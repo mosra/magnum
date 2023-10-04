@@ -25,13 +25,16 @@
 
 #include "DistanceFieldGlyphCache.h"
 
+#include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #ifndef CORRADE_NO_ASSERT
 #include "Magnum/GL/PixelFormat.h"
 #endif
 #include "Magnum/GL/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/TextureTools/DistanceField.h"
 
 namespace Magnum { namespace Text {
@@ -59,40 +62,48 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& sourceSize, con
     #endif
 }
 
+GlyphCacheFeatures DistanceFieldGlyphCache::doFeatures() const {
+    return GlyphCacheFeature::ImageProcessing
+        #ifndef MAGNUM_TARGET_GLES
+        |GlyphCacheFeature::ProcessedImageDownload
+        #endif
+        ;
+}
+
 void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     GL::Texture2D input;
     input.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear);
 
-    #ifndef CORRADE_NO_ASSERT
-    const GL::PixelFormat format = GL::pixelFormat(image.format());
-    #endif
-    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_ASSERT(format == GL::PixelFormat::Red,
-        "Text::DistanceFieldGlyphCache::setImage(): expected"
-        << GL::PixelFormat::Red << "but got" << format, );
-    input.setImage(0, GL::TextureFormat::R8, image);
-    #else
+    /* Upload the input texture and create a distance field from it */
+    const Vector2 scale = Vector2{_size}/Vector2{textureSize()};
+
+    /* On ES2 without EXT_unpack_subimage and on WebGL 1 there's no possibility
+       to upload just a slice of the input, upload the whole image instead by
+       ignoring the PixelStorage properties of the input and also process it as
+       a whole. */
+    #ifdef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_WEBGL
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
-        CORRADE_ASSERT(format == GL::PixelFormat::Red || format == GL::PixelFormat::Luminance,
-            "Text::DistanceFieldGlyphCache::setImage(): expected"
-            << GL::PixelFormat::Red << "but got" << format, );
-        input.setImage(0, GL::TextureFormat::Red, ImageView2D{image.storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, image.size(), image.data()});
-    } else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::unpack_subimage>())
     #endif
     {
-        CORRADE_ASSERT(format == GL::PixelFormat::Luminance,
-            "Text::DistanceFieldGlyphCache::setImage(): expected"
-            << GL::PixelFormat::Luminance << "but got" << format, );
-        input.setImage(0, GL::TextureFormat::Luminance, image);
+        input.setImage(0, GL::textureFormat(image.format()), ImageView2D{image.format(), size().xy(), image.data()});
+        _distanceField(input, texture(), {{}, size().xy()*scale}, size().xy());
+        #ifdef MAGNUM_TARGET_WEBGL
+        static_cast<void>(offset);
+        #endif
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    else
+    #endif
+    #endif
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    {
+        input.setImage(0, GL::textureFormat(image.format()), image);
+        _distanceField(input, texture(), Range2Di::fromSize(offset*scale, image.size()*scale), image.size());
     }
     #endif
-
-    /* Create distance field from input texture */
-    const Vector2 scale = Vector2{_size}/Vector2{textureSize()};
-    _distanceField(input, texture(), Range2Di::fromSize(offset*scale, image.size()*scale), image.size());
 }
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
@@ -121,5 +132,12 @@ void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, cons
 
     texture().setSubImage(0, offset, image);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+Image3D DistanceFieldGlyphCache::doProcessedImage() {
+    Image2D out = _texture.image(0, PixelFormat::R8Unorm);
+    return Image3D{out.format(), {out.size(), 1}, out.release()};
+}
+#endif
 
 }}

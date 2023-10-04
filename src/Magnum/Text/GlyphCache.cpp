@@ -25,17 +25,22 @@
 
 #include "GlyphCache.h"
 
-#include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/TextureFormat.h"
 
+#ifdef MAGNUM_TARGET_GLES2
+#include "Magnum/ImageView.h"
+#endif
+
 namespace Magnum { namespace Text {
 
 GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): GlyphCache{internalFormat, size, size, padding} {}
 
-GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): AbstractGlyphCache{originalSize, padding} {
+/* The unconditional Optional unwrap in here two may assert in rare cases.
+   Let's hope it doesn't in practice. */
+GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): AbstractGlyphCache{*GL::genericPixelFormat(internalFormat), originalSize, padding} {
     /* Initialize the texture */
     _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
@@ -60,21 +65,31 @@ GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const
 
 GlyphCache::~GlyphCache() = default;
 
-GlyphCacheFeatures GlyphCache::doFeatures() const {
-    #ifndef MAGNUM_TARGET_GLES
-    return GlyphCacheFeature::ImageDownload;
-    #else
-    return {};
-    #endif
-}
+GlyphCacheFeatures GlyphCache::doFeatures() const { return {}; }
 
 void GlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {
-    /** @todo some internalformat/format checking also here (if querying internal format is not slow) */
-    _texture.setSubImage(0, offset, image);
+    /* On ES2 without EXT_unpack_subimage and on WebGL 1 there's no possibility
+       to upload just a slice of the input, upload the whole image instead by
+       ignoring the PixelStorage properties of the input */
+    #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::unpack_subimage>())
+    #endif
+    {
+        _texture.setSubImage(0, {}, ImageView2D{image.format(), size().xy(), image.data()});
+        #ifdef MAGNUM_TARGET_WEBGL
+        static_cast<void>(offset);
+        #endif
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    else
+    #endif
+    #endif
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    {
+        _texture.setSubImage(0, offset, image);
+    }
+    #endif
 }
-
-#ifndef MAGNUM_TARGET_GLES
-Image2D GlyphCache::doImage() { return _texture.image(0, PixelFormat::R8Unorm); }
-#endif
 
 }}

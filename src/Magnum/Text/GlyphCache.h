@@ -114,14 +114,16 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
         /** @brief Cache texture */
         GL::Texture2D& texture() { return _texture; }
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
-        GlyphCacheFeatures MAGNUM_LOCAL doFeatures() const override;
-        void MAGNUM_LOCAL doSetImage(const Vector2i& offset, const ImageView2D& image) override;
-        #ifndef MAGNUM_TARGET_GLES
-        Image2D MAGNUM_LOCAL doImage() override;
-        #endif
-
+    #else
+    protected:
+    #endif
         GL::Texture2D _texture;
+
+    private:
+        MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
+        MAGNUM_TEXT_LOCAL void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
 };
 
 }}

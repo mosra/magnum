@@ -62,7 +62,15 @@ corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp
     LIBRARIES Magnum MagnumTextTestLib
     FILES data.bin)
 target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
-corrade_add_test(TextAbstractGlyphCacheTest AbstractGlyphCacheTest.cpp LIBRARIES MagnumTextTestLib)
+corrade_add_test(TextAbstractGlyphCacheTest AbstractGlyphCacheTest.cpp
+    LIBRARIES MagnumTextTestLib MagnumDebugTools)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    if(CMAKE_VERSION VERSION_LESS 3.13)
+        message(FATAL_ERROR "CMake 3.13+ is required in order to specify Emscripten linker options")
+    endif()
+    # Some of the glyph caches tested are rather large
+    target_link_options(TextAbstractGlyphCacheTest PRIVATE "SHELL:-s ALLOW_MEMORY_GROWTH=1")
+endif()
 corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumTextTestLib)
 
 if(MAGNUM_TARGET_GL AND MAGNUM_BUILD_GL_TESTS)

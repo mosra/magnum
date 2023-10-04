@@ -112,7 +112,12 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
         void setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image);
 
     private:
+        MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
         MAGNUM_TEXT_LOCAL void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
+
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_TEXT_LOCAL Image3D doProcessedImage() override;
+        #endif
 
         Vector2i _size;
         TextureTools::DistanceField _distanceField;

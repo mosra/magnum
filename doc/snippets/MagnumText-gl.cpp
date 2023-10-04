@@ -26,6 +26,7 @@
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Shaders/VectorGL.h"
@@ -59,6 +60,12 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
 /* [AbstractFont-usage] */
+}
+
+{
+/* [AbstractGlyphCache-filling-construct] */
+Text::GlyphCache cache{Vector2i{512}};
+/* [AbstractGlyphCache-filling-construct] */
 }
 
 {

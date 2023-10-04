@@ -26,16 +26,22 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractGlyphCache
+ * @brief Class @ref Magnum::Text::AbstractGlyphCache, enum @ref Magnum::Text::GlyphCacheFeature, enum set @ref Magnum::Text::GlyphCacheFeatures
  * @m_since{2019,10}
  */
 
-#include <vector>
-#include <unordered_map>
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/Range.h"
+#include "Magnum/Text/Text.h"
 #include "Magnum/Text/visibility.h"
+#include "Magnum/TextureTools/TextureTools.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/StlForwardVector.h>
+#endif
 
 namespace Magnum { namespace Text {
 
@@ -47,13 +53,34 @@ namespace Magnum { namespace Text {
 */
 enum class GlyphCacheFeature: UnsignedByte {
     /**
-     * Ability to download glyph cache data using
-     * @ref AbstractGlyphCache::image(). May not be supported by glyph caches
-     * on embedded platforms that don't have an ability to get texture data
-     * back from a GPU.
+     * The glyph cache processes the input image, potentially to a different
+     * size or format.
+     * @m_since_latest
      */
-    ImageDownload = 1 << 0
+    ImageProcessing = 1 << 0,
+
+    /**
+     * Ability to download processed image data using
+     * @ref AbstractGlyphCache::processedImage(). May not be supported by glyph
+     * caches on embedded platforms that don't have an ability to get texture
+     * data back from a GPU. Implies @ref GlyphCacheFeature::ImageProcessing.
+     * Glyph caches without @ref GlyphCacheFeature::ImageProcessing have the
+     * image accessible always through @ref AbstractGlyphCache::image().
+     * @m_since_latest
+     */
+    ProcessedImageDownload = ImageProcessing|(1 << 1),
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @m_deprecated_since_latest Use
+     *      @ref GlyphCacheFeature::ProcessedImageDownload instead.
+     */
+    ImageDownload CORRADE_DEPRECATED_ENUM("use ProcessedImageDownload instead") = ProcessedImageDownload
+    #endif
 };
+
+/** @debugoperatorenum{GlyphCacheFeature} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, GlyphCacheFeature value);
 
 /**
 @brief Set of features supported by a glyph cache
@@ -65,141 +92,742 @@ typedef Containers::EnumSet<GlyphCacheFeature> GlyphCacheFeatures;
 
 CORRADE_ENUMSET_OPERATORS(GlyphCacheFeatures)
 
+/** @debugoperatorenum{GlyphCacheFeatures} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, GlyphCacheFeatures value);
+
 /**
 @brief Base for glyph caches
 @m_since{2019,10}
 
-An API-agnostic base for glyph caches. See @ref GlyphCache and
-@ref DistanceFieldGlyphCache for concrete implementations.
+A GPU-API-agnostic base for glyph caches, supporting multiple fonts and both 2D
+and 2D array textures. See the @ref GlyphCache and @ref DistanceFieldGlyphCache
+subclasses for concrete OpenGL implementations. The base class provides a
+common interface for adding fonts, glyph properties, uploading glyph data and
+retrieving glyph properties back.
+
+@section Text-AbstractGlyphCache-filling Filling the glyph cache
+
+A glyph cache is constructed through the concrete GPU-API-specific subclasses,
+namely the @ref GlyphCache and @ref DistanceFieldGlyphCache classes mentioned
+above. Depending on the use case and platform capabilities it's also possible
+to create glyph caches with 2D texture arrays, for example when large alphabets
+are used or when the cache may get filled on-demand with many additional
+glyphs.
+
+A glyph cache is created in an appropriate @ref PixelFormat and a size.
+@ref PixelFormat::R8Unorm is the usual choice, @ref PixelFormat::RGBA8Unorm is
+useful for emoji fonts or when arbitrary icon data are put into the cache.
+
+@snippet MagnumText-gl.cpp AbstractGlyphCache-filling-construct
+
+The rest of this section describes low level usage of the glyph cache filling
+APIs, which are useful mainly when implementing an @ref AbstractFont itself or
+when adding arbitrary other image data to the cache. When using the glyph cache
+with an existing @ref AbstractFont instance, often the high level use involves
+just calling @ref AbstractFont::fillGlyphCache(), which does all of the
+following on its own.
+
+Let's say we want to fill the glyph cache with a custom set of images that
+don't necessarily need to be a font per se. Assuming the input images are
+stored in a simple array, and the goal is to put them all together into the
+cache and reference them later simply by their array indices.
+
+@snippet MagnumText.cpp AbstractGlyphCache-filling-images
+
+@subsection Text-AbstractGlyphCache-filling-font Adding a font
+
+As the cache supports multiple fonts, each glyph added to it needs to be
+associated with a particular font. The @ref addFont() function takes an upper
+bound on *glyph IDs* used in the font and optionally an identifier to associate
+it with a concrete @ref AbstractFont instance to look it up later with
+@ref findFont(). It returns a *font ID* that's subsequently used for adding and
+querying glyphs. In our case the glyph IDs are simply indices into the array,
+so the upper bound is the array size:
+
+@snippet MagnumText.cpp AbstractGlyphCache-filling-font
+
+@subsection Text-AbstractGlyphCache-filling-atlas Reserving space in the glyph atlas
+
+Each glyph cache contains an instance of @ref TextureTools::AtlasLandfill
+packer, which is used to layout glyph data into the cache texture as well as
+maintain the remaining free space when more glyphs get added. In this case
+we'll ask it for best offsets corresponding to the input image sizes, and as we
+created the cache as 2D, we can get 2D offsets back. To keep the example
+simple, rotations are disabled as well, see the atlas packer class docs for
+information about how to deal with them and achieve potentially better packing
+efficiency.
+
+@snippet MagnumText.cpp AbstractGlyphCache-filling-atlas
+
+In case the layouting fails, triggering the assertion, the cache size was
+picked too small or there was already enough glyphs added that the new ones
+didn't fit. The solution is then to either increase the cache size, turn the
+cache into an array, or create a second cache for the new data. Depending on
+the input sizes it's also possible to achieve a better packing efficiency by
+toggling various @ref TextureTools::AtlasLandfillFlag values --- you can for
+example create temporary instances aside, attempt packing with them, and then
+for filling the glyph cache itself pick the set of flags that resulted in the
+smallest @ref TextureTools::AtlasLandfill::filledSize().
+
+@subsection Text-AbstractGlyphCache-filling-glyphs Adding glyphs
+
+With the `offsets` array filled, everything is ready for adding images into the
+cache with @ref addGlyph() and copying their data to respective locations
+in the cache @ref image(). Together with input image sizes, the `offsets` are
+used to form @relativeref{Magnum,Range2Di} instances. What is left at zeros in
+this case is the third *glyph offset* argument, which describes how the glyph
+image is positioned relative to the text layouting cursor (used for example for
+letters *j* or *q* that reach below the baseline).
+
+@snippet MagnumText.cpp AbstractGlyphCache-filling-glyphs
+
+Important is to call @ref flushImage() at the end, which makes the glyph cache
+update its actual GPU-side texture based on what area of the image was updated.
+In case of @ref DistanceFieldGlyphCache for example it also triggers distance
+field generation for given area.
+
+@subsection Text-AbstractGlyphCache-filling-incremental Incremental population
+
+As long as the cache size allows, it's possible to add more fonts with
+additional glyphs. It's also possible to call @ref addGlyph() for any font that
+was added previously, as long as the added glyph ID is within corresponding
+@ref fontGlyphCount() bounds and given glyph ID wasn't added yet. That allows
+for example a use case where the glyph cache is initially empty and glyphs are
+rasterized to it only as needed by actually rendered text, which is especially
+useful with large alphabets or when the set of used fonts is large.
+
+However, note that packing the atlas with all glyphs from all fonts just once
+will always result in a more optimal layout of the glyph data than adding the
+glyphs incrementally.
+
+@subsection Text-AbstractGlyphCache-filling-invalid-glyph Setting a custom invalid glyph
+
+By default, to denote an invalid glyph, i.e. a glyph that isn't present in the
+cache, a zero-area rectangle is used. This can be overriden with
+@ref setInvalidGlyph(). Its usage is similar to @ref addGlyph(), in particular
+you may want to reserve its space together with other glyphs to achieve best
+packing.
+
+Additionally, glyph ID @cpp 0 @ce in fonts is usually reserved for invalid
+font-specific glyphs as well. The cache-global invalid glyph can thus be either
+a special one or you can make it alias some other font-specific invalid glyph,
+by calling @ref setInvalidGlyph() with the same arguments as @ref addGlyph()
+for a font-specific glyph ID @cpp 0 @ce.
+
+@section Text-AbstractGlyphCache-querying Querying glyph properties and glyph data
+
+A glyph cache can be queried for ID of a particular font with @ref findFont(),
+passing the @ref AbstractFont pointer to it. If no font with such pointer was
+added, the function returns @ref Containers::NullOpt. Then, for a particular
+font ID a font-specific glyph ID can be queried with @ref glyphId(). If no such
+glyph was added yet, the function returns @cpp 0 @ce, i.e. the invalid glyph.
+The @ref glyph() function then directly returns data for given glyph, or the
+invalid glyph data in case the glyph wasn't found.
+
+@snippet MagnumText.cpp AbstractGlyphCache-querying
+
+As text rendering is potentially happening very often, batch
+@ref glyphIdsInto(), @ref glyphOffsets(), @ref glyphLayers() and
+@ref glyphRectangles() APIs are provided as well to trim down the amount of
+function calls and redundant lookups:
+
+@snippet MagnumText.cpp AbstractGlyphCache-querying-batch
+
+For invalid glyphs it's the caller choice to either use the invalid glyph
+as-is (as done above), leading to blank spaces in the text, or remember the
+font-specific glyph IDs that resolved to @cpp 0 @ce with @ref glyphId(),
+rasterize them to the cache in the next round, and then update the rendered
+text again.
 
 @section Text-AbstractGlyphCache-subclassing Subclassing
 
-The subclass needs to implement the @ref doSetImage() function and manage the
-glyph cache image. The public @ref setImage() function already does checking
-for rectangle bounds so it's not needed to do it again on the implementation
-side.
+A subclass needs to implement the @ref doFeatures() and @ref doSetImage()
+functions. If the subclass does additional processing of the glyph cache image,
+it should advertise that with @ref GlyphCacheFeature::ImageProcessing. If it's
+desirable to populate the processed image directly and/or download it, it
+should provide an appropriate setter and/or advertise
+@ref GlyphCacheFeature::ProcessedImageDownload as well and implement
+@ref doProcessedImage().
+
+The public @ref flushImage() function already does checking for rectangle
+bounds so it's not needed to do it again inside @ref doSetImage().
 */
 class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
     public:
         /**
-         * @brief Constructor
-         * @param size              Glyph cache texture size
-         * @param padding           Padding around every glyph
+         * @brief Construct a 2D array glyph cache
+         * @param format     Source image format
+         * @param size       Source image size in pixels
+         * @param padding    Padding around every glyph in pixels
+         * @m_since_latest
+         *
+         * The @p size is expected to be non-zero.
+         * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size, const Vector2i& padding = {});
+        #else
+        /* To not need to include Vector */
+        explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size, const Vector2i& padding);
+        explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size);
+        #endif
+
+        /**
+         * @brief Construct a 2D glyph cache
+         * @param format     Source image format
+         * @param size       Source image size in pixels
+         * @param padding    Padding around every glyph in pixels
+         * @m_since_latest
+         *
+         * Equivalent to calling
+         * @ref AbstractGlyphCache(PixelFormat, const Vector3i&, const Vector2i&)
+         * with depth set to @cpp 1 @ce.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, const Vector2i& padding = {});
+        #else
+        /* To not need to include Vector */
+        explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, const Vector2i& padding);
+        explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size);
+        #endif
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Construct a 2D glyph cache
+         * @param size       Source image size in pixels
+         * @param padding    Padding around every glyph in pixels
+         *
+         * Calls @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
+         * with @p format set to @ref PixelFormat::R8Unorm.
+         * @m_deprecated_since_latest Use @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
+         *      instead.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit AbstractGlyphCache(const Vector2i& size, const Vector2i& padding = {});
+        #else
+        /* To not need to include Vector */
+        CORRADE_DEPRECATED("use AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&) instead") explicit AbstractGlyphCache(const Vector2i& size, const Vector2i& padding);
+        CORRADE_DEPRECATED("use AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&) instead") explicit AbstractGlyphCache(const Vector2i& size);
+        #endif
+        #endif
+
+        /** @brief Copying is not allowed */
+        AbstractGlyphCache(const AbstractGlyphCache&) = delete;
+
+        /**
+         * @brief Move constructor
+         * @m_since_latest
+         *
+         * Performs a destructive move, i.e. the original object isn't usable
+         * afterwards anymore.
+         */
+        AbstractGlyphCache(AbstractGlyphCache&&) noexcept;
 
         virtual ~AbstractGlyphCache();
+
+        /** @brief Copying is not allowed */
+        AbstractGlyphCache& operator=(const AbstractGlyphCache&) = delete;
+
+        /**
+         * @brief Move assignment
+         * @m_since_latest
+         */
+        AbstractGlyphCache& operator=(AbstractGlyphCache&&) noexcept;
 
         /** @brief Features supported by this glyph cache implementation */
         GlyphCacheFeatures features() const { return doFeatures(); }
 
-        /** @brief Glyph cache texture size */
-        Vector2i textureSize() const { return _size; }
+        /**
+         * @brief Glyph cache texture format
+         * @m_since_latest
+         *
+         * Corresponds to the format of the image view returned from
+         * @ref image().
+         */
+        PixelFormat format() const;
+
+        /**
+         * @brief Glyph cache texture size
+         * @m_since_latest
+         *
+         * Corresponds to the size of the image view returned from
+         * @ref image().
+         */
+        Vector3i size() const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief 2D glyph cache texture size
+         *
+         * Can be called only if @ref size() depth is @cpp 1 @ce.
+         * @m_deprecated_since_latest Use @ref size() instead.
+         */
+        CORRADE_DEPRECATED("use size() instead") Vector2i textureSize() const;
+        #endif
 
         /** @brief Glyph padding */
-        Vector2i padding() const { return _padding; }
-
-        /** @brief Count of glyphs in the cache */
-        std::size_t glyphCount() const { return glyphs.size(); }
+        Vector2i padding() const;
 
         /**
-         * @brief Parameters of given glyph
-         * @param glyph         Glyph ID
+         * @brief Count of fonts in the cache
+         * @m_since_latest
          *
-         * First tuple element is glyph position relative to point on baseline,
-         * second element is glyph region in texture atlas.
-         *
-         * Returned values include padding.
-         *
-         * If no glyph is found, glyph @cpp 0 @ce is returned, which is by
-         * default on zero position and has zero region in texture atlas. You
-         * can reset it to some meaningful value in @ref insert().
-         * @see @ref padding()
+         * @see @ref addFont(), @ref glyphCount()
          */
-        std::pair<Vector2i, Range2Di> operator[](UnsignedInt glyph) const {
-            auto it = glyphs.find(glyph);
-            return it == glyphs.end() ? glyphs.at(0) : it->second;
-        }
-
-        /** @brief Iterator access to cache data */
-        std::unordered_map<UnsignedInt, std::pair<Vector2i, Range2Di>>::const_iterator begin() const {
-            return glyphs.begin();
-        }
-
-        /** @brief Iterator access to cache data */
-        std::unordered_map<UnsignedInt, std::pair<Vector2i, Range2Di>>::const_iterator end() const {
-            return glyphs.end();
-        }
+        UnsignedInt fontCount() const;
 
         /**
-         * @brief Layout glyphs with given sizes to the cache
+         * @brief Count of all glyphs added to the cache
          *
-         * Returns non-overlapping regions in cache texture to store glyphs.
-         * The reserved space is reused on next call to @ref reserve() if no
-         * glyph was stored there, use @ref insert() to store actual glyph on
-         * given position and @ref setImage() to upload glyph image.
-         *
-         * Glyph @p sizes are expected to be without padding.
-         *
-         * @attention Cache size must be large enough to contain all rendered
-         *      glyphs.
-         * @see @ref padding()
+         * The returned count is a sum across all fonts present in the cache.
+         * It's not possible to query count of added glyphs for a just single
+         * font, the @ref fontGlyphCount() query returns an upper bound for a
+         * font-specific glyph ID.
+         * @see @ref addGlyph(), @ref fontCount()
          */
-        std::vector<Range2Di> reserve(const std::vector<Vector2i>& sizes);
+        UnsignedInt glyphCount() const;
 
         /**
-         * @brief Insert a glyph to the cache
+         * @brief Atlas packer instance
+         * @m_since_latest
+         *
+         * Meant to be used to reserve space in the atlas texture for
+         * to-be-added glyphs. After that call @ref addGlyph() to associate the
+         * reserved space with actual glyph properties, copy the corresponding
+         * glyph data to appropriate sub-ranges in @ref image() and reflect
+         * the updates to the GPU-side data with @ref flushImage().
+         *
+         * The atlas packer is initially configured to match @ref size() and
+         * @ref padding() and the
+         * @ref TextureTools::AtlasLandfillFlag::RotatePortrait and
+         * @relativeref{TextureTools::AtlasLandfillFlag,RotateLandscape} flags
+         * are cleared. Everything else is left at defaults. See the class
+         * documentation for more information.
+         */
+        TextureTools::AtlasLandfill& atlas();
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        const TextureTools::AtlasLandfill& atlas() const;
+
+        /**
+         * @brief Set a cache-global invalid glyph
+         * @param offset        Offset of the rendered glyph relative to a
+         *      point on the baseline
+         * @param layer         Layer in the atlas
+         * @param rectangle     Rectangle in the atlas without padding applied
+         * @return Cache-global glyph ID
+         * @m_since_latest
+         *
+         * Defines properties of glyph with ID @cpp 0 @ce, i.e. a cache-global
+         * invalid glyph. By default the glyph is empty.
+         *
+         * The @p layer and @p rectangle is expected to be in bounds for
+         * @ref size(). Usually the @p rectangle would match an offset + size
+         * reserved earlier in the @ref atlas() packer, but doesn't have to. If
+         * not, it's the caller responsibility to ensure the atlas packer has
+         * up-to-date information about used area in the atlas in case
+         * incremental filling of the cache is desired.
+         *
+         * Copy the corresponding glyph data to appropriate sub-ranges in
+         * @ref image(). After the glyphs are copied, call @ref flushImage() to
+         * reflect the updates to the GPU-side data.
+         */
+        void setInvalidGlyph(const Vector2i& offset, Int layer, const Range2Di& rectangle);
+
+        /**
+         * @brief Set a cache-global invalid glyph in a 2D glyph cache
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref setInvalidGlyph(const Vector2i&, Int, const Range2Di&)
+         * with @p layer set to @cpp 0 @ce. Can be called only if @ref size()
+         * depth is @cpp 1 @ce.
+         */
+        void setInvalidGlyph(const Vector2i& offset, const Range2Di& rectangle);
+
+        /**
+         * @brief Add a font
+         * @param glyphCount    Upper bound on glyph IDs present in the font,
+         *      or the value of @ref AbstractFont::glyphCount()
+         * @param pointer       Optional unique font identifier for later
+         *      lookup via @ref findFont(). Use @cpp nullptr @ce if not
+         *      associated with any particular font instance.
+         * @m_since_latest
+         *
+         * Returns font ID that's subsequently used to identify the font in
+         * @ref addGlyph() and @ref glyph(). The @p pointer is expected to be
+         * either @cpp nullptr @ce or unique across all added fonts but apart
+         * from that isn't accessed in any way.
+         */
+        UnsignedInt addFont(UnsignedInt glyphCount, const AbstractFont* pointer = nullptr);
+
+        /**
+         * @brief Upper bound on glyph IDs present in given font
+         * @param fontId        Font ID returned by @ref addFont()
+         * @m_since_latest
+         *
+         * The @p fontId is expected to be less than @ref fontCount(). Note
+         * that this query doesn't return an actual number of glyphs added for
+         * given font but an upper bound on their IDs.
+         */
+        UnsignedInt fontGlyphCount(UnsignedInt fontId) const;
+
+        /**
+         * @brief Unique font identifier
+         * @param fontId        Font ID returned by @ref addFont()
+         * @m_since_latest
+         *
+         * The @p fontId is expected to be less than @ref fontCount(). The
+         * returned pointer isn't guaranteed to point to anything meaningful.
+         */
+        const AbstractFont* fontPointer(UnsignedInt fontId) const;
+
+        /**
+         * @brief Find a font ID for a unique font identifier
+         * @m_since_latest
+         *
+         * The @p pointer is expected to not be @cpp nullptr @ce, as there can
+         * be multiple fonts with no associated identifier. If no font is found
+         * for given identifier, returns @ref Containers::NullOpt. The lookup
+         * is done with an @f$ \mathcal{O}(n) @f$ complexity with @f$ n @f$
+         * being @ref fontCount().
+         */
+        Containers::Optional<UnsignedInt> findFont(const AbstractFont* pointer) const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Reserve space for given glyph sizes in the cache
+         *
+         * Calls @ref addFont() with glyph count set to size of the @p sizes
+         * vector and then @ref TextureTools::AtlasLandfill::add() to reserve
+         * the sizes. For backwards compatibility only, can be called just
+         * once.
+         * @m_deprecated_since_latest Use @ref atlas() and
+         *      @ref TextureTools::AtlasLandfill::add() instead.
+         */
+        CORRADE_DEPRECATED("use atlas() and TextureTools::AtlasLandfill::add() instead") std::vector<Range2Di> reserve(const std::vector<Vector2i>& sizes);
+        #endif
+
+        /**
+         * @brief Add a glyph
+         * @param fontId        Font ID returned by @ref addFont()
+         * @param fontGlyphId   Glyph ID in given font
+         * @param offset        Offset of the rendered glyph relative to a
+         *      point on the baseline
+         * @param layer         Layer in the atlas
+         * @param rectangle     Rectangle in the atlas without padding applied
+         * @return Cache-global glyph ID
+         * @m_since_latest
+         *
+         * The @p fontId is expected to be less than @ref fontCount(),
+         * @p fontGlyphId then less than the glyph count passed in the
+         * @ref addFont() call and an ID that haven't been added yet, and
+         * @p layer and @p rectangle in bounds for @ref size(). Usually the
+         * @p rectangle would match an offset + size reserved earlier in the
+         * @ref atlas() packer, but doesn't have to. If not, it's the caller
+         * responsibility to ensure the atlas packer has up-to-date information
+         * about used area in the atlas in case incremental filling of the
+         * cache is desired.
+         *
+         * Copy the corresponding glyph data to appropriate sub-ranges in
+         * @ref image(). After the glyphs are copied, call @ref flushImage() to
+         * reflect the updates to the GPU-side data.
+         *
+         * The returned glyph ID can be passed directly to @ref glyph() to
+         * retrieve its properties, the same ID can be also queried by passing
+         * the @p fontId and @p fontGlyphId to @ref glyphId(). Due to how the
+         * internal glyph ID mapping is implemented, there can be at most 65536
+         * glyphs added including the implicit invalid one.
+         */
+        UnsignedInt addGlyph(UnsignedInt fontId, UnsignedInt fontGlyphId, const Vector2i& offset, Int layer, const Range2Di& rectangle);
+
+        /**
+         * @brief Add a glyph to a 2D glyph cache
+         *
+         * Equivalent to calling @ref addGlyph(UnsignedInt, UnsignedInt, const Vector2i&, Int, const Range2Di&)
+         * with @p layer set to @cpp 0 @ce. Can be called only if @ref size()
+         * depth is @cpp 1 @ce.
+         */
+        UnsignedInt addGlyph(UnsignedInt fontId, UnsignedInt fontGlyphId, const Vector2i& offset, const Range2Di& rectangle);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Add a glyph
          * @param glyph         Glyph ID
-         * @param position      Position relative to point on baseline
+         * @param offset        Offset relative to point on baseline
          * @param rectangle     Region in texture atlas
          *
-         * You can obtain unused non-overlapping regions with @ref reserve().
-         * You can't overwrite already inserted glyph, however you can reset
-         * glyph @cpp 0 @ce to some meaningful value.
-         *
-         * Glyph parameters are expected to be without padding.
-         *
-         * Use @ref setImage() to upload an image corresponding to the glyphs.
-         * @see @ref padding(), @ref AbstractFont::fillGlyphCache()
+         * Calls either @ref setInvalidGlyph() or @ref addGlyph() with
+         * @p fontId set to @cpp 0 @ce. If no font is added yet, adds it, if
+         * it's added expands its glyph count as necessary. Cannot be called if
+         * there's more than one font.
+         * @m_deprecated_since_latest Use @ref setInvalidGlyph(),
+         *      @ref addFont() and @ref addGlyph() instead.
          */
-        void insert(UnsignedInt glyph, const Vector2i& position, const Range2Di& rectangle);
+        CORRADE_DEPRECATED("use addFont() and addGlyph() instead") void insert(UnsignedInt glyph, const Vector2i& offset, const Range2Di& rectangle);
+        #endif
 
+        /**
+         * @brief Glyph cache image
+         * @m_since_latest
+         *
+         * The view is of @ref format() and @ref size(), and is initially
+         * zero-filled. For every @ref addGlyph() copy the corresponding glyph
+         * data to appropriate sub-ranges of the image. After the glyphs are
+         * copied, call @ref flushImage() to reflect the updates to the
+         * GPU-side data.
+         *
+         * If the glyph cache has @ref GlyphCacheFeature::ImageProcessing set,
+         * the actual image used for rendering is different. Use
+         * @ref processedImage() to download it.
+         * @see @ref ImageView::pixels(), @ref Utility::copy(),
+         *      @ref processedImage()
+         */
+        MutableImageView3D image();
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        ImageView3D image() const;
+
+        /**
+         * @brief Flush glyph cache image updates
+         * @m_since_latest
+         *
+         * Call after copying glyph data to @ref image() in order to reflect
+         * the updates to the GPU-side data. The @p layer and @p range is
+         * expected to be in bounds for @ref size(). You can use
+         * @ref Math::join() on rectangles passed to @ref addGlyph() to
+         * calculate the area that spans all glyphs that were added.
+         */
+        void flushImage(const Range3Di& range);
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        void flushImage(Int layer, const Range2Di& range);
+
+        /**
+         * @brief Flush 2D glyph cache image updates
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref flushImage(const Range3Di&) with depth
+         * offset @cpp 0 @ce and depth size @cpp 1 @ce. Can be called only if
+         * @ref size() depth is @cpp 1 @ce.
+         */
+        void flushImage(const Range2Di& range);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set cache image
          *
          * Uploads image for one or more glyphs to given offset in cache
-         * texture. The @p offset and @ref ImageView::size() are expected to be
-         * in bounds for @ref textureSize().
-         * @see @ref AbstractFont::fillGlyphCache()
+         * texture and calls @ref flushImage(). The @p offset and
+         * @ref ImageView::size() are expected to be in bounds for @ref size().
+         * Can be called only if @ref size() depth is @cpp 1 @ce.
+         * @m_deprecated_since_latest Copy the glyph data to slices of
+         *      @ref image() instead and call @ref flushImage() afterwards.
          */
-        void setImage(const Vector2i& offset, const ImageView2D& image);
+        CORRADE_DEPRECATED("copy data to image() instead") void setImage(const Vector2i& offset, const ImageView2D& image);
+        #endif
 
         /**
-         * @brief Download cache image
+         * @brief Download processed cache image
+         * @m_since_latest
          *
-         * Downloads the cache texture back. Calls @ref doImage(). Available
-         * only if @ref GlyphCacheFeature::ImageDownload is supported.
+         * If the glyph cache has @ref GlyphCacheFeature::ImageProcessing set,
+         * the actual image used for rendering is different from @ref image()
+         * and has potentially a different size or format. Expects that
+         * @ref GlyphCacheFeature::ProcessedImageDownload is supported. For a
+         * glyph cache without @ref GlyphCacheFeature::ImageProcessing you can
+         * get the image directly through @ref image().
          * @see @ref features()
          */
-        Image2D image();
+        Image3D processedImage();
+
+        /**
+         * @brief Query a cache-global glyph ID from a font-local glyph ID
+         * @param fontId        Font ID returned by @ref addFont()
+         * @param fontGlyphId   Glyph ID in given font
+         * @m_since_latest
+         *
+         * The @p fontId is expected to be less than @ref fontCount(),
+         * @p fontGlyphId then less than the glyph count passed in the
+         * @ref addFont() call. The returned ID can be then used to index the
+         * @ref glyphOffsets() const, @ref glyphLayers() const and
+         * @ref glyphRectangles() const views, alternatively you can use
+         * @ref glyph(UnsignedInt, UnsignedInt) const to get properties of a
+         * single glyph directly.
+         *
+         * If @ref addGlyph() wasn't called for given
+         * @p fontId and @p fontGlyphId yet, returns @cpp 0 @ce, i.e. the
+         * cache-global invalid glyph index.
+         *
+         * The lookup is done with an @f$ \mathcal{O}(1) @f$ complexity.
+         * @see @ref glyphIdsInto()
+         */
+        UnsignedInt glyphId(UnsignedInt fontId, UnsignedInt fontGlyphId) const;
+
+        /**
+         * @brief Query cache-global glyph IDs from font-local glyph IDs
+         * @param[in]  fontId           Font ID returned by @ref addFont()
+         * @param[in]  fontGlyphIds     Glyph IDs in given font
+         * @param[out] glyphIds         Resulting cache-global glyph IDs
+         *
+         * A batch variant of @ref glyphId(), mainly meant to be used to index
+         * the @ref glyphOffsets() const, @ref glyphLayers() const and
+         * @ref glyphRectangles() const views.
+         *
+         * The @p fontId is expected to be less than @ref fontCount(), all
+         * @p fontGlyphIds items then less than the glyph count passed in the
+         * @ref addFont() call. The @p fontGlyphIds and @p glyphIds views are
+         * expected to have the same size. Glyphs for which @ref addGlyph()
+         * wasn't called yet have the corresponding @p glyphIds item set to
+         * @cpp 0 @ce.
+         *
+         * The lookup is done with an @f$ \mathcal{O}(n) @f$ complexity with
+         * @f$ n @f$ being size of the @p fontGlyphIds array.
+         */
+        void glyphIdsInto(UnsignedInt fontId, const Containers::StridedArrayView1D<const UnsignedInt>& fontGlyphIds, const Containers::StridedArrayView1D<UnsignedInt>& glyphIds) const;
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        void glyphIdsInto(UnsignedInt fontId, std::initializer_list<UnsignedInt> fontGlyphIds, const Containers::StridedArrayView1D<UnsignedInt>& glyphIds) const;
+
+        /**
+         * @brief Positions of all glyphs in the cache relative to a point on the baseline
+         * @m_since_latest
+         *
+         * The offsets are including @ref padding(). Size of the returned view
+         * is the same as @ref glyphCount(). Use @ref glyphId() or
+         * @ref glyphIdsInto() to map from per-font glyph IDs to indices in
+         * this array. The first item is the position of the cache-global
+         * invalid glyph.
+         *
+         * The returned view is only guaranteed to be valid until the next
+         * @ref addGlyph() call.
+         * @see @ref glyphLayers() const, @ref glyphRectangles() const,
+         *      @ref glyph()
+         */
+        Containers::StridedArrayView1D<const Vector2i> glyphOffsets() const;
+
+        /**
+         * @brief Layers of all glyphs in the cache atlas
+         * @m_since_latest
+         *
+         * Size of the returned view is the same as @ref glyphCount(). Use
+         * @ref glyphId() or @ref glyphIdsInto() to map from per-font glyph IDs
+         * to indices in this array. The first item is the layer of the
+         * cache-global invalid glyph. All values are guaranteed to be less
+         * than @ref size() depth.
+         *
+         * The returned view is only guaranteed to be valid until the next
+         * @ref addGlyph() call.
+         * @see @ref glyphOffsets() const, @ref glyphRectangles() const,
+         *      @ref glyph()
+         */
+        Containers::StridedArrayView1D<const Int> glyphLayers() const;
+
+        /**
+         * @brief Rectangles of all glyphs in the cache atlas
+         * @m_since_latest
+         *
+         * The rectangles are including @ref padding(). Size of the returned
+         * view is the same as @ref glyphCount(). Use @ref glyphId() or
+         * @ref glyphIdsInto() to map from per-font glyph IDs to indices in
+         * this array. The first item is the layer of the cache-global invalid
+         * glyph. All values are guaranteed to fit into @ref size() width and
+         * height.
+         *
+         * The returned view is only guaranteed to be valid until the next
+         * @ref addGlyph() call.
+         * @see @ref glyphOffsets() const, @ref glyphLayers() const,
+         *      @ref glyph()
+         */
+        Containers::StridedArrayView1D<const Range2Di> glyphRectangles() const;
+
+        /**
+         * @brief Properties of given glyph ID in given font
+         * @param fontId        Font ID returned by @ref addFont()
+         * @param fontGlyphId   Glyph ID in given font
+         * @m_since_latest
+         *
+         * Returns offset of the rendered glyph relative to a point on the
+         * baseline, layer and rectangle in the atlas. The offset and rectangle
+         * are including @ref padding(). The @p fontId is expected to be less
+         * than @ref fontCount(), @p fontGlyphId then less than the glyph count
+         * passed in the @ref addFont() call.
+         *
+         * The lookup is done with an @f$ \mathcal{O}(1) @f$ complexity.
+         */
+        Containers::Triple<Vector2i, Int, Range2Di> glyph(UnsignedInt fontId, UnsignedInt fontGlyphId) const;
+
+        /**
+         * @brief Properties of given cache-global glyph ID
+         * @param glyphId       Cache-global glyph ID
+         * @m_since_latest
+         *
+         * Returns offset of the rendered glyph relative to a point on the
+         * baseline, layer and rectangle in the atlas. The offset and rectangle
+         * are including @ref padding(). The @p glyphId is expected to be less
+         * than @ref glyphCount().
+         */
+        Containers::Triple<Vector2i, Int, Range2Di> glyph(UnsignedInt glyphId) const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Properties of given glyph
+         * @param glyphId       Glyph ID
+         *
+         * Calls @ref glyph() with @p fontId set to @cpp 0 @ce, returns its
+         * output with the layer index ignored.
+         * @m_deprecated_since_latest Use @ref glyph() instead.
+         */
+        CORRADE_DEPRECATED("use glyph() instead") std::pair<Vector2i, Range2Di> operator[](UnsignedInt glyphId) const;
+        #endif
 
     private:
         /** @brief Implementation for @ref features() */
         virtual GlyphCacheFeatures doFeatures() const = 0;
 
         /**
-         * @brief Implementation for @ref setImage()
+         * @brief Set a 3D glyph cache image
+         * @m_since_latest
          *
-         * The @p offset and @ref ImageView::size() are guaranteed to be in
-         * bounds for @ref textureSize().
+         * Called from @ref flushImage() with a slice of @ref image(). The
+         * @p offset and @ref ImageView::size() are guaranteed to be in bounds
+         * for @ref size(). For a glyph cache with @ref size() depth being
+         * @cpp 1 @ce default implementation delegates to
+         * @ref doSetImage(const Vector2i&, const ImageView2D&). Implement
+         * either this or the other overload.
          */
-        virtual void doSetImage(const Vector2i& offset, const ImageView2D& image) = 0;
+        virtual void doSetImage(const Vector3i& offset, const ImageView3D& image);
 
-        /** @brief Implementation for @ref image() */
-        virtual Image2D doImage();
+        /**
+         * @brief Set a 2D glyph cache image
+         *
+         * Delegated to from the default implementation of
+         * @ref doSetImage(const Vector3i&, const ImageView3D&) if @ref size()
+         * depth is @cpp 1 @ce. The @p offset and @ref ImageView::size() are
+         * guaranteed to be in bounds for @ref size(). Implement either this or
+         * the other overload.
+         */
+        virtual void doSetImage(const Vector2i& offset, const ImageView2D& image);
 
-        Vector2i _size, _padding;
-        std::unordered_map<UnsignedInt, std::pair<Vector2i, Range2Di>> glyphs;
+        /**
+         * @brief Implementation for @ref processedImage()
+         * @m_since_latest
+         */
+        virtual Image3D doProcessedImage();
+
+        struct State;
+        Containers::Pointer<State> _state;
 };
 
 }}

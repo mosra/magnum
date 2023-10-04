@@ -34,6 +34,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/AbstractGlyphCache.h"

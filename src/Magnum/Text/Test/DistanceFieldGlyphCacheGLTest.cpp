@@ -28,6 +28,7 @@
 #include <Corrade/Containers/StringStl.h> /**< @todo remove once Debug is stream-free */
 #include <Corrade/PluginManager/AbstractManager.h>
 #include <Corrade/TestSuite/Compare/String.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h> /**< @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
 
@@ -35,6 +36,10 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
+#ifdef MAGNUM_TARGET_GLES
+#include "Magnum/DebugTools/TextureImage.h"
+#endif
+#include "Magnum/Math/Range.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/PixelFormat.h"
@@ -118,27 +123,66 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
     CORRADE_COMPARE(inputImage->size(), (Vector2i{256, 256}));
 
     DistanceFieldGlyphCache cache{data.sourceSize, data.size, 32};
-    /* Test also uploading under an offset */
-    cache.setImage(data.sourceOffset, *inputImage);
+    Containers::StridedArrayView3D<const char> src = inputImage->pixels();
+    /* Test also uploading under an offset. The cache might be three-component
+       in some cases, slice the destination view to just the first component */
+    /** @todo actually the input can be just luminance, only the destination
+        cannot -- fix by dropping the dependency on GlyphCache and creating the
+        texture directly */
+    Utility::copy(src, cache.image().pixels()[0].sliceSize({
+        std::size_t(data.sourceOffset.y()),
+        std::size_t(data.sourceOffset.x()),
+        0}, src.size()));
+    cache.flushImage(Range2Di::fromSize(data.sourceOffset, inputImage->size()));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* On GLES processedImage() isn't implemented as it'd mean creating a
+       temporary framebuffer. Do it via DebugTools here instead, we cannot
+       really verify that the size matches, but at least something. */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D actual = cache.image();
+    Image3D actual3 = cache.processedImage();
+    /** @todo ugh have slicing on images directly already */
+    MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
+    #else
+    /* Pick a format that matches the internal texture format. This is rather
+       shitty, TBH. */
+    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
+    const GL::PixelFormat format = GL::PixelFormat::Red;
+    #else
+    GL::PixelFormat format;
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        format = GL::PixelFormat::Red;
+    } else
+    #endif
+    {
+        format = GL::PixelFormat::RGB;
+    }
+    #endif
+    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, data.size}, {format, GL::PixelType::UnsignedByte});
+    #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
+    /* On GLES2 if EXT_unpack_subimage isn't supported or on WebGL 1, the whole
+       texture gets uploaded and processed every time. Which circumvents this
+       problem. */
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_EXPECT_FAIL_IF(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::unpack_subimage>() && !data.sourceOffset.isZero(),
+        "The distance field tool is currently broken if a non-zero offset is used.");
+    #elif !defined(MAGNUM_TARGET_GLES2)
     CORRADE_EXPECT_FAIL_IF(!data.sourceOffset.isZero(),
         "The distance field tool is currently broken if a non-zero offset is used.");
-    CORRADE_COMPARE_WITH(actual.pixels<UnsignedByte>().exceptPrefix(data.offset),
+    #endif
+    /* The format may be three-component, consider just the first channel */
+    Containers::StridedArrayView3D<const char> pixels = actual.pixels();
+    CORRADE_COMPARE_WITH((Containers::arrayCast<2, const UnsignedByte>(pixels.prefix({pixels.size()[0], pixels.size()[1], 1})).exceptPrefix(data.offset)),
         Utility::Path::join(TEXTURETOOLS_DISTANCEFIELDGLTEST_DIR, "output.tga"),
         /* Same threshold as in TextureTools DistanceFieldGLTest */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
-    #else
-    CORRADE_SKIP("Skipping image download test as it's not available on GLES.");
-    #endif
 }
 
 void DistanceFieldGlyphCacheGLTest::setDistanceFieldImage() {
@@ -175,8 +219,17 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImage() {
     cache.setDistanceFieldImage({8, 4}, ImageView2D{format, GL::PixelType::UnsignedByte, {8, 4}, data});
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* On GLES processedImage() isn't implemented as it'd mean creating a
+       temporary framebuffer. Do it via DebugTools here instead, we cannot
+       really verify that the size matches, but at least something. */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D actual = cache.image();
+    Image3D actual3 = cache.processedImage();
+    /** @todo ugh have slicing on images directly already */
+    MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
+    #else
+    Image2D actualGL = DebugTools::textureSubImage(cache.texture(), 0, {{}, {16, 8}}, {format, GL::PixelType::UnsignedByte});
+    ImageView2D actual{*GL::genericPixelFormat(format, GL::PixelType::UnsignedByte), actualGL.size(), actualGL.data()};
+    #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     UnsignedByte expected[]{
@@ -192,9 +245,6 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImage() {
     CORRADE_COMPARE_AS(actual,
         (ImageView2D{PixelFormat::R8Unorm, {16, 8}, expected}),
         DebugTools::CompareImage);
-    #else
-    CORRADE_SKIP("Skipping image download test as it's not available on GLES.");
-    #endif
 }
 
 void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfRange() {

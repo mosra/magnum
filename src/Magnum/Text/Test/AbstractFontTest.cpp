@@ -36,6 +36,7 @@
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"

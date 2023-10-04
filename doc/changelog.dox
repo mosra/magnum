@@ -1248,6 +1248,35 @@ See also:
 -   @cpp Shaders::PhongGL::setLightColor(const Magnum::Color4&) @ce is deprecated
     in favor of @ref Shaders::PhongGL::setLightColors() with a single item ---
     it's short enough to not warrant the existence of a dedicated overload
+-   The @ref Text library API was reworked for more features, better efficiency
+    and no dependencies on the STL:
+    -   @cpp Text::GlyphCacheFeature::ImageDownload @ce is deprecated in favor
+        of @ref Text::GlyphCacheFeature::ProcessedImageDownload, as there's now
+        a possibility to get the image directly for glyph caches that don't
+        have @ref Text::GlyphCacheFeature::ImageProcessing
+    -   The @cpp Text::AbstractGlyphCache::AbstractGlyphCache(const Vector2i&, const Vector2i&) @ce
+        constructor is deprecated in favor of
+        @ref Text::AbstractGlyphCache::AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
+        that specifies a concrete format for the cache image.
+    -   The @cpp Text::AbstractGlyphCache::reserve() @ce function is deprecated
+        in favor of operating directly on a @ref TextureTools::AtlasLandfill
+        instance through @ref Text::AbstractGlyphCache::atlas(). It also forced
+        the caller to use a @ref std::vector, which wasn't nice at all. The old
+        API can only be called on 2D glyph caches now, and only when there's no
+        font added yet.
+    -   @cpp Text::AbstractGlyphCache::insert() @ce function is deprecated in
+        favor of @ref Text::AbstractGlyphCache::addFont() and
+        @relativeref{Text::AbstractGlyphCache,addGlyph()} that better expose
+        multi-font and 2D array support. The old API can only be called on 2D
+        glyph caches now.
+    -   @cpp Text::AbstractGlyphCache::textureSize() @ce is deprecated in favor
+        of @ref Text::AbstractGlyphCache::size() which returns a 3D size in
+        order to support texture arrays as well. The old API can only be called
+        on 2D glyph caches now.
+    -   @cpp Text::AbstractGlyphCache::setImage() @ce is deprecated, copy glyph
+        data to slices of @ref Text::AbstractGlyphCache::image() instead and
+        call @relativeref{Text::AbstractGlyphCache,flushImage()} instead. The
+        old API can only be called on 2D glyph caches now.
 -   The @cpp TextureTools::atlas() @ce utility is deprecated in favor of
     @ref TextureTools::AtlasLandfill, which has a vastly better packing
     efficiency, supports incremental packing and doesn't force the caller to
@@ -1598,6 +1627,18 @@ See also:
     and @ref Shaders::DistanceFieldVectorGL is removed, as its benefits were
     rather questionable --- on the contrary, it made subclass implementation
     more verbose and less clear
+-   The @ref Text library API was reworked for more features, better efficiency
+    and no dependencies on the STL:
+    -   The @cpp Text::AbstractGlyphCache::begin() @ce / @cpp end() @ce access
+        via @ref std::unordered_map iterators is removed. Use
+        @ref Text::AbstractGlyphCache::glyph() for accessing properties of a
+        particular glyph, for accessing all glyph data then
+        @relativeref{Text::AbstractGlyphCache,glyphIdsInto()},
+        @relativeref{Text::AbstractGlyphCache,glyphOffsets() const} and
+        @relativeref{Text::AbstractGlyphCache,glyphRectangles() const}.
+    -   The @ref Text::AbstractGlyphCache::image() query now returns a
+        @ref MutableImageView3D instead of an @ref Image2D in order to support
+        incremental population and texture arrays
 -   The @ref Trade::AnimationTrackTarget enum was extended from 8 to 16 bits to
     provide more room for custom targets, consistently with
     @ref Trade::MeshAttribute.

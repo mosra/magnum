@@ -31,17 +31,24 @@
 #include <unordered_map>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
+#include "Magnum/Text/AbstractGlyphCache.h"
+#include "Magnum/TextureTools/Atlas.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
@@ -160,6 +167,91 @@ font->setFileCallback([](const std::string& filename,
         return Containers::optional(rs.getRaw(filename));
     }, rs);
 /* [AbstractFont-setFileCallback-template] */
+}
+
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{Vector2i{256}};
+/* [AbstractGlyphCache-filling-images] */
+Containers::ArrayView<const ImageView2D> images = DOXYGEN_ELLIPSIS({});
+/* [AbstractGlyphCache-filling-images] */
+
+/* [AbstractGlyphCache-filling-font] */
+UnsignedInt fontId = cache.addFont(images.size());
+/* [AbstractGlyphCache-filling-font] */
+
+/* [AbstractGlyphCache-filling-atlas] */
+Containers::Array<Vector2i> offsets{NoInit, images.size()};
+
+cache.atlas().clearFlags(
+    TextureTools::AtlasLandfillFlag::RotatePortrait|
+    TextureTools::AtlasLandfillFlag::RotateLandscape);
+CORRADE_INTERNAL_ASSERT(cache.atlas().add(
+    stridedArrayView(images).slice(&ImageView2D::size),
+    offsets));
+/* [AbstractGlyphCache-filling-atlas] */
+
+/* [AbstractGlyphCache-filling-glyphs] */
+/* The glyph cache is just 2D, so copying to the first slice */
+Containers::StridedArrayView3D<char> dst = cache.image().pixels()[0];
+Range2Di updated;
+for(UnsignedInt fontGlyphId = 0; fontGlyphId != images.size(); ++fontGlyphId) {
+    Range2Di rectangle = Range2Di::fromSize(offsets[fontGlyphId],
+                                            images[fontGlyphId].size());
+    cache.addGlyph(fontId, fontGlyphId, {}, rectangle);
+
+    /* Copy assuming all input images have the same pixel format */
+    Containers::StridedArrayView3D<const char> src = images[fontGlyphId].pixels();
+    Utility::copy(src, dst.sliceSize({
+        std::size_t(offsets[fontGlyphId].y()),
+        std::size_t(offsets[fontGlyphId].x()),
+        0}, src.size()));
+
+    /* Maintain a range that was updated in the glyph cache */
+    updated = Math::join(updated, rectangle);
+}
+
+/* Reflect the image data update to the actual GPU-side texture */
+cache.flushImage(updated);
+/* [AbstractGlyphCache-filling-glyphs] */
+}
+
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cacheInstance{Vector2i{256}};
+/* [AbstractGlyphCache-querying] */
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS({});
+Text::AbstractGlyphCache& cache = DOXYGEN_ELLIPSIS(cacheInstance);
+
+Containers::ArrayView<const UnsignedInt> fontGlyphIds = DOXYGEN_ELLIPSIS({});
+
+Containers::Optional<UnsignedInt> fontId = cache.findFont(font.get());
+DOXYGEN_ELLIPSIS()
+for(std::size_t i = 0; i != fontGlyphIds.size(); ++i) {
+    Containers::Triple<Vector2i, Int, Range2Di> glyph =
+        cache.glyph(*fontId, fontGlyphIds[i]);
+    DOXYGEN_ELLIPSIS(static_cast<void>(glyph);)
+}
+/* [AbstractGlyphCache-querying] */
+
+/* [AbstractGlyphCache-querying-batch] */
+Containers::Array<UnsignedInt> glyphIds{NoInit, fontGlyphIds.size()};
+cache.glyphIdsInto(*fontId, fontGlyphIds, glyphIds);
+
+Containers::StridedArrayView1D<const Vector2i> offsets = cache.glyphOffsets();
+Containers::StridedArrayView1D<const Range2Di> rects = cache.glyphRectangles();
+for(std::size_t i = 0; i != fontGlyphIds.size(); ++i) {
+    Vector2i offset = offsets[glyphIds[i]];
+    Range2Di rectangle = rects[glyphIds[i]];
+    DOXYGEN_ELLIPSIS(static_cast<void>(offset); static_cast<void>(rectangle);)
+}
+/* [AbstractGlyphCache-querying-batch] */
 }
 
 }

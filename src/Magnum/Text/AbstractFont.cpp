@@ -39,6 +39,7 @@
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

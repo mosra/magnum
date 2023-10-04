@@ -29,8 +29,12 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
+#ifdef MAGNUM_TARGET_GLES
+#include "Magnum/DebugTools/TextureImage.h"
+#endif
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Text/GlyphCache.h"
 
 namespace Magnum { namespace Text { namespace Test { namespace {
@@ -39,16 +43,18 @@ struct GlyphCacheGLTest: GL::OpenGLTester {
     explicit GlyphCacheGLTest();
 
     void initialize();
-    void initializeExplicitFormat();
+    void initializeCustomFormat();
 
     void setImage();
+    void setImageCustomFormat();
 };
 
 GlyphCacheGLTest::GlyphCacheGLTest() {
     addTests({&GlyphCacheGLTest::initialize,
-              &GlyphCacheGLTest::initializeExplicitFormat,
+              &GlyphCacheGLTest::initializeCustomFormat,
 
-              &GlyphCacheGLTest::setImage});
+              &GlyphCacheGLTest::setImage,
+              &GlyphCacheGLTest::setImageCustomFormat});
 }
 
 void GlyphCacheGLTest::initialize() {
@@ -61,7 +67,7 @@ void GlyphCacheGLTest::initialize() {
     #endif
 }
 
-void GlyphCacheGLTest::initializeExplicitFormat() {
+void GlyphCacheGLTest::initializeCustomFormat() {
     GlyphCache cache{
         #ifndef MAGNUM_TARGET_GLES2
         GL::TextureFormat::RGBA8,
@@ -77,43 +83,95 @@ void GlyphCacheGLTest::initializeExplicitFormat() {
     #endif
 }
 
+const UnsignedByte InputData[]{
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+    0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+    0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+};
+
+const UnsignedByte ExpectedData[]{
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+    0, 0, 0, 0, 0, 0, 0, 0, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+    0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+    0, 0, 0, 0, 0, 0, 0, 0, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+};
+
 void GlyphCacheGLTest::setImage() {
     GlyphCache cache{{16, 8}};
 
-    /* Clear the texture first, as it'd have random garbage otherwise */
-    UnsignedByte zeros[16*8]{};
-    cache.setImage({}, ImageView2D{PixelFormat::R8Unorm, {16, 8}, zeros});
+    cache.setImage({8, 4}, ImageView2D{PixelFormat::R8Unorm, {8, 4}, InputData});
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    UnsignedByte data[]{
-        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-    };
-    cache.setImage({8, 4}, ImageView2D{PixelFormat::R8Unorm, {8, 4}, data});
+    MutableImageView3D actual3 = cache.image();
+    /** @todo ugh have slicing on images directly already */
+    MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    #ifndef MAGNUM_TARGET_GLES
-    Image2D actual = cache.image();
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    UnsignedByte expected[]{
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0, 0, 0, 0, 0, 0, 0, 0, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-        0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0, 0, 0, 0, 0, 0, 0, 0, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-    };
+    ImageView2D expected{PixelFormat::R8Unorm, {16, 8}, ExpectedData};
     CORRADE_COMPARE_AS(actual,
-        (ImageView2D{PixelFormat::R8Unorm, {16, 8}, expected}),
+        expected,
         DebugTools::CompareImage);
+
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("Luminance format used on GLES2 isn't usable for framebuffer reading, can't verify texture contents.");
     #else
-    CORRADE_SKIP("Skipping image download test as it's not available on GLES.");
+    /* Verify the actual texture. It should be the same as above. On GLES we
+       cannot really verify that the size matches, but at least something. */
+    #ifndef MAGNUM_TARGET_GLES
+    Image2D image = cache.texture().image(0, {PixelFormat::R8Unorm});
+    #else
+    Image2D image = DebugTools::textureSubImage(cache.texture(), 0, {{}, {16, 8}}, {PixelFormat::R8Unorm});
     #endif
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(image,
+        expected,
+        DebugTools::CompareImage);
+    #endif
+}
+
+void GlyphCacheGLTest::setImageCustomFormat() {
+    /* Same as setImage(), but with a four-channel format (so quarter of
+       width). Needed to be able to read the texture on ES2 to verify the
+       upload works, as there's a special case for when the EXT_unpack_subimage
+       extension isn't present. */
+
+    GlyphCache cache{
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        GL::TextureFormat::RGBA8,
+        #else
+        GL::TextureFormat::RGBA,
+        #endif
+        {4, 8}};
+
+    cache.setImage({2, 4}, ImageView2D{PixelFormat::RGBA8Unorm, {2, 4}, InputData});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    MutableImageView3D actual3 = cache.image();
+    /** @todo ugh have slicing on images directly already */
+    MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    ImageView2D expected{PixelFormat::RGBA8Unorm, {4, 8}, ExpectedData};
+    CORRADE_COMPARE_AS(actual,
+        expected,
+        DebugTools::CompareImage);
+
+    /* Verify the actual texture. It should be the same as above. On GLES we
+       cannot really verify that the size matches, but at least something. */
+    #ifndef MAGNUM_TARGET_GLES
+    Image2D image = cache.texture().image(0, {PixelFormat::RGBA8Unorm});
+    #else
+    Image2D image = DebugTools::textureSubImage(cache.texture(), 0, {{}, {4, 8}}, {PixelFormat::RGBA8Unorm});
+    #endif
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_AS(image,
+        expected,
+        DebugTools::CompareImage);
 }
 
 }}}}

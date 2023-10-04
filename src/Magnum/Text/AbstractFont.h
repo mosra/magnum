@@ -747,7 +747,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Text.AbstractFont/0.3.2"
+"cz.mosra.magnum.Text.AbstractFont/0.3.3"
 /* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
