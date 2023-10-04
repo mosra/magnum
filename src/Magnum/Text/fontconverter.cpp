@@ -201,16 +201,16 @@ int FontConverter::exec() {
     if(!args.value<Vector2i>("output-size").isZero()) {
         Debug() << "Populating distance field glyph cache...";
 
-        cache.reset(new DistanceFieldGlyphCache(
+        cache.emplace<DistanceFieldGlyphCache>(
             args.value<Vector2i>("atlas-size"),
             args.value<Vector2i>("output-size"),
-            args.value<Int>("radius")));
+            args.value<UnsignedInt>("radius"));
 
     /* Otherwise use normal cache */
     } else {
         Debug() << "Zero-size distance field output specified, populating normal glyph cache...";
 
-        cache.reset(new GlyphCache(args.value<Vector2i>("atlas-size")));
+        cache.emplace<GlyphCache>(args.value<Vector2i>("atlas-size"));
     }
 
     /* Fill the cache */

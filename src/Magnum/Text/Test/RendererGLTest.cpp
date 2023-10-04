@@ -81,7 +81,7 @@ class TestFont: public AbstractFont {
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
     Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float size, Containers::StringView text) override {
-        return Containers::Pointer<AbstractLayouter>(new TestLayouter(size, text.size()));
+        return Containers::pointer<TestLayouter>(size, text.size());
     }
 };
 
@@ -359,7 +359,7 @@ void RendererGLTest::multiline() {
             Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
             Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView text) override {
-                return Containers::Pointer<AbstractLayouter>(new Layouter(text.size()));
+                return Containers::pointer<Layouter>(UnsignedInt(text.size()));
             }
 
             bool _opened;

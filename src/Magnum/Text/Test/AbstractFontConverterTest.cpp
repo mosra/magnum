@@ -802,7 +802,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
             if(data.size() == 1 && data[0] == '\xa5')
-                return Containers::pointer(new DummyGlyphCache{{123, 345}});
+                return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
             return nullptr;
         }
     } converter;
@@ -851,7 +851,7 @@ void AbstractFontConverterTest::importGlyphCacheFromData() {
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const override {
             if(data.size() == 2 && data[1].second.size() == 1 && data[1].second[0] == '\xa5')
-                return Containers::pointer(new DummyGlyphCache{{123, 345}});
+                return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
             return nullptr;
         }
     } converter;
@@ -902,7 +902,7 @@ void AbstractFontConverterTest::importGlyphCacheFromDataAsSingleData() {
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
             if(data.size() == 1 && data[0] == '\xa5')
-                return Containers::pointer(new DummyGlyphCache{{123, 345}});
+                return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
             return nullptr;
         }
     } converter;
@@ -925,7 +925,7 @@ void AbstractFontConverterTest::importGlyphCacheFromFile() {
             CORRADE_COMPARE_AS(*data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
-            return Containers::pointer(new DummyGlyphCache{{123, 345}});
+            return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
         }
     } converter;
 
@@ -957,7 +957,7 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleData() {
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
             if(data.size() == 1 && data[0] == '\xa5')
-                return Containers::pointer(new DummyGlyphCache{{123, 345}});
+                return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
             return nullptr;
         }
     } converter;

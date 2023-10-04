@@ -1113,7 +1113,7 @@ void AbstractFontTest::createGlyphCache() {
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
 
         Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache() override {
-            Containers::Pointer<AbstractGlyphCache> cache{new DummyGlyphCache{{100, 100}}};
+            Containers::Pointer<DummyGlyphCache> cache{InPlaceInit, Vector2i{100, 100}};
             for(char a: "helo"_s) cache->insert(a*10, {a/2, a*2}, {});
             return cache;
         }
