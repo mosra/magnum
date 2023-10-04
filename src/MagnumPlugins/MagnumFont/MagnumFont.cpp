@@ -27,6 +27,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
@@ -185,11 +186,12 @@ Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
 
 Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCache& cache, const Float size, const Containers::StringView text) {
     /* Get glyph codes from characters */
-    Containers::Array<UnsignedInt> glyphs{NoInit, text.size()};
+    Containers::Array<UnsignedInt> glyphs;
+    arrayReserve(glyphs, text.size());
     for(std::size_t i = 0; i != text.size(); ) {
         const Containers::Pair<char32_t, std::size_t> codepointNext = Utility::Unicode::nextChar(text, i);
         const auto it = _opened->glyphId.find(codepointNext.first());
-        glyphs[i] = it == _opened->glyphId.end() ? 0 : it->second;
+        arrayAppend(glyphs, it == _opened->glyphId.end() ? 0 : it->second);
         i = codepointNext.second();
     }
 

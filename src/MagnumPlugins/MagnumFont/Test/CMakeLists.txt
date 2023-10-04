@@ -36,6 +36,9 @@ endif()
 if(NOT MAGNUM_MAGNUMFONT_BUILD_STATIC)
     set(MAGNUMFONT_PLUGIN_FILENAME $<TARGET_FILE:MagnumFont>)
     set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+    if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+        set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
+    endif()
 endif()
 
 # First replace ${} variables, then $<> generator expressions
@@ -63,16 +66,28 @@ endif()
 
 if(MAGNUM_BUILD_GL_TESTS)
     corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp
-        LIBRARIES MagnumText MagnumTrade MagnumOpenGLTester
+        LIBRARIES
+            MagnumDebugTools
+            MagnumText
+            MagnumTrade
+            MagnumOpenGLTester
         FILES
             font.conf
+            font-empty.conf
             font.tga)
     target_include_directories(MagnumFontGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(MAGNUM_MAGNUMFONT_BUILD_STATIC)
-        target_link_libraries(MagnumFontGLTest PRIVATE MagnumFont TgaImporter)
+        target_link_libraries(MagnumFontGLTest PRIVATE
+            MagnumFont) # TgaImporter should get linked transitively
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(MagnumFontGLTest PRIVATE AnyImageImporter)
+        endif()
     else()
         # So the plugins get properly built when building the test
         add_dependencies(MagnumFontGLTest MagnumFont TgaImporter)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+            add_dependencies(MagnumFontGLTest AnyImageImporter)
+        endif()
     endif()
     if((CORRADE_BUILD_STATIC OR MAGNUM_BUILD_STATIC) AND NOT MAGNUM_MAGNUMFONT_BUILD_STATIC)
         # CMake < 3.4 does this implicitly, but 3.4+ not anymore (see CMP0065).

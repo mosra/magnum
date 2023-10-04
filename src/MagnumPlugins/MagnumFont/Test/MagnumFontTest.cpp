@@ -47,6 +47,7 @@ struct MagnumFontTest: TestSuite::Tester {
     void nonexistent();
     void properties();
     void layout();
+    void layoutNoGlyphsInCache();
 
     void fileCallbackImage();
     void fileCallbackImageNotFound();
@@ -56,10 +57,22 @@ struct MagnumFontTest: TestSuite::Tester {
     PluginManager::Manager<AbstractFont> _fontManager{"nonexistent"};
 };
 
+const struct {
+    const char* name;
+    const char* string;
+} LayoutData[]{
+    {"", "Wave"},
+    {"UTF-8", "Wavě"},
+};
+
 MagnumFontTest::MagnumFontTest() {
     addTests({&MagnumFontTest::nonexistent,
-              &MagnumFontTest::properties,
-              &MagnumFontTest::layout,
+              &MagnumFontTest::properties});
+
+    addInstancedTests({&MagnumFontTest::layout},
+        Containers::arraySize(LayoutData));
+
+    addTests({&MagnumFontTest::layoutNoGlyphsInCache,
 
               &MagnumFontTest::fileCallbackImage,
               &MagnumFontTest::fileCallbackImageNotFound});
@@ -93,18 +106,39 @@ void MagnumFontTest::properties() {
     CORRADE_COMPARE(font->ascent(), 25.0f);
     CORRADE_COMPARE(font->descent(), -10.0f);
     CORRADE_COMPARE(font->lineHeight(), 39.7333f);
-    CORRADE_COMPARE(font->glyphCount(), 3);
-    CORRADE_COMPARE(font->glyphSize(font->glyphId(U'W')), (Vector2{16.0f, 120.0f}));
+    CORRADE_COMPARE(font->glyphCount(), 4);
+    CORRADE_COMPARE(font->glyphId(U'W'), 2);
+    CORRADE_COMPARE(font->glyphId(U'e'), 1);
+    UnsignedInt eId = font->glyphId(
+        /* MSVC (but not clang-cl) doesn't support UTF-8 in char32_t literals
+           but it does it regular strings. Still a problem in MSVC 2022, what a
+           trash fire, can't you just give up on those codepage insanities
+           already, ffs?! */
+        #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG)
+        U'\u011B'
+        #else
+        U'ě'
+        #endif
+    );
+    CORRADE_COMPARE(eId, 3);
+    CORRADE_COMPARE(font->glyphSize(font->glyphId(U'W')), (Vector2{8.0f, 44.0f}));
     CORRADE_COMPARE(font->glyphAdvance(font->glyphId(U'W')), (Vector2{23.0f, 0.0f}));
 }
 
 void MagnumFontTest::layout() {
+    auto&& data = LayoutData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
 
     CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
-    /* Fill the cache with some fake glyphs */
-    struct DummyGlyphCache: AbstractGlyphCache {
+    /* Fill the cache with some fake glyphs. Usually fillGlyphCache() would
+       happen here, but that requires creating a GL GlyphCache, which would
+       make it impossible to test w/o a GL context */
+    /** @todo clean up this mess, it's also getting increasingly out of sync
+        with the actual glyph cache data in the font */
+    struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
@@ -112,8 +146,20 @@ void MagnumFontTest::layout() {
     } cache{Vector2i{256}};
     cache.insert(font->glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
     cache.insert(font->glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
+    /* ě has deliberately the same glyph data as e */
+    cache.insert(font->glyphId(
+        /* MSVC (but not clang-cl) doesn't support UTF-8 in char32_t literals
+           but it does it regular strings. Still a problem in MSVC 2022, what a
+           trash fire, can't you just give up on those codepage insanities
+           already, ffs?! */
+        #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG)
+        U'\u011B'
+        #else
+        U'ě'
+        #endif
+    ), {25, 12}, {{16, 4}, {64, 32}});
 
-    auto layouter = font->layout(cache, 0.5f, "Wave");
+    auto layouter = font->layout(cache, 0.5f, data.string);
     CORRADE_VERIFY(layouter);
     CORRADE_COMPARE(layouter->glyphCount(), 4);
 
@@ -136,10 +182,50 @@ void MagnumFontTest::layout() {
         Containers::pair(Range2D{}, Range2D{}));
     CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
 
-    /* 'e' */
+    /* 'e' or 'ě' */
     CORRADE_COMPARE(layouter->renderGlyph(3, cursorPosition = {}, rectangle),
         Containers::pair(Range2D{{0.78125f, 0.375f}, {2.28125f, 1.25f}},
                          Range2D{{0.0625f, 0.015625f}, {0.25f, 0.125f}}));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
+}
+
+void MagnumFontTest::layoutNoGlyphsInCache() {
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+
+    CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+
+    /* Tests the case where createGlyphCache() was accidentally not called */
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{Vector2i{256}};
+
+    auto layouter = font->layout(cache, 0.5f, "Wave");
+    CORRADE_VERIFY(layouter);
+    CORRADE_COMPARE(layouter->glyphCount(), 4);
+
+    Range2D rectangle;
+    Vector2 cursorPosition;
+
+    /* Compared to layout(), only the cursor position gets updated, everything
+       else falls back to the invalid glyph */
+
+    CORRADE_COMPARE(layouter->renderGlyph(0, cursorPosition = {}, rectangle),
+        Containers::pair(Range2D{}, Range2D{}));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.71875f, 0.0f));
+
+    CORRADE_COMPARE(layouter->renderGlyph(1, cursorPosition = {}, rectangle),
+        Containers::pair(Range2D{}, Range2D{}));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
+
+    CORRADE_COMPARE(layouter->renderGlyph(2, cursorPosition = {}, rectangle),
+        Containers::pair(Range2D{}, Range2D{}));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
+
+    CORRADE_COMPARE(layouter->renderGlyph(3, cursorPosition = {}, rectangle),
+        Containers::pair(Range2D{}, Range2D{}));
     CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
 }
 

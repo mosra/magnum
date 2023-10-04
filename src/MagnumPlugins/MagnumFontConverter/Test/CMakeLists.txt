@@ -28,9 +28,11 @@
 set(CMAKE_FOLDER "MagnumPlugins/MagnumFontConverter/Test")
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(MAGNUMFONTCONVERTER_TEST_DIR ".")
     set(MAGNUMFONTCONVERTER_TEST_WRITE_DIR "write")
     set(MAGNUMFONT_TEST_DIR ".")
 else()
+    set(MAGNUMFONTCONVERTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     set(MAGNUMFONTCONVERTER_TEST_WRITE_DIR ${CMAKE_CURRENT_BINARY_DIR})
     set(MAGNUMFONT_TEST_DIR ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/MagnumFont/Test)
 endif()
@@ -38,6 +40,9 @@ endif()
 if(NOT MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)
     set(MAGNUMFONTCONVERTER_PLUGIN_FILENAME $<TARGET_FILE:MagnumFontConverter>)
     set(TGAIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImageConverter>)
+    if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+        set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
+    endif()
     if(MAGNUM_WITH_TGAIMPORTER)
         set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
     endif()
@@ -50,20 +55,31 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
     INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp
-    LIBRARIES MagnumText MagnumTrade
+    LIBRARIES
+        MagnumDebugTools
+        MagnumText
+        MagnumTrade
     FILES
         ../../MagnumFont/Test/font.conf
-        ../../MagnumFont/Test/font.tga)
+        ../../MagnumFont/Test/font.tga
+        font-empty-cache.conf
+        font-empty-cache.tga)
 target_include_directories(MagnumFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)
     target_link_libraries(MagnumFontConverterTest PRIVATE
         MagnumFontConverter) # TgaImageConverter should get linked transitively
+    if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+        target_link_libraries(MagnumFontConverterTest PRIVATE AnyImageImporter)
+    endif()
     if(MAGNUM_WITH_TGAIMPORTER)
         target_link_libraries(MagnumFontConverterTest PRIVATE TgaImporter)
     endif()
 else()
     # So the plugins get properly built when building the test
     add_dependencies(MagnumFontConverterTest MagnumFontConverter)
+    if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+        add_dependencies(MagnumFontConverterTest AnyImageImporter)
+    endif()
     if(MAGNUM_WITH_TGAIMPORTER)
         add_dependencies(MagnumFontConverterTest TgaImporter)
     endif()
