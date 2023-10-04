@@ -171,7 +171,7 @@ struct DummyGlyphCache: AbstractGlyphCache {
 
     GlyphCacheFeatures doFeatures() const override { return {}; }
     void doSetImage(const Vector2i&, const ImageView2D&) override {}
-} dummyGlyphCache{{}};
+} dummyGlyphCache{{128, 128}};
 
 void AbstractFontConverterTest::convertGlyphs() {
     std::u32string characters;
