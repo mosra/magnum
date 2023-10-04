@@ -218,7 +218,12 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
         /** @brief Copying is not allowed */
         AtlasLandfill(const AtlasLandfill&) = delete;
 
-        /** @brief Move constructor */
+        /**
+         * @brief Move constructor
+         *
+         * Performs a destructive move, i.e. the original object isn't usable
+         * afterwards anymore.
+         */
         AtlasLandfill(AtlasLandfill&&) noexcept;
 
         ~AtlasLandfill();
