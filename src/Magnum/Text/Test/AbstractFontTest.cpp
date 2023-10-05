@@ -36,6 +36,7 @@
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Text/AbstractFont.h"
@@ -961,11 +962,11 @@ void AbstractFontTest::layout() {
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView str) override {
-            return Containers::pointer<Layouter>(UnsignedInt(cache.textureSize().x()*str.size()*size));
+            return Containers::pointer<Layouter>(UnsignedInt(cache.size().x()*str.size()*size));
         }
     } font;
 
-    DummyGlyphCache cache{{100, 200}};
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 200}};
     Containers::Pointer<AbstractLayouter> layouter = font.layout(cache, 0.25f, "hello");
     CORRADE_COMPARE(layouter->glyphCount(), 100*5/4);
 }
@@ -986,7 +987,7 @@ void AbstractFontTest::layoutNoFont() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DummyGlyphCache cache{{100, 200}};
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 200}};
     font.layout(cache, 0.25f, "hello");
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::layout(): no font opened\n");
 }
@@ -1003,7 +1004,7 @@ void AbstractFontTest::fillGlyphCache() {
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
 
         void doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters) override {
-            CORRADE_COMPARE(cache.textureSize(), (Vector2i{100, 100}));
+            CORRADE_COMPARE(cache.size(), (Vector3i{100, 100, 1}));
             CORRADE_COMPARE_AS(characters, Containers::arrayView<char32_t>({
                 'h', 'e', 'l', 'o'
             }), TestSuite::Compare::Container);
@@ -1016,7 +1017,7 @@ void AbstractFontTest::fillGlyphCache() {
     /* Capture correct function name */
     CORRADE_VERIFY(true);
 
-    DummyGlyphCache cache{{100, 100}};
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
 
     font.fillGlyphCache(cache, "helo");
     CORRADE_VERIFY(font.called);
@@ -1038,7 +1039,7 @@ void AbstractFontTest::fillGlyphCacheNotSupported() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DummyGlyphCache cache{{100, 100}};
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, "hello");
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::fillGlyphCache(): feature not supported\n");
 }
@@ -1059,7 +1060,7 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DummyGlyphCache cache{{100, 100}};
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, "hello");
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented\n");
 }
@@ -1080,7 +1081,7 @@ void AbstractFontTest::fillGlyphCacheNoFont() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DummyGlyphCache cache{{100, 100}};
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, "hello");
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::fillGlyphCache(): no font opened\n");
 }
@@ -1101,7 +1102,7 @@ void AbstractFontTest::fillGlyphCacheInvalidUtf8() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DummyGlyphCache cache{{100, 100}};
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, "he\xffo");
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string: he\xffo\n");
 }
@@ -1118,14 +1119,14 @@ void AbstractFontTest::createGlyphCache() {
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
 
         Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache() override {
-            return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
+            return Containers::pointer<DummyGlyphCache>(PixelFormat::R8Unorm, Vector2i{123, 345});
         }
     } font;
 
     Containers::Pointer<AbstractGlyphCache> cache = font.createGlyphCache();
     CORRADE_VERIFY(cache);
 
-    CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
+    CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
 }
 
 void AbstractFontTest::createGlyphCacheNotSupported() {

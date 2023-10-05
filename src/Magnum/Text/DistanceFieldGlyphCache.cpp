@@ -77,7 +77,7 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
         .setMagnificationFilter(GL::SamplerFilter::Linear);
 
     /* Upload the input texture and create a distance field from it */
-    const Vector2 scale = Vector2{_size}/Vector2{textureSize()};
+    const Vector2 scale = Vector2{_size}/Vector2{size().xy()};
 
     /* On ES2 without EXT_unpack_subimage and on WebGL 1 there's no possibility
        to upload just a slice of the input, upload the whole image instead by

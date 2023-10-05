@@ -34,7 +34,8 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
@@ -172,7 +173,7 @@ struct DummyGlyphCache: AbstractGlyphCache {
 
     GlyphCacheFeatures doFeatures() const override { return {}; }
     void doSetImage(const Vector2i&, const ImageView2D&) override {}
-} dummyGlyphCache{{128, 128}};
+} dummyGlyphCache{PixelFormat::R8Unorm, {128, 128}};
 
 void AbstractFontConverterTest::convertGlyphs() {
     std::u32string characters;
@@ -803,7 +804,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
             if(data.size() == 1 && data[0] == '\xa5')
-                return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
+                return Containers::pointer<DummyGlyphCache>(PixelFormat::R8Unorm, Vector2i{123, 345});
             return nullptr;
         }
     } converter;
@@ -811,7 +812,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     const char data[] = {'\xa5'};
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromSingleData(data);
     CORRADE_VERIFY(cache);
-    CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
+    CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotImplemented() {
@@ -852,7 +853,7 @@ void AbstractFontConverterTest::importGlyphCacheFromData() {
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const override {
             if(data.size() == 2 && data[1].second.size() == 1 && data[1].second[0] == '\xa5')
-                return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
+                return Containers::pointer<DummyGlyphCache>(PixelFormat::R8Unorm, Vector2i{123, 345});
             return nullptr;
         }
     } converter;
@@ -860,7 +861,7 @@ void AbstractFontConverterTest::importGlyphCacheFromData() {
     const char data[] = {'\xa5'};
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromData({{}, {{}, data}});
     CORRADE_VERIFY(cache);
-    CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
+    CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromDataNoData() {
@@ -903,7 +904,7 @@ void AbstractFontConverterTest::importGlyphCacheFromDataAsSingleData() {
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
             if(data.size() == 1 && data[0] == '\xa5')
-                return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
+                return Containers::pointer<DummyGlyphCache>(PixelFormat::R8Unorm, Vector2i{123, 345});
             return nullptr;
         }
     } converter;
@@ -911,7 +912,7 @@ void AbstractFontConverterTest::importGlyphCacheFromDataAsSingleData() {
     const char data[] = {'\xa5'};
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromData({{{}, data}});
     CORRADE_VERIFY(cache);
-    CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
+    CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFile() {
@@ -926,13 +927,13 @@ void AbstractFontConverterTest::importGlyphCacheFromFile() {
             CORRADE_COMPARE_AS(*data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
-            return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
+            return Containers::pointer<DummyGlyphCache>(PixelFormat::R8Unorm, Vector2i{123, 345});
         }
     } converter;
 
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"));
     CORRADE_VERIFY(cache);
-    CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
+    CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFileNotImplemented() {
@@ -958,7 +959,7 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleData() {
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
             if(data.size() == 1 && data[0] == '\xa5')
-                return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
+                return Containers::pointer<DummyGlyphCache>(PixelFormat::R8Unorm, Vector2i{123, 345});
             return nullptr;
         }
     } converter;
@@ -966,7 +967,7 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleData() {
     /* doImportFromFile() should call doImportFromSingleData() */
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"));
     CORRADE_VERIFY(cache);
-    CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
+    CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound() {

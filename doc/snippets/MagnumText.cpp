@@ -42,6 +42,7 @@
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Range.h"
@@ -174,7 +175,7 @@ struct: Text::AbstractGlyphCache {
     using Text::AbstractGlyphCache::AbstractGlyphCache;
 
     Text::GlyphCacheFeatures doFeatures() const override { return {}; }
-} cache{Vector2i{256}};
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
 /* [AbstractGlyphCache-filling-images] */
 Containers::ArrayView<const ImageView2D> images = DOXYGEN_ELLIPSIS({});
 /* [AbstractGlyphCache-filling-images] */
@@ -224,7 +225,7 @@ struct: Text::AbstractGlyphCache {
     using Text::AbstractGlyphCache::AbstractGlyphCache;
 
     Text::GlyphCacheFeatures doFeatures() const override { return {}; }
-} cacheInstance{Vector2i{256}};
+} cacheInstance{PixelFormat::R8Unorm, Vector2i{256}};
 /* [AbstractGlyphCache-querying] */
 Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS({});
 Text::AbstractGlyphCache& cache = DOXYGEN_ELLIPSIS(cacheInstance);

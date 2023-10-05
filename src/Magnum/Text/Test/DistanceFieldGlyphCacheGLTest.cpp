@@ -100,7 +100,7 @@ void DistanceFieldGlyphCacheGLTest::initialize() {
     DistanceFieldGlyphCache cache{{1024, 2048}, {128, 256}, 16};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CORRADE_COMPARE(cache.textureSize(), (Vector2i{1024, 2048}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
     CORRADE_COMPARE(cache.distanceFieldTextureSize(), (Vector2i{128, 256}));
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));

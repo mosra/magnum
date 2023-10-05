@@ -24,6 +24,8 @@
 */
 
 #include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -34,6 +36,7 @@
 #endif
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/TextureFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Text/GlyphCache.h"
 
@@ -61,7 +64,7 @@ void GlyphCacheGLTest::initialize() {
     GlyphCache cache{{1024, 2048}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CORRADE_COMPARE(cache.textureSize(), (Vector2i{1024, 2048}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{1024, 2048}));
     #endif
@@ -77,7 +80,7 @@ void GlyphCacheGLTest::initializeCustomFormat() {
         {256, 512}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CORRADE_COMPARE(cache.textureSize(), (Vector2i{256, 512}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{256, 512}));
     #endif
@@ -104,7 +107,10 @@ const UnsignedByte ExpectedData[]{
 void GlyphCacheGLTest::setImage() {
     GlyphCache cache{{16, 8}};
 
-    cache.setImage({8, 4}, ImageView2D{PixelFormat::R8Unorm, {8, 4}, InputData});
+    Utility::copy(
+        Containers::StridedArrayView2D<const UnsignedByte>{InputData, {4, 8}},
+        cache.image().pixels<UnsignedByte>()[0].sliceSize({4, 8}, {4, 8}));
+    cache.flushImage(Range2Di::fromSize({8, 4}, {8, 4}));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     MutableImageView3D actual3 = cache.image();
@@ -148,7 +154,10 @@ void GlyphCacheGLTest::setImageCustomFormat() {
         #endif
         {4, 8}};
 
-    cache.setImage({2, 4}, ImageView2D{PixelFormat::RGBA8Unorm, {2, 4}, InputData});
+    Utility::copy(
+        Containers::StridedArrayView2D<const Color4ub>{Containers::arrayCast<const Color4ub>(Containers::arrayView(InputData)), {4, 2}},
+        cache.image().pixels<Color4ub>()[0].sliceSize({4, 2}, {4, 2}));
+    cache.flushImage(Range2Di::fromSize({2, 4}, {2, 4}));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     MutableImageView3D actual3 = cache.image();
