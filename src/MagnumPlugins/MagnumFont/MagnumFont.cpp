@@ -69,10 +69,10 @@ namespace {
         private:
             Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override;
 
-            const Containers::StridedArrayView1D<const Vector2> glyphAdvance;
-            const AbstractGlyphCache& cache;
-            const Float fontSize, textSize;
-            const Containers::Array<UnsignedInt> glyphs;
+            const Containers::StridedArrayView1D<const Vector2> _glyphAdvance;
+            const AbstractGlyphCache& _cache;
+            const Float _fontSize, _textSize;
+            const Containers::Array<UnsignedInt> _glyphs;
     };
 }
 
@@ -200,23 +200,23 @@ Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCa
 
 namespace {
 
-MagnumFontLayouter::MagnumFontLayouter(const Containers::StridedArrayView1D<const Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const Float fontSize, const Float textSize, Containers::Array<UnsignedInt>&& glyphs): AbstractLayouter{UnsignedInt(glyphs.size())}, glyphAdvance{glyphAdvance}, cache(cache), fontSize{fontSize}, textSize{textSize}, glyphs{Utility::move(glyphs)} {}
+MagnumFontLayouter::MagnumFontLayouter(const Containers::StridedArrayView1D<const Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const Float fontSize, const Float textSize, Containers::Array<UnsignedInt>&& glyphs): AbstractLayouter{UnsignedInt(glyphs.size())}, _glyphAdvance{glyphAdvance}, _cache(cache), _fontSize{fontSize}, _textSize{textSize}, _glyphs{Utility::move(glyphs)} {}
 
 Containers::Triple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
     Vector2i position;
     Range2Di rectangle;
-    std::tie(position, rectangle) = cache[glyphs[i]];
+    std::tie(position, rectangle) = _cache[_glyphs[i]];
 
     /* Normalized texture coordinates */
-    const auto textureCoordinates = Range2D(rectangle).scaled(1.0f/Vector2(cache.textureSize()));
+    const auto textureCoordinates = Range2D(rectangle).scaled(1.0f/Vector2(_cache.textureSize()));
 
     /* Quad rectangle, computed from texture rectangle, denormalized to
        requested text size */
-    const auto quadRectangle = Range2D(Range2Di::fromSize(position, rectangle.size())).scaled(Vector2(textSize/fontSize));
+    const auto quadRectangle = Range2D(Range2Di::fromSize(position, rectangle.size())).scaled(Vector2(_textSize/_fontSize));
 
     /* Advance for given glyph, denormalized to requested text size */
-    const Vector2 advance = glyphAdvance[glyphs[i]]*(textSize/fontSize);
+    const Vector2 advance = _glyphAdvance[_glyphs[i]]*(_textSize/_fontSize);
 
     return {quadRectangle, textureCoordinates, advance};
 }
