@@ -684,8 +684,8 @@ void AbstractGlyphCacheTest::reserve() {
         Range2Di::fromSize({6, 12}, {5, 3}),
         Range2Di::fromSize({1, 2}, {12, 6}),
         Range2Di::fromSize({13, 12}, {10, 5}),
-        Range2Di::fromSize({1, 17}, {0, 1}),
-        Range2Di::fromSize({1, 12}, {3, 0}),
+        Range2Di::fromSize({4, 12}, {0, 1}),
+        Range2Di::fromSize({1, 17}, {3, 0}),
     }), TestSuite::Compare::Container);
 }
 

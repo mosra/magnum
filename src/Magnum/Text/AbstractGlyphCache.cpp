@@ -274,13 +274,10 @@ std::vector<Range2Di> AbstractGlyphCache::reserve(const std::vector<Vector2i>& s
     state.atlas.clearFlags(TextureTools::AtlasLandfillFlag::RotatePortrait|
                            TextureTools::AtlasLandfillFlag::RotateLandscape);
 
-    /* Create the output array. Because the new atlas packer doesn't accept
-       zero sizes, change those to be (1, 1) instead. A new interface will
-       disallow them as well, but here we want to keep backwards
-       compatibility. */
+    /* Create the output array */
     std::vector<Range2Di> out(sizes.size());
     for(std::size_t i = 0; i != sizes.size(); ++i)
-        out[i].max() = Math::max(sizes[i], Vector2i{1});
+        out[i].max() = sizes[i];
 
     const bool succeeded = state.atlas.add(
         Containers::stridedArrayView(out).slice(&Range2Di::max),
@@ -298,10 +295,9 @@ std::vector<Range2Di> AbstractGlyphCache::reserve(const std::vector<Vector2i>& s
         return {};
     }
 
-    /* Update the ranges max values to match the new offsets, undo the zero
-       sizes being (1, 1) */
+    /* Update the ranges max values to match the new offsets */
     for(std::size_t i = 0; i != sizes.size(); ++i)
-        out[i].max() = out[i].min() + sizes[i];
+        out[i].max() += out[i].min();
 
     return out;
 }
