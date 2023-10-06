@@ -97,7 +97,7 @@ enum class PixelFormat: GLenum {
     #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
     /**
      * Floating-point luminance channel. The value is used for all RGB
-     * channels.
+     * channels. Can't be used for framebuffer reading.
      * @requires_gles20_only Not available in ES 3.0, WebGL 2.0 or desktop
      *      OpenGL. Use @ref PixelFormat::Red instead.
      * @deprecated_gl Included for compatibility reasons only, use
@@ -127,7 +127,8 @@ enum class PixelFormat: GLenum {
     #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
     /**
      * Floating-point luminance and alpha channel. First value is used for all
-     * RGB channels, second value is used for alpha channel.
+     * RGB channels, second value is used for alpha channel. Can't be used for
+     * framebuffer reading.
      * @requires_gles20_only Not available in ES 3.0, WebGL 2.0 or desktop
      *      OpenGL. Use @ref PixelFormat::RG instead.
      * @deprecated_gl Included for compatibility reasons only, use
