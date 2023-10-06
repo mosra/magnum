@@ -282,13 +282,32 @@ bool atlasLandfillAdd(Implementation::AtlasLandfillState& state, const Container
             rotations.set(i);
         }
 
+        /* Zero-size items are allowed, as they don't really contribute to the
+           layout in any way if padding is zero without needing to special-case
+           anything:
+
+            - If the item width is zero, it still gets sorted according to its
+              height relative to thers and gets placed according to
+              placementYOffsets, but no actual placementYOffsets update happens
+              because the range to update is empty.
+            - If the item height is zero and it's not rotated to a portrait
+              becoming the above case, it's placed as the last item of all and
+              if everything before fit, it fits always too. The
+              placementYOffsets update *does* happen, but as there are no items
+              after it only affects incremental filling.
+
+           On the other hand, if padding is non-zero, the items are expected to
+           not overlap each other by the caller (for example in order to
+           perform a blur or distance field calculation). In that case they're
+           treated as any other non-empty item. */
+
         #ifndef CORRADE_NO_ASSERT
         if(state.padding.isZero())
-            CORRADE_ASSERT(size.product() && sizePadded <= state.size.xy(),
-                "TextureTools::AtlasLandfill::add(): expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size, {});
+            CORRADE_ASSERT((sizePadded <= state.size.xy()).all(),
+                "TextureTools::AtlasLandfill::add(): expected size" << i << "to be not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size, {});
         else
-            CORRADE_ASSERT(size.product() && sizePadded <= state.size.xy(),
-                "TextureTools::AtlasLandfill::add(): expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size << "and padding" << Debug::packed << padding, {});
+            CORRADE_ASSERT((sizePadded <= state.size.xy()).all(),
+                "TextureTools::AtlasLandfill::add(): expected size" << i << "to be not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size << "and padding" << Debug::packed << padding, {});
         #endif
 
         sortedFlippedSizes[i] = {sizePadded, UnsignedInt(i)};

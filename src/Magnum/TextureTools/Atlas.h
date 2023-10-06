@@ -336,9 +336,9 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          * @param[out] rotations    Which textures got rotated
          *
          * The @p sizes, @p offsets and @p rotations views are expected to have
-         * the same size. The @p sizes are all expected to be non-zero and not
-         * larger than @ref size() after appying padding and then a rotation
-         * based on @ref AtlasLandfillFlag::RotatePortrait or
+         * the same size. The @p sizes are all expected to be not larger than
+         * @ref size() after appying padding and then a rotation based on
+         * @ref AtlasLandfillFlag::RotatePortrait or
          * @relativeref{AtlasLandfillFlag,RotateLandscape} being set. If
          * neither @relativeref{AtlasLandfillFlag,RotatePortrait} nor
          * @relativeref{AtlasLandfillFlag,RotateLandscape} is set, the
@@ -346,6 +346,12 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          * @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector2i>&)
          * overload. The resulting @p offsets always point to the original
          * (potentially rotated) sizes without padding applied.
+         *
+         * Items with zero width or height don't contribute to the layout in
+         * any way if padding is zero, but are still sorted, rotated and placed
+         * relative to others. If padding is non-zero, items with zero width or
+         * height are treated as any others to make sure they don't overlap
+         * other items.
          *
          * On success returns @cpp true @ce and updates @ref filledSize(). If
          * @ref size() is bounded, can return @cpp false @ce if the items
