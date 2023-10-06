@@ -109,17 +109,57 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::RGBA8Unorm), PixelFormat::RGBA);
     CORRADE_COMPARE(pixelType(Magnum::PixelFormat::RGBA8Unorm), PixelType::UnsignedByte);
     CORRADE_COMPARE(genericPixelFormat(PixelFormat::RGB, PixelType::UnsignedByte), Magnum::PixelFormat::RGB8Unorm);
-    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_VERIFY(hasTextureFormat(Magnum::PixelFormat::RGBA8Unorm));
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::RGBA8Unorm), TextureFormat::RGBA8);
     CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB8), Magnum::PixelFormat::RGB8Unorm);
     #else
-    CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::RGBA8Unorm));
-    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB), Containers::NullOpt);
+    CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::RGBA8Unorm), TextureFormat::RGBA);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB), Magnum::PixelFormat::RGB8Unorm);
     #endif
+
+    /* No mapping for these */
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB565), Containers::NullOpt);
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::Depth32F));
+    #endif
+
     /* sRGB formats have N:1 mapping, conversion back is losing the sRGB bit */
     CORRADE_COMPARE(genericPixelFormat(pixelFormat(Magnum::PixelFormat::R8Srgb), pixelType(Magnum::PixelFormat::R8Srgb)), Magnum::PixelFormat::R8Unorm);
     CORRADE_COMPARE(genericPixelFormat(pixelFormat(Magnum::PixelFormat::RGBA8Srgb), pixelType(Magnum::PixelFormat::RGBA8Srgb)), Magnum::PixelFormat::RGBA8Unorm);
+
+    /* On ES2, forward PixelFormat mapping goes to luminance, but backwards
+       mapping from R and RG works too. For TextureFormat, forward mapping goes
+       to unsized formats and luminance (which aren't usable in glTexStorage()
+       then, only glTexImage()), but backwards mapping from sized formats works
+       too. */
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::R8Unorm), PixelFormat::Luminance);
+    CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::RG8Unorm), PixelFormat::LuminanceAlpha);
+    CORRADE_COMPARE(pixelType(Magnum::PixelFormat::R8Unorm), PixelType::UnsignedByte);
+    CORRADE_COMPARE(pixelType(Magnum::PixelFormat::RG8Unorm), PixelType::UnsignedByte);
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::Luminance, PixelType::UnsignedByte), Magnum::PixelFormat::R8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::LuminanceAlpha, PixelType::UnsignedByte), Magnum::PixelFormat::RG8Unorm);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::Red, PixelType::UnsignedByte), Magnum::PixelFormat::R8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::RG, PixelType::UnsignedByte), Magnum::PixelFormat::RG8Unorm);
+    #endif
+
+    CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::R8Unorm), TextureFormat::Luminance);
+    CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::RG8Unorm), TextureFormat::LuminanceAlpha);
+    CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::RGB8Unorm), TextureFormat::RGB);
+    CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::RGBA8Unorm), TextureFormat::RGBA);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::Luminance), Magnum::PixelFormat::R8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::LuminanceAlpha), Magnum::PixelFormat::RG8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB), Magnum::PixelFormat::RGB8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGBA), Magnum::PixelFormat::RGBA8Unorm);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::R8), Magnum::PixelFormat::R8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RG8), Magnum::PixelFormat::RG8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB8), Magnum::PixelFormat::RGB8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGBA8), Magnum::PixelFormat::RGBA8Unorm);
+    #endif
+    #endif
 
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
@@ -343,8 +383,8 @@ void PixelFormatTest::mapTextureFormatUnsupported() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    textureFormat(Magnum::PixelFormat::RGB8Unorm);
-    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format PixelFormat::RGB8Unorm is not supported on this target\n");
+    textureFormat(Magnum::PixelFormat::Depth32F);
+    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format PixelFormat::Depth32F is not supported on this target\n");
     #else
     std::ostringstream out;
     Error redirectError{&out};

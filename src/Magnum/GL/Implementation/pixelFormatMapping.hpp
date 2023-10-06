@@ -35,15 +35,26 @@
 _c(R8Unorm, Red, UnsignedByte, R8)
 _c(RG8Unorm, RG, UnsignedByte, RG8)
 #else
-_n(R8Unorm, Luminance, UnsignedByte)
-_n(RG8Unorm, LuminanceAlpha, UnsignedByte)
+/* Luminance / LuminanceAlpha isn't allowed in glTexStorage(). Usually though
+   there's either both the EXT_texture_rg and EXT_texture_storage extensions or
+   neither of them (such as in WebGL), and unconditionally failing for single-
+   and two-channel formats isn't desirable. */
+/** @todo ideally there would be some variant of this mapping for when
+    EXT_texture_rg is supported */
+_c(R8Unorm, Luminance, UnsignedByte, Luminance)
+_c(RG8Unorm, LuminanceAlpha, UnsignedByte, LuminanceAlpha)
 #endif
 #ifndef MAGNUM_TARGET_GLES2
 _c(RGB8Unorm, RGB, UnsignedByte, RGB8)
 _c(RGBA8Unorm, RGBA, UnsignedByte, RGBA8)
 #else
-_n(RGB8Unorm, RGB, UnsignedByte)
-_n(RGBA8Unorm, RGBA, UnsignedByte)
+/* (Unsized) RGB / RGBA isn't allowed in glTexStorage(), however
+   unconditionally failing for for these in WebGL isn't really desirable
+   either. */
+/** @todo ideally there would be some variant of this mapping for when
+    EXT_texture_rg is supported */
+_c(RGB8Unorm, RGB, UnsignedByte, RGB)
+_c(RGBA8Unorm, RGBA, UnsignedByte, RGBA)
 #endif
 #ifndef MAGNUM_TARGET_GLES2
 _c(R8Snorm, Red, Byte, R8Snorm)
@@ -79,8 +90,13 @@ _dn(RG8Srgb, LuminanceAlpha, UnsignedByte)
 _d(RGB8Srgb, RGB, UnsignedByte, SRGB8)
 _d(RGBA8Srgb, RGBA, UnsignedByte, SRGB8Alpha8)
 #else
-_dn(RGB8Srgb, RGB, UnsignedByte)
-_dn(RGBA8Srgb, RGBA, UnsignedByte)
+/* (Unsized) SRGB / SRGBA isn't allowed in glTexStorage(), however
+   unconditionally failing for for these in WebGL isn't really desirable
+   either. */
+/** @todo ideally there would be some variant of this mapping for when
+    EXT_texture_rg is supported */
+_d(RGB8Srgb, RGB, UnsignedByte, SRGB)
+_d(RGBA8Srgb, RGBA, UnsignedByte, SRGBAlpha)
 #endif
 #ifndef MAGNUM_TARGET_GLES2
 _c(R8UI, RedInteger, UnsignedByte, R8UI)
@@ -195,6 +211,8 @@ _n(Depth24Unorm, DepthComponent, UnsignedInt)
 #ifndef MAGNUM_TARGET_GLES2
 _c(Depth32F, DepthComponent, Float, DepthComponent32F)
 #else
+/* There isn't any possibility to have a depth / stencil texture on ES2, so not
+   even any unsized format */
 _s(Depth32F)
 #endif
 #ifndef MAGNUM_TARGET_WEBGL
@@ -211,6 +229,8 @@ _n(Depth24UnormStencil8UI, DepthStencil, UnsignedInt248)
 #ifndef MAGNUM_TARGET_GLES2
 _c(Depth32FStencil8UI, DepthStencil, Float32UnsignedInt248Rev, Depth32FStencil8)
 #else
+/* There isn't any possibility to have a depth / stencil texture on ES2, so not
+   even any unsized format */
 _s(Depth32FStencil8UI)
 #endif
 #endif

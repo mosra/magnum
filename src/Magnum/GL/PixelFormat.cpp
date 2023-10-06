@@ -288,6 +288,17 @@ Containers::Optional<Magnum::PixelFormat> genericPixelFormat(const PixelFormat f
         #undef _n
         #undef _d
         #undef _c
+
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /* The mapping defaults to Luminance and LuminanceAlpha on ES2.
+           Recognize also the R and RG formats from EXT_texture_rg. */
+        /** @todo ideally there would be some variant of the above mapping for
+            when EXT_texture_rg is supported, to have it consistent */
+        case (UnsignedLong(PixelFormat::Red) << 32)|UnsignedLong(PixelType::UnsignedByte):
+            return Magnum::PixelFormat::R8Unorm;
+        case (UnsignedLong(PixelFormat::RG) << 32)|UnsignedLong(PixelType::UnsignedByte):
+            return Magnum::PixelFormat::RG8Unorm;
+        #endif
     }
 
     return {};
@@ -307,6 +318,17 @@ Containers::Optional<Magnum::PixelFormat> genericPixelFormat(const TextureFormat
         #undef _n
         #undef _d
         #undef _c
+
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /* The mapping defaults to Luminance, LuminanceAlpha, RGB and RGBA on
+           ES2. Recognize also the sized formats from EXT_texture_rg. */
+        /** @todo ideally there would be some variant of the above mapping for
+            when EXT_texture_rg is supported, to have it consistent */
+        case TextureFormat::R8: return Magnum::PixelFormat::R8Unorm;
+        case TextureFormat::RG8: return Magnum::PixelFormat::RG8Unorm;
+        case TextureFormat::RGB8: return Magnum::PixelFormat::RGB8Unorm;
+        case TextureFormat::RGBA8: return Magnum::PixelFormat::RGBA8Unorm;
+        #endif
 
         /* For compressed formats it returns NullOpt too instead of asserting,
            as -- compared to the generic-to-GL translation, which is O(1) --

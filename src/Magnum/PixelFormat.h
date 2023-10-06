@@ -83,8 +83,10 @@ enum class PixelFormat: UnsignedInt {
      * Red component, normalized unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::Red and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::R8;
-     * @ref Vk::PixelFormat::R8Unorm;
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::R8 or
+     * alternatively @ref GL::PixelFormat::Luminance and
+     * @ref GL::TextureFormat::Luminance on unextended OpenGL 2.1 and OpenGL ES
+     * 2.0; @ref Vk::PixelFormat::R8Unorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatR8Unorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatr8unorm?language=objc).
      * @m_keywords{DXGI_FORMAT_R8_UNORM MTLPixelFormatR8Unorm}
@@ -95,8 +97,10 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, normalized unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RG and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RG8;
-     * @ref Vk::PixelFormat::RG8Unorm;
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RG8 or
+     * alternatively @ref GL::PixelFormat::LuminanceAlpha and
+     * @ref GL::TextureFormat::LuminanceAlpha on unextended OpenGL 2.1 and
+     * OpenGL ES 2.0; @ref Vk::PixelFormat::RG8Unorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatRG8Unorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatrg8unorm?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8_UNORM MTLPixelFormatRG8Unorm}
@@ -108,7 +112,9 @@ enum class PixelFormat: UnsignedInt {
      *
      * Corresponds to @ref GL::PixelFormat::RGB and
      * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGB8 or
-     * @ref Vk::PixelFormat::RGB8Unorm. No 24-bit D3D or Metal equivalent.
+     * alternatively @ref GL::TextureFormat::RGB on unextended OpenGL 2.1 and
+     * OpenGL ES 2.0; @ref Vk::PixelFormat::RGB8Unorm. No 24-bit D3D or Metal
+     * equivalent.
      */
     RGB8Unorm,
 
@@ -116,8 +122,9 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, normalized unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGBA and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGBA8;
-     * @ref Vk::PixelFormat::RGBA8Unorm;
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGBA8 or
+     * alternatively @ref GL::TextureFormat::RGBA on unextended OpenGL 2.1 and
+     * OpenGL ES 2.0; @ref Vk::PixelFormat::RGBA8Unorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8A8_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatRGBA8Unorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatrgba8unorm?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8A8_UNORM MTLPixelFormatRGBA8Unorm}
