@@ -26,6 +26,7 @@
 #include "MagnumFont.h"
 
 #include <sstream>
+#include <unordered_map>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
@@ -64,13 +65,14 @@ struct MagnumFont::Data {
 namespace {
     class MagnumFontLayouter: public AbstractLayouter {
         public:
-            explicit MagnumFontLayouter(const Containers::StridedArrayView1D<const Vector2>& glyphAdvance, const AbstractGlyphCache& cache, Float fontSize, Float textSize, Containers::Array<UnsignedInt>&& glyphs);
+            explicit MagnumFontLayouter(const Containers::StridedArrayView1D<const Vector2>& glyphAdvance, const AbstractGlyphCache& cache, UnsignedInt fontId, Float fontSize, Float textSize, Containers::Array<UnsignedInt>&& glyphs);
 
         private:
             Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override;
 
             const Containers::StridedArrayView1D<const Vector2> _glyphAdvance;
             const AbstractGlyphCache& _cache;
+            const UnsignedInt _fontId;
             const Float _fontSize, _textSize;
             const Containers::Array<UnsignedInt> _glyphs;
     };
@@ -173,18 +175,46 @@ Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
         _opened->conf.value<Vector2i>("originalImageSize"),
         _opened->image->size(),
         _opened->conf.value<Vector2i>("padding")};
-    cache->setImage({}, *_opened->image);
+    /* Copy the opened image data directly to the GL texture because (unlike
+       image()) it matches the actual image size if it differs from
+       originalImageSize. A potential other way would be to create a
+       DistanceFieldGlyphCache instead, and call setDistanceFieldImage() on it,
+       but the font file itself doesn't contain any info about whether it
+       actually is a distance field, so that would be not really any better. */
+    /** @todo clean this up once there's a way to upload the processed image
+        directly from the base class */
+    cache->texture().setSubImage(0, {}, *_opened->image);
 
-    /* Fill glyph map */
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
-    for(std::size_t i = 0; i != glyphs.size(); ++i)
-        cache->insert(i, glyphs[i]->value<Vector2i>("position"), glyphs[i]->value<Range2Di>("rectangle"));
+
+    /* Set the global invalid glyph to the same as the per-font invalid
+       glyph. */
+    if(!glyphs.empty())
+        cache->setInvalidGlyph(glyphs[0]->value<Vector2i>("position"), glyphs[0]->value<Range2Di>("rectangle"));
+
+    /* Add a font, fill the glyph map */
+    const UnsignedInt fontId = cache->addFont(glyphs.size(), this);
+    for(std::size_t i = 0; i < glyphs.size(); ++i)
+        cache->addGlyph(fontId, i, glyphs[i]->value<Vector2i>("position"), glyphs[i]->value<Range2Di>("rectangle"));
 
     /* GCC 4.8 needs extra help here */
     return Containers::Pointer<AbstractGlyphCache>{Utility::move(cache)};
 }
 
 Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCache& cache, const Float size, const Containers::StringView text) {
+    /* Not yet, at least */
+    if(cache.size().z() != 1) {
+        Error{} << "Text::MagnumFont::layout(): array glyph caches are not supported";
+        return {};
+    }
+
+    /* Find this font in the cache */
+    Containers::Optional<UnsignedInt> fontId = cache.findFont(this);
+    if(!fontId) {
+        Error{} << "Text::MagnumFont::layout(): font not found among" << cache.fontCount() << "fonts in passed glyph cache";
+        return {};
+    }
+
     /* Get glyph codes from characters */
     Containers::Array<UnsignedInt> glyphs;
     arrayReserve(glyphs, text.size());
@@ -195,25 +225,26 @@ Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCa
         i = codepointNext.second();
     }
 
-    return Containers::pointer<MagnumFontLayouter>(stridedArrayView(_opened->glyphs).slice(&Data::Glyph::advance), cache, this->size(), size, Utility::move(glyphs));
+    return Containers::pointer<MagnumFontLayouter>(stridedArrayView(_opened->glyphs).slice(&Data::Glyph::advance), cache, *fontId, this->size(), size, Utility::move(glyphs));
 }
 
 namespace {
 
-MagnumFontLayouter::MagnumFontLayouter(const Containers::StridedArrayView1D<const Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const Float fontSize, const Float textSize, Containers::Array<UnsignedInt>&& glyphs): AbstractLayouter{UnsignedInt(glyphs.size())}, _glyphAdvance{glyphAdvance}, _cache(cache), _fontSize{fontSize}, _textSize{textSize}, _glyphs{Utility::move(glyphs)} {}
+MagnumFontLayouter::MagnumFontLayouter(const Containers::StridedArrayView1D<const Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const UnsignedInt fontId, const Float fontSize, const Float textSize, Containers::Array<UnsignedInt>&& glyphs): AbstractLayouter{UnsignedInt(glyphs.size())}, _glyphAdvance{glyphAdvance}, _cache(cache), _fontId{fontId}, _fontSize{fontSize}, _textSize{textSize}, _glyphs{Utility::move(glyphs)} {}
 
 Containers::Triple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
-    /* Position of the texture in the resulting glyph, texture coordinates */
-    Vector2i position;
-    Range2Di rectangle;
-    std::tie(position, rectangle) = _cache[_glyphs[i]];
+    /* Offset of the glyph rectangle relative to the cursor, layer, texture
+       coordinates. We checked that the glyph cache is 2D in doLayout() so the
+       layer can be ignored. */
+    const Containers::Triple<Vector2i, Int, Range2Di> glyph = _cache.glyph(_fontId, _glyphs[i]);
+    CORRADE_INTERNAL_ASSERT(glyph.second() == 0);
 
     /* Normalized texture coordinates */
-    const auto textureCoordinates = Range2D(rectangle).scaled(1.0f/Vector2(_cache.textureSize()));
+    const auto textureCoordinates = Range2D{glyph.third()}.scaled(1.0f/Vector2{_cache.size().xy()});
 
     /* Quad rectangle, computed from texture rectangle, denormalized to
        requested text size */
-    const auto quadRectangle = Range2D(Range2Di::fromSize(position, rectangle.size())).scaled(Vector2(_textSize/_fontSize));
+    const auto quadRectangle = Range2D{Range2Di::fromSize(glyph.first(), glyph.third().size())}.scaled(Vector2{_textSize/_fontSize});
 
     /* Advance for given glyph, denormalized to requested text size */
     const Vector2 advance = _glyphAdvance[_glyphs[i]]*(_textSize/_fontSize);

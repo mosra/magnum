@@ -26,9 +26,11 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFontConverter is STL-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
@@ -36,6 +38,7 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
@@ -51,8 +54,16 @@ struct MagnumFontConverterTest: TestSuite::Tester {
     explicit MagnumFontConverterTest();
 
     void exportFont();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void exportFontOldStyleCache();
+    #endif
     void exportFontEmptyCache();
-    void exportFontNoGlyphCacheImageDownload();
+    void exportFontImageProcessingGlyphCache();
+    void exportFontImageProcessingGlyphCacheNoDownload();
+
+    void exportFontArrayCache();
+    void exportFontNotFoundInCache();
+    void exportFontImageConversionFailed();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<Trade::AbstractImageConverter> _imageConverterManager{"nonexistent"};
@@ -62,8 +73,16 @@ struct MagnumFontConverterTest: TestSuite::Tester {
 
 MagnumFontConverterTest::MagnumFontConverterTest() {
     addTests({&MagnumFontConverterTest::exportFont,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &MagnumFontConverterTest::exportFontOldStyleCache,
+              #endif
               &MagnumFontConverterTest::exportFontEmptyCache,
-              &MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload});
+              &MagnumFontConverterTest::exportFontImageProcessingGlyphCache,
+              &MagnumFontConverterTest::exportFontImageProcessingGlyphCacheNoDownload,
+
+              &MagnumFontConverterTest::exportFontArrayCache,
+              &MagnumFontConverterTest::exportFontNotFoundInCache,
+              &MagnumFontConverterTest::exportFontImageConversionFailed});
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree. */
@@ -143,26 +162,26 @@ void MagnumFontConverterTest::exportFont() {
     MyFont font;
     font.openFile({}, {});
 
+    /* Create a cache. Two fonts, only the second one should be added. */
     struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
-        GlyphCacheFeatures doFeatures() const override { return GlyphCacheFeature::ImageDownload; }
+        GlyphCacheFeatures doFeatures() const override { return {}; }
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
-        Image2D doImage() override {
-            return Image2D{PixelFormat::R8Unorm, {8, 4}, Containers::Array<char>{InPlaceInit, {
-                '0', '1', '2', '3', '4', '5', '6', '7',
-                '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
-                'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-                'o', 'p', 'q', 'r', 's', 't', 'u', 'v'
-            }}};
-        }
-    } cache{{128, 64}, {16, 8}};
+    } cache{PixelFormat::R8Unorm, {128, 64}, {16, 8}};
+
     /* Override the not found glyph to be in bounds as well */
-    cache.insert(0, {}, {{16, 8}, {16, 8}});
-    cache.insert(font.glyphId(U'W'), {25, 34}, {{16, 12}, {24, 56}});
-    cache.insert(font.glyphId(U'e'), {25, 12}, {{36, 8}, {112, 40}});
+    cache.setInvalidGlyph({}, {{16, 8}, {16, 8}});
+
+    /* This font and all its glyphs should be skipped */
+    UnsignedInt unusedFontId = cache.addFont(56);
+    cache.addGlyph(unusedFontId, 33, {16, 20}, {{60, 40}, {80, 50}});
+
+    UnsignedInt fontId = cache.addFont(25, &font);
+    cache.addGlyph(fontId, font.glyphId(U'W'), {25, 34}, {{16, 12}, {24, 56}});
+    cache.addGlyph(fontId, font.glyphId(U'e'), {25, 12}, {{36, 8}, {112, 40}});
     /* ě has deliberately the same glyph data as e */
-    cache.insert(font.glyphId(
+    cache.addGlyph(fontId, font.glyphId(
         /* MSVC (but not clang-cl) doesn't support UTF-8 in char32_t literals
            but it does it regular strings. Still a problem in MSVC 2022, what a
            trash fire, can't you just give up on those codepage insanities
@@ -173,6 +192,21 @@ void MagnumFontConverterTest::exportFont() {
         U'ě'
         #endif
     ), {25, 12}, {{36, 8}, {112, 40}});
+
+    /* Set the cache image to some non-trivial contents. Compared to the
+       exportFontImageProcessingGlyphCache() test the image is 16x bigger, so
+       do some fancy expansion there. */
+    const char pixels[]{
+        '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v'
+    };
+    for(std::size_t y = 0; y != 16; ++y)
+        for(std::size_t x = 0; x != 16; ++x)
+            Utility::copy(
+                Containers::StridedArrayView2D<const char>{pixels, {4, 8}},
+                cache.image().pixels<char>()[0].exceptPrefix({y, x}).every({16, 16}));
 
     /* Convert the file */
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
@@ -193,6 +227,84 @@ void MagnumFontConverterTest::exportFont() {
         DebugTools::CompareImageFile{_importerManager});
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void MagnumFontConverterTest::exportFontOldStyleCache() {
+    /* Like exportFont(), but using the deprecated cache APIs to verify that
+       the cache contents are still copied the same */
+
+    Containers::String confFilename = Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf");
+    Containers::String tgaFilename = Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga");
+    /* Remove previously created files */
+    if(Utility::Path::exists(confFilename))
+        CORRADE_VERIFY(Utility::Path::remove(confFilename));
+    if(Utility::Path::exists(tgaFilename))
+        CORRADE_VERIFY(Utility::Path::remove(tgaFilename));
+
+    MyFont font;
+    font.openFile({}, {});
+
+    /* Create a cache the old way, i.e. insert() which results in exactly one
+       font added and no association with a pointer */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{{128, 64}, {16, 8}};
+    /* Override the not found glyph to be in bounds as well */
+    cache.insert(0, {}, {{16, 8}, {16, 8}});
+    cache.insert(font.glyphId(U'W'), {25, 34}, {{16, 12}, {24, 56}});
+    cache.insert(font.glyphId(U'e'), {25, 12}, {{36, 8}, {112, 40}});
+    /* ě has deliberately the same glyph data as e */
+    cache.insert(font.glyphId(
+        /* MSVC (but not clang-cl) doesn't support UTF-8 in char32_t literals
+           but it does it regular strings. Still a problem in MSVC 2022, what a
+           trash fire, can't you just give up on those codepage insanities
+           already, ffs?! */
+        #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG)
+        U'\u011B'
+        #else
+        U'ě'
+        #endif
+    ), {25, 12}, {{36, 8}, {112, 40}});
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    /* Set the cache image to some non-trivial contents. There's no "old way"
+       to do this, also compared to the exportFontImageProcessingGlyphCache()
+       test the image is 16x bigger, so do some fancy expansion there. */
+    const char pixels[]{
+        '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v'
+    };
+    for(std::size_t y = 0; y != 16; ++y)
+        for(std::size_t x = 0; x != 16; ++x)
+            Utility::copy(
+                Containers::StridedArrayView2D<const char>{pixels, {4, 8}},
+                cache.image().pixels<char>()[0].exceptPrefix({y, x}).every({16, 16}));
+
+    /* Convert the file */
+    Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
+    CORRADE_VERIFY(converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Waveě"));
+
+    /* Verify font parameters */
+    CORRADE_COMPARE_AS(confFilename,
+        Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"),
+        TestSuite::Compare::File);
+
+    if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found, not testing glyph cache contents");
+
+    /* Verify font image */
+    CORRADE_COMPARE_WITH(tgaFilename,
+        Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.tga"),
+        DebugTools::CompareImageFile{_importerManager});
+}
+#endif
+
 void MagnumFontConverterTest::exportFontEmptyCache() {
     Containers::String confFilename = Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font-empty-cache.conf");
     Containers::String tgaFilename = Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font-empty-cache.tga");
@@ -208,12 +320,13 @@ void MagnumFontConverterTest::exportFontEmptyCache() {
     struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
-        GlyphCacheFeatures doFeatures() const override { return GlyphCacheFeature::ImageDownload; }
+        GlyphCacheFeatures doFeatures() const override { return {}; }
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
-        Image2D doImage() override {
-            return Image2D{PixelFormat::R8Unorm, {8, 4}, Containers::Array<char>{ValueInit, 8*4}};
-        }
-    } cache{{8, 4}};
+    } cache{PixelFormat::R8Unorm, {8, 4}};
+
+    /* Associate the font with the cache. The case where it's not even that is
+       tested in exportFontNotFoundInCache() below. */
+    cache.addFont(0, &font);
 
     /* Convert the file */
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
@@ -234,7 +347,104 @@ void MagnumFontConverterTest::exportFontEmptyCache() {
         DebugTools::CompareImageFile{_importerManager});
 }
 
-void MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload() {
+void MagnumFontConverterTest::exportFontImageProcessingGlyphCache() {
+    /* Like exportFont(), but the image is processed to a 16x smaller one. The
+       rest stays the same, i.e. the offsets and sizes are still relative to
+       the original 128x64 image. */
+
+    Containers::String confFilename = Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font-processed.conf");
+    Containers::String tgaFilename = Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font-processed.tga");
+    /* Remove previously created files */
+    if(Utility::Path::exists(confFilename))
+        CORRADE_VERIFY(Utility::Path::remove(confFilename));
+    if(Utility::Path::exists(tgaFilename))
+        CORRADE_VERIFY(Utility::Path::remove(tgaFilename));
+
+    MyFont font;
+    font.openFile({}, {});
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return GlyphCacheFeature::ProcessedImageDownload; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+        Image3D doProcessedImage() override {
+            return Image3D{PixelFormat::R8Unorm, {8, 4, 1}, Containers::Array<char>{InPlaceInit, {
+                '0', '1', '2', '3', '4', '5', '6', '7',
+                '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+                'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                'o', 'p', 'q', 'r', 's', 't', 'u', 'v'
+            }}};
+        }
+    } cache{PixelFormat::R8Unorm, {128, 64}, {16, 8}};
+    /* Override the not found glyph to be in bounds as well */
+    cache.setInvalidGlyph({}, {{16, 8}, {16, 8}});
+    UnsignedInt fontId = cache.addFont(25, &font);
+    cache.addGlyph(fontId, font.glyphId(U'W'), {25, 34}, {{16, 12}, {24, 56}});
+    cache.addGlyph(fontId, font.glyphId(U'e'), {25, 12}, {{36, 8}, {112, 40}});
+    /* ě has deliberately the same glyph data as e */
+    cache.addGlyph(fontId, font.glyphId(
+        /* MSVC (but not clang-cl) doesn't support UTF-8 in char32_t literals
+           but it does it regular strings. Still a problem in MSVC 2022, what a
+           trash fire, can't you just give up on those codepage insanities
+           already, ffs?! */
+        #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG)
+        U'\u011B'
+        #else
+        U'ě'
+        #endif
+    ), {25, 12}, {{36, 8}, {112, 40}});
+
+    /* Convert the file */
+    Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
+    CORRADE_VERIFY(converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font-processed"), "Waveě"));
+
+    /* Verify font parameters */
+    CORRADE_COMPARE_AS(confFilename,
+        Utility::Path::join(MAGNUMFONT_TEST_DIR, "font-processed.conf"),
+        TestSuite::Compare::File);
+
+    if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found, not testing glyph cache contents");
+
+    /* Verify font image */
+    CORRADE_COMPARE_WITH(tgaFilename,
+        Utility::Path::join(MAGNUMFONT_TEST_DIR, "font-processed.tga"),
+        DebugTools::CompareImageFile{_importerManager});
+}
+
+void MagnumFontConverterTest::exportFontImageProcessingGlyphCacheNoDownload() {
+    struct: AbstractFont {
+        /* Supports neither file nor data opening */
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
+            return nullptr;
+        }
+    } font;
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return GlyphCacheFeature::ImageProcessing; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{PixelFormat::R8Unorm, {100, 100}};
+
+    Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
+    CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): glyph cache has image processing but doesn't support image download\n");
+}
+
+void MagnumFontConverterTest::exportFontArrayCache() {
     struct: AbstractFont {
         /* Supports neither file nor data opening */
         FontFeatures doFeatures() const override { return {}; }
@@ -254,14 +464,91 @@ void MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload() {
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
-    } cache{{100, 100}};
+    } cache{PixelFormat::R8Unorm, {100, 100, 2}};
+
+    cache.addFont(15, &font);
 
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave"));
-    CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): passed glyph cache doesn't support image download\n");
+    converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
+    CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): exporting array glyph caches is not supported\n");
+}
+
+void MagnumFontConverterTest::exportFontNotFoundInCache() {
+    struct: AbstractFont {
+        /* Supports neither file nor data opening */
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
+            return nullptr;
+        }
+    } font1, font2;
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{PixelFormat::R8Unorm, {100, 100}};
+
+    cache.addFont(15, &font2);
+    cache.addFont(33);
+
+    Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter->exportFontToFile(font1, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
+    CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): font not found among 2 fonts in passed glyph cache\n");
+}
+
+void MagnumFontConverterTest::exportFontImageConversionFailed() {
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        void doClose() override { _opened = false; }
+        bool doIsOpened() const override { return _opened; }
+        Properties doOpenFile(Containers::StringView, Float) override {
+            _opened = true;
+            return {16.0f, 25.0f, -10.0f, 39.7333f, 3};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
+            return nullptr;
+        }
+
+        private:
+            bool _opened;
+    } font;
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{PixelFormat::R32F, {100, 100}};
+
+    font.openFile({}, 0.0f);
+
+    cache.addFont(15, &font);
+
+    Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
+    CORRADE_COMPARE(out.str(),
+        "Trade::TgaImageConverter::convertToData(): unsupported pixel format PixelFormat::R32F\n"
+        "Text::MagnumFontConverter::exportFontToData(): cannot create a TGA image\n");
 }
 
 }}}}

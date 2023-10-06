@@ -60,6 +60,8 @@ corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp
         MagnumText
         MagnumTrade
     FILES
+        ../../MagnumFont/Test/font-processed.conf
+        ../../MagnumFont/Test/font-processed.tga
         ../../MagnumFont/Test/font.conf
         ../../MagnumFont/Test/font.tga
         font-empty-cache.conf

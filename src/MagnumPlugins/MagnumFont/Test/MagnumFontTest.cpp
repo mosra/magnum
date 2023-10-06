@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <unordered_map>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
@@ -33,6 +34,8 @@
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -48,6 +51,8 @@ struct MagnumFontTest: TestSuite::Tester {
     void properties();
     void layout();
     void layoutNoGlyphsInCache();
+    void layoutNoFontInCache();
+    void layoutArrayCache();
 
     void fileCallbackImage();
     void fileCallbackImageNotFound();
@@ -73,6 +78,8 @@ MagnumFontTest::MagnumFontTest() {
         Containers::arraySize(LayoutData));
 
     addTests({&MagnumFontTest::layoutNoGlyphsInCache,
+              &MagnumFontTest::layoutNoFontInCache,
+              &MagnumFontTest::layoutArrayCache,
 
               &MagnumFontTest::fileCallbackImage,
               &MagnumFontTest::fileCallbackImageNotFound});
@@ -143,11 +150,14 @@ void MagnumFontTest::layout() {
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
-    } cache{Vector2i{256}};
-    cache.insert(font->glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
-    cache.insert(font->glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
+    } cache{PixelFormat::R8Unorm, Vector2i{256}};
+
+    UnsignedInt fontId = cache.addFont(20, font.get());
+
+    cache.addGlyph(fontId, font->glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
+    cache.addGlyph(fontId, font->glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
     /* ě has deliberately the same glyph data as e */
-    cache.insert(font->glyphId(
+    cache.addGlyph(fontId, font->glyphId(
         /* MSVC (but not clang-cl) doesn't support UTF-8 in char32_t literals
            but it does it regular strings. Still a problem in MSVC 2022, what a
            trash fire, can't you just give up on those codepage insanities
@@ -194,13 +204,16 @@ void MagnumFontTest::layoutNoGlyphsInCache() {
 
     CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
-    /* Tests the case where createGlyphCache() was accidentally not called */
     struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
-    } cache{Vector2i{256}};
+    } cache{PixelFormat::R8Unorm, Vector2i{256}};
+
+    /* Add a font that is associated with this one but createGlyphCache() was
+       actually not called for it */
+    cache.addFont(15, font.get());
 
     auto layouter = font->layout(cache, 0.5f, "Wave");
     CORRADE_VERIFY(layouter);
@@ -227,6 +240,45 @@ void MagnumFontTest::layoutNoGlyphsInCache() {
     CORRADE_COMPARE(layouter->renderGlyph(3, cursorPosition = {}, rectangle),
         Containers::pair(Range2D{}, Range2D{}));
     CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
+}
+
+void MagnumFontTest::layoutNoFontInCache() {
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+
+    CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{PixelFormat::R8Unorm, Vector2i{256}};
+
+    /* Add a font that isn't associated with this one */
+    cache.addFont(15);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font->layout(cache, 0.5f, "Wave"));
+    CORRADE_COMPARE(out.str(), "Text::MagnumFont::layout(): font not found among 1 fonts in passed glyph cache\n");
+}
+
+void MagnumFontTest::layoutArrayCache() {
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+
+    CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{PixelFormat::R8Unorm, {256, 128, 3}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font->layout(cache, 0.5f, "Wave"));
+    CORRADE_COMPARE(out.str(), "Text::MagnumFont::layout(): array glyph caches are not supported\n");
 }
 
 void MagnumFontTest::fileCallbackImage() {

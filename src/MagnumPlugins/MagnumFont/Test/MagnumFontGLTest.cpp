@@ -24,8 +24,10 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -35,6 +37,7 @@
 #ifdef MAGNUM_TARGET_GLES
 #include "Magnum/DebugTools/TextureImage.h"
 #endif
+#include "Magnum/Math/Range.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/GlyphCache.h"
@@ -48,6 +51,7 @@ struct MagnumFontGLTest: GL::OpenGLTester {
     explicit MagnumFontGLTest();
 
     void createGlyphCache();
+    void createGlyphCacheProcessedImage();
     void createGlyphCacheNoGlyphs();
 
     /* Explicitly forbid system-wide plugin dependencies */
@@ -57,6 +61,7 @@ struct MagnumFontGLTest: GL::OpenGLTester {
 
 MagnumFontGLTest::MagnumFontGLTest() {
     addTests({&MagnumFontGLTest::createGlyphCache,
+              &MagnumFontGLTest::createGlyphCacheProcessedImage,
               &MagnumFontGLTest::createGlyphCacheNoGlyphs});
 
     /* Load the plugins directly from the build tree. Otherwise they're either
@@ -81,16 +86,28 @@ void MagnumFontGLTest::createGlyphCache() {
     CORRADE_VERIFY(cache);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* The font should associate itself with the cache */
+    CORRADE_COMPARE(cache->fontCount(), 1);
+    CORRADE_COMPARE(cache->findFont(font.get()), 0);
+
     /* Verify glyph contents */
-    CORRADE_COMPARE(cache->glyphCount(), 4);
-    CORRADE_COMPARE((*cache)[0], std::make_pair(
+    CORRADE_COMPARE(cache->glyphCount(), 5);
+    CORRADE_COMPARE(cache->fontGlyphCount(0), 4);
+    CORRADE_COMPARE(cache->glyph(0), Containers::triple(
         Vector2i{-16, -8},
+        0,
         Range2Di{{0, 0}, {32, 16}}));
-    CORRADE_COMPARE((*cache)[font->glyphId(U'W')], std::make_pair(
+    CORRADE_COMPARE(cache->glyph(0, 0), Containers::triple(
+        Vector2i{-16, -8},
+        0,
+        Range2Di{{0, 0}, {32, 16}}));
+    CORRADE_COMPARE(cache->glyph(0, font->glyphId(U'W')), Containers::triple(
         Vector2i{9, 26},
+        0,
         Range2Di{{0, 4}, {40, 64}}));
-    CORRADE_COMPARE((*cache)[font->glyphId(U'e')], std::make_pair(
+    CORRADE_COMPARE(cache->glyph(0, font->glyphId(U'e')), Containers::triple(
         Vector2i{9, 4},
+        0,
         Range2Di{{20, 0}, {128, 48}}));
     /* ě has deliberately the same glyph data as e */
     UnsignedInt eId = font->glyphId(
@@ -104,14 +121,92 @@ void MagnumFontGLTest::createGlyphCache() {
         U'ě'
         #endif
     );
-    CORRADE_COMPARE((*cache)[eId], std::make_pair(
+    CORRADE_COMPARE(cache->glyph(0, eId), Containers::triple(
         Vector2i{9, 4},
+        0,
         Range2Di{{20, 0}, {128, 48}}));
 
     if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found, not testing glyph cache contents");
 
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("Luminance format used on GLES2 isn't usable for framebuffer reading, can't verify texture contents.");
+    #else
+    /* Verify the actual texture. It should be the image file verbatim. On GLES
+       we cannot really verify that the size matches, but at least
+       something. */
+    #ifndef MAGNUM_TARGET_GLES
+    Image2D image = static_cast<GlyphCache&>(*cache).texture().image(0, {PixelFormat::R8Unorm});
+    #else
+    Image2D image = DebugTools::textureSubImage(static_cast<GlyphCache&>(*cache).texture(), 0, {{}, {128, 64}}, {PixelFormat::R8Unorm});
+    #endif
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(image,
+        Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.tga"),
+        DebugTools::CompareImageToFile{_importerManager});
+    #endif
+}
+
+void MagnumFontGLTest::createGlyphCacheProcessedImage() {
+    /* Compared to createGlyphCache(), this tests the case where the image size
+       is different from the actual size to which glyphs are positioned */
+
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+
+    CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font-processed.conf"), 0.0f));
+
+    Containers::Pointer<AbstractGlyphCache> cache = font->createGlyphCache();
+    CORRADE_VERIFY(cache);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* The font should associate itself with the cache */
+    CORRADE_COMPARE(cache->fontCount(), 1);
+    CORRADE_COMPARE(cache->findFont(font.get()), 0);
+
+    /* Verify glyph contents */
+    CORRADE_COMPARE(cache->glyphCount(), 5);
+    CORRADE_COMPARE(cache->fontGlyphCount(0), 4);
+    CORRADE_COMPARE(cache->glyph(0), Containers::triple(
+        Vector2i{-16, -8},
+        0,
+        Range2Di{{0, 0}, {32, 16}}));
+    CORRADE_COMPARE(cache->glyph(0, 0), Containers::triple(
+        Vector2i{-16, -8},
+        0,
+        Range2Di{{0, 0}, {32, 16}}));
+    CORRADE_COMPARE(cache->glyph(0, font->glyphId(U'W')), Containers::triple(
+        Vector2i{9, 26},
+        0,
+        Range2Di{{0, 4}, {40, 64}}));
+    CORRADE_COMPARE(cache->glyph(0, font->glyphId(U'e')), Containers::triple(
+        Vector2i{9, 4},
+        0,
+        Range2Di{{20, 0}, {128, 48}}));
+    /* ě has deliberately the same glyph data as e */
+    UnsignedInt eId = font->glyphId(
+        /* MSVC (but not clang-cl) doesn't support UTF-8 in char32_t literals
+           but it does it regular strings. Still a problem in MSVC 2022, what a
+           trash fire, can't you just give up on those codepage insanities
+           already, ffs?! */
+        #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG)
+        U'\u011B'
+        #else
+        U'ě'
+        #endif
+    );
+    CORRADE_COMPARE(cache->glyph(0, eId), Containers::triple(
+        Vector2i{9, 4},
+        0,
+        Range2Di{{20, 0}, {128, 48}}));
+
+    if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found, not testing glyph cache contents");
+
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("Luminance format used on GLES2 isn't usable for framebuffer reading, can't verify texture contents.");
+    #else
     /* Verify the actual texture. It should be the image file verbatim. On GLES
        we cannot really verify that the size matches, but at least
        something. */
@@ -120,9 +215,11 @@ void MagnumFontGLTest::createGlyphCache() {
     #else
     Image2D image = DebugTools::textureSubImage(static_cast<GlyphCache&>(*cache).texture(), 0, {{}, {8, 4}}, {PixelFormat::R8Unorm});
     #endif
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(image,
-        Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.tga"),
+        Utility::Path::join(MAGNUMFONT_TEST_DIR, "font-processed.tga"),
         DebugTools::CompareImageToFile{_importerManager});
+    #endif
 }
 
 void MagnumFontGLTest::createGlyphCacheNoGlyphs() {
@@ -134,11 +231,17 @@ void MagnumFontGLTest::createGlyphCacheNoGlyphs() {
     CORRADE_VERIFY(cache);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* The font should associate itself with the cache even in this case */
+    CORRADE_COMPARE(cache->fontCount(), 1);
+    CORRADE_COMPARE(cache->findFont(font.get()), 0);
+
     /* There's just the empty glyph added by the cache itself, nothing else */
     CORRADE_COMPARE(cache->glyphCount(), 1);
-    CORRADE_COMPARE((*cache)[0], std::make_pair(
-        Vector2i{0, 0},
-        Range2Di{{0, 0}, {0, 0}}));
+    CORRADE_COMPARE(cache->fontGlyphCount(0), 0);
+    CORRADE_COMPARE(cache->glyph(0), Containers::triple(
+        Vector2i{},
+        0,
+        Range2Di{}));
 
     /* Not testing the image as there's no special codepath taken for it if
        there are no glyphs */

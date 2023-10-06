@@ -56,7 +56,13 @@ namespace Magnum { namespace Text {
 
 Expects filename prefix, creates two files, `prefix.conf` and `prefix.tga`. See
 @ref MagnumFont for more information about the font. The plugin requires the
-passed @ref AbstractGlyphCache to support @ref GlyphCacheFeature::ImageDownload.
+passed @ref AbstractGlyphCache to be 2D, have a format compatible with the
+@relativeref{Trade,TgaImageConverter} plugin and either not have
+@ref GlyphCacheFeature::ImageProcessing or support both
+@ref GlyphCacheFeature::ImageProcessing and
+@relativeref{GlyphCacheFeature,ProcessedImageDownload}. For a cache with
+multiple fonts, @ref AbstractGlyphCache::findFont() is used to match the font
+with the passed instance.
 
 @section Text-MagnumFontConverter-usage Usage
 

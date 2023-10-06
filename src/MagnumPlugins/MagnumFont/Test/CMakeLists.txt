@@ -72,6 +72,8 @@ if(MAGNUM_BUILD_GL_TESTS)
             MagnumTrade
             MagnumOpenGLTester
         FILES
+            font-processed.conf
+            font-processed.tga
             font.conf
             font-empty.conf
             font.tga)

@@ -27,9 +27,11 @@
 
 #include <algorithm> /* std::sort() */
 #include <sstream>
+#include <unordered_map>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Path.h>
 
@@ -52,8 +54,24 @@ FontConverterFeatures MagnumFontConverter::doFeatures() const {
 }
 
 std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
-    if(!(cache.features() & GlyphCacheFeature::ImageDownload)) {
-        Error{} << "Text::MagnumFontConverter::exportFontToData(): passed glyph cache doesn't support image download";
+    if(cache.size().z() != 1) {
+        Error{} << "Text::MagnumFontConverter::exportFontToData(): exporting array glyph caches is not supported";
+        return {};
+    }
+    if(cache.features() & GlyphCacheFeature::ImageProcessing && !(cache.features() >= GlyphCacheFeature::ProcessedImageDownload)) {
+        Error{} << "Text::MagnumFontConverter::exportFontToData(): glyph cache has image processing but doesn't support image download";
+        return {};
+    }
+
+    Containers::Optional<UnsignedInt> fontId = cache.findFont(&font);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Make it work with the old-style glyph cache filling that adds exactly
+       one font into the cache and doesn't associate any pointer with it */
+    if(!fontId && cache.fontCount() == 1 && cache.fontPointer(0) == nullptr)
+        fontId = 0;
+    #endif
+    if(!fontId) {
+        Error{} << "Text::MagnumFontConverter::exportFontToData(): font not found among" << cache.fontCount() << "fonts in passed glyph cache";
         return {};
     }
 
@@ -61,7 +79,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
 
     configuration.setValue("version", 1);
     configuration.setValue("image", Utility::Path::split(filename).second() + ".tga");
-    configuration.setValue("originalImageSize", cache.textureSize());
+    configuration.setValue("originalImageSize", cache.size().xy());
     configuration.setValue("padding", cache.padding());
     configuration.setValue("fontSize", font.size());
     configuration.setValue("ascent", font.ascent());
@@ -70,8 +88,11 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
 
     /* Get the glyphs and sort them for predictable output */
     std::vector<std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>> sortedGlyphs;
-    for(const std::pair<const UnsignedInt, std::pair<Vector2i, Range2Di>>& glyph: cache)
-        sortedGlyphs.emplace_back(glyph);
+    const Containers::StridedArrayView1D<const Vector2i> offsets = cache.glyphOffsets();
+    const Containers::StridedArrayView1D<const Range2Di> rectangles = cache.glyphRectangles();
+    for(UnsignedInt fontGlyphId = 0; fontGlyphId != cache.fontGlyphCount(*fontId); ++fontGlyphId)
+        if(const UnsignedInt glyphId = cache.glyphId(*fontId, fontGlyphId))
+            sortedGlyphs.emplace_back(fontGlyphId, std::make_pair(offsets[glyphId], rectangles[glyphId]));
     std::sort(sortedGlyphs.begin(), sortedGlyphs.end(),
         [](const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& a,
            const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& b) {
@@ -108,11 +129,15 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
        from the values so they aren't added twice when using the font later */
     /** @todo Some better way to handle this padding stuff */
     for(UnsignedInt oldGlyphId: inverseGlyphIdMap) {
-        std::pair<Vector2i, Range2Di> glyph = cache[oldGlyphId];
+        /** @todo this branch is messy, clean up; also there's now a
+            distinction between a cache-global invalid glyph and font-local,
+            what to do there? */
+        Containers::Triple<Vector2i, Int, Range2Di> glyph =
+            oldGlyphId ? cache.glyph(*fontId, oldGlyphId) : cache.glyph(0);
         Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
         group->setValue("advance", font.glyphAdvance(oldGlyphId));
-        group->setValue("position", glyph.first+cache.padding());
-        group->setValue("rectangle", glyph.second.padded(-cache.padding()));
+        group->setValue("position", glyph.first() + cache.padding());
+        group->setValue("rectangle", glyph.third().padded(-cache.padding()));
     }
 
     std::ostringstream confOut;
@@ -121,9 +146,20 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     Containers::Array<char> confData{confStr.size()};
     std::copy(confStr.begin(), confStr.end(), confData.begin());
 
-    /* Save cache image */
-    Containers::Optional<Containers::Array<char>> tgaData = Trade::TgaImageConverter().convertToData(cache.image());
-    if(!tgaData) return {};
+    /* Save cache image. Either the source image or the processed one if the
+       cache has image processing. */
+    Containers::Optional<Containers::Array<char>> tgaData;
+    if(cache.features() & GlyphCacheFeature::ImageProcessing) {
+        const Image3D image3 = cache.processedImage();
+        tgaData = Trade::TgaImageConverter().convertToData(ImageView2D{image3.format(), image3.size().xy(), image3.data()});
+    } else {
+        const ImageView3D image3 = cache.image();
+        tgaData = Trade::TgaImageConverter().convertToData(ImageView2D{image3.format(), image3.size().xy(), image3.data()});
+    }
+    if(!tgaData) {
+        Error{} << "Text::MagnumFontConverter::exportFontToData(): cannot create a TGA image";
+        return {};
+    }
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename + ".conf", Utility::move(confData));
