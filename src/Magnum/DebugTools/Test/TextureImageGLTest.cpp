@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -53,14 +55,18 @@ struct TextureImageGLTest: GL::OpenGLTester {
        glGetBufferSubData(). */
 
     void subImage2D();
+    void subImage2DNotReadable();
     #ifndef MAGNUM_TARGET_GLES2
     void subImage2DBuffer();
+    void subImage2DBufferNotReadable();
     #endif
     void subImage2DGeneric();
 
     void subImageCube();
+    void subImageCubeNotReadable();
     #ifndef MAGNUM_TARGET_GLES2
     void subImageCubeBuffer();
+    void subImageCubeBufferNotReadable();
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -72,14 +78,18 @@ struct TextureImageGLTest: GL::OpenGLTester {
 
 TextureImageGLTest::TextureImageGLTest() {
     addTests({&TextureImageGLTest::subImage2D,
+              &TextureImageGLTest::subImage2DNotReadable,
               #ifndef MAGNUM_TARGET_GLES2
               &TextureImageGLTest::subImage2DBuffer,
+              &TextureImageGLTest::subImage2DBufferNotReadable,
               #endif
               &TextureImageGLTest::subImage2DGeneric,
 
               &TextureImageGLTest::subImageCube,
+              &TextureImageGLTest::subImageCubeNotReadable,
               #ifndef MAGNUM_TARGET_GLES2
               &TextureImageGLTest::subImageCubeBuffer,
+              &TextureImageGLTest::subImageCubeBufferNotReadable,
               #endif
 
               #ifndef MAGNUM_TARGET_GLES2
@@ -115,6 +125,35 @@ void TextureImageGLTest::subImage2D() {
         Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
 
+void TextureImageGLTest::subImage2DNotReadable() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_shared_exponent>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(GL::Extensions::ARB::get_texture_sub_image::string() << "supported, can't test");
+    #endif
+
+    GL::Texture2D texture;
+    #ifdef MAGNUM_TARGET_GLES2
+    texture.setImage(0, GL::TextureFormat::Luminance, ImageView2D{GL::PixelFormat::Luminance, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D});
+    #else
+    texture.setImage(0, GL::TextureFormat::RGB9E5, ImageView2D{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{2}, Data2D});
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* The read type doesn't have to match, it doesn't get that far */
+    textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(out.str(), "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::Unsupported\n");
+    #else
+    CORRADE_COMPARE(out.str(), "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void TextureImageGLTest::subImage2DBuffer() {
     GL::Texture2D texture;
@@ -131,6 +170,31 @@ void TextureImageGLTest::subImage2DBuffer() {
         Containers::arrayCast<UnsignedByte>(data),
         Containers::arrayView(Data2D),
         TestSuite::Compare::Container);
+}
+
+void TextureImageGLTest::subImage2DBufferNotReadable() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_shared_exponent>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(GL::Extensions::ARB::get_texture_sub_image::string() << "supported, can't test");
+    #endif
+
+    GL::Texture2D texture;
+    texture.setImage(0, GL::TextureFormat::RGB9E5, ImageView2D{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{2}, Data2D});
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* The read type doesn't have to match, it doesn't get that far */
+    textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte}, GL::BufferUsage::StaticRead);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(out.str(), "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::Unsupported\n");
+    #else
+    CORRADE_COMPARE(out.str(), "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    #endif
 }
 #endif
 
@@ -181,6 +245,44 @@ void TextureImageGLTest::subImageCube() {
         Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
 
+void TextureImageGLTest::subImageCubeNotReadable() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_shared_exponent>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(GL::Extensions::ARB::get_texture_sub_image::string() << "supported, can't test");
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES2
+    GL::TextureFormat format = GL::TextureFormat::Luminance;
+    ImageView2D view{GL::PixelFormat::Luminance, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
+    #else
+    GL::TextureFormat format = GL::TextureFormat::RGB9E5;
+    ImageView2D view{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{2}, Data2D};
+    #endif
+
+    GL::CubeMapTexture texture;
+    texture.setImage(GL::CubeMapCoordinate::PositiveX, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::NegativeX, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::PositiveY, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::NegativeY, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::PositiveZ, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::NegativeZ, 0, format, view);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* The read type doesn't have to match, it doesn't get that far */
+    textureSubImage(texture, GL::CubeMapCoordinate::PositiveX, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(out.str(), "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::Unsupported\n");
+    #else
+    CORRADE_COMPARE(out.str(), "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void TextureImageGLTest::subImageCubeBuffer() {
     ImageView2D view{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
@@ -204,6 +306,44 @@ void TextureImageGLTest::subImageCubeBuffer() {
         Containers::arrayCast<UnsignedByte>(data),
         Containers::arrayView(Data2D),
         TestSuite::Compare::Container);
+}
+
+void TextureImageGLTest::subImageCubeBufferNotReadable() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_shared_exponent>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(GL::Extensions::ARB::get_texture_sub_image::string() << "supported, can't test");
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES2
+    GL::TextureFormat format = GL::TextureFormat::Luminance;
+    ImageView2D view{GL::PixelFormat::Luminance, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
+    #else
+    GL::TextureFormat format = GL::TextureFormat::RGB9E5;
+    ImageView2D view{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{2}, Data2D};
+    #endif
+
+    GL::CubeMapTexture texture;
+    texture.setImage(GL::CubeMapCoordinate::PositiveX, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::NegativeX, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::PositiveY, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::NegativeY, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::PositiveZ, 0, format, view)
+           .setImage(GL::CubeMapCoordinate::NegativeZ, 0, format, view);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* The read type doesn't have to match, it doesn't get that far */
+    textureSubImage(texture, GL::CubeMapCoordinate::PositiveX, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte}, GL::BufferUsage::StaticRead);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(out.str(), "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::Unsupported\n");
+    #else
+    CORRADE_COMPARE(out.str(), "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    #endif
 }
 #endif
 

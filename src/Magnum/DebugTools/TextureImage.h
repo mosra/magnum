@@ -46,13 +46,13 @@ Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 @ref GL::Framebuffer::read(). On desktop OpenGL, if @gl_extension{ARB,get_texture_sub_image}
 is available, it's just an alias to @ref GL::Texture2D::subImage().
 
-Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
-marked as framebuffer readable are supported; their generic
-@ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well. In
-addition, on OpenGL ES 3.0, images with @ref GL::PixelType::Float are supported
---- they are reinterpreted as @ref GL::PixelType::UnsignedInt using an
-additional shader and the @glsl floatBitsToUint() @ce GLSL function and then
-reinterpreted back to @ref GL::PixelType::Float when read to client memory.
+The function expects the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} to be framebuffer
+readable. In addition, on OpenGL ES 3.0, images with @ref GL::PixelType::Float
+are supported --- they are reinterpreted as @ref GL::PixelType::UnsignedInt
+using an additional shader and the @glsl floatBitsToUint() @ce GLSL function
+and then reinterpreted back to @ref GL::PixelType::Float when read to client
+memory.
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -80,9 +80,9 @@ Emulates @ref GL::CubeMapTexture::subImage() call on platforms that don't
 support it (such as OpenGL ES) by creating a framebuffer object and using
 @ref GL::Framebuffer::read().
 
-Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
-marked as framebuffer readable are supported; their generic
-@ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well.
+The function expects the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} to be framebuffer
+readable.
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -113,9 +113,9 @@ Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 @gl_extension{ARB,get_texture_sub_image} is available, it's just an alias to
 @ref GL::Texture2D::subImage().
 
-Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
-marked as framebuffer readable are supported; their generic
-@ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well.
+The function expects the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} to be framebuffer
+readable.
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 
@@ -145,9 +145,9 @@ Emulates @ref GL::CubeMapTexture::subImage() call on platforms that don't
 support it (such as OpenGL ES) by creating a framebuffer object and using
 @ref GL::Framebuffer::read().
 
-Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
-marked as framebuffer readable are supported; their generic
-@ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well.
+The function expects the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} to be framebuffer
+readable.
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 

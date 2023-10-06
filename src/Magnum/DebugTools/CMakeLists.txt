@@ -51,7 +51,9 @@ endif()
 if(MAGNUM_TARGET_GL)
     list(APPEND MagnumDebugTools_SRCS
         ResourceManager.cpp
-        Screenshot.cpp
+        Screenshot.cpp)
+
+    list(APPEND MagnumDebugTools_GracefulAssert_SRCS
         TextureImage.cpp)
 
     list(APPEND MagnumDebugTools_HEADERS

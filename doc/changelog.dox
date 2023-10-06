@@ -527,6 +527,9 @@ See also:
     match sRGB and normalization properties of the expected image format
 -   @ref DebugTools::CompareImage now accepts @ref MutableImageView2D as well,
     in addition to @ref Image2D, @ref ImageView2D and @ref Trade::ImageData2D
+-   @ref DebugTools::textureSubImage() now checks that the framebuffer is
+    complete before attempting to read from it to avoid silent failures when
+    the texture format isn't framebuffer readable
 
 @subsubsection changelog-latest-changes-gl GL library
 

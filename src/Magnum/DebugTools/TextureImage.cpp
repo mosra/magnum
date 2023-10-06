@@ -180,8 +180,12 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
     #endif
 
     GL::Framebuffer fb{range};
-    fb.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, level)
-      .read(range, image);
+    fb.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, level);
+
+    CORRADE_ASSERT(fb.checkStatus(GL::FramebufferTarget::Read) == GL::Framebuffer::Status::Complete,
+        "DebugTools::textureSubImage(): texture format not framebuffer-readable:" << fb.checkStatus(GL::FramebufferTarget::Read), );
+
+    fb.read(range, image);
 }
 
 Image2D textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& range, Image2D&& image) {
@@ -199,8 +203,12 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
     #endif
 
     GL::Framebuffer fb{range};
-    fb.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, level)
-      .read(range, image, usage);
+    fb.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, level);
+
+    CORRADE_ASSERT(fb.checkStatus(GL::FramebufferTarget::Read) == GL::Framebuffer::Status::Complete,
+        "DebugTools::textureSubImage(): texture format not framebuffer-readable:" << fb.checkStatus(GL::FramebufferTarget::Read), );
+
+    fb.read(range, image, usage);
 }
 
 GL::BufferImage2D textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& range, GL::BufferImage2D&& image, const GL::BufferUsage usage) {
@@ -211,8 +219,12 @@ GL::BufferImage2D textureSubImage(GL::Texture2D& texture, const Int level, const
 
 void textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, Image2D& image) {
     GL::Framebuffer fb{range};
-    fb.attachCubeMapTexture(GL::Framebuffer::ColorAttachment{0}, texture, coordinate, level)
-      .read(range, image);
+    fb.attachCubeMapTexture(GL::Framebuffer::ColorAttachment{0}, texture, coordinate, level);
+
+    CORRADE_ASSERT(fb.checkStatus(GL::FramebufferTarget::Read) == GL::Framebuffer::Status::Complete,
+        "DebugTools::textureSubImage(): texture format not framebuffer-readable:" << fb.checkStatus(GL::FramebufferTarget::Read), );
+
+    fb.read(range, image);
 }
 
 Image2D textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, Image2D&& image) {
@@ -223,8 +235,12 @@ Image2D textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate
 #ifndef MAGNUM_TARGET_GLES2
 void textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, GL::BufferImage2D& image, const GL::BufferUsage usage) {
     GL::Framebuffer fb{range};
-    fb.attachCubeMapTexture(GL::Framebuffer::ColorAttachment{0}, texture, coordinate, level)
-      .read(range, image, usage);
+    fb.attachCubeMapTexture(GL::Framebuffer::ColorAttachment{0}, texture, coordinate, level);
+
+    CORRADE_ASSERT(fb.checkStatus(GL::FramebufferTarget::Read) == GL::Framebuffer::Status::Complete,
+        "DebugTools::textureSubImage(): texture format not framebuffer-readable:" << fb.checkStatus(GL::FramebufferTarget::Read), );
+
+    fb.read(range, image, usage);
 }
 
 GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, GL::BufferImage2D&& image, const GL::BufferUsage usage) {

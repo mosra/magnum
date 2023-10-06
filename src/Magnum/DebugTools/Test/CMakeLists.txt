@@ -113,7 +113,7 @@ if(MAGNUM_TARGET_GL)
         corrade_add_test(DebugToolsFrameProfilerGLTest FrameProfilerGLTest.cpp
             LIBRARIES MagnumDebugTools MagnumOpenGLTester)
         corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp
-            LIBRARIES MagnumDebugTools MagnumOpenGLTester)
+            LIBRARIES MagnumDebugToolsTestLib MagnumOpenGLTester)
 
         if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
             corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp
