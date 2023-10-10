@@ -44,6 +44,7 @@ enum class Alignment: UnsignedByte;
 
 class AbstractGlyphCache;
 
+enum class Feature: UnsignedInt;
 enum class Script: UnsignedInt;
 
 #ifdef MAGNUM_TARGET_GL

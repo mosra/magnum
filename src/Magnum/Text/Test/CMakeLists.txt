@@ -76,6 +76,8 @@ endif()
 
 corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumTextTestLib)
 
+corrade_add_test(TextFeatureTest FeatureTest.cpp LIBRARIES MagnumTextTestLib)
+
 corrade_add_test(TextScriptTest ScriptTest.cpp LIBRARIES MagnumTextTestLib)
 
 if(MAGNUM_TARGET_GL AND MAGNUM_BUILD_GL_TESTS)
