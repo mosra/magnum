@@ -36,16 +36,21 @@ set(MagnumText_SRCS )
 set(MagnumText_GracefulAssert_SRCS
     AbstractFont.cpp
     AbstractFontConverter.cpp
-    AbstractGlyphCache.cpp)
+    AbstractGlyphCache.cpp
+    Script.cpp)
 
 set(MagnumText_HEADERS
     AbstractFont.h
     AbstractFontConverter.h
     AbstractGlyphCache.h
     Alignment.h
+    Script.h
     Text.h
 
     visibility.h)
+
+set(MagnumText_PRIVATE_HEADERS
+    Implementation/printFourCC.h)
 
 if(MAGNUM_TARGET_GL)
     list(APPEND MagnumText_SRCS
@@ -70,7 +75,8 @@ endif()
 # Objects shared between main and test library
 add_library(MagnumTextObjects OBJECT
     ${MagnumText_SRCS}
-    ${MagnumText_HEADERS})
+    ${MagnumText_HEADERS}
+    ${MagnumText_PRIVATE_HEADERS})
 target_include_directories(MagnumTextObjects PUBLIC
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)

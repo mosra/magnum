@@ -58,10 +58,12 @@ corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp
     LIBRARIES Magnum MagnumTextTestLib
     FILES data.bin)
 target_include_directories(TextAbstractFontTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+
 corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp
     LIBRARIES Magnum MagnumTextTestLib
     FILES data.bin)
 target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+
 corrade_add_test(TextAbstractGlyphCacheTest AbstractGlyphCacheTest.cpp
     LIBRARIES MagnumTextTestLib MagnumDebugTools)
 if(CORRADE_TARGET_EMSCRIPTEN)
@@ -71,7 +73,10 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     # Some of the glyph caches tested are rather large
     target_link_options(TextAbstractGlyphCacheTest PRIVATE "SHELL:-s ALLOW_MEMORY_GROWTH=1")
 endif()
+
 corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumTextTestLib)
+
+corrade_add_test(TextScriptTest ScriptTest.cpp LIBRARIES MagnumTextTestLib)
 
 if(MAGNUM_TARGET_GL AND MAGNUM_BUILD_GL_TESTS)
     corrade_add_test(TextDistanceFieldGlyphCacheGLTest DistanceFieldGlyphCacheGLTest.cpp

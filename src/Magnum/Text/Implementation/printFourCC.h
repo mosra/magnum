@@ -1,5 +1,3 @@
-#ifndef Magnum_Text_Text_h
-#define Magnum_Text_Text_h
 /*
     This file is part of Magnum.
 
@@ -25,37 +23,33 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Text namespace
- */
+#include <cctype>
+#include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Types.h"
-#include "Magnum/configure.h"
+#include "Magnum/Magnum.h"
 
-namespace Magnum { namespace Text {
+namespace Magnum { namespace Text { namespace Implementation {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class AbstractFont;
-class AbstractFontConverter;
-class AbstractGlyphCache;
-class AbstractLayouter;
+/* Might make sense to move this into Magnum/Implementation once the Trade
+   library needs the same for serialization headers */
+inline Debug& printFourCC(Debug& debug, UnsignedInt value) {
+    debug << "(" << Debug::nospace;
 
-enum class Alignment: UnsignedByte;
+    for(std::size_t i = 0; i != 4; ++i) {
+        if(i) debug << Debug::nospace << ",";
 
-class AbstractGlyphCache;
+        const int c = value & 255u;
+        if(std::isprint(c)) {
+            const char data[]{'\'', char(c), '\'', '\0'};
+            debug << data;
+        } else {
+            debug << reinterpret_cast<void*>(c);
+        }
 
-enum class Script: UnsignedInt;
+        value >>= 8;
+    }
 
-#ifdef MAGNUM_TARGET_GL
-class DistanceFieldGlyphCache;
-class GlyphCache;
-class AbstractRenderer;
-template<UnsignedInt> class Renderer;
-typedef Renderer<2> Renderer2D;
-typedef Renderer<3> Renderer3D;
-#endif
-#endif
+    return debug << Debug::nospace << ")";
+}
 
-}}
-
-#endif
+}}}
