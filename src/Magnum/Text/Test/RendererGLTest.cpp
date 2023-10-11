@@ -32,6 +32,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Text/Renderer.h"
 
 namespace Magnum { namespace Text { namespace Test { namespace {
@@ -47,117 +48,193 @@ struct RendererGLTest: GL::OpenGLTester {
     void multiline();
 };
 
+const struct {
+    const char* name;
+    Alignment alignment;
+    Vector2 offset;
+} RenderDataData[]{
+    /* Not testing all combinations, just making sure that each horizontal,
+       vertical and integer variant is covered */
+    {"line left", Alignment::LineLeft,
+        {}},
+    /** @todo for all these, the initial glyph offset is first subtracted and
+        only then the shift by either half or full size is performed, does that
+        make sense? why is not done for the LineLeft case, then? */
+    {"top left", Alignment::TopLeft,
+        {0.0f, -7.0f - 3.5f}},
+    {"top right", Alignment::TopRight,
+        {-10.0f - 2.5f, -7.0f - 3.5f}},
+    {"middle center", Alignment::MiddleCenter,
+        /* Half size of the bounds quad */
+        {-5.0f - 2.5f, -3.5f - 3.625f}},
+    {"middle center, integral", Alignment::MiddleCenterIntegral,
+        /* The X shift is rounded to whole units */
+        {-5.5f - 2.5f, -3.5f - 3.5f}},
+};
+
 RendererGLTest::RendererGLTest() {
-    addTests({&RendererGLTest::renderData,
-              &RendererGLTest::renderMesh,
+    addInstancedTests({&RendererGLTest::renderData},
+        Containers::arraySize(RenderDataData));
+
+    addTests({&RendererGLTest::renderMesh,
               &RendererGLTest::renderMeshIndexType,
               &RendererGLTest::mutableText,
 
               &RendererGLTest::multiline});
 }
 
-class TestLayouter: public AbstractLayouter {
-    public:
-        explicit TestLayouter(Float size, std::size_t glyphCount): AbstractLayouter(glyphCount), _size(size) {}
+struct TestLayouter: AbstractLayouter {
+    explicit TestLayouter(const AbstractGlyphCache& cache, UnsignedInt fontId, Float scale, UnsignedInt glyphCount): AbstractLayouter{glyphCount}, _cache(cache), _fontId{fontId}, _scale{scale} {}
 
-    private:
-        Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override {
-            return {{{}, Vector2(3.0f, 2.0f)*((i+1)*_size)},
-                    Range2D::fromSize({i*6.0f, 0.0f}, {6.0f, 10.0f}),
-                    (Vector2::xAxis((i+1)*3.0f)+Vector2(1.0f, -1.0f))*_size};
-        }
+    Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override {
+        /* It just rotates between the three glyphs */
+        UnsignedInt glyphId;
+        if(i % 3 == 0)
+            glyphId = 3;
+        else if(i % 3 == 1)
+            glyphId = 7;
+        else
+            glyphId = 9;
 
-        Float _size;
+        Containers::Triple<Vector2i, Int, Range2Di> glyph = _cache.glyph(_fontId, glyphId);
+        CORRADE_VERIFY(glyph.second() == 0);
+
+        /* Offset Y and advance X is getting larger with every glyph */
+        return {
+            Range2D::fromSize(Vector2{glyph.first() + Vector2i::yAxis(i + 1)}*_scale, Vector2{glyph.third().size()}*_scale),
+            Range2D{glyph.third()}.scaled(1.0f/Vector2{_cache.size().xy()}),
+            Vector2{Float(i + 1), i % 2 ? -0.5f : +0.5f}*_scale
+        };
+    }
+
+    const AbstractGlyphCache& _cache;
+    UnsignedInt _fontId;
+    Float _scale;
 };
 
-class TestFont: public AbstractFont {
-    FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+struct TestFont: AbstractFont {
+    FontFeatures doFeatures() const override { return {}; }
 
-    bool doIsOpened() const override { return true; }
-    void doClose() override {}
+    bool doIsOpened() const override { return _opened; }
+    void doClose() override { _opened = false; }
+
+    Properties doOpenFile(Containers::StringView, Float size) override {
+        _opened = true;
+        return {size, 0.45f, -0.25f, 0.75f, 10};
+    }
 
     UnsignedInt doGlyphId(char32_t) override { return 0; }
     Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-    Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float size, Containers::StringView text) override {
-        return Containers::pointer<TestLayouter>(size, text.size());
+    Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView text) override {
+        /* The final rendered size should be a ratio of the font and layout
+           size */
+        return Containers::pointer<TestLayouter>(cache, *cache.findFont(this), size/this->size(), UnsignedInt(text.size()));
     }
+
+    bool _opened = false;
 };
 
-/* *static_cast<GlyphCache*>(nullptr) makes Clang Analyzer grumpy */
-char glyphCacheData;
-GlyphCache& nullGlyphCache = *reinterpret_cast<GlyphCache*>(&glyphCacheData);
+GlyphCache testGlyphCache(AbstractFont& font) {
+    GlyphCache cache{{20, 20}};
+
+    /* Add one more font to verify the right one gets picked */
+    cache.addFont(96);
+    UnsignedInt fontId = cache.addFont(font.glyphCount(), &font);
+
+    /* Three glyphs, covering bottom, top left and top right of the cache */
+    cache.addGlyph(fontId, 3, {5, 10}, {{}, {20, 10}});
+    cache.addGlyph(fontId, 7, {10, 5}, {{0, 10}, {10, 20}});
+    cache.addGlyph(fontId, 9, {5, 5}, {{10, 10}, {20, 20}});
+
+    return cache;
+}
 
 void RendererGLTest::renderData() {
+    auto&& data = RenderDataData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     TestFont font;
+    font.openFile({}, 0.5f);
+    GlyphCache cache = testGlyphCache(font);
+
+    /* Capture the correct function name */
+    CORRADE_VERIFY(true);
+
     std::vector<Vector2> positions;
     std::vector<Vector2> textureCoordinates;
     std::vector<UnsignedInt> indices;
     Range2D bounds;
-    std::tie(positions, textureCoordinates, indices, bounds) = AbstractRenderer::render(font, nullGlyphCache, 0.25f, "abc", Alignment::MiddleRightIntegral);
+    std::tie(positions, textureCoordinates, indices, bounds) = AbstractRenderer::render(font, cache, 0.25f, "abc", data.alignment);
 
     /* Three glyphs, three quads -> 12 vertices, 18 indices */
     CORRADE_COMPARE(positions.size(), 12);
     CORRADE_COMPARE(textureCoordinates.size(), 12);
     CORRADE_COMPARE(indices.size(), 18);
 
-    /* Alignment offset. Y would be -0.25f if it wasn't integral */
-    const Vector2 offset{-5.0f, 0.0f};
+    /* Vertex positions. Rectangles coming from the cache and offsets +
+       advances from the layouter are scaled by 0.5. First glyph is moved by
+       (scaled) 1 up and has advance of (scaled) {1, ±0.5}, every next glyph is
+       moved up and further distanced by (scaled) {1, ±0.5}. First glyph is
+       wide, the other two are square.
+
+                   +-+
+              +-+  |c|
+        0---2 |b|  +-+
+        | a | +-+
+        1---3          */
+    CORRADE_COMPARE_AS(positions, (std::vector<Vector2>{
+        /* Cursor is {0, 0}. Offset from the cache is {5, 10}, offset from the
+           renderer is {0, 1}, size is {20, 10}; all scaled by 0.5 */
+        Vector2{ 2.5f, 10.5f} + data.offset,
+        Vector2{ 2.5f,  5.5f} + data.offset,
+        Vector2{12.5f, 10.5f} + data.offset,
+        Vector2{12.5f,  5.5f} + data.offset,
+
+        /* Advance was {1, 0.5}, cursor is {1, 0.5}. Offset from the cache is
+           {10, 5}, offset from the renderer is {0, 2}, size is {10, 10}; all
+           scaled by 0.5 */
+        Vector2{ 5.5f, 8.75f} + data.offset,
+        Vector2{ 5.5f, 3.75f} + data.offset,
+        Vector2{10.5f, 8.75f} + data.offset,
+        Vector2{10.5f, 3.75f} + data.offset,
+
+        /* Advance was {2, -0.5}, cursor is {3, 0}. Offset from the cache is
+           {5, 5}, offset from the renderer is {0, 3}, size is {10, 10}; all
+           scaled by 0.5 */
+        Vector2{ 4.0f,  9.0f} + data.offset,
+        Vector2{ 4.0f,  4.0f} + data.offset,
+        Vector2{ 9.0f,  9.0f} + data.offset,
+        Vector2{ 9.0f,  4.0f} + data.offset
+    }), TestSuite::Compare::Container);
 
     /* Bounds */
-    CORRADE_COMPARE(bounds, Range2D({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
+    CORRADE_COMPARE(bounds, (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f}}.translated(data.offset)));
 
-    /* Vertex positions and texture coordinates
+    /* Texture coordinates. First glyph is bottom, second top left, third top
+       right.
+       +-+-+
+       |b|c|
        0---2
-       |   |
-       |   |
-       |   |
+       | a |
        1---3 */
+    CORRADE_COMPARE_AS(textureCoordinates, (std::vector<Vector2>{
+        {0.0f, 0.5f},
+        {0.0f, 0.0f},
+        {1.0f, 0.5f},
+        {1.0f, 0.0f},
 
-    /* Vertex positions
-              +---+
-          +-+ |   |
-        a |b| | c |
-          +-+ |   |
-              +---+ */
-    CORRADE_COMPARE(positions, (std::vector<Vector2>{
-        Vector2{0.0f,  0.5f} + offset,
-        Vector2{0.0f,  0.0f} + offset,
-        Vector2{0.75f, 0.5f} + offset,
-        Vector2{0.75f, 0.0f} + offset,
+        {0.0f, 1.0f},
+        {0.0f, 0.5f},
+        {0.5f, 1.0f},
+        {0.5f, 0.5f},
 
-        Vector2{1.0f,  0.75f} + offset,
-        Vector2{1.0f, -0.25f} + offset,
-        Vector2{2.5f,  0.75f} + offset,
-        Vector2{2.5f, -0.25f} + offset,
-
-        Vector2{2.75f,  1.0f} + offset,
-        Vector2{2.75f, -0.5f} + offset,
-        Vector2{5.0f,   1.0f} + offset,
-        Vector2{5.0f,  -0.5f} + offset
-    }));
-
-    /* Texture coordinates
-       +-+ +-+ +-+
-       |a| |b| |c|
-       +-+ +-+ +-+ */
-    CORRADE_COMPARE(textureCoordinates, (std::vector<Vector2>{
-        {0.0f, 10.0f},
-        {0.0f,  0.0f},
-        {6.0f, 10.0f},
-        {6.0f,  0.0f},
-
-        { 6.0f, 10.0f},
-        { 6.0f,  0.0f},
-        {12.0f, 10.0f},
-        {12.0f,  0.0f},
-
-        {12.0f, 10.0f},
-        {12.0f,  0.0f},
-        {18.0f, 10.0f},
-        {18.0f,  0.0f}
-    }));
+        {0.5f, 1.0f},
+        {0.5f, 0.5f},
+        {1.0f, 1.0f},
+        {1.0f, 0.5f}
+    }), TestSuite::Compare::Container);
 
     /* Indices
        0---2 0---2 5
@@ -165,50 +242,59 @@ void RendererGLTest::renderData() {
        |   | | / / |
        |   | |/ /  |
        1---3 1 3---4 */
-    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(indices, (std::vector<UnsignedInt>{
         0,  1,  2,  1,  3,  2,
         4,  5,  6,  5,  7,  6,
         8,  9, 10,  9, 11, 10
-    }));
+    }), TestSuite::Compare::Container);
 }
 
 void RendererGLTest::renderMesh() {
+    /* Like render(middle center), but with a mesh output instead of data */
+
     TestFont font;
+    font.openFile({}, 0.5f);
+    GlyphCache cache = testGlyphCache(font);
+
+    /* Capture the correct function name */
+    CORRADE_VERIFY(true);
+
     GL::Mesh mesh{NoCreate};
     GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array},
         indexBuffer{GL::Buffer::TargetHint::ElementArray};
     Range2D bounds;
-    std::tie(mesh, bounds) = Renderer3D::render(font, nullGlyphCache,
-        0.25f, "abc", vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw, Alignment::TopCenter);
+    std::tie(mesh, bounds) = Renderer3D::render(font, cache,
+        0.25f, "abc", vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw, Alignment::MiddleCenter);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Alignment offset */
-    const Vector2 offset{-2.5f, -1.0f};
+    /** @todo same as in render(), figure out if the initial offset makes
+        sense or not */
+    const Vector2 offset{-5.0f - 2.5f, -3.5f - 3.625f};
 
     /* Bounds */
-    CORRADE_COMPARE(bounds, Range2D({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
+    CORRADE_COMPARE(bounds, (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f}}.translated(offset)));
 
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     /* Vertex buffer contents */
     Containers::Array<char> vertices = vertexBuffer.data();
-    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(vertices),
-        Containers::arrayView<Float>({
-            0.0f + offset.x(),  0.5f + offset.y(), 0.0f, 10.0f,
-            0.0f + offset.x(),  0.0f + offset.y(), 0.0f,  0.0f,
-            0.75f + offset.x(), 0.5f + offset.y(), 6.0f, 10.0f,
-            0.75f + offset.x(), 0.0f + offset.y(), 6.0f,  0.0f,
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(vertices), Containers::arrayView<Vector2>({
+        Vector2{ 2.5f, 10.5f} + offset, {0.0f, 0.5f},
+        Vector2{ 2.5f,  5.5f} + offset, {0.0f, 0.0f},
+        Vector2{12.5f, 10.5f} + offset, {1.0f, 0.5f},
+        Vector2{12.5f,  5.5f} + offset, {1.0f, 0.0f},
 
-            1.0f + offset.x(),  0.75f + offset.y(),  6.0f, 10.0f,
-            1.0f + offset.x(), -0.25f + offset.y(),  6.0f,  0.0f,
-            2.5f + offset.x(),  0.75f + offset.y(), 12.0f, 10.0f,
-            2.5f + offset.x(), -0.25f + offset.y(), 12.0f,  0.0f,
+        Vector2{ 5.5f, 8.75f} + offset, {0.0f, 1.0f},
+        Vector2{ 5.5f, 3.75f} + offset, {0.0f, 0.5f},
+        Vector2{10.5f, 8.75f} + offset, {0.5f, 1.0f},
+        Vector2{10.5f, 3.75f} + offset, {0.5f, 0.5f},
 
-            2.75f + offset.x(),  1.0f + offset.y(), 12.0f, 10.0f,
-            2.75f + offset.x(), -0.5f + offset.y(), 12.0f,  0.0f,
-            5.0f + offset.x(),   1.0f + offset.y(), 18.0f, 10.0f,
-            5.0f + offset.x(),  -0.5f + offset.y(), 18.0f,  0.0f
-        }), TestSuite::Compare::Container);
+        Vector2{ 4.0f,  9.0f} + offset, {0.5f, 1.0f},
+        Vector2{ 4.0f,  4.0f} + offset, {0.5f, 0.5f},
+        Vector2{ 9.0f,  9.0f} + offset, {1.0f, 1.0f},
+        Vector2{ 9.0f,  4.0f} + offset, {1.0f, 0.5f},
+    }), TestSuite::Compare::Container);
 
     Containers::Array<char> indices = indexBuffer.data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices),
@@ -223,6 +309,12 @@ void RendererGLTest::renderMesh() {
 void RendererGLTest::renderMeshIndexType() {
     #ifndef MAGNUM_TARGET_GLES
     TestFont font;
+    font.openFile({}, 0.5f);
+    GlyphCache cache = testGlyphCache(font);
+
+    /* Capture the correct function name */
+    CORRADE_VERIFY(true);
+
     GL::Mesh mesh{NoCreate};
     GL::Buffer vertexBuffer, indexBuffer;
 
@@ -230,7 +322,7 @@ void RendererGLTest::renderMeshIndexType() {
        texture coordinates, each float is four bytes; six indices per glyph. */
 
     /* 8-bit indices (exactly 256 vertices) */
-    std::tie(mesh, std::ignore) = Renderer3D::render(font, nullGlyphCache,
+    std::tie(mesh, std::ignore) = Renderer3D::render(font, cache,
         1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_GL_ERROR();
     Containers::Array<char> indicesByte = indexBuffer.data();
@@ -244,7 +336,7 @@ void RendererGLTest::renderMeshIndexType() {
         }), TestSuite::Compare::Container);
 
     /* 16-bit indices (260 vertices) */
-    std::tie(mesh, std::ignore) = Renderer3D::render(font, nullGlyphCache,
+    std::tie(mesh, std::ignore) = Renderer3D::render(font, cache,
         1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_GL_ERROR();
     Containers::Array<char> indicesShort = indexBuffer.data();
@@ -271,8 +363,13 @@ void RendererGLTest::mutableText() {
         CORRADE_SKIP("No required extension is supported");
     #endif
 
+    /* Like render(middle center) and renderMesh(), but modifying an instance
+       instead of rendering once */
+
     TestFont font;
-    Renderer2D renderer(font, nullGlyphCache, 0.25f);
+    font.openFile({}, 0.5f);
+    GlyphCache cache = testGlyphCache(font);
+    Renderer2D renderer(font, cache, 0.25f, Alignment::MiddleCenter);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
     CORRADE_COMPARE(renderer.fontSize(), 0.25f);
@@ -298,87 +395,103 @@ void RendererGLTest::mutableText() {
     renderer.render("abc");
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    /* Updated bounds */
-    CORRADE_COMPARE(renderer.rectangle(), Range2D({0.0f, -0.5f}, {5.0f, 1.0f}));
+    /* Alignment offset */
+    /** @todo same as in render(), figure out if the initial offset makes
+        sense or not */
+    const Vector2 offset{-5.0f - 2.5f, -3.5f - 3.625f};
 
-    /* Aligned to line/left, no offset needed */
+    /* Updated bounds and mesh vertex count */
+    CORRADE_COMPARE(renderer.rectangle(), (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f} }.translated(offset)));
+    CORRADE_COMPARE(renderer.mesh().count(), 3*6);
 
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     Containers::Array<char> vertices = renderer.vertexBuffer().data();
-    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(vertices).prefix(48),
-        Containers::arrayView<Float>({
-            0.0f,  0.5f, 0.0f, 10.0f,
-            0.0f,  0.0f, 0.0f,  0.0f,
-            0.75f, 0.5f, 6.0f, 10.0f,
-            0.75f, 0.0f, 6.0f,  0.0f,
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(vertices).prefix(2*4*3), Containers::arrayView<Vector2>({
+        Vector2{ 2.5f, 10.5f} + offset, {0.0f, 0.5f},
+        Vector2{ 2.5f,  5.5f} + offset, {0.0f, 0.0f},
+        Vector2{12.5f, 10.5f} + offset, {1.0f, 0.5f},
+        Vector2{12.5f,  5.5f} + offset, {1.0f, 0.0f},
 
-            1.0f,  0.75f,  6.0f, 10.0f,
-            1.0f, -0.25f,  6.0f,  0.0f,
-            2.5f,  0.75f, 12.0f, 10.0f,
-            2.5f, -0.25f, 12.0f,  0.0f,
+        Vector2{ 5.5f, 8.75f} + offset, {0.0f, 1.0f},
+        Vector2{ 5.5f, 3.75f} + offset, {0.0f, 0.5f},
+        Vector2{10.5f, 8.75f} + offset, {0.5f, 1.0f},
+        Vector2{10.5f, 3.75f} + offset, {0.5f, 0.5f},
 
-            2.75f,  1.0f, 12.0f, 10.0f,
-            2.75f, -0.5f, 12.0f,  0.0f,
-            5.0f,   1.0f, 18.0f, 10.0f,
-            5.0f,  -0.5f, 18.0f,  0.0f
-        }), TestSuite::Compare::Container);
+        Vector2{ 4.0f,  9.0f} + offset, {0.5f, 1.0f},
+        Vector2{ 4.0f,  4.0f} + offset, {0.5f, 0.5f},
+        Vector2{ 9.0f,  9.0f} + offset, {1.0f, 1.0f},
+        Vector2{ 9.0f,  4.0f} + offset, {1.0f, 0.5f},
+    }), TestSuite::Compare::Container);
     #endif
 }
 
 void RendererGLTest::multiline() {
-    class Layouter: public AbstractLayouter {
-        public:
-            explicit Layouter(UnsignedInt glyphCount): AbstractLayouter(glyphCount) {}
+    struct Layouter: AbstractLayouter {
+        explicit Layouter(const AbstractGlyphCache& cache, UnsignedInt fontId, Float scale, UnsignedInt glyphCount): AbstractLayouter{glyphCount}, _cache(cache), _fontId{fontId}, _scale{scale} {}
 
-        private:
-            Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
-                return {{{}, Vector2(1.0f)},
-                        Range2D({}, Vector2(1.0f)),
-                        Vector2::xAxis(2.0f)};
-            }
+        Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
+            Containers::Triple<Vector2i, Int, Range2Di> glyph = _cache.glyph(_fontId, 0);
+            CORRADE_VERIFY(glyph.second() == 0);
+
+            return {
+                Range2D::fromSize(Vector2{glyph.first()}*_scale,
+                                    Vector2{glyph.third().size()}*_scale),
+                Range2D{glyph.third()}.scaled(1.0f/Vector2{_cache.size().xy()}),
+                Vector2::xAxis(4.0f)*_scale
+            };
+        }
+
+        const AbstractGlyphCache& _cache;
+        UnsignedInt _fontId;
+        Float _scale;
     };
 
-    class Font: public AbstractFont {
-        public:
-            explicit Font(): _opened(false) {}
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
 
-        private:
-            FontFeatures doFeatures() const override { return {};  }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
 
-            bool doIsOpened() const override { return _opened; }
-            void doClose() override { _opened = false; }
+        Properties doOpenFile(Containers::StringView, Float size) override {
+            _opened = true;
+            /* The ascent and descent values shouldn't be used for anything
+               here and so can be completely arbitrary */
+            return {size, -10000.0f, 1000.0f, 6.0f, 10};
+        }
 
-            Properties doOpenFile(Containers::StringView, Float) override {
-                _opened = true;
-                return {0.5f, 0.45f, -0.25f, 0.75f, 1};
-            }
+        UnsignedInt doGlyphId(char32_t) override { return 0; }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-            UnsignedInt doGlyphId(char32_t) override { return 0; }
-            Vector2 doGlyphSize(UnsignedInt) override { return {}; }
-            Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView text) override {
+            /* The final rendered size should be a ratio of the font and layout
+               size */
+            return Containers::pointer<Layouter>(cache, *cache.findFont(this), size/this->size(), UnsignedInt(text.size()));
+        }
 
-            Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView text) override {
-                return Containers::pointer<Layouter>(UnsignedInt(text.size()));
-            }
+        bool _opened = false;
+    } font;
+    font.openFile({}, 0.5f);
 
-            bool _opened;
-    };
+    /* Just a single glyph that scales to {1, 1} in the end */
+    GlyphCache cache{{20, 20}};
+    UnsignedInt fontId = cache.addFont(1, &font);
+    cache.addGlyph(fontId, 0, {}, {{}, {2, 2}});
 
-    Font font;
-    font.openFile({}, 0.0f);
+    /* Capture the correct function name */
+    CORRADE_VERIFY(true);
+
     Range2D rectangle;
     std::vector<UnsignedInt> indices;
     std::vector<Vector2> positions, textureCoordinates;
     std::tie(positions, textureCoordinates, indices, rectangle) = Renderer2D::render(font,
-        nullGlyphCache, 2.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
+        cache, 0.25f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
 
-    /* We're rendering text at 2.0f size and the font is scaled to 0.3f, so the
-       line advance should be 0.75f*2.0f/0.5f = 3.0f */
+    /* We're rendering text at 0.25f size and the font is scaled to 0.5f, so
+       the line advance should be 6.0f*0.25f/0.5f = 3.0f */
     CORRADE_COMPARE(font.size(), 0.5f);
-    CORRADE_COMPARE(font.ascent(), 0.45f);
-    CORRADE_COMPARE(font.descent(), -0.25f);
-    CORRADE_COMPARE(font.lineHeight(), 0.75f);
+    CORRADE_COMPARE(font.lineHeight(), 6.0f);
 
     /* Bounds */
     CORRADE_COMPARE(rectangle, Range2D({-3.5f, -5.0f}, {3.5f, 5.0f}));
@@ -389,32 +502,34 @@ void RendererGLTest::multiline() {
 
          [g] [h] [i]   */
     CORRADE_COMPARE_AS(positions, (std::vector<Vector2>{
-        Vector2{-3.5f,  5.0f}, Vector2{-3.5f,  4.0f}, /* a */
-        Vector2{-2.5f,  5.0f}, Vector2{-2.5f,  4.0f},
+        {-3.5f,  5.0f}, {-3.5f,  4.0f}, /* a */
+        {-2.5f,  5.0f}, {-2.5f,  4.0f},
 
-        Vector2{-1.5f,  5.0f}, Vector2{-1.5f,  4.0f}, /* b */
-        Vector2{-0.5f,  5.0f}, Vector2{-0.5f,  4.0f},
+        {-1.5f,  5.0f}, {-1.5f,  4.0f}, /* b */
+        {-0.5f,  5.0f}, {-0.5f,  4.0f},
 
-        Vector2{ 0.5f,  5.0f}, Vector2{ 0.5f,  4.0f}, /* c */
-        Vector2{ 1.5f,  5.0f}, Vector2{ 1.5f,  4.0f},
+        { 0.5f,  5.0f}, { 0.5f,  4.0f}, /* c */
+        { 1.5f,  5.0f}, { 1.5f,  4.0f},
 
-        Vector2{ 2.5f,  5.0f}, Vector2{ 2.5f,  4.0f}, /* d */
-        Vector2{ 3.5f,  5.0f}, Vector2{ 3.5f,  4.0f},
+        { 2.5f,  5.0f}, { 2.5f,  4.0f}, /* d */
+        { 3.5f,  5.0f}, { 3.5f,  4.0f},
 
-        Vector2{-1.5f,  2.0f}, Vector2{-1.5f,  1.0f}, /* e */
-        Vector2{-0.5f,  2.0f}, Vector2{-0.5f,  1.0f},
+        {-1.5f,  2.0f}, {-1.5f,  1.0f}, /* e */
+        {-0.5f,  2.0f}, {-0.5f,  1.0f},
 
-        Vector2{ 0.5f,  2.0f}, Vector2{ 0.5f,  1.0f}, /* f */
-        Vector2{ 1.5f,  2.0f}, Vector2{ 1.5f,  1.0f},
+        { 0.5f,  2.0f}, { 0.5f,  1.0f}, /* f */
+        { 1.5f,  2.0f}, { 1.5f,  1.0f},
 
-        Vector2{-2.5f, -4.0f}, Vector2{-2.5f, -5.0f}, /* g */
-        Vector2{-1.5f, -4.0f}, Vector2{-1.5f, -5.0f},
+        /* Two linebreaks here */
 
-        Vector2{-0.5f, -4.0f}, Vector2{-0.5f, -5.0f}, /* h */
-        Vector2{ 0.5f, -4.0f}, Vector2{ 0.5f, -5.0f},
+        {-2.5f, -4.0f}, {-2.5f, -5.0f}, /* g */
+        {-1.5f, -4.0f}, {-1.5f, -5.0f},
 
-        Vector2{ 1.5f, -4.0f}, Vector2{ 1.5f, -5.0f}, /* i */
-        Vector2{ 2.5f, -4.0f}, Vector2{ 2.5f, -5.0f},
+        {-0.5f, -4.0f}, {-0.5f, -5.0f}, /* h */
+        { 0.5f, -4.0f}, { 0.5f, -5.0f},
+
+        { 1.5f, -4.0f}, { 1.5f, -5.0f}, /* i */
+        { 2.5f, -4.0f}, { 2.5f, -5.0f},
     }), TestSuite::Compare::Container);
 
     /* Indices
