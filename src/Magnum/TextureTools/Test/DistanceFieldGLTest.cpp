@@ -63,9 +63,13 @@ namespace Magnum { namespace TextureTools { namespace Test { namespace {
 struct DistanceFieldGLTest: GL::OpenGLTester {
     explicit DistanceFieldGLTest();
 
+    void construct();
+    void constructCopy();
+    void constructMove();
+
     /* This tests the GL::Texture overload, which itself calls into the
        GL::Framebuffer overload so both are covered */
-    void test();
+    void run();
     #ifndef MAGNUM_TARGET_WEBGL
     void benchmark();
     #endif
@@ -79,7 +83,7 @@ const struct {
     const char* name;
     Vector2i size;
     Vector2i offset;
-} TestData[]{
+} RunData[]{
     {"", {64, 64}, {}},
     {"with offset", {128, 96}, {64, 32}},
 };
@@ -89,8 +93,12 @@ using namespace Containers::Literals; /* for SwiftShader detection */
 #endif
 
 DistanceFieldGLTest::DistanceFieldGLTest() {
-    addInstancedTests({&DistanceFieldGLTest::test},
-        Containers::arraySize(TestData));
+    addTests({&DistanceFieldGLTest::construct,
+              &DistanceFieldGLTest::constructCopy,
+              &DistanceFieldGLTest::constructMove});
+
+    addInstancedTests({&DistanceFieldGLTest::run},
+        Containers::arraySize(RunData));
 
     #ifndef MAGNUM_TARGET_WEBGL
     addBenchmarks({&DistanceFieldGLTest::benchmark}, 5, BenchmarkType::GpuTime);
@@ -120,8 +128,32 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
     }
 }
 
-void DistanceFieldGLTest::test() {
-    auto&& data = TestData[testCaseInstanceId()];
+void DistanceFieldGLTest::construct() {
+    DistanceField distanceField{32};
+    CORRADE_COMPARE(distanceField.radius(), 32);
+}
+
+void DistanceFieldGLTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<DistanceField>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DistanceField>{});
+}
+
+void DistanceFieldGLTest::constructMove() {
+    DistanceField a{16};
+
+    DistanceField b = Utility::move(a);
+    CORRADE_COMPARE(b.radius(), 16);
+
+    DistanceField c{8};
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.radius(), 16);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<DistanceField>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<DistanceField>::value);
+}
+
+void DistanceFieldGLTest::run() {
+    auto&& data = RunData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<Trade::AbstractImporter> importer;

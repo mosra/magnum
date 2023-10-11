@@ -104,7 +104,25 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceField {
          */
         explicit DistanceField(UnsignedInt radius);
 
+        /** @brief Copying is not allowed */
+        DistanceField(const DistanceField&) = delete;
+
+        /**
+         * @brief Move constructor
+         * @m_since_latest
+         *
+         * Performs a destructive move, i.e. the original object isn't usable
+         * afterwards anymore.
+         */
+        DistanceField(DistanceField&&) noexcept;
+
         ~DistanceField();
+
+        /** @brief Copying is not allowed */
+        DistanceField& operator=(const DistanceField&) = delete;
+
+        /** @brief Move constructor */
+        DistanceField& operator=(DistanceField&&) noexcept;
 
         /** @brief Max lookup radius */
         UnsignedInt radius() const;
