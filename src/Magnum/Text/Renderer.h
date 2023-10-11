@@ -70,7 +70,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment = Alignment::LineLeft);
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, Alignment alignment = Alignment::LineLeft);
 
         /**
          * @brief Capacity for rendered glyphs
@@ -129,7 +129,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
     #else
     private:
     #endif
-        explicit MAGNUM_TEXT_LOCAL AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment);
+        explicit MAGNUM_TEXT_LOCAL AbstractRenderer(AbstractFont& font, const AbstractGlyphCache& cache, Float size, Alignment alignment);
 
         ~AbstractRenderer();
 
@@ -141,7 +141,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
 
     private:
         AbstractFont& font;
-        const GlyphCache& cache;
+        const AbstractGlyphCache& cache;
         Float _fontSize;
         Alignment _alignment;
         UnsignedInt _capacity;
@@ -190,8 +190,8 @@ mesh:
 
 @snippet MagnumText-gl.cpp Renderer-usage1
 
-See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment)
-and @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, GL::Buffer&, GL::Buffer&, GL::BufferUsage, Alignment)
+See @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, Alignment)
+and @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, GL::Buffer&, GL::Buffer&, GL::BufferUsage, Alignment)
 for more information.
 
 While this method is sufficient for one-shot rendering of static texts, for
@@ -295,7 +295,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @ref Shaders::DistanceFieldVectorGL and rectangle spanning the
          * rendered text.
          */
-        static std::tuple<GL::Mesh, Range2D> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment = Alignment::LineLeft);
+        static std::tuple<GL::Mesh, Range2D> render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment = Alignment::LineLeft);
 
         /**
          * @brief Constructor
@@ -304,8 +304,8 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param size          Font size
          * @param alignment     Text alignment
          */
-        explicit Renderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
-        Renderer(AbstractFont&, GlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
+        explicit Renderer(AbstractFont& font, const AbstractGlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
+        Renderer(AbstractFont&, AbstractGlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         using AbstractRenderer::render;

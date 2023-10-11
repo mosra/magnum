@@ -36,7 +36,7 @@
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Text/AbstractFont.h"
-#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/AbstractGlyphCache.h"
 
 namespace Magnum { namespace Text {
 
@@ -66,7 +66,7 @@ struct Vertex {
     Vector2 position, textureCoordinates;
 };
 
-std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, const Float size, const std::string& text, const Alignment alignment) {
+std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& font, const AbstractGlyphCache& cache, const Float size, const std::string& text, const Alignment alignment) {
     /* Output data, reserve memory as when the text would be ASCII-only. In
        reality the actual vertex count will be smaller, but allocating more at
        once is better than reallocating many times later. */
@@ -201,7 +201,7 @@ std::pair<Containers::Array<char>, MeshIndexType> renderIndicesInternal(const Un
     return {Utility::move(indices), indexType};
 }
 
-std::tuple<GL::Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
+std::tuple<GL::Mesh, Range2D> renderInternal(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
     /* Render vertices and upload them */
     std::vector<Vertex> vertices;
     Range2D rectangle;
@@ -229,7 +229,7 @@ std::tuple<GL::Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCach
 
 }
 
-std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> AbstractRenderer::render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
     /* Render vertices */
     std::vector<Vertex> vertices;
     Range2D rectangle;
@@ -252,7 +252,7 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(Utility::move(positions), Utility::move(textureCoordinates), Utility::move(indices), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<GL::Mesh, Range2D> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
+template<UnsignedInt dimensions> std::tuple<GL::Mesh, Range2D> Renderer<dimensions>::render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
     /* Finalize mesh configuration and return the result */
     auto r = renderInternal(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
     GL::Mesh& mesh = std::get<0>(r);
@@ -299,7 +299,7 @@ void AbstractRenderer::bufferUnmapImplementationDefault(GL::Buffer& buffer)
     #endif
 }
 
-AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer{GL::Buffer::TargetHint::Array}, _indexBuffer{GL::Buffer::TargetHint::ElementArray}, font(font), cache(cache), _fontSize{size}, _alignment(alignment), _capacity(0) {
+AbstractRenderer::AbstractRenderer(AbstractFont& font, const AbstractGlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer{GL::Buffer::TargetHint::Array}, _indexBuffer{GL::Buffer::TargetHint::ElementArray}, font(font), cache(cache), _fontSize{size}, _alignment(alignment), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -319,7 +319,7 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, 
 
 AbstractRenderer::~AbstractRenderer() = default;
 
-template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): AbstractRenderer(font, cache, size, alignment) {
+template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& font, const AbstractGlyphCache& cache, const Float size, const Alignment alignment): AbstractRenderer(font, cache, size, alignment) {
     /* Finalize mesh configuration */
     _mesh.addVertexBuffer(_vertexBuffer, 0,
         typename Shaders::GenericGL<dimensions>::Position(
