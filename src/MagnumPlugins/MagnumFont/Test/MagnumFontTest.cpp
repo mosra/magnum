@@ -37,7 +37,7 @@
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/Math/Range.h"
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Text/AbstractShaper.h"
@@ -52,9 +52,8 @@ struct MagnumFontTest: TestSuite::Tester {
 
     void nonexistent();
     void properties();
-    void layout();
-    void layoutNoGlyphsInCache();
 
+    void shape();
     void shaperReuse();
 
     void fileCallbackImage();
@@ -68,21 +67,23 @@ struct MagnumFontTest: TestSuite::Tester {
 const struct {
     const char* name;
     const char* string;
-} LayoutData[]{
-    {"", "Wave"},
-    {"UTF-8", "Wavě"},
+    UnsignedInt eGlyphId;
+    UnsignedInt begin, end;
+} ShapeData[]{
+    {"", "Wave", 1, 0, ~UnsignedInt{}},
+    {"substring", "haWavefefe", 1, 2, 6},
+    {"UTF-8", "Wavě", 3, 0, ~UnsignedInt{}},
+    {"UTF-8 substring", "haWavěfefe", 3, 2, 7},
 };
 
 MagnumFontTest::MagnumFontTest() {
     addTests({&MagnumFontTest::nonexistent,
               &MagnumFontTest::properties});
 
-    addInstancedTests({&MagnumFontTest::layout},
-        Containers::arraySize(LayoutData));
+    addInstancedTests({&MagnumFontTest::shape},
+        Containers::arraySize(ShapeData));
 
-    addTests({&MagnumFontTest::layoutNoGlyphsInCache,
-
-              &MagnumFontTest::shaperReuse,
+    addTests({&MagnumFontTest::shaperReuse,
 
               &MagnumFontTest::fileCallbackImage,
               &MagnumFontTest::fileCallbackImageNotFound});
@@ -135,114 +136,37 @@ void MagnumFontTest::properties() {
     CORRADE_COMPARE(font->glyphAdvance(font->glyphId(U'W')), (Vector2{23.0f, 0.0f}));
 }
 
-void MagnumFontTest::layout() {
-    auto&& data = LayoutData[testCaseInstanceId()];
+void MagnumFontTest::shape() {
+    auto&& data = ShapeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
-
     CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
-    /* Fill the cache with some fake glyphs. Usually fillGlyphCache() would
-       happen here, but that requires creating a GL GlyphCache, which would
-       make it impossible to test w/o a GL context */
-    /** @todo clean up this mess, it's also getting increasingly out of sync
-        with the actual glyph cache data in the font */
-    struct: AbstractGlyphCache {
-        using AbstractGlyphCache::AbstractGlyphCache;
+    Containers::Pointer<AbstractShaper> shaper = font->createShaper();
 
-        GlyphCacheFeatures doFeatures() const override { return {}; }
-        void doSetImage(const Vector2i&, const ImageView2D&) override {}
-    } cache{PixelFormat::R8Unorm, Vector2i{256}};
+    CORRADE_COMPARE(shaper->shape(data.string, data.begin, data.end), 4);
 
-    UnsignedInt fontId = cache.addFont(20, font.get());
-
-    cache.addGlyph(fontId, font->glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
-    cache.addGlyph(fontId, font->glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
-    /* ě has deliberately the same glyph data as e */
-    cache.addGlyph(fontId, font->glyphId(
-        /* MSVC (but not clang-cl) doesn't support UTF-8 in char32_t literals
-           but it does it regular strings. Still a problem in MSVC 2022, what a
-           trash fire, can't you just give up on those codepage insanities
-           already, ffs?! */
-        #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG)
-        U'\u011B'
-        #else
-        U'ě'
-        #endif
-    ), {25, 12}, {{16, 4}, {64, 32}});
-
-    auto layouter = font->layout(cache, 0.5f, data.string);
-    CORRADE_VERIFY(layouter);
-    CORRADE_COMPARE(layouter->glyphCount(), 4);
-
-    Range2D rectangle;
-    Vector2 cursorPosition;
-
-    /* 'W' */
-    CORRADE_COMPARE(layouter->renderGlyph(0, cursorPosition = {}, rectangle),
-        Containers::pair(Range2D{{0.78125f, 1.0625f}, {1.28125f, 4.8125f}},
-                         Range2D{{0, 0.03125f}, {0.0625f, 0.5f}}));
-    CORRADE_COMPARE(cursorPosition, Vector2(0.71875f, 0.0f));
-
-    /* 'a' (not found) */
-    CORRADE_COMPARE(layouter->renderGlyph(1, cursorPosition = {}, rectangle),
-        Containers::pair(Range2D{}, Range2D{}));
-    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
-
-    /* 'v' (not found) */
-    CORRADE_COMPARE(layouter->renderGlyph(2, cursorPosition = {}, rectangle),
-        Containers::pair(Range2D{}, Range2D{}));
-    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
-
-    /* 'e' or 'ě' */
-    CORRADE_COMPARE(layouter->renderGlyph(3, cursorPosition = {}, rectangle),
-        Containers::pair(Range2D{{0.78125f, 0.375f}, {2.28125f, 1.25f}},
-                         Range2D{{0.0625f, 0.015625f}, {0.25f, 0.125f}}));
-    CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
-}
-
-void MagnumFontTest::layoutNoGlyphsInCache() {
-    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
-
-    CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
-
-    struct: AbstractGlyphCache {
-        using AbstractGlyphCache::AbstractGlyphCache;
-
-        GlyphCacheFeatures doFeatures() const override { return {}; }
-        void doSetImage(const Vector2i&, const ImageView2D&) override {}
-    } cache{PixelFormat::R8Unorm, Vector2i{256}};
-
-    /* Add a font that is associated with this one but createGlyphCache() was
-       actually not called for it */
-    cache.addFont(15, font.get());
-
-    auto layouter = font->layout(cache, 0.5f, "Wave");
-    CORRADE_VERIFY(layouter);
-    CORRADE_COMPARE(layouter->glyphCount(), 4);
-
-    Range2D rectangle;
-    Vector2 cursorPosition;
-
-    /* Compared to layout(), only the cursor position gets updated, everything
-       else falls back to the invalid glyph */
-
-    CORRADE_COMPARE(layouter->renderGlyph(0, cursorPosition = {}, rectangle),
-        Containers::pair(Range2D{}, Range2D{}));
-    CORRADE_COMPARE(cursorPosition, Vector2(0.71875f, 0.0f));
-
-    CORRADE_COMPARE(layouter->renderGlyph(1, cursorPosition = {}, rectangle),
-        Containers::pair(Range2D{}, Range2D{}));
-    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
-
-    CORRADE_COMPARE(layouter->renderGlyph(2, cursorPosition = {}, rectangle),
-        Containers::pair(Range2D{}, Range2D{}));
-    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
-
-    CORRADE_COMPARE(layouter->renderGlyph(3, cursorPosition = {}, rectangle),
-        Containers::pair(Range2D{}, Range2D{}));
-    CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
+    UnsignedInt ids[4];
+    Vector2 offsets[4];
+    Vector2 advances[4];
+    shaper->glyphsInto(ids, offsets, advances);
+    CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
+        2u,             /* 'W' */
+        0u,             /* 'a' (not found) */
+        0u,             /* 'v' (not found) */
+        data.eGlyphId   /* 'e' or 'ě' */
+    }), TestSuite::Compare::Container);
+    /* There are no glyph-specific offsets here */
+    CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector2>({
+        {}, {}, {}, {}
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(advances), Containers::arrayView<Vector2>({
+        {23.0f, 0.0f},
+        {8.0f, 0.0f},
+        {8.0f, 0.0f},
+        {12.f, 0.0f}
+    }), TestSuite::Compare::Container);
 }
 
 void MagnumFontTest::shaperReuse() {
