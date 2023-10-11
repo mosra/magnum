@@ -150,11 +150,9 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
         for(auto it = vertices.begin()+lastLineLastVertex; it != vertices.end(); ++it)
             it->position.x() += alignmentOffsetX;
 
-        /* Add final line bounds to total bounds, similarly to AbstractFont::renderGlyph() */
-        if(!rectangle.size().isZero()) {
-            rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), lineRectangle.bottomLeft());
-            rectangle.topRight() = Math::max(rectangle.topRight(), lineRectangle.topRight());
-        } else rectangle = lineRectangle;
+        /* Extend the rectangle with final line bounds, similarly to
+           AbstractFont::renderGlyph() */
+        rectangle = Math::join(rectangle, lineRectangle);
 
     /* Move to next line */
     } while(prevPos = pos+1,

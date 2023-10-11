@@ -340,11 +340,9 @@ Containers::Pair<Range2D, Range2D> AbstractLayouter::renderGlyph(const UnsignedI
     /* Move the quad to cursor */
     const Range2D quadPosition = quadPositionTextureCoordinatesAdvance.first().translated(cursorPosition);
 
-    /* Extend rectangle with current quad bounds. If zero size, replace it. */
-    if(!rectangle.size().isZero()) {
-        rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), quadPosition.bottomLeft());
-        rectangle.topRight() = Math::max(rectangle.topRight(), quadPosition.topRight());
-    } else rectangle = quadPosition;
+    /* Extend the rectangle with current quad bounds. If the original is zero
+       size, it gets replaced. */
+    rectangle = Math::join(rectangle, quadPosition);
 
     /* Advance cursor position to next character */
     cursorPosition += quadPositionTextureCoordinatesAdvance.third();
