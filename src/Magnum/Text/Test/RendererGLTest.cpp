@@ -23,12 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo drop once Debug is stream-free */
 
+#include "Magnum/PixelFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
@@ -48,6 +51,9 @@ struct RendererGLTest: GL::OpenGLTester {
     void mutableText();
 
     void multiline();
+
+    void arrayGlyphCache();
+    void fontNotFoundInCache();
 };
 
 const struct {
@@ -85,7 +91,10 @@ RendererGLTest::RendererGLTest() {
               &RendererGLTest::renderMeshIndexType,
               &RendererGLTest::mutableText,
 
-              &RendererGLTest::multiline});
+              &RendererGLTest::multiline,
+
+              &RendererGLTest::arrayGlyphCache,
+              &RendererGLTest::fontNotFoundInCache});
 }
 
 struct TestShaper: AbstractShaper {
@@ -541,6 +550,39 @@ void RendererGLTest::multiline() {
         28, 29, 30, 29, 31, 30,
         32, 33, 34, 33, 35, 34
     }), TestSuite::Compare::Container);
+}
+
+void RendererGLTest::arrayGlyphCache() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    TestFont font;
+    font.openFile({}, 0.5f);
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } cache{PixelFormat::R8Unorm, {100, 100, 3}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    AbstractRenderer::render(font, cache, 0.25f, "abc");
+    CORRADE_COMPARE(out.str(), "Text::Renderer: array glyph caches are not supported\n");
+}
+
+void RendererGLTest::fontNotFoundInCache() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    TestFont font;
+    font.openFile({}, 0.5f);
+    GlyphCache cache{{100, 100}};
+
+    cache.addFont(34);
+    cache.addFont(25);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    AbstractRenderer::render(font, cache, 0.25f, "abc");
+    CORRADE_COMPARE(out.str(), "Text::Renderer: font not found among 2 fonts in passed glyph cache\n");
 }
 
 }}}}

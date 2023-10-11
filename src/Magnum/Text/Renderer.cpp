@@ -27,7 +27,9 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h> /** @todo remove once Renderer is STL-free */
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Renderer is STL-free */
+#include <Corrade/Containers/Triple.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/GL/Context.h"
@@ -37,6 +39,7 @@
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
+#include "Magnum/Text/AbstractShaper.h"
 
 namespace Magnum { namespace Text {
 
@@ -67,17 +70,31 @@ struct Vertex {
 };
 
 std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& font, const AbstractGlyphCache& cache, const Float size, const std::string& text, const Alignment alignment) {
+    /* This was originally added as a runtime error into plugin implementations
+       during the transition period for the new AbstractGlyphCache API, now
+       it's an assert in the transition period for the Renderer API. Shouldn't
+       get triggered by existing code that uses 2D caches. */
+    CORRADE_ASSERT(cache.size().z() == 1,
+        "Text::Renderer: array glyph caches are not supported", {});
+
+    /* Find this font in the cache. This is an assert again, as not having a
+       font in the cache is a user error. */
+    Containers::Optional<UnsignedInt> fontId = cache.findFont(&font);
+    CORRADE_ASSERT(fontId,
+        "Text::Renderer: font not found among" << cache.fontCount() << "fonts in passed glyph cache", {});
+
     /* Output data, reserve memory as when the text would be ASCII-only. In
        reality the actual vertex count will be smaller, but allocating more at
        once is better than reallocating many times later. */
     std::vector<Vertex> vertices;
     vertices.reserve(text.size()*4);
 
-    /* Total rendered bounds, initial line position, line increment, last+1
-       vertex on previous line */
+    /* Scaling factor, line advance, total rendered bounds, initial line
+       position, last+1 vertex on previous line */
+    const Float scale = size/font.size();
+    const Vector2 lineAdvance = Vector2::yAxis(font.lineHeight()*scale);
     Range2D rectangle;
     Vector2 linePosition;
-    const Vector2 lineAdvance = Vector2::yAxis(font.lineHeight()*size/font.size());
     std::size_t lastLineLastVertex = 0;
 
     /* Temp buffer so we don't allocate for each new line */
@@ -87,6 +104,16 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
      */
     std::string line;
     line.reserve(text.size());
+    struct Glyph {
+        UnsignedInt id;
+        Vector2 offset;
+        Vector2 advance;
+    };
+    Containers::Array<Glyph> glyphs{NoInit, text.size()};
+
+    /* Create a shaper */
+    /** @todo even with reusing a shaper this is all horrific, rework!! */
+    Containers::Pointer<AbstractShaper> shaper = font.createShaper();
 
     /* Render each line separately and align it horizontally */
     std::size_t pos, prevPos = 0;
@@ -97,39 +124,62 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
         /* Copy the line into the temp buffer */
         line.assign(text, prevPos, pos-prevPos);
 
-        /* Layout the line */
-        Containers::Pointer<AbstractLayouter> layouter = font.layout(cache, size, line);
+        /* Shape the line, get the results */
+        shaper->shape(line);
+        const Containers::StridedArrayView1D<Glyph> lineGlyphs = glyphs.prefix(shaper->glyphCount());
+        shaper->glyphsInto(lineGlyphs.slice(&Glyph::id),
+                           lineGlyphs.slice(&Glyph::offset),
+                           lineGlyphs.slice(&Glyph::advance));
 
         /* Verify that we don't reallocate anything. The only problem might
            arise when the layouter decides to compose one character from more
-           than one glyph (i.e. accents). Will remove the assert when this
+           than one glyph (i.e. accents). Will remove the asserts when this
            issue arises. */
-        CORRADE_INTERNAL_ASSERT(vertices.size() + layouter->glyphCount()*4 <= vertices.capacity());
+        CORRADE_INTERNAL_ASSERT(vertices.size() + shaper->glyphCount()*4 <= vertices.capacity());
 
         /* Bounds of rendered line */
         Range2D lineRectangle;
 
-        /* Render all glyphs */
+        /* Create quads for all glyphs */
         Vector2 cursorPosition(linePosition);
-        for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-            const Containers::Pair<Range2D, Range2D> quadPositionTextureCoordinates = layouter->renderGlyph(i, cursorPosition, lineRectangle);
+        for(UnsignedInt i = 0; i != lineGlyphs.size(); ++i) {
+            /* Offset of the glyph rectangle relative to the cursor, layer,
+               texture coordinates. We checked that the glyph cache is 2D above
+               so the layer can be ignored. */
+            const Containers::Triple<Vector2i, Int, Range2Di> cacheGlyph = cache.glyph(*fontId, glyphs[i].id);
+            CORRADE_INTERNAL_ASSERT(cacheGlyph.second() == 0);
+
+            /* Quad rectangle, created from cache and shaper offset and the
+               texture rectangle, scaled to requested text size and translated
+               to current cursor */
+            const Range2D quadPosition = Range2D::fromSize(
+                    Vector2{cacheGlyph.first()} + glyphs[i].offset,
+                    Vector2{cacheGlyph.third().size()})
+                .scaled(Vector2{scale})
+                .translated(cursorPosition);
+
+            /* Normalized texture coordinates */
+            const Range2D quadTextureCoordinates = Range2D{cacheGlyph.third()}
+                .scaled(1.0f/Vector2{cache.size().xy()});
 
             /* 0---2
                |   |
                |   |
                |   |
                1---3 */
-
             vertices.insert(vertices.end(), {
-                {quadPositionTextureCoordinates.first().topLeft(),
-                    quadPositionTextureCoordinates.second().topLeft()},
-                {quadPositionTextureCoordinates.first().bottomLeft(),
-                    quadPositionTextureCoordinates.second().bottomLeft()},
-                {quadPositionTextureCoordinates.first().topRight(),
-                    quadPositionTextureCoordinates.second().topRight()},
-                {quadPositionTextureCoordinates.first().bottomRight(),
-                    quadPositionTextureCoordinates.second().bottomRight()}
+                {quadPosition.topLeft(), quadTextureCoordinates.topLeft()},
+                {quadPosition.bottomLeft(), quadTextureCoordinates.bottomLeft()},
+                {quadPosition.topRight(), quadTextureCoordinates.topRight()},
+                {quadPosition.bottomRight(), quadTextureCoordinates.bottomRight()}
             });
+
+            /* Extend the line rectangle with current quad bounds. If the
+               original is zero size, it gets replaced. */
+            lineRectangle = Math::join(lineRectangle, quadPosition);
+
+            /* Advance cursor position to next character, again scaled */
+            cursorPosition += glyphs[i].advance*scale;
         }
 
         /** @todo What about top-down text? */
@@ -150,8 +200,8 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
         for(auto it = vertices.begin()+lastLineLastVertex; it != vertices.end(); ++it)
             it->position.x() += alignmentOffsetX;
 
-        /* Extend the rectangle with final line bounds, similarly to
-           AbstractFont::renderGlyph() */
+        /* Extend the rectangle with final line bounds, similarly to what was
+           done for each glyph above */
         rectangle = Math::join(rectangle, lineRectangle);
 
     /* Move to next line */

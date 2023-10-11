@@ -113,5 +113,8 @@ if(MAGNUM_TARGET_GL AND MAGNUM_BUILD_GL_TESTS)
             MagnumText
             MagnumOpenGLTester
             MagnumDebugTools)
-    corrade_add_test(TextRendererGLTest RendererGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
+    corrade_add_test(TextRendererGLTest RendererGLTest.cpp
+        LIBRARIES
+            MagnumTextTestLib
+            MagnumOpenGLTester)
 endif()

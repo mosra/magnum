@@ -67,8 +67,9 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * @param text          Text to render
          * @param alignment     Text alignment
          *
-         * Returns tuple with vertex positions, texture coordinates, indices
-         * and rectangle spanning the rendered text.
+         * Returns a tuple with vertex positions, texture coordinates, indices
+         * and rectangle spanning the rendered text. Expects that @p font is
+         * present in @p cache and that @p cache isn't an array.
          */
         static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, Alignment alignment = Alignment::LineLeft);
 
@@ -291,9 +292,10 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param usage         Usage of vertex and index buffer
          * @param alignment     Text alignment
          *
-         * Returns mesh prepared for use with @ref Shaders::VectorGL or
-         * @ref Shaders::DistanceFieldVectorGL and rectangle spanning the
-         * rendered text.
+         * Returns a mesh prepared for use with @ref Shaders::VectorGL or
+         * @ref Shaders::DistanceFieldVectorGL and a rectangle spanning the
+         * rendered text. Expects that @p font is present in @p cache and that
+         * @p cache isn't an array.
          */
         static std::tuple<GL::Mesh, Range2D> render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment = Alignment::LineLeft);
 

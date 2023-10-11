@@ -58,10 +58,10 @@ set(MagnumText_PRIVATE_HEADERS
 
 if(MAGNUM_TARGET_GL)
     list(APPEND MagnumText_SRCS
-        GlyphCache.cpp
-        Renderer.cpp)
+        GlyphCache.cpp)
     list(APPEND MagnumText_GracefulAssert_SRCS
-        DistanceFieldGlyphCache.cpp)
+        DistanceFieldGlyphCache.cpp
+        Renderer.cpp)
     list(APPEND MagnumText_HEADERS
         DistanceFieldGlyphCache.h
         GlyphCache.h
