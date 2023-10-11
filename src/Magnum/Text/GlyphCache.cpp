@@ -63,8 +63,6 @@ GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const
     #endif
 }
 
-GlyphCache::~GlyphCache() = default;
-
 GlyphCacheFeatures GlyphCache::doFeatures() const { return {}; }
 
 void GlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {

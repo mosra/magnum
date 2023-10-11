@@ -109,8 +109,6 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
          */
         explicit GlyphCache(const Vector2i& size, const Vector2i& padding = {});
 
-        ~GlyphCache();
-
         /** @brief Cache texture */
         GL::Texture2D& texture() { return _texture; }
 

@@ -54,7 +54,10 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
     explicit DistanceFieldGlyphCacheGLTest();
 
-    void initialize();
+    void construct();
+
+    void constructCopy();
+    void constructMove();
 
     void setImage();
 
@@ -78,7 +81,10 @@ const struct {
 };
 
 DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
-    addTests({&DistanceFieldGlyphCacheGLTest::initialize});
+    addTests({&DistanceFieldGlyphCacheGLTest::construct,
+
+              &DistanceFieldGlyphCacheGLTest::constructCopy,
+              &DistanceFieldGlyphCacheGLTest::constructMove});
 
     addInstancedTests({&DistanceFieldGlyphCacheGLTest::setImage},
         Containers::arraySize(SetImageData));
@@ -96,7 +102,7 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
     #endif
 }
 
-void DistanceFieldGlyphCacheGLTest::initialize() {
+void DistanceFieldGlyphCacheGLTest::construct() {
     DistanceFieldGlyphCache cache{{1024, 2048}, {128, 256}, 16};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -105,6 +111,25 @@ void DistanceFieldGlyphCacheGLTest::initialize() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));
     #endif
+}
+
+void DistanceFieldGlyphCacheGLTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldGlyphCache>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldGlyphCache>{});
+}
+
+void DistanceFieldGlyphCacheGLTest::constructMove() {
+    DistanceFieldGlyphCache a{{1024, 512}, {128, 64}, 3};
+
+    DistanceFieldGlyphCache b = Utility::move(a);
+    CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 1}));
+
+    DistanceFieldGlyphCache c{{2, 3}, {1, 1}, 1};
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 1}));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<DistanceFieldGlyphCache>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<DistanceFieldGlyphCache>::value);
 }
 
 void DistanceFieldGlyphCacheGLTest::setImage() {

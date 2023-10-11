@@ -45,22 +45,28 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 struct GlyphCacheGLTest: GL::OpenGLTester {
     explicit GlyphCacheGLTest();
 
-    void initialize();
-    void initializeCustomFormat();
+    void construct();
+    void constructCustomFormat();
+
+    void constructCopy();
+    void constructMove();
 
     void setImage();
     void setImageCustomFormat();
 };
 
 GlyphCacheGLTest::GlyphCacheGLTest() {
-    addTests({&GlyphCacheGLTest::initialize,
-              &GlyphCacheGLTest::initializeCustomFormat,
+    addTests({&GlyphCacheGLTest::construct,
+              &GlyphCacheGLTest::constructCustomFormat,
+
+              &GlyphCacheGLTest::constructCopy,
+              &GlyphCacheGLTest::constructMove,
 
               &GlyphCacheGLTest::setImage,
               &GlyphCacheGLTest::setImageCustomFormat});
 }
 
-void GlyphCacheGLTest::initialize() {
+void GlyphCacheGLTest::construct() {
     GlyphCache cache{{1024, 2048}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -70,7 +76,7 @@ void GlyphCacheGLTest::initialize() {
     #endif
 }
 
-void GlyphCacheGLTest::initializeCustomFormat() {
+void GlyphCacheGLTest::constructCustomFormat() {
     GlyphCache cache{
         #ifndef MAGNUM_TARGET_GLES2
         GL::TextureFormat::RGBA8,
@@ -84,6 +90,25 @@ void GlyphCacheGLTest::initializeCustomFormat() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{256, 512}));
     #endif
+}
+
+void GlyphCacheGLTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<GlyphCache>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<GlyphCache>{});
+}
+
+void GlyphCacheGLTest::constructMove() {
+    GlyphCache a{{1024, 512}};
+
+    GlyphCache b = Utility::move(a);
+    CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 1}));
+
+    GlyphCache c{{2, 3}};
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 1}));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<GlyphCache>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<GlyphCache>::value);
 }
 
 const UnsignedByte InputData[]{
