@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -32,6 +33,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/AbstractShaper.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Text/Renderer.h"
 
@@ -86,33 +88,29 @@ RendererGLTest::RendererGLTest() {
               &RendererGLTest::multiline});
 }
 
-struct TestLayouter: AbstractLayouter {
-    explicit TestLayouter(const AbstractGlyphCache& cache, UnsignedInt fontId, Float scale, UnsignedInt glyphCount): AbstractLayouter{glyphCount}, _cache(cache), _fontId{fontId}, _scale{scale} {}
+struct TestShaper: AbstractShaper {
+    using AbstractShaper::AbstractShaper;
 
-    Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override {
-        /* It just rotates between the three glyphs */
-        UnsignedInt glyphId;
-        if(i % 3 == 0)
-            glyphId = 3;
-        else if(i % 3 == 1)
-            glyphId = 7;
-        else
-            glyphId = 9;
-
-        Containers::Triple<Vector2i, Int, Range2Di> glyph = _cache.glyph(_fontId, glyphId);
-        CORRADE_VERIFY(glyph.second() == 0);
-
-        /* Offset Y and advance X is getting larger with every glyph */
-        return {
-            Range2D::fromSize(Vector2{glyph.first() + Vector2i::yAxis(i + 1)}*_scale, Vector2{glyph.third().size()}*_scale),
-            Range2D{glyph.third()}.scaled(1.0f/Vector2{_cache.size().xy()}),
-            Vector2{Float(i + 1), i % 2 ? -0.5f : +0.5f}*_scale
-        };
+    UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+        return text.size();
     }
 
-    const AbstractGlyphCache& _cache;
-    UnsignedInt _fontId;
-    Float _scale;
+    void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+        for(UnsignedInt i = 0; i != ids.size(); ++i) {
+            /* It just rotates between the three glyphs */
+            if(i % 3 == 0)
+                ids[i] = 3;
+            else if(i % 3 == 1)
+                ids[i] = 7;
+            else
+                ids[i] = 9;
+
+            /* Offset Y and advance X is getting larger with every glyph,
+               advance Y is flipping its sign with every glyph */
+            offsets[i] = Vector2::yAxis(i + 1);
+            advances[i] = {Float(i + 1), i % 2 ? -0.5f : +0.5f};
+        }
+    }
 };
 
 struct TestFont: AbstractFont {
@@ -130,10 +128,8 @@ struct TestFont: AbstractFont {
     Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-    Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView text) override {
-        /* The final rendered size should be a ratio of the font and layout
-           size */
-        return Containers::pointer<TestLayouter>(cache, *cache.findFont(this), size/this->size(), UnsignedInt(text.size()));
+    Containers::Pointer<AbstractShaper> doCreateShaper() override {
+        return Containers::pointer<TestShaper>(*this);
     }
 
     bool _opened = false;
@@ -430,29 +426,24 @@ void RendererGLTest::mutableText() {
 }
 
 void RendererGLTest::multiline() {
-    struct Layouter: AbstractLayouter {
-        explicit Layouter(const AbstractGlyphCache& cache, UnsignedInt fontId, Float scale, UnsignedInt glyphCount): AbstractLayouter{glyphCount}, _cache(cache), _fontId{fontId}, _scale{scale} {}
+    struct Shaper: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
 
-        Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
-            Containers::Triple<Vector2i, Int, Range2Di> glyph = _cache.glyph(_fontId, 0);
-            CORRADE_VERIFY(glyph.second() == 0);
-
-            return {
-                Range2D::fromSize(Vector2{glyph.first()}*_scale,
-                                    Vector2{glyph.third().size()}*_scale),
-                Range2D{glyph.third()}.scaled(1.0f/Vector2{_cache.size().xy()}),
-                Vector2::xAxis(4.0f)*_scale
-            };
+        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return text.size();
         }
 
-        const AbstractGlyphCache& _cache;
-        UnsignedInt _fontId;
-        Float _scale;
+        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            for(UnsignedInt i = 0; i != ids.size(); ++i) {
+                ids[i] = 0;
+                offsets[i] = {};
+                advances[i] = Vector2::xAxis(4.0f);
+            }
+        }
     };
 
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
-
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -467,10 +458,8 @@ void RendererGLTest::multiline() {
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView text) override {
-            /* The final rendered size should be a ratio of the font and layout
-               size */
-            return Containers::pointer<Layouter>(cache, *cache.findFont(this), size/this->size(), UnsignedInt(text.size()));
+        Containers::Pointer<AbstractShaper> doCreateShaper() override {
+            return Containers::pointer<Shaper>(*this);
         }
 
         bool _opened = false;

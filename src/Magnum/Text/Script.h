@@ -45,6 +45,7 @@ The values are [FourCC](https://en.wikipedia.org/wiki/FourCC) codes according
 to [ISO 15924](https://en.wikipedia.org/wiki/ISO_15924). Use
 @ref script(char, char, char, char) or @ref script(Containers::StringView) for
 creating values not listed in the enum.
+@see @ref AbstractShaper::setScript(), @ref AbstractShaper::script()
 */
 enum class Script: UnsignedInt {
     /* List taken from https://en.wikipedia.org/wiki/ISO_15924, ordered by

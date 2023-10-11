@@ -37,6 +37,8 @@
 #include "Magnum/Text/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* Used by deprecated AbstractLayouter */
+#include <Corrade/Containers/Array.h>
 /* For APIs that used to take or return a std::string */
 #include <Corrade/Containers/StringStl.h>
 /* renderGlyph() used to return a std::pair */
@@ -182,7 +184,7 @@ instance is destroyed.
 @section Text-AbstractFont-subclassing Subclassing
 
 The plugin needs to implement the @ref doFeatures(), @ref doClose(),
-@ref doLayout() functions, either @ref doCreateGlyphCache() or
+@ref doCreateShaper() functions, either @ref doCreateGlyphCache() or
 @ref doFillGlyphCache() and one or more of `doOpen*()` functions. See also
 @ref AbstractLayouter for more information.
 
@@ -513,17 +515,34 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         Containers::Pointer<AbstractGlyphCache> createGlyphCache();
 
         /**
+         * @brief Create an instance of this font shaper implementation
+         * @m_since_latest
+         *
+         * The returned class can be used to shape text using this font. See
+         * its documentation for more information. Note that the font has to
+         * stay in scope for as long as any @ref AbstractShaper instances
+         * originating from the font exist. Expects that a font is opened. The
+         * returned instance is never @cpp nullptr @ce.
+         */
+        Containers::Pointer<AbstractShaper> createShaper();
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
          * @brief Layout the text using font's own layouter
          * @param cache     Glyph cache
          * @param size      Size to layout the text in, in pooints
          * @param text      Text to layout
+         *
+         * @m_deprecated_since_latest Use @ref createShaper() and the
+         *      @ref AbstractShaper class instead.
          *
          * Note that the layouters support rendering of single-line text only.
          * See @ref Renderer class for more advanced text layouting. Expects
          * that a font is opened.
          * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
-        Containers::Pointer<AbstractLayouter> layout(const AbstractGlyphCache& cache, Float size, Containers::StringView text);
+        CORRADE_DEPRECATED("use createShaper() instead") Containers::Pointer<AbstractLayouter> layout(const AbstractGlyphCache& cache, Float size, Containers::StringView text);
+        #endif
 
     protected:
         /**
@@ -647,8 +666,14 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /** @brief Implementation for @ref createGlyphCache() */
         virtual Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache();
 
-        /** @brief Implementation for @ref layout() */
-        virtual Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView text) = 0;
+        /**
+         * @brief Implementation for @ref createShaper()
+         * @m_since_latest
+         *
+         * This function is only called if the font is opened. The
+         * implementation is not allowed to return @cpp nullptr @ce.
+         */
+        virtual Containers::Pointer<AbstractShaper> doCreateShaper() = 0;
 
         Containers::Optional<Containers::ArrayView<const char>>(*_fileCallback)(const std::string&, InputFileCallbackPolicy, void*){};
         void* _fileCallbackUserData{};
@@ -664,20 +689,14 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         UnsignedInt _glyphCount{};
 };
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Base for text layouters
 
-Returned by @ref AbstractFont::layout().
-
-@section Text-AbstractLayouter-subclassing Subclassing
-
-The @ref AbstractFont plugin creates a local @ref AbstractLayouter subclass and
-implements @ref doRenderGlyph(). You don't need to do most of the redundant
-sanity checks, these things are checked by the implementation:
-
--   The @ref doRenderGlyph() is called only if `i` is from valid range
+@m_deprecated_since_latest Use @ref AbstractShaper returned from
+    @ref AbstractFont::createShaper() instead.
 */
-class MAGNUM_TEXT_EXPORT AbstractLayouter {
+class MAGNUM_TEXT_EXPORT CORRADE_DEPRECATED("use AbstractShaper instead") AbstractLayouter {
     public:
         /** @brief Copying is not allowed */
         AbstractLayouter(const AbstractLayouter&) = delete;
@@ -694,7 +713,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
         AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
 
         /** @brief Count of glyphs in the laid out text */
-        UnsignedInt glyphCount() const { return _glyphCount; }
+        UnsignedInt glyphCount() const { return _glyphs.size(); }
 
         /**
          * @brief Render a glyph
@@ -709,25 +728,19 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
          */
         Containers::Pair<Range2D, Range2D> renderGlyph(UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle);
 
-    protected:
-        /**
-         * @brief Constructor
-         * @param glyphCount    Count of glyphs in laid out text
-         */
-        explicit AbstractLayouter(UnsignedInt glyphCount);
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    public:
+    #endif
+        /* Can't just friend AbstractFont as this is actually called from
+           Pointer internals */
+        explicit AbstractLayouter(Containers::Array<Containers::Triple<Range2D, Range2D, Vector2>>&& glyphs);
 
     private:
-        /**
-         * @brief Implementation for @ref renderGlyph()
-         * @param i                 Glyph index
-         *
-         * Returns quad position (relative to current cursor position), texture
-         * coordinates and advance to the next glyph.
-         */
-        virtual Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) = 0;
-
-        UnsignedInt _glyphCount;
+        Containers::Array<Containers::Triple<Range2D, Range2D, Vector2>> _glyphs;
 };
+#endif
 
 /**
 @brief Font plugin interface
@@ -747,7 +760,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Text.AbstractFont/0.3.3"
+"cz.mosra.magnum.Text.AbstractFont/0.3.4"
 /* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

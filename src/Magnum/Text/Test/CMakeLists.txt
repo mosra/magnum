@@ -74,7 +74,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     target_link_options(TextAbstractGlyphCacheTest PRIVATE "SHELL:-s ALLOW_MEMORY_GROWTH=1")
 endif()
 
-corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumTextTestLib)
+corrade_add_test(TextAbstractShaperTest AbstractShaperTest.cpp
+    LIBRARIES MagnumTextTestLib)
 
 corrade_add_test(TextFeatureTest FeatureTest.cpp LIBRARIES MagnumTextTestLib)
 

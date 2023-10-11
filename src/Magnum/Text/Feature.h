@@ -51,6 +51,7 @@ for creating values not listed in the enum.
 Currently, there's no corresponding feature list for [Apple Advanced Typography](https://en.wikipedia.org/wiki/Apple_Advanced_Typography).
 Mapping from OpenType features to AAT features is possible but nontrivial, and
 is the responsibility of a particular font plugin.
+@see @ref FeatureRange, @ref AbstractShaper::shape()
 */
 enum class Feature: UnsignedInt {
     /**

@@ -39,6 +39,7 @@ class AbstractFont;
 class AbstractFontConverter;
 class AbstractGlyphCache;
 class AbstractLayouter;
+class AbstractShaper;
 
 enum class Alignment: UnsignedByte;
 

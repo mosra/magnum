@@ -33,12 +33,14 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Triple.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/Math/ConfigurationValue.h"
+#include "Magnum/Text/AbstractShaper.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Trade/ImageData.h"
 #include "MagnumPlugins/TgaImporter/TgaImporter.h"
@@ -61,22 +63,6 @@ struct MagnumFont::Data {
     };
     Containers::Array<Glyph> glyphs;
 };
-
-namespace {
-    class MagnumFontLayouter: public AbstractLayouter {
-        public:
-            explicit MagnumFontLayouter(const Containers::StridedArrayView1D<const Vector2>& glyphAdvance, const AbstractGlyphCache& cache, UnsignedInt fontId, Float fontSize, Float textSize, Containers::Array<UnsignedInt>&& glyphs);
-
-        private:
-            Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override;
-
-            const Containers::StridedArrayView1D<const Vector2> _glyphAdvance;
-            const AbstractGlyphCache& _cache;
-            const UnsignedInt _fontId;
-            const Float _fontSize, _textSize;
-            const Containers::Array<UnsignedInt> _glyphs;
-    };
-}
 
 MagnumFont::MagnumFont(): _opened(nullptr) {}
 
@@ -201,57 +187,43 @@ Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
     return Containers::Pointer<AbstractGlyphCache>{Utility::move(cache)};
 }
 
-Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCache& cache, const Float size, const Containers::StringView text) {
-    /* Not yet, at least */
-    if(cache.size().z() != 1) {
-        Error{} << "Text::MagnumFont::layout(): array glyph caches are not supported";
-        return {};
-    }
+Containers::Pointer<AbstractShaper> MagnumFont::doCreateShaper() {
+    struct Shaper: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
 
-    /* Find this font in the cache */
-    Containers::Optional<UnsignedInt> fontId = cache.findFont(this);
-    if(!fontId) {
-        Error{} << "Text::MagnumFont::layout(): font not found among" << cache.fontCount() << "fonts in passed glyph cache";
-        return {};
-    }
+        UnsignedInt doShape(const Containers::StringView textFull, const UnsignedInt begin, const UnsignedInt end, Containers::ArrayView<const FeatureRange>) override {
+            const Data& fontData = *static_cast<const MagnumFont&>(font())._opened;
+            const Containers::StringView text = textFull.slice(begin, end == ~UnsignedInt{} ? textFull.size() : end);
 
-    /* Get glyph codes from characters */
-    Containers::Array<UnsignedInt> glyphs;
-    arrayReserve(glyphs, text.size());
-    for(std::size_t i = 0; i != text.size(); ) {
-        const Containers::Pair<char32_t, std::size_t> codepointNext = Utility::Unicode::nextChar(text, i);
-        const auto it = _opened->glyphId.find(codepointNext.first());
-        arrayAppend(glyphs, it == _opened->glyphId.end() ? 0 : it->second);
-        i = codepointNext.second();
-    }
+            /* Get glyph codes from characters */
+            arrayResize(_glyphs, 0);
+            arrayReserve(_glyphs, text.size());
+            for(std::size_t i = 0; i != text.size(); ) {
+                const Containers::Pair<char32_t, std::size_t> codepointNext = Utility::Unicode::nextChar(text, i);
+                const auto it = fontData.glyphId.find(codepointNext.first());
+                arrayAppend(_glyphs, it == fontData.glyphId.end() ? 0 : it->second);
+                i = codepointNext.second();
+            }
 
-    return Containers::pointer<MagnumFontLayouter>(stridedArrayView(_opened->glyphs).slice(&Data::Glyph::advance), cache, *fontId, this->size(), size, Utility::move(glyphs));
-}
+            return _glyphs.size();
+        }
 
-namespace {
+        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            const Data& fontData = *static_cast<const MagnumFont&>(font())._opened;
 
-MagnumFontLayouter::MagnumFontLayouter(const Containers::StridedArrayView1D<const Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const UnsignedInt fontId, const Float fontSize, const Float textSize, Containers::Array<UnsignedInt>&& glyphs): AbstractLayouter{UnsignedInt(glyphs.size())}, _glyphAdvance{glyphAdvance}, _cache(cache), _fontId{fontId}, _fontSize{fontSize}, _textSize{textSize}, _glyphs{Utility::move(glyphs)} {}
+            Utility::copy(_glyphs, ids);
+            for(std::size_t i = 0; i != _glyphs.size(); ++i) {
+                /* There's no glyph offsets in addition to advances */
+                offsets[i] = {};
+                advances[i] = fontData.glyphs[_glyphs[i]].advance;
+            }
+        }
 
-Containers::Triple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
-    /* Offset of the glyph rectangle relative to the cursor, layer, texture
-       coordinates. We checked that the glyph cache is 2D in doLayout() so the
-       layer can be ignored. */
-    const Containers::Triple<Vector2i, Int, Range2Di> glyph = _cache.glyph(_fontId, _glyphs[i]);
-    CORRADE_INTERNAL_ASSERT(glyph.second() == 0);
+        Containers::StridedArrayView1D<const Vector2> _glyphAdvance;
+        Containers::Array<UnsignedInt> _glyphs;
+    };
 
-    /* Normalized texture coordinates */
-    const auto textureCoordinates = Range2D{glyph.third()}.scaled(1.0f/Vector2{_cache.size().xy()});
-
-    /* Quad rectangle, computed from texture rectangle, denormalized to
-       requested text size */
-    const auto quadRectangle = Range2D{Range2Di::fromSize(glyph.first(), glyph.third().size())}.scaled(Vector2{_textSize/_fontSize});
-
-    /* Advance for given glyph, denormalized to requested text size */
-    const Vector2 advance = _glyphAdvance[_glyphs[i]]*(_textSize/_fontSize);
-
-    return {quadRectangle, textureCoordinates, advance};
-}
-
+    return Containers::pointer<Shaper>(*this);
 }
 
 }}

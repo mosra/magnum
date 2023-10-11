@@ -42,6 +42,7 @@
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
+#include "Magnum/Text/AbstractShaper.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -112,7 +113,7 @@ class MyFont: public Text::AbstractFont {
             return {16.0f, 25.0f, -10.0f, 39.7333f, 4};
         }
         FontFeatures doFeatures() const override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return nullptr; }
 
         UnsignedInt doGlyphId(const char32_t character) override {
             switch(character) {
@@ -424,9 +425,7 @@ void MagnumFontConverterTest::exportFontImageProcessingGlyphCacheNoDownload() {
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
-            return nullptr;
-        }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return nullptr; }
     } font;
 
     struct: AbstractGlyphCache {
@@ -454,9 +453,7 @@ void MagnumFontConverterTest::exportFontArrayCache() {
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
-            return nullptr;
-        }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return nullptr; }
     } font;
 
     struct: AbstractGlyphCache {
@@ -486,9 +483,7 @@ void MagnumFontConverterTest::exportFontNotFoundInCache() {
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
-            return nullptr;
-        }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return nullptr; }
     } font1, font2;
 
     struct: AbstractGlyphCache {
@@ -522,9 +517,7 @@ void MagnumFontConverterTest::exportFontImageConversionFailed() {
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
-            return nullptr;
-        }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return nullptr; }
 
         private:
             bool _opened;

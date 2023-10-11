@@ -29,18 +29,25 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
-#include <Corrade/Containers/Triple.h>
 #include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Text/AbstractGlyphCache.h"
+#include "Magnum/Text/AbstractShaper.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Triple.h>
+#include <Corrade/Containers/StridedArrayView.h>
+
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Text/AbstractGlyphCache.h"
+#endif
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Text/configure.h"
@@ -295,11 +302,85 @@ Containers::Pointer<AbstractGlyphCache> AbstractFont::doCreateGlyphCache() {
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
 }
 
-Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCache& cache, const Float size, const Containers::StringView text) {
-    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
-
-    return doLayout(cache, size, text);
+Containers::Pointer<AbstractShaper> AbstractFont::createShaper() {
+    CORRADE_ASSERT(isOpened(),
+        "Text::AbstractFont::createShaper(): no font opened", {});
+    Containers::Pointer<AbstractShaper> out = doCreateShaper();
+    CORRADE_ASSERT(out,
+        "Text::AbstractFont::createShaper(): implementation returned nullptr", {});
+    return out;
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCache& cache, const Float size, const Containers::StringView text) {
+    CORRADE_ASSERT(isOpened(),
+        "Text::AbstractFont::layout(): no font opened", {});
+    /* This was originally added as a runtime error into plugin
+       implementations during the transition period for the new
+       AbstractGlyphCache API, now it's an assert. Shouldn't get triggered by
+       existing code in practice. */
+    CORRADE_ASSERT(cache.size().z() == 1,
+        "Text::AbstractFont::layout(): array glyph caches are not supported", {});
+
+    /* Find this font in the cache. This is kept as a runtime error however. */
+    Containers::Optional<UnsignedInt> fontId = cache.findFont(this);
+    if(!fontId) {
+        Error{} << "Text::AbstractFont::layout(): font not found among" << cache.fontCount() << "fonts in passed glyph cache";
+        return {};
+    }
+
+    /* Ignoring the failures in this case, as the old API was never failing
+       also -- it'll simply return an empty AbstractLayouter */
+    Containers::Pointer<AbstractShaper> shaper = createShaper();
+    shaper->shape(text);
+
+    /* Scaling factor */
+    const Float scale = size/this->size();
+
+    /* Get the glyph data. Yes, this is one extra temporary allocation which
+       could be aliased with the output array, but for the deprecated API implementation should be as unsurprising and unclever as possible. */
+    struct Glyph {
+        UnsignedInt id;
+        Vector2 offset;
+        Vector2 advance;
+    };
+    Containers::Array<Glyph> glyphs{NoInit, shaper->glyphCount()};
+    shaper->glyphsInto(stridedArrayView(glyphs).slice(&Glyph::id),
+                       stridedArrayView(glyphs).slice(&Glyph::offset),
+                       stridedArrayView(glyphs).slice(&Glyph::advance));
+
+    /* Create the data to return from AbstractLayouter::renderGlyph(). Most of
+       this used to be copypasted in various *Layouter::doRenderGlyph()
+       implementations, ugh. */
+    Containers::Array<Containers::Triple<Range2D, Range2D, Vector2>> out{NoInit, glyphs.size()};
+    for(std::size_t i = 0; i != glyphs.size(); ++i) {
+        /* Offset of the glyph rectangle relative to the cursor, layer, texture
+           coordinates. We checked that the glyph cache is 2D above so the
+           layer can be ignored. */
+        const Containers::Triple<Vector2i, Int, Range2Di> cacheGlyph = cache.glyph(*fontId, glyphs[i].id);
+        CORRADE_INTERNAL_ASSERT(cacheGlyph.second() == 0);
+
+        out[i] = {
+            /* Quad rectangle, created from cache and shaper offset and the
+               texture rectangle, scaled to requested text size */
+            Range2D::fromSize(Vector2{cacheGlyph.first()} + glyphs[i].offset,
+                              Vector2{cacheGlyph.third().size()})
+                .scaled(Vector2{scale}),
+
+            /* Normalized texture coordinates */
+            Range2D{cacheGlyph.third()}
+                .scaled(1.0f/Vector2{cache.size().xy()}),
+
+            /* Advance from the font, again scaled */
+            glyphs[i].advance*scale
+        };
+    }
+
+    return Containers::pointer<AbstractLayouter>(Utility::move(out));
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 Debug& operator<<(Debug& debug, const FontFeature value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
@@ -327,28 +408,28 @@ Debug& operator<<(Debug& debug, const FontFeatures value) {
         FontFeature::PreparedGlyphCache});
 }
 
-AbstractLayouter::AbstractLayouter(UnsignedInt glyphCount): _glyphCount(glyphCount) {}
+#ifdef MAGNUM_BUILD_DEPRECATED
+AbstractLayouter::AbstractLayouter(Containers::Array<Containers::Triple<Range2D, Range2D, Vector2>>&& glyphs): _glyphs{Utility::move(glyphs)} {}
 
 AbstractLayouter::~AbstractLayouter() = default;
 
 Containers::Pair<Range2D, Range2D> AbstractLayouter::renderGlyph(const UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle) {
-    CORRADE_ASSERT(i < glyphCount(), "Text::AbstractLayouter::renderGlyph(): index" << i << "out of range for" << glyphCount() << "glyphs", {});
-
-    /* Render the glyph */
-    const Containers::Triple<Range2D, Range2D, Vector2> quadPositionTextureCoordinatesAdvance = doRenderGlyph(i);
+    CORRADE_ASSERT(i < _glyphs.size(),
+        "Text::AbstractLayouter::renderGlyph(): index" << i << "out of range for" << _glyphs.size() << "glyphs", {});
 
     /* Move the quad to cursor */
-    const Range2D quadPosition = quadPositionTextureCoordinatesAdvance.first().translated(cursorPosition);
+    const Range2D quadPosition = _glyphs[i].first().translated(cursorPosition);
 
     /* Extend the rectangle with current quad bounds. If the original is zero
        size, it gets replaced. */
     rectangle = Math::join(rectangle, quadPosition);
 
     /* Advance cursor position to next character */
-    cursorPosition += quadPositionTextureCoordinatesAdvance.third();
+    cursorPosition += _glyphs[i].third();
 
     /* Return moved quad and unchanged texture coordinates */
-    return {quadPosition, quadPositionTextureCoordinatesAdvance.second()};
+    return {quadPosition, _glyphs[i].second()};
 }
+#endif
 
 }}

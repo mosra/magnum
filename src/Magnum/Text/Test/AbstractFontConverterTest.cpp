@@ -39,6 +39,7 @@
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
+#include "Magnum/Text/AbstractShaper.h"
 
 #include "configure.h"
 
@@ -163,9 +164,7 @@ struct DummyFont: AbstractFont {
     UnsignedInt doGlyphId(char32_t) override { return {}; }
     Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-    Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
-        return nullptr;
-    }
+    Containers::Pointer<AbstractShaper> doCreateShaper() override { return nullptr; }
 } dummyFont;
 
 struct DummyGlyphCache: AbstractGlyphCache {

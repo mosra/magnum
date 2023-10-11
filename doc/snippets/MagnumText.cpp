@@ -30,6 +30,7 @@
 #include <string>
 #include <unordered_map>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
@@ -49,6 +50,9 @@
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
+#include "Magnum/Text/AbstractShaper.h"
+#include "Magnum/Text/Feature.h"
+#include "Magnum/Text/Script.h"
 #include "Magnum/TextureTools/Atlas.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
@@ -67,7 +71,7 @@ struct MyFont: Text::AbstractFont {
     UnsignedInt doGlyphId(char32_t) override { return {}; }
     Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-    Containers::Pointer<Text::AbstractLayouter> doLayout(const Text::AbstractGlyphCache&, Float, Containers::StringView) override { return {}; }
+    Containers::Pointer<Text::AbstractShaper> doCreateShaper() override { return nullptr; }
 };
 struct MyFontConverter: Text::AbstractFontConverter {
     explicit MyFontConverter(PluginManager::AbstractManager& manager, Containers::StringView plugin): Text::AbstractFontConverter{manager, plugin} {}
@@ -253,6 +257,81 @@ for(std::size_t i = 0; i != fontGlyphIds.size(); ++i) {
     DOXYGEN_ELLIPSIS(static_cast<void>(offset); static_cast<void>(rectangle);)
 }
 /* [AbstractGlyphCache-querying-batch] */
+}
+
+{
+/* [AbstractShaper-shape] */
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS({});
+Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
+
+/* Set text properties and shape it */
+shaper->setScript(Text::Script::Latin);
+shaper->setDirection(Text::Direction::LeftToRight);
+shaper->setLanguage("en");
+shaper->shape("Hello, world!");
+
+/* Get the glyph info back */
+struct GlyphInfo {
+    UnsignedInt id;
+    Vector2 offset;
+    Vector2 advance;
+};
+Containers::Array<GlyphInfo> glyphs{NoInit, shaper->glyphCount()};
+shaper->glyphsInto(stridedArrayView(glyphs).slice(&GlyphInfo::id),
+                   stridedArrayView(glyphs).slice(&GlyphInfo::offset),
+                   stridedArrayView(glyphs).slice(&GlyphInfo::advance));
+/* [AbstractShaper-shape] */
+}
+
+{
+Containers::Pointer<Text::AbstractFont> font;
+Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
+/* [AbstractShaper-shape-features] */
+shaper->shape("Hello, world!", {
+    {Text::Feature::SmallCapitals, 7, 12}
+});
+/* [AbstractShaper-shape-features] */
+}
+
+{
+struct GlyphInfo {
+    UnsignedInt id;
+    Vector2 offset;
+    Vector2 advance;
+};
+/* [AbstractShaper-shape-multiple] */
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS({});
+Containers::Pointer<Text::AbstractFont> boldFont = DOXYGEN_ELLIPSIS({});
+Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
+Containers::Pointer<Text::AbstractShaper> boldShaper = boldFont->createShaper();
+DOXYGEN_ELLIPSIS()
+
+Containers::Array<GlyphInfo> glyphs;
+
+/* Shape "Hello, " with a regular font */
+shaper->shape("Hello, world!", 0, 7);
+Containers::StridedArrayView1D<GlyphInfo> glyphs1 =
+    arrayAppend(glyphs, NoInit, shaper->glyphCount());
+shaper->glyphsInto(glyphs1.slice(&GlyphInfo::id),
+                   glyphs1.slice(&GlyphInfo::offset),
+                   glyphs1.slice(&GlyphInfo::advance));
+
+/* Append "world" shaped with a bold font */
+boldShaper->shape("Hello, world!", 7, 12);
+Containers::StridedArrayView1D<GlyphInfo> glyphs2 =
+    arrayAppend(glyphs, NoInit, boldShaper->glyphCount());
+boldShaper->glyphsInto(glyphs2.slice(&GlyphInfo::id),
+                       glyphs2.slice(&GlyphInfo::offset),
+                       glyphs2.slice(&GlyphInfo::advance));
+
+/* Finally shape "!" shaped with a regular font again */
+shaper->shape("Hello, world!", 12, 13);
+Containers::StridedArrayView1D<GlyphInfo> glyphs3 =
+    arrayAppend(glyphs, NoInit, shaper->glyphCount());
+shaper->glyphsInto(glyphs3.slice(&GlyphInfo::id),
+                   glyphs3.slice(&GlyphInfo::offset),
+                   glyphs3.slice(&GlyphInfo::advance));
+/* [AbstractShaper-shape-multiple] */
 }
 
 }

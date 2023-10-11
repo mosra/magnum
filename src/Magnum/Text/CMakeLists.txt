@@ -37,6 +37,7 @@ set(MagnumText_GracefulAssert_SRCS
     AbstractFont.cpp
     AbstractFontConverter.cpp
     AbstractGlyphCache.cpp
+    AbstractShaper.cpp
     Feature.cpp
     Script.cpp)
 
@@ -44,6 +45,7 @@ set(MagnumText_HEADERS
     AbstractFont.h
     AbstractFontConverter.h
     AbstractGlyphCache.h
+    AbstractShaper.h
     Alignment.h
     Feature.h
     Script.h

@@ -1252,6 +1252,12 @@ See also:
     it's short enough to not warrant the existence of a dedicated overload
 -   The @ref Text library API was reworked for more features, better efficiency
     and no dependencies on the STL:
+    -   @cpp Text::AbstractFont::layout() @ce and the
+        @cpp Text::AbstractLayouter @ce class is deprecated in favor of
+        @ref Text::AbstractFont::createShaper() and the
+        @ref Text::AbstractShaper class, which allows for reusing allocated
+        resources, is independent on a glyph cache and has a batch-oriented
+        interface for retrieving shaped glyph data
     -   @cpp Text::GlyphCacheFeature::ImageDownload @ce is deprecated in favor
         of @ref Text::GlyphCacheFeature::ProcessedImageDownload, as there's now
         a possibility to get the image directly for glyph caches that don't
@@ -1631,6 +1637,13 @@ See also:
     more verbose and less clear
 -   The @ref Text library API was reworked for more features, better efficiency
     and no dependencies on the STL:
+    -   The @cpp Text::AbstractFont::doLayout() @ce and
+        @cpp Text::AbstractLayouter::doRenderGlyph() @ce virtual interfaces
+        no longer exist, plugins are expected to implement
+        @ref Text::AbstractFont::doCreateShaper() and a
+        @ref Text::AbstractShaper subclass instead. Only public APIs of the old
+        interface are preserved for backward compatibility with existing
+        application code.
     -   The @cpp Text::AbstractGlyphCache::begin() @ce / @cpp end() @ce access
         via @ref std::unordered_map iterators is removed. Use
         @ref Text::AbstractGlyphCache::glyph() for accessing properties of a

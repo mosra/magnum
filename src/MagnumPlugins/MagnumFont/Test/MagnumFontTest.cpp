@@ -28,7 +28,9 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
@@ -38,6 +40,7 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
+#include "Magnum/Text/AbstractShaper.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
 #include "configure.h"
@@ -51,8 +54,8 @@ struct MagnumFontTest: TestSuite::Tester {
     void properties();
     void layout();
     void layoutNoGlyphsInCache();
-    void layoutNoFontInCache();
-    void layoutArrayCache();
+
+    void shaperReuse();
 
     void fileCallbackImage();
     void fileCallbackImageNotFound();
@@ -78,8 +81,8 @@ MagnumFontTest::MagnumFontTest() {
         Containers::arraySize(LayoutData));
 
     addTests({&MagnumFontTest::layoutNoGlyphsInCache,
-              &MagnumFontTest::layoutNoFontInCache,
-              &MagnumFontTest::layoutArrayCache,
+
+              &MagnumFontTest::shaperReuse,
 
               &MagnumFontTest::fileCallbackImage,
               &MagnumFontTest::fileCallbackImageNotFound});
@@ -242,43 +245,71 @@ void MagnumFontTest::layoutNoGlyphsInCache() {
     CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
 }
 
-void MagnumFontTest::layoutNoFontInCache() {
+void MagnumFontTest::shaperReuse() {
     Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
-
     CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
-    struct: AbstractGlyphCache {
-        using AbstractGlyphCache::AbstractGlyphCache;
+    Containers::Pointer<AbstractShaper> shaper = font->createShaper();
 
-        GlyphCacheFeatures doFeatures() const override { return {}; }
-        void doSetImage(const Vector2i&, const ImageView2D&) override {}
-    } cache{PixelFormat::R8Unorm, Vector2i{256}};
+    /* Short text */
+    {
+        CORRADE_COMPARE(shaper->shape("We"), 2);
+        UnsignedInt ids[2];
+        Vector2 offsets[2];
+        Vector2 advances[2];
+        shaper->glyphsInto(ids, offsets, advances);
+        CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
+            2u, /* 'W' */
+            1u  /* 'e' */
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector2>({
+            {}, {},
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(advances), Containers::arrayView<Vector2>({
+            {23.0f, 0.0f},
+            {12.f, 0.0f}
+        }), TestSuite::Compare::Container);
 
-    /* Add a font that isn't associated with this one */
-    cache.addFont(15);
+    /* Long text, same as in shape(), should enlarge the array for it */
+    } {
+        CORRADE_COMPARE(shaper->shape("Wave"), 4);
+        UnsignedInt ids[4];
+        Vector2 offsets[4];
+        Vector2 advances[4];
+        shaper->glyphsInto(ids, offsets, advances);
+        CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
+            2u, /* 'W' */
+            0u, /* 'a' (not found) */
+            0u, /* 'v' (not found) */
+            1u  /* 'e' or 'ě' */
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector2>({
+            {}, {}, {}, {}
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(advances), Containers::arrayView<Vector2>({
+            {23.0f, 0.0f},
+            {8.0f, 0.0f},
+            {8.0f, 0.0f},
+            {12.f, 0.0f}
+        }), TestSuite::Compare::Container);
 
-    std::ostringstream out;
-    Error redirectError{&out};
-    CORRADE_VERIFY(!font->layout(cache, 0.5f, "Wave"));
-    CORRADE_COMPARE(out.str(), "Text::MagnumFont::layout(): font not found among 1 fonts in passed glyph cache\n");
-}
-
-void MagnumFontTest::layoutArrayCache() {
-    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
-
-    CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
-
-    struct: AbstractGlyphCache {
-        using AbstractGlyphCache::AbstractGlyphCache;
-
-        GlyphCacheFeatures doFeatures() const override { return {}; }
-        void doSetImage(const Vector2i&, const ImageView2D&) override {}
-    } cache{PixelFormat::R8Unorm, {256, 128, 3}};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    CORRADE_VERIFY(!font->layout(cache, 0.5f, "Wave"));
-    CORRADE_COMPARE(out.str(), "Text::MagnumFont::layout(): array glyph caches are not supported\n");
+    /* Short text again, should not leave the extra glyphs there */
+    } {
+        CORRADE_COMPARE(shaper->shape("a"), 1);
+        UnsignedInt ids[1];
+        Vector2 offsets[1];
+        Vector2 advances[1];
+        shaper->glyphsInto(ids, offsets, advances);
+        CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
+            0u,
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector2>({
+            {},
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(advances), Containers::arrayView<Vector2>({
+            {8.0f, 0.0f}
+        }), TestSuite::Compare::Container);
+    }
 }
 
 void MagnumFontTest::fileCallbackImage() {
