@@ -179,7 +179,7 @@ void DistanceFieldGLTest::test() {
         .setMagnificationFilter(GL::SamplerFilter::Nearest)
         .setStorage(1, outputFormat, data.size);
 
-    TextureTools::DistanceField distanceField{32};
+    DistanceField distanceField{32};
     CORRADE_COMPARE(distanceField.radius(), 32);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -306,7 +306,7 @@ void DistanceFieldGLTest::benchmark() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    TextureTools::DistanceField distanceField{32};
+    DistanceField distanceField{32};
 
     /* So it doesn't spam too much */
     GL::DebugOutput::setCallback(nullptr);
