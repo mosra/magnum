@@ -782,6 +782,8 @@ See also:
 -   Added @ref Text::AbstractFont::glyphCount() and
     @relativeref{Text::AbstractFont,glyphSize()}
 -   Added @ref Text::Renderer::fontSize()
+-   Added @ref Text::Alignment::TopCenterIntegral, which is also needed in
+    order to prevent aligning pixel-perfect fonts to fractional positions
 
 @subsubsection changelog-latest-changes-trade Trade library
 

@@ -52,6 +52,12 @@ namespace Implementation {
 /**
 @brief Text rendering alignment
 
+The `*Integer` values are meant to be used for pixel-perfect fonts that always
+have glyph sizes, advances and other metrics whole pixels, and need to be
+positioned on whole pixels as well in order to avoid making them blurry. These
+are only needed for `*Middle` and `*Center` alignments as they may result in
+the bounding rectangle to have odd dimensions, which would then result in
+half-pixel shifts when divided by 2.
 @see @ref Renderer::render(), @ref Renderer::Renderer()
 */
 enum class Alignment: UnsignedByte {
@@ -92,7 +98,11 @@ enum class Alignment: UnsignedByte {
     /** Text start and top is at origin */
     TopLeft = Implementation::AlignmentTop|Implementation::AlignmentLeft,
 
-    /** Text center and top is at origin */
+    /**
+     * Text center and top is at origin
+     *
+     * @see @ref Alignment::TopCenterIntegral
+     */
     TopCenter = Implementation::AlignmentTop|Implementation::AlignmentCenter,
 
     /** Text end and top is at origin */
@@ -124,7 +134,16 @@ enum class Alignment: UnsignedByte {
      *
      * @see @ref Alignment::MiddleRight
      */
-    MiddleRightIntegral = Implementation::AlignmentMiddle|Implementation::AlignmentRight|Implementation::AlignmentIntegral
+    MiddleRightIntegral = Implementation::AlignmentMiddle|Implementation::AlignmentRight|Implementation::AlignmentIntegral,
+
+    /**
+     * Text center and line is at origin and alignment offset is integral
+     *
+     * @see @ref Alignment::TopCenter
+     * @m_since_latest
+     */
+    TopCenterIntegral = Implementation::AlignmentTop|Implementation::AlignmentCenter|Implementation::AlignmentIntegral,
+
 };
 
 }}

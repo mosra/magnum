@@ -60,6 +60,9 @@ const struct {
     /** @todo for all these, the initial glyph offset is first subtracted and
         only then the shift by either half or full size is performed, does that
         make sense? why is not done for the LineLeft case, then? */
+    {"top center, integral", Alignment::TopCenterIntegral,
+        /* The Y shift is rounded to whole units */
+        {-5.5f - 2.5f, -7.5f - 3.5f}},
     {"top left", Alignment::TopLeft,
         {0.0f, -7.0f - 3.5f}},
     {"top right", Alignment::TopRight,
