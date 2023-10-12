@@ -54,6 +54,7 @@ struct MagnumFontTest: TestSuite::Tester {
     void properties();
 
     void shape();
+    void shapeEmpty();
     void shaperReuse();
 
     void fileCallbackImage();
@@ -83,7 +84,8 @@ MagnumFontTest::MagnumFontTest() {
     addInstancedTests({&MagnumFontTest::shape},
         Containers::arraySize(ShapeData));
 
-    addTests({&MagnumFontTest::shaperReuse,
+    addTests({&MagnumFontTest::shapeEmpty,
+              &MagnumFontTest::shaperReuse,
 
               &MagnumFontTest::fileCallbackImage,
               &MagnumFontTest::fileCallbackImageNotFound});
@@ -169,14 +171,28 @@ void MagnumFontTest::shape() {
     }), TestSuite::Compare::Container);
 }
 
+void MagnumFontTest::shapeEmpty() {
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+    CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+
+    Containers::Pointer<AbstractShaper> shaper = font->createShaper();
+
+    /* Shouldn't crash or do anything rogue */
+    CORRADE_COMPARE(shaper->shape("Wave", 2, 2), 0);
+}
+
 void MagnumFontTest::shaperReuse() {
     Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
     CORRADE_VERIFY(font->openFile(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
     Containers::Pointer<AbstractShaper> shaper = font->createShaper();
 
-    /* Short text */
+    /* Empty text */
     {
+        CORRADE_COMPARE(shaper->shape("Wave", 2, 2), 0);
+
+    /* Short text. Empty shape shouldn't have caused any broken state. */
+    } {
         CORRADE_COMPARE(shaper->shape("We"), 2);
         UnsignedInt ids[2];
         Vector2 offsets[2];

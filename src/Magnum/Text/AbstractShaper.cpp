@@ -80,8 +80,6 @@ UnsignedInt AbstractShaper::shape(const Containers::StringView text, const Unsig
     CORRADE_ASSERT((end == ~UnsignedInt{} && begin <= text.size()) ||
                    (begin <= end && end <= text.size()),
         "Text::AbstractShaper::shape(): begin" << begin << "and end" << end << "out of range for a text of" << text.size() << "bytes", {});
-    CORRADE_ASSERT(begin < text.size() && begin != end,
-        "Text::AbstractShaper::shape(): shaped text at begin" << begin << "is empty", {});
     #ifndef CORRADE_NO_ASSERT
     for(std::size_t i = 0; i != features.size(); ++i) {
         const FeatureRange& feature = features[i];
@@ -89,7 +87,6 @@ UnsignedInt AbstractShaper::shape(const Containers::StringView text, const Unsig
             (feature._end == ~UnsignedInt{} && feature._begin <= text.size()) ||
             (feature._begin <= feature._end && feature._end <= text.size()),
             "Text::AbstractShaper::shape(): feature" << i << "begin" << feature._begin << "and end" << feature._end << "out of range for a text of" << text.size() << "bytes", {});
-        /** @todo catch empty feature ranges too? or not important */
     }
     #endif
     return _glyphCount = doShape(text, begin, end, features);
@@ -116,19 +113,19 @@ UnsignedInt AbstractShaper::shape(const Containers::StringView text) {
 }
 
 Script AbstractShaper::script() const {
-    return _glyphCount ? doScript() : Script::Unspecified;
+    return doScript();
 }
 
 Script AbstractShaper::doScript() const { return Script::Unspecified; }
 
 Containers::StringView AbstractShaper::language() const {
-    return _glyphCount ? doLanguage() : Containers::StringView{};
+    return doLanguage();
 }
 
 Containers::StringView AbstractShaper::doLanguage() const { return {}; }
 
 Direction AbstractShaper::direction() const {
-    return _glyphCount ? doDirection() : Direction::Unspecified;
+    return doDirection();
 }
 
 Direction AbstractShaper::doDirection() const { return Direction::Unspecified; }

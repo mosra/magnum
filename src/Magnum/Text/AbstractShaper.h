@@ -344,18 +344,13 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * @param features  OpenType features to apply for the whole text or
          *      its subranges
          *
-         * Expects that @p text is non-empty, that both @p begin and all
-         * @ref FeatureRange::begin() are contained within @p text, and that
-         * @p end and all @ref FeatureRange::end() are either contained within
-         * @p text or have a value of @cpp 0xffffffffu @ce. On success returns
-         * the number of shaped glyphs (which is also subsequently available
-         * through @ref glyphCount() const) and updates the @ref script() const,
-         * @ref language() const and @ref direction() const values.
-         *
-         * On failure, such as when the input is not valid UTF-8 or when
-         * specified combination or script, language and direction is
-         * unsupported, prints a message to @relativeref{Magnum,Error} and
-         * returns @cpp 0 @ce.
+         * Expects that both @p begin and all @ref FeatureRange::begin() are
+         * contained within @p text, and that @p end and all
+         * @ref FeatureRange::end() are either contained within @p text or have
+         * a value of @cpp 0xffffffffu @ce. Returns the number of shaped glyphs
+         * (which is also subsequently available through @ref glyphCount() const)
+         * and updates the @ref script() const, @ref language() const and
+         * @ref direction() const values.
          *
          * Whether @p features are used depends on a particular
          * @ref AbstractFont plugin implementation and the font file itself as
@@ -415,9 +410,9 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         /**
          * @brief Script used for the last @ref shape() call
          *
-         * If the last @ref shape() call failed, it hasn't been called yet or
-         * if the @ref AbstractFont doesn't implement any script-specific
-         * behavior, returns @ref Script::Unspecified.
+         * May return @ref Script::Unspecified if @ref shape() hasn't been
+         * called yet or if the @ref AbstractFont doesn't implement any
+         * script-specific behavior.
          * @see @ref setScript(), @ref language(), @ref direction()
          */
         Script script() const;
@@ -425,9 +420,9 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         /**
          * @brief Language used for the last @ref shape() call
          *
-         * If the last @ref shape() call failed, it hasn't been called yet or
+         * May return an empty string if @ref shape() hasn't been called yet or
          * if the @ref AbstractFont doesn't implement any language-specific
-         * behavior, returns an empty string.
+         * behavior.
          *
          * The returned view is generally neither
          * @relativeref{Corrade,Containers::StringViewFlag::Global} nor
@@ -443,9 +438,9 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         /**
          * @brief Language used for the last @ref shape() call
          *
-         * If the last @ref shape() call failed, it hasn't been called yet or
-         * if the @ref AbstractFont doesn't implement any direction-specific
-         * behavior, returns @ref Direction::Unspecified.
+         * May return @ref Direction::Unspecified if @ref shape() hasn't been
+         * called yet or if the @ref AbstractFont doesn't implement any
+         * script-specific behavior.
          * @see @ref setDirection(), @ref script(), @ref language()
          */
         Direction direction() const;

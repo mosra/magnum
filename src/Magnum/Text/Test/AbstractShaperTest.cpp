@@ -64,9 +64,8 @@ struct AbstractShaperTest: TestSuite::Tester {
     void shapeNoBeginEnd();
     void shapeNoBeginEndFeatures();
     void shapeScriptLanguageDirectionNotImplemented();
-    void shapeFailed();
+    void shapeZeroGlyphs();
     void shapeBeginEndOutOfRange();
-    void shapeEmptyText();
 
     /* glyphsInto() tested in shape() already */
     void glyphsIntoEmpty();
@@ -97,9 +96,8 @@ AbstractShaperTest::AbstractShaperTest() {
               &AbstractShaperTest::shapeNoBeginEnd,
               &AbstractShaperTest::shapeNoBeginEndFeatures,
               &AbstractShaperTest::shapeScriptLanguageDirectionNotImplemented,
-              &AbstractShaperTest::shapeFailed,
+              &AbstractShaperTest::shapeZeroGlyphs,
               &AbstractShaperTest::shapeBeginEndOutOfRange,
-              &AbstractShaperTest::shapeEmptyText,
 
               &AbstractShaperTest::glyphsIntoEmpty,
               &AbstractShaperTest::glyphsIntoInvalidViewSizes});
@@ -352,13 +350,15 @@ void AbstractShaperTest::shape() {
         bool shapeCalled = false;
     } shaper{FakeFont};
 
-    /* Initially it shouldn't call into any of the implementations */
+    /* There's no special behavior, it calls into the implementations even if
+       nothing has been shaped yet */
     CORRADE_COMPARE(shaper.glyphCount(), 0);
-    CORRADE_COMPARE(shaper.script(), Script::Unspecified);
-    CORRADE_COMPARE(shaper.language(), "");
-    CORRADE_COMPARE(shaper.direction(), Direction::Unspecified);
+    CORRADE_COMPARE(shaper.script(), Script::LinearA);
+    CORRADE_COMPARE(shaper.language(), "eh-UH");
+    CORRADE_COMPARE(shaper.direction(), Direction::BottomToTop);
 
-    /* Shaping fills glyph count and allows calling into the implementations */
+    /* Shaping fills glyph count. A real implementation would then return
+       (different) detected script/language/direction values, for example. */
     CORRADE_COMPARE(shaper.shape("some text", 3, 8, {
         Feature::ContextualLigatures,
         {Feature::Kerning, 2, 5, false}
@@ -496,7 +496,7 @@ void AbstractShaperTest::shapeScriptLanguageDirectionNotImplemented() {
     CORRADE_COMPARE(shaper.direction(), Direction::Unspecified);
 }
 
-void AbstractShaperTest::shapeFailed() {
+void AbstractShaperTest::shapeZeroGlyphs() {
     struct: AbstractShaper {
         using AbstractShaper::AbstractShaper;
 
@@ -519,16 +519,16 @@ void AbstractShaperTest::shapeFailed() {
         void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
     } shaper{FakeFont};
 
-    /* The implementation is responsible for printing a message, the base class
-       doesn't */
     CORRADE_COMPARE(shaper.shape("some text", 3, 8), 0);
 
-    /* After a failure it shouldn't call into any of the implementations
-       either */
+    /* It calls into the implementations even in case no glyphs were actually
+       shaped. It could be for example a zero-length slice of a larger string
+       for which script/language/direction detection was performed, so it's
+       still useful to get the values after */
     CORRADE_COMPARE(shaper.glyphCount(), 0);
-    CORRADE_COMPARE(shaper.script(), Script::Unspecified);
-    CORRADE_COMPARE(shaper.language(), "");
-    CORRADE_COMPARE(shaper.direction(), Direction::Unspecified);
+    CORRADE_COMPARE(shaper.script(), Script::LinearA);
+    CORRADE_COMPARE(shaper.language(), "eh-UH");
+    CORRADE_COMPARE(shaper.direction(), Direction::BottomToTop);
 }
 
 void AbstractShaperTest::shapeBeginEndOutOfRange() {
@@ -583,35 +583,6 @@ void AbstractShaperTest::shapeBeginEndOutOfRange() {
         "Text::AbstractShaper::shape(): feature 1 begin 4 and end 6 out of range for a text of 5 bytes\n"
         "Text::AbstractShaper::shape(): begin 4 and end 3 out of range for a text of 5 bytes\n"
         "Text::AbstractShaper::shape(): feature 1 begin 4 and end 3 out of range for a text of 5 bytes\n",
-        TestSuite::Compare::String);
-}
-
-void AbstractShaperTest::shapeEmptyText() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractShaper {
-        using AbstractShaper::AbstractShaper;
-
-        UnsignedInt doShape(Containers::StringView, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
-            CORRADE_FAIL("This shouldn't be called");
-            return 5;
-        }
-
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
-    } shaper{FakeFont};
-
-    /* Capture correct function name */
-    CORRADE_VERIFY(true);
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    shaper.shape("");
-    shaper.shape("hello", 3, 3);
-    shaper.shape("hello", 5, ~UnsignedInt{});
-    CORRADE_COMPARE_AS(out.str(),
-        "Text::AbstractShaper::shape(): shaped text at begin 0 is empty\n"
-        "Text::AbstractShaper::shape(): shaped text at begin 3 is empty\n"
-        "Text::AbstractShaper::shape(): shaped text at begin 5 is empty\n",
         TestSuite::Compare::String);
 }
 
