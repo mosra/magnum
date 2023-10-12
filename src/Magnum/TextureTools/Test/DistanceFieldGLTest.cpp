@@ -27,6 +27,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/AbstractManager.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -83,9 +84,12 @@ const struct {
     const char* name;
     Vector2i size;
     Vector2i offset;
+    bool flipX, flipY;
 } RunData[]{
-    {"", {64, 64}, {}},
-    {"with offset", {128, 96}, {64, 32}},
+    {"", {64, 64}, {}, false, false},
+    {"flipped on X", {64, 64}, {}, true, false},
+    {"flipped on Y", {64, 64}, {}, false, true},
+    {"with offset", {128, 96}, {64, 32}, false, false},
 };
 
 DistanceFieldGLTest::DistanceFieldGLTest() {
@@ -164,6 +168,12 @@ void DistanceFieldGLTest::run() {
     CORRADE_VERIFY(inputImage);
     CORRADE_COMPARE(inputImage->format(), PixelFormat::R8Unorm);
 
+    /* Flip the input if desired */
+    if(data.flipX)
+        Utility::flipInPlace<1>(inputImage->mutablePixels());
+    if(data.flipY)
+        Utility::flipInPlace<0>(inputImage->mutablePixels());
+
     #ifndef MAGNUM_TARGET_GLES2
     const GL::TextureFormat inputFormat = GL::TextureFormat::R8;
     #elif !defined(MAGNUM_TARGET_WEBGL)
@@ -240,12 +250,19 @@ void DistanceFieldGLTest::run() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
+    /* Flip the output back */
+    Containers::StridedArrayView3D<char> pixels3 = actualOutputImage->pixels();
+    if(data.flipX)
+        Utility::flipInPlace<1>(pixels3);
+    if(data.flipY)
+        Utility::flipInPlace<0>(pixels3);
+
     /* Use just the first channel if the format is RGBA */
     Containers::StridedArrayView2D<UnsignedByte> pixels;
     if(actualOutputImage->format() == PixelFormat::RGBA8Unorm)
-        pixels = actualOutputImage->pixels<Color4ub>().slice(&Color4ub::r);
+        pixels = Containers::arrayCast<2, Color4ub>(pixels3).slice(&Color4ub::r);
     else
-        pixels = actualOutputImage->pixels<UnsignedByte>();
+        pixels = Containers::arrayCast<2, UnsignedByte>(pixels3);
 
     CORRADE_EXPECT_FAIL_IF(!data.offset.isZero(),
         "Currently broken if a non-zero offset is used.");
