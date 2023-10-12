@@ -59,12 +59,12 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
         explicit DistanceFieldShader(UnsignedInt radius);
 
         DistanceFieldShader& setScaling(const Vector2& scaling) {
-            setUniform(scalingUniform, scaling);
+            setUniform(_scalingUniform, scaling);
             return *this;
         }
 
         DistanceFieldShader& setImageSizeInverted(const Vector2& size) {
-            setUniform(imageSizeInvertedUniform, size);
+            setUniform(_imageSizeInvertedUniform, size);
             return *this;
         }
 
@@ -80,8 +80,8 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
            Unit 6 is used by Shaders::Vector and Shaders::DistanceFieldVector. */
         enum: Int { TextureUnit = 7 };
 
-        Int scalingUniform{0},
-            imageSizeInvertedUniform;
+        Int _scalingUniform{0},
+            _imageSizeInvertedUniform;
 };
 
 DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
@@ -131,7 +131,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     if(v < GL::Version::GLES310)
     #endif
     {
-        scalingUniform = uniformLocation("scaling"_s);
+        _scalingUniform = uniformLocation("scaling"_s);
 
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
@@ -139,7 +139,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
         #endif
         {
-            imageSizeInvertedUniform = uniformLocation("imageSizeInverted"_s);
+            _imageSizeInvertedUniform = uniformLocation("imageSizeInverted"_s);
         }
     }
 
