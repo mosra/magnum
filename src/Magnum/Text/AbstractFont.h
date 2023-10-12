@@ -696,7 +696,19 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 @m_deprecated_since_latest Use @ref AbstractShaper returned from
     @ref AbstractFont::createShaper() instead.
 */
-class MAGNUM_TEXT_EXPORT CORRADE_DEPRECATED("use AbstractShaper instead") AbstractLayouter {
+class MAGNUM_TEXT_EXPORT
+    /* Clang-cl 12, included in MSVC 2019, chokes on two __declspec attributes
+       being specified here. Clang-cl 16, included in MSVC 2022, doesn't, but I
+       couldn't find any relevant changelog entry in the in-between versions to
+       know which version this was actually fixed in, except for these:
+        https://releases.llvm.org/16.0.0/tools/clang/docs/ReleaseNotes.html#bug-fixes-to-attribute-support
+       Also probably not limited to just clang-cl, but also regular Clang
+       within MSVC, and a MinGW Clang as well, so taking the safe path and
+       excluding all Clang versions below 16 on Windows. */
+    #if !defined(CORRADE_TARGET_WINDOWS) || !defined(CORRADE_TARGET_CLANG) || __clang_major__ >= 16
+    CORRADE_DEPRECATED("use AbstractShaper instead")
+    #endif
+AbstractLayouter {
     public:
         /** @brief Copying is not allowed */
         AbstractLayouter(const AbstractLayouter&) = delete;
