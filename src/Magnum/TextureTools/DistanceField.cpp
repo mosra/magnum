@@ -175,10 +175,10 @@ DistanceField::DistanceField(const UnsignedInt radius): _state{new State{radius}
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
     #endif
     {
-        constexpr Vector2 triangle[] = {
-            Vector2(-1.0,  1.0),
-            Vector2(-1.0, -3.0),
-            Vector2( 3.0,  1.0)
+        constexpr Vector2 triangle[]{
+            {-1.0f,  1.0f},
+            {-1.0f, -3.0f},
+            { 3.0f,  1.0f}
         };
         GL::Buffer buffer;
         buffer.setData(triangle, GL::BufferUsage::StaticDraw);
