@@ -621,7 +621,71 @@ To be written.
 
 @section file-formats-fonts Fonts
 
-To be written.
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_class{m-fullwidth m-flat}
+
+<table>
+<tr>
+<th>Format</th>
+<th>Generic plugin alias</th>
+<th>Plugin name</th>
+<th class="m-text-center">Caveats</th>
+<th class="m-text-center">Dependencies</th>
+<th class="m-text-center">License</th>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th rowspan="3">OpenType (`*.otf`)</th>
+<td rowspan="3">`OpenTypeFont`</td>
+<td>@relativeref{Text,FreeTypeFont}</td>
+<td class="m-text-center m-warning">@ref Text-FreeTypeFont-behavior "some"</td>
+<td class="m-text-center m-danger">external</td>
+<td class="m-text-center m-success">FreeType</td>
+</tr>
+<tr>
+<td>@relativeref{Text,HarfBuzzFont}</td>
+<td class="m-text-center m-dim">@ref Text-HarfBuzzFont-behavior "none"</td>
+<td class="m-text-center m-danger">external</td>
+<td class="m-text-center m-success">MIT</td>
+</tr>
+<tr>
+<td>@relativeref{Text,StbTrueTypeFont}</td>
+<td class="m-text-center m-warning">@ref Text-StbTrueTypeFont-behavior "some"</td>
+<td class="m-text-center m-primary">bundled</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th rowspan="3">TrueType (`*.ttf`)</th>
+<td rowspan="3">`TrueTypeFont`</td>
+<td>@relativeref{Text,FreeTypeFont}</td>
+<td class="m-text-center m-success">@ref Text-FreeTypeFont-behavior "minor"</td>
+<td class="m-text-center m-danger">external</td>
+<td class="m-text-center m-success">FreeType</td>
+</tr>
+<tr>
+<td>@relativeref{Text,HarfBuzzFont}</td>
+<td class="m-text-center m-dim">@ref Text-HarfBuzzFont-behavior "none"</td>
+<td class="m-text-center m-danger">external</td>
+<td class="m-text-center m-success">MIT</td>
+</tr>
+<tr>
+<td>@relativeref{Text,StbTrueTypeFont}</td>
+<td class="m-text-center m-warning">@ref Text-StbTrueTypeFont-behavior "some"</td>
+<td class="m-text-center m-primary">bundled</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
+</tr>
+</table>
+
+@endparblock
+
+In addition to the above, @ref Text::FreeTypeFont "FreeTypeFont" supports many
+more formats.
 
 @section file-formats-font-converters Font converters
 
