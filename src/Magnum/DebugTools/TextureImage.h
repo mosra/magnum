@@ -46,9 +46,10 @@ Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 @ref GL::Framebuffer::read(). On desktop OpenGL, if @gl_extension{ARB,get_texture_sub_image}
 is available, it's just an alias to @ref GL::Texture2D::subImage().
 
-The function expects the @ref GL::PixelFormat and @ref GL::PixelType
-combination or the generic @relativeref{Magnum,PixelFormat} to be framebuffer
-readable. In addition, on OpenGL ES 3.0, images with @ref GL::PixelType::Float
+The function expects that @p texture has a @ref GL::TextureFormat that's
+framebuffer-readable and that the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} is compatible with
+it. In addition, on OpenGL ES 3.0, images with @ref GL::PixelType::Float
 are supported --- they are reinterpreted as @ref GL::PixelType::UnsignedInt
 using an additional shader and the @glsl floatBitsToUint() @ce GLSL function
 and then reinterpreted back to @ref GL::PixelType::Float when read to client
@@ -80,9 +81,10 @@ Emulates @ref GL::CubeMapTexture::subImage() call on platforms that don't
 support it (such as OpenGL ES) by creating a framebuffer object and using
 @ref GL::Framebuffer::read().
 
-The function expects the @ref GL::PixelFormat and @ref GL::PixelType
-combination or the generic @relativeref{Magnum,PixelFormat} to be framebuffer
-readable.
+The function expects that @p texture has a @ref GL::TextureFormat that's
+framebuffer-readable and that the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} is compatible with
+it
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -113,9 +115,10 @@ Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 @gl_extension{ARB,get_texture_sub_image} is available, it's just an alias to
 @ref GL::Texture2D::subImage().
 
-The function expects the @ref GL::PixelFormat and @ref GL::PixelType
-combination or the generic @relativeref{Magnum,PixelFormat} to be framebuffer
-readable.
+The function expects that @p texture has a @ref GL::TextureFormat that's
+framebuffer-readable and that the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} is compatible with
+it
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 
@@ -145,9 +148,10 @@ Emulates @ref GL::CubeMapTexture::subImage() call on platforms that don't
 support it (such as OpenGL ES) by creating a framebuffer object and using
 @ref GL::Framebuffer::read().
 
-The function expects the @ref GL::PixelFormat and @ref GL::PixelType
-combination or the generic @relativeref{Magnum,PixelFormat} to be framebuffer
-readable.
+The function expects that @p texture has a @ref GL::TextureFormat that's
+framebuffer-readable and that the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} is compatible with
+it
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 
