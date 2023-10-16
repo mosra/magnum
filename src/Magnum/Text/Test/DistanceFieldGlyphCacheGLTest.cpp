@@ -70,14 +70,25 @@ struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
 const struct {
     const char* name;
     Vector2i sourceSize, size, sourceOffset;
+    Range2Di flushRange;
     Containers::Size2D offset;
 } SetImageData[]{
     {"",
-        {256, 256}, {64, 64},
-        {}, {}},
+        {256, 256}, {64, 64}, {},
+        {{}, {256, 256}},
+        {}},
     {"upload with offset",
-        {512, 384}, {128, 96},
-        {256, 128}, {128/4, 256/4}},
+        {512, 384}, {128, 96}, {256, 128},
+        {{256, 128}, {512, 384}},
+        {128/4, 256/4}},
+    {"tight flush rectangle",
+        {256, 256}, {64, 64}, {},
+        /* The image is 256x256 with a black 48x48 border around. Even with the
+           border excluded from the flush rectangle, the doSetImage() should be
+           still called with a large enough padding to properly run the
+           distance field algorithm as if the whole image was processed. */
+        {{48, 48}, {208, 208}},
+        {}},
 };
 
 DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
@@ -158,7 +169,7 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
         std::size_t(data.sourceOffset.y()),
         std::size_t(data.sourceOffset.x()),
         0}, src.size()));
-    cache.flushImage(Range2Di::fromSize(data.sourceOffset, inputImage->size()));
+    cache.flushImage(data.flushRange);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* On GLES processedImage() isn't implemented as it'd mean creating a
