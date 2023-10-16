@@ -1077,6 +1077,9 @@ See also:
     propagate errors when delegating to
     @ref Text::AbstractFontConverter::exportFontToSingleData() /
     @ref Text::AbstractFontConverter::exportGlyphCacheToSingleData()
+-   @ref TextureTools::DistanceField no longer generates an output that's
+    slightly shifted, which also makes the output invariant to flips and
+    transpositions
 -   @ref Trade::MeshData::attributeData(UnsignedInt) const was not correctly
     propagating attribute array size, causing array attributes to appear as
     non-array

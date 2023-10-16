@@ -47,11 +47,7 @@ layout(binding = 7)
 #endif
 uniform lowp sampler2D textureData;
 
-#ifdef TEXELFETCH_USABLE
-#ifndef GL_ES
-layout(pixel_center_integer) in mediump vec4 gl_FragCoord;
-#endif
-#else
+#ifndef TEXELFETCH_USABLE
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -68,11 +64,11 @@ bool hasValue(const mediump ivec2 position, const mediump ivec2 offset) {
 }
 #else
 bool hasValue(const mediump vec2 position, const mediump ivec2 offset) {
-    return texture(textureData, position + (vec2(offset) + vec2(0.5))*imageSizeInverted).r > 0.5;
+    return texture(textureData, position + vec2(offset)*imageSizeInverted).r > 0.5;
 }
 #endif
 
-mediump int findMinDistanceSquared(const mediump
+mediump float findMinDistanceSquared(const mediump
     #ifdef TEXELFETCH_USABLE
     ivec2
     #else
@@ -80,57 +76,40 @@ mediump int findMinDistanceSquared(const mediump
     #endif
     position, const bool isInside)
 {
-    /* Initialize minimal distance to a value just outside the radius */
-    mediump int minDistanceSquared = (RADIUS+1)*(RADIUS+1);
+    /* Initialize minimal distance to a value just outside the radius. As the
+       output coordinate is shifted by half a pixel from the input (see the
+       diagram in main() below), the X/Y distances are always a whole pixel
+       minus 0.5. Thus the max distance found in the below loop can be at most
+       `RADIUS - 0.5`, and the next nearest distance is thus `RADIUS + 0.5`. */
+    mediump float minDistanceSquared = (float(RADIUS)+0.5)*(float(RADIUS)+0.5);
 
     /* Go in cocentric squares around the point */
-    for(int i = 1; i <= RADIUS; ++i) {
-        /* First check the nearest points, since that's only four combinations.
-           If any of the four values is opposite of what is on `position`, we
-           found the nearest value. If the distance is not less than what's
-           found already, we don't even check the texture.
+    for(int i = 2; i <= RADIUS; ++i) {
+        /* Actual distance from the center for this iteration is half a pixel
+           less (see the diagram in main() below) */
+        const mediump float iF = float(i) - 0.5;
 
-           i = 1    i = 2     i = 3
+        /* Check for points further away from the initial 2x2 square, except
+           for corners. Every iteration checks all eight rotations/reflections
+           at the same distance. If the distance in given iteration is not less
+           than what's found already, we don't even check the texture -- but
+           can't return, since next iteration can still have closer values.
 
-                                0
-                      0
-             0
-            1o3     1 o 3    1  o  3
-             2
-                      2
-                                2
+            i = 2   i = 3
 
-           Since everything else in the cocentric square and all others will be
-           further away, we can stop if we found something. */
-        const mediump int centerDistanceSquared = i*i;
-        if(centerDistanceSquared >= minDistanceSquared)
-            return minDistanceSquared;
-        if(hasValue(position, ivec2(0,  i)) != isInside ||
-           hasValue(position, ivec2(-i, 0)) != isInside ||
-           hasValue(position, ivec2(0, -i)) != isInside ||
-           hasValue(position, ivec2(i,  0)) != isInside) {
-            return centerDistanceSquared;
-        }
-
-        /* Now check for points further away, except for the corner points.
-           Every iteration checks all eight rotations/reflections at the same
-           distance. Again, if the distance is not less than what's found
-           already, we don't even check the texture -- but can't return, since
-           next iteration can still have closer values.
-
-           i = 1    i = 2     i = 3
-           (none)
-                              91 08
-                     1 0     a     f
-                    2   7    2     7
-             o        o         o
-                    3   6    3     6
-                     4 5     b     e
-                              c4 5d
+                     9108
+             10     a    f
+            2  7    2    7
+            3p 6    3 p  6
+             45     b    e
+                     c45d
 
            Once we find something, it's the closest value possible in this
            cycle, so we stop the cycle. But next iterations can still have
-           values that are closer, so can't return. */
+           values that are closer, so can't return.
+
+           Note that the integer `position` isn't at the center, which means
+           the offsets aren't symmetric. */
         for(int j = 1; j < RADIUS; ++j) {
             /* Don't go further than current radius - 1 (i.e., excluding the
                corner). The loop needs to be compile-time bound otherwise some
@@ -138,43 +117,47 @@ mediump int findMinDistanceSquared(const mediump
                this directly in the loop condition. */
             if(j >= i) break;
 
-            const mediump int sideDistanceSquared = i*i + j*j;
+            /* Again, actual distance from the center is half a pixel less (see
+               the diagram in main() below) */
+            const mediump float jF = float(j) - 0.5;
+            const mediump float sideDistanceSquared = iF*iF + jF*jF;
             if(sideDistanceSquared >= minDistanceSquared)
                 break;
-            if(hasValue(position, ivec2( j,  i)) != isInside ||
-               hasValue(position, ivec2(-j,  i)) != isInside ||
-               hasValue(position, ivec2(-i,  j)) != isInside ||
-               hasValue(position, ivec2(-i, -j)) != isInside ||
-               hasValue(position, ivec2(-j, -i)) != isInside ||
-               hasValue(position, ivec2( j, -i)) != isInside ||
-               hasValue(position, ivec2( i, -j)) != isInside ||
-               hasValue(position, ivec2( i,  j)) != isInside) {
+            if(hasValue(position, ivec2(  j,   i)) != isInside || /* 0, 8 */
+               hasValue(position, ivec2(1-j,   i)) != isInside || /* 1, 9 */
+               hasValue(position, ivec2(1-i,   j)) != isInside || /* 2, a */
+               hasValue(position, ivec2(1-i, 1-j)) != isInside || /* 3, b */
+               hasValue(position, ivec2(1-j, 1-i)) != isInside || /* 4, c */
+               hasValue(position, ivec2(  j, 1-i)) != isInside || /* 5, d */
+               hasValue(position, ivec2(  i, 1-j)) != isInside || /* 6, e */
+               hasValue(position, ivec2(  i,   j)) != isInside) { /* 7, f */
                 minDistanceSquared = sideDistanceSquared;
                 break;
             }
         }
 
-        /* Finally, check for the corners, which is again just four cases:
+        /* Then check for the corners, which is just four cases. Again the
+           integer `position` isn't at the center, which means the offsets
+           aren't symmetric.
 
-           i = 1    i = 2     i = 3
+            i = 2   i = 3
 
-                             1     0
-                    1   0
-            1 0
-             o        o         o
-            2 3
-                    2   3
-                             2     3
+                    1    0
+            1  0
+
+             p        p
+            2  3
+                    2    3
 
            If we find something, it's most probably not the nearest distance,
            since the following iterations can be much closer. */
-        const mediump int cornerDistanceSquared = 2*i*i;
+        const mediump float cornerDistanceSquared = 2.0*iF*iF;
         if(cornerDistanceSquared >= minDistanceSquared)
             continue;
-        if(hasValue(position, ivec2( i,  i)) != isInside ||
-           hasValue(position, ivec2(-i,  i)) != isInside ||
-           hasValue(position, ivec2(-i, -i)) != isInside ||
-           hasValue(position, ivec2( i, -i)) != isInside) {
+        if(hasValue(position, ivec2(  i,   i)) != isInside ||
+           hasValue(position, ivec2(1-i,   i)) != isInside ||
+           hasValue(position, ivec2(1-i, 1-i)) != isInside ||
+           hasValue(position, ivec2(  i, 1-i)) != isInside) {
             minDistanceSquared = cornerDistanceSquared;
         }
     }
@@ -183,24 +166,76 @@ mediump int findMinDistanceSquared(const mediump
 }
 
 void main() {
+    /* The -0.5 is to make the position aligned with the center of the input
+       pixel, and in the integer case to make the conversion not round up */
     #ifdef TEXELFETCH_USABLE
-    #ifndef GL_ES
-    const mediump ivec2 position = ivec2(gl_FragCoord.xy*scaling);
+    const mediump ivec2 position = ivec2(gl_FragCoord.xy*scaling - vec2(0.5));
     #else
-    const mediump ivec2 position = ivec2((gl_FragCoord.xy - vec2(0.5))*scaling);
-    #endif
-    #else
-    const mediump vec2 position = (gl_FragCoord.xy - vec2(0.5))*scaling*imageSizeInverted;
+    const mediump vec2 position = (gl_FragCoord.xy*scaling - vec2(0.5))*imageSizeInverted;
     #endif
 
-    /* If pixel at the position is inside (its value > 0.5), we are looking for
-       nearest pixel outside and the value will be positive (or > 0.5 after
-       normalization). If it is outside (its value < 0), we are looking for
-       nearest pixel inside and the value will be negative (or < 0.5). */
-    const bool isInside = hasValue(position, ivec2(0, 0));
-    const mediump float minDistance = sqrt(float(findMinDistanceSquared(position, isInside)));
+    /*  +=======+=====
+        H | | | H | |    Assuming the ratio of input and output sizes is a
+        H-+-+-+-H-+-+    multiple of 2 (in this diagram it's scaled 4x), the
+        H |k|l| H |      center of the output pixel `o` is always between four
+        H-+-o-+-H-+      input pixels `i`, `j`, `k`, `l`.Then, depending on
+        H |i|j| H        which of the four input pixels have a value > 0.5, the
+        H-+-+-+-H-       following six cases can happen. Other combinations are
+        H | | |          just variants of these.
+        +=====
 
-    /* Final signed distance, normalized from [-radius-1, radius+1] to [0, 1] */
+       - In case A and F, the pixel is either inside or outside and we have to
+         look further around to know the distance to the edge.
+       - In case B and C, the pixel is exactly on the edge, i.e. distance is
+         0, and we don't need to look further.
+       - In case D and E, the pixel is at a distance of 0.5 or (0.5, 0.5) from
+         the edge, and we don't need to look further.
+
+          A        B        C        D      | E        F
+        k---l    k---l    k   l    k   l   -k   l    k   l
+        |   |    |  /        /     |
+        | o |    | o        o      | o        o        o
+        |   |    |/        /       |
+        i---j    i   j    i   j    i   j    i   j    i   j
+
+       The main complication is distinguishing cases C and D, in all other
+       cases it's simply a matter of counting the number of pixels that have a
+       value of > 0.5.
+
+       Note that the integer `position` isn't at `o` (which is between pixels)
+       but aliases `i`. Which means the offsets aren't symmetric. */
+    const bool i = hasValue(position, ivec2(0, 0));
+    const bool j = hasValue(position, ivec2(1, 0));
+    const bool k = hasValue(position, ivec2(0, 1));
+    const bool l = hasValue(position, ivec2(1, 1));
+
+    mediump float minDistance;
+    bool isInside;
+    const int sum = int(i) + int(j) + int(k) + int(l);
+    /* Case B */
+    if(sum == 3) {
+        isInside = false;
+        minDistance = 0.0;
+    /* Case C and D */
+    } else if(sum == 2) {
+        isInside = false;
+        if((i && l) || (j && k))
+            minDistance = 0.0;
+        else
+            minDistance = 0.5;
+    /* Case E */
+    } else if(sum == 1) {
+        isInside = false;
+        /* sqrt(0.5*0.5 + 0.5*0.5) */
+        minDistance = 0.7071067811865475;
+    /* Case A and F */
+    } else {
+        isInside = sum == 4;
+        minDistance = sqrt(float(findMinDistanceSquared(position, isInside)));
+    }
+
+    /* Final signed distance, normalized from [-radius + 0.5, radius + 0.5] to
+       [0, 1] */
     const highp float halfSign = isInside ? 0.5 : -0.5;
-    value = halfSign*minDistance/float(RADIUS + 1) + 0.5;
+    value = halfSign*minDistance/(float(RADIUS) + 0.5) + 0.5;
 }

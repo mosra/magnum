@@ -70,6 +70,7 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
     void run();
 
     void formatNotDrawable();
+    void sizeRatioNotMultipleOfTwo();
 
     #ifndef MAGNUM_TARGET_WEBGL
     void benchmark();
@@ -100,7 +101,8 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
     addInstancedTests({&DistanceFieldGLTest::run},
         Containers::arraySize(RunData));
 
-    addTests({&DistanceFieldGLTest::formatNotDrawable});
+    addTests({&DistanceFieldGLTest::formatNotDrawable,
+              &DistanceFieldGLTest::sizeRatioNotMultipleOfTwo});
 
     #ifndef MAGNUM_TARGET_WEBGL
     addBenchmarks({&DistanceFieldGLTest::benchmark}, 5, BenchmarkType::GpuTime);
@@ -311,6 +313,44 @@ void DistanceFieldGLTest::formatNotDrawable() {
     #else
     CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
     #endif
+}
+
+void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_shared_exponent>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
+    #endif
+
+    GL::Texture2D input;
+    input.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
+        .setStorage(1, GL::textureFormat(PixelFormat::R8Unorm), {23*14, 23*14});
+
+    GL::Texture2D output;
+    output.setStorage(1, GL::textureFormat(PixelFormat::RGBA8Unorm), {23, 23});
+
+    GL::Texture2D outputInvalid;
+    outputInvalid.setStorage(1, GL::textureFormat(PixelFormat::RGBA8Unorm), {23*2, 23*2});
+
+    DistanceField distanceField{4};
+
+    /* This should be fine */
+    distanceField(input, output, {{}, Vector2i{23}}
+        #ifdef MAGNUM_TARGET_GLES
+        , Vector2i{23*14}
+        #endif
+        );
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    distanceField(input, output, {{}, Vector2i{23*2}}
+        #ifdef MAGNUM_TARGET_GLES
+        , Vector2i{23*14}
+        #endif
+        );
+    CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n");
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

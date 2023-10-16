@@ -208,11 +208,20 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
     CORRADE_ASSERT(output.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete,
         "TextureTools::DistanceField: output texture format not framebuffer-drawable:" << output.checkStatus(GL::FramebufferTarget::Draw), );
 
+    /* The shader assumes that the ratio between the output and input is a
+       multiple of 2, causing output pixel *centers* to be aligned with input
+       pixel *edges* */
+    const Vector2i scaling = imageSize/rectangle.size();
+    CORRADE_ASSERT(imageSize % rectangle.size() == Vector2i{0} &&
+                   scaling % 2 == Vector2i{0},
+        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got" << Debug::packed << imageSize << "and" << Debug::packed << rectangle.size(), );
+
     output
         .clear(GL::FramebufferClear::Color)
         .bind();
 
-    _state->shader.setScaling(Vector2(imageSize)/Vector2(rectangle.size()))
+    _state->shader
+        .setScaling(Vector2{scaling})
         .bindTexture(input);
 
     #ifndef MAGNUM_TARGET_GLES
