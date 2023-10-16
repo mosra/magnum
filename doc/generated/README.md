@@ -32,7 +32,8 @@ output is put into `doc/` directory. The executable requires two textures:
     ```
 
 -   `vector-distancefield.png`, generated as full-page PNG output at 360 DPI
-    (1024x1024) and then processed through `magnum-distancefieldconverter`
+    (1024x1024) to `vector-src.png` and then processed through
+    `magnum-distancefieldconverter`
 
     ```bash
     magnum-distancefieldconverter --importer PngImporter --converter PngImageConverter --output-size "64 64" --radius 16 vector-src.png vector-distancefield.png
