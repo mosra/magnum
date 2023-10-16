@@ -200,7 +200,11 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
                    (imageSize/rectangle.size()) % 2 == Vector2i{0},
         "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got" << Debug::packed << imageSize << "and" << Debug::packed << rectangle.size(), );
 
+    /* Save existing viewport to restore it back after */
+    const Range2Di previousViewport = output.viewport();
+
     output
+        .setViewport(rectangle)
         .clear(GL::FramebufferClear::Color)
         .bind();
 
@@ -208,6 +212,9 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
         .bindTexture(input)
         .setImageSizeInverted(1.0f/Vector2(imageSize))
         .draw(_state->mesh);
+
+    /* Restore the previous viewport */
+    output.setViewport(previousViewport);
 }
 
 void DistanceField::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i&
