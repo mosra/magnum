@@ -99,7 +99,12 @@ if(MAGNUM_BUILD_GL_TESTS)
         list(APPEND TextureToolsDistanceFieldGLTest_SRCS DistanceFieldGLTestFiles)
     endif()
     corrade_add_test(TextureToolsDistanceFieldGLTest ${TextureToolsDistanceFieldGLTest_SRCS}
-        LIBRARIES MagnumTextureTools MagnumGL MagnumTrade MagnumDebugTools MagnumOpenGLTester
+        LIBRARIES
+            MagnumDebugTools
+            MagnumGL
+            MagnumOpenGLTester
+            MagnumTextureToolsTestLib
+            MagnumTrade
         FILES
             DistanceFieldGLTestFiles/input.tga
             DistanceFieldGLTestFiles/output.tga)

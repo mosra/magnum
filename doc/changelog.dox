@@ -1654,6 +1654,9 @@ See also:
     -   The @ref Text::AbstractGlyphCache::image() query now returns a
         @ref MutableImageView3D instead of an @ref Image2D in order to support
         incremental population and texture arrays
+-   @ref TextureTools::DistanceField now asserts that the output texture has a
+    framebuffer-drawable format. Before it only printed an error message and
+    silently did nothing, causing a hard-to-track error.
 -   The @ref Trade::AnimationTrackTarget enum was extended from 8 to 16 bits to
     provide more room for custom targets, consistently with
     @ref Trade::MeshAttribute.

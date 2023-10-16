@@ -67,6 +67,9 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
     /* This tests the GL::Texture overload, which itself calls into the
        GL::Framebuffer overload so both are covered */
     void run();
+
+    void formatNotDrawable();
+
     #ifndef MAGNUM_TARGET_WEBGL
     void benchmark();
     #endif
@@ -92,6 +95,8 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
 
     addInstancedTests({&DistanceFieldGLTest::run},
         Containers::arraySize(RunData));
+
+    addTests({&DistanceFieldGLTest::formatNotDrawable});
 
     #ifndef MAGNUM_TARGET_WEBGL
     addBenchmarks({&DistanceFieldGLTest::benchmark}, 5, BenchmarkType::GpuTime);
@@ -253,6 +258,42 @@ void DistanceFieldGLTest::run() {
            That's okay. It's also possible that the ground truth itself has
            rounding errors ;) */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
+}
+
+void DistanceFieldGLTest::formatNotDrawable() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_shared_exponent>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
+    #endif
+
+    GL::Texture2D input;
+    input.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
+        .setStorage(1, GL::textureFormat(PixelFormat::R8Unorm), {64, 64});
+
+    GL::Texture2D output;
+    #ifdef MAGNUM_TARGET_GLES2
+    output.setImage(0, GL::TextureFormat::Luminance, ImageView2D{GL::PixelFormat::Luminance, GL::PixelType::UnsignedByte, Vector2i{4}});
+    #else
+    output.setImage(0, GL::TextureFormat::RGB9E5, ImageView2D{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{4}});
+    #endif
+
+    DistanceField distanceField{4};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    distanceField(input, output, {{}, Vector2i{4}}
+        #ifdef MAGNUM_TARGET_GLES
+        , Vector2i{64}
+        #endif
+        );
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: output texture format not framebuffer-drawable: GL::Framebuffer::Status::Unsupported\n");
+    #else
+    CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

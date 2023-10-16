@@ -205,12 +205,8 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
     Vector2i imageSize = input.imageSize(0);
     #endif
 
-    const GL::Framebuffer::Status status = output.checkStatus(GL::FramebufferTarget::Draw);
-    if(status != GL::Framebuffer::Status::Complete) {
-        Error() << "TextureTools::DistanceField: cannot render to given output texture, unexpected framebuffer status"
-                << status;
-        return;
-    }
+    CORRADE_ASSERT(output.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete,
+        "TextureTools::DistanceField: output texture format not framebuffer-drawable:" << output.checkStatus(GL::FramebufferTarget::Draw), );
 
     output
         .clear(GL::FramebufferClear::Color)

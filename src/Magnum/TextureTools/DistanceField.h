@@ -81,15 +81,6 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
 @attention This is a GPU-only implementation, so it expects an active GL
     context.
 
-@note If internal format of @p output texture is not renderable, this function
-    prints a message to error output and does nothing. On desktop OpenGL and
-    OpenGL ES 3.0 it's common to render to @ref GL::TextureFormat::R8. On
-    OpenGL ES 2.0 you can use @ref GL::TextureFormat::Red if
-    @gl_extension{EXT,texture_rg} is available; if not, the smallest but still
-    inefficient supported format is in most cases @ref GL::TextureFormat::RGB,
-    rendering to @ref GL::TextureFormat::Luminance is not supported in most
-    cases.
-
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
@@ -136,6 +127,15 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceField {
          *      on desktop GL the information is gathered automatically using
          *      @ref GL::Texture2D::imageSize().
          * @m_since_latest
+         *
+         * The @p output texture is expected to have a framebuffer-drawable
+         * @ref GL::TextureFormat. On desktop OpenGL and
+         * OpenGL ES 3.0 it's common to render to @ref GL::TextureFormat::R8.
+         * On OpenGL ES 2.0 you can use @ref GL::TextureFormat::Red if
+         * @gl_extension{EXT,texture_rg} is available; if not, the smallest but
+         * still inefficient supported format is in most cases
+         * @ref GL::TextureFormat::RGB. The @ref GL::TextureFormat::Luminance
+         * format usually isn't renderable.
          */
         void operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i& imageSize
             #ifndef MAGNUM_TARGET_GLES
