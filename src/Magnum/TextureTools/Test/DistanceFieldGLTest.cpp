@@ -266,8 +266,6 @@ void DistanceFieldGLTest::run() {
     else
         pixels = Containers::arrayCast<2, UnsignedByte>(pixels3);
 
-    CORRADE_EXPECT_FAIL_IF(!data.offset.isZero(),
-        "Currently broken if a non-zero offset is used.");
     CORRADE_COMPARE_WITH(
         pixels,
         Utility::Path::join(_testDir, "output.tga"),

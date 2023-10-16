@@ -192,16 +192,6 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    /* On GLES2 if EXT_unpack_subimage isn't supported or on WebGL 1, the whole
-       texture gets uploaded and processed every time. Which circumvents this
-       problem. */
-    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_EXPECT_FAIL_IF(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::unpack_subimage>() && !data.sourceOffset.isZero(),
-        "The distance field tool is currently broken if a non-zero offset is used.");
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    CORRADE_EXPECT_FAIL_IF(!data.sourceOffset.isZero(),
-        "The distance field tool is currently broken if a non-zero offset is used.");
-    #endif
     /* The format may be three-component, consider just the first channel */
     Containers::StridedArrayView3D<const char> pixels = actual.pixels();
     CORRADE_COMPARE_WITH((Containers::arrayCast<2, const UnsignedByte>(pixels.prefix({pixels.size()[0], pixels.size()[1], 1})).exceptPrefix(data.offset)),

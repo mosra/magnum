@@ -23,6 +23,25 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#if (defined(GL_ES) && __VERSION__ >= 300) || (!defined(GL_ES) && __VERSION__ >= 150)
+#define TEXELFETCH_USABLE
+#endif
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0)
+#endif
+uniform mediump vec2 imageSizeInverted;
+
+#ifndef NEW_GLSL
+#define out varying
+#endif
+out mediump vec2 inputTextureCoordinates;
+
 void main() {
     fullScreenTriangle();
+    #ifdef TEXELFETCH_USABLE
+    inputTextureCoordinates = (gl_Position.xy*0.5 + 0.5)/imageSizeInverted;
+    #else
+    inputTextureCoordinates = gl_Position.xy*0.5 + 0.5;
+    #endif
 }

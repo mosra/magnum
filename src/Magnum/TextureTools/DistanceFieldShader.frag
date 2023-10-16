@@ -37,11 +37,6 @@
 #define TEXELFETCH_USABLE
 #endif
 
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0)
-#endif
-uniform mediump vec2 scaling;
-
 #ifdef EXPLICIT_BINDING
 layout(binding = 7)
 #endif
@@ -49,10 +44,12 @@ uniform lowp sampler2D textureData;
 
 #ifndef TEXELFETCH_USABLE
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1)
+layout(location = 0)
 #endif
 uniform mediump vec2 imageSizeInverted;
 #endif
+
+in mediump vec2 inputTextureCoordinates;
 
 #ifdef NEW_GLSL
 out lowp float value;
@@ -169,9 +166,9 @@ void main() {
     /* The -0.5 is to make the position aligned with the center of the input
        pixel, and in the integer case to make the conversion not round up */
     #ifdef TEXELFETCH_USABLE
-    const mediump ivec2 position = ivec2(gl_FragCoord.xy*scaling - vec2(0.5));
+    const mediump ivec2 position = ivec2(inputTextureCoordinates - vec2(0.5));
     #else
-    const mediump vec2 position = (gl_FragCoord.xy*scaling - vec2(0.5))*imageSizeInverted;
+    const mediump vec2 position = inputTextureCoordinates - vec2(0.5)*imageSizeInverted;
     #endif
 
     /*  +=======+=====

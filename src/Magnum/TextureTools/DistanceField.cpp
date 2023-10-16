@@ -58,11 +58,6 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
 
         explicit DistanceFieldShader(UnsignedInt radius);
 
-        DistanceFieldShader& setScaling(const Vector2& scaling) {
-            setUniform(_scalingUniform, scaling);
-            return *this;
-        }
-
         DistanceFieldShader& setImageSizeInverted(const Vector2& size) {
             setUniform(_imageSizeInvertedUniform, size);
             return *this;
@@ -80,8 +75,7 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
            Unit 6 is used by Shaders::Vector and Shaders::DistanceFieldVector. */
         enum: Int { TextureUnit = 7 };
 
-        Int _scalingUniform{0},
-            _imageSizeInvertedUniform;
+        Int _imageSizeInvertedUniform{0};
 };
 
 DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
@@ -131,16 +125,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     if(v < GL::Version::GLES310)
     #endif
     {
-        _scalingUniform = uniformLocation("scaling"_s);
-
-        #ifndef MAGNUM_TARGET_GLES
-        if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
-        #else
-        if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
-        #endif
-        {
-            _imageSizeInvertedUniform = uniformLocation("imageSizeInverted"_s);
-        }
+        _imageSizeInvertedUniform = uniformLocation("imageSizeInverted"_s);
     }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -211,9 +196,8 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
     /* The shader assumes that the ratio between the output and input is a
        multiple of 2, causing output pixel *centers* to be aligned with input
        pixel *edges* */
-    const Vector2i scaling = imageSize/rectangle.size();
     CORRADE_ASSERT(imageSize % rectangle.size() == Vector2i{0} &&
-                   scaling % 2 == Vector2i{0},
+                   (imageSize/rectangle.size()) % 2 == Vector2i{0},
         "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got" << Debug::packed << imageSize << "and" << Debug::packed << rectangle.size(), );
 
     output
@@ -221,20 +205,9 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
         .bind();
 
     _state->shader
-        .setScaling(Vector2{scaling})
-        .bindTexture(input);
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
-    #else
-    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
-    #endif
-    {
-        _state->shader.setImageSizeInverted(1.0f/Vector2(imageSize));
-    }
-
-    /* Draw the mesh */
-    _state->shader.draw(_state->mesh);
+        .bindTexture(input)
+        .setImageSizeInverted(1.0f/Vector2(imageSize))
+        .draw(_state->mesh);
 }
 
 void DistanceField::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i&
