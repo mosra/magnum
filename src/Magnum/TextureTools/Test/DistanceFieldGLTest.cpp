@@ -85,10 +85,6 @@ const struct {
     {"with offset", {128, 96}, {64, 32}},
 };
 
-#ifdef MAGNUM_TARGET_GLES
-using namespace Containers::Literals; /* for SwiftShader detection */
-#endif
-
 DistanceFieldGLTest::DistanceFieldGLTest() {
     addTests({&DistanceFieldGLTest::construct,
               &DistanceFieldGLTest::constructCopy,
@@ -198,7 +194,7 @@ void DistanceFieldGLTest::run() {
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
         outputFormat = GL::TextureFormat::R8;
     else
-        outputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
+        outputFormat = GL::TextureFormat::RGBA;
     #else
     const GL::TextureFormat outputFormat = GL::TextureFormat::RGBA;
     #endif
@@ -213,29 +209,11 @@ void DistanceFieldGLTest::run() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    std::ostringstream out;
-    {
-        Error redirectError{&out};
-        distanceField(input, output,
-            Range2Di::fromSize(data.offset, Vector2i{64})
-            #ifdef MAGNUM_TARGET_GLES
-            , inputImage->size()
-            #endif
-            );
-    }
-
-    #ifdef MAGNUM_TARGET_GLES
-    /* Probably due to the luminance target pixel format? Works with 4.1,
-        didn't find any commit in between that would clearly affect
-        this. */
-    if(GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s)) {
-        CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: cannot render to given output texture, unexpected framebuffer status GL::Framebuffer::Status::IncompleteAttachment\n");
-        CORRADE_SKIP("SwiftShader 4.0.0 has a bug where the framebuffer is considered incomplete.");
-    } else
-    #endif
-    {
-        CORRADE_COMPARE(out.str(), "");
-    }
+    distanceField(input, output, Range2Di::fromSize(data.offset, Vector2i{64})
+        #ifdef MAGNUM_TARGET_GLES
+        , inputImage->size()
+        #endif
+        );
 
     Containers::Optional<Image2D> actualOutputImage;
     #ifndef MAGNUM_TARGET_GLES2
@@ -244,7 +222,7 @@ void DistanceFieldGLTest::run() {
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
         actualOutputImage = Image2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte};
     else
-        actualOutputImage = Image2D{PixelFormat::R8Unorm};
+        actualOutputImage = Image2D{PixelFormat::RGBA8Unorm};
     #else
     actualOutputImage = Image2D{PixelFormat::RGBA8Unorm};
     #endif
