@@ -107,7 +107,7 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
               &DistanceFieldGLTest::sizeRatioNotMultipleOfTwo});
 
     #ifndef MAGNUM_TARGET_WEBGL
-    addBenchmarks({&DistanceFieldGLTest::benchmark}, 5, BenchmarkType::GpuTime);
+    addBenchmarks({&DistanceFieldGLTest::benchmark}, 10, BenchmarkType::GpuTime);
     #endif
 
     /* Load the plugin directly from the build tree. Otherwise it's either
@@ -595,7 +595,7 @@ void DistanceFieldGLTest::benchmark() {
 
     DistanceField distanceField{32};
 
-    CORRADE_BENCHMARK(25) {
+    CORRADE_BENCHMARK(50) {
         distanceField(input, framebuffer, {{}, Vector2i{64}}
             #ifdef MAGNUM_TARGET_GLES
             , inputImage->size()

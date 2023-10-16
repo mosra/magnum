@@ -205,7 +205,6 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
 
     output
         .setViewport(rectangle)
-        .clear(GL::FramebufferClear::Color)
         .bind();
 
     _state->shader
