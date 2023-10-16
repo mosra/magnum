@@ -44,6 +44,7 @@
 #include "Magnum/DebugTools/TextureImage.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
@@ -336,6 +337,9 @@ void DistanceFieldGLTest::benchmark() {
         .setMagnificationFilter(GL::SamplerFilter::Nearest)
         .setStorage(1, outputFormat, Vector2i{64});
 
+    GL::Framebuffer framebuffer{{{}, Vector2i{64}}};
+    framebuffer.attachTexture(GL::Framebuffer::ColorAttachment(0), output, 0);
+
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     DistanceField distanceField{32};
@@ -343,15 +347,15 @@ void DistanceFieldGLTest::benchmark() {
     /* So it doesn't spam too much */
     GL::DebugOutput::setCallback(nullptr);
 
-    CORRADE_BENCHMARK(5) {
-        distanceField(input, output, {{}, Vector2i{64}}
+    CORRADE_BENCHMARK(25) {
+        distanceField(input, framebuffer, {{}, Vector2i{64}}
             #ifdef MAGNUM_TARGET_GLES
             , inputImage->size()
             #endif
             );
-
-        MAGNUM_VERIFY_NO_GL_ERROR();
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     GL::DebugOutput::setDefaultCallback();
 }
