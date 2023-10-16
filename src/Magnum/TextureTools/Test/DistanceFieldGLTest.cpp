@@ -53,10 +53,6 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
-#ifndef MAGNUM_TARGET_WEBGL
-#include "Magnum/GL/DebugOutput.h"
-#endif
-
 #include "configure.h"
 
 namespace Magnum { namespace TextureTools { namespace Test { namespace {
@@ -344,9 +340,6 @@ void DistanceFieldGLTest::benchmark() {
 
     DistanceField distanceField{32};
 
-    /* So it doesn't spam too much */
-    GL::DebugOutput::setCallback(nullptr);
-
     CORRADE_BENCHMARK(25) {
         distanceField(input, framebuffer, {{}, Vector2i{64}}
             #ifdef MAGNUM_TARGET_GLES
@@ -356,8 +349,6 @@ void DistanceFieldGLTest::benchmark() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-
-    GL::DebugOutput::setDefaultCallback();
 }
 #endif
 
