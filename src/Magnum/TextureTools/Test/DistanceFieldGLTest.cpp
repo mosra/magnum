@@ -344,8 +344,6 @@ void DistanceFieldGLTest::benchmark() {
     GL::DebugOutput::setCallback(nullptr);
 
     CORRADE_BENCHMARK(5) {
-        /* This is creating the shader from scratch every time, so no wonder
-           it's so freaking slow */
         distanceField(input, output, {{}, Vector2i{64}}
             #ifdef MAGNUM_TARGET_GLES
             , inputImage->size()
