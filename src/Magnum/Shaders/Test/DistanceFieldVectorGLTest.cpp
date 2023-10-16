@@ -869,14 +869,13 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    /* Should be almost the same as Shaders::Vector output, but due to various
-       differences in the SDF output and too sharp default shininess it can't
-       be exact */
+    /* Should be almost the same as Shaders::Vector output, but due to too
+       sharp default shininess it can't be exact */
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 201.0f, 6.1f}));
+        (DebugTools::CompareImageToFile{_manager, 131.0f, 1.83f}));
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
@@ -980,14 +979,13 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    /* Should be almost the same as Shaders::Vector output, but due to various
-       differences in the SDF output and too sharp default shininess it can't
-       be exact */
+    /* Should be almost the same as Shaders::Vector output, but due to too
+       sharp default shininess it can't be exact */
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 201.0f, 6.1f}));
+        (DebugTools::CompareImageToFile{_manager, 131.0f, 1.83f}));
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
