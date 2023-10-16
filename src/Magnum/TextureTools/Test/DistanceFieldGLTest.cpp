@@ -80,6 +80,8 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
         Containers::String _testDir;
 };
 
+using namespace Math::Literals;
+
 const struct {
     const char* name;
     Vector2i size;
@@ -205,21 +207,34 @@ void DistanceFieldGLTest::runTexture() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    const GL::TextureFormat outputFormat = GL::TextureFormat::R8;
+    const GL::TextureFormat outputTextureFormat = GL::TextureFormat::R8;
+    const GL::PixelFormat outputPixelFormat = GL::PixelFormat::Red;
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    GL::TextureFormat outputFormat;
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
-        outputFormat = GL::TextureFormat::R8;
-    else
-        outputFormat = GL::TextureFormat::RGBA;
+    GL::TextureFormat outputTextureFormat;
+    GL::PixelFormat outputPixelFormat;
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        outputTextureFormat = GL::TextureFormat::R8;
+        outputPixelFormat = GL::PixelFormat::Red;
+    } else {
+        outputTextureFormat = GL::TextureFormat::RGBA;
+        outputPixelFormat = GL::PixelFormat::RGBA;
+    }
     #else
-    const GL::TextureFormat outputFormat = GL::TextureFormat::RGBA;
+    const GL::TextureFormat outputTextureFormat = GL::TextureFormat::RGBA;
+    const GL::PixelFormat outputPixelFormat = GL::PixelFormat::RGBA;
     #endif
+    const GL::PixelType outputPixelType = GL::PixelType::UnsignedByte;
 
     GL::Texture2D output;
     output.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
         .setMagnificationFilter(GL::SamplerFilter::Nearest)
-        .setStorage(1, outputFormat, data.size);
+        .setStorage(1, outputTextureFormat, data.size);
+
+    /* Fill the texture with some data to verify they don't affect the output
+       and aren't accidentally overwritten when running on just a
+       subrectangle */
+    output.setSubImage(0, {}, ImageView2D{outputPixelFormat, outputPixelType, data.size,
+    Containers::Array<char>{DirectInit, std::size_t(data.size.product()*GL::pixelFormatSize(outputPixelFormat, outputPixelType)), '\x66'}});
 
     DistanceField distanceField{32};
     CORRADE_COMPARE(distanceField.radius(), 32);
@@ -243,6 +258,16 @@ void DistanceFieldGLTest::runTexture() {
     #else
     actualOutputImage = Image2D{PixelFormat::RGBA8Unorm};
     #endif
+
+    /* Verify that the other data weren't overwritten if processing just a
+       subrange -- it should still have the original data kept */
+    if(data.offset.product()) {
+        DebugTools::textureSubImage(output, 0, Range2Di::fromSize({}, Vector2i{1}), *actualOutputImage);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(actualOutputImage->data()[0], '\x66');
+    }
 
     DebugTools::textureSubImage(output, 0, Range2Di::fromSize(data.offset, Vector2i{64}), *actualOutputImage);
 
@@ -351,6 +376,19 @@ void DistanceFieldGLTest::runFramebuffer() {
     GL::Framebuffer output{{{}, data.size}};
     output.attachTexture(GL::Framebuffer::ColorAttachment(0), outputTexture, 0);
 
+    /* Clear the framebuffer to some data to verify it's not getting cleared
+       again inside, stomping on existing data. Use the statless clear command
+       if possible to avoid the clear color getting accidentally reused for a
+       clear inside, making the test wrongly pass */
+    #ifndef MAGNUM_TARGET_GLES2
+    output.clearColor(0, 0x667788_rgbf);
+    #else
+    GL::Renderer::setClearColor(0x667788_rgbf);
+    output.clear(GL::FramebufferClear::Color);
+    /* Same as in GL::Renderer::initializeContextBasedFunctionality() */
+    GL::Renderer::setClearColor(0x1f1f1f_rgbf);
+    #endif
+
     DistanceField distanceField{32};
     CORRADE_COMPARE(distanceField.radius(), 32);
 
@@ -376,6 +414,16 @@ void DistanceFieldGLTest::runFramebuffer() {
     #else
     actualOutputImage = Image2D{PixelFormat::RGBA8Unorm};
     #endif
+
+    /* Verify that the other data weren't overwritten if processing just a
+       subrange -- it should still have the original data kept */
+    if(data.offset.product()) {
+        DebugTools::textureSubImage(outputTexture, 0, Range2Di::fromSize({}, Vector2i{1}), *actualOutputImage);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(actualOutputImage->data()[0], '\x66');
+    }
 
     DebugTools::textureSubImage(outputTexture, 0, Range2Di::fromSize(data.offset, Vector2i{64}), *actualOutputImage);
 
