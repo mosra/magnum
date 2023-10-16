@@ -65,9 +65,8 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
     void constructCopy();
     void constructMove();
 
-    /* This tests the GL::Texture overload, which itself calls into the
-       GL::Framebuffer overload so both are covered */
-    void run();
+    void runTexture();
+    void runFramebuffer();
 
     void formatNotDrawable();
     void sizeRatioNotMultipleOfTwo();
@@ -98,7 +97,8 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
               &DistanceFieldGLTest::constructCopy,
               &DistanceFieldGLTest::constructMove});
 
-    addInstancedTests({&DistanceFieldGLTest::run},
+    addInstancedTests({&DistanceFieldGLTest::runTexture,
+                       &DistanceFieldGLTest::runFramebuffer},
         Containers::arraySize(RunData));
 
     addTests({&DistanceFieldGLTest::formatNotDrawable,
@@ -156,7 +156,7 @@ void DistanceFieldGLTest::constructMove() {
     CORRADE_VERIFY(std::is_nothrow_move_assignable<DistanceField>::value);
 }
 
-void DistanceFieldGLTest::run() {
+void DistanceFieldGLTest::runTexture() {
     auto&& data = RunData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -245,6 +245,139 @@ void DistanceFieldGLTest::run() {
     #endif
 
     DebugTools::textureSubImage(output, 0, Range2Di::fromSize(data.offset, Vector2i{64}), *actualOutputImage);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /* Flip the output back */
+    Containers::StridedArrayView3D<char> pixels3 = actualOutputImage->pixels();
+    if(data.flipX)
+        Utility::flipInPlace<1>(pixels3);
+    if(data.flipY)
+        Utility::flipInPlace<0>(pixels3);
+
+    /* Use just the first channel if the format is RGBA */
+    Containers::StridedArrayView2D<UnsignedByte> pixels;
+    if(actualOutputImage->format() == PixelFormat::RGBA8Unorm)
+        pixels = Containers::arrayCast<2, Color4ub>(pixels3).slice(&Color4ub::r);
+    else
+        pixels = Containers::arrayCast<2, UnsignedByte>(pixels3);
+
+    CORRADE_COMPARE_WITH(
+        pixels,
+        Utility::Path::join(_testDir, "output.tga"),
+        /* Some mobile GPUs have slight (off-by-one) rounding errors compared
+           to the ground truth, but it's just a very small amount of pixels
+           (20-50 out of the total 4k pixels, iOS/WebGL has slightly more).
+           That's okay. It's also possible that the ground truth itself has
+           rounding errors ;) */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
+}
+
+void DistanceFieldGLTest::runFramebuffer() {
+    auto&& data = RunData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Like runTexture(), except that the it's using the framebuffer overload.
+       It should give the same results even without having to explicitly set
+       anything on the framebuffer. */
+
+    Containers::Pointer<Trade::AbstractImporter> importer;
+    if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
+        CORRADE_SKIP("TgaImporter plugin not found.");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "input.tga")));
+    CORRADE_COMPARE(importer->image2DCount(), 1);
+    Containers::Optional<Trade::ImageData2D> inputImage = importer->image2D(0);
+    CORRADE_VERIFY(inputImage);
+    CORRADE_COMPARE(inputImage->format(), PixelFormat::R8Unorm);
+
+    /* Flip the input if desired */
+    if(data.flipX)
+        Utility::flipInPlace<1>(inputImage->mutablePixels());
+    if(data.flipY)
+        Utility::flipInPlace<0>(inputImage->mutablePixels());
+
+    #ifndef MAGNUM_TARGET_GLES2
+    const GL::TextureFormat inputFormat = GL::TextureFormat::R8;
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    GL::TextureFormat inputFormat;
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        CORRADE_INFO("Using" << GL::Extensions::EXT::texture_rg::string());
+        inputFormat = GL::TextureFormat::R8;
+    } else {
+        inputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
+    }
+    #else
+    const GL::TextureFormat inputFormat = GL::TextureFormat::Luminance;
+    #endif
+
+    GL::Texture2D input;
+    input.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
+        .setStorage(1, inputFormat, inputImage->size());
+
+    #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+    input.setSubImage(0, {}, *inputImage);
+    #else
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+        input.setSubImage(0, {}, ImageView2D{inputImage->storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, inputImage->size(), inputImage->data()});
+    else
+        input.setSubImage(0, {}, *inputImage);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    const GL::TextureFormat outputFormat = GL::TextureFormat::R8;
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    GL::TextureFormat outputFormat;
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+        outputFormat = GL::TextureFormat::R8;
+    else
+        outputFormat = GL::TextureFormat::RGBA;
+    #else
+    const GL::TextureFormat outputFormat = GL::TextureFormat::RGBA;
+    #endif
+
+    GL::Texture2D outputTexture;
+    outputTexture.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
+        .setStorage(1, outputFormat, data.size);
+
+    /* Deliberately making the viewport the whole framebuffer -- the tool
+       should adjust it as appropriate and then revert back */
+    GL::Framebuffer output{{{}, data.size}};
+    output.attachTexture(GL::Framebuffer::ColorAttachment(0), outputTexture, 0);
+
+    DistanceField distanceField{32};
+    CORRADE_COMPARE(distanceField.radius(), 32);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    distanceField(input, output, Range2Di::fromSize(data.offset, Vector2i{64})
+        #ifdef MAGNUM_TARGET_GLES
+        , inputImage->size()
+        #endif
+        );
+
+    /* The viewport should stay as it was before */
+    CORRADE_COMPARE(output.viewport(), (Range2Di{{}, data.size}));
+
+    Containers::Optional<Image2D> actualOutputImage;
+    #ifndef MAGNUM_TARGET_GLES2
+    actualOutputImage = Image2D{PixelFormat::R8Unorm};
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+        actualOutputImage = Image2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte};
+    else
+        actualOutputImage = Image2D{PixelFormat::RGBA8Unorm};
+    #else
+    actualOutputImage = Image2D{PixelFormat::RGBA8Unorm};
+    #endif
+
+    DebugTools::textureSubImage(outputTexture, 0, Range2Di::fromSize(data.offset, Vector2i{64}), *actualOutputImage);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
