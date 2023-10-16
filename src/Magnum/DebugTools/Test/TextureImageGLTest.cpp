@@ -318,13 +318,8 @@ void TextureImageGLTest::subImageCubeBufferNotReadable() {
         CORRADE_SKIP(GL::Extensions::ARB::get_texture_sub_image::string() << "supported, can't test");
     #endif
 
-    #ifdef MAGNUM_TARGET_GLES2
-    GL::TextureFormat format = GL::TextureFormat::Luminance;
-    ImageView2D view{GL::PixelFormat::Luminance, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
-    #else
     GL::TextureFormat format = GL::TextureFormat::RGB9E5;
     ImageView2D view{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{2}, Data2D};
-    #endif
 
     GL::CubeMapTexture texture;
     texture.setImage(GL::CubeMapCoordinate::PositiveX, 0, format, view)
