@@ -35,22 +35,34 @@ namespace Magnum { namespace Text {
 
 namespace Implementation {
     enum: UnsignedByte {
-        AlignmentLeft = 1,
-        AlignmentCenter = 2,
-        AlignmentRight = 3,
+        /* Line/Left, which causes no shift of the shaped text whatsoever,
+           is deliberately 0 to signify a default */
+
+        AlignmentLeft = 0,
+        AlignmentCenter = 1 << 0,
+        AlignmentRight = 2 << 0,
         AlignmentHorizontal = AlignmentLeft|AlignmentCenter|AlignmentRight,
 
-        AlignmentLine = 1 << 3,
-        AlignmentMiddle = 2 << 3,
-        AlignmentTop = 3 << 3,
-        AlignmentVertical = AlignmentLine|AlignmentMiddle|AlignmentTop,
+        AlignmentLine = 0,
+        AlignmentBottom = 1 << 2,
+        AlignmentMiddle = 2 << 2,
+        AlignmentTop = 3 << 2,
+        AlignmentVertical = AlignmentLine|AlignmentBottom|AlignmentMiddle|AlignmentTop,
 
-        AlignmentIntegral = 1 << 6,
+        AlignmentIntegral = 1 << 4,
+        AlignmentGlyphBounds = 1 << 5
     };
 }
 
 /**
 @brief Text rendering alignment
+
+By default, the alignment is performed based on cursor position and font metric
+alone, without taking actual glyph offsets and rectangles into account. This
+allows the alignment to be performed even before actual glyph bounds are known
+and avoids the position changing based on what concrete glyphs are present.
+Aligning to actual glyph rectangle bounds can be done with the `*GlyphBounds`
+variants.
 
 The `*Integer` values are meant to be used for pixel-perfect fonts that always
 have glyph sizes, advances and other metrics whole pixels, and need to be
@@ -61,89 +73,301 @@ half-pixel shifts when divided by 2.
 @see @ref Renderer::render(), @ref Renderer::Renderer()
 */
 enum class Alignment: UnsignedByte {
-    /** Text start and line is at origin */
+    /**
+     * Leftmost cursor position and vertical line position is at origin.
+     * @see @ref Alignment::LineLeftGlyphBounds
+     */
     LineLeft = Implementation::AlignmentLine|Implementation::AlignmentLeft,
 
     /**
-     * Text center and line is at origin
-     *
-     * @see @ref Alignment::LineCenterIntegral
+     * Left side of the glyph bounding rectangle and vertical line position is
+     * at origin.
+     * @see @ref Alignment::LineLeft
+     * @m_since_latest
+     */
+    LineLeftGlyphBounds = LineLeft|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Midpoint between leftmost and rightmost cursor position and vertical
+     * line position is at origin.
+     * @see @ref Alignment::LineCenterGlyphBounds,
+     *      @ref Alignment::LineCenterIntegral
      */
     LineCenter = Implementation::AlignmentLine|Implementation::AlignmentCenter,
 
-    /** Text end and line is at origin */
+    /**
+     * Midpoint between leftmost and rightmost cursor position and vertical
+     * line position is at origin, with the horizontal offset rounded to whole
+     * units.
+     * @see @ref Alignment::LineCenter,
+     *      @ref Alignment::LineCenterGlyphBoundsIntegral
+     */
+    LineCenterIntegral = LineCenter|Implementation::AlignmentIntegral,
+
+    /**
+     * Horizontal center of the glyph bounding rectangle and vertical line
+     * position is at origin.
+     * @see @ref Alignment::LineCenter,
+     *      @ref Alignment::LineCenterGlyphBoundsIntegral
+     * @m_since_latest
+     */
+    LineCenterGlyphBounds = LineCenter|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Horizontal center of the glyph bounding rectangle and vertical line
+     * position is at origin, with the horizontal offset rounded to whole
+     * units.
+     * @see @ref Alignment::LineCenterGlyphBounds,
+     *      @ref Alignment::LineCenterIntegral
+     * @m_since_latest
+     */
+    LineCenterGlyphBoundsIntegral = LineCenterGlyphBounds|Implementation::AlignmentIntegral,
+
+    /**
+     * Rightmost cursor position and vertical line position is at origin.
+     * @see @ref Alignment::LineRightGlyphBounds
+     */
     LineRight = Implementation::AlignmentLine|Implementation::AlignmentRight,
 
     /**
-     * Text start and vertical middle is at origin
-     *
-     * @see @ref Alignment::MiddleLeftIntegral
+     * Right side of the glyph bounding rectangle and vertical line position is
+     * at origin.
+     * @see @ref Alignment::LineRight
+     * @m_since_latest
+     */
+    LineRightGlyphBounds = LineRight|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Leftmost cursor position and bottommost line descent is at origin.
+     * @see @ref Alignment::BottomLeftGlyphBounds
+     * @m_since_latest
+     */
+    BottomLeft = Implementation::AlignmentBottom|Implementation::AlignmentLeft,
+
+    /**
+     * Bottom left corner of the glyph bounding rectangle is at origin.
+     * @see @ref Alignment::BottomLeft
+     * @m_since_latest
+     */
+    BottomLeftGlyphBounds = BottomLeft|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Midpoint between leftmost and rightmost cursor position and bottommost
+     * line decent is at origin.
+     * @see @ref Alignment::BottomCenterGlyphBounds,
+     *      @ref Alignment::BottomCenterIntegral
+     * @m_since_latest
+     */
+    BottomCenter = Implementation::AlignmentBottom|Implementation::AlignmentCenter,
+
+    /**
+     * Midpoint between leftmost and rightmost cursor position and bottommost
+     * line descent is at origin, with the horizontal offset rounded to whole
+     * units.
+     * @see @ref Alignment::BottomCenter,
+     *      @ref Alignment::BottomCenterGlyphBoundsIntegral
+     * @m_since_latest
+     */
+    BottomCenterIntegral = BottomCenter|Implementation::AlignmentIntegral,
+
+    /**
+     * Horizontal center and bottom side of the glyph bounding rectangle is at
+     * origin.
+     * @see @ref Alignment::BottomCenter,
+     *      @ref Alignment::BottomCenterGlyphBoundsIntegral
+     * @m_since_latest
+     */
+    BottomCenterGlyphBounds = BottomCenter|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Horizontal center and bottom side of the glyph bounding rectangle is at
+     * origin, with the horizontal offset rounded to whole units.
+     * @see @ref Alignment::BottomCenterGlyphBounds,
+     *      @ref Alignment::BottomCenterIntegral
+     * @m_since_latest
+     */
+    BottomCenterGlyphBoundsIntegral = BottomCenterGlyphBounds|Implementation::AlignmentIntegral,
+
+    /**
+     * Rightmost cursor position and bottommost line descent is at origin.
+     * @see @ref Alignment::BottomRightGlyphBounds
+     * @m_since_latest
+     */
+    BottomRight = Implementation::AlignmentBottom|Implementation::AlignmentRight,
+
+    /**
+     * Bottom right corner of the glyph bounding rectangle is at origin.
+     * @see @ref Alignment::BottomRight
+     * @m_since_latest
+     */
+    BottomRightGlyphBounds = BottomRight|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Leftmost cursor position and a midpoint between topmost line ascent and
+     * bottommost line descent is at origin.
+     * @see @ref Alignment::MiddleLeftGlyphBounds,
+     *      @ref Alignment::MiddleLeftIntegral
      */
     MiddleLeft = Implementation::AlignmentMiddle|Implementation::AlignmentLeft,
 
     /**
-     * Text center and vertical middle is at origin
-     *
-     * @see @ref Alignment::MiddleRightIntegral
+     * Leftmost cursor position and a midpoint between topmost line ascent and
+     * bottommost line descent is at origin, with the vertical offset rounded
+     * to whole units.
+     * @see @ref Alignment::MiddleLeft,
+     *      @ref Alignment::MiddleLeftGlyphBoundsIntegral
+     */
+    MiddleLeftIntegral = MiddleLeft|Implementation::AlignmentIntegral,
+
+    /**
+     * Left side and vertical center of the glyph bounding rectangle is at
+     * origin.
+     * @see @ref Alignment::MiddleLeft,
+     *      @ref Alignment::MiddleLeftGlyphBoundsIntegral
+     * @m_since_latest
+     */
+    MiddleLeftGlyphBounds = MiddleLeft|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Left side and vertical center of the glyph bounding rectangle is at
+     * origin, with the vertical offset rounded to whole units.
+     * @see @ref Alignment::MiddleLeftGlyphBounds,
+     *      @ref Alignment::MiddleLeftIntegral
+     * @m_since_latest
+     */
+    MiddleLeftGlyphBoundsIntegral = MiddleLeftGlyphBounds|Implementation::AlignmentIntegral,
+
+    /**
+     * Midpoint between leftmost and rightmost cursor position and a midpoint
+     * between topmost line ascent and bottommost line descent is at origin.
+     * @see @ref Alignment::MiddleCenterGlyphBounds,
+     *      @ref Alignment::MiddleRightIntegral
      */
     MiddleCenter = Implementation::AlignmentMiddle|Implementation::AlignmentCenter,
 
     /**
-     * Text end and vertical middle is at origin
-     *
-     * @see @ref Alignment::MiddleRightIntegral
+     * Midpoint between leftmost and rightmost cursor position and a midpoint
+     * between topmost line ascent and bottommost line descent is at origin,
+     * with both the horizontal and vertical offset rounded to whole units.
+     * @see @ref Alignment::MiddleCenter,
+     *      @ref Alignment::MiddleCenterGlyphBoundsIntegral
+     */
+    MiddleCenterIntegral = MiddleCenter|Implementation::AlignmentIntegral,
+
+    /**
+     * Horizontal and vertical center of the glyph bounding rectangle is at
+     * origin.
+     * @see @ref Alignment::MiddleCenter,
+     *      @ref Alignment::MiddleCenterGlyphBoundsIntegral
+     * @m_since_latest
+     */
+    MiddleCenterGlyphBounds = MiddleCenter|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Horizontal and vertical center of the glyph bounding rectangle is at
+     * origin, with both the horizontal and vertical offset rounded to whole
+     * units.
+     * @see @ref Alignment::MiddleCenterGlyphBounds,
+     *      @ref Alignment::MiddleCenterIntegral
+     * @m_since_latest
+     */
+    MiddleCenterGlyphBoundsIntegral = MiddleCenterGlyphBounds|Implementation::AlignmentIntegral,
+
+    /**
+     * Rightmost cursor position and a midpoint between topmost line ascent and
+     * bottommost line descent is at origin.
+     * @see @ref Alignment::MiddleRightGlyphBounds,
+     *      @ref Alignment::MiddleRightIntegral
      */
     MiddleRight = Implementation::AlignmentMiddle|Implementation::AlignmentRight,
 
-    /** Text start and top is at origin */
+    /**
+     * Rightmost cursor position and a midpoint between topmost line ascent and
+     * bottommost line descent is at origin, with the vertical offset rounded
+     * to whole units.
+     * @see @ref Alignment::MiddleRight,
+     *      @ref Alignment::MiddleRightGlyphBoundsIntegral
+     */
+    MiddleRightIntegral = MiddleRight|Implementation::AlignmentIntegral,
+
+    /**
+     * Right side and vertical center of the glyph bounding rectangle is at
+     * origin.
+     * @see @ref Alignment::MiddleRight,
+     *      @ref Alignment::MiddleRightGlyphBoundsIntegral
+     * @m_since_latest
+     */
+    MiddleRightGlyphBounds = MiddleRight|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Right side and vertical center of the glyph bounding rectangle is at
+     * origin, with the vertical offset rounded to whole units.
+     * @see @ref Alignment::MiddleRightGlyphBounds,
+     *      @ref Alignment::MiddleRightIntegral
+     * @m_since_latest
+     */
+    MiddleRightGlyphBoundsIntegral = MiddleRightGlyphBounds|Implementation::AlignmentIntegral,
+
+    /**
+     * Leftmost cursor position and topmost line ascent is at origin.
+     * @see @ref Alignment::TopLeftGlyphBounds
+     */
     TopLeft = Implementation::AlignmentTop|Implementation::AlignmentLeft,
 
     /**
-     * Text center and top is at origin
-     *
-     * @see @ref Alignment::TopCenterIntegral
+     * Top left corner of the glyph bounding rectangle is at origin.
+     * @see @ref Alignment::TopLeft
+     * @m_since_latest
+     */
+    TopLeftGlyphBounds = TopLeft|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Midpoint between leftmost and rightmost cursor position and topmost line
+     * ascent is at origin.
+     * @see @ref Alignment::TopCenterGlyphBounds,
+     *      @ref Alignment::TopCenterIntegral
      */
     TopCenter = Implementation::AlignmentTop|Implementation::AlignmentCenter,
 
-    /** Text end and top is at origin */
+    /**
+     * Midpoint between leftmost and rightmost cursor position and topmost line
+     * ascent is at origin, with the horizontal offset rounded to whole units.
+     * @see @ref Alignment::TopCenter,
+     *      @ref Alignment::TopCenterGlyphBoundsIntegral
+     * @m_since_latest
+     */
+    TopCenterIntegral = TopCenter|Implementation::AlignmentIntegral,
+
+    /**
+     * Horizontal center and top side of the glyph bounding rectangle is at
+     * origin.
+     * @see @ref Alignment::TopCenter,
+     *      @ref Alignment::TopCenterGlyphBoundsIntegral
+     * @m_since_latest
+     */
+    TopCenterGlyphBounds = TopCenter|Implementation::AlignmentGlyphBounds,
+
+    /**
+     * Horizontal center and top side of the glyph bounding rectangle is at
+     * origin, with the horizontal offset rounded to whole units.
+     * @see @ref Alignment::TopCenterGlyphBounds,
+     *      @ref Alignment::TopCenterIntegral
+     * @m_since_latest
+     */
+    TopCenterGlyphBoundsIntegral = TopCenterGlyphBounds|Implementation::AlignmentIntegral,
+
+    /**
+     * Rightmost cursor position and topmost line ascent is at origin.
+     * @see @ref Alignment::TopRightGlyphBounds
+     */
     TopRight = Implementation::AlignmentTop|Implementation::AlignmentRight,
 
     /**
-     * Text center and line is at origin and alignment offset is integral
-     *
-     * @see @ref Alignment::LineCenter
-     */
-    LineCenterIntegral = Implementation::AlignmentLine|Implementation::AlignmentCenter|Implementation::AlignmentIntegral,
-
-    /**
-     * Text start and vertical middle is at origin and alignment offset is integral
-     *
-     * @see @ref Alignment::MiddleLeft
-     */
-    MiddleLeftIntegral = Implementation::AlignmentMiddle|Implementation::AlignmentLeft|Implementation::AlignmentIntegral,
-
-    /**
-     * Text center and vertical middle is at origin and alignment offset is integral
-     *
-     * @see @ref Alignment::MiddleCenter
-     */
-    MiddleCenterIntegral = Implementation::AlignmentMiddle|Implementation::AlignmentCenter|Implementation::AlignmentIntegral,
-
-    /**
-     * Text end and vertical middle is at origin and alignment offset is integral
-     *
-     * @see @ref Alignment::MiddleRight
-     */
-    MiddleRightIntegral = Implementation::AlignmentMiddle|Implementation::AlignmentRight|Implementation::AlignmentIntegral,
-
-    /**
-     * Text center and line is at origin and alignment offset is integral
-     *
-     * @see @ref Alignment::TopCenter
+     * Top right corner of the glyph bounding rectangle is at origin.
+     * @see @ref Alignment::TopRight
      * @m_since_latest
      */
-    TopCenterIntegral = Implementation::AlignmentTop|Implementation::AlignmentCenter|Implementation::AlignmentIntegral,
-
+    TopRightGlyphBounds = TopRight|Implementation::AlignmentGlyphBounds,
 };
 
 }}

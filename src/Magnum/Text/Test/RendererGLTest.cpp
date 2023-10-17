@@ -57,30 +57,64 @@ struct RendererGLTest: GL::OpenGLTester {
 };
 
 const struct {
-    const char* name;
+    TestSuite::TestCaseDescriptionSourceLocation name;
     Alignment alignment;
     Vector2 offset;
 } RenderDataData[]{
     /* Not testing all combinations, just making sure that each horizontal,
-       vertical and integer variant is covered */
+       vertical, glyph bounds and integer variant is covered */
     {"line left", Alignment::LineLeft,
+        /* This is the default (0) value, thus should result in no shift */
         {}},
-    /** @todo for all these, the initial glyph offset is first subtracted and
-        only then the shift by either half or full size is performed, does that
-        make sense? why is not done for the LineLeft case, then? */
-    {"top center, integral", Alignment::TopCenterIntegral,
-        /* The Y shift is rounded to whole units */
-        {-8.0f, -11.0f}},
+    {"line left, glyph bounds", Alignment::LineLeftGlyphBounds,
+        /* The first glyph has X offset of 2.5, which is subtracted */
+        {-2.5f, 0.0f}},
     {"top left", Alignment::TopLeft,
-        {0.0f, -10.5f}},
+        /* Ascent is 4.5, scaled by 0.5 */
+        {0.0f, -2.25f}},
+    {"top left, glyph bounds", Alignment::TopLeftGlyphBounds,
+        /* Largest Y value is 10.5f */
+        {-2.5f, -10.5f}},
     {"top right", Alignment::TopRight,
+        /* Advances were 1, 2, 3, so 6 in total, ascent is 4.5; scaled by
+           0.5 */
+        {-3.0f, -2.25f}},
+    {"top right, glyph bounds", Alignment::TopRightGlyphBounds,
+        /* Basically subtracting the largest vertex value */
         {-12.5f, -10.5f}},
+    {"top center", Alignment::TopCenter,
+        /* Advances were 1, 2, 3, so 6 in total, center is 3, scaled by 0.5 */
+        {-1.5f, -2.25f}},
+    {"top center, integral", Alignment::TopCenterIntegral,
+        /* The Y shift isn't whole units but only X is rounded here */
+        {-2.0f, -2.25f}},
+    {"top center, glyph bounds", Alignment::TopCenterGlyphBounds,
+        {-7.5f, -10.5f}},
+    {"top center, glyph bounds, integral", Alignment::TopCenterGlyphBoundsIntegral,
+        /* The Y shift isn't whole units but only X is rounded here */
+        {-8.0f, -10.5f}},
+    {"middle left, glyph bounds", Alignment::MiddleLeftGlyphBounds,
+        {-2.5f, -7.125f}},
+    {"middle left, glyph bounds, integral", Alignment::MiddleLeftGlyphBoundsIntegral,
+        /* The X shift isn't whole units but only Y is rounded here */
+        {-2.5f, -7.0f}},
     {"middle center", Alignment::MiddleCenter,
+        {-1.5f, -0.5f}},
+    {"middle center, integral", Alignment::MiddleCenterIntegral,
+        /* Rounding happens on both X and Y in this case */
+        {-2.0f, -1.0f}},
+    {"middle center, glyph bounds", Alignment::MiddleCenterGlyphBounds,
         /* Half size of the bounds quad */
         {-7.5f, -7.125f}},
-    {"middle center, integral", Alignment::MiddleCenterIntegral,
-        /* The X shift is rounded to whole units */
+    {"middle center, glyph bounds, integral", Alignment::MiddleCenterGlyphBoundsIntegral,
         {-8.0f, -7.0f}},
+    {"bottom left", Alignment::BottomLeft,
+        /* Descent is -2.5; scaled by 0.5 */
+        {0.0f, 1.25f}},
+    {"bottom right", Alignment::BottomRight,
+        {-3.0f, 1.25f}},
+    {"bottom right, glyph bounds", Alignment::BottomRightGlyphBounds,
+        {-12.5f, -3.75f}},
 };
 
 const struct {
@@ -91,34 +125,68 @@ const struct {
     Vector2 offset0, offset1, offset2;
 } MultilineData[]{
     {"line left", Alignment::LineLeft,
+        {0.0f, -0.0f},
+        {0.0f, -4.0f},
+        {0.0f, -12.0f}},
+    {"line left, glyph bounds", Alignment::LineLeftGlyphBounds,
         {0.0f, 0.0f},
         {0.0f, -4.0f},
         {0.0f, -12.0f}},
     {"middle left", Alignment::MiddleLeft,
+        {0.0f, 6.0f},
+        {0.0f, 2.0f},
+        {0.0f, -6.0f}},
+    {"middle left, glyph bounds", Alignment::MiddleLeftGlyphBounds,
         {0.0f, 5.5f},
         {0.0f, 1.5f},
         {0.0f, -6.5f}},
-    {"middle left, integral", Alignment::MiddleLeftIntegral,
+    {"middle left, glyph bounds, integral", Alignment::MiddleLeftGlyphBoundsIntegral,
         {0.0f, 6.0f},
         {0.0f, 2.0f},
         {0.0f, -6.0f}},
     {"middle center", Alignment::MiddleCenter,
-        {-3.5f, 5.5f},
-        {-1.5f, 1.5f},
-        {-2.5f, -6.5f}},
+        /* The advance for the rightmost glyph is one unit larger than the
+           actual bounds which makes it different */
+        {-4.0f, 6.0f},
+        {-2.0f, 2.0f},
+        {-3.0f, -6.0f}},
     {"middle center, integral", Alignment::MiddleCenterIntegral,
         {-4.0f, 6.0f},
         {-2.0f, 2.0f},
         {-3.0f, -6.0f}},
+    {"middle center, glyph bounds", Alignment::MiddleCenterGlyphBounds,
+        {-3.5f, 5.5f},
+        {-1.5f, 1.5f},
+        {-2.5f, -6.5f}},
+    {"middle center, glyph bounds, integral", Alignment::MiddleCenterGlyphBoundsIntegral,
+        {-4.0f, 6.0f},
+        {-2.0f, 2.0f},
+        {-3.0f, -6.0f}},
     {"top right", Alignment::TopRight,
+        {-8.0f, -0.5f},
+        {-4.0f, -4.5f},
+        {-6.0f, -12.5f}},
+    {"top right, glyph bounds", Alignment::TopRightGlyphBounds,
         {-7.0f, -1.0f},
         {-3.0f, -5.0f},
         {-5.0f, -13.0f}},
     {"top center", Alignment::TopCenter,
+        /* The advance for the rightmost glyph is one unit larger than the
+           actual bounds which makes it different */
+        {-4.0f, -0.5f},
+        {-2.0f, -4.5f},
+        {-3.0f, -12.5f}},
+    {"top center, integral", Alignment::TopCenterIntegral,
+        /* The Y shift isn't whole units but only X (which is already whole
+           units) would be rounded here */
+        {-4.0f, -0.5f},
+        {-2.0f, -4.5f},
+        {-3.0f, -12.5f}},
+    {"top center, glyph bounds", Alignment::TopCenterGlyphBounds,
         {-3.5f, -1.0f},
         {-1.5f, -5.0f},
         {-2.5f, -13.0f}},
-    {"top center, integral", Alignment::TopCenterIntegral,
+    {"top center, integral", Alignment::TopCenterGlyphBoundsIntegral,
         {-4.0f, -1.0f},
         {-2.0f, -5.0f},
         {-3.0f, -13.0f}},
@@ -172,7 +240,8 @@ struct TestFont: AbstractFont {
 
     Properties doOpenFile(Containers::StringView, Float size) override {
         _opened = true;
-        return {size, 0.45f, -0.25f, 0.75f, 10};
+        /* Line height isn't used for anything here so can be arbitrary */
+        return {size, 4.5f, -2.5f, 10000.0f, 10};
     }
 
     UnsignedInt doGlyphId(char32_t) override { return 0; }
@@ -259,8 +328,12 @@ void RendererGLTest::renderData() {
         Vector2{ 9.0f,  4.0f} + data.offset
     }), TestSuite::Compare::Container);
 
-    /* Bounds */
-    CORRADE_COMPARE(bounds, (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f}}.translated(data.offset)));
+    /* Bounds. Different depending on whether or not GlyphBounds alignment is
+       used. */
+    if(UnsignedByte(data.alignment) & Implementation::AlignmentGlyphBounds)
+        CORRADE_COMPARE(bounds, (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f}}.translated(data.offset)));
+    else
+        CORRADE_COMPARE(bounds, (Range2D{{0.0f, -1.25f}, {3.0f, 2.25f}}.translated(data.offset)));
 
     /* Texture coordinates. First glyph is bottom, second top left, third top
        right.
@@ -318,12 +391,10 @@ void RendererGLTest::renderMesh() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Alignment offset */
-    /** @todo same as in render(), figure out if the initial offset makes
-        sense or not */
-    const Vector2 offset{-7.5f, -7.125f};
+    const Vector2 offset{-1.5f, -0.5f};
 
     /* Bounds */
-    CORRADE_COMPARE(bounds, (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f}}.translated(offset)));
+    CORRADE_COMPARE(bounds, (Range2D{{0.0f, -1.25f}, {3.0f, 2.25f}}.translated(offset)));
 
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -446,12 +517,10 @@ void RendererGLTest::mutableText() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Alignment offset */
-    /** @todo same as in render(), figure out if the initial offset makes
-        sense or not */
-    const Vector2 offset{-7.5f, -7.125f};
+    const Vector2 offset{-1.5f, -0.5f};
 
     /* Updated bounds and mesh vertex count */
-    CORRADE_COMPARE(renderer.rectangle(), (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f} }.translated(offset)));
+    CORRADE_COMPARE(renderer.rectangle(), (Range2D{{0.0f, -1.25f}, {3.0f, 2.25f}}.translated(offset)));
     CORRADE_COMPARE(renderer.mesh().count(), 3*6);
 
     /** @todo How to verify this on ES? */
@@ -503,9 +572,9 @@ void RendererGLTest::multiline() {
 
         Properties doOpenFile(Containers::StringView, Float size) override {
             _opened = true;
-            /* The ascent and descent values shouldn't be used for anything
-               here and so can be completely arbitrary */
-            return {size, -10000.0f, 1000.0f, 8.0f, 10};
+            /* Compared to the glyph bounds, which are from 0 to 2, this is
+               shifted by one unit, thus by 0.5 in the output */
+            return {size, 1.0f, -1.0f, 8.0f, 10};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return 0; }
@@ -539,8 +608,12 @@ void RendererGLTest::multiline() {
     CORRADE_COMPARE(font.size(), 0.5f);
     CORRADE_COMPARE(font.lineHeight(), 8.0f);
 
-    /* Bounds */
-    CORRADE_COMPARE(rectangle, Range2D({0.0f, -12.0f}, {7.0f, 1.0f}).translated(data.offset0));
+    /* Bounds. The advance for the rightmost glyph is one unit larger than the
+       actual bounds so it's different on X between the two variants */
+    if(UnsignedByte(data.alignment) & Implementation::AlignmentGlyphBounds)
+        CORRADE_COMPARE(rectangle, Range2D({0.0f, -12.0f}, {7.0f, 1.0f}).translated(data.offset0));
+    else
+        CORRADE_COMPARE(rectangle, Range2D({0.0f, -12.5f}, {8.0f, 0.5f}).translated(data.offset0));
 
     /* Vertices
        [a] [b] [c] [d]

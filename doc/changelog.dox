@@ -785,8 +785,13 @@ See also:
 -   Added @ref Text::AbstractFont::glyphCount() and
     @relativeref{Text::AbstractFont,glyphSize()}
 -   Added @ref Text::Renderer::fontSize()
--   Added @ref Text::Alignment::TopCenterIntegral, which is also needed in
-    order to prevent aligning pixel-perfect fonts to fractional positions
+-   @ref Text::Alignment now has separate values for alignment based on font
+    metrics and cursor position alone, which is the more commonly expected
+    behavior, and `*GlyphBounds` values that align based on actual glyph
+    bounds. There's a set of new `Bottom*` values that were for some reason
+    missing before, and @ref Text::Alignment::TopCenterIntegral, which is also
+    needed in order to prevent aligning pixel-perfect fonts to fractional
+    positions.
 
 @subsubsection changelog-latest-changes-trade Trade library
 
@@ -1660,6 +1665,14 @@ See also:
     -   The @ref Text::AbstractGlyphCache::image() query now returns a
         @ref MutableImageView3D instead of an @ref Image2D in order to support
         incremental population and texture arrays
+-   The @ref Text::Alignment left, right, top and middle values now work with
+    the font metrics and cursor position instead of glyph bounding rectangles,
+    as that's the more commonly expected behavior. The original behavior with alignment based on glyph bounds is now in the `*GlyphBounds` variants
+    except for `*LeftGlyphBounds`, where the left glyph offset is also removed
+    by the alignment compared to `*Left` which performs no horizontal
+    translation like in the original case. Additionally, the `*Integer`
+    variants now only round the axis where division by 2 happened for the
+    middle / center alignment, with the other axis kept unchanged.
 -   @ref TextureTools::DistanceField now asserts that the output texture has a
     framebuffer-drawable format. Before it only printed an error message and
     silently did nothing, causing a hard-to-track error.

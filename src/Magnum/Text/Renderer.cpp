@@ -137,8 +137,15 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
            issue arises. */
         CORRADE_INTERNAL_ASSERT(vertices.size() + shaper->glyphCount()*4 <= vertices.capacity());
 
-        /* Bounds of rendered line */
+        /* Bounds of rendered line. If `Alignment::*GlyphBounds` is used, it's
+           filled with actual bounds of each glyph, otherwise with
+           ascent/descent and actual cursor range. */
         Range2D lineRectangle;
+        /** @todo this assumes horizontal direction, update when vertical text
+            is possible & testable */
+        if(!(UnsignedByte(alignment) & Implementation::AlignmentGlyphBounds))
+            lineRectangle = {linePosition + Vector2::yAxis(font.descent()*scale),
+                             linePosition + Vector2::yAxis(font.ascent()*scale)};
 
         /* Create quads for all glyphs */
         Vector2 cursorPosition(linePosition);
@@ -174,34 +181,46 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
                 {quadPosition.bottomRight(), quadTextureCoordinates.bottomRight()}
             });
 
-            /* Extend the line rectangle with current quad bounds. If the
-               original is zero size, it gets replaced. */
-            lineRectangle = Math::join(lineRectangle, quadPosition);
-
             /* Advance cursor position to next character, again scaled */
             cursorPosition += glyphs[i].advance*scale;
+
+            /* Extend the line rectangle with current glyph bounds if
+               `Alignment::*GlyphBounds` is used, otherwise just expand with
+               the cursor range. */
+            if(UnsignedByte(alignment) & Implementation::AlignmentGlyphBounds) {
+                /* If the original is zero size, it gets replaced */
+                lineRectangle = Math::join(lineRectangle, quadPosition);
+            } else {
+                /** @todo this assumes left-to-right direction, update when
+                    when vertical text is possible & testable */
+                lineRectangle.max() = Math::max(lineRectangle.max(), cursorPosition);
+            }
         }
 
         /** @todo What about top-down text? */
 
-        /* Horizontally align the rendered line */
+        /* Horizontally align the rendered line. As we have the `lineRectangle`
+           already appropriate based on presence of `Alignment::*GlyphBounds`,
+           we don't need to special-case it here in any way. */
         Float alignmentOffsetX = 0.0f;
-        if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter)
+        if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentLeft)
+            alignmentOffsetX = -lineRectangle.left();
+        else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter) {
             alignmentOffsetX = -lineRectangle.centerX();
+            /* Integer alignment */
+            if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
+                alignmentOffsetX = Math::round(alignmentOffsetX);
+        }
         else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight)
             alignmentOffsetX = -lineRectangle.right();
-
-        /* Integer alignment */
-        if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
-            alignmentOffsetX = Math::round(alignmentOffsetX);
 
         /* Align positions and bounds on current line */
         lineRectangle = lineRectangle.translated(Vector2::xAxis(alignmentOffsetX));
         for(auto it = vertices.begin()+lastLineLastVertex; it != vertices.end(); ++it)
             it->position.x() += alignmentOffsetX;
 
-        /* Extend the rectangle with final line bounds, similarly to what was
-           done for each glyph above */
+        /* Extend the rectangle with final line bounds. This is again the same
+           code path for both with and without `Alignment::*GlyphBounds`. */
         rectangle = Math::join(rectangle, lineRectangle);
 
     /* Move to next line */
@@ -210,16 +229,20 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
             lastLineLastVertex = vertices.size(),
             pos != std::string::npos);
 
-    /* Vertically align the rendered text */
+    /* Vertically align the rendered text. Again, as we had the input rects
+       already appropriate based on presence of `Alignment::*GlyphBounds`, we
+       don't need to special-case it here in any way either. */
     Float alignmentOffsetY = 0.0f;
-    if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle)
+    if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentBottom)
+        alignmentOffsetY = -rectangle.bottom();
+    else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle) {
         alignmentOffsetY = -rectangle.centerY();
+        /* Integer alignment */
+        if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
+            alignmentOffsetY = Math::round(alignmentOffsetY);
+    }
     else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentTop)
         alignmentOffsetY = -rectangle.top();
-
-    /* Integer alignment */
-    if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
-        alignmentOffsetY = Math::round(alignmentOffsetY);
 
     /* Align positions and bounds */
     rectangle = rectangle.translated(Vector2::yAxis(alignmentOffsetY));
