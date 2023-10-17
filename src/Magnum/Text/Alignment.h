@@ -38,14 +38,14 @@ namespace Implementation {
         AlignmentLeft = 1,
         AlignmentCenter = 2,
         AlignmentRight = 3,
+        AlignmentHorizontal = AlignmentLeft|AlignmentCenter|AlignmentRight,
 
         AlignmentLine = 1 << 3,
         AlignmentMiddle = 2 << 3,
         AlignmentTop = 3 << 3,
+        AlignmentVertical = AlignmentLine|AlignmentMiddle|AlignmentTop,
 
-        AlignmentHorizontal = 3,
-        AlignmentVertical = 3 << 3,
-        AlignmentIntegral = 1 << 6
+        AlignmentIntegral = 1 << 6,
     };
 }
 
