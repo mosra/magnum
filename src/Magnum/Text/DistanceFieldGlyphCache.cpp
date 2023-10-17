@@ -55,6 +55,13 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& sourceSize, con
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
     #endif
 
+    /* Replicating the assertion from TextureTools::DistanceField so it gets
+       checked during construction already instead of only later during the
+       setImage() call */
+    CORRADE_ASSERT(sourceSize % size == Vector2i{0} &&
+                   (sourceSize/size) % 2 == Vector2i{0},
+        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got" << Debug::packed << sourceSize << "and" << Debug::packed << size, );
+
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())

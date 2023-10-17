@@ -83,11 +83,15 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * @param radius            Distance field computation radius
          *
          * See @ref TextureTools::DistanceField for more information about the
-         * parameters. Sets the internal texture format to single-channel.
-         * On OpenGL ES 3.0+ and WebGL 2 uses @ref GL::TextureFormat::R8. On
-         * desktop OpenGL requires @gl_extension{ARB,texture_rg} (part of
-         * OpenGL 3.0), on ES2 uses @gl_extension{EXT,texture_rg} if available
-         * or @ref GL::TextureFormat::RGB as fallback, on WebGL 1 uses
+         * parameters. Size restrictions from it apply here as well, in
+         * particular the ratio of @p sourceSize and @p size is expected to be
+         * a multiple of 2.
+         *
+         * Sets the internal texture format to single-channel. On OpenGL ES
+         * 3.0+ and WebGL 2 uses @ref GL::TextureFormat::R8. On desktop OpenGL
+         * requires @gl_extension{ARB,texture_rg} (part of OpenGL 3.0), on ES2
+         * uses @gl_extension{EXT,texture_rg} if available or
+         * @ref GL::TextureFormat::RGB as fallback, on WebGL 1 uses
          * @ref GL::TextureFormat::RGB always.
          */
         explicit DistanceFieldGlyphCache(const Vector2i& sourceSize, const Vector2i& size, UnsignedInt radius);

@@ -55,6 +55,7 @@ struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
     explicit DistanceFieldGlyphCacheGLTest();
 
     void construct();
+    void constructSizeRatioNotMultipleOfTwo();
 
     void constructCopy();
     void constructMove();
@@ -93,6 +94,7 @@ const struct {
 
 DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
     addTests({&DistanceFieldGlyphCacheGLTest::construct,
+              &DistanceFieldGlyphCacheGLTest::constructSizeRatioNotMultipleOfTwo,
 
               &DistanceFieldGlyphCacheGLTest::constructCopy,
               &DistanceFieldGlyphCacheGLTest::constructMove});
@@ -124,6 +126,30 @@ void DistanceFieldGlyphCacheGLTest::construct() {
     #endif
 }
 
+void DistanceFieldGlyphCacheGLTest::constructSizeRatioNotMultipleOfTwo() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This should be fine */
+    DistanceFieldGlyphCache{Vector2i{23*14}, Vector2i{23}, 4};
+
+    /* It's the same assert as in TextureTools::DistanceField */
+    std::ostringstream out;
+    Error redirectError{&out};
+    DistanceFieldGlyphCache{Vector2i{23*14}, Vector2i{23*2}, 4};
+    /* Verify also just one axis wrong */
+    DistanceFieldGlyphCache{Vector2i{23*14}, {23*2, 23}, 4};
+    DistanceFieldGlyphCache{Vector2i{23*14}, {23, 23*2}, 4};
+    /* Almost correct except that it's not an integer multiply */
+    DistanceFieldGlyphCache{Vector2i{23*14}, {22, 23}, 4};
+    DistanceFieldGlyphCache{Vector2i{23*14}, {23, 22}, 4};
+    CORRADE_COMPARE(out.str(),
+        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
+        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
+        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
+        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {22, 23}\n"
+        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {23, 22}\n");
+}
+
 void DistanceFieldGlyphCacheGLTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldGlyphCache>{});
     CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldGlyphCache>{});
@@ -135,7 +161,7 @@ void DistanceFieldGlyphCacheGLTest::constructMove() {
     DistanceFieldGlyphCache b = Utility::move(a);
     CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 1}));
 
-    DistanceFieldGlyphCache c{{2, 3}, {1, 1}, 1};
+    DistanceFieldGlyphCache c{{2, 4}, {1, 2}, 1};
     c = Utility::move(b);
     CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 1}));
 
@@ -276,7 +302,7 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImage() {
 void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DistanceFieldGlyphCache cache{{200, 300}, {100, 200}, 4};
+    DistanceFieldGlyphCache cache{{200, 400}, {100, 200}, 4};
 
     /* This is fine. Not testing on ES2 as there it would need the complicated
        format logic from above. */
