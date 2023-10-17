@@ -83,17 +83,59 @@ const struct {
         {-8.0f, -7.0f}},
 };
 
+const struct {
+    const char* name;
+    Alignment alignment;
+    /* The Y offset value could be calculated, but this is easier to grasp and
+       makes it possible to test overrideable line height later, for example */
+    Vector2 offset0, offset1, offset2;
+} MultilineData[]{
+    {"line left", Alignment::LineLeft,
+        {0.0f, 0.0f},
+        {0.0f, -4.0f},
+        {0.0f, -12.0f}},
+    {"middle left", Alignment::MiddleLeft,
+        {0.0f, 5.5f},
+        {0.0f, 1.5f},
+        {0.0f, -6.5f}},
+    {"middle left, integral", Alignment::MiddleLeftIntegral,
+        {0.0f, 6.0f},
+        {0.0f, 2.0f},
+        {0.0f, -6.0f}},
+    {"middle center", Alignment::MiddleCenter,
+        {-3.5f, 5.5f},
+        {-1.5f, 1.5f},
+        {-2.5f, -6.5f}},
+    {"middle center, integral", Alignment::MiddleCenterIntegral,
+        {-4.0f, 6.0f},
+        {-2.0f, 2.0f},
+        {-3.0f, -6.0f}},
+    {"top right", Alignment::TopRight,
+        {-7.0f, -1.0f},
+        {-3.0f, -5.0f},
+        {-5.0f, -13.0f}},
+    {"top center", Alignment::TopCenter,
+        {-3.5f, -1.0f},
+        {-1.5f, -5.0f},
+        {-2.5f, -13.0f}},
+    {"top center, integral", Alignment::TopCenterIntegral,
+        {-4.0f, -1.0f},
+        {-2.0f, -5.0f},
+        {-3.0f, -13.0f}},
+};
+
 RendererGLTest::RendererGLTest() {
     addInstancedTests({&RendererGLTest::renderData},
         Containers::arraySize(RenderDataData));
 
     addTests({&RendererGLTest::renderMesh,
               &RendererGLTest::renderMeshIndexType,
-              &RendererGLTest::mutableText,
+              &RendererGLTest::mutableText});
 
-              &RendererGLTest::multiline,
+    addInstancedTests({&RendererGLTest::multiline},
+        Containers::arraySize(MultilineData));
 
-              &RendererGLTest::arrayGlyphCache,
+    addTests({&RendererGLTest::arrayGlyphCache,
               &RendererGLTest::fontNotFoundInCache});
 }
 
@@ -435,6 +477,9 @@ void RendererGLTest::mutableText() {
 }
 
 void RendererGLTest::multiline() {
+    auto&& data = MultilineData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     struct Shaper: AbstractShaper {
         using AbstractShaper::AbstractShaper;
 
@@ -460,7 +505,7 @@ void RendererGLTest::multiline() {
             _opened = true;
             /* The ascent and descent values shouldn't be used for anything
                here and so can be completely arbitrary */
-            return {size, -10000.0f, 1000.0f, 6.0f, 10};
+            return {size, -10000.0f, 1000.0f, 8.0f, 10};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return 0; }
@@ -487,15 +532,15 @@ void RendererGLTest::multiline() {
     std::vector<UnsignedInt> indices;
     std::vector<Vector2> positions, textureCoordinates;
     std::tie(positions, textureCoordinates, indices, rectangle) = Renderer2D::render(font,
-        cache, 0.25f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
+        cache, 0.25f, "abcd\nef\n\nghi", data.alignment);
 
     /* We're rendering text at 0.25f size and the font is scaled to 0.5f, so
-       the line advance should be 6.0f*0.25f/0.5f = 3.0f */
+       the line advance should be 8.0f*0.25f/0.5f = 4.0f */
     CORRADE_COMPARE(font.size(), 0.5f);
-    CORRADE_COMPARE(font.lineHeight(), 6.0f);
+    CORRADE_COMPARE(font.lineHeight(), 8.0f);
 
     /* Bounds */
-    CORRADE_COMPARE(rectangle, Range2D({-3.5f, -5.0f}, {3.5f, 5.0f}));
+    CORRADE_COMPARE(rectangle, Range2D({0.0f, -12.0f}, {7.0f, 1.0f}).translated(data.offset0));
 
     /* Vertices
        [a] [b] [c] [d]
@@ -503,34 +548,52 @@ void RendererGLTest::multiline() {
 
          [g] [h] [i]   */
     CORRADE_COMPARE_AS(positions, (std::vector<Vector2>{
-        {-3.5f,  5.0f}, {-3.5f,  4.0f}, /* a */
-        {-2.5f,  5.0f}, {-2.5f,  4.0f},
+        Vector2{0.0f, 1.0f} + data.offset0, /* a */
+        Vector2{0.0f, 0.0f} + data.offset0,
+        Vector2{1.0f, 1.0f} + data.offset0,
+        Vector2{1.0f, 0.0f} + data.offset0,
 
-        {-1.5f,  5.0f}, {-1.5f,  4.0f}, /* b */
-        {-0.5f,  5.0f}, {-0.5f,  4.0f},
+        Vector2{2.0f, 1.0f} + data.offset0, /* b */
+        Vector2{2.0f, 0.0f} + data.offset0,
+        Vector2{3.0f, 1.0f} + data.offset0,
+        Vector2{3.0f, 0.0f} + data.offset0,
 
-        { 0.5f,  5.0f}, { 0.5f,  4.0f}, /* c */
-        { 1.5f,  5.0f}, { 1.5f,  4.0f},
+        Vector2{4.0f, 1.0f} + data.offset0, /* c */
+        Vector2{4.0f, 0.0f} + data.offset0,
+        Vector2{5.0f, 1.0f} + data.offset0,
+        Vector2{5.0f, 0.0f} + data.offset0,
 
-        { 2.5f,  5.0f}, { 2.5f,  4.0f}, /* d */
-        { 3.5f,  5.0f}, { 3.5f,  4.0f},
+        Vector2{6.0f, 1.0f} + data.offset0, /* d */
+        Vector2{6.0f, 0.0f} + data.offset0,
+        Vector2{7.0f, 1.0f} + data.offset0,
+        Vector2{7.0f, 0.0f} + data.offset0,
 
-        {-1.5f,  2.0f}, {-1.5f,  1.0f}, /* e */
-        {-0.5f,  2.0f}, {-0.5f,  1.0f},
+        Vector2{0.0f, 1.0f} + data.offset1, /* e */
+        Vector2{0.0f, 0.0f} + data.offset1,
+        Vector2{1.0f, 1.0f} + data.offset1,
+        Vector2{1.0f, 0.0f} + data.offset1,
 
-        { 0.5f,  2.0f}, { 0.5f,  1.0f}, /* f */
-        { 1.5f,  2.0f}, { 1.5f,  1.0f},
+        Vector2{2.0f, 1.0f} + data.offset1, /* f */
+        Vector2{2.0f, 0.0f} + data.offset1,
+        Vector2{3.0f, 1.0f} + data.offset1,
+        Vector2{3.0f, 0.0f} + data.offset1,
 
         /* Two linebreaks here */
 
-        {-2.5f, -4.0f}, {-2.5f, -5.0f}, /* g */
-        {-1.5f, -4.0f}, {-1.5f, -5.0f},
+        Vector2{0.0f, 1.0f} + data.offset2, /* g */
+        Vector2{0.0f, 0.0f} + data.offset2,
+        Vector2{1.0f, 1.0f} + data.offset2,
+        Vector2{1.0f, 0.0f} + data.offset2,
 
-        {-0.5f, -4.0f}, {-0.5f, -5.0f}, /* h */
-        { 0.5f, -4.0f}, { 0.5f, -5.0f},
+        Vector2{2.0f, 1.0f} + data.offset2, /* h */
+        Vector2{2.0f, 0.0f} + data.offset2,
+        Vector2{3.0f, 1.0f} + data.offset2,
+        Vector2{3.0f, 0.0f} + data.offset2,
 
-        { 1.5f, -4.0f}, { 1.5f, -5.0f}, /* i */
-        { 2.5f, -4.0f}, { 2.5f, -5.0f},
+        Vector2{4.0f, 1.0f} + data.offset2, /* i */
+        Vector2{4.0f, 0.0f} + data.offset2,
+        Vector2{5.0f, 1.0f} + data.offset2,
+        Vector2{5.0f, 0.0f} + data.offset2,
     }), TestSuite::Compare::Container);
 
     /* Indices
