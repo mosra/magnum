@@ -90,6 +90,13 @@ const struct {
            distance field algorithm as if the whole image was processed. */
         {{48, 48}, {208, 208}},
         {}},
+    {"tight flush rectangle, ratio not a multiple of 2",
+        /* Like above, but the flush range isn't satisfying the "multiple of 2"
+           assertion and the code needs to round it to a larger rectangle that
+           satisfies it */
+        {256, 256}, {64, 64}, {},
+        {{47, 48}, {208, 209}},
+        {}},
 };
 
 DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {

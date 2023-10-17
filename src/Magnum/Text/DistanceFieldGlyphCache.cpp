@@ -83,11 +83,14 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
         .setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear);
 
-    /* Upload the input texture and create a distance field from it */
-    const Vector2 scale = Vector2{_size}/Vector2{size().xy()};
+    /* The constructor already checked that the ratio is an integer multiple,
+       so this division should lead to no information loss */
+    CORRADE_INTERNAL_ASSERT(size().xy() % _size == Vector2i{0});
+    const Vector2i ratio = size().xy()/_size;
 
-    /* On ES2 without EXT_unpack_subimage and on WebGL 1 there's no possibility
-       to upload just a slice of the input, upload the whole image instead by
+    /* Upload the input texture and create a distance field from it. On ES2
+       without EXT_unpack_subimage and on WebGL 1 there's no possibility to
+       upload just a slice of the input, upload the whole image instead by
        ignoring the PixelStorage properties of the input and also process it as
        a whole. */
     #ifdef MAGNUM_TARGET_GLES2
@@ -96,7 +99,7 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
     #endif
     {
         input.setImage(0, GL::textureFormat(image.format()), ImageView2D{image.format(), size().xy(), image.data()});
-        _distanceField(input, texture(), {{}, size().xy()*scale}, size().xy());
+        _distanceField(input, texture(), {{}, size().xy()/ratio}, size().xy());
         #ifdef MAGNUM_TARGET_WEBGL
         static_cast<void>(offset);
         #endif
@@ -122,15 +125,28 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
             image.storage().skip().xy() - padding());
         const Vector2i paddedMax = Math::min(size().xy(),
             image.size() + image.storage().skip().xy() + padding());
+
+        /* TextureTools::DistanceField expects the input size and output
+           rectangle size ratio to be a multiple of 2 in order for the shader
+           to perform pixel addressing correctly. That might not always be the
+           case with the rectangle passed to flushImage(), so round the
+           paddedMin *down* to a multiple of the ratio and paddedMax *up* to a
+           multiple of the ratio. */
+        const Vector2i paddedMinRounded = ratio*(paddedMin/ratio);
+        const Vector2i paddedMaxRounded = ratio*((paddedMax + ratio - Vector2i{1})/ratio);
+        /* As the size is also a multiple of ratio, the resulting size should
+           not get larger. */
+        CORRADE_INTERNAL_ASSERT(paddedMaxRounded <= size().xy());
+
         const ImageView2D paddedImage{
             PixelStorage{image.storage()}
-                .setSkip({paddedMin, image.storage().skip().z()}),
+                .setSkip({paddedMinRounded, image.storage().skip().z()}),
             image.format(),
-            paddedMax - paddedMin,
+            paddedMaxRounded - paddedMinRounded,
             image.data()};
 
         input.setImage(0, GL::textureFormat(paddedImage.format()), paddedImage);
-        _distanceField(input, texture(), Range2Di::fromSize(paddedMin*scale, paddedImage.size()*scale), paddedImage.size());
+        _distanceField(input, texture(), Range2Di::fromSize(paddedMinRounded/ratio, paddedImage.size()/ratio), paddedImage.size());
     }
     #endif
 }
