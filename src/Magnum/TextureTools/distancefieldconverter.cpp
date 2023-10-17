@@ -122,9 +122,11 @@ Arguments:
 Images with @ref PixelFormat::R8Unorm, @ref PixelFormat::RGB8Unorm or
 @ref PixelFormat::RGBA8Unorm are accepted on input.
 
-The resulting image can be then used with @ref Shaders::DistanceFieldVectorGL
-shader. See also @ref TextureTools::DistanceField for more information about
-the algorithm and parameters.
+The resulting image can then be used with @ref Shaders::DistanceFieldVectorGL.
+See @ref TextureTools::DistanceField for more information about the algorithm
+and parameters. Size restrictions from it apply here as well, in particular the
+ratio of the source image size and and `--output-size` is expected to be a
+multiple of 2.
 */
 
 namespace TextureTools {
@@ -184,6 +186,18 @@ int DistanceFieldConverter::exec() {
         return 3;
     }
 
+    /** @todo do all these error checks before a context is created, to avoid
+        extra spam in the output (or worse, a failure to create context even
+        before the input data can be checked) */
+
+    /* Check that the output size is compatible with what we want to do */
+    const Vector2i outputSize = args.value<Vector2i>("output-size");
+    if(image->size() % outputSize != Vector2i{0} ||
+       (image->size()/outputSize) % 2 != Vector2i{0}) {
+        Error{} << "Expected input and output size ratio to be a multiple of 2, got" << Debug::packed << image->size() << "and" << Debug::packed << outputSize;
+        return 5;
+    }
+
     /* Decide about internal format */
     /** @todo this doesn't work on ES2, the image pixel format is converted to
         a LUMINANCE which doesn't match GL_RED / GL_R8; it also doesn't check
@@ -211,10 +225,10 @@ int DistanceFieldConverter::exec() {
 
     /* Output texture */
     GL::Texture2D output;
-    output.setStorage(1, GL::TextureFormat::R8, args.value<Vector2i>("output-size"));
+    output.setStorage(1, GL::TextureFormat::R8, outputSize);
 
     /* Rectangle to process */
-    const Range2Di rectangle{{}, args.value<Vector2i>("output-size")};
+    const Range2Di rectangle{{}, outputSize};
 
     /* Output framebuffer */
     GL::Framebuffer framebuffer{rectangle};
