@@ -70,17 +70,17 @@ const struct {
         make sense? why is not done for the LineLeft case, then? */
     {"top center, integral", Alignment::TopCenterIntegral,
         /* The Y shift is rounded to whole units */
-        {-5.5f - 2.5f, -7.5f - 3.5f}},
+        {-8.0f, -11.0f}},
     {"top left", Alignment::TopLeft,
-        {0.0f, -7.0f - 3.5f}},
+        {0.0f, -10.5f}},
     {"top right", Alignment::TopRight,
-        {-10.0f - 2.5f, -7.0f - 3.5f}},
+        {-12.5f, -10.5f}},
     {"middle center", Alignment::MiddleCenter,
         /* Half size of the bounds quad */
-        {-5.0f - 2.5f, -3.5f - 3.625f}},
+        {-7.5f, -7.125f}},
     {"middle center, integral", Alignment::MiddleCenterIntegral,
         /* The X shift is rounded to whole units */
-        {-5.5f - 2.5f, -3.5f - 3.5f}},
+        {-8.0f, -7.0f}},
 };
 
 RendererGLTest::RendererGLTest() {
@@ -278,7 +278,7 @@ void RendererGLTest::renderMesh() {
     /* Alignment offset */
     /** @todo same as in render(), figure out if the initial offset makes
         sense or not */
-    const Vector2 offset{-5.0f - 2.5f, -3.5f - 3.625f};
+    const Vector2 offset{-7.5f, -7.125f};
 
     /* Bounds */
     CORRADE_COMPARE(bounds, (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f}}.translated(offset)));
@@ -406,7 +406,7 @@ void RendererGLTest::mutableText() {
     /* Alignment offset */
     /** @todo same as in render(), figure out if the initial offset makes
         sense or not */
-    const Vector2 offset{-5.0f - 2.5f, -3.5f - 3.625f};
+    const Vector2 offset{-7.5f, -7.125f};
 
     /* Updated bounds and mesh vertex count */
     CORRADE_COMPARE(renderer.rectangle(), (Range2D{{2.5f, 3.75f}, {12.5f, 10.5f} }.translated(offset)));
