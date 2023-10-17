@@ -136,6 +136,11 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceField {
          * still inefficient supported format is in most cases
          * @ref GL::TextureFormat::RGB. The @ref GL::TextureFormat::Luminance
          * format usually isn't renderable.
+         *
+         * Additionally, the ratio of the @p input size (or @p imageSize on
+         * OpenGL ES) and @p rectangle size is expected to be a multiple of 2,
+         * as that's what the generator shader relies on for correct pixel
+         * addressing.
          */
         void operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i& imageSize
             #ifndef MAGNUM_TARGET_GLES
