@@ -529,7 +529,34 @@ void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
         , Vector2i{23*14}
         #endif
         );
-    CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n");
+    /* Verify also just one axis wrong */
+    distanceField(input, output, {{}, {23*2, 23}}
+        #ifdef MAGNUM_TARGET_GLES
+        , Vector2i{23*14}
+        #endif
+        );
+    distanceField(input, output, {{}, {23, 23*2}}
+        #ifdef MAGNUM_TARGET_GLES
+        , Vector2i{23*14}
+        #endif
+        );
+    /* Almost correct except that it's not an integer multiply */
+    distanceField(input, output, {{}, {22, 23}}
+        #ifdef MAGNUM_TARGET_GLES
+        , Vector2i{23*14}
+        #endif
+        );
+    distanceField(input, output, {{}, {23, 22}}
+        #ifdef MAGNUM_TARGET_GLES
+        , Vector2i{23*14}
+        #endif
+        );
+    CORRADE_COMPARE(out.str(),
+        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
+        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
+        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
+        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {22, 23}\n"
+        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {23, 22}\n");
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
