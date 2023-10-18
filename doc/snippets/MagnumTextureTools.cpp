@@ -34,7 +34,11 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/MeshTools/Transform.h"
 #include "Magnum/TextureTools/Atlas.h"
+#include "Magnum/Trade/MaterialData.h"
+#include "Magnum/Trade/MeshData.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
@@ -142,4 +146,40 @@ for(std::size_t i = 0; i != input.size(); ++i) {
 }
 /* [atlasArrayPowerOfTwo] */
 }
+
+{
+Vector2i atlasSize;
+Containers::StridedArrayView1D<const Vector2i> sizes;
+Containers::StridedArrayView1D<const Vector2i> offsets;
+Containers::BitArrayView rotations;
+std::size_t i{};
+/* [atlasTextureCoordinateTransformation] */
+Matrix3 matrix = (rotations[i] ?
+    TextureTools::atlasTextureCoordinateTransformationRotatedCounterClockwise :
+    TextureTools::atlasTextureCoordinateTransformation
+)(atlasSize, sizes[i], offsets[i]);
+/* [atlasTextureCoordinateTransformation] */
+static_cast<void>(matrix);
+}
+
+{
+Matrix3 matrix;
+/* [atlasTextureCoordinateTransformation-meshdata] */
+Trade::MeshData mesh = DOXYGEN_ELLIPSIS(Trade::MeshData{MeshPrimitive::Points, 0});
+
+MeshTools::transformTextureCoordinates2DInPlace(mesh, matrix);
+/* [atlasTextureCoordinateTransformation-meshdata] */
+}
+
+{
+Matrix3 matrix;
+/* [atlasTextureCoordinateTransformation-materialdata] */
+Trade::MaterialData material = DOXYGEN_ELLIPSIS(Trade::MaterialData{{}, {}});
+
+Matrix3& materialMatrix =
+    material.mutableAttribute<Matrix3>(Trade::MaterialAttribute::TextureMatrix);
+materialMatrix = matrix*materialMatrix;
+/* [atlasTextureCoordinateTransformation-materialdata] */
+}
+
 }

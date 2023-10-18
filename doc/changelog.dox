@@ -376,6 +376,9 @@ See also:
     [mosra/magnum#2](https://github.com/mosra/magnum/issues/2))
 -   New @ref TextureTools::atlasArrayPowerOfTwo() utility for optimal packing
     of power-of-two textures into a texture atlas array
+-   New @ref TextureTools::atlasTextureCoordinateTransformation() helper for
+    creating an appropriate texture coordinate transformation matrix for
+    textures placed into an atlas
 -   Added a @ref TextureTools::DistanceField::operator()() overload taking a
     @ref GL::Framebuffer instead of a @ref GL::Texture as an output for an
     easier ability to download the resulting image on OpenGL ES platforms;

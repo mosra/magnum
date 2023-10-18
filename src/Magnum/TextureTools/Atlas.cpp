@@ -33,7 +33,7 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/FunctionsBatch.h"
 
@@ -502,5 +502,34 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
     CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
+
+Matrix3 atlasTextureCoordinateTransformation(const Vector2i& atlasSize, const Vector2i& size, const Vector2i& offset) {
+    CORRADE_ASSERT((offset + size <= atlasSize).all(),
+        "TextureTools::atlasTextureCoordinateTransformation(): size" << Debug::packed << size << "and offset" << Debug::packed << offset << "doesn't fit into" << Debug::packed << atlasSize, {});
+    const Vector2 atlasSizeF = Vector2{atlasSize};
+    return Matrix3{{Float(size.x())/atlasSizeF.x(), 0.0f, 0.0f},
+                   {0.0f, Float(size.y())/atlasSizeF.y(), 0.0f},
+                   {Vector2{offset}/atlasSizeF, 1.0f}};
+}
+
+Matrix3 atlasTextureCoordinateTransformationRotatedCounterClockwise(const Vector2i& atlasSize, const Vector2i& size, const Vector2i& offset) {
+    CORRADE_ASSERT((offset + size.flipped() <= atlasSize).all(),
+        "TextureTools::atlasTextureCoordinateTransformationRotatedCounterClockwise(): (rotated) size" << Debug::packed << size.flipped() << "and offset" << Debug::packed << offset << "doesn't fit into" << Debug::packed << atlasSize, {});
+    const Vector2 atlasSizeF = Vector2{atlasSize};
+    return Matrix3{{0.0f, Float(size.x())/atlasSizeF.y(), 0.0f},
+                   {-Float(size.y())/atlasSizeF.x(), 0.0f, 0.0f},
+                   {Float(offset.x() + size.y())/atlasSizeF.x(),
+                    Float(offset.y())/atlasSizeF.y(), 1.0f}};
+}
+
+Matrix3 atlasTextureCoordinateTransformationRotatedClockwise(const Vector2i& atlasSize, const Vector2i& size, const Vector2i& offset) {
+    CORRADE_ASSERT((offset + size.flipped() <= atlasSize).all(),
+        "TextureTools::atlasTextureCoordinateTransformationRotatedClockwise(): (rotated) size" << Debug::packed << size.flipped() << "and offset" << Debug::packed << offset << "doesn't fit into" << Debug::packed << atlasSize, {});
+    const Vector2 atlasSizeF = Vector2{atlasSize};
+    return Matrix3{{0.0f, -Float(size.x())/atlasSizeF.y(), 0.0f},
+                   {Float(size.y())/atlasSizeF.x(), 0.0f, 0.0f},
+                   {Float(offset.x())/atlasSizeF.x(),
+                    Float(offset.y() + size.x())/atlasSizeF.y(), 1.0f}};
+}
 
 }}

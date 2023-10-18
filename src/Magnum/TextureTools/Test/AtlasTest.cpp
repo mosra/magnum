@@ -35,7 +35,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Matrix3.h"
 #include "Magnum/TextureTools/Atlas.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -92,6 +92,9 @@ struct AtlasTest: TestSuite::Tester {
     #ifdef MAGNUM_BUILD_DEPRECATED
     void arrayPowerOfTwoDeprecated();
     #endif
+
+    void textureCoordinateTransformation();
+    void textureCoordinateTransformationOutOfBounds();
 };
 
 const Vector2i LandfillSizes[]{
@@ -551,6 +554,9 @@ AtlasTest::AtlasTest() {
     #ifdef MAGNUM_BUILD_DEPRECATED
     addTests({&AtlasTest::arrayPowerOfTwoDeprecated});
     #endif
+
+    addTests({&AtlasTest::textureCoordinateTransformation,
+              &AtlasTest::textureCoordinateTransformationOutOfBounds});
 }
 
 void AtlasTest::debugLandfillFlag() {
@@ -1439,6 +1445,164 @@ void AtlasTest::arrayPowerOfTwoDeprecated() {
     }), TestSuite::Compare::Container);
 }
 #endif
+
+void AtlasTest::textureCoordinateTransformation() {
+    const Vector2i atlasSize{4, 5};
+    const Vector2i size{2, 1};
+    const Vector2i offset{1, 2};
+    const Vector2 a{0.0f, 0.0f};
+    const Vector2 b{1.0f, 0.0f};
+    const Vector2 c{0.0f, 1.0f};
+    const Vector2 d{1.0f, 1.0f};
+
+    /* Trivial rotation cases with no scaling or offset should return in exact
+       corner positions
+        c--d    d--b    a--c
+        |  |    |  |    |  |
+        a--b    c--a    b--d */
+    {
+        const Matrix3 transformation = atlasTextureCoordinateTransformation(atlasSize, atlasSize, {});
+        CORRADE_COMPARE(transformation.transformPoint(a), (Vector2{0.0f, 0.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(b), (Vector2{1.0f, 0.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(c), (Vector2{0.0f, 1.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(d), (Vector2{1.0f, 1.0f}));
+        CORRADE_COMPARE(transformation, (Matrix3{
+            {1.0f, 0.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f},
+            {0.0f, 0.0f, 1.0f}
+        }));
+    } {
+        /* The item size is flipped, as otherwise with the rotation it'd mean
+           we want to put a {5, 4} item into an atlas of size {4, 5} */
+        const Matrix3 transformation = atlasTextureCoordinateTransformationRotatedCounterClockwise(atlasSize, atlasSize.flipped(), {});
+        CORRADE_COMPARE(transformation.transformPoint(a), (Vector2{1.0f, 0.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(b), (Vector2{1.0f, 1.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(c), (Vector2{0.0f, 0.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(d), (Vector2{0.0f, 1.0f}));
+        CORRADE_COMPARE(transformation, (Matrix3{
+            {0.0f, 1.0f, 0.0f},
+            {-1.0f, 0.0f, 0.0f},
+            {1.0f, 0.0f, 1.0f}
+        }));
+    } {
+        /* The item size is flipped, as otherwise with the rotation it'd mean
+           we want to put a {5, 4} item into an atlas of size {4, 5} */
+        const Matrix3 transformation = atlasTextureCoordinateTransformationRotatedClockwise(atlasSize, atlasSize.flipped(), {});
+        CORRADE_COMPARE(transformation.transformPoint(a), (Vector2{0.0f, 1.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(b), (Vector2{0.0f, 0.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(c), (Vector2{1.0f, 1.0f}));
+        CORRADE_COMPARE(transformation.transformPoint(d), (Vector2{1.0f, 0.0f}));
+        CORRADE_COMPARE(transformation, (Matrix3{
+            {0.0f, -1.0f, 0.0f},
+            {1.0f, 0.0f, 0.0f},
+            {0.0f, 1.0f, 1.0f}
+        }));
+
+    /* 5 +--------+
+         |        |
+       3 | c----d |
+         | |    | |
+       2 | a----b |
+         |        |
+       0 +--------+
+         0 1    3 4 */
+    } {
+        const Matrix3 transformation = atlasTextureCoordinateTransformation(atlasSize, size, offset);
+        CORRADE_COMPARE(transformation.transformPoint(a)*atlasSize, (Vector2i{1, 2}));
+        CORRADE_COMPARE(transformation.transformPoint(b)*atlasSize, (Vector2i{3, 2}));
+        CORRADE_COMPARE(transformation.transformPoint(c)*atlasSize, (Vector2i{1, 3}));
+        CORRADE_COMPARE(transformation.transformPoint(d)*atlasSize, (Vector2i{3, 3}));
+        CORRADE_COMPARE(transformation, (Matrix3{
+            {0.5f, 0.0f, 0.0f},
+            {0.0f, 0.2f, 0.0f},
+            {0.25f, 0.4f, 1.0f}
+        }));
+
+    /* 5 +--------+
+       4 | d--b   |
+         | |  |   |
+         | |  |   |
+       2 | c--a   |
+         |        |
+       0 +--------+
+         0 1  2   4 */
+    } {
+        const Matrix3 transformation = atlasTextureCoordinateTransformationRotatedCounterClockwise(atlasSize, size, offset);
+        CORRADE_COMPARE(transformation.transformPoint(a)*atlasSize, (Vector2i{2, 2}));
+        CORRADE_COMPARE(transformation.transformPoint(b)*atlasSize, (Vector2i{2, 4}));
+        CORRADE_COMPARE(transformation.transformPoint(c)*atlasSize, (Vector2i{1, 2}));
+        CORRADE_COMPARE(transformation.transformPoint(d)*atlasSize, (Vector2i{1, 4}));
+        CORRADE_COMPARE(transformation, (Matrix3{
+            {0.0f, 0.4f, 0.0f},
+            {-0.25f, 0.0f, 0.0f},
+            {0.5f, 0.4f, 1.0f}
+        }));
+
+    /* 5 +--------+
+       4 | a--c   |
+         | |  |   |
+         | |  |   |
+       2 | b--d   |
+         |        |
+       0 +--------+
+         0 1  2   4 */
+    } {
+        const Matrix3 transformation = atlasTextureCoordinateTransformationRotatedClockwise(atlasSize, size, offset);
+        CORRADE_COMPARE(transformation.transformPoint(a)*atlasSize, (Vector2i{1, 4}));
+        CORRADE_COMPARE(transformation.transformPoint(b)*atlasSize, (Vector2i{1, 2}));
+        CORRADE_COMPARE(transformation.transformPoint(c)*atlasSize, (Vector2i{2, 4}));
+        CORRADE_COMPARE(transformation.transformPoint(d)*atlasSize, (Vector2i{2, 2}));
+        CORRADE_COMPARE(transformation, (Matrix3{
+            {0.0f, -0.4f, 0.0f},
+            {0.25f, 0.0f, 0.0f},
+            {0.25f, 0.8f, 1.0f}
+        }));
+    }
+}
+
+void AtlasTest::textureCoordinateTransformationOutOfBounds() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* These should be fine */
+    atlasTextureCoordinateTransformation({5, 4}, {5, 4}, {});
+    atlasTextureCoordinateTransformationRotatedCounterClockwise({5, 4}, {4, 5}, {});
+    atlasTextureCoordinateTransformationRotatedClockwise({5, 4}, {4, 5}, {});
+    atlasTextureCoordinateTransformation({5, 4}, {3, 1}, {2, 3});
+    atlasTextureCoordinateTransformationRotatedCounterClockwise({5, 4}, {1, 3}, {2, 3});
+    atlasTextureCoordinateTransformationRotatedClockwise({5, 4}, {1, 3}, {2, 3});
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Size too large in either dimension */
+    atlasTextureCoordinateTransformation({5, 4}, {3, 5}, {});
+    atlasTextureCoordinateTransformation({4, 5}, {5, 3}, {});
+    atlasTextureCoordinateTransformationRotatedCounterClockwise({5, 4}, {5, 3}, {});
+    atlasTextureCoordinateTransformationRotatedCounterClockwise({4, 5}, {3, 5}, {});
+    atlasTextureCoordinateTransformationRotatedClockwise({5, 4}, {5, 3}, {});
+    atlasTextureCoordinateTransformationRotatedClockwise({4, 5}, {3, 5}, {});
+    /* Size + offset too large */
+    atlasTextureCoordinateTransformation({5, 4}, {1, 2}, {2, 3});
+    atlasTextureCoordinateTransformation({4, 5}, {2, 1}, {3, 2});
+    atlasTextureCoordinateTransformationRotatedCounterClockwise({5, 4}, {2, 1}, {2, 3});
+    atlasTextureCoordinateTransformationRotatedCounterClockwise({4, 5}, {1, 2}, {3, 2});
+    atlasTextureCoordinateTransformationRotatedClockwise({5, 4}, {2, 1}, {2, 3});
+    atlasTextureCoordinateTransformationRotatedClockwise({4, 5}, {1, 2}, {3, 2});
+    CORRADE_COMPARE_AS(out.str(),
+       "TextureTools::atlasTextureCoordinateTransformation(): size {3, 5} and offset {0, 0} doesn't fit into {5, 4}\n"
+       "TextureTools::atlasTextureCoordinateTransformation(): size {5, 3} and offset {0, 0} doesn't fit into {4, 5}\n"
+       "TextureTools::atlasTextureCoordinateTransformationRotatedCounterClockwise(): (rotated) size {3, 5} and offset {0, 0} doesn't fit into {5, 4}\n"
+       "TextureTools::atlasTextureCoordinateTransformationRotatedCounterClockwise(): (rotated) size {5, 3} and offset {0, 0} doesn't fit into {4, 5}\n"
+       "TextureTools::atlasTextureCoordinateTransformationRotatedClockwise(): (rotated) size {3, 5} and offset {0, 0} doesn't fit into {5, 4}\n"
+       "TextureTools::atlasTextureCoordinateTransformationRotatedClockwise(): (rotated) size {5, 3} and offset {0, 0} doesn't fit into {4, 5}\n"
+
+       "TextureTools::atlasTextureCoordinateTransformation(): size {1, 2} and offset {2, 3} doesn't fit into {5, 4}\n"
+       "TextureTools::atlasTextureCoordinateTransformation(): size {2, 1} and offset {3, 2} doesn't fit into {4, 5}\n"
+       "TextureTools::atlasTextureCoordinateTransformationRotatedCounterClockwise(): (rotated) size {1, 2} and offset {2, 3} doesn't fit into {5, 4}\n"
+       "TextureTools::atlasTextureCoordinateTransformationRotatedCounterClockwise(): (rotated) size {2, 1} and offset {3, 2} doesn't fit into {4, 5}\n"
+       "TextureTools::atlasTextureCoordinateTransformationRotatedClockwise(): (rotated) size {1, 2} and offset {2, 3} doesn't fit into {5, 4}\n"
+       "TextureTools::atlasTextureCoordinateTransformationRotatedClockwise(): (rotated) size {2, 1} and offset {3, 2} doesn't fit into {4, 5}\n",
+        TestSuite::Compare::String);
+}
 
 }}}}
 

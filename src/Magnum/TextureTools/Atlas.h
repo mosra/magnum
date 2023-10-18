@@ -137,6 +137,11 @@ efficiency while not making any difference for texture mapping.
 
 @snippet MagnumTextureTools.cpp AtlasLandfill-usage
 
+Calculating a texture coordinate transformation matrix for a particular image
+can then be done with @ref atlasTextureCoordinateTransformation(), see its
+documentation for an example of how to calculate and apply the matrix to either
+the mesh directly or to a material / shader.
+
 If rotations are undesirable, for example if the resulting atlas is used by a
 linear rasterizer later, they can be disabled by clearing appropriate
 @ref AtlasLandfillFlags. The process can then also use the
@@ -152,6 +157,10 @@ packing overflows to next slices instead of expanding to potentially unbounded
 height.
 
 @snippet MagnumTextureTools.cpp AtlasLandfill-usage-array
+
+The layer has to be taken into an account in addition to the texture coordinate
+transformation matrix calculated with @ref atlasTextureCoordinateTransformation(),
+for example by adding a texture layer attribute to @ref Trade::MaterialData.
 
 @section TextureTools-AtlasLandfill-process Packing process
 
@@ -446,7 +455,11 @@ texture in the set will lead to the least wasted space in the last layer.
 
 @htmlinclude atlas-array-power-of-two.svg
 
-Example usage is shown below.
+Example usage is shown below. Calculating a texture coordinate transformation
+matrix for a particular image can then be done with
+@ref atlasTextureCoordinateTransformation(), see its documentation for how to
+calculate and apply the matrix to either the mesh directly or to a material /
+shader.
 
 @snippet MagnumTextureTools.cpp atlasArrayPowerOfTwo
 
@@ -485,6 +498,63 @@ MAGNUM_TEXTURETOOLS_EXPORT CORRADE_DEPRECATED("use the overload taking offsets a
 */
 MAGNUM_TEXTURETOOLS_EXPORT CORRADE_DEPRECATED("use the overload taking offsets as an output view instead") Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, std::initializer_list<Vector2i> sizes);
 #endif
+
+/**
+@brief Calculate a texture coordinate transformation matrix for an atlas-packed item
+@m_since_latest
+
+Together with @ref atlasTextureCoordinateTransformationRotatedCounterClockwise()
+or @ref atlasTextureCoordinateTransformationRotatedClockwise() meant be used to
+adjust mesh texture coordinate attributes after packing textures with
+@ref AtlasLandfill or @ref atlasArrayPowerOfTwo(). Expects that @p size and
+@p offset fit into the @p atlasSize, the rotated variants expect that @p size
+with coordinates flipped and @p offset fit into the @p atlasSize.
+
+With a concrete `atlasSize`, `sizes` being the input sizes passed to
+@ref AtlasLandfill::add() (i.e., without any potential rotations applied yet),
+and `offsets` and `rotations` being the output, the usage is as follows:
+
+@snippet MagnumTextureTools.cpp atlasTextureCoordinateTransformation
+
+The resulting matrix can be then directly used to adjust texture coordinates,
+like below with @ref MeshTools::transformTextureCoordinates2DInPlace() on a
+@link Trade::MeshData @endlink:
+
+@snippet MagnumTextureTools.cpp atlasTextureCoordinateTransformation-meshdata
+
+Alternatively, for example in cases where a single mesh is used with several different textures, the transformation can be applied at draw time, such as
+with @ref Shaders::FlatGL::setTextureMatrix(). In case there's already a
+texture transformation matrix being applied when drawing, the new
+transformation has to happen *after*, so multiplied from the left side. For
+example with a @ref Trade::MaterialData that contains a
+@link Trade::MaterialAttribute::TextureMatrix @endlink:
+
+@snippet MagnumTextureTools.cpp atlasTextureCoordinateTransformation-materialdata
+*/
+MAGNUM_TEXTURETOOLS_EXPORT Matrix3 atlasTextureCoordinateTransformation(const Vector2i& atlasSize, const Vector2i& size, const Vector2i& offset);
+
+/**
+@brief Calculate a texture coordinate transformation matrix for an atlas-packed item rotated counterclockwise
+@m_since_latest
+
+Like @ref atlasTextureCoordinateTransformation(), but swaps X and Y of @p size
+and produces a matrix that rotates the texture coordinates 90°
+counterclockwise. The lower left corner of the input becomes a lower right
+corner. See @ref atlasTextureCoordinateTransformationRotatedClockwise() for a
+clockwise variant.
+*/
+MAGNUM_TEXTURETOOLS_EXPORT Matrix3 atlasTextureCoordinateTransformationRotatedCounterClockwise(const Vector2i& atlasSize, const Vector2i& size, const Vector2i& offset);
+
+/**
+@brief Calculate a texture coordinate transformation matrix for an atlas-packed item rotated clockwise
+@m_since_latest
+
+Like @ref atlasTextureCoordinateTransformation(), but swaps X and Y of @p size
+and produces a matrix that rotates the texture coordinates 90° clockwise. The lower left corner of the input becomes an upper left corner. See
+@ref atlasTextureCoordinateTransformationRotatedClockwise() for a
+counterclockwise variant.
+*/
+MAGNUM_TEXTURETOOLS_EXPORT Matrix3 atlasTextureCoordinateTransformationRotatedClockwise(const Vector2i& atlasSize, const Vector2i& size, const Vector2i& offset);
 
 }}
 
