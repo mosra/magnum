@@ -68,6 +68,10 @@ channels.
 
 @snippet MagnumText-gl.cpp DistanceFieldGlyphCache-usage
 
+See the @ref Renderer class for information about text rendering. The
+@ref AbstractGlyphCache base class has more information about general glyph
+cache usage.
+
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.

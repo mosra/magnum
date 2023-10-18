@@ -49,11 +49,9 @@ Create the @ref GlyphCache object with sufficient size and then call
 
 @snippet MagnumText-gl.cpp GlyphCache-usage
 
-See the @ref Renderer class for information about text rendering.
-
-This class supports @ref GlyphCacheFeature::ImageDownload (and thus calling
-@ref image()) only on desktop OpenGL, due to using @ref GL::Texture::image(),
-which is not available on @ref MAGNUM_TARGET_GLES "OpenGL ES" platforms.
+See the @ref Renderer class for information about text rendering. The
+@ref AbstractGlyphCache base class has more information about general glyph
+cache usage.
 
 @todo Some way for Font to negotiate or check internal texture format
 @todo Default glyph 0 with rect 0 0 0 0 will result in negative dimensions when

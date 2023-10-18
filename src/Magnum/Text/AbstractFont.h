@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractFont, @ref Magnum::Text::AbstractLayouter, enum @ref Magnum::Text::FontFeature, enum set @ref Magnum::Text::FontFeatures
+ * @brief Class @ref Magnum::Text::AbstractFont, enum @ref Magnum::Text::FontFeature, enum set @ref Magnum::Text::FontFeatures
  */
 
 #include <Corrade/PluginManager/AbstractPlugin.h>
@@ -176,9 +176,9 @@ code reuse.
 
 @section Text-AbstractFont-data-dependency Data dependency
 
-The @ref AbstractLayouter instances returned from @ref layout() have a code and
-data dependency on the dynamic plugin module --- since their implementation is
-in the plugin module itself, the plugin can't be unloaded until the returned
+The @ref AbstractShaper instances returned from @ref createShaper() have a code
+and data dependency on the dynamic plugin module --- since their implementation
+is in the plugin module itself, the plugin can't be unloaded until the returned
 instance is destroyed.
 
 @section Text-AbstractFont-subclassing Subclassing
@@ -186,7 +186,7 @@ instance is destroyed.
 The plugin needs to implement the @ref doFeatures(), @ref doClose(),
 @ref doCreateShaper() functions, either @ref doCreateGlyphCache() or
 @ref doFillGlyphCache() and one or more of `doOpen*()` functions. See also
-@ref AbstractLayouter for more information.
+@ref AbstractShaper for more information.
 
 In order to support @ref FontFeature::FileCallback, the font needs to properly
 use the callbacks to both load the top-level file in @ref doOpenFile() and also

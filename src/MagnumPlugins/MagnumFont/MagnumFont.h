@@ -157,7 +157,8 @@ need to instantiate a manager for them and register it with
 
 @snippet plugins.cpp MagnumFont-importer-register
 
-See @ref building, @ref cmake and @ref plugins for more information.
+See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
+information.
 */
 class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
     public:
