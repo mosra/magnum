@@ -186,6 +186,12 @@ update its actual GPU-side texture based on what area of the image was updated.
 In case of @ref DistanceFieldGlyphCache for example it also triggers distance
 field generation for given area.
 
+If the images put into the cache are meant to be used with general meshes, the
+@ref TextureTools::atlasTextureCoordinateTransformation() function can be used
+to create an appropriate texture coordinate transformation matrix. See its
+documentation for an example of calculating and applying the matrix to either
+the mesh directly or to a material / shader.
+
 @subsection Text-AbstractGlyphCache-filling-incremental Incremental population
 
 As long as the cache size allows, it's possible to add more fonts with
