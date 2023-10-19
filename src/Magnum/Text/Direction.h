@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::Text::ShapeDirection
+ * @brief Enum @ref Magnum::Text::ShapeDirection, @ref Magnum::Text::LayoutDirection
  * @m_since_latest
  */
 
@@ -40,7 +40,8 @@ namespace Magnum { namespace Text {
 @brief Direction a text is shaped in
 @m_since_latest
 
-@see @ref AbstractShaper::setDirection(), @ref AbstractShaper::direction()
+@see @ref AbstractShaper::setDirection(), @ref AbstractShaper::direction(),
+    @ref LayoutDirection
 */
 enum class ShapeDirection: UnsignedByte {
     /**
@@ -84,6 +85,31 @@ enum class ShapeDirection: UnsignedByte {
 
 /** @debugoperatorenum{ShapeDirection} */
 MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, ShapeDirection value);
+
+/**
+@brief Direction a text is laid out in
+@m_since_latest
+
+@see @ref ShapeDirection
+*/
+enum class LayoutDirection: UnsignedByte {
+    Unspecified = 0,
+
+    /** Horizontal text with lines advancing from top to bottom */
+    HorizontalTopToBottom = 1,
+
+    /* There's no HorizontalBottomToTop, as apparently no scripts use that. Not
+       even the CSS writing-mode property has it, so why should I. */
+
+    /** Vertical text with lines advancing from left to right */
+    VerticalLeftToRight,
+
+    /** Vertical text with lines advancing from right to left */
+    VerticalRightToLeft
+};
+
+/** @debugoperatorenum{LayoutDirection} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, LayoutDirection value);
 
 }}
 

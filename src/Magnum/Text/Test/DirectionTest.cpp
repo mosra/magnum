@@ -35,16 +35,24 @@ struct DirectionTest: TestSuite::Tester {
     explicit DirectionTest();
 
     void debugShape();
+    void debugLayout();
 };
 
 DirectionTest::DirectionTest() {
-    addTests({&DirectionTest::debugShape});
+    addTests({&DirectionTest::debugShape,
+              &DirectionTest::debugLayout});
 }
 
 void DirectionTest::debugShape() {
     std::ostringstream out;
     Debug{&out} << ShapeDirection::RightToLeft << ShapeDirection(0xab);
     CORRADE_COMPARE(out.str(), "Text::ShapeDirection::RightToLeft Text::ShapeDirection(0xab)\n");
+}
+
+void DirectionTest::debugLayout() {
+    std::ostringstream out;
+    Debug{&out} << LayoutDirection::VerticalRightToLeft << LayoutDirection(0xab);
+    CORRADE_COMPARE(out.str(), "Text::LayoutDirection::VerticalRightToLeft Text::LayoutDirection(0xab)\n");
 }
 
 }}}}

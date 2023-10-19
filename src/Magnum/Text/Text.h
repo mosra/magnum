@@ -43,6 +43,7 @@ class AbstractShaper;
 
 enum class Alignment: UnsignedByte;
 enum class ShapeDirection: UnsignedByte;
+enum class LayoutDirection: UnsignedByte;
 
 class AbstractGlyphCache;
 

@@ -47,4 +47,21 @@ Debug& operator<<(Debug& debug, const ShapeDirection value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
+Debug& operator<<(Debug& debug, const LayoutDirection value) {
+    debug << "Text::LayoutDirection" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case LayoutDirection::v: return debug << "::" #v;
+        _c(Unspecified)
+        _c(HorizontalTopToBottom)
+        _c(VerticalLeftToRight)
+        _c(VerticalRightToLeft)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
 }}
