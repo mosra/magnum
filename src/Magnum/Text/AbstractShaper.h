@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractShaper, @ref Magnum::Text::FeatureRange, enum @ref Magnum::Text::Direction
+ * @brief Class @ref Magnum::Text::AbstractShaper, @ref Magnum::Text::FeatureRange
  * @m_since_latest
  */
 
@@ -38,55 +38,6 @@
 #include "Magnum/Text/visibility.h"
 
 namespace Magnum { namespace Text {
-
-/**
-@brief Direction a text is shaped in
-@m_since_latest
-
-@see @ref AbstractShaper::setDirection(), @ref AbstractShaper::direction()
-*/
-enum class Direction: UnsignedByte {
-    /**
-     * Unspecified. When set in @ref AbstractShaper::setDirection(), makes the
-     * shaping rely on direction autodetection implemented in a particular
-     * @ref AbstractFont plugin (if any). When returned from
-     * @ref AbstractShaper::direction() after a successful
-     * @ref AbstractShaper::shape() call, it means a particular
-     * @ref AbstractFont plugin doesn't implement any script-specific behavior.
-     */
-    Unspecified = 0,
-
-    /**
-     * Left to right. When returned from @ref AbstractShaper::direction(),
-     * the @p advances filled by @ref AbstractShaper::glyphsInto() are
-     * guaranteed to have their Y components @cpp 0.0f @ce.
-     */
-    LeftToRight = 1,
-
-    /**
-     * Right to left. When returned from @ref AbstractShaper::direction(),
-     * the @p advances filled by @ref AbstractShaper::glyphsInto() are
-     * guaranteed to have their Y components @cpp 0.0f @ce.
-     */
-    RightToLeft,
-
-    /**
-     * Top to bottom. When returned from @ref AbstractShaper::direction(),
-     * the @p advances filled by @ref AbstractShaper::glyphsInto() are
-     * guaranteed to have their X components @cpp 0.0f @ce.
-     */
-    TopToBottom,
-
-    /**
-     * Bottom to top. When returned from @ref AbstractShaper::direction(),
-     * the @p advances filled by @ref AbstractShaper::glyphsInto() are
-     * guaranteed to have their X components @cpp 0.0f @ce.
-     */
-    BottomToTop
-};
-
-/** @debugoperatorenum{Direction} */
-MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, Direction value);
 
 /**
 @brief OpenType feature for a text range
@@ -321,14 +272,14 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         bool setLanguage(Containers::StringView language);
 
         /**
-         * @brief Set text direction
+         * @brief Set direction the text is meant to be shaped in
          *
          * The direction is used for all following @ref shape() calls. If not
-         * called at all or if explicitly set to @ref Direction::Unspecified,
-         * the @ref AbstractFont plugin may attempt to guess the direction from
-         * the input text. The actual direction used for shaping (if any) is
-         * queryable with @ref direction() const after @ref shape() has been
-         * called.
+         * called at all or if explicitly set to
+         * @ref ShapeDirection::Unspecified, the @ref AbstractFont plugin may
+         * attempt to guess the direction from the input text. The actual
+         * direction used for shaping (if any) is queryable with
+         * @ref direction() const after @ref shape() has been called.
          *
          * Returns @cpp true @ce if the plugin supports setting a language and
          * the language is supported, @cpp false @ce otherwise, in which case
@@ -336,7 +287,7 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * particular font plugin for more information.
          * @see @ref setScript(), @ref setLanguage()
          */
-        bool setDirection(Direction direction);
+        bool setDirection(ShapeDirection direction);
 
         /**
          * @brief Shape a text
@@ -436,14 +387,14 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         Containers::StringView language() const;
 
         /**
-         * @brief Language used for the last @ref shape() call
+         * @brief Shape direction used for the last @ref shape() call
          *
-         * May return @ref Direction::Unspecified if @ref shape() hasn't been
-         * called yet or if the @ref AbstractFont doesn't implement any
+         * May return @ref ShapeDirection::Unspecified if @ref shape() hasn't
+         * been called yet or if the @ref AbstractFont doesn't implement any
          * script-specific behavior.
          * @see @ref setDirection(), @ref script(), @ref language()
          */
-        Direction direction() const;
+        ShapeDirection direction() const;
 
         /**
          * @brief Retrieve glyph information
@@ -458,11 +409,12 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * relative to current cursor (which is then further offset for the
          * particular glyph rectangle returned from the glyph cache) and
          * @p advances specify in which direction to move the cursor for the
-         * next glyph. For @ref direction() being @ref Direction::LeftToRight
-         * or @relativeref{Direction,RightToLeft} Y components of @p advances
-         * are @cpp 0.0f @ce, for @relativeref{Direction,TopToBottom} or
-         * @relativeref{Direction,BottomToTop} X components of @p advances are
-         * @cpp 0.0f @ce.
+         * next glyph. For @ref direction() being
+         * @ref ShapeDirection::LeftToRight or
+         * @relativeref{ShapeDirection,RightToLeft} Y components of @p advances
+         * are @cpp 0.0f @ce, for @relativeref{ShapeDirection,TopToBottom} or
+         * @relativeref{ShapeDirection,BottomToTop} X components of @p advances
+         * are @cpp 0.0f @ce.
          * @see @ref direction()
          */
         void glyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const;
@@ -487,7 +439,7 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          *
          * Default implementation does nothing and returns @cpp false @ce.
          */
-        virtual bool doSetDirection(Direction direction);
+        virtual bool doSetDirection(ShapeDirection direction);
 
         /**
          * @brief Implemenation for @ref shape()
@@ -516,9 +468,9 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         /**
          * @brief Implemenation for @ref direction()
          *
-         * Default implementation returns @ref Direction::Unspecified.
+         * Default implementation returns @ref ShapeDirection::Unspecified.
          */
-        virtual Direction doDirection() const;
+        virtual ShapeDirection doDirection() const;
 
         /**
          * @brief Implemenation for @ref glyphsInto()

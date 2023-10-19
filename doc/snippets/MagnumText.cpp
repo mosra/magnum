@@ -51,6 +51,7 @@
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Text/AbstractShaper.h"
+#include "Magnum/Text/Direction.h"
 #include "Magnum/Text/Feature.h"
 #include "Magnum/Text/Script.h"
 #include "Magnum/TextureTools/Atlas.h"
@@ -266,7 +267,7 @@ Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
 
 /* Set text properties and shape it */
 shaper->setScript(Text::Script::Latin);
-shaper->setDirection(Text::Direction::LeftToRight);
+shaper->setDirection(Text::ShapeDirection::LeftToRight);
 shaper->setLanguage("en");
 shaper->shape("Hello, world!");
 

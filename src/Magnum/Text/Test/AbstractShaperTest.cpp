@@ -33,6 +33,7 @@
 
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Text/AbstractShaper.h"
+#include "Magnum/Text/Direction.h"
 #include "Magnum/Text/Feature.h"
 #include "Magnum/Text/Script.h"
 
@@ -40,8 +41,6 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 
 struct AbstractShaperTest: TestSuite::Tester {
     explicit AbstractShaperTest();
-
-    void debugDirection();
 
     void featureRangeConstruct();
     void featureRangeConstructBeginEnd();
@@ -73,9 +72,7 @@ struct AbstractShaperTest: TestSuite::Tester {
 };
 
 AbstractShaperTest::AbstractShaperTest() {
-    addTests({&AbstractShaperTest::debugDirection,
-
-              &AbstractShaperTest::featureRangeConstruct,
+    addTests({&AbstractShaperTest::featureRangeConstruct,
               &AbstractShaperTest::featureRangeConstructBeginEnd,
 
               &AbstractShaperTest::construct,
@@ -101,12 +98,6 @@ AbstractShaperTest::AbstractShaperTest() {
 
               &AbstractShaperTest::glyphsIntoEmpty,
               &AbstractShaperTest::glyphsIntoInvalidViewSizes});
-}
-
-void AbstractShaperTest::debugDirection() {
-    std::ostringstream out;
-    Debug{&out} << Direction::RightToLeft << Direction(0xab);
-    CORRADE_COMPARE(out.str(), "Text::Direction::RightToLeft Text::Direction(0xab)\n");
 }
 
 void AbstractShaperTest::featureRangeConstruct() {
@@ -281,8 +272,8 @@ void AbstractShaperTest::setDirection() {
     struct: AbstractShaper {
         using AbstractShaper::AbstractShaper;
 
-        bool doSetDirection(Direction direction) override {
-            CORRADE_COMPARE(direction, Direction::BottomToTop);
+        bool doSetDirection(ShapeDirection direction) override {
+            CORRADE_COMPARE(direction, ShapeDirection::BottomToTop);
             called = true;
             return true;
         }
@@ -293,13 +284,13 @@ void AbstractShaperTest::setDirection() {
         bool called = false;
     } shaper{FakeFont};
 
-    CORRADE_VERIFY(shaper.setDirection(Direction::BottomToTop));
+    CORRADE_VERIFY(shaper.setDirection(ShapeDirection::BottomToTop));
     CORRADE_VERIFY(shaper.called);
 }
 
 void AbstractShaperTest::setDirectionNotImplemented() {
     DummyShaper shaper{FakeFont};
-    CORRADE_VERIFY(!shaper.setDirection(Direction::BottomToTop));
+    CORRADE_VERIFY(!shaper.setDirection(ShapeDirection::BottomToTop));
 }
 
 void AbstractShaperTest::shape() {
@@ -331,8 +322,8 @@ void AbstractShaperTest::shape() {
             return "eh-UH";
         }
 
-        Direction doDirection() const override {
-            return Direction::BottomToTop;
+        ShapeDirection doDirection() const override {
+            return ShapeDirection::BottomToTop;
         }
 
         void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
@@ -355,7 +346,7 @@ void AbstractShaperTest::shape() {
     CORRADE_COMPARE(shaper.glyphCount(), 0);
     CORRADE_COMPARE(shaper.script(), Script::LinearA);
     CORRADE_COMPARE(shaper.language(), "eh-UH");
-    CORRADE_COMPARE(shaper.direction(), Direction::BottomToTop);
+    CORRADE_COMPARE(shaper.direction(), ShapeDirection::BottomToTop);
 
     /* Shaping fills glyph count. A real implementation would then return
        (different) detected script/language/direction values, for example. */
@@ -367,7 +358,7 @@ void AbstractShaperTest::shape() {
     CORRADE_COMPARE(shaper.glyphCount(), 24);
     CORRADE_COMPARE(shaper.script(), Script::LinearA);
     CORRADE_COMPARE(shaper.language(), "eh-UH");
-    CORRADE_COMPARE(shaper.direction(), Direction::BottomToTop);
+    CORRADE_COMPARE(shaper.direction(), ShapeDirection::BottomToTop);
 
     UnsignedInt ids[24];
     Vector2 offsets[24];
@@ -485,7 +476,7 @@ void AbstractShaperTest::shapeScriptLanguageDirectionNotImplemented() {
     /* Initially it won't call into any of the implementations */
     CORRADE_COMPARE(shaper.script(), Script::Unspecified);
     CORRADE_COMPARE(shaper.language(), "");
-    CORRADE_COMPARE(shaper.direction(), Direction::Unspecified);
+    CORRADE_COMPARE(shaper.direction(), ShapeDirection::Unspecified);
 
     CORRADE_COMPARE(shaper.shape("some text"), 24);
 
@@ -493,7 +484,7 @@ void AbstractShaperTest::shapeScriptLanguageDirectionNotImplemented() {
        values as if shape() wouldn't be called at all */
     CORRADE_COMPARE(shaper.script(), Script::Unspecified);
     CORRADE_COMPARE(shaper.language(), "");
-    CORRADE_COMPARE(shaper.direction(), Direction::Unspecified);
+    CORRADE_COMPARE(shaper.direction(), ShapeDirection::Unspecified);
 }
 
 void AbstractShaperTest::shapeZeroGlyphs() {
@@ -512,8 +503,8 @@ void AbstractShaperTest::shapeZeroGlyphs() {
             return "eh-UH";
         }
 
-        Direction doDirection() const override {
-            return Direction::BottomToTop;
+        ShapeDirection doDirection() const override {
+            return ShapeDirection::BottomToTop;
         }
 
         void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
@@ -528,7 +519,7 @@ void AbstractShaperTest::shapeZeroGlyphs() {
     CORRADE_COMPARE(shaper.glyphCount(), 0);
     CORRADE_COMPARE(shaper.script(), Script::LinearA);
     CORRADE_COMPARE(shaper.language(), "eh-UH");
-    CORRADE_COMPARE(shaper.direction(), Direction::BottomToTop);
+    CORRADE_COMPARE(shaper.direction(), ShapeDirection::BottomToTop);
 }
 
 void AbstractShaperTest::shapeBeginEndOutOfRange() {

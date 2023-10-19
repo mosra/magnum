@@ -1,5 +1,3 @@
-#ifndef Magnum_Text_Text_h
-#define Magnum_Text_Text_h
 /*
     This file is part of Magnum.
 
@@ -25,40 +23,28 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Text namespace
- */
+#include "Direction.h"
 
-#include "Magnum/Types.h"
-#include "Magnum/configure.h"
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Text {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class AbstractFont;
-class AbstractFontConverter;
-class AbstractGlyphCache;
-class AbstractLayouter;
-class AbstractShaper;
+Debug& operator<<(Debug& debug, const ShapeDirection value) {
+    debug << "Text::ShapeDirection" << Debug::nospace;
 
-enum class Alignment: UnsignedByte;
-enum class ShapeDirection: UnsignedByte;
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ShapeDirection::v: return debug << "::" #v;
+        _c(Unspecified)
+        _c(LeftToRight)
+        _c(RightToLeft)
+        _c(TopToBottom)
+        _c(BottomToTop)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
 
-class AbstractGlyphCache;
-
-enum class Feature: UnsignedInt;
-enum class Script: UnsignedInt;
-
-#ifdef MAGNUM_TARGET_GL
-class DistanceFieldGlyphCache;
-class GlyphCache;
-class AbstractRenderer;
-template<UnsignedInt> class Renderer;
-typedef Renderer<2> Renderer2D;
-typedef Renderer<3> Renderer3D;
-#endif
-#endif
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
 
 }}
-
-#endif

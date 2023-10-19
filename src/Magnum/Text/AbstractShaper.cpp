@@ -28,27 +28,10 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
 
+#include "Magnum/Text/Direction.h"
 #include "Magnum/Text/Script.h"
 
 namespace Magnum { namespace Text {
-
-Debug& operator<<(Debug& debug, const Direction value) {
-    debug << "Text::Direction" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case Direction::v: return debug << "::" #v;
-        _c(Unspecified)
-        _c(LeftToRight)
-        _c(RightToLeft)
-        _c(TopToBottom)
-        _c(BottomToTop)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
-}
 
 AbstractShaper::AbstractShaper(AbstractFont& font): _font(font), _glyphCount{0} {}
 
@@ -70,11 +53,11 @@ bool AbstractShaper::setLanguage(const Containers::StringView language) {
 
 bool AbstractShaper::doSetLanguage(Containers::StringView) { return false; }
 
-bool AbstractShaper::setDirection(const Direction direction) {
+bool AbstractShaper::setDirection(const ShapeDirection direction) {
     return doSetDirection(direction);
 }
 
-bool AbstractShaper::doSetDirection(Direction) { return false; }
+bool AbstractShaper::doSetDirection(ShapeDirection) { return false; }
 
 UnsignedInt AbstractShaper::shape(const Containers::StringView text, const UnsignedInt begin, const UnsignedInt end, const Containers::ArrayView<const FeatureRange> features) {
     CORRADE_ASSERT((end == ~UnsignedInt{} && begin <= text.size()) ||
@@ -124,11 +107,13 @@ Containers::StringView AbstractShaper::language() const {
 
 Containers::StringView AbstractShaper::doLanguage() const { return {}; }
 
-Direction AbstractShaper::direction() const {
+ShapeDirection AbstractShaper::direction() const {
     return doDirection();
 }
 
-Direction AbstractShaper::doDirection() const { return Direction::Unspecified; }
+ShapeDirection AbstractShaper::doDirection() const {
+    return ShapeDirection::Unspecified;
+}
 
 void AbstractShaper::glyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const {
     CORRADE_ASSERT(ids.size() == _glyphCount && offsets.size() == _glyphCount && advances.size() == _glyphCount,

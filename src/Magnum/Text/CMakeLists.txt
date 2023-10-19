@@ -30,7 +30,8 @@ set(CMAKE_FOLDER "Magnum/Text")
 find_package(Corrade REQUIRED PluginManager)
 
 # Files shared between main library and unit test library
-set(MagnumText_SRCS )
+set(MagnumText_SRCS
+    Direction.cpp)
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumText_GracefulAssert_SRCS
@@ -47,6 +48,7 @@ set(MagnumText_HEADERS
     AbstractGlyphCache.h
     AbstractShaper.h
     Alignment.h
+    Direction.h
     Feature.h
     Script.h
     Text.h

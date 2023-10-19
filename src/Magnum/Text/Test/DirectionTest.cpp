@@ -1,5 +1,3 @@
-#ifndef Magnum_Text_Text_h
-#define Magnum_Text_Text_h
 /*
     This file is part of Magnum.
 
@@ -25,40 +23,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Text namespace
- */
+#include <sstream>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
-#include "Magnum/Types.h"
-#include "Magnum/configure.h"
+#include "Magnum/Text/Direction.h"
 
-namespace Magnum { namespace Text {
+namespace Magnum { namespace Text { namespace Test { namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class AbstractFont;
-class AbstractFontConverter;
-class AbstractGlyphCache;
-class AbstractLayouter;
-class AbstractShaper;
+struct DirectionTest: TestSuite::Tester {
+    explicit DirectionTest();
 
-enum class Alignment: UnsignedByte;
-enum class ShapeDirection: UnsignedByte;
+    void debugShape();
+};
 
-class AbstractGlyphCache;
+DirectionTest::DirectionTest() {
+    addTests({&DirectionTest::debugShape});
+}
 
-enum class Feature: UnsignedInt;
-enum class Script: UnsignedInt;
+void DirectionTest::debugShape() {
+    std::ostringstream out;
+    Debug{&out} << ShapeDirection::RightToLeft << ShapeDirection(0xab);
+    CORRADE_COMPARE(out.str(), "Text::ShapeDirection::RightToLeft Text::ShapeDirection(0xab)\n");
+}
 
-#ifdef MAGNUM_TARGET_GL
-class DistanceFieldGlyphCache;
-class GlyphCache;
-class AbstractRenderer;
-template<UnsignedInt> class Renderer;
-typedef Renderer<2> Renderer2D;
-typedef Renderer<3> Renderer3D;
-#endif
-#endif
+}}}}
 
-}}
-
-#endif
+CORRADE_TEST_MAIN(Magnum::Text::Test::DirectionTest)
