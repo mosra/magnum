@@ -666,9 +666,12 @@ void RangeTest::padded1D() {
 void RangeTest::scaled() {
     Range2Di a({34, 23}, {47, 30});
     Range2Di b({68, -69}, {94, -90});
+    Range2Di c({68, 46}, {94, 60});
 
     CORRADE_COMPARE(a.scaled({2, -3}), b);
+    CORRADE_COMPARE(a.scaled(2), c);
     CORRADE_COMPARE((a.size()*Vector2i{2, -3}), b.size());
+    CORRADE_COMPARE(a.size()*2, c.size());
 }
 
 void RangeTest::scaled1D() {
@@ -682,10 +685,14 @@ void RangeTest::scaled1D() {
 void RangeTest::scaledFromCenter() {
     Range2Di a{{34, 22}, {48, 30}};
     Range2Di b{{27, 38}, {55, 14}};
+    Range2Di c{{27, 18}, {55, 34}};
 
     CORRADE_COMPARE(a.scaledFromCenter({2, -3}), b);
+    CORRADE_COMPARE(a.scaledFromCenter(2), c);
     CORRADE_COMPARE(a.center(), b.center());
+    CORRADE_COMPARE(a.center(), c.center());
     CORRADE_COMPARE((a.size()*Vector2i{2, -3}), b.size());
+    CORRADE_COMPARE(a.size()*2, c.size());
 }
 
 void RangeTest::scaledFromCenter1D() {
@@ -943,7 +950,9 @@ void RangeTest::subclassTypes() {
     CORRADE_VERIFY(std::is_same<decltype(r.translated(a)), Recti>::value);
     CORRADE_VERIFY(std::is_same<decltype(r.padded(a)), Recti>::value);
     CORRADE_VERIFY(std::is_same<decltype(r.scaled(a)), Recti>::value);
+    CORRADE_VERIFY(std::is_same<decltype(r.scaled(2)), Recti>::value);
     CORRADE_VERIFY(std::is_same<decltype(r.scaledFromCenter(a)), Recti>::value);
+    CORRADE_VERIFY(std::is_same<decltype(r.scaledFromCenter(2)), Recti>::value);
 }
 
 void RangeTest::subclass() {
@@ -960,8 +969,12 @@ void RangeTest::subclass() {
                     Recti(Vector2i{31, 28}, Vector2i{50, 25}));
     CORRADE_COMPARE(Recti(Vector2i{34, 23}, Vector2i{47, 30}).scaled({2, -3}),
                     Recti(Vector2i{68, -69}, Vector2i{94, -90}));
+    CORRADE_COMPARE(Recti(Vector2i{34, 23}, Vector2i{47, 30}).scaled(2),
+                    Recti(Vector2i{68, 46}, Vector2i{94, 60}));
     CORRADE_COMPARE(Recti(Vector2i{34, 22}, Vector2i{48, 30}).scaledFromCenter({2, -3}),
                     Recti(Vector2i{27, 38}, Vector2i{55, 14}));
+    CORRADE_COMPARE(Recti(Vector2i{34, 22}, Vector2i{48, 30}).scaledFromCenter(2),
+                    Recti(Vector2i{27, 18}, Vector2i{55, 34}));
 }
 
 void RangeTest::debug() {

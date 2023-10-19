@@ -648,6 +648,8 @@ See also:
     return a reference to a fixed-size array instead of a pointer (i.e.,
     @cpp T(&)[size] @ce instead of @cpp T* @ce) for more convenient usage in
     APIs that take sized views.
+-   Added @ref Math::Range::scaled() and @ref Math::Range::scaledFromCenter()
+    overloads taking a scalar
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

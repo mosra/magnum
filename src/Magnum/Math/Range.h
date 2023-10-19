@@ -287,9 +287,20 @@ template<UnsignedInt dimensions, class T> class Range {
          * Multiplies the minimal and maximal coordinates by given amount.
          * Center *doesn't* remain the same, use @ref scaledFromCenter() for
          * that operation.
-         * @see @ref padded()
+         * @see @ref padded(), @ref scaled(T) const
          */
         Range<dimensions, T> scaled(const VectorType& scaling) const {
+            return {_min*scaling, _max*scaling};
+        }
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d != 1>::type>
+        #endif
+        Range<dimensions, T> scaled(T scaling) const {
             return {_min*scaling, _max*scaling};
         }
 
@@ -297,9 +308,22 @@ template<UnsignedInt dimensions, class T> class Range {
          * @brief Range scaled from the center
          *
          * Scales the size, while center remains the same.
-         * @see @ref scaled(), @ref padded(), @ref fromCenter()
+         * @see @ref scaled(), @ref padded(), @ref fromCenter(),
+         *      @ref scaledFromCenter(T) const
          */
         Range<dimensions, T> scaledFromCenter(const VectorType& scaling) const {
+            /* Can't use *T(0.5) because that won't work for integers */
+            return fromCenter(center(), size()*scaling/T(2));
+        }
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d != 1>::type>
+        #endif
+        Range<dimensions, T> scaledFromCenter(T scaling) const {
             /* Can't use *T(0.5) because that won't work for integers */
             return fromCenter(center(), size()*scaling/T(2));
         }
@@ -375,7 +399,13 @@ template<UnsignedInt dimensions, class T> class Range {
     Type<T> scaled(const VectorType<T>& scaling) const {                    \
         return Range<dimensions, T>::scaled(scaling);                       \
     }                                                                       \
+    Type<T> scaled(T scaling) const {                                       \
+        return Range<dimensions, T>::scaled(scaling);                       \
+    }                                                                       \
     Type<T> scaledFromCenter(const VectorType<T>& scaling) const {          \
+        return Range<dimensions, T>::scaledFromCenter(scaling);             \
+    }                                                                       \
+    Type<T> scaledFromCenter(T scaling) const {                             \
         return Range<dimensions, T>::scaledFromCenter(scaling);             \
     }
 #endif
