@@ -943,6 +943,7 @@ void RangeTest::subclassTypes() {
     CORRADE_VERIFY(std::is_same<decltype(r.translated(a)), Recti>::value);
     CORRADE_VERIFY(std::is_same<decltype(r.padded(a)), Recti>::value);
     CORRADE_VERIFY(std::is_same<decltype(r.scaled(a)), Recti>::value);
+    CORRADE_VERIFY(std::is_same<decltype(r.scaledFromCenter(a)), Recti>::value);
 }
 
 void RangeTest::subclass() {
@@ -959,6 +960,8 @@ void RangeTest::subclass() {
                     Recti(Vector2i{31, 28}, Vector2i{50, 25}));
     CORRADE_COMPARE(Recti(Vector2i{34, 23}, Vector2i{47, 30}).scaled({2, -3}),
                     Recti(Vector2i{68, -69}, Vector2i{94, -90}));
+    CORRADE_COMPARE(Recti(Vector2i{34, 22}, Vector2i{48, 30}).scaledFromCenter({2, -3}),
+                    Recti(Vector2i{27, 38}, Vector2i{55, 14}));
 }
 
 void RangeTest::debug() {
