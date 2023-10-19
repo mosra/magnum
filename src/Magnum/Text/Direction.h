@@ -55,29 +55,29 @@ enum class ShapeDirection: UnsignedByte {
 
     /**
      * Left to right. When returned from @ref AbstractShaper::direction(),
-     * the @p advances filled by @ref AbstractShaper::glyphsInto() are
-     * guaranteed to have their Y components @cpp 0.0f @ce.
+     * the @p advances filled by @ref AbstractShaper::glyphsInto() have their Y
+     * components @cpp 0.0f @ce.
      */
     LeftToRight = 1,
 
     /**
      * Right to left. When returned from @ref AbstractShaper::direction(),
-     * the @p advances filled by @ref AbstractShaper::glyphsInto() are
-     * guaranteed to have their Y components @cpp 0.0f @ce.
+     * the @p advances filled by @ref AbstractShaper::glyphsInto() have their Y
+     * components @cpp 0.0f @ce.
      */
     RightToLeft,
 
     /**
      * Top to bottom. When returned from @ref AbstractShaper::direction(),
-     * the @p advances filled by @ref AbstractShaper::glyphsInto() are
-     * guaranteed to have their X components @cpp 0.0f @ce.
+     * the @p advances filled by @ref AbstractShaper::glyphsInto() have their X
+     * components @cpp 0.0f @ce.
      */
     TopToBottom,
 
     /**
      * Bottom to top. When returned from @ref AbstractShaper::direction(),
-     * the @p advances filled by @ref AbstractShaper::glyphsInto() are
-     * guaranteed to have their X components @cpp 0.0f @ce.
+     * the @p advances filled by @ref AbstractShaper::glyphsInto() have their X
+     * components @cpp 0.0f @ce.
      */
     BottomToTop
 };
