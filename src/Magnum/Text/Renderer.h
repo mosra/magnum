@@ -55,6 +55,11 @@ namespace Magnum { namespace Text {
 
 Not meant to be used directly, see the @ref Renderer class for more
 information.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @see @ref Renderer2D, @ref Renderer3D
 */
 class MAGNUM_TEXT_EXPORT AbstractRenderer {
@@ -276,6 +281,10 @@ available in ES 2.0, at least @gl_extension{OES,mapbuffer} must be supported for
 asynchronous buffer updates. There is no similar extension in WebGL, thus plain
 (and slow) buffer updates are used there.
 
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @see @ref Renderer2D, @ref Renderer3D, @ref AbstractFont,
     @ref Shaders::VectorGL, @ref Shaders::DistanceFieldVectorGL
 */
@@ -314,10 +323,22 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
         #endif
 };
 
-/** @brief Two-dimensional text renderer */
+/**
+@brief Two-dimensional text renderer
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+*/
 typedef Renderer<2> Renderer2D;
 
-/** @brief Three-dimensional text renderer */
+/**
+@brief Three-dimensional text renderer
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+*/
 typedef Renderer<3> Renderer3D;
 
 }}
