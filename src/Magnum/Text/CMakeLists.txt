@@ -40,6 +40,7 @@ set(MagnumText_GracefulAssert_SRCS
     AbstractGlyphCache.cpp
     AbstractShaper.cpp
     Feature.cpp
+    Renderer.cpp
     Script.cpp)
 
 set(MagnumText_HEADERS
@@ -50,6 +51,7 @@ set(MagnumText_HEADERS
     Alignment.h
     Direction.h
     Feature.h
+    Renderer.h
     Script.h
     Text.h
 
@@ -62,12 +64,10 @@ if(MAGNUM_TARGET_GL)
     list(APPEND MagnumText_SRCS
         GlyphCache.cpp)
     list(APPEND MagnumText_GracefulAssert_SRCS
-        DistanceFieldGlyphCache.cpp
-        Renderer.cpp)
+        DistanceFieldGlyphCache.cpp)
     list(APPEND MagnumText_HEADERS
         DistanceFieldGlyphCache.h
-        GlyphCache.h
-        Renderer.h)
+        GlyphCache.h)
 else()
     # So MagnumTextObjects has at least something
     list(APPEND MagnumText_SRCS ${PROJECT_SOURCE_DIR}/src/dummy.cpp)

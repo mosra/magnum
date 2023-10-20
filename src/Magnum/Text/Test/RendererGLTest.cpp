@@ -146,28 +146,28 @@ void RendererGLTest::renderMesh() {
     /* Vertex buffer contents */
     Containers::Array<char> vertices = vertexBuffer.data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(vertices), Containers::arrayView<Vector2>({
-        Vector2{ 2.5f, 10.5f} + offset, {0.0f, 0.5f},
         Vector2{ 2.5f,  5.5f} + offset, {0.0f, 0.0f},
-        Vector2{12.5f, 10.5f} + offset, {1.0f, 0.5f},
         Vector2{12.5f,  5.5f} + offset, {1.0f, 0.0f},
+        Vector2{ 2.5f, 10.5f} + offset, {0.0f, 0.5f},
+        Vector2{12.5f, 10.5f} + offset, {1.0f, 0.5f},
 
-        Vector2{ 5.5f, 8.75f} + offset, {0.0f, 1.0f},
         Vector2{ 5.5f, 3.75f} + offset, {0.0f, 0.5f},
-        Vector2{10.5f, 8.75f} + offset, {0.5f, 1.0f},
         Vector2{10.5f, 3.75f} + offset, {0.5f, 0.5f},
+        Vector2{ 5.5f, 8.75f} + offset, {0.0f, 1.0f},
+        Vector2{10.5f, 8.75f} + offset, {0.5f, 1.0f},
 
-        Vector2{ 4.0f,  9.0f} + offset, {0.5f, 1.0f},
         Vector2{ 4.0f,  4.0f} + offset, {0.5f, 0.5f},
-        Vector2{ 9.0f,  9.0f} + offset, {1.0f, 1.0f},
         Vector2{ 9.0f,  4.0f} + offset, {1.0f, 0.5f},
+        Vector2{ 4.0f,  9.0f} + offset, {0.5f, 1.0f},
+        Vector2{ 9.0f,  9.0f} + offset, {1.0f, 1.0f},
     }), TestSuite::Compare::Container);
 
     Containers::Array<char> indices = indexBuffer.data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices),
         Containers::arrayView<UnsignedByte>({
-            0,  1,  2,  1,  3,  2,
-            4,  5,  6,  5,  7,  6,
-            8,  9, 10,  9, 11, 10
+            0,  1,  2,  2,  1,  3,
+            4,  5,  6,  6,  5,  7,
+            8,  9, 10, 10,  9, 11,
         }), TestSuite::Compare::Container);
     #endif
 }
@@ -196,9 +196,9 @@ void RendererGLTest::renderMeshIndexType() {
     CORRADE_COMPARE(indicesByte.size(), 64*6);
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indicesByte).prefix(18),
         Containers::arrayView<UnsignedByte>({
-            0,  1,  2,  1,  3,  2,
-            4,  5,  6,  5,  7,  6,
-            8,  9, 10,  9, 11, 10
+            0,  1,  2,  2,  1,  3,
+            4,  5,  6,  6,  5,  7,
+            8,  9, 10, 10,  9, 11,
         }), TestSuite::Compare::Container);
 
     /* 16-bit indices (260 vertices) */
@@ -210,9 +210,9 @@ void RendererGLTest::renderMeshIndexType() {
     CORRADE_COMPARE(indicesShort.size(), 65*6*2);
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedShort>(indicesShort).prefix(18),
         Containers::arrayView<UnsignedShort>({
-            0,  1,  2,  1,  3,  2,
-            4,  5,  6,  5,  7,  6,
-            8,  9, 10,  9, 11, 10
+            0,  1,  2,  2,  1,  3,
+            4,  5,  6,  6,  5,  7,
+            8,  9, 10, 10,  9, 11,
         }), TestSuite::Compare::Container);
     #else
     CORRADE_SKIP("Can't verify buffer contents on OpenGL ES.");
@@ -250,10 +250,10 @@ void RendererGLTest::mutableText() {
     Containers::Array<char> indices = renderer.indexBuffer().data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices).prefix(24),
         Containers::arrayView<UnsignedByte>({
-             0,  1,  2,  1,  3,  2,
-             4,  5,  6,  5,  7,  6,
-             8,  9, 10,  9, 11, 10,
-            12, 13, 14, 13, 15, 14
+             0,  1,  2,  2,  1,  3,
+             4,  5,  6,  6,  5,  7,
+             8,  9, 10, 10,  9, 11,
+            12, 13, 14, 14, 13, 15,
         }), TestSuite::Compare::Container);
     #endif
 
@@ -272,20 +272,20 @@ void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
     Containers::Array<char> vertices = renderer.vertexBuffer().data();
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(vertices).prefix(2*4*3), Containers::arrayView<Vector2>({
-        Vector2{ 2.5f, 10.5f} + offset, {0.0f, 0.5f},
         Vector2{ 2.5f,  5.5f} + offset, {0.0f, 0.0f},
-        Vector2{12.5f, 10.5f} + offset, {1.0f, 0.5f},
         Vector2{12.5f,  5.5f} + offset, {1.0f, 0.0f},
+        Vector2{ 2.5f, 10.5f} + offset, {0.0f, 0.5f},
+        Vector2{12.5f, 10.5f} + offset, {1.0f, 0.5f},
 
-        Vector2{ 5.5f, 8.75f} + offset, {0.0f, 1.0f},
         Vector2{ 5.5f, 3.75f} + offset, {0.0f, 0.5f},
-        Vector2{10.5f, 8.75f} + offset, {0.5f, 1.0f},
         Vector2{10.5f, 3.75f} + offset, {0.5f, 0.5f},
+        Vector2{ 5.5f, 8.75f} + offset, {0.0f, 1.0f},
+        Vector2{10.5f, 8.75f} + offset, {0.5f, 1.0f},
 
-        Vector2{ 4.0f,  9.0f} + offset, {0.5f, 1.0f},
         Vector2{ 4.0f,  4.0f} + offset, {0.5f, 0.5f},
-        Vector2{ 9.0f,  9.0f} + offset, {1.0f, 1.0f},
         Vector2{ 9.0f,  4.0f} + offset, {1.0f, 0.5f},
+        Vector2{ 4.0f,  9.0f} + offset, {0.5f, 1.0f},
+        Vector2{ 9.0f,  9.0f} + offset, {1.0f, 1.0f},
     }), TestSuite::Compare::Container);
     #endif
 }

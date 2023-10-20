@@ -26,10 +26,11 @@
 */
 
 /** @file Text/Renderer.h
- * @brief Class @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::Renderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D
+ * @brief Class @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::Renderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto() @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock()
  */
 
-#include "Magnum/configure.h"
+#include "Magnum/Text/Text.h"
+#include "Magnum/Text/visibility.h"
 
 #ifdef MAGNUM_TARGET_GL
 #include <string>
@@ -40,16 +41,223 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
-#include "Magnum/Text/Text.h"
 #include "Magnum/Text/Alignment.h"
-#include "Magnum/Text/visibility.h"
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <Corrade/Containers/Array.h>
 #endif
+#endif
 
 namespace Magnum { namespace Text {
 
+/**
+@brief Render glyph positions for a (part of a) single line
+@param[in] font             Font to query metrics from
+@param[in] size             Size to render the glyphs at
+@param[in] direction        Layout direction. Currently expected to always be
+    @ref LayoutDirection::HorizontalTopToBottom.
+@param[in] glyphOffsets     Glyph offsets coming from @ref AbstractShaper
+    instance(s) associated with @p font
+@param[in] glyphAdvances    Glyph advances coming from @ref AbstractShaper
+    instance(s) associated with @p font
+@param[in,out] cursor       Initial cursor position. Is updated to a final
+    cursor position after all glyphs are rendered.
+@param[out] glyphPositions  Where to put output absolute glyph positions
+@return Rectangle spanning the rendered cursor range in one direction and font
+    descent to ascent in the other
+@m_since_latest
+
+The output of this function are just glyph positions alone, which is useful for
+example when the actual glyph quad expansion is done by a shader or when the
+glyphs get subsequently rasterized some other way than applying a glyph texture
+to a sequence of quads. Use @ref renderGlyphQuadsInto() on the resulting
+@p glyphPositions array to form actual glyph quads together with texture
+coordinates.
+
+The @p glyphOffsets, @p glyphAdvances and @p glyphPositions views are all
+expected to have the same size. It's possible to use the same view for
+@p glyphOffsets and @p glyphPositions, which will turn the input relative glyph
+offsets into absolute positions.
+
+Calls to this function don't strictly need to match calls to
+@ref AbstractShaper::shape(). For example if multiple text runs on a single
+line differ just by script, language or direction but not by a font or
+rendering size, they can be shaped into consecutive portions of a larger
+@p glyphOffsets and @p glyphAdvances array and this function can be then called
+just once for all runs together. If the font or rendering size changes between
+text runs however, you have to call this function for each such run separately
+and each time use the updated @p cursor value as an input for the next
+@ref renderLineGlyphPositionsInto() call.
+
+@m_class{m-note m-warning}
+
+@par
+    This function only works on a single line of text. When rendering a
+    multi-line text, you have to split it by lines and then shape, render and
+    align each individually, and adjust @p cursor for each new line as
+    appropriate.
+
+Once the whole line is rendered, @ref Math::join() the rectangles returned from
+all calls to this function and pass them together with positions for the whole
+line to @ref alignRenderedLine(). Finally, to align a multi-line block, join
+rectangles returned from all @ref alignRenderedLine() calls and pass them
+together with positions for the whole text to @ref alignRenderedBlock().
+*/
+MAGNUM_TEXT_EXPORT Range2D renderLineGlyphPositionsInto(const AbstractFont& font, Float size, LayoutDirection direction, const Containers::StridedArrayView1D<const Vector2>& glyphOffsets, const Containers::StridedArrayView1D<const Vector2>& glyphAdvances, Vector2& cursor, const Containers::StridedArrayView1D<Vector2>& glyphPositions);
+
+/**
+@brief Render glyph quads for a (part of a) single line
+@param[in] font                 Font to query metrics from
+@param[in] size                 Size to render the glyphs at
+@param[in] cache                Glyph cache to query for glyph rectangles
+@param[in] glyphPositions       Glyph positions coming from an earlier call to
+    @ref renderLineGlyphPositionsInto()
+@param[in] glyphIds             Matching glyph IDs coming from
+    @ref AbstractShaper instance(s) associated with @p font
+@param[out] vertexPositions     Where to put output vertex positions
+@param[out] vertexTextureCoordinates  Where to put output texture coordinates
+@return Rectangle spanning the rendered glyph quads
+@m_since_latest
+
+Produces a sequence of quad corner positions and texture coordinates in order
+as shown below. The @p glyphPositions and @p glyphIds views are expected to
+have the same size, the @p vertexPositions and @p vertexTextureCoordinates
+views are then expected to be four times larger than @p glyphPositions and
+@p glyphIds, in order to ultimately contain four corner vertices for each
+glyph. To optimize memory use, it's possible to alias @p glyphPositions and
+@p glyphIds with @cpp vertexPositions.every(4) @ce and
+@cpp vertexTextureCoordinates.every(4) @ce --- the rendering is performed in a
+way that first reads the position and ID for each glyph and only then fills in
+the vertex data.
+
+@verbatim
+2---3
+|   |
+|   |
+|   |
+0---1
+@endverbatim
+
+If the text doesn't need to be aligned based on the actual glyph bounds (i.e.,
+the desired @ref Alignment isn't `*GlyphBounds`), it's  possible to call this
+function even on a multi-line text run provided that @ref alignRenderedLine()
+was called on the @p glyphPositions before to align lines relatively to each
+other. Otherwise this function should be called on each line individually and
+then the @p vertexPositions passed further to @ref alignRenderedLine().
+
+Expects that @p font is contained in @p cache. Glyph IDs not found in the cache
+are replaced with the cache-global invalid glyph. If the @p cache is only 2D,
+you can use the @ref renderGlyphQuadsInto(const AbstractFont&, Float, const AbstractGlyphCache&, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&)
+overload to get just 2D texture coordinates out. Use
+@ref renderGlyphQuadIndicesInto() to populate the corresponding index array.
+*/
+MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractFont& font, Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector3>& vertexTextureCoordinates);
+
+/**
+@brief Render glyph quads for a (part of a) single line and a 2D glyph cache
+@m_since_latest
+
+Compared to @ref renderGlyphQuadsInto(const AbstractFont&, Float, const AbstractGlyphCache&, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector3>&)
+outputs just 2D texture coordinates. Expects that @ref AbstractGlyphCache::size()
+depth is @cpp 1 @ce.
+*/
+MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractFont& font, Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates);
+
+/**
+@brief Align a rendered line
+@param[in] lineRectangle    Rectangle spanning the whole line
+@param[in] direction        Layout direction. Currently expected to always be
+    @ref LayoutDirection::HorizontalTopToBottom.
+@param[in] alignment        Desired alignment. Only the part in direction of
+    the line is used.
+@param[in,out] positions    Positions of glyphs or glyph quad vertices on the
+    whole line to be aligned
+@return The @p lineRectangle, translated in the direction of the line based on
+    the alignment.
+@m_since_latest
+
+If @p alignment isn't `*GlyphBounds`, this function should get glyph
+@p positions for the whole line coming from @ref renderLineGlyphPositionsInto()
+and @p lineRectangle being all rectangles returned by that function combined
+together with @ref Math::join().
+
+If @p alignment is `*GlyphBounds`, this function should get vertex @p positions
+for a whole line coming from @ref renderGlyphQuadsInto() and @p lineRectangle
+being all rectangles returned by that function combined together with
+@ref Math::join().
+
+The @p positions are translated in one axis based on the @p inputRectangle and
+the part of @p alignment matching line direction in @p direction. Values of the
+@p positions themselves aren't considered when calculating the alignment. To
+align a multi-line block, join rectangles returned from all calls to this
+function and pass them together with positions for the whole block to
+@ref alignRenderedBlock().
+*/
+MAGNUM_TEXT_EXPORT Range2D alignRenderedLine(const Range2D& lineRectangle, LayoutDirection direction, Alignment alignment, const Containers::StridedArrayView1D<Vector2>& positions);
+
+/**
+@brief Align a rendered block
+@param[in] blockRectangle   Rectangle spanning all lines in the block
+@param[in] direction        Layout direction. Currently expected to always be
+    @ref LayoutDirection::HorizontalTopToBottom.
+@param[in] alignment        Desired alignment. Only the part in direction of
+    the line is used.
+@param[in,out] positions    Positions of glyphs or glyph quad vertices on the
+    whole line to be aligned
+@return The @p blockRectangle, translated in the direction of the layout
+    advance based on the alignment.
+@m_since_latest
+
+This function should get glyph or vertex @p positions for all lines as aligned
+by calls to @ref alignRenderedLine(), and @p blockRectangle being all line
+rectangles returned by that function combined together with @ref Math::join().
+
+The @p positions are translated in one axis based on the @p inputRectangle and
+the part of @p alignment matching layout advance in @p direction. Values of the
+@p positions themselves aren't considered when calculating the translation.
+*/
+MAGNUM_TEXT_EXPORT Range2D alignRenderedBlock(const Range2D& blockRectangle, LayoutDirection direction, Alignment alignment, const Containers::StridedArrayView1D<Vector2>& positions);
+
+/**
+@brief Render 32-bit glyph quad indices
+@param[in]  glyphOffset     Offset of the first glyph to generate indices for
+@param[out] indices         Where to put the generated indices
+@m_since_latest
+
+Produces a sequence of quad indices in order as shown below, with the index
+values being shifted by @cpp glyphOffset*4 @ce. Expects that the @p indices
+view size is divisible by @cpp 6 @ce and the value range fits into the output
+type.
+
+@verbatim
+2---3 2 3---5
+|   | |\ \  |
+|   | | \ \ |
+|   | |  \ \|
+0---1 0---1 4
+@endverbatim
+*/
+MAGNUM_TEXT_EXPORT void renderGlyphQuadIndicesInto(UnsignedInt glyphOffset, const Containers::StridedArrayView1D<UnsignedInt>& indices);
+
+/**
+@brief Render 16-bit glyph quad indices
+@m_since_latest
+
+See @ref renderGlyphQuadIndicesInto(UnsignedInt, const Containers::StridedArrayView1D<UnsignedInt>&)
+for more information.
+*/
+MAGNUM_TEXT_EXPORT void renderGlyphQuadIndicesInto(UnsignedInt glyphOffset, const Containers::StridedArrayView1D<UnsignedShort>& indices);
+
+/**
+@brief Render 8-bit glyph quad indices
+@m_since_latest
+
+See @ref renderGlyphQuadIndicesInto(UnsignedInt, const Containers::StridedArrayView1D<UnsignedInt>&)
+for more information.
+*/
+MAGNUM_TEXT_EXPORT void renderGlyphQuadIndicesInto(UnsignedInt glyphOffset, const Containers::StridedArrayView1D<UnsignedByte>& indices);
+
+#ifdef MAGNUM_TARGET_GL
 /**
 @brief Base for text renderers
 
@@ -340,10 +548,8 @@ typedef Renderer<2> Renderer2D;
     for more information.
 */
 typedef Renderer<3> Renderer3D;
+#endif
 
 }}
-#else
-#error this header is available only in the OpenGL build
-#endif
 
 #endif
