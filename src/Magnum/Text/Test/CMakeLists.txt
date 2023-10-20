@@ -78,9 +78,8 @@ corrade_add_test(TextAbstractShaperTest AbstractShaperTest.cpp
     LIBRARIES MagnumTextTestLib)
 
 corrade_add_test(TextDirectionTest DirectionTest.cpp LIBRARIES MagnumText)
-
 corrade_add_test(TextFeatureTest FeatureTest.cpp LIBRARIES MagnumTextTestLib)
-
+corrade_add_test(TextRendererTest RendererTest.cpp LIBRARIES MagnumTextTestLib)
 corrade_add_test(TextScriptTest ScriptTest.cpp LIBRARIES MagnumTextTestLib)
 
 if(MAGNUM_TARGET_GL AND MAGNUM_BUILD_GL_TESTS)
