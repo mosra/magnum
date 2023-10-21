@@ -115,13 +115,22 @@ ShapeDirection AbstractShaper::doDirection() const {
     return ShapeDirection::Unspecified;
 }
 
-void AbstractShaper::glyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const {
-    CORRADE_ASSERT(ids.size() == _glyphCount && offsets.size() == _glyphCount && advances.size() == _glyphCount,
-        "Text::AbstractShaper::glyphsInto(): expected the ids, offsets and advanced views to have a size of" << _glyphCount << "but got" << ids.size() << Debug::nospace << "," << offsets.size() << "and" << advances.size(), );
+void AbstractShaper::glyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const {
+    CORRADE_ASSERT(ids.size() == _glyphCount,
+        "Text::AbstractShaper::glyphIdsInto(): expected the ids view to have a size of" << _glyphCount << "but got" << ids.size(), );
     /* Call into the implementation only if there's actually anything shaped,
        otherwise it might not yet have everything properly set up */
     if(_glyphCount)
-        doGlyphsInto(ids, offsets, advances);
+        doGlyphIdsInto(ids);
+}
+
+void AbstractShaper::glyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const {
+    CORRADE_ASSERT(offsets.size() == _glyphCount && advances.size() == _glyphCount,
+        "Text::AbstractShaper::glyphOffsetsAdvancesInto(): expected the offsets and advanced views to have a size of" << _glyphCount << "but got" << offsets.size() << "and" << advances.size(), );
+    /* Call into the implementation only if there's actually anything shaped,
+       otherwise it might not yet have everything properly set up */
+    if(_glyphCount)
+        doGlyphOffsetsAdvancesInto(offsets, advances);
 }
 
 }}

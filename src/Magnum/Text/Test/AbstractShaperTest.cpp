@@ -182,7 +182,8 @@ struct DummyShaper: AbstractShaper {
     using AbstractShaper::AbstractShaper;
 
     UnsignedInt doShape(Containers::StringView, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override { return {}; }
-    void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+    void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+    void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
 };
 
 void AbstractShaperTest::construct() {
@@ -229,7 +230,8 @@ void AbstractShaperTest::setScript() {
         }
 
         UnsignedInt doShape(Containers::StringView, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override { return {}; }
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
 
         bool called = false;
     } shaper{FakeFont};
@@ -254,7 +256,8 @@ void AbstractShaperTest::setLanguage() {
         }
 
         UnsignedInt doShape(Containers::StringView, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override { return {}; }
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
 
         bool called = false;
     } shaper{FakeFont};
@@ -278,8 +281,8 @@ void AbstractShaperTest::setDirection() {
             return true;
         }
 
-        UnsignedInt doShape(Containers::StringView, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override { return {}; }
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        UnsignedInt doShape(Containers::StringView, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override { return {}; }        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
 
         bool called = false;
     } shaper{FakeFont};
@@ -326,14 +329,17 @@ void AbstractShaperTest::shape() {
             return ShapeDirection::BottomToTop;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
             CORRADE_COMPARE(ids.size(), 24);
             CORRADE_COMPARE(ids[0], 1337);
+            ids[1] = 666;
+        }
+
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
             CORRADE_COMPARE(offsets.size(), 24);
             CORRADE_COMPARE(offsets[0], (Vector2{13.0f, 37.0f}));
             CORRADE_COMPARE(advances.size(), 24);
             CORRADE_COMPARE(advances[0], (Vector2{42.0f, 69.0f}));
-            ids[1] = 666;
             offsets[1] = {-4.0f, -5.0f};
             advances[1] = {12.0f, 23.0f};
         }
@@ -366,7 +372,8 @@ void AbstractShaperTest::shape() {
     ids[0] = 1337;
     offsets[0] = {13.0f, 37.0f};
     advances[0] = {42.0f, 69.0f};
-    shaper.glyphsInto(ids, offsets, advances);
+    shaper.glyphIdsInto(ids);
+    shaper.glyphOffsetsAdvancesInto(offsets, advances);
     CORRADE_COMPARE(ids[1], 666);
     CORRADE_COMPARE(offsets[1], (Vector2{-4.0f, -5.0f}));
     CORRADE_COMPARE(advances[1], (Vector2{12.0f, 23.0f}));
@@ -385,7 +392,8 @@ void AbstractShaperTest::shapeNoFeatures() {
             return 24;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
 
         bool shapeCalled = false;
     } shaper{FakeFont};
@@ -419,7 +427,8 @@ void AbstractShaperTest::shapeNoBeginEnd() {
             return 24;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
 
         bool shapeCalled = false;
     } shaper{FakeFont};
@@ -449,7 +458,8 @@ void AbstractShaperTest::shapeNoBeginEndFeatures() {
             return 24;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
 
         bool shapeCalled = false;
     } shaper{FakeFont};
@@ -470,7 +480,8 @@ void AbstractShaperTest::shapeScriptLanguageDirectionNotImplemented() {
             return 24;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
     } shaper{FakeFont};
 
     /* Initially it won't call into any of the implementations */
@@ -507,7 +518,8 @@ void AbstractShaperTest::shapeZeroGlyphs() {
             return ShapeDirection::BottomToTop;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
     } shaper{FakeFont};
 
     CORRADE_COMPARE(shaper.shape("some text", 3, 8), 0);
@@ -533,7 +545,8 @@ void AbstractShaperTest::shapeBeginEndOutOfRange() {
             return 5;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
     } shaper{FakeFont};
 
     /* Capture correct function name */
@@ -585,7 +598,10 @@ void AbstractShaperTest::glyphsIntoEmpty() {
             return 0;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            CORRADE_FAIL("This shouldn't be called");
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
             CORRADE_FAIL("This shouldn't be called");
         }
     } shaper{FakeFont};
@@ -594,7 +610,8 @@ void AbstractShaperTest::glyphsIntoEmpty() {
     CORRADE_VERIFY(true);
 
     /* This should not assert but also not call anywhere */
-    shaper.glyphsInto(nullptr, nullptr, nullptr);
+    shaper.glyphIdsInto(nullptr);
+    shaper.glyphOffsetsAdvancesInto(nullptr, nullptr);
 }
 
 void AbstractShaperTest::glyphsIntoInvalidViewSizes() {
@@ -607,14 +624,16 @@ void AbstractShaperTest::glyphsIntoInvalidViewSizes() {
             return 5;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            CORRADE_FAIL("This shouldn't be called");
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
             CORRADE_FAIL("This shouldn't be called");
         }
     } shaper{FakeFont};
 
     CORRADE_COMPARE(shaper.shape("yey"), 5);
 
-    UnsignedInt ids[5];
     UnsignedInt idsWrong[6];
     Vector2 offsets[5];
     Vector2 offsetsWrong[6];
@@ -623,13 +642,13 @@ void AbstractShaperTest::glyphsIntoInvalidViewSizes() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    shaper.glyphsInto(idsWrong, offsets, advances);
-    shaper.glyphsInto(ids, offsetsWrong, advances);
-    shaper.glyphsInto(ids, offsets, advancesWrong);
+    shaper.glyphIdsInto(idsWrong);
+    shaper.glyphOffsetsAdvancesInto(offsetsWrong, advances);
+    shaper.glyphOffsetsAdvancesInto(offsets, advancesWrong);
     CORRADE_COMPARE(out.str(),
-        "Text::AbstractShaper::glyphsInto(): expected the ids, offsets and advanced views to have a size of 5 but got 6, 5 and 5\n"
-        "Text::AbstractShaper::glyphsInto(): expected the ids, offsets and advanced views to have a size of 5 but got 5, 6 and 5\n"
-        "Text::AbstractShaper::glyphsInto(): expected the ids, offsets and advanced views to have a size of 5 but got 5, 5 and 6\n");
+        "Text::AbstractShaper::glyphIdsInto(): expected the ids view to have a size of 5 but got 6\n"
+        "Text::AbstractShaper::glyphOffsetsAdvancesInto(): expected the offsets and advanced views to have a size of 5 but got 6 and 5\n"
+        "Text::AbstractShaper::glyphOffsetsAdvancesInto(): expected the offsets and advanced views to have a size of 5 but got 5 and 6\n");
 }
 
 }}}}

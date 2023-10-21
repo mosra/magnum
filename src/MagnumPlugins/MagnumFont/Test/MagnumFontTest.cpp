@@ -152,7 +152,8 @@ void MagnumFontTest::shape() {
     UnsignedInt ids[4];
     Vector2 offsets[4];
     Vector2 advances[4];
-    shaper->glyphsInto(ids, offsets, advances);
+    shaper->glyphIdsInto(ids);
+    shaper->glyphOffsetsAdvancesInto(offsets, advances);
     CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
         2u,             /* 'W' */
         0u,             /* 'a' (not found) */
@@ -197,7 +198,8 @@ void MagnumFontTest::shaperReuse() {
         UnsignedInt ids[2];
         Vector2 offsets[2];
         Vector2 advances[2];
-        shaper->glyphsInto(ids, offsets, advances);
+        shaper->glyphIdsInto(ids);
+        shaper->glyphOffsetsAdvancesInto(offsets, advances);
         CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
             2u, /* 'W' */
             1u  /* 'e' */
@@ -216,7 +218,8 @@ void MagnumFontTest::shaperReuse() {
         UnsignedInt ids[4];
         Vector2 offsets[4];
         Vector2 advances[4];
-        shaper->glyphsInto(ids, offsets, advances);
+        shaper->glyphIdsInto(ids);
+        shaper->glyphOffsetsAdvancesInto(offsets, advances);
         CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
             2u, /* 'W' */
             0u, /* 'a' (not found) */
@@ -239,7 +242,8 @@ void MagnumFontTest::shaperReuse() {
         UnsignedInt ids[1];
         Vector2 offsets[1];
         Vector2 advances[1];
-        shaper->glyphsInto(ids, offsets, advances);
+        shaper->glyphIdsInto(ids);
+        shaper->glyphOffsetsAdvancesInto(offsets, advances);
         CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
             0u,
         }), TestSuite::Compare::Container);

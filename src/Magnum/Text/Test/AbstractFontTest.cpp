@@ -1123,7 +1123,8 @@ void AbstractFontTest::createShaper() {
             return 37;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
     };
 
     struct MyFont: AbstractFont {
@@ -1190,8 +1191,10 @@ void AbstractFontTest::layout() {
             return 3;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
             Utility::copy({3, 7, 3}, ids);
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
             Utility::copy({{0.5f, 1.0f},
                            {1.0f, 0.5f},
                            {2.0f, 2.0f}}, offsets);
@@ -1342,11 +1345,12 @@ void AbstractFontTest::layoutGlyphOutOfRange() {
             return 3;
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
             /* Clear the IDs as otherwise it'd result in OOB calls into the
                glyph cache */
             for(UnsignedInt& i: ids) i = 0;
         }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
     };
 
     struct MyFont: AbstractFont {

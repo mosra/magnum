@@ -346,9 +346,11 @@ Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCa
         Vector2 advance;
     };
     Containers::Array<Glyph> glyphs{NoInit, shaper->glyphCount()};
-    shaper->glyphsInto(stridedArrayView(glyphs).slice(&Glyph::id),
-                       stridedArrayView(glyphs).slice(&Glyph::offset),
-                       stridedArrayView(glyphs).slice(&Glyph::advance));
+    shaper->glyphIdsInto(
+        stridedArrayView(glyphs).slice(&Glyph::id));
+    shaper->glyphOffsetsAdvancesInto(
+        stridedArrayView(glyphs).slice(&Glyph::offset),
+        stridedArrayView(glyphs).slice(&Glyph::advance));
 
     /* Create the data to return from AbstractLayouter::renderGlyph(). Most of
        this used to be copypasted in various *Layouter::doRenderGlyph()

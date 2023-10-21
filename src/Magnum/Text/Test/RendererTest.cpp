@@ -297,7 +297,7 @@ struct TestShaper: AbstractShaper {
         return text.size();
     }
 
-    void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+    void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
         for(UnsignedInt i = 0; i != ids.size(); ++i) {
             /* It just rotates between the three glyphs */
             if(i % 3 == 0)
@@ -306,7 +306,10 @@ struct TestShaper: AbstractShaper {
                 ids[i] = 7;
             else
                 ids[i] = 9;
-
+        }
+    }
+    void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+        for(UnsignedInt i = 0; i != offsets.size(); ++i) {
             /* Offset Y and advance X is getting larger with every glyph,
                advance Y is flipping its sign with every glyph */
             offsets[i] = Vector2::yAxis(i + 1);
@@ -961,9 +964,13 @@ void RendererTest::multiline() {
             return text.size();
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
             for(UnsignedInt i = 0; i != ids.size(); ++i) {
                 ids[i] = 0;
+            }
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            for(UnsignedInt i = 0; i != offsets.size(); ++i) {
                 offsets[i] = {};
                 advances[i] = Vector2::xAxis(4.0f);
             }

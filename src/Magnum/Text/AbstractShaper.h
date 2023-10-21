@@ -123,10 +123,11 @@ instance has to stay in scope for at least as long as the @ref AbstractShaper
 is alive.
 
 A text is shaped by calling @ref shape(), retrieving the shaped glyph count
-with @ref glyphCount() and then getting the glyph data with @ref glyphsInto().
-Glyph IDs can be then queried in (or inserted into) an @ref AbstractGlyphCache,
-and the rendered glyphs positioned at @p offsets with the cursor moving by
-@p advances is what makes up the final shaped text.
+with @ref glyphCount() and then getting the glyph data with @ref glyphIdsInto()
+and @ref glyphOffsetsAdvancesInto(). Glyph IDs can be then queried in (or
+inserted into) an @ref AbstractGlyphCache, and the rendered glyphs positioned
+at @p offsets with the cursor moving by @p advances is what makes up the final
+shaped text.
 
 @snippet MagnumText.cpp AbstractShaper-shape
 
@@ -198,12 +199,12 @@ per-font, per-script or per-language instances.
 @section Text-AbstractShaper-subclassing Subclassing
 
 The @ref AbstractFont plugin is meant to create a local @ref AbstractShaper
-subclass. It implements at least @ref doShape() and @ref doGlyphsInto(), and
-potentially also (a subset of) @ref doSetScript(), @ref doScript(),
-@ref doSetLanguage(),@ref doLanguage(), @ref doSetDirection() and
-@ref doDirection(). The public API does most sanity checks on its own, see
-documentation of particular `do*()` functions for more information about the
-guarantees.
+subclass. It implements at least @ref doShape(), @ref doGlyphIdsInto() and
+@ref doGlyphOffsetsAdvancesInto(), and potentially also (a subset of)
+@ref doSetScript(), @ref doScript(), @ref doSetLanguage(),@ref doLanguage(),
+@ref doSetDirection() and @ref doDirection(). The public API does most sanity
+checks on its own, see documentation of particular `do*()` functions for more
+information about the guarantees.
 */
 class MAGNUM_TEXT_EXPORT AbstractShaper {
     public:
@@ -397,15 +398,24 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         ShapeDirection direction() const;
 
         /**
-         * @brief Retrieve glyph information
+         * @brief Retrieve glyph IDs
          * @param[out] ids          Where to put glyph IDs
+         *
+         * The @p ids view is expected to have a size of @ref glyphCount().
+         * After calling this function, the @p ids are commonly looked up in or
+         * inserted into an @ref AbstractGlyphCache. Offsets and advances
+         * corresponding to the IDs can be retrieved with
+         * @ref glyphOffsetsAdvancesInto().
+         */
+        void glyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const;
+
+        /**
+         * @brief Retrieve glyph offsets and advances
          * @param[out] offsets      Where to put glyph offsets
          * @param[out] advances     Where to put glyph advances
          *
-         * The @p ids, @p offsets and @p advances views are all expected to
-         * have a size of @ref glyphCount(). After calling this function, the
-         * @p ids are commonly looked up in or inserted into an
-         * @ref AbstractGlyphCache, @p offsets specify where to put the glyph
+         * The @p offsets and @p advances views are all expected to have a size
+         * of @ref glyphCount(). The @p offsets specify where to put the glyph
          * relative to current cursor (which is then further offset for the
          * particular glyph rectangle returned from the glyph cache) and
          * @p advances specify in which direction to move the cursor for the
@@ -414,10 +424,11 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * @relativeref{ShapeDirection,RightToLeft} Y components of @p advances
          * are @cpp 0.0f @ce, for @relativeref{ShapeDirection,TopToBottom} or
          * @relativeref{ShapeDirection,BottomToTop} X components of @p advances
-         * are @cpp 0.0f @ce.
+         * are @cpp 0.0f @ce. Glyph IDs corresponding to the offsets and
+         * advances can be retrieved with @ref glyphIdsInto().
          * @see @ref direction()
          */
-        void glyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const;
+        void glyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const;
 
     private:
         /**
@@ -473,13 +484,21 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         virtual ShapeDirection doDirection() const;
 
         /**
-         * @brief Implemenation for @ref glyphsInto()
+         * @brief Implemenation for @ref glyphIdsInto()
          *
-         * The @p ids, @p offsets and @p advances are guaranteed to have a size
-         * of @ref glyphCount(). Called only if @ref glyphCount() is not
+         * The @p ids are guaranteed to have a size of @ref glyphCount().
+         * Called only if @ref glyphCount() is not @cpp 0 @ce.
+         */
+        virtual void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const = 0;
+
+        /**
+         * @brief Implemenation for @ref glyphOffsetsAdvancesInto()
+         *
+         * The @p offsets and @p advances are guaranteed to have a size of
+         * @ref glyphCount(). Called only if @ref glyphCount() is not
          * @cpp 0 @ce.
          */
-        virtual void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const = 0;
+        virtual void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const = 0;
 
         Containers::Reference<AbstractFont> _font;
         UnsignedInt _glyphCount;

@@ -316,9 +316,11 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
         /* Shape the line, get the results */
         shaper->shape(line);
         const Containers::StridedArrayView1D<Glyph> lineGlyphs = glyphs.prefix(shaper->glyphCount());
-        shaper->glyphsInto(lineGlyphs.slice(&Glyph::id),
-                           lineGlyphs.slice(&Glyph::offset),
-                           lineGlyphs.slice(&Glyph::advance));
+        shaper->glyphIdsInto(
+            lineGlyphs.slice(&Glyph::id));
+        shaper->glyphOffsetsAdvancesInto(
+            lineGlyphs.slice(&Glyph::offset),
+            lineGlyphs.slice(&Glyph::advance));
 
         /* Verify that we don't reallocate anything. The only problem might
            arise when the layouter decides to compose one character from more

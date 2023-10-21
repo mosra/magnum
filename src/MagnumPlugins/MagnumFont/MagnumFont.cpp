@@ -208,10 +208,11 @@ Containers::Pointer<AbstractShaper> MagnumFont::doCreateShaper() {
             return _glyphs.size();
         }
 
-        void doGlyphsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids, const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
-            const Data& fontData = *static_cast<const MagnumFont&>(font())._opened;
-
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
             Utility::copy(_glyphs, ids);
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            const Data& fontData = *static_cast<const MagnumFont&>(font())._opened;
             for(std::size_t i = 0; i != _glyphs.size(); ++i) {
                 /* There's no glyph offsets in addition to advances */
                 offsets[i] = {};

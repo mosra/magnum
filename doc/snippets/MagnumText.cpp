@@ -278,9 +278,11 @@ struct GlyphInfo {
     Vector2 advance;
 };
 Containers::Array<GlyphInfo> glyphs{NoInit, shaper->glyphCount()};
-shaper->glyphsInto(stridedArrayView(glyphs).slice(&GlyphInfo::id),
-                   stridedArrayView(glyphs).slice(&GlyphInfo::offset),
-                   stridedArrayView(glyphs).slice(&GlyphInfo::advance));
+shaper->glyphIdsInto(
+    stridedArrayView(glyphs).slice(&GlyphInfo::id));
+shaper->glyphOffsetsAdvancesInto(
+    stridedArrayView(glyphs).slice(&GlyphInfo::offset),
+    stridedArrayView(glyphs).slice(&GlyphInfo::advance));
 /* [AbstractShaper-shape] */
 }
 
@@ -313,25 +315,31 @@ Containers::Array<GlyphInfo> glyphs;
 shaper->shape("Hello, world!", 0, 7);
 Containers::StridedArrayView1D<GlyphInfo> glyphs1 =
     arrayAppend(glyphs, NoInit, shaper->glyphCount());
-shaper->glyphsInto(glyphs1.slice(&GlyphInfo::id),
-                   glyphs1.slice(&GlyphInfo::offset),
-                   glyphs1.slice(&GlyphInfo::advance));
+shaper->glyphIdsInto(
+    glyphs1.slice(&GlyphInfo::id));
+shaper->glyphOffsetsAdvancesInto(
+    glyphs1.slice(&GlyphInfo::offset),
+    glyphs1.slice(&GlyphInfo::advance));
 
 /* Append "world" shaped with a bold font */
 boldShaper->shape("Hello, world!", 7, 12);
 Containers::StridedArrayView1D<GlyphInfo> glyphs2 =
     arrayAppend(glyphs, NoInit, boldShaper->glyphCount());
-boldShaper->glyphsInto(glyphs2.slice(&GlyphInfo::id),
-                       glyphs2.slice(&GlyphInfo::offset),
-                       glyphs2.slice(&GlyphInfo::advance));
+shaper->glyphIdsInto(
+    glyphs2.slice(&GlyphInfo::id));
+shaper->glyphOffsetsAdvancesInto(
+    glyphs2.slice(&GlyphInfo::offset),
+    glyphs2.slice(&GlyphInfo::advance));
 
 /* Finally shape "!" shaped with a regular font again */
 shaper->shape("Hello, world!", 12, 13);
 Containers::StridedArrayView1D<GlyphInfo> glyphs3 =
     arrayAppend(glyphs, NoInit, shaper->glyphCount());
-shaper->glyphsInto(glyphs3.slice(&GlyphInfo::id),
-                   glyphs3.slice(&GlyphInfo::offset),
-                   glyphs3.slice(&GlyphInfo::advance));
+shaper->glyphIdsInto(
+    glyphs3.slice(&GlyphInfo::id));
+shaper->glyphOffsetsAdvancesInto(
+    glyphs3.slice(&GlyphInfo::offset),
+    glyphs3.slice(&GlyphInfo::advance));
 /* [AbstractShaper-shape-multiple] */
 }
 
