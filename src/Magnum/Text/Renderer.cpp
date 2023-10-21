@@ -293,12 +293,6 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
      */
     std::string line;
     line.reserve(text.size());
-    struct Glyph {
-        UnsignedInt id;
-        Vector2 offset;
-        Vector2 advance;
-    };
-    Containers::Array<Glyph> glyphs{NoInit, text.size()};
 
     /* Create a shaper */
     /** @todo even with reusing a shaper this is all horrific, rework!! */
@@ -313,44 +307,63 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
         /* Copy the line into the temp buffer */
         line.assign(text, prevPos, pos-prevPos);
 
-        /* Shape the line, get the results */
+        /* Shape the line */
         shaper->shape(line);
-        const Containers::StridedArrayView1D<Glyph> lineGlyphs = glyphs.prefix(shaper->glyphCount());
-        shaper->glyphIdsInto(
-            lineGlyphs.slice(&Glyph::id));
-        shaper->glyphOffsetsAdvancesInto(
-            lineGlyphs.slice(&Glyph::offset),
-            lineGlyphs.slice(&Glyph::advance));
 
         /* Verify that we don't reallocate anything. The only problem might
            arise when the layouter decides to compose one character from more
            than one glyph (i.e. accents). Will remove the asserts when this
            issue arises. */
         CORRADE_INTERNAL_ASSERT(vertices.size() + shaper->glyphCount()*4 <= vertices.capacity());
+        vertices.resize(vertices.size() + shaper->glyphCount()*4);
+
+        /* Retrieve glyph offsets and advances directly into the output array
+           to not have to allocate a temp buffer; the offsets then get
+           converted to absolute positions. The renderLineGlyphPositionsInto()
+           is aware of this and will make sure to read the input before writing
+           to it. Taking every fourth item as the positions are subsequently
+           in-place converted to quads by renderGlyphQuadsInto() below and
+           putting them just into a prefix would cause them to be overwritten
+           too early. */
+        const Containers::StridedArrayView1D<Vertex> lineVertices = Containers::stridedArrayView(vertices).exceptPrefix(vertices.size() - shaper->glyphCount()*4);
+        const Containers::StridedArrayView1D<Vector2> glyphOffsetsPositions = lineVertices.slice(&Vertex::position).every(4);
+        const Containers::StridedArrayView1D<Vector2> glyphAdvances = lineVertices.slice(&Vertex::textureCoordinates).every(4);
+        shaper->glyphOffsetsAdvancesInto(
+            glyphOffsetsPositions,
+            glyphAdvances);
 
         Vector2 cursor = linePosition;
 
-        /* Render line glyph positions into the first vertex of each quad in
-           the output */
-        vertices.resize(vertices.size() + shaper->glyphCount()*4);
-        const Containers::StridedArrayView1D<Vertex> lineVertices = Containers::stridedArrayView(vertices).exceptPrefix(vertices.size() - shaper->glyphCount()*4);
+        /* Render line glyph positions, aliasing the offsets */
         const Range2D lineRectangle = renderLineGlyphPositionsInto(
             font,
             size,
             /** @todo direction hardcoded here */
             LayoutDirection::HorizontalTopToBottom,
-            lineGlyphs.slice(&Glyph::offset),
-            lineGlyphs.slice(&Glyph::advance),
+            glyphOffsetsPositions,
+            glyphAdvances,
             cursor,
-            lineVertices.slice(&Vertex::position).every(4));
+            glyphOffsetsPositions);
+
+        /* Retrieve the glyph IDs directly into the output array, again to not
+           have to allocate a temp buffer. The place where IDs get stored is
+           where glyph advances were stored before and which were combined into
+           glyph positions, and ultimately this location is where texture
+           coordinates get written. Again the renderGlyphQuadsInto() is aware
+           of this and will make sure to read the IDs before writing the quads.
+           Again taking every fourth item as these are subsequently converted
+           to quads by the function and putting them just into a prefix would
+           cause them to be overwritten too early. */
+        const Containers::StridedArrayView1D<UnsignedInt> glyphIds = Containers::arrayCast<UnsignedInt>(glyphAdvances);
+        shaper->glyphIdsInto(glyphIds);
 
         /* Create quads from the positions */
         const Range2D lineQuadRectangle = renderGlyphQuadsInto(
             font,
             size,
             cache,
-            lineVertices.slice(&Vertex::position).every(4),
-            lineGlyphs.slice(&Glyph::id),
+            glyphOffsetsPositions,
+            glyphIds,
             lineVertices.slice(&Vertex::position),
             lineVertices.slice(&Vertex::textureCoordinates));
 
