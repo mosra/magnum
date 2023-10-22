@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::Renderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto() @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock()
  */
 
+#include "Magnum/Magnum.h"
 #include "Magnum/Text/Text.h"
 #include "Magnum/Text/visibility.h"
 

@@ -26,11 +26,14 @@
 #include "Renderer.h"
 
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Triple.h>
 
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
+#include "Magnum/Text/Alignment.h"
 #include "Magnum/Text/Direction.h"
 
 #ifdef MAGNUM_TARGET_GL
