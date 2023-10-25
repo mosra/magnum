@@ -52,14 +52,14 @@ struct RendererTest: TestSuite::Tester {
     void lineGlyphPositionsInvalidDirection();
     void lineGlyphPositionsNoFontOpened();
 
-    void lineGlyphQuads();
-    void lineGlyphQuadsAliasedViews();
-    void lineGlyphQuadsInvalidViewSizes();
-    void lineGlyphQuadsNoFontOpened();
-    void lineGlyphQuadsFontNotFoundInCache();
+    void glyphQuads();
+    void glyphQuadsAliasedViews();
+    void glyphQuadsInvalidViewSizes();
+    void glyphQuadsNoFontOpened();
+    void glyphQuadsFontNotFoundInCache();
 
-    void lineGlyphQuads2D();
-    void lineGlyphQuads2DArrayGlyphCache();
+    void glyphQuads2D();
+    void glyphQuads2DArrayGlyphCache();
 
     void alignLine();
     void alignLineInvalidDirection();
@@ -254,14 +254,14 @@ RendererTest::RendererTest() {
               &RendererTest::lineGlyphPositionsInvalidDirection,
               &RendererTest::lineGlyphPositionsNoFontOpened,
 
-              &RendererTest::lineGlyphQuads,
-              &RendererTest::lineGlyphQuadsAliasedViews,
-              &RendererTest::lineGlyphQuadsInvalidViewSizes,
-              &RendererTest::lineGlyphQuadsNoFontOpened,
-              &RendererTest::lineGlyphQuadsFontNotFoundInCache,
+              &RendererTest::glyphQuads,
+              &RendererTest::glyphQuadsAliasedViews,
+              &RendererTest::glyphQuadsInvalidViewSizes,
+              &RendererTest::glyphQuadsNoFontOpened,
+              &RendererTest::glyphQuadsFontNotFoundInCache,
 
-              &RendererTest::lineGlyphQuads2D,
-              &RendererTest::lineGlyphQuads2DArrayGlyphCache});
+              &RendererTest::glyphQuads2D,
+              &RendererTest::glyphQuads2DArrayGlyphCache});
 
     addInstancedTests({&RendererTest::alignLine},
         Containers::arraySize(AlignLineData));
@@ -480,7 +480,7 @@ void RendererTest::lineGlyphPositionsNoFontOpened() {
     CORRADE_COMPARE(out.str(), "Text::renderLineGlyphPositionsInto(): no font opened\n");
 }
 
-void RendererTest::lineGlyphQuads() {
+void RendererTest::glyphQuads() {
     TestFont font;
     font.openFile({}, 2.5f);
     DummyGlyphCache cache = testGlyphCacheArray(font);
@@ -547,7 +547,7 @@ void RendererTest::lineGlyphQuads() {
     }), TestSuite::Compare::Container);
 }
 
-void RendererTest::lineGlyphQuadsAliasedViews() {
+void RendererTest::glyphQuadsAliasedViews() {
     /* Like lineGlyphPositions(), but with the input data stored in the output
        array. The internals should be written in a way that doesn't overwrite
        the input before it's read. */
@@ -609,7 +609,7 @@ void RendererTest::lineGlyphQuadsAliasedViews() {
     }), TestSuite::Compare::Container);
 }
 
-void RendererTest::lineGlyphQuadsInvalidViewSizes() {
+void RendererTest::glyphQuadsInvalidViewSizes() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
@@ -637,7 +637,7 @@ void RendererTest::lineGlyphQuadsInvalidViewSizes() {
         TestSuite::Compare::String);
 }
 
-void RendererTest::lineGlyphQuadsNoFontOpened() {
+void RendererTest::glyphQuadsNoFontOpened() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
@@ -649,7 +649,7 @@ void RendererTest::lineGlyphQuadsNoFontOpened() {
     CORRADE_COMPARE(out.str(), "Text::renderGlyphQuadsInto(): no font opened\n");
 }
 
-void RendererTest::lineGlyphQuadsFontNotFoundInCache() {
+void RendererTest::glyphQuadsFontNotFoundInCache() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
@@ -664,7 +664,7 @@ void RendererTest::lineGlyphQuadsFontNotFoundInCache() {
     CORRADE_COMPARE(out.str(), "Text::renderGlyphQuadsInto(): font not found among 2 fonts in passed glyph cache\n");
 }
 
-void RendererTest::lineGlyphQuads2D() {
+void RendererTest::glyphQuads2D() {
     /* Like lineGlyphPositions(), but with just a 2D glyph cache and using the
        three-component overload. */
 
@@ -721,7 +721,7 @@ void RendererTest::lineGlyphQuads2D() {
     }), TestSuite::Compare::Container);
 }
 
-void RendererTest::lineGlyphQuads2DArrayGlyphCache() {
+void RendererTest::glyphQuads2DArrayGlyphCache() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
