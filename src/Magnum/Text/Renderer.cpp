@@ -87,7 +87,7 @@ Range2D renderLineGlyphPositionsInto(const AbstractFont& font, const Float size,
 
 namespace {
 
-Range2D renderGlyphQuadsInto(const AbstractFont& font, const Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates, const Containers::StridedArrayView1D<Float>& vertexTextureLayers) {
+Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, const Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates, const Containers::StridedArrayView1D<Float>& vertexTextureLayers) {
     CORRADE_ASSERT(glyphIds.size() == glyphPositions.size(),
         "Text::renderGlyphQuadsInto(): expected glyphIds and glyphPositions views to have the same size, got" << glyphIds.size() << "and" << glyphPositions.size(), {});
     CORRADE_ASSERT(vertexPositions.size() == glyphPositions.size()*4 &&
@@ -96,32 +96,26 @@ Range2D renderGlyphQuadsInto(const AbstractFont& font, const Float size, const A
     /* Should be ensured by the callers below */
     CORRADE_INTERNAL_ASSERT(!vertexTextureLayers || vertexTextureLayers.size() == vertexTextureCoordinates.size());
 
-    CORRADE_ASSERT(font.isOpened(),
-        "Text::renderGlyphQuadsInto(): no font opened", {});
-    const Float scale = size/font.size();
+    /* Direct views on the cache data */
     const Vector2 inverseCacheSize = 1.0f/Vector2{cache.size().xy()};
+    const Containers::StridedArrayView1D<const Vector2i> cacheGlyphOffsets = cache.glyphOffsets();
+    const Containers::StridedArrayView1D<const Int> cacheGlyphLayers = cache.glyphLayers();
+    const Containers::StridedArrayView1D<const Range2Di> cacheGlyphRectangles = cache.glyphRectangles();
 
-    const Containers::Optional<UnsignedInt> fontId = cache.findFont(&font);
-    CORRADE_ASSERT(fontId,
-        "Text::renderGlyphQuadsInto(): font not found among" << cache.fontCount() << "fonts in passed glyph cache", {});
-
-    /* Get all glyphs from the glyph cache, create quads for each and calculate
-       the glyph bound rectangle along the way. */
+    /* Create quads for each glyph and calculate the glyph bound rectangle
+       along the way. */
     Range2D rectangle;
     for(std::size_t i = 0; i != glyphIds.size(); ++i) {
-        /* Offset of the glyph rectangle relative to the cursor, layer,
-           texture coordinates */
-        const Containers::Triple<Vector2i, Int, Range2Di> cacheGlyph = cache.glyph(*fontId, glyphIds[i]);
-
         /* 2---3
            |   |
            |   |
            |   |
            0---1 */
+        const UnsignedInt glyphId = glyphIds[i];
         const Range2D quad = Range2D::fromSize(
-            glyphPositions[i] + Vector2{cacheGlyph.first()}*scale,
-            Vector2{cacheGlyph.third().size()}*scale);
-        const Range2D texture = Range2D{cacheGlyph.third()}
+            glyphPositions[i] + Vector2{cacheGlyphOffsets[glyphId]}*scale,
+            Vector2{cacheGlyphRectangles[glyphId].size()}*scale);
+        const Range2D texture = Range2D{cacheGlyphRectangles[glyphId]}
             .scaled(inverseCacheSize);
         const std::size_t i4 = i*4;
         for(UnsignedByte j = 0; j != 4; ++j) {
@@ -133,13 +127,40 @@ Range2D renderGlyphQuadsInto(const AbstractFont& font, const Float size, const A
         /* Fill also a texture layer if desirable. For 2D output the caller
            already checked that the cache is 2D. */
         if(vertexTextureLayers) for(std::size_t j = 0; j != 4; ++j)
-            vertexTextureLayers[i4 + j] = cacheGlyph.second();
+            vertexTextureLayers[i4 + j] = cacheGlyphLayers[glyphId];
 
         /* Extend the rectangle with current glyph bounds */
         rectangle = Math::join(rectangle, quad);
     }
 
     return rectangle;
+}
+
+Range2D renderGlyphQuadsInto(const AbstractFont& font, const Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& fontGlyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates, const Containers::StridedArrayView1D<Float>& vertexTextureLayers) {
+    CORRADE_ASSERT(font.isOpened(),
+        "Text::renderGlyphQuadsInto(): no font opened", {});
+
+    const Containers::Optional<UnsignedInt> fontId = cache.findFont(&font);
+    CORRADE_ASSERT(fontId,
+        "Text::renderGlyphQuadsInto(): font not found among" << cache.fontCount() << "fonts in passed glyph cache", {});
+
+    /* First map the font-local glyph IDs to cache-global, abusing the texture
+       coordinate output array as the storage. Not vertex positions, as those
+       are allowed to be aliased with glyphPositions by the caller and this
+       process would overwrite them.
+
+       This also means we need to duplicate the size assertions here, to avoid
+       asserting inside glyphIdsInto() instead and confusing the user. */
+    CORRADE_ASSERT(fontGlyphIds.size() == glyphPositions.size(),
+        "Text::renderGlyphQuadsInto(): expected fontGlyphIds and glyphPositions views to have the same size, got" << fontGlyphIds.size() << "and" << glyphPositions.size(), {});
+    CORRADE_ASSERT(vertexPositions.size() == glyphPositions.size()*4 &&
+                   vertexTextureCoordinates.size() == glyphPositions.size()*4,
+        "Text::renderGlyphQuadsInto(): expected vertexPositions and vertexTextureCoordinates views to have" << glyphPositions.size()*4 << "elements, got" << vertexPositions.size() << "and" << vertexTextureCoordinates.size(), {});
+    const Containers::StridedArrayView1D<UnsignedInt> glyphIds = Containers::arrayCast<UnsignedInt>(vertexTextureCoordinates.every(4));
+    cache.glyphIdsInto(*fontId, fontGlyphIds, glyphIds);
+
+    /* Delegate to the above */
+    return renderGlyphQuadsInto(cache, size/font.size(), glyphPositions, glyphIds, vertexPositions, vertexTextureCoordinates, vertexTextureLayers);
 }
 
 }
@@ -152,6 +173,16 @@ Range2D renderGlyphQuadsInto(const AbstractFont& font, const Float size, const A
     CORRADE_ASSERT(cache.size().z() == 1,
         "Text::renderGlyphQuadsInto(): can't use this overload with an array glyph cache", {});
     return renderGlyphQuadsInto(font, size, cache, glyphPositions, glyphIds, vertexPositions, vertexTextureCoordinates, nullptr);
+}
+
+Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, const Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector3>& vertexTextureCoordinates) {
+    return renderGlyphQuadsInto(cache, scale, glyphPositions, glyphIds, vertexPositions, vertexTextureCoordinates.slice(&Vector3::xy), vertexTextureCoordinates.slice(&Vector3::z));
+}
+
+Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, const Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates) {
+    CORRADE_ASSERT(cache.size().z() == 1,
+        "Text::renderGlyphQuadsInto(): can't use this overload with an array glyph cache", {});
+    return renderGlyphQuadsInto(cache, scale, glyphPositions, glyphIds, vertexPositions, vertexTextureCoordinates, nullptr);
 }
 
 Range2D alignRenderedLine(const Range2D& lineRectangle, const LayoutDirection direction, const Alignment alignment, const Containers::StridedArrayView1D<Vector2>& positions) {

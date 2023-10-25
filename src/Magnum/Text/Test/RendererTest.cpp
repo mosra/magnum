@@ -82,6 +82,14 @@ struct RendererTest: TestSuite::Tester {
 
 const struct {
     const char* name;
+    bool globalIds;
+} GlyphQuadsData[]{
+    {"font-specific glyph IDs", false},
+    {"cache-global glyph IDs", true}
+};
+
+const struct {
+    const char* name;
     Alignment alignment;
     Float offset;
 } AlignLineData[]{
@@ -252,16 +260,20 @@ RendererTest::RendererTest() {
               &RendererTest::lineGlyphPositionsAliasedViews,
               &RendererTest::lineGlyphPositionsInvalidViewSizes,
               &RendererTest::lineGlyphPositionsInvalidDirection,
-              &RendererTest::lineGlyphPositionsNoFontOpened,
+              &RendererTest::lineGlyphPositionsNoFontOpened});
 
-              &RendererTest::glyphQuads,
-              &RendererTest::glyphQuadsAliasedViews,
-              &RendererTest::glyphQuadsInvalidViewSizes,
+    addInstancedTests({&RendererTest::glyphQuads,
+                       &RendererTest::glyphQuadsAliasedViews},
+        Containers::arraySize(GlyphQuadsData));
+
+    addTests({&RendererTest::glyphQuadsInvalidViewSizes,
               &RendererTest::glyphQuadsNoFontOpened,
-              &RendererTest::glyphQuadsFontNotFoundInCache,
+              &RendererTest::glyphQuadsFontNotFoundInCache});
 
-              &RendererTest::glyphQuads2D,
-              &RendererTest::glyphQuads2DArrayGlyphCache});
+    addInstancedTests({&RendererTest::glyphQuads2D},
+        Containers::arraySize(GlyphQuadsData));
+
+    addTests({&RendererTest::glyphQuads2DArrayGlyphCache});
 
     addInstancedTests({&RendererTest::alignLine},
         Containers::arraySize(AlignLineData));
@@ -355,10 +367,12 @@ DummyGlyphCache testGlyphCache(AbstractFont& font) {
     cache.addFont(96);
     UnsignedInt fontId = cache.addFont(font.glyphCount(), &font);
 
-    /* Three glyphs, covering bottom, top left and top right of the cache */
+    /* Three glyphs, covering bottom, top right and top left of the cache.
+       Adding them in a shuffled order to verify non-trivial font-specific to
+       cache-global glyph mapping in glyphQuads() below. */
     cache.addGlyph(fontId, 3, {5, 10}, {{}, {20, 10}});
-    cache.addGlyph(fontId, 7, {10, 5}, {{0, 10}, {10, 20}});
     cache.addGlyph(fontId, 9, {5, 5}, {{10, 10}, {20, 20}});
+    cache.addGlyph(fontId, 7, {10, 5}, {{0, 10}, {10, 20}});
 
     return cache;
 }
@@ -370,10 +384,12 @@ DummyGlyphCache testGlyphCacheArray(AbstractFont& font) {
     cache.addFont(96);
     UnsignedInt fontId = cache.addFont(font.glyphCount(), &font);
 
-    /* Three glyphs, covering bottom, top left and top right of the cache */
+    /* Three glyphs, covering bottom, top right and top left of the cache.
+       Adding them in a shuffled order to verify non-trivial font-specific to
+       cache-global glyph mapping in glyphQuads() below. */
     cache.addGlyph(fontId, 3, {5, 10}, 2, {{}, {20, 10}});
-    cache.addGlyph(fontId, 7, {10, 5}, 0, {{0, 10}, {10, 20}});
     cache.addGlyph(fontId, 9, {5, 5}, 1, {{10, 10}, {20, 20}});
+    cache.addGlyph(fontId, 7, {10, 5}, 0, {{0, 10}, {10, 20}});
 
     return cache;
 }
@@ -481,6 +497,9 @@ void RendererTest::lineGlyphPositionsNoFontOpened() {
 }
 
 void RendererTest::glyphQuads() {
+    auto&& data = GlyphQuadsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     TestFont font;
     font.openFile({}, 2.5f);
     DummyGlyphCache cache = testGlyphCacheArray(font);
@@ -490,15 +509,21 @@ void RendererTest::glyphQuads() {
         {103.0f, 202.0f},
         {107.0f, 196.0f}
     };
-    UnsignedInt glyphIds[]{
+    UnsignedInt fontGlyphIds[]{
         3, 7, 9
+    };
+    UnsignedInt glyphIds[]{
+        /* Glyph 0 is the cache-global invalid glyph */
+        1, 3, 2
     };
 
     Vector2 positions[3*4];
     Vector3 textureCoordinates[3*4];
     /* The font is opened at 2.5, rendering at 1.25, so everything will be
        scaled by 0.5 */
-    Range2D rectangle = renderGlyphQuadsInto(font, 1.25f, cache, glyphPositions, glyphIds, positions, textureCoordinates);
+    Range2D rectangle = data.globalIds ?
+        renderGlyphQuadsInto(cache, 1.25f/2.5f, glyphPositions, glyphIds, positions, textureCoordinates) :
+        renderGlyphQuadsInto(font, 1.25f, cache, glyphPositions, fontGlyphIds, positions, textureCoordinates);
     CORRADE_COMPARE(rectangle, (Range2D{{102.5f, 198.5f}, {114.5f, 210.0f}}));
 
     /* 2---3
@@ -548,6 +573,9 @@ void RendererTest::glyphQuads() {
 }
 
 void RendererTest::glyphQuadsAliasedViews() {
+    auto&& data = GlyphQuadsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     /* Like lineGlyphPositions(), but with the input data stored in the output
        array. The internals should be written in a way that doesn't overwrite
        the input before it's read. */
@@ -567,11 +595,13 @@ void RendererTest::glyphQuadsAliasedViews() {
     }, glyphPositions);
 
     Containers::StridedArrayView1D<UnsignedInt> glyphIds = Containers::arrayCast<UnsignedInt>(Containers::stridedArrayView(textureCoordinates).every(4));
-    Utility::copy({
-        3, 7, 9
-    }, glyphIds);
+    data.globalIds ?
+        Utility::copy({1, 3, 2}, glyphIds) :
+        Utility::copy({3, 7, 9}, glyphIds);
 
-    Range2D rectangle = renderGlyphQuadsInto(font, 1.25f, cache, glyphPositions, glyphIds, positions, textureCoordinates);
+    Range2D rectangle = data.globalIds ?
+        renderGlyphQuadsInto(cache, 1.25f/2.5f, glyphPositions, glyphIds, positions, textureCoordinates) :
+        renderGlyphQuadsInto(font, 1.25f, cache, glyphPositions, glyphIds, positions, textureCoordinates);
     CORRADE_COMPARE(rectangle, (Range2D{{102.5f, 198.5f}, {114.5f, 210.0f}}));
 
     CORRADE_COMPARE_AS(Containers::arrayView(positions), Containers::arrayView<Vector2>({
@@ -613,10 +643,12 @@ void RendererTest::glyphQuadsInvalidViewSizes() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
+    font.openFile({}, 5.0f);
     DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20}};
+    cache.addFont(96, &font);
     Vector2 glyphPositions[4];
     Vector2 glyphPositionsInvalid[5];
-    UnsignedInt glyphIds[4];
+    UnsignedInt glyphIds[4]{};
     UnsignedInt glyphIdsInvalid[3];
     Vector2 positions[16];
     Vector2 positionsInvalid[15];
@@ -626,13 +658,21 @@ void RendererTest::glyphQuadsInvalidViewSizes() {
     std::ostringstream out;
     Error redirectError{&out};
     renderGlyphQuadsInto(font, 10.0f, cache, glyphPositions, glyphIdsInvalid, positions, textureCoordinates);
+    renderGlyphQuadsInto(cache, 2.0f, glyphPositions, glyphIdsInvalid, positions, textureCoordinates);
     renderGlyphQuadsInto(font, 10.0f, cache, glyphPositionsInvalid, glyphIds, positions, textureCoordinates);
+    renderGlyphQuadsInto(cache, 2.0f, glyphPositionsInvalid, glyphIds, positions, textureCoordinates);
     renderGlyphQuadsInto(font, 10.0f, cache, glyphPositions, glyphIds, positions, textureCoordinatesInvalid);
+    renderGlyphQuadsInto(cache, 2.0f, glyphPositions, glyphIds, positions, textureCoordinatesInvalid);
     renderGlyphQuadsInto(font, 10.0f, cache, glyphPositions, glyphIds, positionsInvalid, textureCoordinates);
+    renderGlyphQuadsInto(cache, 10.0f, glyphPositions, glyphIds, positionsInvalid, textureCoordinates);
     CORRADE_COMPARE_AS(out.str(),
+        "Text::renderGlyphQuadsInto(): expected fontGlyphIds and glyphPositions views to have the same size, got 3 and 4\n"
         "Text::renderGlyphQuadsInto(): expected glyphIds and glyphPositions views to have the same size, got 3 and 4\n"
+        "Text::renderGlyphQuadsInto(): expected fontGlyphIds and glyphPositions views to have the same size, got 4 and 5\n"
         "Text::renderGlyphQuadsInto(): expected glyphIds and glyphPositions views to have the same size, got 4 and 5\n"
         "Text::renderGlyphQuadsInto(): expected vertexPositions and vertexTextureCoordinates views to have 16 elements, got 16 and 17\n"
+        "Text::renderGlyphQuadsInto(): expected vertexPositions and vertexTextureCoordinates views to have 16 elements, got 16 and 17\n"
+        "Text::renderGlyphQuadsInto(): expected vertexPositions and vertexTextureCoordinates views to have 16 elements, got 15 and 16\n"
         "Text::renderGlyphQuadsInto(): expected vertexPositions and vertexTextureCoordinates views to have 16 elements, got 15 and 16\n",
         TestSuite::Compare::String);
 }
@@ -665,6 +705,9 @@ void RendererTest::glyphQuadsFontNotFoundInCache() {
 }
 
 void RendererTest::glyphQuads2D() {
+    auto&& data = GlyphQuadsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     /* Like lineGlyphPositions(), but with just a 2D glyph cache and using the
        three-component overload. */
 
@@ -677,13 +720,18 @@ void RendererTest::glyphQuads2D() {
         {103.0f, 202.0f},
         {107.0f, 196.0f}
     };
-    UnsignedInt glyphIds[]{
+    UnsignedInt fontGlyphIds[]{
         3, 7, 9
+    };
+    UnsignedInt glyphIds[]{
+        1, 3, 2
     };
 
     Vector2 positions[3*4];
     Vector2 textureCoordinates[3*4];
-    Range2D rectangle = renderGlyphQuadsInto(font, 1.25f, cache, glyphPositions, glyphIds, positions, textureCoordinates);
+    Range2D rectangle = data.globalIds ?
+        renderGlyphQuadsInto(cache, 1.25f/2.5f, glyphPositions, glyphIds, positions, textureCoordinates) :
+        renderGlyphQuadsInto(font, 1.25f, cache, glyphPositions, fontGlyphIds, positions, textureCoordinates);
     CORRADE_COMPARE(rectangle, (Range2D{{102.5f, 198.5f}, {114.5f, 210.0f}}));
 
     CORRADE_COMPARE_AS(Containers::arrayView(positions), Containers::arrayView<Vector2>({

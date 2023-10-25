@@ -107,14 +107,14 @@ together with positions for the whole text to @ref alignRenderedBlock().
 MAGNUM_TEXT_EXPORT Range2D renderLineGlyphPositionsInto(const AbstractFont& font, Float size, LayoutDirection direction, const Containers::StridedArrayView1D<const Vector2>& glyphOffsets, const Containers::StridedArrayView1D<const Vector2>& glyphAdvances, Vector2& cursor, const Containers::StridedArrayView1D<Vector2>& glyphPositions);
 
 /**
-@brief Render glyph quads for a (part of a) single line
-@param[in] font                 Font to query metrics from
+@brief Render glyph quads for a (part of a) single line from font-specific glyph IDs
+@param[in] font                 Font the glyphs are coming from
 @param[in] size                 Size to render the glyphs at
 @param[in] cache                Glyph cache to query for glyph rectangles
 @param[in] glyphPositions       Glyph positions coming from an earlier call to
     @ref renderLineGlyphPositionsInto()
-@param[in] glyphIds             Matching glyph IDs coming from
-    @ref AbstractShaper instance(s) associated with @p font
+@param[in] fontGlyphIds         Glyph IDs coming from @ref AbstractShaper
+    instance(s) associated with @p font
 @param[out] vertexPositions     Where to put output vertex positions
 @param[out] vertexTextureCoordinates  Where to put output texture coordinates
 @return Rectangle spanning the rendered glyph quads
@@ -125,11 +125,12 @@ as shown below. The @p glyphPositions and @p glyphIds views are expected to
 have the same size, the @p vertexPositions and @p vertexTextureCoordinates
 views are then expected to be four times larger than @p glyphPositions and
 @p glyphIds, in order to ultimately contain four corner vertices for each
-glyph. To optimize memory use, it's possible to alias @p glyphPositions and
-@p glyphIds with @cpp vertexPositions.every(4) @ce and
-@cpp vertexTextureCoordinates.every(4) @ce --- the rendering is performed in a
-way that first reads the position and ID for each glyph and only then fills in
-the vertex data.
+glyph. To optimize memory use, it's possible to alias @p glyphPositions with
+@cpp vertexPositions.every(4) @ce and @p glyphIds with
+@cpp vertexTextureCoordinates.every(4) @ce. The @p vertexTextureCoordinates are
+temporarily used to store resolved cache-global glyph IDs, the rendering is
+then performed in a way that first reads the position and ID for each glyph and
+only then fills in the vertex data.
 
 @verbatim
 2---3
@@ -149,20 +150,54 @@ then the @p vertexPositions passed further to @ref alignRenderedLine().
 Expects that @p font is contained in @p cache. Glyph IDs not found in the cache
 are replaced with the cache-global invalid glyph. If the @p cache is only 2D,
 you can use the @ref renderGlyphQuadsInto(const AbstractFont&, Float, const AbstractGlyphCache&, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&)
-overload to get just 2D texture coordinates out. Use
+overload to get just 2D texture coordinates out. Use the
+@ref renderGlyphQuadsInto(const AbstractGlyphCache&, Float, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&)
+overload if you already have cache-global glyph IDs. Use
 @ref renderGlyphQuadIndicesInto() to populate the corresponding index array.
 */
-MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractFont& font, Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector3>& vertexTextureCoordinates);
+MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractFont& font, Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& fontGlyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector3>& vertexTextureCoordinates);
 
 /**
-@brief Render glyph quads for a (part of a) single line and a 2D glyph cache
+@brief Render glyph quads for a (part of a) single line from font-specific glyph IDs and a 2D glyph cache
 @m_since_latest
 
 Compared to @ref renderGlyphQuadsInto(const AbstractFont&, Float, const AbstractGlyphCache&, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector3>&)
 outputs just 2D texture coordinates. Expects that @ref AbstractGlyphCache::size()
 depth is @cpp 1 @ce.
 */
-MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractFont& font, Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates);
+MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractFont& font, Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& fontGlyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates);
+
+/**
+@brief Render glyph quads for a (part of a) single line from cache-global glyph IDs
+@param[in] cache                Glyph cache to query for glyph rectangles
+@param[in] scale                Size to render the glyphs at divided by size of
+    the input font
+@param[in] glyphPositions       Glyph positions coming from an earlier call to
+    @ref renderLineGlyphPositionsInto()
+@param[in] glyphIds             Cache-global glyph IDs
+@param[out] vertexPositions     Where to put output vertex positions
+@param[out] vertexTextureCoordinates  Where to put output texture coordinates
+@return Rectangle spanning the rendered glyph quads
+@m_since_latest
+
+Compared to @ref renderGlyphQuadsInto(const AbstractFont&, Float, const AbstractGlyphCache&, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector3>&)
+this function operates takes cache-global glyph IDs as an input, i.e. no
+mapping from font-specific glyph IDs to cache-global IDs happens in this case.
+As with the above overload, to optimize memory use, it's possible to alias
+@p glyphPositions and @p glyphIds with @cpp vertexPositions.every(4) @ce and
+@cpp vertexTextureCoordinates.every(4) @ce.
+*/
+MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector3>& vertexTextureCoordinates);
+
+/**
+@brief Render glyph quads for a (part of a) single line from cache-global glyph IDs and a 2D glyph cache
+@m_since_latest
+
+Compared to @ref renderGlyphQuadsInto(const AbstractGlyphCache&, Float, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector3>&)
+outputs just 2D texture coordinates. Expects that @ref AbstractGlyphCache::size()
+depth is @cpp 1 @ce.
+*/
+MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates);
 
 /**
 @brief Align a rendered line
