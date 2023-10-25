@@ -110,8 +110,7 @@ Range2D renderGlyphQuadsInto(const AbstractFont& font, const Float size, const A
     Range2D rectangle;
     for(std::size_t i = 0; i != glyphIds.size(); ++i) {
         /* Offset of the glyph rectangle relative to the cursor, layer,
-           texture coordinates. We checked that the glyph cache is 2D above
-           so the layer can be ignored. */
+           texture coordinates */
         const Containers::Triple<Vector2i, Int, Range2Di> cacheGlyph = cache.glyph(*fontId, glyphIds[i]);
 
         /* 2---3
