@@ -370,6 +370,20 @@ See also:
     @ref ShaderTools::AnyConverter "AnyShaderConverter" plugin and a
     @ref magnum-shaderconverter "magnum-shaderconverter" utility
 
+@subsubsection changelog-latest-new-text Text library
+
+-   New @ref Text::AbstractShaper interface returned by @ref Text::AbstractFont
+    and associated @ref Text::Script, @ref Text::Feature and
+    @ref Text::ShapeDirection enums allowing full control over script,
+    language, direction and used typographic features of shaped text
+-   Reworked @ref Text::AbstractGlyphCache on top of
+    @ref TextureTools::AtlasLandfill allowing more efficient and incremental
+    glyph packing together with support for texture arrays
+-   New @ref Text::renderLineGlyphPositionsInto(),
+    @ref Text::renderGlyphQuadsInto(), @ref Text::alignRenderedLine(),
+    @ref Text::alignRenderedBlock() and @ref Text::renderGlyphQuadIndicesInto()
+    APIs providing low-level access to the text renderer building blocks
+
 @subsubsection changelog-latest-new-texturetools TextureTools library
 
 -   New @ref TextureTools::AtlasLandfill texture atlas packer (see
