@@ -457,9 +457,9 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @brief Add a font
          * @param glyphCount    Upper bound on glyph IDs present in the font,
          *      or the value of @ref AbstractFont::glyphCount()
-         * @param pointer       Optional unique font identifier for later
-         *      lookup via @ref findFont(). Use @cpp nullptr @ce if not
-         *      associated with any particular font instance.
+         * @param pointer       Font instance for later lookup via
+         *      @ref findFont(). Use @cpp nullptr @ce if not associated with
+         *      any particular font instance.
          * @m_since_latest
          *
          * Returns font ID that's subsequently used to identify the font in
@@ -491,16 +491,15 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
         const AbstractFont* fontPointer(UnsignedInt fontId) const;
 
         /**
-         * @brief Find a font ID for a unique font identifier
+         * @brief Find a font ID for a font instance
          * @m_since_latest
          *
-         * The @p pointer is expected to not be @cpp nullptr @ce, as there can
-         * be multiple fonts with no associated identifier. If no font is found
-         * for given identifier, returns @ref Containers::NullOpt. The lookup
-         * is done with an @f$ \mathcal{O}(n) @f$ complexity with @f$ n @f$
-         * being @ref fontCount().
+         * Returns a font ID if a pointer matching @p font was used in an
+         * earlier @ref addFont() call, @ref Containers::NullOpt otherwise. The
+         * lookup is done with an @f$ \mathcal{O}(n) @f$ complexity with
+         * @f$ n @f$ being @ref fontCount().
          */
-        Containers::Optional<UnsignedInt> findFont(const AbstractFont* pointer) const;
+        Containers::Optional<UnsignedInt> findFont(const AbstractFont& font) const;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**

@@ -140,7 +140,7 @@ Range2D renderGlyphQuadsInto(const AbstractFont& font, const Float size, const A
     CORRADE_ASSERT(font.isOpened(),
         "Text::renderGlyphQuadsInto(): no font opened", {});
 
-    const Containers::Optional<UnsignedInt> fontId = cache.findFont(&font);
+    const Containers::Optional<UnsignedInt> fontId = cache.findFont(font);
     CORRADE_ASSERT(fontId,
         "Text::renderGlyphQuadsInto(): font not found among" << cache.fontCount() << "fonts in passed glyph cache", {});
 
@@ -303,7 +303,7 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
 
     /* Find this font in the cache and assert in the high-level API already to
        avoid confusion */
-    CORRADE_ASSERT(cache.findFont(&font),
+    CORRADE_ASSERT(cache.findFont(font),
         "Text::Renderer: font not found among" << cache.fontCount() << "fonts in passed glyph cache", {});
 
     /* Output data, reserve memory as when the text would be ASCII-only. In

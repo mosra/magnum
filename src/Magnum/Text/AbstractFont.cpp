@@ -324,7 +324,7 @@ Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCa
         "Text::AbstractFont::layout(): array glyph caches are not supported", {});
 
     /* Find this font in the cache. This is kept as a runtime error however. */
-    Containers::Optional<UnsignedInt> fontId = cache.findFont(this);
+    Containers::Optional<UnsignedInt> fontId = cache.findFont(*this);
     if(!fontId) {
         Error{} << "Text::AbstractFont::layout(): font not found among" << cache.fontCount() << "fonts in passed glyph cache";
         return {};

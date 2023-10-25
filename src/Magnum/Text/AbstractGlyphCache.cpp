@@ -246,12 +246,10 @@ const AbstractFont* AbstractGlyphCache::fontPointer(const UnsignedInt fontId) co
     return state.fonts[fontId].pointer;
 }
 
-Containers::Optional<UnsignedInt> AbstractGlyphCache::findFont(const AbstractFont* pointer) const {
-    CORRADE_ASSERT(pointer,
-        "Text::AbstractGlyphCache::findFont(): expected a non-null pointer", {});
+Containers::Optional<UnsignedInt> AbstractGlyphCache::findFont(const AbstractFont& font) const {
     const State& state = *_state;
     for(UnsignedInt i = 0; i != state.fonts.size() - 1; ++i)
-        if(state.fonts[i].pointer == pointer) return i;
+        if(state.fonts[i].pointer == &font) return i;
     return {};
 }
 

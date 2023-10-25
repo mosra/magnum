@@ -63,7 +63,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
         return {};
     }
 
-    Containers::Optional<UnsignedInt> fontId = cache.findFont(&font);
+    Containers::Optional<UnsignedInt> fontId = cache.findFont(font);
     #ifdef MAGNUM_BUILD_DEPRECATED
     /* Make it work with the old-style glyph cache filling that adds exactly
        one font into the cache and doesn't associate any pointer with it */

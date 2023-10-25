@@ -88,7 +88,7 @@ void MagnumFontGLTest::createGlyphCache() {
 
     /* The font should associate itself with the cache */
     CORRADE_COMPARE(cache->fontCount(), 1);
-    CORRADE_COMPARE(cache->findFont(font.get()), 0);
+    CORRADE_COMPARE(cache->findFont(*font), 0);
 
     /* Verify glyph contents */
     CORRADE_COMPARE(cache->glyphCount(), 5);
@@ -162,7 +162,7 @@ void MagnumFontGLTest::createGlyphCacheProcessedImage() {
 
     /* The font should associate itself with the cache */
     CORRADE_COMPARE(cache->fontCount(), 1);
-    CORRADE_COMPARE(cache->findFont(font.get()), 0);
+    CORRADE_COMPARE(cache->findFont(*font), 0);
 
     /* Verify glyph contents */
     CORRADE_COMPARE(cache->glyphCount(), 5);
@@ -233,7 +233,7 @@ void MagnumFontGLTest::createGlyphCacheNoGlyphs() {
 
     /* The font should associate itself with the cache even in this case */
     CORRADE_COMPARE(cache->fontCount(), 1);
-    CORRADE_COMPARE(cache->findFont(font.get()), 0);
+    CORRADE_COMPARE(cache->findFont(*font), 0);
 
     /* There's just the empty glyph added by the cache itself, nothing else */
     CORRADE_COMPARE(cache->glyphCount(), 1);

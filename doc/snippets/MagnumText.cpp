@@ -237,7 +237,7 @@ Text::AbstractGlyphCache& cache = DOXYGEN_ELLIPSIS(cacheInstance);
 
 Containers::ArrayView<const UnsignedInt> fontGlyphIds = DOXYGEN_ELLIPSIS({});
 
-Containers::Optional<UnsignedInt> fontId = cache.findFont(font.get());
+Containers::Optional<UnsignedInt> fontId = cache.findFont(*font);
 DOXYGEN_ELLIPSIS()
 for(std::size_t i = 0; i != fontGlyphIds.size(); ++i) {
     Containers::Triple<Vector2i, Int, Range2Di> glyph =

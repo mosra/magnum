@@ -85,7 +85,6 @@ struct AbstractGlyphCacheTest: TestSuite::Tester {
     void addFont();
     void addFontDuplicatePointer();
     void fontOutOfRange();
-    void findFontNullptr();
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     void reserve();
@@ -182,7 +181,6 @@ AbstractGlyphCacheTest::AbstractGlyphCacheTest() {
               &AbstractGlyphCacheTest::addFont,
               &AbstractGlyphCacheTest::addFontDuplicatePointer,
               &AbstractGlyphCacheTest::fontOutOfRange,
-              &AbstractGlyphCacheTest::findFontNullptr,
 
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractGlyphCacheTest::reserve,
@@ -603,21 +601,21 @@ void AbstractGlyphCacheTest::addFont() {
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}};
 
     const AbstractFont* font = reinterpret_cast<const AbstractFont*>(0xdeadbeef);
-    CORRADE_COMPARE(cache.findFont(font), Containers::NullOpt);
+    CORRADE_COMPARE(cache.findFont(*font), Containers::NullOpt);
 
     CORRADE_COMPARE(cache.addFont(35, nullptr), 0);
     CORRADE_COMPARE(cache.fontCount(), 1);
     CORRADE_COMPARE(cache.glyphCount(), 1);
     CORRADE_COMPARE(cache.fontGlyphCount(0), 35);
     CORRADE_COMPARE(cache.fontPointer(0), nullptr);
-    CORRADE_COMPARE(cache.findFont(font), Containers::NullOpt);
+    CORRADE_COMPARE(cache.findFont(*font), Containers::NullOpt);
 
     CORRADE_COMPARE(cache.addFont(12, font), 1);
     CORRADE_COMPARE(cache.fontCount(), 2);
     CORRADE_COMPARE(cache.glyphCount(), 1);
     CORRADE_COMPARE(cache.fontGlyphCount(1), 12);
     CORRADE_COMPARE(cache.fontPointer(1), font);
-    CORRADE_COMPARE(cache.findFont(font), 1);
+    CORRADE_COMPARE(cache.findFont(*font), 1);
 }
 
 void AbstractGlyphCacheTest::addFontDuplicatePointer() {
@@ -651,17 +649,6 @@ void AbstractGlyphCacheTest::fontOutOfRange() {
     CORRADE_COMPARE(out.str(),
         "Text::AbstractGlyphCache::fontGlyphCount(): index 2 out of range for 2 fonts\n"
         "Text::AbstractGlyphCache::fontPointer(): index 2 out of range for 2 fonts\n");
-}
-
-void AbstractGlyphCacheTest::findFontNullptr() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    cache.findFont(nullptr);
-    CORRADE_COMPARE(out.str(), "Text::AbstractGlyphCache::findFont(): expected a non-null pointer\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
