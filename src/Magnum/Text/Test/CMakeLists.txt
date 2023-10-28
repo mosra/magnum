@@ -77,6 +77,7 @@ endif()
 corrade_add_test(TextAbstractShaperTest AbstractShaperTest.cpp
     LIBRARIES MagnumTextTestLib)
 
+corrade_add_test(TextAlignmentTest AlignmentTest.cpp LIBRARIES MagnumText)
 corrade_add_test(TextDirectionTest DirectionTest.cpp LIBRARIES MagnumText)
 corrade_add_test(TextFeatureTest FeatureTest.cpp LIBRARIES MagnumTextTestLib)
 corrade_add_test(TextRendererTest RendererTest.cpp LIBRARIES MagnumTextTestLib)

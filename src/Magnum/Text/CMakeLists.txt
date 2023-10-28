@@ -31,6 +31,7 @@ find_package(Corrade REQUIRED PluginManager)
 
 # Files shared between main library and unit test library
 set(MagnumText_SRCS
+    Alignment.cpp
     Direction.cpp)
 
 # Files compiled with different flags for main library and unit test library

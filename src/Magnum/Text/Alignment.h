@@ -29,7 +29,8 @@
  * @brief Enum @ref Magnum::Text::Alignment
  */
 
-#include "Magnum/Types.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Text/visibility.h"
 
 namespace Magnum { namespace Text {
 
@@ -369,6 +370,9 @@ enum class Alignment: UnsignedByte {
      */
     TopRightGlyphBounds = TopRight|Implementation::AlignmentGlyphBounds,
 };
+
+/** @debugoperatorenum{Alignment} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, Alignment value);
 
 }}
 
