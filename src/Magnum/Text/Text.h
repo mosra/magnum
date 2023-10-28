@@ -50,6 +50,8 @@ class AbstractGlyphCache;
 enum class Feature: UnsignedInt;
 enum class Script: UnsignedInt;
 
+class FeatureRange;
+
 #ifdef MAGNUM_TARGET_GL
 class DistanceFieldGlyphCache;
 class GlyphCache;
