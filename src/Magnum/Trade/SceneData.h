@@ -2265,7 +2265,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * If the field has @ref SceneFieldFlag::ImplicitMapping, the lookup is
          * done in an @f$ \mathcal{O}(m) @f$ complexity with @f$ m @f$ being
-         * the * field count. Otherwise, if the field has
+         * the field count. Otherwise, if the field has
          * @ref SceneFieldFlag::OrderedMapping, the lookup is done in an
          * @f$ \mathcal{O}(m + \log{} n) @f$ complexity with @f$ m @f$ being
          * the field count and @f$ n @f$ the size of the field. Otherwise, the

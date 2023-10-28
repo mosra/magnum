@@ -293,7 +293,7 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
         /**
          * @brief Shape a text
          * @param text      Text in UTF-8
-         * @param features  OpenType features to apply for the whole text or
+         * @param features  Typographic features to apply for the whole text or
          *      its subranges
          *
          * Expects that both @p begin and all @ref FeatureRange::begin() are
@@ -327,7 +327,7 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * @param text      Text in UTF-8
          * @param begin     Beginning byte in the input text
          * @param end       (One byte after) the end byte in the input text
-         * @param features  OpenType features to apply for the whole text or
+         * @param features  Typographic features to apply for the whole text or
          *      its subranges
          *
          * A variant of @ref shape(Containers::StringView, Containers::ArrayView<const FeatureRange>)
