@@ -75,8 +75,10 @@ add_library(MagnumAudioObjects OBJECT
     ${MagnumAudio_SRCS}
     ${MagnumAudio_HEADERS})
 target_include_directories(MagnumAudioObjects PUBLIC
-    $<TARGET_PROPERTY:OpenAL::OpenAL,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    # Include dependencies after Magnum itself, to avoid stale installed Magnum
+    # headers being preferred over the project-local ones
+    $<TARGET_PROPERTY:OpenAL::OpenAL,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumAudioObjects PRIVATE "MagnumAudioObjects_EXPORTS")
@@ -178,7 +180,6 @@ if(MAGNUM_BUILD_TESTS)
         ${MagnumAudio_GracefulAssert_SRCS})
     target_compile_definitions(MagnumAudioTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumAudio_EXPORTS")
-    target_include_directories(MagnumAudioTestLib PUBLIC ${OPENAL_INCLUDE_DIR})
     set_target_properties(MagnumAudioTestLib PROPERTIES DEBUG_POSTFIX "-d")
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumAudioTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -187,6 +188,9 @@ if(MAGNUM_BUILD_TESTS)
         Magnum
         Corrade::PluginManager
         OpenAL::OpenAL)
+    # Include dependencies after Magnum itself, to avoid stale installed Magnum
+    # headers being preferred over the project-local ones
+    target_include_directories(MagnumAudioTestLib PUBLIC ${OPENAL_INCLUDE_DIR})
     if(MAGNUM_WITH_SCENEGRAPH)
         target_link_libraries(MagnumAudioTestLib PUBLIC MagnumSceneGraph)
     endif()

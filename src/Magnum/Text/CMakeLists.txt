@@ -85,11 +85,14 @@ add_library(MagnumTextObjects OBJECT
     ${MagnumText_HEADERS}
     ${MagnumText_PRIVATE_HEADERS})
 target_include_directories(MagnumTextObjects PUBLIC
-    $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(MAGNUM_TARGET_GL)
     target_include_directories(MagnumTextObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
 endif()
+# Include dependencies after Magnum itself, to avoid stale installed Magnum
+# headers being preferred over the project-local ones
+target_include_directories(MagnumTextObjects PUBLIC
+    $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumTextObjects PRIVATE "MagnumTextObjects_EXPORTS")
 endif()
@@ -109,11 +112,13 @@ elseif(MAGNUM_BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumText PUBLIC
     Magnum
-    MagnumTextureTools
-    Corrade::PluginManager)
+    MagnumTextureTools)
 if(MAGNUM_TARGET_GL)
     target_link_libraries(MagnumText PUBLIC MagnumGL)
 endif()
+# Include dependencies after Magnum itself, to avoid stale installed Magnum
+# headers being preferred over the project-local ones
+target_link_libraries(MagnumText PUBLIC Corrade::PluginManager)
 
 install(TARGETS MagnumText
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}

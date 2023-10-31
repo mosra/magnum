@@ -264,9 +264,11 @@ if(MAGNUM_WITH_OPENGLTESTER)
     # Assuming that PIC is not needed because the Tester lib is always linked
     # to the executable and not to any intermediate shared lib
     target_include_directories(MagnumOpenGLTesterObjects PUBLIC
-        $<TARGET_PROPERTY:Corrade::TestSuite,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:${OPENGLTESTER_APPLICATION},INTERFACE_INCLUDE_DIRECTORIES>)
+        $<TARGET_PROPERTY:${OPENGLTESTER_APPLICATION},INTERFACE_INCLUDE_DIRECTORIES>
+        # Include dependencies after Magnum itself, to avoid stale installed
+        # headers being preferred over the project-local ones
+        $<TARGET_PROPERTY:Corrade::TestSuite,INTERFACE_INCLUDE_DIRECTORIES>)
 
     add_library(MagnumOpenGLTester STATIC
         $<TARGET_OBJECTS:MagnumOpenGLTesterObjects>

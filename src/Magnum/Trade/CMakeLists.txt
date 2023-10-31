@@ -123,6 +123,8 @@ add_library(MagnumTradeObjects OBJECT
     ${MagnumTrade_PRIVATE_HEADERS})
 target_include_directories(MagnumTradeObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    # Include dependencies after Magnum itself, to avoid stale installed
+    # headers being preferred over the project-local ones
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumTradeObjects PRIVATE "MagnumTradeObjects_EXPORTS")
