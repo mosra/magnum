@@ -290,7 +290,7 @@ if(MAGNUM_BUILD_TESTS)
         DEBUG_POSTFIX "-d"
         # Differs from CMAKE_FOLDER
         FOLDER "Magnum/Math")
-    target_link_libraries(MagnumMathTestLib Corrade::Utility)
+    target_link_libraries(MagnumMathTestLib PUBLIC Corrade::Utility)
 
     # Library with graceful assert for testing
     add_library(MagnumTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
