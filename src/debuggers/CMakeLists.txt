@@ -26,7 +26,7 @@
 
 # TODO: same TODOs as in corrade/src/debuggers/CMakeLists.txt apply here
 if(NOT CORRADE_TARGET_MSVC AND NOT CORRADE_TARGET_EMSCRIPTEN)
-    install(DIRECTORY gdb DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/debuggers)
+    install(DIRECTORY gdb/magnum DESTINATION share/gdb/python)
 endif()
 
 if(CORRADE_TARGET_MSVC)
