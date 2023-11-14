@@ -626,15 +626,26 @@ void ColorTest::data() {
 }
 
 void ColorTest::literals() {
-    constexpr Color3ub a = 0x33b27f_rgb;
-    CORRADE_COMPARE(a, (Color3ub{0x33, 0xb2, 0x7f}));
-
-    constexpr Color4ub b = 0x33b27fcc_rgba;
-    CORRADE_COMPARE(b, (Color4ub{0x33, 0xb2, 0x7f, 0xcc}));
-
-    /* Not constexpr yet */
+    CORRADE_COMPARE(0x33b27f_rgb, (Color3ub{0x33, 0xb2, 0x7f}));
+    CORRADE_COMPARE(0x33b27fcc_rgba, (Color4ub{0x33, 0xb2, 0x7f, 0xcc}));
     CORRADE_COMPARE(0x33b27f_rgbf, (Color3{0.2f, 0.698039f, 0.498039f}));
     CORRADE_COMPARE(0x33b27fcc_rgbaf, (Color4{0.2f, 0.698039f, 0.498039f, 0.8f}));
+
+    /* As the implementation doesn't delegate into unpack() etc in order to be
+       constexpr, test also boundary values to be sure */
+    CORRADE_COMPARE(0xffffff_rgbf, Color3{1.0f});
+    CORRADE_COMPARE(0x000000_rgbf, Color3{0.0f});
+    CORRADE_COMPARE(0xffffffff_rgbaf, Color4{1.0f});
+    CORRADE_COMPARE(0x00000000_rgbaf, (Color4{0.0f, 0.0f}));
+
+    constexpr Color3ub ca = 0x33b27f_rgb;
+    constexpr Color4ub cb = 0x33b27fcc_rgba;
+    constexpr Color3 cc = 0x33b27f_rgbf;
+    constexpr Color4 cd = 0x33b27fcc_rgbaf;
+    CORRADE_COMPARE(ca, (Color3ub{0x33, 0xb2, 0x7f}));
+    CORRADE_COMPARE(cb, (Color4ub{0x33, 0xb2, 0x7f, 0xcc}));
+    CORRADE_COMPARE(cc, (Color3{0.2f, 0.698039f, 0.498039f}));
+    CORRADE_COMPARE(cd, (Color4{0.2f, 0.698039f, 0.498039f, 0.8f}));
 }
 
 void ColorTest::colors() {

@@ -1393,7 +1393,8 @@ constexpr Vector4<UnsignedByte> operator "" _srgba(unsigned long long value) {
 /** @relatesalso Magnum::Math::Color3
 @brief Float linear RGB literal
 
-Calls @ref Color3::fromLinearRgbInt() on the literal value. Example usage:
+Equivalent to calling @ref Color3::fromLinearRgbInt() on the literal value.
+Example usage:
 
 @snippet MagnumMath.cpp _rgbf
 
@@ -1405,8 +1406,10 @@ Calls @ref Color3::fromLinearRgbInt() on the literal value. Example usage:
 @see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink
 @m_keywords{_rgbf rgbf}
 */
-inline Color3<Float> operator "" _rgbf(unsigned long long value) {
-    return Math::unpack<Color3<Float>>(Color3<UnsignedByte>{UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+constexpr Color3<Float> operator "" _rgbf(unsigned long long value) {
+    return {((value >> 16) & 0xff)/255.0f,
+            ((value >>  8) & 0xff)/255.0f,
+            ((value >>  0) & 0xff)/255.0f};
 }
 
 /** @relatesalso Magnum::Math::Color3
@@ -1427,7 +1430,8 @@ inline Color3<Float> operator "" _srgbf(unsigned long long value) {
 /** @relatesalso Magnum::Math::Color4
 @brief Float linear RGBA literal
 
-Calls @ref Color4::fromLinearRgbaInt() on the literal value. Example usage:
+Equivalent to calling @ref Color4::fromLinearRgbaInt() on the literal value.
+Example usage:
 
 @snippet MagnumMath.cpp _rgbaf
 
@@ -1439,8 +1443,11 @@ Calls @ref Color4::fromLinearRgbaInt() on the literal value. Example usage:
 @see @link operator""_rgbf() @endlink, @link operator""_rgba() @endlink
 @m_keywords{_rgbaf rgbaf}
 */
-inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
-    return Math::unpack<Color4<Float>>(Color4<UnsignedByte>{UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+constexpr Color4<Float> operator "" _rgbaf(unsigned long long value) {
+    return {((value >> 24) & 0xff)/255.0f,
+            ((value >> 16) & 0xff)/255.0f,
+            ((value >>  8) & 0xff)/255.0f,
+            ((value >>  0) & 0xff)/255.0f};
 }
 
 /** @relatesalso Magnum::Math::Color4
