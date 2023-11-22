@@ -69,6 +69,8 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& sourceSize, con
     #endif
 }
 
+DistanceFieldGlyphCache::DistanceFieldGlyphCache(NoCreateT) noexcept: GlyphCache{NoCreate}, _distanceField{NoCreate} {}
+
 GlyphCacheFeatures DistanceFieldGlyphCache::doFeatures() const {
     return GlyphCacheFeature::ImageProcessing
         #ifndef MAGNUM_TARGET_GLES

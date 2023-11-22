@@ -107,6 +107,22 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
          */
         explicit GlyphCache(const Vector2i& size, const Vector2i& padding = {});
 
+        /**
+         * @brief Construct without creating the internal state and the OpenGL texture object
+         * @m_since_latest
+         *
+         * The constructed instance is equivalent to moved-from state, i.e. no
+         * APIs can be safely called on the object. Useful in cases where you
+         * will overwrite the instance later anyway. Move another object over
+         * it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
+         */
+        explicit GlyphCache(NoCreateT) noexcept;
+
         /** @brief Cache texture */
         GL::Texture2D& texture() { return _texture; }
 

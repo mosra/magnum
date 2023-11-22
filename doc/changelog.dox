@@ -809,6 +809,9 @@ See also:
     missing before, and @ref Text::Alignment::TopCenterIntegral, which is also
     needed in order to prevent aligning pixel-perfect fonts to fractional
     positions.
+-   Added a @ref Text::GlyphCache::GlyphCache(NoCreateT) and
+    @ref Text::DistanceFieldGlyphCache::DistanceFieldGlyphCache(NoCreateT)
+    constructor allowing to construct the object without a GL context present
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 

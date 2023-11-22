@@ -66,6 +66,7 @@ struct AbstractGlyphCacheTest: TestSuite::Tester {
     #endif
     void constructImageRowPadding();
     void constructZeroSize();
+    void constructNoCreate();
 
     void constructCopy();
     void constructMove();
@@ -162,6 +163,7 @@ AbstractGlyphCacheTest::AbstractGlyphCacheTest() {
               #endif
               &AbstractGlyphCacheTest::constructImageRowPadding,
               &AbstractGlyphCacheTest::constructZeroSize,
+              &AbstractGlyphCacheTest::constructNoCreate,
 
               &AbstractGlyphCacheTest::constructCopy,
               &AbstractGlyphCacheTest::constructMove,
@@ -444,6 +446,16 @@ void AbstractGlyphCacheTest::constructZeroSize() {
     CORRADE_COMPARE(out.str(),
         "Text::AbstractGlyphCache: expected non-zero size, got {2, 0, 1}\n"
         "Text::AbstractGlyphCache: expected non-zero size, got {0, 2, 1}\n");
+}
+
+void AbstractGlyphCacheTest::constructNoCreate() {
+    DummyGlyphCache cache{NoCreate};
+
+    /* Shouldn't crash */
+    CORRADE_VERIFY(true);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DummyGlyphCache>::value);
 }
 
 void AbstractGlyphCacheTest::constructCopy() {

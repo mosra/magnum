@@ -144,6 +144,8 @@ AbstractGlyphCache::AbstractGlyphCache(const Vector2i& size, const Vector2i& pad
 AbstractGlyphCache::AbstractGlyphCache(const Vector2i& size): AbstractGlyphCache{PixelFormat::R8Unorm, size, {}} {}
 #endif
 
+AbstractGlyphCache::AbstractGlyphCache(NoCreateT) noexcept {}
+
 AbstractGlyphCache::AbstractGlyphCache(AbstractGlyphCache&&) noexcept = default;
 
 AbstractGlyphCache::~AbstractGlyphCache() = default;
