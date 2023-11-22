@@ -56,6 +56,7 @@ struct BufferGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void bindBase();
     void bindRange();
+    void bindBaseRangeUpdateRegularBinding();
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -75,6 +76,17 @@ struct BufferGLTest: OpenGLTester {
     void invalidate();
 };
 
+const struct {
+    const char* name;
+    bool bindRange;
+    bool multi;
+} BindBaseRangeUpdateRegularBindingData[]{
+    {"bind base", false, false},
+    {"bind bases", false, true},
+    {"bind range", true, false},
+    {"bind ranges", true, true},
+};
+
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
               &BufferGLTest::constructFromData,
@@ -89,7 +101,14 @@ BufferGLTest::BufferGLTest() {
               &BufferGLTest::bindBase,
               &BufferGLTest::bindRange,
               #endif
+              });
 
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&BufferGLTest::bindBaseRangeUpdateRegularBinding},
+        Containers::arraySize(BindBaseRangeUpdateRegularBindingData));
+    #endif
+
+    addTests({
               #ifndef MAGNUM_TARGET_GLES
               &BufferGLTest::storage,
               &BufferGLTest::storagePreinitialized,
@@ -259,6 +278,58 @@ void BufferGLTest::bindRange() {
     Buffer::bind(Buffer::Target::Uniform, 7, {
         {&buffer, 256, 512}, {},
         {&buffer, 768, 256}});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferGLTest::bindBaseRangeUpdateRegularBinding() {
+    auto&& data = BindBaseRangeUpdateRegularBindingData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
+        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() << "is supported, can't test.");
+    #endif
+
+    /* glBindBufferRange() / glBindBufferBase() binds the buffer to the regular
+       binding point as a side effect. Verify that the state tracker accounts
+       for that when uploading data to another (larger) buffer via classic
+       glBindBuffer() + glBufferSubData() -- if it wouldn't, the data upload
+       would fail due to the range being too large.
+
+       In comparison, the multi-bind APIs don't have this side effect. GL is
+       "fun". */
+
+    Buffer small{Buffer::TargetHint::Uniform};
+    small.setData({nullptr, 16});
+
+    Buffer large{Buffer::TargetHint::Uniform};
+    /* Without DSA, this makes the current Uniform buffer binding set to
+       `large`. */
+    large.setData({nullptr, 128});
+
+    /* And this makes the current Uniform buffer binding set to `small` again,
+       but only as a side effect. Testing also the multi variants, they
+       shouldn't do that though. */
+    if(data.multi) {
+        if(data.bindRange)
+            Buffer::bind(Buffer::Target::Uniform, 0, {{&small, 0, 16}});
+        else
+            Buffer::bind(Buffer::Target::Uniform, 0, {&small});
+    } else {
+        if(data.bindRange)
+            small.bind(Buffer::Target::Uniform, 0, 0, 16);
+        else
+            small.bind(Buffer::Target::Uniform, 0);
+    }
+
+    /* So this has to explicitly rebind `large` again as the binding was
+       overwritten by the above, even though glBindBuffer() wasn't directly
+       called */
+    char zeros[128]{};
+    large.setSubData(0, zeros);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
