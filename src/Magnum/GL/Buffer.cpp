@@ -302,11 +302,44 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
 
 #ifndef MAGNUM_TARGET_GLES2
 Buffer& Buffer::bind(const Target target, const UnsignedInt index, const GLintptr offset, const GLsizeiptr size) {
+    /* glBindBufferBase() and glBindBufferRange() bind the buffer to the
+       "regular" binding target as a side effect:
+        https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBufferBase.xhtml
+       So update the state tracker to be aware of that. Apart from saving a
+       needless rebind in some cases, this also prevents an inverse case where
+       it would think a buffer is bound and won't call glBindBuffer() for it,
+       causing for example a (DSA-less) data upload to happen to some entirely
+       different buffer. In comparison, the multi-bind APIs don't have this
+       side effect:
+        https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffersBase.xhtml
+
+       See BufferGLTest::bindBaseRangeUpdateRegularBinding() for a
+       corresponding test case. */
+    Context::current().state().buffer.bindings[Implementation::BufferState::indexForTarget(
+        /* The Target enum is a subset of TargetHint and the values match, so
+           no expensive translation is necessary */
+        TargetHint(UnsignedInt(target)))] = _id;
+    /* As the "regular" binding target is a side effect, I assume it also
+       creates the object internally if not already, equivalently to
+       glBindBuffer() and to what the createIfNotAlready() call does, and
+       satisfying the internal assertion there which in turn expects that if a
+       buffer is in the bindings state tracker array, it also has the Created
+       flag set. */
+    _flags |= ObjectFlag::Created;
+
     glBindBufferRange(GLenum(target), index, _id, offset, size);
     return *this;
 }
 
 Buffer& Buffer::bind(const Target target, const UnsignedInt index) {
+    /* Same as in bind(Target, UnsignedInt, GLintptr, GLsizeiptr) above */
+    Context::current().state().buffer.bindings[Implementation::BufferState::indexForTarget(
+        /* The Target enum is a subset of TargetHint and the values match, so
+           no expensive translation is necessary */
+        TargetHint(UnsignedInt(target)))] = _id;
+    /* Ditto */
+    _flags |= ObjectFlag::Created;
+
     glBindBufferBase(GLenum(target), index, _id);
     return *this;
 }
@@ -405,6 +438,10 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
         }
     }
 
+    /* Unlike Buffer::bind(Target, UnsignedInt) this doesn't affect the regular
+       binding points:
+        https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffersBase.xhtml
+       See the comment in that function for details. */
     glBindBuffersBase(GLenum(target), firstIndex, buffers.size(), ids);
 }
 #endif

@@ -57,6 +57,9 @@ struct BufferGLTest: OpenGLTester {
     void bindBase();
     void bindRange();
     void bindBaseRangeUpdateRegularBinding();
+    #ifndef MAGNUM_TARGET_WEBGL
+    void bindBaseRangeCreatesObject();
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -87,6 +90,16 @@ const struct {
     {"bind ranges", true, true},
 };
 
+#ifndef MAGNUM_TARGET_WEBGL
+const struct {
+    const char* name;
+    bool multi;
+} BindBaseRangeCreatesObjectData[]{
+    {"bind base", false},
+    {"bind bases", true},
+};
+#endif
+
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
               &BufferGLTest::constructFromData,
@@ -106,6 +119,11 @@ BufferGLTest::BufferGLTest() {
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&BufferGLTest::bindBaseRangeUpdateRegularBinding},
         Containers::arraySize(BindBaseRangeUpdateRegularBindingData));
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    addInstancedTests({&BufferGLTest::bindBaseRangeCreatesObject},
+        Containers::arraySize(BindBaseRangeCreatesObjectData));
+    #endif
     #endif
 
     addTests({
@@ -333,6 +351,58 @@ void BufferGLTest::bindBaseRangeUpdateRegularBinding() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void BufferGLTest::bindBaseRangeCreatesObject() {
+    auto&& data = BindBaseRangeCreatesObjectData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
+        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() << "is supported, can't test.");
+    #endif
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
+        CORRADE_SKIP(Extensions::KHR::debug::string() << "is not supported.");
+
+    Buffer buffer;
+
+    /* The glGenBuffers() API doesn't actually create a buffer object, creation
+       only happens on the first glBindBuffer(). The DSA glCreateBuffer() API
+       combines the two, and then some DSA APIs that take just an object ID
+       such as glObjectLabel() require the object to be created.
+
+       As the glBindBufferBase() / glBindBufferRange() binds the buffer to the
+       regular binding point as a side effect, the implementation assumes it
+       also performs the creation, and so sets the ObjectFlag::Created flag. To
+       verify that, the glObjectLabel() call should then work without a GL
+       error.
+
+       On the other hand, the multi-bind APIs *don't* bind the buffer to the
+       regular binding point, but conversely require the objects to be created.
+       So for these, the multi-bind is actually internally preceded by an
+       explicit glBindBuffer() that creates the buffer if not already. Calling
+       the multi-bind variant here just to be sure it all works as intended.
+
+       Also, only the "base" binding APIs are tested here, the range APIs fail
+       on an error because size of 0 is not an allowed value. The
+       implementation and ObjectFlag::Created flag setting however behaves the
+       same for both for consistency, even though it's impossible to test. */
+
+    if(data.multi)
+        Buffer::bind(Buffer::Target::Uniform, 0, {&buffer});
+    else
+        buffer.bind(Buffer::Target::Uniform, 0);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    buffer.setLabel("hello");
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(buffer.label(), "hello");
+}
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
