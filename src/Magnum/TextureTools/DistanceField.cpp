@@ -171,6 +171,8 @@ DistanceField::DistanceField(const UnsignedInt radius): _state{new State{radius}
     }
 }
 
+DistanceField::DistanceField(NoCreateT) noexcept {}
+
 DistanceField::DistanceField(DistanceField&&) noexcept = default;
 
 DistanceField::~DistanceField() = default;

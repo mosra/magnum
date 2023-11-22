@@ -810,6 +810,11 @@ See also:
     needed in order to prevent aligning pixel-perfect fonts to fractional
     positions.
 
+@subsubsection changelog-latest-changes-texturetools TextureTools library
+
+-   Added a @ref TextureTools::DistanceField::DistanceField(NoCreateT)
+    constructor allowing to construct the object without a GL context present
+
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   A changed signature of the @ref Trade::AbstractImporter::doOpenData(Containers::Array<char>&&, DataFlags)
