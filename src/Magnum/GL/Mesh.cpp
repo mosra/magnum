@@ -165,20 +165,40 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
 #endif
 
 struct Mesh::AttributeLayout {
-    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{location}, size{size}, type{type}, kind{kind}, offset{offset}, stride{stride}, divisor{divisor} {}
+    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, kind{kind}, location{UnsignedByte(location)}, size{UnsignedShort(size)}, type{type}, offset{offset}, stride{stride}, divisor{divisor} {
+        CORRADE_INTERNAL_ASSERT(location < 256 && size < 65536);
+    }
 
     AttributeLayout(AttributeLayout&&) noexcept = default;
     AttributeLayout(const AttributeLayout&) noexcept = delete;
     AttributeLayout& operator=(AttributeLayout&&) noexcept = default;
     AttributeLayout& operator=(const AttributeLayout&) noexcept = delete;
 
+    /* This structure has 32 bytes at the moment, but could theoretically go
+       to just 24 or lower with mroe clever packing as shown below. 28 would be
+       trivial but as the offset is a 8-byte type we need to have a multiple of
+       8. */
+
+    /* 4 bytes +
+       2 bits:  if unwrapped (for flags, the TargetHint is always Array) */
     Buffer buffer;
-    GLuint location;
-    GLint size;
-    GLenum type;
+    /* 2 bits:  the enum has just four values */
     DynamicAttribute::Kind kind;
+    /* 4 bits:  GPUs have usually max 8 or 16 locations */
+    UnsignedByte location;
+    /* 3 bits:  1, 2, 3, 4 components or GL_BGRA (which is a 16-bit value,
+                which is why it's 2-byte now) */
+    UnsignedShort size;
+    /* 2 bytes: the type values are all just 16-bit */
+    GLenum type;
+    /* 6 bytes: has to be more than 32 bits to work with buffers larger than
+                4 GB, but 48 bits (256 TB?) could be enough */
     GLintptr offset;
+    /* 11 bits: max stride is usually 2048 */
     GLsizei stride;
+    /* 4 bytes: not sure what's the limit on this, but looks like it can be a
+                full 32 bit range, same as vertex / element count (unlike in
+                Vulkan, where it's often either just 0 or 1) */
     GLuint divisor;
 };
 
