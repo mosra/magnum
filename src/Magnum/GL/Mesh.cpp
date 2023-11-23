@@ -344,7 +344,7 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive),
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart(other._indexStart), _indexEnd(other._indexEnd),
     #endif
-    _indexBufferOffset(other._indexBufferOffset), _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer{Utility::move(other._indexBuffer)}
+    _indexType(other._indexType), _indexBufferOffset(other._indexBufferOffset), _indexOffset(other._indexOffset), _indexBuffer{Utility::move(other._indexBuffer)}
 {
     if(_constructed || other._constructed)
         Context::current().state().mesh.moveConstructImplementation(*this, Utility::move(other));
@@ -368,8 +368,8 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     swap(_indexEnd, other._indexEnd);
     #endif
     swap(_indexBufferOffset, other._indexBufferOffset);
-    swap(_indexOffset, other._indexOffset);
     swap(_indexType, other._indexType);
+    swap(_indexOffset, other._indexOffset);
     swap(_indexBuffer, other._indexBuffer);
 
     if(_constructed || other._constructed)

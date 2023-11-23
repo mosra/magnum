@@ -1432,8 +1432,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         UnsignedInt _baseInstance{};
         UnsignedInt _indexStart{}, _indexEnd{};
         #endif
-        GLintptr _indexBufferOffset{}, _indexOffset{};
         MeshIndexType _indexType{};
+        /* 4 bytes free on ES2 */
+        GLintptr _indexBufferOffset{}, _indexOffset{};
         Buffer _indexBuffer{NoCreate};
 
         /* Storage for either std::vector<AttributeLayout> (in case of no VAOs)
