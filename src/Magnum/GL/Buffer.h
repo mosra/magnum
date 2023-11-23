@@ -256,7 +256,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @see @ref Buffer(), @ref setTargetHint()
          * @m_enum_values_as_keywords
          */
-        enum class TargetHint: GLenum {
+        /* The type is a (32bit) GLenum, but all values fit into 16 bits, I
+           suppose thanks to backwards compatibility with systems where int is
+           just 16 bit. Restricting the type size makes the class 8 instead of
+           12 bytes. */
+        enum class TargetHint: UnsignedShort {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
 
