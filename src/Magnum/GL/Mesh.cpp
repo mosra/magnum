@@ -165,8 +165,17 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
 #endif
 
 struct Mesh::AttributeLayout {
-    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, kind{kind}, location{UnsignedByte(location)}, size{UnsignedShort(size)}, type{type}, offset{offset}, stride{stride}, divisor{divisor} {
-        CORRADE_INTERNAL_ASSERT(location < 256 && size < 65536);
+    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{UnsignedByte(location)}, kindSize{UnsignedByte(kind)}, type{UnsignedShort(type)}, divisor{divisor}, offsetStride{(UnsignedLong(offset) << 16)|stride} {
+        CORRADE_INTERNAL_ASSERT(location < 256 && type < 65536 && UnsignedLong(offset) < (1ull << 48) && stride < 65536);
+        #ifndef MAGNUM_TARGET_GLES
+        if(size == GL_BGRA) {
+            kindSize |= 0 << 2;
+        } else
+        #endif
+        {
+            CORRADE_INTERNAL_ASSERT(size >= 1 && size <= 4);
+            kindSize |= size << 2;
+        }
     }
 
     AttributeLayout(AttributeLayout&&) noexcept = default;
@@ -174,32 +183,58 @@ struct Mesh::AttributeLayout {
     AttributeLayout& operator=(AttributeLayout&&) noexcept = default;
     AttributeLayout& operator=(const AttributeLayout&) noexcept = delete;
 
-    /* This structure has 32 bytes at the moment, but could theoretically go
-       to just 24 or lower with mroe clever packing as shown below. 28 would be
-       trivial but as the offset is a 8-byte type we need to have a multiple of
-       8. */
+    DynamicAttribute::Kind kind() const {
+        return DynamicAttribute::Kind(kindSize & 0x03);
+    }
+
+    GLint size() const {
+        const GLint size = kindSize >> 2;
+        #ifndef MAGNUM_TARGET_GLES
+        if(!size) return GL_BGRA;
+        #endif
+        return size;
+    }
+
+    GLintptr offset() const {
+        return offsetStride >> 16;
+    };
+
+    GLsizei stride() const {
+        return offsetStride & 0xffff;
+    }
+
+    /* Packing to just 20 bytes would be possible with unwrapping the buffer,
+       keeping just the ID from it putting the 2-bit ObjectFlags into the
+       remaining free bits in `kindSize`, at the cost of extra logic that would
+       be needed to properly destruct it if it's owned. Then, on 32-bit WebGL
+       we don't need the offset to be more than 32 bits and the stride can be
+       just 1 byte, leaving us with just 17 bytes. The last byte could be then
+       stolen from the `divisor`, for example. Not doing that as I don't feel
+       it's necessary to optimize that much, additionally the AttributeLayout
+       instances are only stored if VAOs are disabled, which is a rare
+       scenario. */
 
     /* 4 bytes +
        2 bits:  if unwrapped (for flags, the TargetHint is always Array) */
     Buffer buffer;
-    /* 2 bits:  the enum has just four values */
-    DynamicAttribute::Kind kind;
     /* 4 bits:  GPUs have usually max 8 or 16 locations */
     UnsignedByte location;
-    /* 3 bits:  1, 2, 3, 4 components or GL_BGRA (which is a 16-bit value,
-                which is why it's 2-byte now) */
-    UnsignedShort size;
+    /* 2 bits for a kind +
+       3 bits for size: kind is just 4 values, size is  1, 2, 3, 4 components
+                or GL_BGRA, which is treated as 0 */
+    UnsignedByte kindSize;
     /* 2 bytes: the type values are all just 16-bit */
-    GLenum type;
-    /* 6 bytes: has to be more than 32 bits to work with buffers larger than
-                4 GB, but 48 bits (256 TB?) could be enough */
-    GLintptr offset;
-    /* 11 bits: max stride is usually 2048 */
-    GLsizei stride;
+    UnsignedShort type;
     /* 4 bytes: not sure what's the limit on this, but looks like it can be a
                 full 32 bit range, same as vertex / element count (unlike in
                 Vulkan, where it's often either just 0 or 1) */
     GLuint divisor;
+    /* 6 bytes offset +
+       2 byte stride: offset has to be more than 32 bits to work with buffers
+                larger than 4 GB, but 48 bits (256 TB?) could be enough. Max
+                stride is usually 2048, it's just 256 on WebGL so 16 bits for
+                it should be enough. */
+    UnsignedLong offsetStride;
 };
 
 UnsignedInt Mesh::maxVertexAttributeStride() {
@@ -1180,22 +1215,27 @@ void Mesh::attributePointerImplementationVAO(Mesh& self, AttributeLayout&& attri
 void Mesh::attributePointerImplementationVAODSA(Mesh& self, AttributeLayout&& attribute) {
     glEnableVertexArrayAttrib(self._id, attribute.location);
 
+    const DynamicAttribute::Kind attributeKind = attribute.kind();
+    const GLint attributeSize = attribute.size();
+    const GLintptr attributeOffset = attribute.offset();
+    const GLsizei attributeStride = attribute.stride();
+
     #ifndef MAGNUM_TARGET_GLES2
-    if(attribute.kind == DynamicAttribute::Kind::Integral)
-        glVertexArrayAttribIFormat(self._id, attribute.location, attribute.size, attribute.type, 0);
+    if(attributeKind == DynamicAttribute::Kind::Integral)
+        glVertexArrayAttribIFormat(self._id, attribute.location, attributeSize, attribute.type, 0);
     #ifndef MAGNUM_TARGET_GLES
-    else if(attribute.kind == DynamicAttribute::Kind::Long)
-        glVertexArrayAttribLFormat(self._id, attribute.location, attribute.size, attribute.type, 0);
+    else if(attributeKind == DynamicAttribute::Kind::Long)
+        glVertexArrayAttribLFormat(self._id, attribute.location, attributeSize, attribute.type, 0);
     #endif
     else
     #endif
     {
-        glVertexArrayAttribFormat(self._id, attribute.location, attribute.size, attribute.type, attribute.kind == DynamicAttribute::Kind::GenericNormalized, 0);
+        glVertexArrayAttribFormat(self._id, attribute.location, attributeSize, attribute.type, attributeKind == DynamicAttribute::Kind::GenericNormalized, 0);
     }
 
     glVertexArrayAttribBinding(self._id, attribute.location, attribute.location);
-    CORRADE_INTERNAL_ASSERT(attribute.stride != 0);
-    glVertexArrayVertexBuffer(self._id, attribute.location, attribute.buffer.id(), attribute.offset, attribute.stride);
+    CORRADE_INTERNAL_ASSERT(attributeStride != 0);
+    glVertexArrayVertexBuffer(self._id, attribute.location, attribute.buffer.id(), attributeOffset, attributeStride);
 
     if(attribute.divisor)
         Context::current().state().mesh.vertexAttribDivisorImplementation(self, attribute.location, attribute.divisor);
@@ -1205,7 +1245,7 @@ void Mesh::attributePointerImplementationVAODSA(Mesh& self, AttributeLayout&& at
 void Mesh::attributePointerImplementationVAODSAIntelWindows(Mesh& self, AttributeLayout&& attribute) {
     /* See the "intel-windows-broken-dsa-integer-vertex-attributes" workaround
        for more information. */
-    if(attribute.kind == DynamicAttribute::Kind::Integral)
+    if(attribute.kind() == DynamicAttribute::Kind::Integral)
         return attributePointerImplementationVAO(self, Utility::move(attribute));
     else
         return attributePointerImplementationVAODSA(self, Utility::move(attribute));
@@ -1230,17 +1270,22 @@ void Mesh::vertexAttribPointer(AttributeLayout& attribute) {
     glEnableVertexAttribArray(attribute.location);
     attribute.buffer.bindInternal(Buffer::TargetHint::Array);
 
+    const DynamicAttribute::Kind attributeKind = attribute.kind();
+    const GLint attributeSize = attribute.size();
+    const GLintptr attributeOffset = attribute.offset();
+    const GLsizei attributeStride = attribute.stride();
+
     #ifndef MAGNUM_TARGET_GLES2
-    if(attribute.kind == DynamicAttribute::Kind::Integral)
-        glVertexAttribIPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+    if(attributeKind == DynamicAttribute::Kind::Integral)
+        glVertexAttribIPointer(attribute.location, attributeSize, attribute.type, attributeStride, reinterpret_cast<const GLvoid*>(attributeOffset));
     #ifndef MAGNUM_TARGET_GLES
-    else if(attribute.kind == DynamicAttribute::Kind::Long)
-        glVertexAttribLPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+    else if(attributeKind == DynamicAttribute::Kind::Long)
+        glVertexAttribLPointer(attribute.location, attributeSize, attribute.type, attributeStride, reinterpret_cast<const GLvoid*>(attributeOffset));
     #endif
     else
     #endif
     {
-        glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.kind == DynamicAttribute::Kind::GenericNormalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+        glVertexAttribPointer(attribute.location, attributeSize, attribute.type, attributeKind == DynamicAttribute::Kind::GenericNormalized, attributeStride, reinterpret_cast<const GLvoid*>(attributeOffset));
     }
 
     if(attribute.divisor) {
