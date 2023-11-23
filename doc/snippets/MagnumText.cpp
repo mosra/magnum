@@ -261,8 +261,12 @@ for(std::size_t i = 0; i != fontGlyphIds.size(); ++i) {
 }
 
 {
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
 /* [AbstractShaper-shape] */
-Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS({});
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
 Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
 
 /* Set text properties and shape it */
@@ -287,7 +291,11 @@ shaper->glyphOffsetsAdvancesInto(
 }
 
 {
-Containers::Pointer<Text::AbstractFont> font;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("SomethingWhatever");
 Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
 /* [AbstractShaper-shape-features] */
 shaper->shape("Hello, world!", {
@@ -302,9 +310,13 @@ struct GlyphInfo {
     Vector2 offset;
     Vector2 advance;
 };
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
 /* [AbstractShaper-shape-multiple] */
-Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS({});
-Containers::Pointer<Text::AbstractFont> boldFont = DOXYGEN_ELLIPSIS({});
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
+Containers::Pointer<Text::AbstractFont> boldFont = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
 Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
 Containers::Pointer<Text::AbstractShaper> boldShaper = boldFont->createShaper();
 DOXYGEN_ELLIPSIS()
