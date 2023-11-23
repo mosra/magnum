@@ -421,7 +421,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
          * Specifies what kind of shader type matches the attribute.
          * @see @ref DynamicAttribute()
          */
-        enum class Kind {
+        enum class Kind: UnsignedByte {
             /** Generic, matches single-precision floating-point shader type */
             Generic,
 

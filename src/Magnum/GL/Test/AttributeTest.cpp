@@ -1002,8 +1002,8 @@ void AttributeTest::debugDataTypeVector4() {
 
 void AttributeTest::debugDynamicKind() {
     std::ostringstream out;
-    Debug{&out} << DynamicAttribute::Kind::GenericNormalized << DynamicAttribute::Kind(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::DynamicAttribute::Kind::GenericNormalized GL::DynamicAttribute::Kind(0xdead)\n");
+    Debug{&out} << DynamicAttribute::Kind::GenericNormalized << DynamicAttribute::Kind(0xfe);
+    CORRADE_COMPARE(out.str(), "GL::DynamicAttribute::Kind::GenericNormalized GL::DynamicAttribute::Kind(0xfe)\n");
 }
 
 void AttributeTest::debugDynamicComponents() {
