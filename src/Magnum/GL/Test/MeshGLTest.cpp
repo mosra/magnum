@@ -26,6 +26,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
@@ -65,6 +66,8 @@ struct MeshGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+
+    void destructMovedOutInstance();
 
     template<class T> void primitive();
 
@@ -552,6 +555,8 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::constructMove,
               &MeshGLTest::wrap,
 
+              &MeshGLTest::destructMovedOutInstance,
+
               &MeshGLTest::primitive<GL::MeshPrimitive>,
               &MeshGLTest::primitive<Magnum::MeshPrimitive>,
 
@@ -911,6 +916,23 @@ void MeshGLTest::wrap() {
     #else
     glDeleteVertexArraysOES(1, &id);
     #endif
+}
+
+void MeshGLTest::destructMovedOutInstance() {
+    {
+        Containers::ScopeGuard restoreCurrentContext{&GL::Context::current(), GL::Context::makeCurrent};
+
+        Mesh a = Mesh::wrap(0xabcd);
+        CORRADE_COMPARE(a.id(), 0xabcd);
+
+        a = Mesh{NoCreate};
+        CORRADE_COMPARE(a.id(), 0);
+
+        GL::Context::makeCurrent(nullptr);
+    }
+
+    /* It shouldn't try to access the current context to decide anything */
+    CORRADE_VERIFY(true);
 }
 
 template<class T> void MeshGLTest::primitive() {
