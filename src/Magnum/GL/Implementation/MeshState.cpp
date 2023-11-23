@@ -113,8 +113,6 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
             bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
         }
 
-        moveConstructImplementation = &Mesh::moveConstructImplementationVAO;
-        moveAssignImplementation = &Mesh::moveAssignImplementationVAO;
         destroyImplementation = &Mesh::destroyImplementationVAO;
         acquireVertexBufferImplementation = &Mesh::acquireVertexBufferImplementationVAO;
         bindVAOImplementation = &Mesh::bindVAOImplementationVAO;
@@ -124,8 +122,6 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     else {
         createImplementation = &Mesh::createImplementationDefault;
-        moveConstructImplementation = &Mesh::moveConstructImplementationDefault;
-        moveAssignImplementation = &Mesh::moveAssignImplementationDefault;
         destroyImplementation = &Mesh::destroyImplementationDefault;
 
         /* ANGLE is ... also special! Equivalently above for the VAO case. */

@@ -25,7 +25,7 @@
 
 #include "Mesh.h"
 
-#include <vector>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
@@ -165,6 +165,11 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
 #endif
 
 struct Mesh::AttributeLayout {
+    /* Records attribute layout with a non-owning Buffer reference. Used as a
+       temporary data holder when VAOs are used, saved to the _attributes
+       member when not. If a Buffer instance needs to be owned, it's
+       subsequently moved in (usually with ObjectFlag::DeleteOnDestruction
+       set). */
     explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{UnsignedByte(location)}, kindSize{UnsignedByte(kind)}, type{UnsignedShort(type)}, divisor{divisor}, offsetStride{(UnsignedLong(offset) << 16)|stride} {
         CORRADE_INTERNAL_ASSERT(location < 256 && type < 65536 && UnsignedLong(offset) < (1ull << 48) && stride < 65536);
         #ifndef MAGNUM_TARGET_GLES
@@ -177,6 +182,13 @@ struct Mesh::AttributeLayout {
             kindSize |= size << 2;
         }
     }
+
+    /* Takes ownership of a Buffer instance. Abuses the _attributes storage in
+       cases where VAOs are used. That wastes a bit of space as only 8 out of
+       the 24 bytes is actually used, but that should be okay as there's likely
+       only very few buffers (compared to attributes, which can be quite
+       many). */
+    explicit AttributeLayout(Buffer&& buffer): buffer{Utility::move(buffer)}, location{}, kindSize{}, type{}, divisor{}, offsetStride{} {}
 
     AttributeLayout(AttributeLayout&&) noexcept = default;
     AttributeLayout(const AttributeLayout&) noexcept = delete;
@@ -319,22 +331,19 @@ Int Mesh::maxElementsVertices() {
 #endif
 
 Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction} {
-    Context::current().state().mesh.createImplementation(*this, true);
+    Context::current().state().mesh.createImplementation(*this);
 }
 
 Mesh::Mesh(NoCreateT) noexcept: _id{0}, _primitive{MeshPrimitive::Triangles}, _flags{ObjectFlag::DeleteOnDestruction} {}
 
 Mesh::~Mesh() {
-    const bool deleteObject = _id && (_flags & ObjectFlag::DeleteOnDestruction);
-
     /* Moved out or not deleting on destruction, nothing to do */
-    if(deleteObject) {
-        /* Remove current vao from the state */
-        GLuint& current = Context::current().state().mesh.currentVAO;
-        if(current == _id) current = 0;
-    }
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction))
+        return;
 
-    if(_constructed) Context::current().state().mesh.destroyImplementation(*this, deleteObject);
+    /* Remove current vao from the state */
+    GLuint& current = Context::current().state().mesh.currentVAO;
+    if(current == _id) current = 0;
 }
 
 Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _flags{other._flags}, _countSet{other._countSet}, _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
@@ -344,10 +353,9 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive),
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart(other._indexStart), _indexEnd(other._indexEnd),
     #endif
-    _indexType(other._indexType), _indexBufferOffset(other._indexBufferOffset), _indexOffset(other._indexOffset), _indexBuffer{Utility::move(other._indexBuffer)}
+    _indexType(other._indexType), _indexBufferOffset(other._indexBufferOffset), _indexOffset(other._indexOffset), _indexBuffer{Utility::move(other._indexBuffer)},
+    _attributes{Utility::move(other._attributes)}
 {
-    if(_constructed || other._constructed)
-        Context::current().state().mesh.moveConstructImplementation(*this, Utility::move(other));
     other._id = 0;
 }
 
@@ -371,16 +379,12 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     swap(_indexType, other._indexType);
     swap(_indexOffset, other._indexOffset);
     swap(_indexBuffer, other._indexBuffer);
-
-    if(_constructed || other._constructed)
-        Context::current().state().mesh.moveAssignImplementation(*this, Utility::move(other));
+    swap(_attributes, other._attributes);
 
     return *this;
 }
 
-Mesh::Mesh(const GLuint id, const MeshPrimitive primitive, const ObjectFlags flags): _id{id}, _primitive{primitive}, _flags{flags} {
-    Context::current().state().mesh.createImplementation(*this, false);
-}
+Mesh::Mesh(const GLuint id, const MeshPrimitive primitive, const ObjectFlags flags): _id{id}, _primitive{primitive}, _flags{flags} {}
 
 inline void Mesh::createIfNotAlready() {
     /* If VAO extension is not available, the following is always true */
@@ -1084,102 +1088,35 @@ void Mesh::bindVAO() {
     }
 }
 
-void Mesh::createImplementationDefault(Mesh& self, bool) {
+void Mesh::createImplementationDefault(Mesh& self) {
     self._id = 0;
     self._flags |= ObjectFlag::Created;
-
-    static_assert(sizeof(_attributes) >= sizeof(std::vector<AttributeLayout>),
-        "attribute storage buffer size too small");
-    new(&self._attributes) std::vector<AttributeLayout>;
-    self._constructed = true;
 }
 
-void Mesh::createImplementationVAO(Mesh& self, const bool createObject) {
-    if(createObject) {
-        #ifndef MAGNUM_TARGET_GLES2
-        glGenVertexArrays(1, &self._id);
-        #else
-        glGenVertexArraysOES(1, &self._id);
-        #endif
-        CORRADE_INTERNAL_ASSERT(self._id != Implementation::State::DisengagedBinding);
-    }
-
-    static_assert(sizeof(_attributes) >= sizeof(std::vector<Buffer>),
-        "attribute storage buffer size too small");
-    new(&self._attributes) std::vector<Buffer>;
-    self._constructed = true;
+void Mesh::createImplementationVAO(Mesh& self) {
+    #ifndef MAGNUM_TARGET_GLES2
+    glGenVertexArrays(1, &self._id);
+    #else
+    glGenVertexArraysOES(1, &self._id);
+    #endif
+    CORRADE_INTERNAL_ASSERT(self._id != Implementation::State::DisengagedBinding);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::createImplementationVAODSA(Mesh& self, const bool createObject) {
-    if(createObject) {
-        glCreateVertexArrays(1, &self._id);
-        self._flags |= ObjectFlag::Created;
-    }
-
-    static_assert(sizeof(_attributes) >= sizeof(std::vector<Buffer>),
-        "attribute storage buffer size too small");
-    new(&self._attributes) std::vector<Buffer>;
-    self._constructed = true;
+void Mesh::createImplementationVAODSA(Mesh& self) {
+    glCreateVertexArrays(1, &self._id);
+    self._flags |= ObjectFlag::Created;
 }
 #endif
 
-void Mesh::moveConstructImplementationDefault(Mesh& self, Mesh&& other) {
-    new(&self._attributes) std::vector<AttributeLayout>{Utility::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes))};
-    self._constructed = true;
-}
+void Mesh::destroyImplementationDefault(Mesh&) {}
 
-void Mesh::moveConstructImplementationVAO(Mesh& self, Mesh&& other) {
-    new(&self._attributes) std::vector<Buffer>{Utility::move(*reinterpret_cast<std::vector<Buffer>*>(&other._attributes))};
-    self._constructed = true;
-}
-
-/* In the move construction / assignment we need to stay noexcept, which means
-   it's only possible to swap or move-construct the vector, can't delete or
-   allocate. So, in the particular case where `this` is constructed and `other`
-   is not, we do a "partial swap" -- `other` gets our data and our data gets
-   emptied. */
-
-void Mesh::moveAssignImplementationDefault(Mesh& self, Mesh&& other) {
-    if(self._constructed && other._constructed)
-        Utility::swap(*reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes),
-            *reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes));
-    else if(self._constructed && !other._constructed) {
-        other._constructed = true;
-        new(&other._attributes) std::vector<AttributeLayout>{Utility::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes))};
-    } else if(!self._constructed && other._constructed) {
-        self._constructed = true;
-        new(&self._attributes) std::vector<AttributeLayout>{Utility::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes))};
-    }
-}
-
-void Mesh::moveAssignImplementationVAO(Mesh& self, Mesh&& other) {
-    if(self._constructed && other._constructed)
-        Utility::swap(*reinterpret_cast<std::vector<Buffer>*>(&self._attributes),
-            *reinterpret_cast<std::vector<Buffer>*>(&other._attributes));
-    else if(self._constructed && !other._constructed) {
-        other._constructed = true;
-        new(&other._attributes) std::vector<Buffer>{Utility::move(*reinterpret_cast<std::vector<Buffer>*>(&self._attributes))};
-    } else if(!self._constructed && other._constructed) {
-        self._constructed = true;
-        new(&self._attributes) std::vector<Buffer>{Utility::move(*reinterpret_cast<std::vector<Buffer>*>(&other._attributes))};
-    }
-}
-
-void Mesh::destroyImplementationDefault(Mesh& self, bool) {
-    reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes)->~vector();
-}
-
-void Mesh::destroyImplementationVAO(Mesh& self, const bool deleteObject) {
-    if(deleteObject) {
-        #ifndef MAGNUM_TARGET_GLES2
-        glDeleteVertexArrays(1, &self._id);
-        #else
-        glDeleteVertexArraysOES(1, &self._id);
-        #endif
-    }
-
-    reinterpret_cast<std::vector<Buffer>*>(&self._attributes)->~vector();
+void Mesh::destroyImplementationVAO(Mesh& self) {
+    #ifndef MAGNUM_TARGET_GLES2
+    glDeleteVertexArrays(1, &self._id);
+    #else
+    glDeleteVertexArraysOES(1, &self._id);
+    #endif
 }
 
 void Mesh::attributePointerInternal(const Buffer& buffer, const GLuint location, const GLint size, const GLenum type, const DynamicAttribute::Kind kind, const GLintptr offset, const GLsizei stride, const GLuint divisor) {
@@ -1198,7 +1135,7 @@ void Mesh::attributePointerImplementationDefault(Mesh& self, AttributeLayout&& a
         "GL::Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
     #endif
 
-    reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes)->push_back(Utility::move(attribute));
+    arrayAppend(self._attributes, Utility::move(attribute));
 }
 
 void Mesh::attributePointerImplementationVAO(Mesh& self, AttributeLayout&& attribute) {
@@ -1325,17 +1262,19 @@ void Mesh::acquireVertexBuffer(Buffer&& buffer) {
 
 void Mesh::acquireVertexBufferImplementationDefault(Mesh& self, Buffer&& buffer) {
     /* The last added buffer should be this one, replace it with a owning one */
-    auto& attributes = *reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes);
-    CORRADE_INTERNAL_ASSERT(!attributes.empty() && attributes.back().buffer.id() == buffer.id() && buffer.id());
-    attributes.back().buffer.release(); /* so we swap back a zero ID */
-    attributes.back().buffer = Utility::move(buffer);
+    CORRADE_INTERNAL_ASSERT(!self._attributes.isEmpty() && self._attributes.back().buffer.id() == buffer.id() && buffer.id());
+    self._attributes.back().buffer.release(); /* so we swap back a zero ID */
+    self._attributes.back().buffer = Utility::move(buffer);
 }
 
 void Mesh::acquireVertexBufferImplementationVAO(Mesh& self, Buffer&& buffer) {
     CORRADE_INTERNAL_ASSERT(buffer.id());
-    /* With VAOs we are not maintaining the attribute list, so just store the
-       buffer directly */
-    reinterpret_cast<std::vector<Buffer>*>(&self._attributes)->emplace_back(Utility::move(buffer));
+    /* With VAOs we are not maintaining the attribute list, so abuse the
+       storage for just owning the buffer. That wastes a bit of space as only 8
+       out of the 24 bytes is actually used, but that should be okay as there's
+       likely only very few buffers (compared to attributes, which can be quite
+       many). */
+    arrayAppend(self._attributes, InPlaceInit, Utility::move(buffer));
 }
 
 void Mesh::bindIndexBufferImplementationDefault(Mesh&, Buffer&) {}
@@ -1356,7 +1295,7 @@ void Mesh::bindIndexBufferImplementationVAODSA(Mesh& self, Buffer& buffer) {
 
 void Mesh::bindImplementationDefault(Mesh& self) {
     /* Specify vertex attributes */
-    for(AttributeLayout& attribute: *reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes))
+    for(AttributeLayout& attribute: self._attributes)
         self.vertexAttribPointer(attribute);
 
     /* Bind index buffer, if the mesh is indexed */
@@ -1368,7 +1307,7 @@ void Mesh::bindImplementationVAO(Mesh& self) {
 }
 
 void Mesh::unbindImplementationDefault(Mesh& self) {
-    for(const AttributeLayout& attribute: *reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes)) {
+    for(const AttributeLayout& attribute: self._attributes) {
         glDisableVertexAttribArray(attribute.location);
 
         /* Reset also the divisor back so it doesn't affect  */

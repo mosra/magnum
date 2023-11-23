@@ -39,10 +39,8 @@ struct MeshState {
 
     void reset();
 
-    void(*createImplementation)(Mesh&, bool);
-    void(*moveConstructImplementation)(Mesh&, Mesh&&);
-    void(*moveAssignImplementation)(Mesh&, Mesh&&);
-    void(*destroyImplementation)(Mesh&, bool);
+    void(*createImplementation)(Mesh&);
+    void(*destroyImplementation)(Mesh&);
     void(*attributePointerImplementation)(Mesh&, Mesh::AttributeLayout&&);
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     void(*vertexAttribDivisorImplementation)(Mesh&, GLuint, GLuint);

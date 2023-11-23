@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::GL::Mesh, enum @ref Magnum::GL::MeshPrimitive, @ref Magnum::GL::MeshIndexType, function @ref Magnum::GL::meshPrimitive(), @ref Magnum::GL::meshIndexType(), @ref Magnum::GL::meshIndexTypeSize()
  */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 
 #include "Magnum/Tags.h"
@@ -1195,6 +1196,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         struct MAGNUM_GL_LOCAL AttributeLayout;
 
+        /* Used by wrap() */
         explicit Mesh(GLuint id, MeshPrimitive primitive, ObjectFlags flags);
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
@@ -1315,19 +1317,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         MAGNUM_GL_LOCAL void drawInternal(TransformFeedback& xfb, UnsignedInt stream, Int instanceCount);
         #endif
 
-        static void MAGNUM_GL_LOCAL createImplementationDefault(Mesh& self, bool);
-        static void MAGNUM_GL_LOCAL createImplementationVAO(Mesh& self, bool createObject);
+        static void MAGNUM_GL_LOCAL createImplementationDefault(Mesh& self);
+        static void MAGNUM_GL_LOCAL createImplementationVAO(Mesh& self);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_GL_LOCAL createImplementationVAODSA(Mesh& self, bool createObject);
+        static void MAGNUM_GL_LOCAL createImplementationVAODSA(Mesh& self);
         #endif
 
-        static void MAGNUM_GL_LOCAL moveConstructImplementationDefault(Mesh& self, Mesh&& other);
-        static void MAGNUM_GL_LOCAL moveConstructImplementationVAO(Mesh& self, Mesh&& other);
-        static void MAGNUM_GL_LOCAL moveAssignImplementationDefault(Mesh& self, Mesh&& other);
-        static void MAGNUM_GL_LOCAL moveAssignImplementationVAO(Mesh& self, Mesh&& other);
-
-        static void MAGNUM_GL_LOCAL destroyImplementationDefault(Mesh& self, bool);
-        static void MAGNUM_GL_LOCAL destroyImplementationVAO(Mesh& self, bool deleteObject);
+        static void MAGNUM_GL_LOCAL destroyImplementationDefault(Mesh& self);
+        static void MAGNUM_GL_LOCAL destroyImplementationVAO(Mesh& self);
 
         void attributePointerInternal(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor);
         void MAGNUM_GL_LOCAL attributePointerInternal(AttributeLayout&& attribute);
@@ -1420,9 +1417,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         /* using a separate bool for _count instead of Optional to make use of
            the 3-byte gap after _flags */
         bool _countSet{};
-        /* Whether the _attributes storage was constructed (it's not when the
-           object is constructed using NoCreate). Also fits in the gap. */
-        bool _constructed{};
+        /* 1 byte free */
         #ifdef MAGNUM_TARGET_GLES
         /* See the "angle-instanced-attributes-always-draw-instanced" workaround */
         bool _instanced{};
@@ -1437,10 +1432,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         GLintptr _indexBufferOffset{}, _indexOffset{};
         Buffer _indexBuffer{NoCreate};
 
-        /* Storage for either std::vector<AttributeLayout> (in case of no VAOs)
-           or std::vector<Buffer> (in case of VAOs). 4 pointers should be one
-           pointer more than enough. */
-        struct { std::intptr_t data[4]; } _attributes;
+        /* Stores attribute layouts in case VAOs are not supported or disabled,
+           abused for capturing buffer ownership if VAOs are supported. */
+        Containers::Array<AttributeLayout> _attributes;
 };
 
 /** @debugoperatorenum{MeshPrimitive} */

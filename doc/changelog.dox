@@ -1036,6 +1036,10 @@ See also:
     passed the arguments to the base @relativeref{Corrade,TestSuite::Tester}
     implementation in a wrong order, failing to compile if this function was
     used in a test
+-   Destructing a moved-out @ref GL::Mesh was querying the GL context to decide
+    what to destroy in its internal state, now it's a proper no-op that works
+    also with the GL context already gone, like with all other GL object
+    wrappers.
 -   @ref GL::Renderer::MemoryBarrier::ShaderStorage had an incorrect value
 -   @ref GL::Shader limit queries for a particular shader stage on desktop were
     out-of-bounds array accesses, causing wrong or random values being returned
