@@ -123,6 +123,9 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
             support border clamp, (c) required the input texture to have
             certain wrapping mode set */
         CORRADE_INTERNAL_ASSERT(image.storage().skip().xy() == offset);
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(offset);
+        #endif
         const Vector2i paddedMin = Math::max(Vector2i{0},
             image.storage().skip().xy() - padding());
         const Vector2i paddedMax = Math::min(size().xy(),

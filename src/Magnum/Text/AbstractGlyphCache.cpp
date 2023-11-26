@@ -314,10 +314,9 @@ UnsignedInt AbstractGlyphCache::addGlyph(const UnsignedInt fontId, const Unsigne
         "Text::AbstractGlyphCache::addGlyph(): glyph" << fontGlyphId << "in font" << fontId << "already added at index" << state.fontGlyphMapping[fontOffset + fontGlyphId], {});
     /** @todo expand once rotations (and thus negative rectangle sizes) are
         supported */
-    const Range2Di rectanglePadded = rectangle.padded(state.padding);
     #ifndef CORRADE_NO_ASSERT
     const Range2Dui rectangleu{rectangle};
-    const Range2Dui rectanglePaddedu{rectanglePadded};
+    const Range2Dui rectanglePaddedu{rectangle.padded(state.padding)};
     #endif
     CORRADE_ASSERT(UnsignedInt(layer) < UnsignedInt(state.image.size().z()) && (rectangleu.min() <= rectangleu.max()).all() && (rectanglePaddedu.min() <= Vector2ui{state.image.size().xy()}).all() && (rectanglePaddedu.max() <= Vector2ui{state.image.size().xy()}).all(),
         "Text::AbstractGlyphCache::addGlyph(): layer" << layer << "and rectangle" << Debug::packed << rectangle << "out of range for size" << Debug::packed << state.image.size() << "and padding" << Debug::packed << state.padding, {});
