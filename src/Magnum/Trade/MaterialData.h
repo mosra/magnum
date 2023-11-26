@@ -1470,7 +1470,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
         > /*implicit*/ MaterialAttributeData(MaterialAttribute name, const T& value) noexcept: MaterialAttributeData{name, Implementation::MaterialAttributeTypeFor<T>::type(), &value} {}
 
         /**
-         * @brief Construct with a predefined name and string value
+         * @brief Construct with a predefined name and a string value
          * @param name      Attribute name
          * @param value     Attribute value
          *
@@ -1497,21 +1497,22 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * @ref MaterialAttributeType::Buffer, copies a number of bytes
          * according to @ref materialAttributeTypeSize() from @p value. The
          * @p name together with @p value is expected to fit into 62 bytes.
+         * Note that in case of a @ref MaterialAttributeType::Pointer or a
+         * @ref MaterialAttributeType::MutablePointer, takes a
+         * *pointer to a pointer*, not the pointer value itself.
          *
          * In case @p type is @ref MaterialAttributeType::String, @p value is
          * expected to point to a @ref Containers::StringView. The combined
          * length of @p name and @p value strings is expected to fit into 60
-         * bytes.
-         *
-         * In case @p type is @ref MaterialAttributeType::String, @p value is
-         * expected to point to a @relativeref{Corrade,Containers::ArrayView}.
-         * The combined length of @p name and @p value views is expected to fit
-         * into 61 bytes.
+         * bytes. In case @p type is @ref MaterialAttributeType::Buffer,
+         * @p value is expected to point to a
+         * @relativeref{Corrade,Containers::ArrayView}. The combined length of
+         * @p name and @p value views is expected to fit into 61 bytes.
          */
         /*implicit*/ MaterialAttributeData(Containers::StringView name, MaterialAttributeType type, const void* value) noexcept;
 
         /**
-         * @brief Construct with a predefined name
+         * @brief Construct with a predefined name and a type-erased value
          * @param name      Attribute name
          * @param type      Attribute type
          * @param value     Attribute value
