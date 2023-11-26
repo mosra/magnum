@@ -35,13 +35,15 @@ set(MagnumMaterialTools_SRCS
 # Files compiled with different flags for main library and unit test library
 set(MagnumMaterialTools_GracefulAssert_SRCS
     Filter.cpp
-    Merge.cpp)
+    Merge.cpp
+    RemoveDuplicates.cpp)
 
 set(MagnumMaterialTools_HEADERS
     Copy.h
     Filter.h
     Merge.h
     PhongToPbrMetallicRoughness.h
+    RemoveDuplicates.h
 
     visibility.h)
 
