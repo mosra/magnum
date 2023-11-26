@@ -1,0 +1,103 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "buffers": [
+    {
+      "uri": "quad.bin",
+      "byteLength": 72
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 24,
+      "byteLength": 36,
+      "byteStride": 12,
+      "target": 34962
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 3,
+      "type": "VEC3",
+      "min": [-1, -1, 0],
+      "max": [1, 1, 0]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "First mesh",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0
+          },
+          "material": 1
+        }
+      ]
+    },
+    {
+      "name": "Second mesh, unfortunately the shared verted data get duplicated",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0
+          },
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "Third mesh that should get a material same as second",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0
+          },
+          "material": 2
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "Duplicate material, this name is preserved",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [0.5, 0.25, 0.75, 1]
+      }
+    },
+    {
+      "name": "Unique material",
+      "extensions": {
+        "KHR_materials_unlit": {}
+      }
+    },
+    {
+      "name": "Duplicate material, this name in't preserved",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [0.5, 0.25, 0.75, 1]
+      }
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "First"
+    },
+    {
+      "mesh": 2
+    },
+    {
+      "mesh": 1
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [0, 2, 1],
+      "name": "Scene with three nodes"
+    }
+  ]
+}

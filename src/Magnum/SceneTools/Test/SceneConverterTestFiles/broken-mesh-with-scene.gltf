@@ -1,0 +1,24 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "indices": 0
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [0]
+    }
+  ]
+}
