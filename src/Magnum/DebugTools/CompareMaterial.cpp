@@ -33,6 +33,9 @@
 
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
+/* Depending on MaterialTools isn't desirable at the moment, so it's just a
+   header and an anonymous namespace to avoid clashes */
+#include "Magnum/MaterialTools/Implementation/attributesEqual.h"
 #include "Magnum/Trade/MaterialData.h"
 
 namespace Corrade { namespace TestSuite {
@@ -81,64 +84,6 @@ Comparator<DebugTools::CompareMaterial>::Comparator(): _state{InPlaceInit} {}
 
 Comparator<DebugTools::CompareMaterial>::~Comparator() = default;
 
-namespace {
-
-bool attributesEqual(const Trade::MaterialAttributeData& a, const Trade::MaterialAttributeData& b) {
-    #ifdef CORRADE_TARGET_GCC
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic error "-Wswitch"
-    #endif
-    CORRADE_INTERNAL_ASSERT(a.type() == b.type());
-    switch(a.type()) {
-        #define _c(type) case Trade::MaterialAttributeType::type:           \
-            return Math::TypeTraits<type>::equals(a.value<type>(), b.value<type>());
-        #define _ct(name, type) case Trade::MaterialAttributeType::name:    \
-            return Math::TypeTraits<type>::equals(a.value<type>(), b.value<type>());
-        _ct(Bool, bool)
-        /* LCOV_EXCL_START */
-        _c(Float)
-        _c(Deg)
-        _c(Rad)
-        _c(UnsignedInt)
-        _c(Int)
-        _c(UnsignedLong)
-        _c(Long)
-        _c(Vector2)
-        _c(Vector2ui)
-        _c(Vector2i)
-        _c(Vector3)
-        _c(Vector3ui)
-        _c(Vector3i)
-        _c(Vector4)
-        _c(Vector4ui)
-        _c(Vector4i)
-        _c(Matrix2x2)
-        _c(Matrix2x3)
-        _c(Matrix2x4)
-        _c(Matrix3x2)
-        _c(Matrix3x3)
-        _c(Matrix3x4)
-        _c(Matrix4x2)
-        _c(Matrix4x3)
-        /* LCOV_EXCL_STOP */
-        _ct(Pointer, const void*)
-        _ct(MutablePointer, void*)
-        _ct(String, Containers::StringView)
-        _ct(TextureSwizzle, Trade::MaterialTextureSwizzle)
-        #undef _c
-        #undef _ct
-        case Trade::MaterialAttributeType::Buffer:
-            return Containers::StringView{Containers::arrayCast<const char>(a.value<Containers::ArrayView<const void>>())} == Containers::StringView{Containers::arrayCast<const char>(b.value<Containers::ArrayView<const void>>())};
-    }
-    #ifdef CORRADE_TARGET_GCC
-    #pragma GCC diagnostic pop
-    #endif
-
-    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-}
-
-}
-
 TestSuite::ComparisonStatusFlags Comparator<DebugTools::CompareMaterial>::operator()(const Trade::MaterialData& actual, const Trade::MaterialData& expected) {
     _state->actual = &actual;
     _state->expected = &expected;
@@ -164,7 +109,7 @@ TestSuite::ComparisonStatusFlags Comparator<DebugTools::CompareMaterial>::operat
                 if(actual.attributeType(layer, inActual) != expected.attributeType(layer, inExpected)) {
                     attributeState = AttributeState::DifferentType;
                     _state->materialState = Utility::max(_state->materialState, MaterialState::DifferentAttributeTypes);
-                } else if(!attributesEqual(actual.attributeData(layer, inActual), expected.attributeData(layer, inExpected))) {
+                } else if(!MaterialTools::Implementation::attributesEqual(actual.attributeData(layer, inActual), expected.attributeData(layer, inExpected))) {
                     attributeState = AttributeState::DifferentValue;
                     _state->materialState = Utility::max(_state->materialState, MaterialState::DifferentAttributeValues);
                 } else {

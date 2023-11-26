@@ -45,7 +45,8 @@ set(MagnumMaterialTools_HEADERS
 
     visibility.h)
 
-set(MagnumSceneTools_PRIVATE_HEADERS )
+set(MagnumMaterialTools_PRIVATE_HEADERS
+    Implementation/attributesEqual.h)
 
 # Objects shared between main and test library
 add_library(MagnumMaterialToolsObjects OBJECT
