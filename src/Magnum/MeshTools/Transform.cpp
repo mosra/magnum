@@ -92,6 +92,8 @@ Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformatio
        assert here again. */
     const Containers::Optional<UnsignedInt> positionAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Position, id, morphTargetId);
     if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
+       /* There's currently no way to create a MeshData that's Owned but not
+          Mutable so this check is enough */
        (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
         positionAttributeId && mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector2
     ) {
@@ -235,6 +237,8 @@ Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformatio
     const Containers::Optional<UnsignedInt> bitangentAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Bitangent, id, morphTargetId);
     const Containers::Optional<UnsignedInt> normalAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Normal, id, morphTargetId);
     if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
+       /* There's currently no way to create a MeshData that's Owned but not
+          Mutable so this check is enough */
        (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
        positionAttributeId && mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector3 &&
        (!tangentAttributeId || mesh.attributeFormat(*tangentAttributeId) == VertexFormat::Vector3 || mesh.attributeFormat(*tangentAttributeId) == VertexFormat::Vector4) &&
@@ -363,6 +367,8 @@ Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matr
        assert here again. */
     const Containers::Optional<UnsignedInt> textureCoordinateAttributeId = mesh.findAttributeId(Trade::MeshAttribute::TextureCoordinates, id, morphTargetId);
     if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
+       /* There's currently no way to create a MeshData that's Owned but not
+          Mutable so this check is enough */
        (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
         textureCoordinateAttributeId && mesh.attributeFormat(*textureCoordinateAttributeId) == VertexFormat::Vector2
     ) {
