@@ -1429,7 +1429,9 @@ void SceneConverterTest::convert() {
     CORRADE_VERIFY(true); /* capture correct function name */
 
     Containers::Pair<bool, Containers::String> output = call(data.args);
-    CORRADE_COMPARE(output.second(), data.message);
+    CORRADE_COMPARE_AS(output.second(),
+        data.message,
+        TestSuite::Compare::String);
     CORRADE_VERIFY(output.first());
 
     /* In some cases the test verifies only the printed output and doesn't
@@ -1478,7 +1480,9 @@ void SceneConverterTest::error() {
             TestSuite::Compare::StringHasSuffix);
     /* If it ends with a \n, assume it's the whole message */
     else if(data.message.hasSuffix('\n'))
-        CORRADE_COMPARE(output.second(), data.message);
+        CORRADE_COMPARE_AS(output.second(),
+            data.message,
+            TestSuite::Compare::String);
     /* Otherwise it's just a prefix */
     else
         CORRADE_COMPARE_AS(output.second(),
