@@ -146,7 +146,7 @@ magnum-sceneconverter --info-converter -C GltfSceneConverter -c copyright="Me & 
 Processing a glTF file and removing duplicates in all its meshes:
 
 @code{.sh}
-magnum-sceneconverter scene.gltf --remove-duplicates scene.deduplicated.gltf
+magnum-sceneconverter scene.gltf --remove-duplicate-vertices scene.deduplicated.gltf
 @endcode
 
 Processing a glTF file, resizing all its images to 512x512 with
@@ -821,9 +821,11 @@ well, the IDs reference attributes of the first mesh.)")
             if(importer->defaultScene() != -1 || importer->sceneCount()) {
                 Containers::Optional<Trade::SceneData> scene;
                 {
-                    /** @todo make it possible to choose the scene, or possibly
-                        fail if there are multiple scenes but no default one
-                        and require the user to pick? */
+                    /** @todo once the required SceneTools APIs exist, rework
+                        this to concatenate only what actually makes sense (and
+                        thus preserve the (multi-)scene hierarchy, with the
+                        original behavior only being achievable if everything
+                        except meshes and scene hierarchy is filtered away */
                     const UnsignedInt defaultScene = importer->defaultScene() == -1 ? 0 : importer->defaultScene();
                     Trade::Implementation::Duration d{importConversionTime};
                     if(!(scene = importer->scene(defaultScene))) {
@@ -1193,6 +1195,8 @@ well, the IDs reference attributes of the first mesh.)")
         /** @todo make it possible to filter this on the command line, once the
             converters receive this for SceneData, MaterialData and TextureData
             as well */
+        /** @todo and then also test all branching on Names in direct image,
+            mesh, material and scene import */
         Trade::SceneContents contents = ~Trade::SceneContents{};
 
         /* If there are any loose images from previous conversion steps, add
