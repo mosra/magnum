@@ -46,12 +46,14 @@ set(MagnumSceneTools_SRCS
 set(MagnumSceneTools_GracefulAssert_SRCS
     Combine.cpp
     Filter.cpp
-    Hierarchy.cpp)
+    Hierarchy.cpp
+    Map.cpp)
 
 set(MagnumSceneTools_HEADERS
     Combine.h
     Filter.h
     Hierarchy.h
+    Map.h
 
     visibility.h)
 

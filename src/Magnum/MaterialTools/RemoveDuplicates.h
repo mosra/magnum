@@ -61,6 +61,13 @@ count --- every material in the list is compared to all unique materials
 collected so far. As attributes are sorted in @ref Trade::MaterialData,
 material comparison is just a linear operation. The function doesn't allocate
 any temporary memory.
+
+The output index array can be passed to @ref SceneTools::mapIndexField() to
+update a @ref Trade::SceneField::MeshMaterial field to reference only the
+unique materials. For example:
+
+@snippet MagnumMaterialTools.cpp removeDuplicatesInPlace
+
 @see @ref removeDuplicatesInPlaceInto()
 */
 MAGNUM_MATERIALTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::Iterable<Trade::MaterialData>& materials);
@@ -92,7 +99,8 @@ values are compared using fuzzy comparison. Importer state and data flags
 aren't considered when comparing the materials. The returned mapping array has
 the same size as the @p materials list and maps from the original indices to
 only unique materials in the input array. See @ref removeDuplicatesInPlace()
-for a variant that also shifts the unique materials to the front of the list.
+for a variant that also shifts the unique materials to the front of the list
+and for a practical usage example.
 
 The operation is done in an @f$ \mathcal{O}(n^2 m) @f$ complexity with
 @f$ n @f$ being the material list size and @f$ m @f$ the per-material attribute

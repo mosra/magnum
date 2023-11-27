@@ -55,6 +55,7 @@ corrade_add_test(SceneToolsCopyTest CopyTest.cpp LIBRARIES MagnumSceneTools)
 corrade_add_test(SceneToolsConvertToSingleFunc___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsFilterTest FilterTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsHierarchyTest HierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
+corrade_add_test(SceneToolsMapTest MapTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 
 corrade_add_test(SceneToolsSceneConverterImple___Test SceneConverterImplementationTest.cpp
     LIBRARIES MagnumSceneTools

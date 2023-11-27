@@ -99,6 +99,15 @@ if(MAGNUM_WITH_GL)
     endif()
 endif()
 
+if(MAGNUM_WITH_MATERIALTOOLS)
+    add_library(snippets-MagnumMaterialTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        MagnumMaterialTools.cpp)
+    target_link_libraries(snippets-MagnumMaterialTools PRIVATE MagnumMaterialTools)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumMaterialTools)
+    endif()
+endif()
+
 if(MAGNUM_WITH_MESHTOOLS)
     add_library(snippets-MagnumMeshTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         MagnumMeshTools.cpp)
