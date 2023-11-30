@@ -57,13 +57,28 @@
 #endif
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
+/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
+   3.1.4 moved them to a version header and version 3.1.23 dropped the
+   backwards compatibility. To work consistently on all versions, including the
+   header only if the version macros aren't present.
+   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
+   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
+#ifndef __EMSCRIPTEN_major__
+#include <emscripten/version.h>
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct EmscriptenKeyboardEvent;
 struct EmscriptenMouseEvent;
 struct EmscriptenWheelEvent;
 struct EmscriptenUiEvent;
+
+/* The typedef changed in 3.1.49, https://github.com/emscripten-core/emscripten/commit/40cbc2164400a7c27218b9655f1830bfc882bb01 */
+#if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30149
+typedef std::intptr_t EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
+#else
 typedef int EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
+#endif
 #endif
 
 namespace Magnum { namespace Platform {
