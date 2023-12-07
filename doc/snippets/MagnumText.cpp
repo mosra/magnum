@@ -204,16 +204,15 @@ CORRADE_INTERNAL_ASSERT(cache.atlas().add(
 /* The glyph cache is just 2D, so copying to the first slice */
 Containers::StridedArrayView3D<char> dst = cache.image().pixels()[0];
 Range2Di updated;
-for(UnsignedInt fontGlyphId = 0; fontGlyphId != images.size(); ++fontGlyphId) {
-    Range2Di rectangle = Range2Di::fromSize(offsets[fontGlyphId],
-                                            images[fontGlyphId].size());
-    cache.addGlyph(fontId, fontGlyphId, {}, rectangle);
+for(UnsignedInt i = 0; i != images.size(); ++i) {
+    Range2Di rectangle = Range2Di::fromSize(offsets[i], images[i].size());
+    cache.addGlyph(fontId, i, {}, rectangle);
 
     /* Copy assuming all input images have the same pixel format */
-    Containers::StridedArrayView3D<const char> src = images[fontGlyphId].pixels();
+    Containers::StridedArrayView3D<const char> src = images[i].pixels();
     Utility::copy(src, dst.sliceSize({
-        std::size_t(offsets[fontGlyphId].y()),
-        std::size_t(offsets[fontGlyphId].x()),
+        std::size_t(offsets[i].y()),
+        std::size_t(offsets[i].x()),
         0}, src.size()));
 
     /* Maintain a range that was updated in the glyph cache */
