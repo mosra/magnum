@@ -855,7 +855,7 @@ template<class T> inline Quaternion<T> Quaternion<T>::rotation(const Rad<T> angl
 template<class T> inline Quaternion<T> Quaternion<T>::reflection(const Vector3<T>& normal) {
     CORRADE_DEBUG_ASSERT(normal.isNormalized(),
         "Math::Quaternion::reflection(): normal" << normal << "is not normalized", {});
-    return {normal, 0.0f};
+    return {normal, T(0)};
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix3x3<T>& matrix) {
