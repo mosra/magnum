@@ -36,6 +36,10 @@
 #include "Magnum/MaterialTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace MaterialTools {
 
 /**
@@ -53,17 +57,35 @@ enum class PhongToPbrMetallicRoughnessFlag {
     /**
      * Drop attributes that can't be converted instead of keeping them in the
      * output. If
-     * @relativeref{PhongToPbrMetallicRoughnessFlag,FailOnUnconvertableAttributes}
+     * @relativeref{PhongToPbrMetallicRoughnessFlag,FailOnUnconvertibleAttributes}
      * is specified as well, it has a priority.
      */
-    DropUnconvertableAttributes = 1 << 1,
+    DropUnconvertibleAttributes = 1 << 1,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @copydoc PhongToPbrMetallicRoughnessFlag::DropUnconvertibleAttributes
+     * @m_deprecated_since_latest Use @ref PhongToPbrMetallicRoughnessFlag::DropUnconvertibleAttributes
+     *      instead.
+     */
+    DropUnconvertableAttributes CORRADE_DEPRECATED_ENUM("use DropUnconvertibleAttributes instead") = DropUnconvertibleAttributes,
+    #endif
 
     /**
      * Fail if any attributes can't be converted instead of keeping them in the
      * output. Has a priority over
-     * @relativeref{PhongToPbrMetallicRoughnessFlag,DropUnconvertableAttributes}.
+     * @relativeref{PhongToPbrMetallicRoughnessFlag,DropUnconvertibleAttributes}.
      */
-    FailOnUnconvertableAttributes = (1 << 2)|DropUnconvertableAttributes,
+    FailOnUnconvertibleAttributes = (1 << 2)|DropUnconvertibleAttributes,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @copydoc PhongToPbrMetallicRoughnessFlag::DropUnconvertibleAttributes
+     * @m_deprecated_since_latest Use @ref PhongToPbrMetallicRoughnessFlag::DropUnconvertibleAttributes
+     *      instead.
+     */
+    FailOnUnconvertableAttributes CORRADE_DEPRECATED_ENUM("use FailOnUnconvertibleAttributes instead") = FailOnUnconvertibleAttributes,
+    #endif
 
     /** @todo flags to pick various shininess conversion alternatives */
 };
@@ -97,8 +119,8 @@ set.
 The following attributes currently aren't converted. If they are present in the
 input material, a message is printed to @relativeref{Magnum,Warning}. The
 attributes are passed through unchanged unless
-@ref PhongToPbrMetallicRoughnessFlag::DropUnconvertableAttributes is set; if
-@relativeref{PhongToPbrMetallicRoughnessFlag,FailOnUnconvertableAttributes} is
+@ref PhongToPbrMetallicRoughnessFlag::DropUnconvertibleAttributes is set; if
+@relativeref{PhongToPbrMetallicRoughnessFlag,FailOnUnconvertibleAttributes} is
 set instead, a message is printed to @relativeref{Magnum,Error} and the
 function returns @relativeref{Corrade,Containers::NullOpt}.
 

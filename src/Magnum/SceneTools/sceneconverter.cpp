@@ -1152,7 +1152,7 @@ well, the IDs reference attributes of the first mesh.)")
                 Trade::Implementation::Duration d{conversionTime};
                 /** @todo make the flags configurable as well? then the below
                     assert can actually fire, convert to a runtime error */
-                material = MaterialTools::phongToPbrMetallicRoughness(*material, MaterialTools::PhongToPbrMetallicRoughnessFlag::DropUnconvertableAttributes);
+                material = MaterialTools::phongToPbrMetallicRoughness(*material, MaterialTools::PhongToPbrMetallicRoughnessFlag::DropUnconvertibleAttributes);
                 CORRADE_INTERNAL_ASSERT(material);
             }
 

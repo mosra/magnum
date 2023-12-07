@@ -770,7 +770,7 @@ const struct {
         "UfbxImporter", "PngImporter", "GltfSceneConverter", {"PngImageConverter", nullptr}, nullptr,
         /* The file should contain also material names and everything */
         "materials-pbr.gltf", nullptr,
-        "MaterialTools::phongToPbrMetallicRoughness(): unconvertable Trade::MaterialAttribute::AmbientColor attribute, skipping\n"},
+        "MaterialTools::phongToPbrMetallicRoughness(): unconvertible Trade::MaterialAttribute::AmbientColor attribute, skipping\n"},
     {"Phong to PBR, verbose", {InPlaceInit, {
             /* Same as above, just with -v added */
             "-I", "UfbxImporter", "-C", "GltfSceneConverter", "--phong-to-pbr",
@@ -780,7 +780,7 @@ const struct {
         "UfbxImporter", "PngImporter", "GltfSceneConverter", {"PngImageConverter", nullptr}, nullptr,
         "materials-pbr.gltf", nullptr,
         "Converting material 0 to PBR\n"
-        "MaterialTools::phongToPbrMetallicRoughness(): unconvertable Trade::MaterialAttribute::AmbientColor attribute, skipping\n"
+        "MaterialTools::phongToPbrMetallicRoughness(): unconvertible Trade::MaterialAttribute::AmbientColor attribute, skipping\n"
         "Converting material 1 to PBR\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 0 out of 2\n"
         "Trade::AnyImageImporter::openFile(): using PngImporter\n"
