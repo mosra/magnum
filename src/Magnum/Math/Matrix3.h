@@ -766,19 +766,17 @@ template<class T> Matrix3<T> Matrix3<T>::projection(const Vector2<T>& bottomLeft
 }
 
 template<class T> Matrix2x2<T> Matrix3<T>::rotation() const {
-    Matrix2x2<T> rotation{(*this)[0].xy().normalized(),
-                          (*this)[1].xy().normalized()};
-    CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
-        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:" << Debug::newline << rotation, {});
-    return rotation;
+    Matrix2x2<T> rotationShear = this->rotationShear();
+    CORRADE_DEBUG_ASSERT(rotationShear.isOrthogonal(),
+        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:" << Debug::newline << rotationShear, {});
+    return rotationShear;
 }
 
 template<class T> Matrix2x2<T> Matrix3<T>::rotationNormalized() const {
-    Matrix2x2<T> rotation{(*this)[0].xy(),
-                          (*this)[1].xy()};
-    CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
-        "Math::Matrix3::rotationNormalized(): the rotation part is not orthogonal:" << Debug::newline << rotation, {});
-    return rotation;
+    Matrix2x2<T> rotationScaling = this->rotationScaling();
+    CORRADE_DEBUG_ASSERT(rotationScaling.isOrthogonal(),
+        "Math::Matrix3::rotationNormalized(): the rotation part is not orthogonal:" << Debug::newline << rotationScaling, {});
+    return rotationScaling;
 }
 
 template<class T> T Matrix3<T>::uniformScalingSquared() const {

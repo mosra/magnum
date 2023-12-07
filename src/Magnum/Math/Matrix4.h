@@ -1328,21 +1328,17 @@ template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vec
 }
 
 template<class T> Matrix3x3<T> Matrix4<T>::rotation() const {
-    Matrix3x3<T> rotation{(*this)[0].xyz().normalized(),
-                          (*this)[1].xyz().normalized(),
-                          (*this)[2].xyz().normalized()};
-    CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
-        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:" << Debug::newline << rotation, {});
-    return rotation;
+    Matrix3x3<T> rotationShear = this->rotationShear();
+    CORRADE_DEBUG_ASSERT(rotationShear.isOrthogonal(),
+        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:" << Debug::newline << rotationShear, {});
+    return rotationShear;
 }
 
 template<class T> Matrix3x3<T> Matrix4<T>::rotationNormalized() const {
-    Matrix3x3<T> rotation{(*this)[0].xyz(),
-                          (*this)[1].xyz(),
-                          (*this)[2].xyz()};
-    CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
-        "Math::Matrix4::rotationNormalized(): the rotation part is not orthogonal:" << Debug::newline << rotation, {});
-    return rotation;
+    Matrix3x3<T> rotationScaling = this->rotationScaling();
+    CORRADE_DEBUG_ASSERT(rotationScaling.isOrthogonal(),
+        "Math::Matrix4::rotationNormalized(): the rotation part is not orthogonal:" << Debug::newline << rotationScaling, {});
+    return rotationScaling;
 }
 
 template<class T> T Matrix4<T>::uniformScalingSquared() const {
