@@ -13,6 +13,9 @@ options=('!strip' '!buildflags')
 _rootdir=$startdir/../../
 
 prepare() {
+    # rsync can't create the directory on its own if it doesn't exist at all,
+    # heh
+    mkdir -p $(em-config CACHE)/sysroot/include/
     # This is needed in order to fill ~/.emscripten_cache/sysroot/ with
     # up-to-date dependency headers and libs. There's
     #   embuilder build sysroot --force
