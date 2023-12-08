@@ -2254,7 +2254,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * returned by @ref attributeData() const. The @p layer is expected to
          * be less *or equal to* @ref layerCount(), i.e. it's always possible
          * to call this function with @cpp layer @ce and @cpp layer + 1 @ce to
-         * get the attribute range for given layer.
+         * get the attribute range for given layer, or with @ref layerCount()
+         * to get the total attribute count in all layers.
          */
         UnsignedInt attributeDataOffset(UnsignedInt layer) const;
 
