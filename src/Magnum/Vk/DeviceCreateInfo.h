@@ -71,7 +71,7 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
              * gets enabled, set this flag.
              *
              * This flag also affects enabling of
-             * @vk_extension{KHR,portability_subset},which is *required* to be
+             * @vk_extension{KHR,portability_subset}, which is *required* to be
              * enabled by the spec on any device that advertises it, and
              * behavior of related @ref DeviceFeatures. See
              * @ref Vk-Device-portability-subset for details.
