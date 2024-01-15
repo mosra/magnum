@@ -331,6 +331,9 @@ void MatrixTest::isOrthogonal() {
     CORRADE_VERIFY(!Matrix3x3(Vector3(1.0f, 0.0f, 0.0f),
                               Vector3(0.0f, 1.0f, 0.0f),
                               Vector3(0.0f, 1.0f, 0.0f)).isOrthogonal());
+    CORRADE_VERIFY(!Matrix3x3(Vector3(1.0f, 0.0f, 0.0f),
+                              Vector3(0.0f, 1.0f, 0.0f),
+                              Vector3(0.0f, -1.0f, 0.0f)).isOrthogonal());
     CORRADE_VERIFY(Matrix3x3(Vector3(1.0f, 0.0f, 0.0f),
                              Vector3(0.0f, 1.0f, 0.0f),
                              Vector3(0.0f, 0.0f, 1.0f)).isOrthogonal());

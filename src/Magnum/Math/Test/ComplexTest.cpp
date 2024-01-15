@@ -519,10 +519,10 @@ void ComplexTest::matrixNotRotation() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    /* Shear, using rotation() instead of rotationScaling() as that isn't
+    /* Shear, using rotationShear() instead of rotationScaling() as that isn't
        supposed to "fix" the shear */
     Complex::fromMatrix((Matrix3::scaling({2.0f, 1.0f})*
-                         Matrix3::rotation(45.0_degf)).rotation());
+                         Matrix3::rotation(45.0_degf)).rotationShear());
     /* Reflection, using rotation() instead of rotationScaling() as that isn't
        supposed to "fix" the reflection either */
     Complex::fromMatrix((Matrix3::scaling({-1.0f, 1.0f})*

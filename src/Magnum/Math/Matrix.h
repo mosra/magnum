@@ -469,7 +469,7 @@ template<std::size_t size, class T> bool Matrix<size, T>::isOrthogonal() const {
     /* Orthogonality */
     for(std::size_t i = 0; i != size-1; ++i)
         for(std::size_t j = i+1; j != size; ++j)
-            if(dot(RectangularMatrix<size, size, T>::_data[i], RectangularMatrix<size, size, T>::_data[j]) > TypeTraits<T>::epsilon())
+            if(std::abs(dot(RectangularMatrix<size, size, T>::_data[i], RectangularMatrix<size, size, T>::_data[j])) > TypeTraits<T>::epsilon())
                 return false;
 
     return true;

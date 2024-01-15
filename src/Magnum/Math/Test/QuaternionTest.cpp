@@ -644,10 +644,10 @@ void QuaternionTest::matrixNotRotation() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    /* Shear, using rotation() instead of rotationScaling() as that isn't
+    /* Shear, using rotationShear() instead of rotationScaling() as that isn't
        supposed to "fix" the shear */
     Quaternion::fromMatrix((Matrix4::scaling({2.0f, 1.0f, 1.0f})*
-                            Matrix4::rotationZ(45.0_degf)).rotation());
+                            Matrix4::rotationZ(45.0_degf)).rotationShear());
     /* Reflection, using rotation() instead of rotationScaling() as that isn't
        supposed to "fix" the reflection either */
     Quaternion::fromMatrix((Matrix4::scaling({-1.0f, 1.0f, 1.0f})*
