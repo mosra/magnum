@@ -124,6 +124,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /**
          * @brief Whether the matrix is orthogonal
          *
+         * Also called an [orthonormal matrix](https://en.wikipedia.org/wiki/Orthogonal_matrix).
          * Returns @cpp true @ce if all basis vectors have unit length and are
          * orthogonal to each other. In other words, when its transpose is
          * equal to its inverse: @f[
