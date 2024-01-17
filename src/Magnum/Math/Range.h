@@ -780,11 +780,35 @@ template<class T> class Range3D: public Range<3, T> {
 Returns a range that contains both input ranges. If one of the ranges is empty,
 only the other is returned. Results are undefined if any range has a negative
 size.
+@see @ref join(const Range<dimensions, T>&, const Vector<dimensions, T>&)
 */
 template<UnsignedInt dimensions, class T> inline Range<dimensions, T> join(const Range<dimensions, T>& a, const Range<dimensions, T>& b) {
     if(a.min() == a.max()) return b;
     if(b.min() == b.max()) return a;
     return {min(a.min(), b.min()), max(a.max(), b.max())};
+}
+
+/** @relatesalso Range
+@brief Join a range and a point
+@m_since_latest
+
+Returns a range that contains both the input range and the point. Compared to
+@ref join(const Range<dimensions, T>&, const Range<dimensions, T>&) there's no
+special casing for an empty range. Results are undefined if the range has a
+negative size.
+*/
+template<UnsignedInt dimensions, class T> inline Range<dimensions, T> join(const Range<dimensions, T>& a,
+    /* std::common_type has to be used so it's possible to pass Vector2 and
+       other subclasses, FFS */
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    const Vector<dimensions, T>& b
+    #else
+    const typename std::common_type<Vector<dimensions, T>>::type& b
+    #endif
+) {
+    /* Range::min() / max() return scalars for 1D, have to explicitly choose a
+       vector overload of Math::min() / max() to make it work with 1D vectors */
+    return {min<dimensions, T>(a.min(), b), max<dimensions, T>(a.max(), b)};
 }
 
 /** @relatesalso Range

@@ -137,6 +137,8 @@ struct RangeTest: TestSuite::Tester {
     void intersectIntersects1D();
     void join();
     void join1D();
+    void joinPoint();
+    void joinPoint1D();
 
     void strictWeakOrdering();
 
@@ -187,6 +189,8 @@ RangeTest::RangeTest() {
               &RangeTest::intersectIntersects1D,
               &RangeTest::join,
               &RangeTest::join1D,
+              &RangeTest::joinPoint,
+              &RangeTest::joinPoint1D,
 
               &RangeTest::strictWeakOrdering,
 
@@ -915,6 +919,32 @@ void RangeTest::join1D() {
     CORRADE_COMPARE(Math::join(b, a), d);
     CORRADE_COMPARE(Math::join(a, c), a);
     CORRADE_COMPARE(Math::join(c, a), a);
+}
+
+void RangeTest::joinPoint() {
+    Range2Di a{{12, 20}, {15, 35}};
+    Range2Di empty{{12, 20}, {12, 20}};
+    Vector2i b{13, 25};
+    Vector2i c{10, 40};
+    Vector2i d{20, 15};
+
+    CORRADE_COMPARE(Math::join(a, b), a);
+    CORRADE_COMPARE(Math::join(empty, b), (Range2Di{{12, 20}, {13, 25}}));
+    CORRADE_COMPARE(Math::join(a, c), (Range2Di{{10, 20}, {15, 40}}));
+    CORRADE_COMPARE(Math::join(a, d), (Range2Di{{12, 15}, {20, 35}}));
+}
+
+void RangeTest::joinPoint1D() {
+    Range1Di a{12, 15};
+    Range1Di empty{12, 12};
+    Vector2i{13, 25};
+    Vector2i{10, 40};
+    Vector2i{20, 15};
+
+    CORRADE_COMPARE(Math::join(a, 13), a);
+    CORRADE_COMPARE(Math::join(empty, 13), (Range1Di{12, 13}));
+    CORRADE_COMPARE(Math::join(a, 10), (Range1Di{10, 15}));
+    CORRADE_COMPARE(Math::join(a, 20), (Range1Di{12, 20}));
 }
 
 void RangeTest::strictWeakOrdering() {

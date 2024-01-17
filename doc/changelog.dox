@@ -665,6 +665,8 @@ See also:
     APIs that take sized views.
 -   Added @ref Math::Range::scaled() and @ref Math::Range::scaledFromCenter()
     overloads taking a scalar
+-   Added a @ref Math::join(const Range<dimensions, T>&, const Vector<dimensions, T>&)
+    overload for joining a range and a point
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
