@@ -636,12 +636,11 @@ template<std::size_t size, class T> class Vector {
          * an integral vector, convert both arguments to the same
          * floating-point type to have a floating-point result.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> Vector<size, T>
-        #else
-        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
-        #endif
-        operator*(const Vector<size, FloatingPoint>& other) const {
+        template<class FloatingPoint
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr
+            #endif
+        > Vector<size, T> operator*(const Vector<size, FloatingPoint>& other) const {
             return Vector<size, T>{*this} *= other;
         }
 
@@ -650,13 +649,17 @@ template<std::size_t size, class T> class Vector {
          *
          * Same as @ref operator*(const Vector<size, FloatingPoint>&) const.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> friend Vector<size, T>
-        #else
-        template<class FloatingPoint, class Integral = T> friend typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
-        #endif
-        operator*(const Vector<size, FloatingPoint>& a, const Vector<size, T>& b) {
-            return b*a;
+        /* This was originally friend operator*(const Vector<size, FloatingPoint>&, const Vector<size, T>&),
+           but that made it not found on MSVC 2015 and 2017 (and possibly
+           newer?) for some reason. Making it a member operator makes it work,
+           but it additionally has to prevent a conflict with the
+           Integral*FloatingPoint variant above */
+        template<class Integral
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , class FloatingPoint = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr
+            #endif
+        > Vector<size, Integral> operator*(const Vector<size, Integral>& other) const {
+            return other**this;
         }
 
         /**
@@ -1329,11 +1332,11 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
         Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator*(const Math::Vector<size, FloatingPoint>& other) const { \
+    template<class FloatingPoint, class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr> Type<T> operator*(const Math::Vector<size, FloatingPoint>& other) const { \
         return Math::Vector<size, T>::operator*(other);                     \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> friend typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator*(const Math::Vector<size, FloatingPoint>& a, const Type<T>& b) { \
-        return a*static_cast<const Math::Vector<size, T>&>(b);              \
+    template<class Integral, class FloatingPoint = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr> Type<Integral> operator*(const Math::Vector<size, Integral>& other) const { \
+        return Math::Vector<size, T>::operator*(other);                     \
     }                                                                       \
                                                                             \
     Type<T>& operator/=(const Math::Vector<size, T>& other) {               \
