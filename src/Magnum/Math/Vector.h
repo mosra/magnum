@@ -1320,19 +1320,19 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     Type<T> operator-(const Math::Vector<size, T>& other) const {           \
         return Math::Vector<size, T>::operator-(other);                     \
     }                                                                       \
-    Type<T>& operator*=(T number) {                                         \
-        Math::Vector<size, T>::operator*=(number);                          \
+    Type<T>& operator*=(T scalar) {                                         \
+        Math::Vector<size, T>::operator*=(scalar);                          \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator*(T number) const {                                     \
-        return Math::Vector<size, T>::operator*(number);                    \
+    Type<T> operator*(T scalar) const {                                     \
+        return Math::Vector<size, T>::operator*(scalar);                    \
     }                                                                       \
-    Type<T>& operator/=(T number) {                                         \
-        Math::Vector<size, T>::operator/=(number);                          \
+    Type<T>& operator/=(T scalar) {                                         \
+        Math::Vector<size, T>::operator/=(scalar);                          \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator/(T number) const {                                     \
-        return Math::Vector<size, T>::operator/(number);                    \
+    Type<T> operator/(T scalar) const {                                     \
+        return Math::Vector<size, T>::operator/(scalar);                    \
     }                                                                       \
     Type<T>& operator*=(const Math::Vector<size, T>& other) {               \
         Math::Vector<size, T>::operator*=(other);                           \
@@ -1366,11 +1366,11 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     }
 
 #define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                  \
-    template<class T> inline Type<T> operator*(typename std::common_type<T>::type number, const Type<T>& vector) { \
-        return number*static_cast<const Math::Vector<size, T>&>(vector);    \
+    template<class T> inline Type<T> operator*(typename std::common_type<T>::type scalar, const Type<T>& vector) { \
+        return scalar*static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
-    template<class T> inline Type<T> operator/(typename std::common_type<T>::type number, const Type<T>& vector) { \
-        return number/static_cast<const Math::Vector<size, T>&>(vector);    \
+    template<class T> inline Type<T> operator/(typename std::common_type<T>::type scalar, const Type<T>& vector) { \
+        return scalar/static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
                                                                             \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, Integral b) { \
@@ -1426,22 +1426,22 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator>>(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
         return static_cast<const Math::Vector<size, Integral>&>(vector) >> shift; \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& vector, FloatingPoint number) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) *= number;       \
+    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& vector, FloatingPoint scalar) { \
+        static_cast<Math::Vector<size, Integral>&>(vector) *= scalar;       \
         return vector;                                                      \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& vector, FloatingPoint number) { \
-        return static_cast<const Math::Vector<size, Integral>&>(vector)*number; \
+    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& vector, FloatingPoint scalar) { \
+        return static_cast<const Math::Vector<size, Integral>&>(vector)*scalar; \
     }                                                                       \
-    template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint number, const Type<Integral>& vector) { \
-        return number*static_cast<const Math::Vector<size, Integral>&>(vector); \
+    template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint scalar, const Type<Integral>& vector) { \
+        return scalar*static_cast<const Math::Vector<size, Integral>&>(vector); \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& vector, FloatingPoint number) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) /= number;       \
+    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& vector, FloatingPoint scalar) { \
+        static_cast<Math::Vector<size, Integral>&>(vector) /= scalar;       \
         return vector;                                                      \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& vector, FloatingPoint number) { \
-        return static_cast<const Math::Vector<size, Integral>&>(vector)/number; \
+    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& vector, FloatingPoint scalar) { \
+        return static_cast<const Math::Vector<size, Integral>&>(vector)/scalar; \
     }                                                                       \
                                                                             \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
