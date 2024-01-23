@@ -64,6 +64,8 @@ UnitTest::UnitTest() {
               &UnitTest::multiplyDivide});
 }
 
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
 template<class> struct Sec_;
 typedef Unit<Sec_, Float> Sec;
 typedef Unit<Sec_, Int> Seci;

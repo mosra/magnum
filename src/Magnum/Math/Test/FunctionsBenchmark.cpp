@@ -68,9 +68,9 @@ FunctionsBenchmark::FunctionsBenchmark() {
                    &FunctionsBenchmark::sinCosCombined}, 100);
 }
 
-typedef Math::Constants<Float> Constants;
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
+using Magnum::Constants;
+using Magnum::Deg;
+using Magnum::Rad;
 
 enum: std::size_t { Repeats = 100000 };
 

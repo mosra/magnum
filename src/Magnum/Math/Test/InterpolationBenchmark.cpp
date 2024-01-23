@@ -47,9 +47,9 @@ struct InterpolationBenchmark: TestSuite::Tester {
 
 using namespace Math::Literals;
 
-typedef Math::Quaternion<Float> Quaternion;
-typedef Math::DualQuaternion<Float> DualQuaternion;
-typedef Math::Vector3<Float> Vector3;
+using Magnum::Quaternion;
+using Magnum::DualQuaternion;
+using Magnum::Vector3;
 
 InterpolationBenchmark::InterpolationBenchmark() {
     addBenchmarks({&InterpolationBenchmark::baseline,

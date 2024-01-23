@@ -56,6 +56,8 @@ template<> struct BezierConverter<2, 2, Float, QBezier2D> {
 
 namespace Test { namespace {
 
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
 using Magnum::Vector2;
 typedef Math::Bezier<1, 2, Float> LinearBezier2D;
 using Magnum::QuadraticBezier2D;

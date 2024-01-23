@@ -67,9 +67,9 @@ VectorBenchmark::VectorBenchmark() {
     }, 500);
 }
 
-typedef Math::Constants<Float> Constants;
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
+using Magnum::Constants;
+using Magnum::Vector2;
+using Magnum::Vector3;
 
 enum: std::size_t { Repeats = 100000 };
 

@@ -68,6 +68,8 @@ struct DualTest: TestSuite::Tester {
     void debug();
 };
 
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
 typedef Math::Dual<Float> Dual;
 using Magnum::Vector2;
 typedef Math::Dual<Vector2> DualVector2;

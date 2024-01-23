@@ -99,18 +99,21 @@ struct RectangularMatrixTest: TestSuite::Tester {
     void debugPacked();
 };
 
-typedef RectangularMatrix<4, 3, Float> Matrix4x3;
-typedef RectangularMatrix<4, 2, Float> Matrix4x2;
-typedef RectangularMatrix<3, 4, Float> Matrix3x4;
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
+using Magnum::Matrix4x3;
+using Magnum::Matrix4x2;
+using Magnum::Matrix3x4;
 typedef RectangularMatrix<3, 3, Float> Matrix3x3;
-typedef RectangularMatrix<3, 2, Float> Matrix3x2;
+using Magnum::Matrix3x2;
 typedef RectangularMatrix<2, 2, Float> Matrix2x2;
-typedef RectangularMatrix<2, 3, Float> Matrix2x3;
-typedef RectangularMatrix<2, 4, Float> Matrix2x4;
+using Magnum::Matrix2x3;
+using Magnum::Matrix2x4;
 typedef RectangularMatrix<2, 2, Int> Matrix2x2i;
 typedef Vector<4, Float> Vector4;
 typedef Vector<3, Float> Vector3;
 typedef Vector<2, Float> Vector2;
+using Magnum::BitVector3;
 
 typedef RectangularMatrix<4, 3, Int> Matrix4x3i;
 typedef RectangularMatrix<3, 4, Int> Matrix3x4i;
@@ -380,7 +383,6 @@ void RectangularMatrixTest::constructCopy() {
 }
 
 void RectangularMatrixTest::convert() {
-    typedef RectangularMatrix<2, 3, Float> Matrix2x3;
     constexpr Mat2x3 a{{1.5f,  2.0f, -3.5f,
                         2.0f, -3.1f,  0.4f}};
     constexpr Matrix2x3 b(Vector3(1.5f, 2.0f, -3.5f),
@@ -474,7 +476,6 @@ void RectangularMatrixTest::compare() {
 }
 
 void RectangularMatrixTest::compareComponentWise() {
-    typedef BitVector<3> BitVector3;
     typedef RectangularMatrix<3, 1, Float> Matrix3x1;
     CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) < Matrix3x1(1.1f, -1.0f, 3.0f), BitVector3(0x1));
     CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) <= Matrix3x1(1.1f, -1.0f, 3.0f), BitVector3(0x3));
@@ -637,8 +638,6 @@ void RectangularMatrixTest::diagonal() {
 }
 
 void RectangularMatrixTest::vector() {
-    typedef Vector<3, Int> Vector3i;
-    typedef RectangularMatrix<4, 3, Int> Matrix4x3i;
     typedef Vector<12, Int> Vector12i;
 
     Matrix4x3i a(Vector3i(0, 1, 2),

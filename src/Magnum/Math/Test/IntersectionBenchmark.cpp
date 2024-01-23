@@ -87,14 +87,14 @@ Math::Matrix4<T> coneViewFromCone(const Math::Vector3<T>& origin, const Math::Ve
     return Math::Matrix4<T>::lookAt(origin, origin + normal, Math::Vector3<T>::yAxis()).inverted();
 }
 
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Matrix4<Float> Matrix4;
-typedef Math::Frustum<Float> Frustum;
-typedef Math::Range3D<Float> Range3D;
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Vector4;
+using Magnum::Matrix4;
+using Magnum::Frustum;
+using Magnum::Range3D;
+using Magnum::Deg;
+using Magnum::Rad;
 
 struct IntersectionBenchmark: TestSuite::Tester {
     explicit IntersectionBenchmark();

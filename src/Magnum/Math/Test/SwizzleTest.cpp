@@ -44,6 +44,7 @@ struct SwizzleTest: TestSuite::Tester {
     void scatterFarComponents();
 };
 
+/* These differ from the typedefs in root Magnum namespace */
 typedef Vector<2, Int> Vector2i;
 typedef Vector<3, Int> Vector3i;
 typedef Vector<4, Int> Vector4i;

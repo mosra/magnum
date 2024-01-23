@@ -75,11 +75,11 @@ MatrixBenchmark::MatrixBenchmark() {
                    &MatrixBenchmark::transformPoint4}, 1000);
 }
 
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Matrix4<Float> Matrix4;
-typedef Math::Matrix3<Float> Matrix3;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Vector4;
+using Magnum::Matrix4;
+using Magnum::Matrix3;
 
 enum: std::size_t { Repeats = 10000 };
 

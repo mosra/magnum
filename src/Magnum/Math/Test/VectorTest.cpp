@@ -120,6 +120,8 @@ struct VectorTest: TestSuite::Tester {
     void debugPacked();
 };
 
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace */
 using Magnum::Constants;
 using Magnum::Rad;
 typedef Vector<2, Float> Vector2;
@@ -128,6 +130,7 @@ typedef Vector<3, Float> Vector3;
 typedef Vector<4, Float> Vector4;
 typedef Vector<4, Half> Vector4h;
 typedef Vector<4, Int> Vector4i;
+typedef Vector<2, Int> Vector2i;
 
 using namespace Literals;
 
@@ -459,8 +462,6 @@ void VectorTest::multiplyDivideComponentWiseIntegral() {
 }
 
 void VectorTest::modulo() {
-    typedef Math::Vector<2, Int> Vector2i;
-
     const Vector2i a(4, 13);
     const Vector2i b(2, 5);
     CORRADE_COMPARE(a % 2, Vector2i(0, 1));
@@ -468,8 +469,6 @@ void VectorTest::modulo() {
 }
 
 void VectorTest::bitwise() {
-    typedef Math::Vector<2, Int> Vector2i;
-
     const Vector2i a(85, 240);
     const Vector2i b(170, 85);
     CORRADE_COMPARE(~a, Vector2i(-86, -241));
