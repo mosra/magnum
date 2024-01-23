@@ -54,7 +54,6 @@ struct MapTest: TestSuite::Tester {
 
     void indexFieldRvalue();
     void indexFieldRvalueSigned();
-    void indexFieldRvalueNamed();
     void indexFieldRvalueNotOwned();
     void indexFieldRvalueNotFullType();
 };
