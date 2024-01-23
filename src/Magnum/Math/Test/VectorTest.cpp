@@ -407,78 +407,172 @@ void VectorTest::promotedNegated() {
 }
 
 void VectorTest::addSubtract() {
-    Vector4 a(1.0f, -3.0f, 5.0f, -10.0f);
-    Vector4 b(7.5f, 33.0f, -15.0f, 0.0f);
-    Vector4 c(8.5f, 30.0f, -10.0f, -10.0f);
+    const Vector4 a{1.0f, -3.0f, 5.0f, -10.0f};
+    const Vector4 b{7.5f, 33.0f, -15.0f, 0.0f};
+    const Vector4 c{8.5f, 30.0f, -10.0f, -10.0f};
 
     CORRADE_COMPARE(a + b, c);
     CORRADE_COMPARE(c - b, a);
+    {
+        Vector4 v{1.0f, -3.0f, 5.0f, -10.0f};
+        CORRADE_COMPARE(&(v += b), &v);
+        CORRADE_COMPARE(v, c);
+    } {
+        Vector4 v{8.5f, 30.0f, -10.0f, -10.0f};
+        CORRADE_COMPARE(&(v -= b), &v);
+        CORRADE_COMPARE(v, a);
+    }
 }
 
 void VectorTest::multiplyDivide() {
-    Vector4 vector(1.0f, 2.0f, 3.0f, 4.0f);
-    Vector4 multiplied(-1.5f, -3.0f, -4.5f, -6.0f);
+    const Vector4 vector{1.0f, 2.0f, 3.0f, 4.0f};
+    const Vector4 multiplied{-1.5f, -3.0f, -4.5f, -6.0f};
 
     CORRADE_COMPARE(vector*-1.5f, multiplied);
     CORRADE_COMPARE(-1.5f*vector, multiplied);
-    CORRADE_COMPARE(multiplied/-1.5f, vector);
+    {
+        Vector4 v{1.0f, 2.0f, 3.0f, 4.0f};
+        CORRADE_COMPARE(&(v *= -1.5f), &v);
+        CORRADE_COMPARE(v, multiplied);
+    }
 
-    /* Divide vector with number and invert */
-    Vector4 divisor(1.0f, 2.0f, -4.0f, 8.0f);
-    Vector4 result(1.0f, 0.5f, -0.25f, 0.125f);
+    CORRADE_COMPARE(multiplied/-1.5f, vector);
+    {
+        Vector4 v{-1.5f, -3.0f, -4.5f, -6.0f};
+        CORRADE_COMPARE(&(v /= -1.5f), &v);
+        CORRADE_COMPARE(v, vector);
+    }
+
+    /* Divide a vector with a scalar and invert */
+    const Vector4 divisor{1.0f, 2.0f, -4.0f, 8.0f};
+    const Vector4 result{1.0f, 0.5f, -0.25f, 0.125f};
     CORRADE_COMPARE(1.0f/divisor, result);
 }
 
 void VectorTest::multiplyDivideIntegral() {
-    Vector4i vector(32, 10, -6, 2);
-    Vector4i multiplied(-48, -15, 9, -3);
+    const Vector4i vector{32, 10, -6, 2};
+    const Vector4i multiplied{-48, -15, 9, -3};
 
     CORRADE_COMPARE(vector*-1.5f, multiplied);
     CORRADE_COMPARE(-1.5f*vector, multiplied);
+    {
+        Vector4i v{32, 10, -6, 2};
+        CORRADE_COMPARE(&(v *= -1.5f), &v);
+        CORRADE_COMPARE(v, multiplied);
+    }
 
     CORRADE_COMPARE(multiplied/-1.5f, vector);
+    {
+        Vector4i v{-48, -15, 9, -3};
+        CORRADE_COMPARE(&(v /= -1.5f), &v);
+        CORRADE_COMPARE(v, vector);
+    }
+
     /* Using integer vector as divisor is not supported */
 }
 
 void VectorTest::multiplyDivideComponentWise() {
-    Vector4 vec(1.0f, 2.0f, 3.0f, 4.0f);
-    Vector4 multiplier(7.0f, -4.0f, -1.5f, 1.0f);
-    Vector4 multiplied(7.0f, -8.0f, -4.5f, 4.0f);
+    const Vector4 vec{1.0f, 2.0f, 3.0f, 4.0f};
+    const Vector4 multiplier{7.0f, -4.0f, -1.5f, 1.0f};
+    const Vector4 multiplied{7.0f, -8.0f, -4.5f, 4.0f};
 
     CORRADE_COMPARE(vec*multiplier, multiplied);
+    {
+        Vector4 v{1.0f, 2.0f, 3.0f, 4.0f};
+        CORRADE_COMPARE(&(v *= multiplier), &v);
+        CORRADE_COMPARE(v, multiplied);
+    }
+
     CORRADE_COMPARE(multiplied/multiplier, vec);
+    {
+        Vector4 v{7.0f, -8.0f, -4.5f, 4.0f};
+        CORRADE_COMPARE(&(v /= multiplier), &v);
+        CORRADE_COMPARE(v, vec);
+    }
 }
 
 void VectorTest::multiplyDivideComponentWiseIntegral() {
-    Vector4i vec(7, 2, -16, -1);
-    Vector4 multiplier(2.0f, -1.5f, 0.5f, 10.0f);
-    Vector4i multiplied(14, -3, -8, -10);
+    const Vector4i vec{7, 2, -16, -1};
+    const Vector4 multiplier{2.0f, -1.5f, 0.5f, 10.0f};
+    const Vector4i multiplied{14, -3, -8, -10};
 
     CORRADE_COMPARE(vec*multiplier, multiplied);
     CORRADE_COMPARE(multiplier*vec, multiplied);
+    {
+        Vector4i v{7, 2, -16, -1};
+        CORRADE_COMPARE(&(v *= multiplier), &v);
+        CORRADE_COMPARE(v, multiplied);
+    }
 
     CORRADE_COMPARE(multiplied/multiplier, vec);
+    {
+        Vector4i v{14, -3, -8, -10};
+        CORRADE_COMPARE(&(v /= multiplier), &v);
+        CORRADE_COMPARE(v, vec);
+    }
+
     /* Using integer vector as divisor is not supported */
 }
 
 void VectorTest::modulo() {
-    const Vector2i a(4, 13);
-    const Vector2i b(2, 5);
-    CORRADE_COMPARE(a % 2, Vector2i(0, 1));
-    CORRADE_COMPARE(a % b, Vector2i(0, 3));
+    const Vector4i a{4, 13, 255, -6};
+    const Vector4i b{2, 5, 64, -4};
+
+    CORRADE_COMPARE(a % 2, (Vector4i{0, 1, 1, 0}));
+    {
+        Vector4i v{4, 13, 255, -6};
+        CORRADE_COMPARE(&(v %= 2), &v);
+        CORRADE_COMPARE(v, (Vector4i{0, 1, 1, 0}));
+    }
+
+    CORRADE_COMPARE(a % b, (Vector4i{0, 3, 63, -2}));
+    {
+        Vector4i v{4, 13, 255, -6};
+        CORRADE_COMPARE(&(v %= b), &v);
+        CORRADE_COMPARE(v, (Vector4i{0, 3, 63, -2}));
+    }
 }
 
 void VectorTest::bitwise() {
-    const Vector2i a(85, 240);
-    const Vector2i b(170, 85);
-    CORRADE_COMPARE(~a, Vector2i(-86, -241));
-    CORRADE_COMPARE(a & b, Vector2i(0, 80));
-    CORRADE_COMPARE(a | b, Vector2i(255, 245));
-    CORRADE_COMPARE(a ^ b, Vector2i(255, 165));
+    const Vector4i a{85, 240, -241, 33};
+    const Vector4i b{170, 85, 13, -11};
+    CORRADE_COMPARE(~a, (Vector4i{-86, -241, 240, -34}));
 
-    const Vector2i c(7, 32);
-    CORRADE_COMPARE(c << 2, Vector2i(28, 128));
-    CORRADE_COMPARE(c >> 2, Vector2i(1, 8));
+    CORRADE_COMPARE(a & b, (Vector4i{0, 80, 13, 33}));
+    {
+        Vector4i v{85, 240, -241, 33};
+        CORRADE_COMPARE(&(v &= b), &v);
+        CORRADE_COMPARE(v, (Vector4i{0, 80, 13, 33}));
+    }
+
+    CORRADE_COMPARE(a | b, (Vector4i{255, 245, -241, -11}));
+    {
+        Vector4i v{85, 240, -241, 33};
+        CORRADE_COMPARE(&(v |= b), &v);
+        CORRADE_COMPARE(v, (Vector4i{255, 245, -241, -11}));
+    }
+
+    CORRADE_COMPARE(a ^ b, (Vector4i{255, 165, -254, -44}));
+    {
+        Vector4i v{85, 240, -241, 33};
+        CORRADE_COMPARE(&(v ^= b), &v);
+        CORRADE_COMPARE(v, (Vector4i{255, 165, -254, -44}));
+    }
+
+    const Vector4i c{7, 32, 1, 15};
+    CORRADE_COMPARE(c << 2, (Vector4i{28, 128, 4, 60}));
+    {
+        Vector4i v{7, 32, 1, 15};
+        CORRADE_COMPARE(&(v <<= 2), &v);
+        CORRADE_COMPARE(v, (Vector4i{28, 128, 4, 60}));
+    }
+
+    CORRADE_COMPARE(c >> 2, (Vector4i{1, 8, 0, 3}));
+    {
+        Vector4i v{7, 32, 1, 15};
+        CORRADE_COMPARE(&(v >>= 2), &v);
+        CORRADE_COMPARE(v, (Vector4i{1, 8, 0, 3}));
+    }
 }
 
 void VectorTest::dot() {
@@ -724,71 +818,171 @@ void VectorTest::subclass() {
     CORRADE_COMPARE(Vec2::from(cdata), Vec2(1.0f, -2.0f));
 
     {
-        constexpr Vector<1, Float> a = 5.0f;
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
-        constexpr
-        #endif
+        const Vector<1, Float> a = 5.0f;
         Vec2 b = Vec2::pad(a);
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
-        constexpr
-        #endif
         Vec2 c = Vec2::pad(a, -1.0f);
         CORRADE_COMPARE(b, Vec2(5.0f, 0.0f));
         CORRADE_COMPARE(c, Vec2(5.0f, -1.0f));
+
+        constexpr Vector<1, Float> ca = 5.0f;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+        constexpr
+        #endif
+        Vec2 cb = Vec2::pad(ca);
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+        constexpr
+        #endif
+        Vec2 cc = Vec2::pad(ca, -1.0f);
+        CORRADE_COMPARE(cb, Vec2(5.0f, 0.0f));
+        CORRADE_COMPARE(cc, Vec2(5.0f, -1.0f));
     }
 
-    /* Constexpr constructor */
-    constexpr const Vec2 a{-2.0f, 5.0f};
-    CORRADE_COMPARE(a[0], -2.0f);
-
+    /* Unary operators */
     CORRADE_COMPARE(+Vec2(-2.0f, 5.0f), Vec2(-2.0f, 5.0f));
     CORRADE_COMPARE(-Vec2(-2.0f, 5.0f), Vec2(2.0f, -5.0f));
-    CORRADE_COMPARE(Vec2(-2.0f, 5.0f) + Vec2(1.0f, -3.0f), Vec2(-1.0f, 2.0f));
-    CORRADE_COMPARE(Vec2(-2.0f, 5.0f) - Vec2(1.0f, -3.0f), Vec2(-3.0f, 8.0f));
 
+    /* Addition / subtraction */
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f) + Vec2(1.0f, -3.0f), Vec2(-1.0f, 2.0f));
+    {
+        Vec2 a{-2.0f, 5.0f};
+        CORRADE_COMPARE(&(a += Vec2{1.0f, -3.0f}), &a);
+        CORRADE_COMPARE(a, (Vec2{-1.0f, 2.0f}));
+    }
+
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f) - Vec2(1.0f, -3.0f), Vec2(-3.0f, 8.0f));
+    {
+        Vec2 a{-2.0f, 5.0f};
+        CORRADE_COMPARE(&(a -= Vec2{1.0f, -3.0f}), &a);
+        CORRADE_COMPARE(a, (Vec2{-3.0f, 8.0f}));
+    }
+
+    /* Multiplication and division with a scalar */
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f)*2.0f, Vec2(-4.0f, 10.0f));
     CORRADE_COMPARE(2.0f*Vec2(-2.0f, 5.0f), Vec2(-4.0f, 10.0f));
+    {
+        Vec2 a{-2.0f, 5.0f};
+        CORRADE_COMPARE(&(a *= 2.0f), &a);
+        CORRADE_COMPARE(a, (Vec2{-4.0f, 10.0f}));
+    }
+
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f)/0.5f, Vec2(-4.0f, 10.0f));
     CORRADE_COMPARE(2.0f/Vec2(-2.0f, 5.0f), Vec2(-1.0f, 0.4f));
+    {
+        Vec2 a{-2.0f, 5.0f};
+        CORRADE_COMPARE(&(a /= 0.5f), &a);
+        CORRADE_COMPARE(a, (Vec2{-4.0f, 10.0f}));
+    }
 
-    CORRADE_COMPARE(Vec2(-2.0f, 5.0f)*Vec2(1.5f, -2.0f), Vec2(-3.0f, -10.0f));
-    CORRADE_COMPARE(Vec2(-2.0f, 5.0f)/Vec2(2.0f/3.0f, -0.5f), Vec2(-3.0f, -10.0f));
-
-    /* No need to test in-place operators as the other ones are implemented
-       using them */
-
-    /* Modulo operations */
-    CORRADE_COMPARE(Vec2i(4, 13) % 2, Vec2i(0, 1));
-    CORRADE_COMPARE(Vec2i(4, 13) % Vec2i(2, 5), Vec2i(0, 3));
-
-    /* Bitwise operations */
-    CORRADE_COMPARE(~Vec2i(85, 240), Vec2i(-86, -241));
-    CORRADE_COMPARE(Vec2i(85, 240) & Vec2i(170, 85), Vec2i(0, 80));
-    CORRADE_COMPARE(Vec2i(85, 240) | Vec2i(170, 85), Vec2i(255, 245));
-    CORRADE_COMPARE(Vec2i(85, 240) ^ Vec2i(170, 85), Vec2i(255, 165));
-
-    CORRADE_COMPARE(Vec2i(7, 32) << 2, Vec2i(28, 128));
-    CORRADE_COMPARE(Vec2i(7, 32) >> 2, Vec2i(1, 8));
-
-    /* Integral multiplication/division */
+    /* Multiplication/division with an integer scalar */
     CORRADE_COMPARE(Vec2i(2, 4)*1.5f, Vec2i(3, 6));
     CORRADE_COMPARE(1.5f*Vec2i(2, 4), Vec2i(3, 6));
+    {
+        Vec2i a{2, 4};
+        CORRADE_COMPARE(&(a *= 1.5f), &a);
+        CORRADE_COMPARE(a, (Vec2i{3, 6}));
+    }
+
     {
         #ifdef CORRADE_TARGET_EMSCRIPTEN
         CORRADE_EXPECT_FAIL_IF(Vec2i(2, 4)/(2.0f/3.0f) == Vec2i(2, 5),
             "Emscripten -O1 misoptimizes the following (-O2 works).");
         #endif
         CORRADE_COMPARE(Vec2i(2, 4)/(2.0f/3.0f), Vec2i(3, 6));
+    } {
+        Vec2i a{2, 4};
+        CORRADE_COMPARE(&(a /= (2.0f/3.0f)), &a);
+        CORRADE_COMPARE(a, (Vec2i{3, 6}));
     }
 
+    /* Multiplication and division with a vector */
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f)*Vec2(1.5f, -2.0f), Vec2(-3.0f, -10.0f));
+    {
+        Vec2 a{-2.0f, 5.0f};
+        CORRADE_COMPARE(&(a *= Vec2{1.5f, -2.0f}), &a);
+        CORRADE_COMPARE(a, (Vec2{-3.0f, -10.0f}));
+    }
+
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f)/Vec2(2.0f/3.0f, -0.5f), Vec2(-3.0f, -10.0f));
+    {
+        Vec2 a{-2.0f, 5.0f};
+        CORRADE_COMPARE(&(a /= Vec2{2.0f/3.0f, -0.5f}), &a);
+        CORRADE_COMPARE(a, (Vec2{-3.0f, -10.0f}));
+    }
+
+    /* Multiplication/division with an integer vector */
     CORRADE_COMPARE(Vec2i(2, 4)*Vec2(-1.5f, 0.5f), Vec2i(-3, 2));
     CORRADE_COMPARE(Vec2(-1.5f, 0.5f)*Vec2i(2, 4), Vec2i(-3, 2));
+    {
+        Vec2i a{2, 4};
+        CORRADE_COMPARE(&(a *= Vec2{-1.5f, 0.5f}), &a);
+        CORRADE_COMPARE(a, (Vec2i{-3, 2}));
+    }
+
     {
         #ifdef CORRADE_TARGET_EMSCRIPTEN
         CORRADE_EXPECT_FAIL_IF(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f) == Vec2i(-2, 2),
             "Emscripten -O1 misoptimizes the following (-O2 works).");
         #endif
         CORRADE_COMPARE(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f), Vec2i(-3, 2));
+    } {
+        Vec2i a{2, 4};
+        CORRADE_COMPARE(&(a /= Vec2{-2.0f/3.0f, 2.0f}), &a);
+        CORRADE_COMPARE(a, (Vec2i{-3, 2}));
+    }
+
+    /* Modulo operations */
+    CORRADE_COMPARE(Vec2i(4, 13) % 2, Vec2i(0, 1));
+    {
+        Vec2i a{4, 13};
+        CORRADE_COMPARE(&(a %= 2), &a);
+        CORRADE_COMPARE(a, (Vec2i{0, 1}));
+    }
+
+    CORRADE_COMPARE(Vec2i(4, 13) % Vec2i(2, 5), Vec2i(0, 3));
+    {
+        Vec2i a{4, 13};
+        CORRADE_COMPARE(&(a %= Vec2i{2, 5}), &a);
+        CORRADE_COMPARE(a, (Vec2i{0, 3}));
+    }
+
+    /* Unary bitwise operations */
+    CORRADE_COMPARE(~Vec2i(85, 240), Vec2i(-86, -241));
+
+    /* Bitwise AND, OR and XOR */
+    CORRADE_COMPARE(Vec2i(85, 240) & Vec2i(170, 85), Vec2i(0, 80));
+    {
+        Vec2i a{85, 240};
+        CORRADE_COMPARE(&(a &= Vec2i{170, 85}), &a);
+        CORRADE_COMPARE(a, (Vec2i{0, 80}));
+    }
+
+    CORRADE_COMPARE(Vec2i(85, 240) | Vec2i(170, 85), Vec2i(255, 245));
+    {
+        Vec2i a{85, 240};
+        CORRADE_COMPARE(&(a |= Vec2i{170, 85}), &a);
+        CORRADE_COMPARE(a, (Vec2i{255, 245}));
+    }
+
+    CORRADE_COMPARE(Vec2i(85, 240) ^ Vec2i(170, 85), Vec2i(255, 165));
+    {
+        Vec2i a{85, 240};
+        CORRADE_COMPARE(&(a ^= Vec2i{170, 85}), &a);
+        CORRADE_COMPARE(a, (Vec2i{255, 165}));
+    }
+
+    /* Bit shift */
+    CORRADE_COMPARE(Vec2i(7, 32) << 2, Vec2i(28, 128));
+    {
+        Vec2i a{7, 32};
+        CORRADE_COMPARE(&(a <<= 2), &a);
+        CORRADE_COMPARE(a, (Vec2i{28, 128}));
+    }
+
+    CORRADE_COMPARE(Vec2i(7, 32) >> 2, Vec2i(1, 8));
+    {
+        Vec2i a{7, 32};
+        CORRADE_COMPARE(&(a >>= 2), &a);
+        CORRADE_COMPARE(a, (Vec2i{1, 8}));
     }
 
     /* Functions */
@@ -796,11 +990,12 @@ void VectorTest::subclass() {
     CORRADE_COMPARE(Vec2(3.0f, 0.0f).resized(6.0f), Vec2(6.0f, 0.0f));
     CORRADE_COMPARE(Vec2(1.0f, 1.0f).projected({0.0f, 2.0f}), Vec2(0.0f, 1.0f));
     CORRADE_COMPARE(Vec2(1.0f, 1.0f).projectedOntoNormalized({0.0f, 1.0f}), Vec2(0.0f, 1.0f));
+    CORRADE_COMPARE((Vec2{1.0f, 0.4f}).flipped(), (Vec2{0.4f, 1.0f}));
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
     constexpr
     #endif
-    Vec2 flipped = Vec2{1.0f, 0.4f}.flipped();
-    CORRADE_COMPARE(flipped, (Vec2{0.4f, 1.0f}));
+    Vec2 cflipped = Vec2{1.0f, 0.4f}.flipped();
+    CORRADE_COMPARE(cflipped, (Vec2{0.4f, 1.0f}));
 }
 
 void VectorTest::strictWeakOrdering() {
