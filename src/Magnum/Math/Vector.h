@@ -382,6 +382,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator+=(), @ref sum()
          */
         Vector<size, T> operator+(const Vector<size, T>& other) const {
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
             return Vector<size, T>(*this) += other;
         }
 
@@ -405,6 +406,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator-=()
          */
         Vector<size, T> operator-(const Vector<size, T>& other) const {
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
             return Vector<size, T>(*this) -= other;
         }
 
@@ -432,6 +434,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator*(FloatingPoint) const
          */
         Vector<size, T> operator*(T scalar) const {
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
             return Vector<size, T>(*this) *= scalar;
         }
 
@@ -481,7 +484,8 @@ template<std::size_t size, class T> class Vector {
         template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
         #endif
         operator*(FloatingPoint scalar) const {
-            return Vector<size, T>{*this} *= scalar;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) *= scalar;
         }
 
         /**
@@ -522,6 +526,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator/(FloatingPoint) const
          */
         Vector<size, T> operator/(T scalar) const {
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
             return Vector<size, T>(*this) /= scalar;
         }
 
@@ -579,7 +584,8 @@ template<std::size_t size, class T> class Vector {
         template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
         #endif
         operator/(FloatingPoint scalar) const {
-            return Vector<size, T>{*this} /= scalar;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) /= scalar;
         }
 
         /**
@@ -606,6 +612,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref product()
          */
         Vector<size, T> operator*(const Vector<size, T>& other) const {
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
             return Vector<size, T>(*this) *= other;
         }
 
@@ -641,7 +648,8 @@ template<std::size_t size, class T> class Vector {
             , class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr
             #endif
         > Vector<size, T> operator*(const Vector<size, FloatingPoint>& other) const {
-            return Vector<size, T>{*this} *= other;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) *= other;
         }
 
         /**
@@ -685,6 +693,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator/(const Vector<size, FloatingPoint>&) const
          */
         Vector<size, T> operator/(const Vector<size, T>& other) const {
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
             return Vector<size, T>(*this) /= other;
         }
 
@@ -721,7 +730,8 @@ template<std::size_t size, class T> class Vector {
         template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
         #endif
         operator/(const Vector<size, FloatingPoint>& other) const {
-            return Vector<size, T>{*this} /= other;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) /= other;
         }
 
         /**
@@ -752,7 +762,8 @@ template<std::size_t size, class T> class Vector {
         template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator%(T scalar) const {
-            return Vector<size, T>{*this} %= scalar;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) %= scalar;
         }
 
         /**
@@ -783,7 +794,8 @@ template<std::size_t size, class T> class Vector {
         template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator%(const Vector<size, T>& other) const {
-            return Vector<size, T>{*this} %= other;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) %= other;
         }
 
         /**
@@ -833,7 +845,8 @@ template<std::size_t size, class T> class Vector {
         template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator&(const Vector<size, T>& other) const {
-            return Vector<size, T>{*this} &= other;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) &= other;
         }
 
         /**
@@ -864,7 +877,8 @@ template<std::size_t size, class T> class Vector {
         template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator|(const Vector<size, T>& other) const {
-            return Vector<size, T>{*this} |= other;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) |= other;
         }
 
         /**
@@ -895,7 +909,8 @@ template<std::size_t size, class T> class Vector {
         template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator^(const Vector<size, T>& other) const {
-            return Vector<size, T>{*this} ^= other;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) ^= other;
         }
 
         /**
@@ -927,7 +942,8 @@ template<std::size_t size, class T> class Vector {
         operator<<(typename std::common_type<T>::type shift) const
         #endif
         {
-            return Vector<size, T>{*this} <<= shift;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) <<= shift;
         }
 
         /**
@@ -959,7 +975,8 @@ template<std::size_t size, class T> class Vector {
         typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type operator>>(typename std::common_type<T>::type shift) const
         #endif
         {
-            return Vector<size, T>{*this} >>= shift;
+            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
+            return Vector<size, T>(*this) >>= shift;
         }
 
         /**
