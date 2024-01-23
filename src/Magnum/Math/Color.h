@@ -715,10 +715,6 @@ template<class T> class Color3: public Vector3<T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Color3)
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
-#endif
-
 /**
 @brief Color in linear RGBA color space
 
@@ -1291,10 +1287,6 @@ template<class T> Debug& operator<<(Debug& debug, const ColorHsv<T>& value) {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const ColorHsv<Float>&);
 #endif
-#endif
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Color4)
 #endif
 
 namespace Literals {

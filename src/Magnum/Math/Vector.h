@@ -415,7 +415,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_i = b \boldsymbol a_i
          * @f]
          * @see @ref operator*=(const Vector<size, T>&),
-         *      @ref operator*=(Vector<size, Integral>&, FloatingPoint)
+         *      @ref operator*=(FloatingPoint)
          */
         Vector<size, T>& operator*=(T scalar) {
             for(std::size_t i = 0; i != size; ++i)
@@ -429,10 +429,73 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref operator*(const Vector<size, T>&) const,
          *      @ref operator*=(T), @ref operator*(T, const Vector<size, T>&),
-         *      @ref operator*(const Vector<size, Integral>&, FloatingPoint)
+         *      @ref operator*(FloatingPoint) const
          */
         Vector<size, T> operator*(T scalar) const {
             return Vector<size, T>(*this) *= scalar;
+        }
+
+        /**
+         * @brief Multiply a scalar with a vector
+         *
+         * Same as @ref operator*(T) const.
+         */
+        friend Vector<size, T> operator*(
+            #ifdef DOXYGEN_GENERATING_OUTPUT
+            T
+            #else
+            typename std::common_type<T>::type
+            #endif
+            scalar, const Vector<size, T>& vector)
+        {
+            return vector*scalar;
+        }
+
+        /**
+         * @brief Multiply an integral vector with a floating-point scalar and assign
+         *
+         * Similar to @ref operator*=(T), except that the multiplication is
+         * done in floating-point. The computation is done in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Vector<size, T>&
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>&>::type
+        #endif
+        operator*=(FloatingPoint scalar) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] = T(_data[i]*scalar);
+
+            return *this;
+        }
+
+        /**
+         * @brief Multiply an integral vector with a floating-point scalar
+         *
+         * Similar to @ref operator*(T) const, except that the multiplication
+         * is done in floating-point.
+        */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Vector<size, T>
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        #endif
+        operator*(FloatingPoint scalar) const {
+            return Vector<size, T>{*this} *= scalar;
+        }
+
+        /**
+         * @brief Multiply a floating-point scalar with an integral vector
+         *
+         * Same as @ref operator*(FloatingPoint) const.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> friend Vector<size, T>
+        #else
+        template<class FloatingPoint, class Integral = T> friend typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        #endif
+        operator*(FloatingPoint scalar, const Vector<size, T>& vector) {
+            return vector*scalar;
         }
 
         /**
@@ -442,7 +505,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_i = \frac{\boldsymbol a_i} b
          * @f]
          * @see @ref operator/=(const Vector<size, T>&),
-         *      @ref operator/=(Vector<size, Integral>&, FloatingPoint)
+         *      @ref operator/=(FloatingPoint)
          */
         Vector<size, T>& operator/=(T scalar) {
             for(std::size_t i = 0; i != size; ++i)
@@ -456,10 +519,67 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref operator/(const Vector<size, T>&) const,
          *      @ref operator/=(T), @ref operator/(T, const Vector<size, T>&),
-         *      @ref operator/(const Vector<size, Integral>&, FloatingPoint)
+         *      @ref operator/(FloatingPoint) const
          */
         Vector<size, T> operator/(T scalar) const {
             return Vector<size, T>(*this) /= scalar;
+        }
+
+        /**
+         * @brief Divide a vector with a scalar and invert
+         *
+         * @f[
+         *      \boldsymbol c_i = \frac b {\boldsymbol a_i}
+         * @f]
+         * @see @ref operator/(T) const
+        */
+        friend Vector<size, T> operator/(
+            #ifdef DOXYGEN_GENERATING_OUTPUT
+            T
+            #else
+            typename std::common_type<T>::type
+            #endif
+            scalar, const Vector<size, T>& vector)
+        {
+            Vector<size, T> out;
+
+            for(std::size_t i = 0; i != size; ++i)
+                out._data[i] = scalar/vector._data[i];
+
+            return out;
+        }
+
+        /**
+         * @brief Divide an integral vector with a floating-point scalar and assign
+         *
+         * Similar to @ref operator/=(T), except that the division is done in
+         * floating-point. The computation is done in-place.
+        */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Vector<size, Integral>&
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>&>::type
+        #endif
+        operator/=(FloatingPoint scalar) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] = T(_data[i]/scalar);
+
+            return *this;
+        }
+
+        /**
+         * @brief Divide an integral vector with a floating-point scalar
+         *
+         * Similar to @ref operator/(T) const, except that the division is done
+         * in floating-point.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Vector<size, T>
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        #endif
+        operator/(FloatingPoint scalar) const {
+            return Vector<size, T>{*this} /= scalar;
         }
 
         /**
@@ -469,7 +589,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_i = \boldsymbol a_i \boldsymbol b_i
          * @f]
          * @see @ref operator*=(T),
-         *      @ref operator*=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
+         *      @ref operator*=(const Vector<size, FloatingPoint>&)
          */
         Vector<size, T>& operator*=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
@@ -482,11 +602,61 @@ template<std::size_t size, class T> class Vector {
          * @brief Multiply a vector component-wise
          *
          * @see @ref operator*(T) const, @ref operator*=(const Vector<size, T>&),
-         *      @ref operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&),
+         *      @ref operator*(const Vector<size, FloatingPoint>&) const,
          *      @ref product()
          */
         Vector<size, T> operator*(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) *= other;
+        }
+
+        /**
+         * @brief Multiply an integral vector with a floating-point vector component-wise and assign
+         *
+         * Similar to @ref operator*=(const Vector<size, T>&), except that the
+         * multiplication is done in floating-point. The computation is done
+         * in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Vector<size, T>&
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>&>::type
+        #endif
+        operator*=(const Vector<size, FloatingPoint>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] = T(_data[i]*other._data[i]);
+
+            return *this;
+        }
+
+        /**
+         * @brief Multiply an integral vector with a floating-point vector component-wise
+         *
+         * Similar to @ref operator*(const Vector<size, T>&) const, except that
+         * the multiplication is done in floating-point. The result is always
+         * an integral vector, convert both arguments to the same
+         * floating-point type to have a floating-point result.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Vector<size, T>
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        #endif
+        operator*(const Vector<size, FloatingPoint>& other) const {
+            return Vector<size, T>{*this} *= other;
+        }
+
+        /**
+         * @brief Multiply a floating-point vector with an integral vector component-wise
+         *
+         * Same as @ref operator*(const Vector<size, FloatingPoint>&) const.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> friend Vector<size, T>
+        #else
+        template<class FloatingPoint, class Integral = T> friend typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        #endif
+        operator*(const Vector<size, FloatingPoint>& a, const Vector<size, T>& b) {
+            return b*a;
         }
 
         /**
@@ -496,7 +666,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_i = \frac{\boldsymbol a_i}{\boldsymbol b_i}
          * @f]
          * @see @ref operator/=(T),
-         *      @ref operator/=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
+         *      @ref operator/=(const Vector<size, FloatingPoint>&)
          */
         Vector<size, T>& operator/=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
@@ -509,10 +679,284 @@ template<std::size_t size, class T> class Vector {
          * @brief Divide a vector component-wise
          *
          * @see @ref operator/(T) const, @ref operator/=(const Vector<size, T>&),
-         *      @ref operator/(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
+         *      @ref operator/(const Vector<size, FloatingPoint>&) const
          */
         Vector<size, T> operator/(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) /= other;
+        }
+
+        /**
+         * @brief Divide an integral vector with a floating-point vector component-wise and assign
+         *
+         * Similar to @ref operator/=(const Vector<size, T>&), except that the
+         * division is done in floating-point. The computation is done
+         * in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Vector<size, T>&
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>&>::type
+        #endif
+        operator/=(const Vector<size, FloatingPoint>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] = T(_data[i]/other._data[i]);
+
+            return *this;
+        }
+
+        /**
+         * @brief Divide an integral vector with a floating-point vector component-wise
+         *
+         * Similar to @ref Vector::operator/(const Vector<size, T>&) const,
+         * except that the division is done in floating-point. The result is
+         * always an integral vector, convert both arguments to the same
+         * floating-point type to have a floating-point result.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Vector<size, T>
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        #endif
+        operator/(const Vector<size, FloatingPoint>& other) const {
+            return Vector<size, T>{*this} /= other;
+        }
+
+        /**
+         * @brief Do modulo of a vector and assign
+         *
+         * Enabled only for integral types. The computation is done in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>&
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>&>::type
+        #endif
+        operator%=(T other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] %= other;
+
+            return *this;
+        }
+
+        /**
+         * @brief Modulo of a vector
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        #endif
+        operator%(T scalar) const {
+            return Vector<size, T>{*this} %= scalar;
+        }
+
+        /**
+         * @brief Do modulo of two vectors and assign
+         *
+         * Enabled only for integral types. The computation is done in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>&
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>&>::type
+        #endif
+        operator%=(const Vector<size, T>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] %= other._data[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Modulo of two vectors
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        #endif
+        operator%(const Vector<size, T>& other) const {
+            return Vector<size, T>{*this} %= other;
+        }
+
+        /**
+         * @brief Bitwise NOT of a vector
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        #endif
+        operator~() const {
+            Vector<size, T> out;
+
+            for(std::size_t i = 0; i != size; ++i)
+                out._data[i] = ~_data[i];
+
+            return out;
+        }
+
+        /**
+         * @brief Do bitwise AND of two vectors and assign
+         *
+         * Enabled only for integral types. The computation is done in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>&
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>&>::type
+        #endif
+        operator&=(const Vector<size, T>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] &= other._data[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Bitwise AND of two vectors
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        #endif
+        operator&(const Vector<size, T>& other) const {
+            return Vector<size, T>{*this} &= other;
+        }
+
+        /**
+         * @brief Do bitwise OR of two vectors and assign
+         *
+         * Enabled only for integral types. The computation is done in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>&
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>&>::type
+        #endif
+        operator|=(const Vector<size, T>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] |= other._data[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Bitwise OR of two vectors
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        #endif
+        operator|(const Vector<size, T>& other) const {
+            return Vector<size, T>{*this} |= other;
+        }
+
+        /**
+         * @brief Do bitwise XOR of two vectors and assign
+         *
+         * Enabled only for integral types. The computation is done in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>&
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>&>::type
+        #endif
+        operator^=(const Vector<size, T>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] ^= other._data[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Bitwise XOR of two vectors
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        #endif
+        operator^(const Vector<size, T>& other) const {
+            return Vector<size, T>{*this} ^= other;
+        }
+
+        /**
+         * @brief Do bitwise left shift of a vector and assign
+         *
+         * Enabled only for integral types. The computation is done in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>& operator<<=(T shift)
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>&>::type operator<<=(typename std::common_type<T>::type shift)
+        #endif
+        {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] <<= shift;
+
+            return *this;
+        }
+
+        /**
+         * @brief Bitwise left shift of a vector
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T> operator<<(T shift) const
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        operator<<(typename std::common_type<T>::type shift) const
+        #endif
+        {
+            return Vector<size, T>{*this} <<= shift;
+        }
+
+        /**
+         * @brief Do bitwise right shift of a vector and assign
+         *
+         * Enabled only for integral types. The computation is done in-place.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>& operator>>=(T shift)
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>&>::type operator>>=(typename std::common_type<T>::type shift)
+        #endif
+        {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] >>= shift;
+
+            return *this;
+        }
+
+        /**
+         * @brief Bitwise left shift of a vector
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T> operator>>(T shift) const
+        #else
+        template<class Integral = T>
+        typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type operator>>(typename std::common_type<T>::type shift) const
+        #endif
+        {
+            return Vector<size, T>{*this} >>= shift;
         }
 
         /**
@@ -770,492 +1214,6 @@ template<std::size_t size, class T> inline BitVector<size> notEqual(const Vector
     return out;
 }
 
-/** @relates Vector
-@brief Multiply a scalar with a vector
-
-Same as @ref Vector::operator*(T) const.
-*/
-template<std::size_t size, class T> inline Vector<size, T> operator*(
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    T
-    #else
-    typename std::common_type<T>::type
-    #endif
-    scalar, const Vector<size, T>& vector)
-{
-    return vector*scalar;
-}
-
-/** @relates Vector
-@brief Divide a vector with a scalar and invert
-
-@f[
-    \boldsymbol c_i = \frac b {\boldsymbol a_i}
-@f]
-@see @ref Vector::operator/(T) const
-*/
-template<std::size_t size, class T> inline Vector<size, T> operator/(
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    T
-    #else
-    typename std::common_type<T>::type
-    #endif
-    scalar, const Vector<size, T>& vector)
-{
-    Vector<size, T> out;
-
-    for(std::size_t i = 0; i != size; ++i)
-        out[i] = scalar/vector[i];
-
-    return out;
-}
-
-/** @relates Vector
-@brief Do modulo of an integral vector and assign
-
-The computation is done in-place.
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
-#endif
-operator%=(Vector<size, Integral>& a, Integral b) {
-    for(std::size_t i = 0; i != size; ++i)
-        a[i] %= b;
-
-    return a;
-}
-
-/** @relates Vector
-@brief Modulo of an integral vector
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
-#endif
-operator%(const Vector<size, Integral>& a, Integral b) {
-    Vector<size, Integral> copy(a);
-    return copy %= b;
-}
-
-/** @relates Vector
-@brief Do modulo of two integral vectors and assign
-
-The computation is done in-place.
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
-#endif
-operator%=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
-    for(std::size_t i = 0; i != size; ++i)
-        a[i] %= b[i];
-
-    return a;
-}
-
-/** @relates Vector
-@brief Modulo of two integral vectors
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
-#endif
-operator%(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
-    Vector<size, Integral> copy(a);
-    return copy %= b;
-}
-
-/** @relates Vector
-@brief Bitwise NOT of an integral vector
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
-#endif
-operator~(const Vector<size, Integral>& vector) {
-    Vector<size, Integral> out;
-
-    for(std::size_t i = 0; i != size; ++i)
-        out[i] = ~vector[i];
-
-    return out;
-}
-
-/** @relates Vector
-@brief Do bitwise AND of two integral vectors and assign
-
-The computation is done in-place.
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
-#endif
-operator&=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
-    for(std::size_t i = 0; i != size; ++i)
-        a[i] &= b[i];
-
-    return a;
-}
-
-/** @relates Vector
-@brief Bitwise AND of two integral vectors
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
-#endif
-operator&(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
-    Vector<size, Integral> copy(a);
-    return copy &= b;
-}
-
-/** @relates Vector
-@brief Do bitwise OR of two integral vectors and assign
-
-The computation is done in-place.
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
-#endif
-operator|=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
-    for(std::size_t i = 0; i != size; ++i)
-        a[i] |= b[i];
-
-    return a;
-}
-
-/** @relates Vector
-@brief Bitwise OR of two integral vectors
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
-#endif
-operator|(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
-    Vector<size, Integral> copy(a);
-    return copy |= b;
-}
-
-/** @relates Vector
-@brief Do bitwise XOR of two integral vectors and assign
-
-The computation is done in-place.
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
-#endif
-operator^=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
-    for(std::size_t i = 0; i != size; ++i)
-        a[i] ^= b[i];
-
-    return a;
-}
-
-/** @relates Vector
-@brief Bitwise XOR of two integral vectors
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
-#endif
-operator^(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
-    Vector<size, Integral> copy(a);
-    return copy ^= b;
-}
-
-/** @relates Vector
-@brief Do bitwise left shift of an integral vector and assign
-
-The computation is done in-place.
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
-#endif
-operator<<=(Vector<size, Integral>& vector,
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    Integral
-    #else
-    typename std::common_type<Integral>::type
-    #endif
-    shift)
-{
-    for(std::size_t i = 0; i != size; ++i)
-        vector[i] <<= shift;
-
-    return vector;
-}
-
-/** @relates Vector
-@brief Bitwise left shift of an integral vector
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
-#endif
-operator<<(const Vector<size, Integral>& vector,
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    Integral
-    #else
-    typename std::common_type<Integral>::type
-    #endif
-    shift)
-{
-    Vector<size, Integral> copy(vector);
-    return copy <<= shift;
-}
-
-/** @relates Vector
-@brief Do bitwise right shift of an integral vector and assign
-
-The computation is done in-place.
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
-#endif
-operator>>=(Vector<size, Integral>& vector,
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    Integral
-    #else
-    typename std::common_type<Integral>::type
-    #endif
-    shift) {
-    for(std::size_t i = 0; i != size; ++i)
-        vector[i] >>= shift;
-
-    return vector;
-}
-
-/** @relates Vector
-@brief Bitwise left shift of an integral vector
-*/
-template<std::size_t size, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
-#endif
-operator>>(const Vector<size, Integral>& vector,
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    Integral
-    #else
-    typename std::common_type<Integral>::type
-    #endif
-    shift) {
-    Vector<size, Integral> copy(vector);
-    return copy >>= shift;
-}
-
-/** @relates Vector
-@brief Multiply an integral vector with a floating-point scalar and assign
-
-Similar to @ref Vector::operator*=(T), except that the multiplication is done
-in floating-point. The computation is done in-place.
-*/
-template<std::size_t size, class Integral, class FloatingPoint> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>&>::type
-#endif
-operator*=(Vector<size, Integral>& vector, FloatingPoint scalar) {
-    for(std::size_t i = 0; i != size; ++i)
-        vector[i] = Integral(vector[i]*scalar);
-
-    return vector;
-}
-
-/** @relates Vector
-@brief Multiply an integral vector with a floating-point scalar
-
-Similar to @ref Vector::operator*(T) const, except that the multiplication is
-done in floating-point.
-*/
-template<std::size_t size, class Integral, class FloatingPoint> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type
-#endif
-operator*(const Vector<size, Integral>& vector, FloatingPoint scalar) {
-    Vector<size, Integral> copy(vector);
-    return copy *= scalar;
-}
-
-/** @relates Vector
-@brief Multiply a floating-point scalar with an integral vector
-
-Same as @ref operator*(const Vector<size, Integral>&, FloatingPoint).
-*/
-template<std::size_t size, class FloatingPoint, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type
-#endif
-operator*(FloatingPoint scalar, const Vector<size, Integral>& vector) {
-    return vector*scalar;
-}
-
-/** @relates Vector
-@brief Divide an integral vector with a floating-point scalar and assign
-
-Similar to @ref Vector::operator/=(T), except that the division is done in
-floating-point. The computation is done in-place.
-*/
-template<std::size_t size, class Integral, class FloatingPoint> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>&>::type
-#endif
-operator/=(Vector<size, Integral>& vector, FloatingPoint scalar) {
-    for(std::size_t i = 0; i != size; ++i)
-        vector[i] = Integral(vector[i]/scalar);
-
-    return vector;
-}
-
-/** @relates Vector
-@brief Divide an integral vector with a floating-point scalar
-
-Similar to @ref Vector::operator/(T) const, except that the division is done in
-floating-point.
-*/
-template<std::size_t size, class Integral, class FloatingPoint> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type
-#endif
-operator/(const Vector<size, Integral>& vector, FloatingPoint scalar) {
-    Vector<size, Integral> copy(vector);
-    return copy /= scalar;
-}
-
-/** @relates Vector
-@brief Multiply an integral vector with a floating-point vector component-wise and assign
-
-Similar to @ref Vector::operator*=(const Vector<size, T>&), except that the
-multiplication is done in floating-point. The computation is done in-place.
-*/
-template<std::size_t size, class Integral, class FloatingPoint> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>&>::type
-#endif
-operator*=(Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
-    for(std::size_t i = 0; i != size; ++i)
-        a[i] = Integral(a[i]*b[i]);
-
-    return a;
-}
-
-/** @relates Vector
-@brief Multiply an integral vector with a floating-point vector component-wise
-
-Similar to @ref Vector::operator*(const Vector<size, T>&) const, except that
-the multiplication is done in floating-point. The result is always integral
-vector, convert both arguments to the same floating-point type to have
-floating-point result.
-*/
-template<std::size_t size, class Integral, class FloatingPoint> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type
-#endif
-operator*(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
-    Vector<size, Integral> copy(a);
-    return copy *= b;
-}
-
-/** @relates Vector
-@brief Multiply a floating-point vector with an integral vector component-wise
-
-Same as @ref operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&).
-*/
-template<std::size_t size, class FloatingPoint, class Integral> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type
-#endif
-operator*(const Vector<size, FloatingPoint>& a, const Vector<size, Integral>& b) {
-    return b*a;
-}
-
-/** @relates Vector
-@brief Divide an integral vector with a floating-point vector component-wise and assign
-
-Similar to @ref Vector::operator/=(const Vector<size, T>&), except that the
-division is done in floating-point. The computation is done in-place.
-*/
-template<std::size_t size, class Integral, class FloatingPoint> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>&
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>&>::type
-#endif
-operator/=(Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
-    for(std::size_t i = 0; i != size; ++i)
-        a[i] = Integral(a[i]/b[i]);
-
-    return a;
-}
-
-/** @relates Vector
-@brief Divide an integral vector with a floating-point vector component-wise
-
-Similar to @ref Vector::operator/(const Vector<size, T>&) const, except that
-the division is done in floating-point. The result is always integral vector,
-convert both arguments to the same floating-point type to have floating-point
-result.
-*/
-template<std::size_t size, class Integral, class FloatingPoint> inline
-#ifdef DOXYGEN_GENERATING_OUTPUT
-Vector<size, Integral>
-#else
-typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type
-#endif
-operator/(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
-    Vector<size, Integral> copy(a);
-    return copy /= b;
-}
-
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Vector} */
 template<std::size_t size, class T> Debug& operator<<(Debug& debug, const Vector<size, T>& value) {
@@ -1320,6 +1278,7 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     Type<T> operator-(const Math::Vector<size, T>& other) const {           \
         return Math::Vector<size, T>::operator-(other);                     \
     }                                                                       \
+                                                                            \
     Type<T>& operator*=(T scalar) {                                         \
         Math::Vector<size, T>::operator*=(scalar);                          \
         return *this;                                                       \
@@ -1327,6 +1286,20 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     Type<T> operator*(T scalar) const {                                     \
         return Math::Vector<size, T>::operator*(scalar);                    \
     }                                                                       \
+    friend Type<T> operator*(typename std::common_type<T>::type scalar, const Type<T>& vector) { \
+        return scalar*static_cast<const Math::Vector<size, T>&>(vector);    \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>&>::type operator*=(FloatingPoint scalar) { \
+        Math::Vector<size, T>::operator*=(scalar);                          \
+        return *this;                                                       \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator*(FloatingPoint scalar) const { \
+        return Math::Vector<size, T>::operator*(scalar);                    \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> friend typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator*(FloatingPoint scalar, const Type<T>& vector) { \
+        return scalar*static_cast<const Math::Vector<size, T>&>(vector);    \
+    }                                                                       \
+                                                                            \
     Type<T>& operator/=(T scalar) {                                         \
         Math::Vector<size, T>::operator/=(scalar);                          \
         return *this;                                                       \
@@ -1334,6 +1307,17 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     Type<T> operator/(T scalar) const {                                     \
         return Math::Vector<size, T>::operator/(scalar);                    \
     }                                                                       \
+    friend Type<T> operator/(typename std::common_type<T>::type scalar, const Type<T>& vector) { \
+        return scalar/static_cast<const Math::Vector<size, T>&>(vector);    \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>&>::type operator/=(FloatingPoint scalar) { \
+        Math::Vector<size, T>::operator/=(scalar);                          \
+        return *this;                                                       \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator/(FloatingPoint scalar) const { \
+        return Math::Vector<size, T>::operator/(scalar);                    \
+    }                                                                       \
+                                                                            \
     Type<T>& operator*=(const Math::Vector<size, T>& other) {               \
         Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
@@ -1341,12 +1325,84 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     Type<T> operator*(const Math::Vector<size, T>& other) const {           \
         return Math::Vector<size, T>::operator*(other);                     \
     }                                                                       \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>&>::type operator*=(const Math::Vector<size, FloatingPoint>& other) { \
+        Math::Vector<size, T>::operator*=(other);                           \
+        return *this;                                                       \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator*(const Math::Vector<size, FloatingPoint>& other) const { \
+        return Math::Vector<size, T>::operator*(other);                     \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> friend typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator*(const Math::Vector<size, FloatingPoint>& a, const Type<T>& b) { \
+        return a*static_cast<const Math::Vector<size, T>&>(b);              \
+    }                                                                       \
+                                                                            \
     Type<T>& operator/=(const Math::Vector<size, T>& other) {               \
         Math::Vector<size, T>::operator/=(other);                           \
         return *this;                                                       \
     }                                                                       \
     Type<T> operator/(const Math::Vector<size, T>& other) const {           \
         return Math::Vector<size, T>::operator/(other);                     \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>&>::type operator/=(const Math::Vector<size, FloatingPoint>& other) { \
+        Math::Vector<size, T>::operator/=(other);                           \
+        return *this;                                                       \
+    }                                                                       \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator/(const Math::Vector<size, FloatingPoint>& other) const { \
+        return Math::Vector<size, T>::operator/(other);                     \
+    }                                                                       \
+                                                                            \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator%=(T scalar) { \
+        Math::Vector<size, T>::operator%=(scalar);                          \
+        return *this;                                                       \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator%(T scalar) const { \
+        return Math::Vector<size, T>::operator%(scalar);                    \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator%=(const Math::Vector<size, T>& other) { \
+        Math::Vector<size, T>::operator%=(other);                           \
+        return *this;                                                       \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator%(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::operator%(other);                     \
+    }                                                                       \
+                                                                            \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator~() const { \
+        return Math::Vector<size, T>::operator~();                          \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator&=(const Math::Vector<size, T>& other) { \
+        Math::Vector<size, T>::operator&=(other);                           \
+        return *this;                                                       \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator&(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::operator&(other);                     \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator|=(const Math::Vector<size, T>& other) { \
+        Math::Vector<size, T>::operator|=(other);                           \
+        return *this;                                                       \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator|(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::operator|(other);                     \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator^=(const Math::Vector<size, T>& other) { \
+        Math::Vector<size, T>::operator^=(other);                           \
+        return *this;                                                       \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator^(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::operator^(other);                     \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator<<=(typename std::common_type<T>::type shift) { \
+        Math::Vector<size, T>::operator<<=(shift);                          \
+        return *this;                                                       \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator<<(typename std::common_type<T>::type shift) const { \
+        return Math::Vector<size, T>::operator<<(shift);                    \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator>>=(typename std::common_type<T>::type shift) { \
+        Math::Vector<size, T>::operator>>=(shift);                          \
+        return *this;                                                       \
+    }                                                                       \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator>>(typename std::common_type<T>::type shift) const { \
+        return Math::Vector<size, T>::operator>>(shift);                    \
     }                                                                       \
                                                                             \
     template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type normalized() const { \
@@ -1363,103 +1419,6 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     }                                                                       \
     constexpr Type<T> flipped() const {                                     \
         return Math::Vector<size, T>::flipped();                            \
-    }
-
-#define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                  \
-    template<class T> inline Type<T> operator*(typename std::common_type<T>::type scalar, const Type<T>& vector) { \
-        return scalar*static_cast<const Math::Vector<size, T>&>(vector);    \
-    }                                                                       \
-    template<class T> inline Type<T> operator/(typename std::common_type<T>::type scalar, const Type<T>& vector) { \
-        return scalar/static_cast<const Math::Vector<size, T>&>(vector);    \
-    }                                                                       \
-                                                                            \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, Integral b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) %= b;                 \
-        return a;                                                           \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator%(const Type<Integral>& a, Integral b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a) % b;     \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) %= b;                 \
-        return a;                                                           \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator%(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a) % b;     \
-    }                                                                       \
-                                                                            \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator~(const Type<Integral>& vector) { \
-        return ~static_cast<const Math::Vector<size, Integral>&>(vector);   \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator&=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) &= b;                 \
-        return a;                                                           \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator&(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a) & b;     \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator|=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) |= b;                 \
-        return a;                                                           \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator|(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a) | b;     \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator^=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) ^= b;                 \
-        return a;                                                           \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator^(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a) ^ b;     \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator<<=(Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) <<= shift;       \
-        return vector;                                                      \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator<<(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
-        return static_cast<const Math::Vector<size, Integral>&>(vector) << shift; \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator>>=(Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) >>= shift;       \
-        return vector;                                                      \
-    }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator>>(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
-        return static_cast<const Math::Vector<size, Integral>&>(vector) >> shift; \
-    }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& vector, FloatingPoint scalar) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) *= scalar;       \
-        return vector;                                                      \
-    }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& vector, FloatingPoint scalar) { \
-        return static_cast<const Math::Vector<size, Integral>&>(vector)*scalar; \
-    }                                                                       \
-    template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint scalar, const Type<Integral>& vector) { \
-        return scalar*static_cast<const Math::Vector<size, Integral>&>(vector); \
-    }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& vector, FloatingPoint scalar) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) /= scalar;       \
-        return vector;                                                      \
-    }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& vector, FloatingPoint scalar) { \
-        return static_cast<const Math::Vector<size, Integral>&>(vector)/scalar; \
-    }                                                                       \
-                                                                            \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) *= b;                 \
-        return a;                                                           \
-    }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a)*b;       \
-    }                                                                       \
-    template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Math::Vector<size, FloatingPoint>& a, const Type<Integral>& b) { \
-        return a*static_cast<const Math::Vector<size, Integral>&>(b);       \
-    }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) /= b;                 \
-        return a;                                                           \
-    }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a)/b;       \
     }
 #endif
 

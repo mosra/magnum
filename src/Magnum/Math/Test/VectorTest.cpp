@@ -734,8 +734,6 @@ template<class T> class BasicVec2: public Math::Vector<2, T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, BasicVec2)
 };
 
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, BasicVec2)
-
 typedef BasicVec2<Float> Vec2;
 typedef BasicVec2<Int> Vec2i;
 

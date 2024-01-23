@@ -425,6 +425,22 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
+         * @brief Multiply a scalar with a matrix
+         *
+         * Same as @ref operator*(T) const.
+         */
+        friend RectangularMatrix<cols, rows, T> operator*(
+            #ifdef DOXYGEN_GENERATING_OUTPUT
+            T
+            #else
+            typename std::common_type<T>::type
+            #endif
+            scalar, const RectangularMatrix<cols, rows, T>& matrix)
+        {
+            return matrix*scalar;
+        }
+
+        /**
          * @brief Divide with a scalar and assign
          *
          * The computation is done column-wise in-place. @f[
@@ -446,6 +462,30 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          */
         RectangularMatrix<cols, rows, T> operator/(T scalar) const {
             return RectangularMatrix<cols, rows, T>(*this) /= scalar;
+        }
+
+        /**
+         * @brief Divide a matrix with a scalar and invert
+         *
+         * The computation is done column-wise. @f[
+         *      \boldsymbol B_j = \frac a {\boldsymbol A_j}
+         * @f]
+         * @see @ref operator/(T) const
+         */
+        friend RectangularMatrix<cols, rows, T> operator/(
+            #ifdef DOXYGEN_GENERATING_OUTPUT
+            T
+            #else
+            typename std::common_type<T>::type
+            #endif
+            scalar, const RectangularMatrix<cols, rows, T>& matrix)
+        {
+            RectangularMatrix<cols, rows, T> out{Magnum::NoInit};
+
+            for(std::size_t i = 0; i != cols; ++i)
+                out._data[i] = scalar/matrix._data[i];
+
+            return out;
         }
 
         /**
@@ -638,46 +678,6 @@ template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
 #endif
 
 /** @relates RectangularMatrix
-@brief Multiply a scalar with a matrix
-
-Same as @ref RectangularMatrix::operator*(T) const.
-*/
-template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> operator*(
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    T
-    #else
-    typename std::common_type<T>::type
-    #endif
-    scalar, const RectangularMatrix<cols, rows, T>& matrix)
-{
-    return matrix*scalar;
-}
-
-/** @relates RectangularMatrix
-@brief Divide a matrix with a scalar and invert
-
-The computation is done column-wise. @f[
-    \boldsymbol B_j = \frac a {\boldsymbol A_j}
-@f]
-@see @ref RectangularMatrix::operator/(T) const
-*/
-template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> operator/(
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    T
-    #else
-    typename std::common_type<T>::type
-    #endif
-    scalar, const RectangularMatrix<cols, rows, T>& matrix)
-{
-    RectangularMatrix<cols, rows, T> out{Magnum::NoInit};
-
-    for(std::size_t i = 0; i != cols; ++i)
-        out[i] = scalar/matrix[i];
-
-    return out;
-}
-
-/** @relates RectangularMatrix
 @brief Multiply a vector with a rectangular matrix
 
 Internally the same as multiplying one-column matrix with one-row matrix. @f[
@@ -784,6 +784,9 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<
     constexpr __VA_ARGS__ flippedRows() const {                             \
         return Math::RectangularMatrix<cols, rows, T>::flippedRows();       \
     }                                                                       \
+
+/* Unlike with Vector, these are kept non-member and non-friend as it'd mean
+   too many macro combinations otherwise */
 
 #define MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(...)                          \
     template<std::size_t size, class T> inline __VA_ARGS__ operator*(typename std::common_type<T>::type number, const __VA_ARGS__& matrix) { \
