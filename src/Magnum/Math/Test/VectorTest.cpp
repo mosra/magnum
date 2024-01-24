@@ -400,10 +400,14 @@ void VectorTest::compareComponentWise() {
 }
 
 void VectorTest::promotedNegated() {
-    CORRADE_COMPARE(+Vector4(1.0f, -3.0f, 5.0f, -10.0f),
-                     Vector4(1.0f, -3.0f, 5.0f, -10.0f));
-    CORRADE_COMPARE(-Vector4(1.0f, -3.0f, 5.0f, -10.0f),
-                     Vector4(-1.0f, 3.0f, -5.0f, 10.0f));
+    CORRADE_COMPARE(+(Vector4{1.0f, -3.0f, 5.0f, -10.0f}),
+                     (Vector4{1.0f, -3.0f, 5.0f, -10.0f}));
+    CORRADE_COMPARE(-(Vector4{1.0f, -3.0f, 5.0f, -10.0f}),
+                     (Vector4{-1.0f, 3.0f, -5.0f, 10.0f}));
+
+    constexpr Vector4 a{1.0f, -3.0f, 5.0f, -10.0f};
+    constexpr Vector4 promotedA = +a;
+    CORRADE_COMPARE(promotedA, a);
 }
 
 void VectorTest::addSubtract() {
@@ -841,6 +845,15 @@ void VectorTest::subclass() {
 
     /* Unary operators */
     CORRADE_COMPARE(+Vec2(-2.0f, 5.0f), Vec2(-2.0f, 5.0f));
+    {
+        constexpr Vec2 ca{-2.0f, 5.0f};
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+        constexpr
+        #endif
+        Vec2 cb = +ca;
+        CORRADE_COMPARE(cb, ca);
+    }
+
     CORRADE_COMPARE(-Vec2(-2.0f, 5.0f), Vec2(2.0f, -5.0f));
 
     /* Addition / subtraction */

@@ -345,7 +345,7 @@ template<std::size_t size, class T> class Vector {
          *
          * Returns the value as-is.
          */
-        Vector<size, T> operator+() const { return *this; }
+        constexpr Vector<size, T> operator+() const { return *this; }
 
         /**
          * @brief Negated vector
@@ -1281,7 +1281,7 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
         return Math::Vector<size, T>::pad(a, value);                        \
     }                                                                       \
                                                                             \
-    Type<T> operator+() const {                                             \
+    constexpr Type<T> operator+() const {                                   \
         return Math::Vector<size, T>::operator+();                          \
     }                                                                       \
     template<class U = T> typename std::enable_if<std::is_signed<U>::value, Type<T>>::type \
