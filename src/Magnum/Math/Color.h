@@ -715,6 +715,10 @@ template<class T> class Color3: public Vector3<T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Color3)
 };
 
+#ifdef CORRADE_MSVC2015_COMPATIBILITY
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
+#endif
+
 /**
 @brief Color in linear RGBA color space
 
@@ -1183,6 +1187,10 @@ class Color4: public Vector4<T> {
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Color4)
 };
+
+#ifdef CORRADE_MSVC2015_COMPATIBILITY
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Color4)
+#endif
 
 /** @relatesalso Color3
 @brief Convert color from [CIE xyY representation](https://en.wikipedia.org/wiki/CIE_1931_color_space#CIE_xy_chromaticity_diagram_and_the_CIE_xyY_color_space) to CIE XYZ

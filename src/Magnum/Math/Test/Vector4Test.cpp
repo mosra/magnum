@@ -70,6 +70,8 @@ struct Vector4Test: TestSuite::Tester {
     void threeComponent();
     void twoComponent();
 
+    void multiplyDivideIntegral();
+
     void planeEquationThreePoints();
     void planeEquationNormalPoint();
 
@@ -97,6 +99,8 @@ Vector4Test::Vector4Test() {
               &Vector4Test::access,
               &Vector4Test::threeComponent,
               &Vector4Test::twoComponent,
+
+              &Vector4Test::multiplyDivideIntegral,
 
               &Vector4Test::planeEquationThreePoints,
               &Vector4Test::planeEquationNormalPoint,
@@ -281,6 +285,16 @@ void Vector4Test::twoComponent() {
     constexpr Float d = b.xy().x();
     CORRADE_COMPARE(c, Vector2(1.0f, 2.0f));
     CORRADE_COMPARE(d, 1.0f);
+}
+
+void Vector4Test::multiplyDivideIntegral() {
+    const Vector4i vector{32, 10, -6, 2};
+    const Vector4i multiplied{-48, -15, 9, -3};
+
+    CORRADE_COMPARE(vector*-1.5f, multiplied);
+    /* On MSVC 2015 this picks an int*Vector2i overload, leading to a wrong
+       result, unless MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() is used */
+    CORRADE_COMPARE(-1.5f*vector, multiplied);
 }
 
 void Vector4Test::planeEquationThreePoints() {

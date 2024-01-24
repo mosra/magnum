@@ -71,6 +71,8 @@ struct Vector2Test: TestSuite::Tester {
     void perpendicular();
     void aspectRatio();
 
+    void multiplyDivideIntegral();
+
     void strictWeakOrdering();
 
     void swizzleType();
@@ -94,6 +96,8 @@ Vector2Test::Vector2Test() {
               &Vector2Test::scales,
               &Vector2Test::perpendicular,
               &Vector2Test::aspectRatio,
+
+              &Vector2Test::multiplyDivideIntegral,
 
               &Vector2Test::strictWeakOrdering,
 
@@ -247,6 +251,16 @@ void Vector2Test::perpendicular() {
 
 void Vector2Test::aspectRatio() {
     CORRADE_COMPARE(Vector2(3.0f, 4.0f).aspectRatio(), 0.75f);
+}
+
+void Vector2Test::multiplyDivideIntegral() {
+    const Vector2i vector{32, -6};
+    const Vector2i multiplied{-48, 9};
+
+    CORRADE_COMPARE(vector*-1.5f, multiplied);
+    /* On MSVC 2015 this picks an int*Vector2i overload, leading to a wrong
+       result, unless MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() is used */
+    CORRADE_COMPARE(-1.5f*vector, multiplied);
 }
 
 void Vector2Test::strictWeakOrdering() {

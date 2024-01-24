@@ -493,6 +493,10 @@ template<std::size_t size, class T> class Vector {
          *
          * Same as @ref operator*(FloatingPoint) const.
          */
+        /* Note that this one isn't correctly picked up on MSVC 2015, there's
+           an out-of-class overload wrapped in CORRADE_MSVC2015_COMPATIBILITY
+           which is (and the two don't conflict, apparently, so both are
+           present) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class FloatingPoint> friend Vector<size, T>
         #else
@@ -1439,6 +1443,25 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
     }                                                                       \
     constexpr Type<T> flipped() const {                                     \
         return Math::Vector<size, T>::flipped();                            \
+    }
+#endif
+
+#ifdef CORRADE_MSVC2015_COMPATIBILITY
+/* MSVC 2015 doesn't correctly pick up the in-class inline friend that does
+   this, resulting in float*VectorNi expressions being wrongly executed as
+   int*VectorNi due to an implicit conversion fallback. This overload is picked
+   up correctly (and doesn't conflict with the in-class one), subclasses then
+   need to use the MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() overloads as well
+   to return a correct subtype. See VectorTest::multiplyDivideIntegral(),
+   VectorTest::subclass() and corresponding cases in Vector2Test, Vector3Test,
+   Vector4Test and ColorTest for regression tests. */
+template<std::size_t size, class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type operator*(FloatingPoint scalar, const Vector<size, Integral>& vector) {
+    return vector*scalar;
+}
+
+#define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                   \
+    template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint scalar, const Type<Integral>& vector) { \
+        return vector*scalar;                                               \
     }
 #endif
 

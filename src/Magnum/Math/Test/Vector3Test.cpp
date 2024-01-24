@@ -71,6 +71,8 @@ struct Vector3Test: TestSuite::Tester {
     void scales();
     void twoComponent();
 
+    void multiplyDivideIntegral();
+
     void strictWeakOrdering();
 
     void swizzleType();
@@ -95,6 +97,8 @@ Vector3Test::Vector3Test() {
               &Vector3Test::axes,
               &Vector3Test::scales,
               &Vector3Test::twoComponent,
+
+              &Vector3Test::multiplyDivideIntegral,
 
               &Vector3Test::strictWeakOrdering,
 
@@ -271,6 +275,16 @@ void Vector3Test::twoComponent() {
     CORRADE_COMPARE(c2, Vector2(1.0f, 2.0f));
     CORRADE_COMPARE(d1, 2.0f);
     CORRADE_COMPARE(d2, 2.0f);
+}
+
+void Vector3Test::multiplyDivideIntegral() {
+    const Vector3i vector{32, 10, -6};
+    const Vector3i multiplied{-48, -15, 9};
+
+    CORRADE_COMPARE(vector*-1.5f, multiplied);
+    /* On MSVC 2015 this picks an int*Vector2i overload, leading to a wrong
+       result, unless MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() is used */
+    CORRADE_COMPARE(-1.5f*vector, multiplied);
 }
 
 void Vector3Test::strictWeakOrdering() {

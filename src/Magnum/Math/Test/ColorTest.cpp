@@ -125,6 +125,8 @@ struct ColorTest: TestSuite::Tester {
     void fromXyzDefaultAlpha();
     void xyY();
 
+    void multiplyDivideIntegral();
+
     void strictWeakOrdering();
 
     void swizzleType();
@@ -252,6 +254,8 @@ ColorTest::ColorTest() {
               &ColorTest::xyz,
               &ColorTest::fromXyzDefaultAlpha,
               &ColorTest::xyY,
+
+              &ColorTest::multiplyDivideIntegral,
 
               &ColorTest::strictWeakOrdering,
 
@@ -1067,6 +1071,23 @@ void ColorTest::xyY() {
 
     CORRADE_COMPARE(xyzToXyY(xyz), xyY);
     CORRADE_COMPARE(xyYToXyz(xyY), xyz);
+}
+
+void ColorTest::multiplyDivideIntegral() {
+    typedef Math::Color3<Int> Color3i;
+    typedef Math::Color4<Int> Color4i;
+
+    const Color3i vector3{32, 10, -6};
+    const Color4i vector4{32, 10, -6, 2};
+    const Color3i multiplied3{-48, -15, 9};
+    const Color4i multiplied4{-48, -15, 9, -3};
+
+    CORRADE_COMPARE(vector3*-1.5f, multiplied3);
+    CORRADE_COMPARE(vector4*-1.5f, multiplied4);
+    /* On MSVC 2015 this picks an int*Vector2i overload, leading to a wrong
+       result, unless MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() is used */
+    CORRADE_COMPARE(-1.5f*vector3, multiplied3);
+    CORRADE_COMPARE(-1.5f*vector4, multiplied4);
 }
 
 void ColorTest::strictWeakOrdering() {

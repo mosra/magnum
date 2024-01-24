@@ -236,6 +236,10 @@ template<class T> class Vector4: public Vector<4, T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Vector4)
 };
 
+#ifdef CORRADE_MSVC2015_COMPATIBILITY
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Vector4)
+#endif
+
 /** @relatesalso Vector4
 @brief Create a plane equation from three points
 

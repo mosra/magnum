@@ -235,6 +235,10 @@ template<class T> class Vector2: public Vector<2, T> {
         template<class U> friend U cross(const Vector2<U>&, const Vector2<U>&);
 };
 
+#ifdef CORRADE_MSVC2015_COMPATIBILITY
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, Vector2)
+#endif
+
 namespace Implementation {
     template<std::size_t, class> struct TypeForSize;
     template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
