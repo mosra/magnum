@@ -270,10 +270,14 @@ void Vector4Test::threeComponent() {
     CORRADE_COMPARE(a.rgb(), Vector3(1.0f, 2.0f, 3.0f));
 
     constexpr Vector4 b(1.0f, 2.0f, 3.0f, 4.0f);
-    constexpr Vector3 c = b.xyz();
-    constexpr Float d = b.xyz().y();
-    CORRADE_COMPARE(c, Vector3(1.0f, 2.0f, 3.0f));
-    CORRADE_COMPARE(d, 2.0f);
+    constexpr Vector3 c1 = b.xyz();
+    constexpr Vector3 c2 = b.rgb();
+    constexpr Float d1 = b.xyz().y();
+    constexpr Float d2 = b.rgb().g();
+    CORRADE_COMPARE(c1, Vector3(1.0f, 2.0f, 3.0f));
+    CORRADE_COMPARE(c2, Vector3(1.0f, 2.0f, 3.0f));
+    CORRADE_COMPARE(d1, 2.0f);
+    CORRADE_COMPARE(d2, 2.0f);
 }
 
 void Vector4Test::twoComponent() {
