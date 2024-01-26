@@ -93,6 +93,8 @@ struct QuaternionTest: TestSuite::Tester {
 
     void rotation();
     void rotationNotNormalized();
+    void rotationFromTwoVectors();
+    void rotationFromTwoVectorsNotNormalized();
     void reflection();
     void reflectionNotNormalized();
     void angle();
@@ -134,6 +136,7 @@ using Magnum::Rad;
 using Magnum::Matrix3x3;
 using Magnum::Matrix4;
 using Magnum::Quaternion;
+using Magnum::Vector2;
 using Magnum::Vector3;
 using Magnum::Vector4;
 
@@ -179,6 +182,8 @@ QuaternionTest::QuaternionTest() {
 
               &QuaternionTest::rotation,
               &QuaternionTest::rotationNotNormalized,
+              &QuaternionTest::rotationFromTwoVectors,
+              &QuaternionTest::rotationFromTwoVectorsNotNormalized,
               &QuaternionTest::reflection,
               &QuaternionTest::reflectionNotNormalized,
               &QuaternionTest::angle,
@@ -522,6 +527,80 @@ void QuaternionTest::rotationNotNormalized() {
     CORRADE_COMPARE(out.str(), "Math::Quaternion::rotation(): axis Vector(-1, 2, 2) is not normalized\n");
 }
 
+void QuaternionTest::rotationFromTwoVectors() {
+    Vector3 a{1.0f/Constants<Float>::sqrt3()};
+    Vector3 b{Vector2{1.0f/Constants<Float>::sqrt2()}, 0.0f};
+    Vector3 c{0.0f, 0.0f, 1.0f};
+
+    /* Usual cases */
+    {
+        Quaternion q1 = Quaternion::rotation(a, b);
+        Quaternion q2 = Quaternion::rotation(b, a);
+        CORRADE_COMPARE(q1.transformVector(a), b);
+        CORRADE_COMPARE(q2.transformVector(b), a);
+        CORRADE_COMPARE(q1, (Quaternion{{-0.214186f, 0.214186f, 0.0f}, 0.953021f}));
+        /* The reverse rotation is the same axis, different angle */
+        CORRADE_COMPARE(q2, (Quaternion{-q1.vector(), q1.scalar()}));
+    } {
+        Quaternion q1 = Quaternion::rotation(a, c);
+        Quaternion q2 = Quaternion::rotation(c, a);
+        CORRADE_COMPARE(q1.transformVector(a), c);
+        CORRADE_COMPARE(q2.transformVector(c), a);
+        CORRADE_COMPARE(q1, (Quaternion{{0.325058f, -0.325058f, 0.0f}, 0.888074f}));
+        /* The reverse rotation is the same axis, different angle */
+        CORRADE_COMPARE(q2, (Quaternion{-q1.vector(), q1.scalar()}));
+    } {
+        Quaternion q1 = Quaternion::rotation(b, c);
+        Quaternion q2 = Quaternion::rotation(c, b);
+        CORRADE_COMPARE(q1.transformVector(b), c);
+        CORRADE_COMPARE(q2.transformVector(c), b);
+        CORRADE_COMPARE(q1, (Quaternion{{0.5f, -0.5f, 0.0f}, 0.707107f}));
+        CORRADE_COMPARE(q2, (Quaternion{-q1.vector(), q1.scalar()}));
+
+    /* Same direction, identity rotation */
+    } {
+        Quaternion q1 = Quaternion::rotation(a, a);
+        Quaternion q2 = Quaternion::rotation(b, b);
+        CORRADE_COMPARE(q1.transformVector(a), a);
+        CORRADE_COMPARE(q2.transformVector(b), b);
+        CORRADE_COMPARE(q1, Quaternion{});
+        CORRADE_COMPARE(q2, Quaternion{});
+
+    /* Oppposite direction, picking Y axis */
+    } {
+        Quaternion q1 = Quaternion::rotation(a, -a);
+        Quaternion q2 = Quaternion::rotation(-a, a);
+        CORRADE_COMPARE(q1.transformVector(a), -a);
+        CORRADE_COMPARE(q2.transformVector(-a), a);
+        CORRADE_COMPARE(q1, (Quaternion{{0.707107f, 0.0f, -0.707107f}, 0.0f}));
+        /* The reverse rotation is the same axis, different angle */
+        CORRADE_COMPARE(q2, (Quaternion{-q1.vector(), q1.scalar()}));
+
+    /* Opposite direction, picking X axis as a fallback */
+    } {
+        Quaternion q1 = Quaternion::rotation(Vector3::yAxis(), -Vector3::yAxis());
+        Quaternion q2 = Quaternion::rotation(-Vector3::yAxis(), Vector3::yAxis());
+        CORRADE_COMPARE(q1.transformVector(Vector3::yAxis()), -Vector3::yAxis());
+        CORRADE_COMPARE(q2.transformVector(-Vector3::yAxis()), Vector3::yAxis());
+        CORRADE_COMPARE(q1, (Quaternion{{0.0f, 0.0f, 1.0f}, 0.0f}));
+        /* The reverse rotation is the same axis, different angle */
+        CORRADE_COMPARE(q2, (Quaternion{-q1.vector(), q1.scalar()}));
+    }
+}
+
+void QuaternionTest::rotationFromTwoVectorsNotNormalized() {
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Quaternion::rotation({2.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
+    Quaternion::rotation({1.0f, 0.0f, 0.0f}, {0.0f, 2.0f, 0.0f});
+    CORRADE_COMPARE(out.str(),
+        "Math::Quaternion::rotation(): vectors Vector(2, 0, 0) and Vector(0, 1, 0) are not normalized\n"
+        "Math::Quaternion::rotation(): vectors Vector(1, 0, 0) and Vector(0, 2, 0) are not normalized\n");
+}
+
 void QuaternionTest::reflection() {
     Vector3 axis(1.0f/Constants<Float>::sqrt3());
     Quaternion q = Quaternion::reflection(axis);
@@ -797,7 +876,7 @@ void QuaternionTest::slerpLinearFallback() {
 template<class T> void QuaternionTest::slerpLinearFallbackIsNormalized() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
-    Math::Quaternion<T> a = Math::Quaternion<T>::rotation({}, Math::Vector3<T>::xAxis());
+    Math::Quaternion<T> a = Math::Quaternion<T>::rotation(Math::Rad<T>{}, Math::Vector3<T>::xAxis());
     Math::Quaternion<T> b = Math::Quaternion<T>::rotation(Math::acos(T(1) - T(0.49999)*TypeTraits<T>::epsilon()), Math::Vector3<T>::xAxis());
 
     /* Ensure we're in the special case */
@@ -884,7 +963,7 @@ void QuaternionTest::slerpShortestPathLinearFallback() {
 template<class T> void QuaternionTest::slerpShortestPathLinearFallbackIsNormalized() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
-    Math::Quaternion<T> a = Math::Quaternion<T>::rotation({}, Math::Vector3<T>::xAxis());
+    Math::Quaternion<T> a = Math::Quaternion<T>::rotation(Math::Rad<T>{}, Math::Vector3<T>::xAxis());
     Math::Quaternion<T> b = Math::Quaternion<T>::rotation(Math::acos(T(1) - T(0.49999)*TypeTraits<T>::epsilon()), Math::Vector3<T>::xAxis());
 
     /* Ensure we're in the special case */

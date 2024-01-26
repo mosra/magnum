@@ -302,12 +302,30 @@ template<class T> class Quaternion {
          * Expects that the rotation axis is normalized. @f[
          *      q = [\boldsymbol a \cdot \sin(\frac{\theta}{2}), \cos(\frac{\theta}{2})]
          * @f]
-         * @see @ref angle(), @ref axis(), @ref DualQuaternion::rotation(),
+         * @see @ref rotation(const Vector3<T>&, const Vector3<T>&),
+         *      @ref angle(), @ref axis(), @ref DualQuaternion::rotation(),
          *      @ref Matrix4::rotation(), @ref Complex::rotation(),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
          *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
          */
         static Quaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
+
+        /**
+         * @brief Quaternion rotating from a vector to another
+         * @param normalizedFrom    Normalized vector from which to rotate
+         * @param normalizedTo      Normalized vector to which to rotate
+         * @m_since_latest
+         *
+         * Returns a quaternion that transforms @p normalizedFrom into
+         * @p normalizedTo. Expects that both vectors are normalized. If the
+         * vectors are parallel, returns an identity quaternion, if they're
+         * antiparallel, picks an arbitrary rotation axis.
+         *
+         * Based on *The Shortest Arc Quaternion* by Stan Melax,
+         * [Game Programming Gems 1, page 214](https://archive.org/details/game-programming-gems-1/page/214/mode/2up).
+         * @see @ref rotation(Rad<T>, const Vector3<T>&)
+         */
+        static Quaternion<T> rotation(const Vector3<T>& normalizedFrom, const Vector3<T>& normalizedTo);
 
         /**
          * @brief Reflection quaternion
@@ -850,6 +868,42 @@ template<class T> inline Quaternion<T> Quaternion<T>::rotation(const Rad<T> angl
     CORRADE_DEBUG_ASSERT(normalizedAxis.isNormalized(),
         "Math::Quaternion::rotation(): axis" << normalizedAxis << "is not normalized", {});
     return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
+}
+
+template<class T> Quaternion<T> Quaternion<T>::rotation(const Vector3<T>& normalizedFrom, const Vector3<T>& normalizedTo) {
+    CORRADE_DEBUG_ASSERT(normalizedFrom.isNormalized() && normalizedTo.isNormalized(),
+        "Math::Quaternion::rotation(): vectors" << normalizedFrom << "and" << normalizedTo << "are not normalized", {});
+
+    const T cosHalfAngle = Math::dot(normalizedFrom, normalizedTo);
+
+    /* Vectors point in (almost) the same direction, don't need to rotate
+       anything */
+    if(cosHalfAngle > T(1) - TypeTraits<T>::epsilon())
+        return Quaternion<T>{IdentityInit};
+
+    /* Vectors point in an (almost) opposite direction, pick some arbitrary
+       axis as there's no single solution */
+    if(cosHalfAngle < T(-1) + TypeTraits<T>::epsilon()) {
+        /* Try rotating around Y. If Y is parallel with the input vector,
+           rotate around X instead. */
+        Vector3<T> rotationAxis = cross(Vector3<T>::yAxis(), normalizedFrom);
+        T dot = rotationAxis.dot();
+        if(dot < TypeTraits<T>::epsilon()) {
+            rotationAxis = cross(Vector3<T>::xAxis(), normalizedFrom);
+            dot = rotationAxis.dot();
+        }
+
+        /* Reuse the dot product to normalize the axis */
+        rotationAxis /= std::sqrt(dot);
+
+        /* Same as Quaternion::rotation(axis, 180°) */
+        return {rotationAxis, 0.0f};
+    }
+
+    /* Vectors are not colinear, calculate a rotation axis */
+    const Vector3<T> rotationAxis = cross(normalizedFrom, normalizedTo);
+    const T sqrt = std::sqrt((T(1) + cosHalfAngle)*T(2));
+    return {rotationAxis/sqrt, T(0.5)*sqrt};
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::reflection(const Vector3<T>& normal) {
