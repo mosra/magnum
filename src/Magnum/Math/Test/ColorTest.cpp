@@ -1091,12 +1091,24 @@ void ColorTest::multiplyDivideIntegral() {
 
     constexpr Color3i cvector3{32, 10, -6};
     constexpr Color4i cvector4{32, 10, -6, 2};
-    constexpr Color3i ca31 = cvector3*-1.5f;
-    constexpr Color4i ca41 = cvector4*-1.5f;
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+    constexpr
+    #endif
+    Color3i ca31 = cvector3*-1.5f;
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+    constexpr
+    #endif
+    Color4i ca41 = cvector4*-1.5f;
     /* On MSVC 2015 this picks an int*Vector2i overload, leading to a wrong
        result, unless MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() is used */
-    constexpr Color3i ca32 = -1.5f*cvector3;
-    constexpr Color4i ca42 = -1.5f*cvector4;
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+    constexpr
+    #endif
+    Color3i ca32 = -1.5f*cvector3;
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+    constexpr
+    #endif
+    Color4i ca42 = -1.5f*cvector4;
     CORRADE_COMPARE(ca31, multiplied3);
     CORRADE_COMPARE(ca41, multiplied4);
     CORRADE_COMPARE(ca32, multiplied3);

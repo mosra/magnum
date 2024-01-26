@@ -287,10 +287,16 @@ void Vector3Test::multiplyDivideIntegral() {
     CORRADE_COMPARE(-1.5f*vector, multiplied);
 
     constexpr Vector3i cvector{32, 10, -6};
-    constexpr Vector3i ca1 = cvector*-1.5f;
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+    constexpr
+    #endif
+    Vector3i ca1 = cvector*-1.5f;
     /* On MSVC 2015 this picks an int*Vector2i overload, leading to a wrong
        result, unless MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() is used */
-    constexpr Vector3i ca2 = -1.5f*cvector;
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+    constexpr
+    #endif
+    Vector3i ca2 = -1.5f*cvector;
     CORRADE_COMPARE(ca1, multiplied);
     CORRADE_COMPARE(ca2, multiplied);
 }

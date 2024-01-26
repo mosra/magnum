@@ -935,7 +935,10 @@ void VectorTest::subclass() {
     CORRADE_COMPARE(-Vec2(-2.0f, 5.0f), Vec2(2.0f, -5.0f));
     {
         constexpr Vec2 ca{-2.0f, 5.0f};
-        constexpr Vec2 cb = -ca;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cb = -ca;
         CORRADE_COMPARE(cb, (Vec2{2.0f, -5.0f}));
     }
 
@@ -948,7 +951,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2 ca{-2.0f, 5.0f};
         constexpr Vec2 cb{1.0f, -3.0f};
-        constexpr Vec2 cc = ca + cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cc = ca + cb;
         CORRADE_COMPARE(cc, (Vec2{-1.0f, 2.0f}));
     }
 
@@ -960,7 +966,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2 ca{-2.0f, 5.0f};
         constexpr Vec2 cb{1.0f, -3.0f};
-        constexpr Vec2 cc = ca - cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cc = ca - cb;
         CORRADE_COMPARE(cc, (Vec2{-3.0f, 8.0f}));
     }
 
@@ -973,8 +982,14 @@ void VectorTest::subclass() {
         CORRADE_COMPARE(a, (Vec2{-4.0f, 10.0f}));
 
         constexpr Vec2 ca{-2.0f, 5.0f};
-        constexpr Vec2 cb1 = ca*2.0f;
-        constexpr Vec2 cb2 = 2.0f*ca;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cb1 = ca*2.0f;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cb2 = 2.0f*ca;
         CORRADE_COMPARE(cb1, (Vec2{-4.0f, 10.0f}));
         CORRADE_COMPARE(cb2, (Vec2{-4.0f, 10.0f}));
     }
@@ -987,8 +1002,14 @@ void VectorTest::subclass() {
         CORRADE_COMPARE(a, (Vec2{-4.0f, 10.0f}));
 
         constexpr Vec2 ca{-2.0f, 5.0f};
-        constexpr Vec2 cb1 = ca/0.5f;
-        constexpr Vec2 cb2 = 2.0f/ca;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cb1 = ca/0.5f;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cb2 = 2.0f/ca;
         CORRADE_COMPARE(cb1, (Vec2{-4.0f, 10.0f}));
         CORRADE_COMPARE(cb2, (Vec2{-1.0f, 0.4f}));
     }
@@ -1002,8 +1023,14 @@ void VectorTest::subclass() {
         CORRADE_COMPARE(a, (Vec2i{3, 6}));
 
         constexpr Vec2i ca{2, 4};
-        constexpr Vec2i cb1 = ca*1.5f;
-        constexpr Vec2i cb2 = 1.5f*ca;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cb1 = ca*1.5f;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cb2 = 1.5f*ca;
         CORRADE_COMPARE(cb1, (Vec2i{3, 6}));
         CORRADE_COMPARE(cb2, (Vec2i{3, 6}));
     }
@@ -1020,7 +1047,10 @@ void VectorTest::subclass() {
         CORRADE_COMPARE(a, (Vec2i{3, 6}));
 
         constexpr Vec2i ca{2, 4};
-        constexpr Vec2i cb = ca/(2.0f/3.0f);
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cb = ca/(2.0f/3.0f);
         CORRADE_COMPARE(cb, (Vec2i{3, 6}));
     }
 
@@ -1033,7 +1063,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2 ca{-2.0f, 5.0f};
         constexpr Vec2 cb{1.5f, -2.0f};
-        constexpr Vec2 cc = ca*cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cc = ca*cb;
         CORRADE_COMPARE(cc, (Vec2{-3.0f, -10.0f}));
     }
 
@@ -1045,7 +1078,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2 ca{-2.0f, 5.0f};
         constexpr Vec2 cb{2.0f/3.0f, -0.5f};
-        constexpr Vec2 cc = ca/cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2 cc = ca/cb;
         CORRADE_COMPARE(cc, (Vec2{-3.0f, -10.0f}));
     }
 
@@ -1059,8 +1095,14 @@ void VectorTest::subclass() {
 
         constexpr Vec2i ca{2, 4};
         constexpr Vec2 cb{-1.5f, 0.5f};
-        constexpr Vec2i cc1 = ca*cb;
-        constexpr Vec2i cc2 = cb*ca;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cc1 = ca*cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cc2 = cb*ca;
         CORRADE_COMPARE(cc1, (Vec2i{-3, 2}));
         CORRADE_COMPARE(cc2, (Vec2i{-3, 2}));
     }
@@ -1078,7 +1120,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2i ca{2, 4};
         constexpr Vec2 cb{-2.0f/3.0f, 2.0f};
-        constexpr Vec2i cc = ca/cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cc = ca/cb;
         CORRADE_COMPARE(cc, (Vec2i{-3, 2}));
     }
 
@@ -1090,7 +1135,10 @@ void VectorTest::subclass() {
         CORRADE_COMPARE(a, (Vec2i{0, 1}));
 
         constexpr Vec2i ca{4, 13};
-        constexpr Vec2i cb = ca % 2;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cb = ca % 2;
         CORRADE_COMPARE(cb, (Vec2i{0, 1}));
     }
 
@@ -1102,7 +1150,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2i ca{4, 13};
         constexpr Vec2i cb{2, 5};
-        constexpr Vec2i cc = ca % cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cc = ca % cb;
         CORRADE_COMPARE(cc, (Vec2i{0, 3}));
     }
 
@@ -1110,7 +1161,10 @@ void VectorTest::subclass() {
     CORRADE_COMPARE(~Vec2i(85, 240), Vec2i(-86, -241));
     {
         constexpr Vec2i ca{85, 240};
-        constexpr Vec2i cb = ~ca;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cb = ~ca;
         CORRADE_COMPARE(cb, (Vec2i{-86, -241}));
     }
 
@@ -1123,7 +1177,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2i ca{85, 240};
         constexpr Vec2i cb{170, 85};
-        constexpr Vec2i cc = ca & cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cc = ca & cb;
         CORRADE_COMPARE(cc, (Vec2i{0, 80}));
     }
 
@@ -1135,7 +1192,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2i ca{85, 240};
         constexpr Vec2i cb{170, 85};
-        constexpr Vec2i cc = ca | cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cc = ca | cb;
         CORRADE_COMPARE(cc, (Vec2i{255, 245}));
     }
 
@@ -1147,7 +1207,10 @@ void VectorTest::subclass() {
 
         constexpr Vec2i ca{85, 240};
         constexpr Vec2i cb{170, 85};
-        constexpr Vec2i cc = ca ^ cb;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cc = ca ^ cb;
         CORRADE_COMPARE(cc, (Vec2i{255, 165}));
     }
 
@@ -1159,7 +1222,10 @@ void VectorTest::subclass() {
         CORRADE_COMPARE(a, (Vec2i{28, 128}));
 
         constexpr Vec2i ca{7, 32};
-        constexpr Vec2i cb = ca << 2;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cb = ca << 2;
         CORRADE_COMPARE(cb, (Vec2i{28, 128}));
     }
 
@@ -1170,7 +1236,10 @@ void VectorTest::subclass() {
         CORRADE_COMPARE(a, (Vec2i{1, 8}));
 
         constexpr Vec2i ca{7, 32};
-        constexpr Vec2i cb = ca >> 2;
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* No idea? */
+        constexpr
+        #endif
+        Vec2i cb = ca >> 2;
         CORRADE_COMPARE(cb, (Vec2i{1, 8}));
     }
 
