@@ -356,11 +356,13 @@ template<std::size_t size, class T> class Vector {
          * @see @ref flipped(), @ref Vector2::perpendicular()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T>
+        constexpr Vector<size, T>
         #else
-        template<class U = T> typename std::enable_if<std::is_signed<U>::value, Vector<size, T>>::type
+        template<class U = T> constexpr typename std::enable_if<std::is_signed<U>::value, Vector<size, T>>::type
         #endif
-        operator-() const;
+        operator-() const {
+            return negateInternal(typename Containers::Implementation::GenerateSequence<size>::Type{});
+        }
 
         /**
          * @brief Add and assign a vector
@@ -381,9 +383,8 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref operator+=(), @ref sum()
          */
-        Vector<size, T> operator+(const Vector<size, T>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) += other;
+        constexpr Vector<size, T> operator+(const Vector<size, T>& other) const {
+            return addInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -405,9 +406,8 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref operator-=()
          */
-        Vector<size, T> operator-(const Vector<size, T>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) -= other;
+        constexpr Vector<size, T> operator-(const Vector<size, T>& other) const {
+            return subtractInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -433,9 +433,8 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator*=(T), @ref operator*(T, const Vector<size, T>&),
          *      @ref operator*(FloatingPoint) const
          */
-        Vector<size, T> operator*(T scalar) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) *= scalar;
+        constexpr Vector<size, T> operator*(T scalar) const {
+            return multiplyInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -443,7 +442,7 @@ template<std::size_t size, class T> class Vector {
          *
          * Same as @ref operator*(T) const.
          */
-        friend Vector<size, T> operator*(
+        constexpr friend Vector<size, T> operator*(
             #ifdef DOXYGEN_GENERATING_OUTPUT
             T
             #else
@@ -479,13 +478,12 @@ template<std::size_t size, class T> class Vector {
          * is done in floating-point.
         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> Vector<size, T>
+        template<class FloatingPoint> constexpr Vector<size, T>
         #else
-        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
         #endif
         operator*(FloatingPoint scalar) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) *= scalar;
+            return multiplyIntegerInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -498,9 +496,9 @@ template<std::size_t size, class T> class Vector {
            which is (and the two don't conflict, apparently, so both are
            present) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> friend Vector<size, T>
+        template<class FloatingPoint> friend constexpr Vector<size, T>
         #else
-        template<class FloatingPoint, class Integral = T> friend typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        template<class FloatingPoint, class Integral = T> friend constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
         #endif
         operator*(FloatingPoint scalar, const Vector<size, T>& vector) {
             return vector*scalar;
@@ -529,9 +527,8 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator/=(T), @ref operator/(T, const Vector<size, T>&),
          *      @ref operator/(FloatingPoint) const
          */
-        Vector<size, T> operator/(T scalar) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) /= scalar;
+        constexpr Vector<size, T> operator/(T scalar) const {
+            return divideInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -542,7 +539,7 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see @ref operator/(T) const
         */
-        friend Vector<size, T> operator/(
+        friend constexpr Vector<size, T> operator/(
             #ifdef DOXYGEN_GENERATING_OUTPUT
             T
             #else
@@ -550,12 +547,7 @@ template<std::size_t size, class T> class Vector {
             #endif
             scalar, const Vector<size, T>& vector)
         {
-            Vector<size, T> out;
-
-            for(std::size_t i = 0; i != size; ++i)
-                out._data[i] = scalar/vector._data[i];
-
-            return out;
+            return divideInternal(scalar, vector, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -583,13 +575,12 @@ template<std::size_t size, class T> class Vector {
          * in floating-point.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> Vector<size, T>
+        template<class FloatingPoint> Vector<size, T> constexpr
         #else
-        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
         #endif
         operator/(FloatingPoint scalar) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) /= scalar;
+            return divideIntegerInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -615,9 +606,8 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator*(const Vector<size, FloatingPoint>&) const,
          *      @ref product()
          */
-        Vector<size, T> operator*(const Vector<size, T>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) *= other;
+        constexpr Vector<size, T> operator*(const Vector<size, T>& other) const {
+            return multiplyInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -651,9 +641,8 @@ template<std::size_t size, class T> class Vector {
             #ifndef DOXYGEN_GENERATING_OUTPUT
             , class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr
             #endif
-        > Vector<size, T> operator*(const Vector<size, FloatingPoint>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) *= other;
+        > constexpr Vector<size, T> operator*(const Vector<size, FloatingPoint>& other) const {
+            return multiplyIntegerInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -670,7 +659,7 @@ template<std::size_t size, class T> class Vector {
             #ifndef DOXYGEN_GENERATING_OUTPUT
             , class FloatingPoint = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr
             #endif
-        > Vector<size, Integral> operator*(const Vector<size, Integral>& other) const {
+        > constexpr Vector<size, Integral> operator*(const Vector<size, Integral>& other) const {
             return other**this;
         }
 
@@ -696,9 +685,8 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator/(T) const, @ref operator/=(const Vector<size, T>&),
          *      @ref operator/(const Vector<size, FloatingPoint>&) const
          */
-        Vector<size, T> operator/(const Vector<size, T>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) /= other;
+        constexpr Vector<size, T> operator/(const Vector<size, T>& other) const {
+            return divideInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -729,13 +717,12 @@ template<std::size_t size, class T> class Vector {
          * floating-point type to have a floating-point result.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> Vector<size, T>
+        template<class FloatingPoint> constexpr Vector<size, T>
         #else
-        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
+        template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, T>>::type
         #endif
         operator/(const Vector<size, FloatingPoint>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) /= other;
+            return divideIntegerInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -761,13 +748,12 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for integral types.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T>
+        constexpr Vector<size, T>
         #else
-        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator%(T scalar) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) %= scalar;
+            return moduloInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -793,13 +779,12 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for integral types.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T>
+        constexpr Vector<size, T>
         #else
-        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator%(const Vector<size, T>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) %= other;
+            return moduloInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -808,17 +793,12 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for integral types.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T>
+        constexpr Vector<size, T>
         #else
-        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator~() const {
-            Vector<size, T> out;
-
-            for(std::size_t i = 0; i != size; ++i)
-                out._data[i] = ~_data[i];
-
-            return out;
+            return invertInternal(typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -844,13 +824,12 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for integral types.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T>
+        constexpr Vector<size, T>
         #else
-        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator&(const Vector<size, T>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) &= other;
+            return andInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -876,13 +855,12 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for integral types.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T>
+        constexpr Vector<size, T>
         #else
-        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator|(const Vector<size, T>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) |= other;
+            return orInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -908,13 +886,12 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for integral types.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T>
+        constexpr Vector<size, T>
         #else
-        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         #endif
         operator^(const Vector<size, T>& other) const {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) ^= other;
+            return xorInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -940,14 +917,13 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for integral types.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T> operator<<(T shift) const
+        constexpr Vector<size, T> operator<<(T shift) const
         #else
-        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
+        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type
         operator<<(typename std::common_type<T>::type shift) const
         #endif
         {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) <<= shift;
+            return shiftLeftInternal(shift, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -973,14 +949,13 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for integral types.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<size, T> operator>>(T shift) const
+        constexpr Vector<size, T> operator>>(T shift) const
         #else
         template<class Integral = T>
-        typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type operator>>(typename std::common_type<T>::type shift) const
+        constexpr typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>>::type operator>>(typename std::common_type<T>::type shift) const
         #endif
         {
-            /* MSVC 2015 and 2017 treat the copy as a const if {} is used */
-            return Vector<size, T>(*this) >>= shift;
+            return shiftRightInternal(shift, typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -1168,6 +1143,86 @@ template<std::size_t size, class T> class Vector {
            builds */
         T _data[size];
 
+        /* Implementation for constexpr operators. Not SFINAE-restricted for
+           integers or integers + floats, not marked as inline friends, no
+           std::common_type<T> workarounds for scalars as the callers do all
+           that already. Protected as they're used directly by subclasses
+           through the MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION() macro to speed
+           up debug builds. */
+        template<std::size_t ...sequence> constexpr Vector<size, T> negateInternal(Containers::Implementation::Sequence<sequence...>) const {
+            /* All these explicitly cast to T because with e.g. Vector2s it
+               would otherwise cause narrowing warnings because stupid C
+               promotion rules make e.g. `short + short` result in an int */
+            return {T(-_data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> addInternal(const Vector<size, T>& other, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] + other._data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> subtractInternal(const Vector<size, T>& other, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] - other._data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> multiplyInternal(T scalar, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence]*scalar)...};
+        }
+        template<std::size_t ...sequence, class FloatingPoint> constexpr Vector<size, T> multiplyIntegerInternal(FloatingPoint scalar, Containers::Implementation::Sequence<sequence...>) const {
+            /* This has to cast even without C promotion rules in effect, to
+               convert a floating-point result back to an integer */
+            return {T(_data[sequence]*scalar)...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> divideInternal(T scalar, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence]/scalar)...};
+        }
+        template<std::size_t ...sequence, class FloatingPoint> constexpr Vector<size, T> divideIntegerInternal(FloatingPoint scalar, Containers::Implementation::Sequence<sequence...>) const {
+            /* This has to cast even without C promotion rules in effect, to
+               convert a floating-point result back to an integer */
+            return {T(_data[sequence]/scalar)...};
+        }
+        template<std::size_t ...sequence> constexpr static Vector<size, T> divideInternal(T scalar, const Vector<size, T>& vector, Containers::Implementation::Sequence<sequence...>) {
+            return {T(scalar/vector._data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> multiplyInternal(const Vector<size, T>& other, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence]*other._data[sequence])...};
+        }
+        template<std::size_t ...sequence, class FloatingPoint> constexpr Vector<size, T> multiplyIntegerInternal(const Vector<size, FloatingPoint>& other, Containers::Implementation::Sequence<sequence...>) const {
+            /* This has to cast even without C promotion rules in effect, to
+               convert a floating-point result back to an integer */
+            return {T(_data[sequence]*other._data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> divideInternal(const Vector<size, T>& other, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence]/other._data[sequence])...};
+        }
+        template<std::size_t ...sequence, class FloatingPoint> constexpr Vector<size, T> divideIntegerInternal(const Vector<size, FloatingPoint>& other, Containers::Implementation::Sequence<sequence...>) const {
+            /* This has to cast even without C promotion rules in effect, to
+               convert a floating-point result back to an integer */
+            return {T(_data[sequence]/other._data[sequence])...};
+        }
+
+        template<std::size_t ...sequence> constexpr Vector<size, T> moduloInternal(T scalar, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] % scalar)...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> moduloInternal(const Math::Vector<size, T>& other, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] % other._data[sequence])...};
+        }
+
+        template<std::size_t ...sequence> constexpr Vector<size, T> invertInternal(Containers::Implementation::Sequence<sequence...>) const {
+            return {T(~_data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> andInternal(const Math::Vector<size, T>& other, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] & other._data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> orInternal(const Math::Vector<size, T>& other, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] | other._data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> xorInternal(const Math::Vector<size, T>& other, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] ^ other._data[sequence])...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> shiftLeftInternal(typename std::common_type<T>::type shift, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] << shift)...};
+        }
+        template<std::size_t ...sequence> constexpr Vector<size, T> shiftRightInternal(typename std::common_type<T>::type shift, Containers::Implementation::Sequence<sequence...>) const {
+            return {T(_data[sequence] >> shift)...};
+        }
+
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Since I added deprecated aliases to Shaders::VectorGL, this FUCKING
@@ -1270,178 +1325,178 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(size, Type)                   \
-    static Type<T>& from(T* data) {                                         \
-        return *reinterpret_cast<Type<T>*>(data);                           \
+#define MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(size, Type_)                  \
+    static Type_<T>& from(T* data) {                                        \
+        return *reinterpret_cast<Type_<T>*>(data);                          \
     }                                                                       \
-    static const Type<T>& from(const T* data) {                             \
-        return *reinterpret_cast<const Type<T>*>(data);                     \
+    static const Type_<T>& from(const T* data) {                            \
+        return *reinterpret_cast<const Type_<T>*>(data);                    \
     }                                                                       \
-    template<std::size_t otherSize> constexpr static Type<T> pad(const Math::Vector<otherSize, T>& a, T value = T()) { \
+    template<std::size_t otherSize> constexpr static Type_<T> pad(const Math::Vector<otherSize, T>& a, T value = T()) { \
         return Math::Vector<size, T>::pad(a, value);                        \
     }                                                                       \
                                                                             \
-    constexpr Type<T> operator+() const {                                   \
+    constexpr Type_<T> operator+() const {                                  \
         return Math::Vector<size, T>::operator+();                          \
     }                                                                       \
-    template<class U = T> typename std::enable_if<std::is_signed<U>::value, Type<T>>::type \
+    template<class U = T> constexpr typename std::enable_if<std::is_signed<U>::value, Type_<T>>::type \
     operator-() const {                                                     \
-        return Math::Vector<size, T>::operator-();                          \
+        return Math::Vector<size, T>::negateInternal(typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    Type<T>& operator+=(const Math::Vector<size, T>& other) {               \
+    Type_<T>& operator+=(const Math::Vector<size, T>& other) {              \
         Math::Vector<size, T>::operator+=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator+(const Math::Vector<size, T>& other) const {           \
-        return Math::Vector<size, T>::operator+(other);                     \
+    constexpr Type_<T> operator+(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::addInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    Type<T>& operator-=(const Math::Vector<size, T>& other) {               \
+    Type_<T>& operator-=(const Math::Vector<size, T>& other) {              \
         Math::Vector<size, T>::operator-=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator-(const Math::Vector<size, T>& other) const {           \
-        return Math::Vector<size, T>::operator-(other);                     \
+    constexpr Type_<T> operator-(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::subtractInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
                                                                             \
-    Type<T>& operator*=(T scalar) {                                         \
+    Type_<T>& operator*=(T scalar) {                                        \
         Math::Vector<size, T>::operator*=(scalar);                          \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator*(T scalar) const {                                     \
-        return Math::Vector<size, T>::operator*(scalar);                    \
+    constexpr Type_<T> operator*(T scalar) const {                          \
+        return Math::Vector<size, T>::multiplyInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    friend Type<T> operator*(typename std::common_type<T>::type scalar, const Type<T>& vector) { \
+    friend constexpr Type_<T> operator*(typename std::common_type<T>::type scalar, const Type_<T>& vector) { \
         return scalar*static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>&>::type operator*=(FloatingPoint scalar) { \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type_<T>&>::type operator*=(FloatingPoint scalar) { \
         Math::Vector<size, T>::operator*=(scalar);                          \
         return *this;                                                       \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator*(FloatingPoint scalar) const { \
-        return Math::Vector<size, T>::operator*(scalar);                    \
+    template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type_<T>>::type operator*(FloatingPoint scalar) const { \
+        return Math::Vector<size, T>::multiplyIntegerInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> friend typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator*(FloatingPoint scalar, const Type<T>& vector) { \
+    template<class FloatingPoint, class Integral = T> friend constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type_<T>>::type operator*(FloatingPoint scalar, const Type_<T>& vector) { \
         return scalar*static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
                                                                             \
-    Type<T>& operator/=(T scalar) {                                         \
+    Type_<T>& operator/=(T scalar) {                                        \
         Math::Vector<size, T>::operator/=(scalar);                          \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator/(T scalar) const {                                     \
-        return Math::Vector<size, T>::operator/(scalar);                    \
+    constexpr Type_<T> operator/(T scalar) const {                          \
+        return Math::Vector<size, T>::divideInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    friend Type<T> operator/(typename std::common_type<T>::type scalar, const Type<T>& vector) { \
+    friend constexpr Type_<T> operator/(typename std::common_type<T>::type scalar, const Type_<T>& vector) { \
         return scalar/static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>&>::type operator/=(FloatingPoint scalar) { \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type_<T>&>::type operator/=(FloatingPoint scalar) { \
         Math::Vector<size, T>::operator/=(scalar);                          \
         return *this;                                                       \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator/(FloatingPoint scalar) const { \
-        return Math::Vector<size, T>::operator/(scalar);                    \
+    template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type_<T>>::type operator/(FloatingPoint scalar) const { \
+        return Math::Vector<size, T>::divideIntegerInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
                                                                             \
-    Type<T>& operator*=(const Math::Vector<size, T>& other) {               \
+    Type_<T>& operator*=(const Math::Vector<size, T>& other) {              \
         Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator*(const Math::Vector<size, T>& other) const {           \
-        return Math::Vector<size, T>::operator*(other);                     \
+    constexpr Type_<T> operator*(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::multiplyInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>&>::type operator*=(const Math::Vector<size, FloatingPoint>& other) { \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type_<T>&>::type operator*=(const Math::Vector<size, FloatingPoint>& other) { \
         Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr> Type<T> operator*(const Math::Vector<size, FloatingPoint>& other) const { \
-        return Math::Vector<size, T>::operator*(other);                     \
+    template<class FloatingPoint, class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr> constexpr Type_<T> operator*(const Math::Vector<size, FloatingPoint>& other) const { \
+        return Math::Vector<size, T>::multiplyIntegerInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class Integral, class FloatingPoint = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr> Type<Integral> operator*(const Math::Vector<size, Integral>& other) const { \
-        return Math::Vector<size, T>::operator*(other);                     \
+    template<class Integral, class FloatingPoint = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value>::type* = nullptr> constexpr Type_<Integral> operator*(const Math::Vector<size, Integral>& other) const { \
+        return other**this;                                                 \
     }                                                                       \
                                                                             \
-    Type<T>& operator/=(const Math::Vector<size, T>& other) {               \
+    Type_<T>& operator/=(const Math::Vector<size, T>& other) {              \
         Math::Vector<size, T>::operator/=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator/(const Math::Vector<size, T>& other) const {           \
-        return Math::Vector<size, T>::operator/(other);                     \
+    constexpr Type_<T> operator/(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::divideInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>&>::type operator/=(const Math::Vector<size, FloatingPoint>& other) { \
+    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type_<T>&>::type operator/=(const Math::Vector<size, FloatingPoint>& other) { \
         Math::Vector<size, T>::operator/=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<T>>::type operator/(const Math::Vector<size, FloatingPoint>& other) const { \
-        return Math::Vector<size, T>::operator/(other);                     \
+    template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type_<T>>::type operator/(const Math::Vector<size, FloatingPoint>& other) const { \
+        return Math::Vector<size, T>::divideIntegerInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
                                                                             \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator%=(T scalar) { \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type_<T>&>::type operator%=(T scalar) { \
         Math::Vector<size, T>::operator%=(scalar);                          \
         return *this;                                                       \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator%(T scalar) const { \
-        return Math::Vector<size, T>::operator%(scalar);                    \
+    template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Type_<T>>::type operator%(T scalar) const { \
+        return Math::Vector<size, T>::moduloInternal(scalar, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator%=(const Math::Vector<size, T>& other) { \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type_<T>&>::type operator%=(const Math::Vector<size, T>& other) { \
         Math::Vector<size, T>::operator%=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator%(const Math::Vector<size, T>& other) const { \
-        return Math::Vector<size, T>::operator%(other);                     \
+    template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Type_<T>>::type operator%(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::moduloInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
                                                                             \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator~() const { \
-        return Math::Vector<size, T>::operator~();                          \
+    template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Type_<T>>::type operator~() const { \
+        return Math::Vector<size, T>::invertInternal(typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator&=(const Math::Vector<size, T>& other) { \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type_<T>&>::type operator&=(const Math::Vector<size, T>& other) { \
         Math::Vector<size, T>::operator&=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator&(const Math::Vector<size, T>& other) const { \
-        return Math::Vector<size, T>::operator&(other);                     \
+    template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Type_<T>>::type operator&(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::andInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator|=(const Math::Vector<size, T>& other) { \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type_<T>&>::type operator|=(const Math::Vector<size, T>& other) { \
         Math::Vector<size, T>::operator|=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator|(const Math::Vector<size, T>& other) const { \
-        return Math::Vector<size, T>::operator|(other);                     \
+    template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Type_<T>>::type operator|(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::orInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator^=(const Math::Vector<size, T>& other) { \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type_<T>&>::type operator^=(const Math::Vector<size, T>& other) { \
         Math::Vector<size, T>::operator^=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator^(const Math::Vector<size, T>& other) const { \
-        return Math::Vector<size, T>::operator^(other);                     \
+    template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Type_<T>>::type operator^(const Math::Vector<size, T>& other) const { \
+        return Math::Vector<size, T>::xorInternal(other, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator<<=(typename std::common_type<T>::type shift) { \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type_<T>&>::type operator<<=(typename std::common_type<T>::type shift) { \
         Math::Vector<size, T>::operator<<=(shift);                          \
         return *this;                                                       \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator<<(typename std::common_type<T>::type shift) const { \
-        return Math::Vector<size, T>::operator<<(shift);                    \
+    template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Type_<T>>::type operator<<(typename std::common_type<T>::type shift) const { \
+        return Math::Vector<size, T>::shiftLeftInternal(shift, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>&>::type operator>>=(typename std::common_type<T>::type shift) { \
+    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type_<T>&>::type operator>>=(typename std::common_type<T>::type shift) { \
         Math::Vector<size, T>::operator>>=(shift);                          \
         return *this;                                                       \
     }                                                                       \
-    template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Type<T>>::type operator>>(typename std::common_type<T>::type shift) const { \
-        return Math::Vector<size, T>::operator>>(shift);                    \
+    template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Type_<T>>::type operator>>(typename std::common_type<T>::type shift) const { \
+        return Math::Vector<size, T>::shiftRightInternal(shift, typename Containers::Implementation::GenerateSequence<size>::Type{}); \
     }                                                                       \
                                                                             \
-    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type normalized() const { \
+    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type_<T>>::type normalized() const { \
         return Math::Vector<size, T>::normalized();                         \
     }                                                                       \
-    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type resized(T length) const { \
+    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type_<T>>::type resized(T length) const { \
         return Math::Vector<size, T>::resized(length);                      \
     }                                                                       \
-    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type projected(const Math::Vector<size, T>& other) const {           \
+    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type_<T>>::type projected(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::projected(other);                     \
     }                                                                       \
-    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type projectedOntoNormalized(const Math::Vector<size, T>& other) const { \
+    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type_<T>>::type projectedOntoNormalized(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::projectedOntoNormalized(other);       \
     }                                                                       \
-    constexpr Type<T> flipped() const {                                     \
+    constexpr Type_<T> flipped() const {                                    \
         return Math::Vector<size, T>::flipped();                            \
     }
 #endif
@@ -1455,12 +1510,12 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
    to return a correct subtype. See VectorTest::multiplyDivideIntegral(),
    VectorTest::subclass() and corresponding cases in Vector2Test, Vector3Test,
    Vector4Test and ColorTest for regression tests. */
-template<std::size_t size, class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type operator*(FloatingPoint scalar, const Vector<size, Integral>& vector) {
+template<std::size_t size, class FloatingPoint, class Integral> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type operator*(FloatingPoint scalar, const Vector<size, Integral>& vector) {
     return vector*scalar;
 }
 
 #define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                   \
-    template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint scalar, const Type<Integral>& vector) { \
+    template<class FloatingPoint, class Integral> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint scalar, const Type<Integral>& vector) { \
         return vector*scalar;                                               \
     }
 #endif
@@ -1497,21 +1552,6 @@ template<std::size_t size, class T> inline BitVector<size> Vector<size, T>::oper
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] > other._data[i]);
-
-    return out;
-}
-
-template<std::size_t size, class T>
-#ifdef DOXYGEN_GENERATING_OUTPUT
-inline Vector<size, T>
-#else
-template<class U> inline typename std::enable_if<std::is_signed<U>::value, Vector<size, T>>::type
-#endif
-Vector<size, T>::operator-() const {
-    Vector<size, T> out;
-
-    for(std::size_t i = 0; i != size; ++i)
-        out._data[i] = -_data[i];
 
     return out;
 }

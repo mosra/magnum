@@ -261,6 +261,14 @@ void Vector2Test::multiplyDivideIntegral() {
     /* On MSVC 2015 this picks an int*Vector2i overload, leading to a wrong
        result, unless MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() is used */
     CORRADE_COMPARE(-1.5f*vector, multiplied);
+
+    constexpr Vector2i cvector{32, -6};
+    constexpr Vector2i ca1 = cvector*-1.5f;
+    /* On MSVC 2015 this picks an int*Vector2i overload, leading to a wrong
+       result, unless MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() is used */
+    constexpr Vector2i ca2 = -1.5f*cvector;
+    CORRADE_COMPARE(ca1, multiplied);
+    CORRADE_COMPARE(ca2, multiplied);
 }
 
 void Vector2Test::strictWeakOrdering() {
