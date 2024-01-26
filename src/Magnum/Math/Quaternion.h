@@ -897,7 +897,7 @@ template<class T> Quaternion<T> Quaternion<T>::rotation(const Vector3<T>& normal
         rotationAxis /= std::sqrt(dot);
 
         /* Same as Quaternion::rotation(axis, 180°) */
-        return {rotationAxis, 0.0f};
+        return {rotationAxis, T(0.0)};
     }
 
     /* Vectors are not colinear, calculate a rotation axis */
