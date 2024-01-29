@@ -474,9 +474,12 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Expects that @p data stride fits into a signed 16-bit value, that
          * vertex count fits into 32 bits, and for builtin attributes that
          * @p format corresponds to @p name, @p arraySize is either zero for
-         * non-array attributes or non-zero for array attributes. The stride
-         * can be zero or negative, but note that such data layouts are not
-         * commonly supported by GPU APIs.
+         * non-array attributes or non-zero for array attributes. The
+         * @p morphTargetId is expected to be greater or equal to @cpp -1 @ce
+         * and less than @cpp 128 @ce and has to be @cpp -1 @ce for builtin
+         * attributes that can't be morph targets. The stride can be zero or
+         * negative, but note that such data layouts are not commonly supported
+         * by GPU APIs.
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept;
 
@@ -494,9 +497,11 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * size matches @p format and @p arraySize, and for builtin attributes
          * that @p format corresponds to @p name and @p arraySize is either
          * zero for non-array attributes or non-zero for array attributes. The
-         * stride is expected to fit into a signed 16-bit value. It can be zero
-         * or negative, but note that such data layouts are not commonly
-         * supported by GPU APIs.
+         * @p morphTargetId is expected to be greater or equal to @cpp -1 @ce
+         * and less than @cpp 128 @ce and has to be @cpp -1 @ce for builtin
+         * attributes that can't be morph targets. The stride is expected to
+         * fit into a signed 16-bit value. It can be zero or negative, but note
+         * that such data layouts are not commonly supported by GPU APIs.
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView2D<const char>& data, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept;
 
@@ -591,9 +596,11 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          *
          * For builtin attributes expects that @p arraySize is zero for
          * non-array attributes and non-zero for array attributes. The
-         * @p stride is expected to fit into a signed 16-bit value. It can be
-         * zero or negative, but note that such data layouts are not commonly
-         * supported by GPU APIs.
+         * @p morphTargetId is expected to be greater or equal to @cpp -1 @ce
+         * and less than @cpp 128 @ce and has to be @cpp -1 @ce for builtin
+         * attributes that can't be morph targets. The @p stride is expected to
+         * fit into a signed 16-bit value. It can be zero or negative, but note
+         * that such data layouts are not commonly supported by GPU APIs.
          *
          * Additionally, for even more flexibility, the @p vertexCount can be
          * overridden at @ref MeshData construction time, however all attributes
