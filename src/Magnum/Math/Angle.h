@@ -49,12 +49,12 @@ and conversion less error-prone.
 
 @section Math-Deg-usage Usage
 
-You can enter the value either by using a literal:
+You can create the value either by using a literal:
 
 @snippet MagnumMath.cpp Deg-usage
 
-Or explicitly convert a unitless value (such as output from some function) to
-either degrees or radians:
+Or explicitly convert a unitless value (such as an output from some function)
+to either degrees or radians:
 
 @snippet MagnumMath.cpp Deg-usage-convert
 
@@ -65,7 +65,7 @@ or multiplication/division by a unitless number:
 
 It is also possible to compare angles with all comparison operators, but
 comparison of degrees and radians is not possible without explicit conversion
-to common type:
+to a common type:
 
 @snippet MagnumMath.cpp Deg-usage-comparison
 
@@ -105,7 +105,7 @@ template<class T> class Deg: public Unit<Deg, T> {
          * Equivalent to @ref Deg(ZeroInitT).
          */
         /* Needs to be Math::Deg here and in all other places because older
-           Clang and both MSVC 2015 and 2017 treat it as a template instantce
+           Clang and both MSVC 2015 and 2017 treat it as a template instance
            Deg<T> instead of a Deg template */
         constexpr /*implicit*/ Deg() noexcept: Unit<Math::Deg, T>{ZeroInit} {}
 
@@ -115,7 +115,7 @@ template<class T> class Deg: public Unit<Deg, T> {
         /** @brief Construct without initializing the contents */
         explicit Deg(Magnum::NoInitT) noexcept: Unit<Math::Deg, T>{Magnum::NoInit} {}
 
-        /** @brief Explicit constructor from unitless type */
+        /** @brief Explicit constructor from a unitless type */
         constexpr explicit Deg(T value) noexcept: Unit<Math::Deg, T>(value) {}
 
         /** @brief Construct from another underlying type */
