@@ -344,6 +344,8 @@ Mesh::~Mesh() {
     /* Remove current vao from the state */
     GLuint& current = Context::current().state().mesh.currentVAO;
     if(current == _id) current = 0;
+
+    Context::current().state().mesh.destroyImplementation(*this);
 }
 
 Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _flags{other._flags}, _countSet{other._countSet}, _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},

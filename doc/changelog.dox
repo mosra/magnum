@@ -1035,6 +1035,8 @@ See also:
     @ref GL::Buffer::bind() call as affecting also the regular binding point,
     leading to wrong buffer object being used for data upload etc. in certain
     cases on platforms without DSA extensions.
+-   A large refactor of @ref GL::Mesh internals caused VAOs to no longer be
+    correctly deleted on destruction (see [mosra/magnum#632](https://github.com/mosra/magnum/issues/632))
 -   @ref GL::Context move constructor was not marked @cpp noexcept @ce by
     accident and it was also not really moving everything properly, especially
     when delayed creation was done on the moved-to object
