@@ -57,7 +57,7 @@ atlas.add(stridedArrayView(images).slice(&ImageView2D::size), offsets, rotations
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
 Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize().xy(),
-    Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product())}};
+    Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product()*4)}};
 Containers::StridedArrayView2D<Color4ub> dst = output.pixels<Color4ub>();
 for(std::size_t i = 0; i != images.size(); ++i) {
     /* Rotate 90° counterclockwise if the image is rotated in the atlas */
@@ -82,7 +82,7 @@ atlas.clearFlags(TextureTools::AtlasLandfillFlag::RotatePortrait|
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
 Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize().xy(),
-    Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product())}};
+    Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product()*4)}};
 Containers::StridedArrayView2D<Color4ub> dst = output.pixels<Color4ub>();
 for(std::size_t i = 0; i != images.size(); ++i) {
     Containers::StridedArrayView2D<const Color4ub> src = images[i].pixels<Color4ub>();
@@ -104,9 +104,8 @@ TextureTools::AtlasLandfill atlas{{1024, 1024, 0}};
 atlas.add(stridedArrayView(images).slice(&ImageView2D::size), offsets, rotations);
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
-Vector3i outputSize = atlas.filledSize();
-Image3D output{PixelFormat::RGBA8Unorm, outputSize,
-    Containers::Array<char>{ValueInit, std::size_t(outputSize.product())}};
+Image3D output{PixelFormat::RGBA8Unorm, atlas.filledSize(),
+    Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product()*4)}};
 Containers::StridedArrayView3D<Color4ub> dst = output.pixels<Color4ub>();
 for(std::size_t i = 0; i != images.size(); ++i) {
     /* Rotate 90° counterclockwise if the image is rotated in the atlas */
@@ -135,7 +134,7 @@ Int layerCount = TextureTools::atlasArrayPowerOfTwo(layerSize, sizes, offsets);
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
 Vector3i outputSize{layerSize, layerCount};
 Image3D output{PixelFormat::RGBA8Unorm, outputSize,
-    Containers::Array<char>{ValueInit, std::size_t(outputSize.product())}};
+    Containers::Array<char>{ValueInit, std::size_t(outputSize.product()*4)}};
 Containers::StridedArrayView3D<Color4ub> dst = output.pixels<Color4ub>();
 for(std::size_t i = 0; i != input.size(); ++i) {
     Containers::StridedArrayView3D<const Color4ub> src = input[i].pixels<Color4ub>();
