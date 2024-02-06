@@ -170,7 +170,11 @@ struct Mesh::AttributeLayout {
        member when not. If a Buffer instance needs to be owned, it's
        subsequently moved in (usually with ObjectFlag::DeleteOnDestruction
        set). */
-    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{UnsignedByte(location)}, kindSize{UnsignedByte(kind)}, type{UnsignedShort(type)}, divisor{divisor}, offsetStride{(UnsignedLong(offset) << 16)|stride} {
+    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{UnsignedByte(location)},
+        /* Have to use () instead of {}, otherwise GCC 4.8 complains that
+           parameter kind is set but not used */
+        kindSize(UnsignedByte(kind)), type{UnsignedShort(type)}, divisor{divisor}, offsetStride{(UnsignedLong(offset) << 16)|stride}
+    {
         CORRADE_INTERNAL_ASSERT(location < 256 && type < 65536 && UnsignedLong(offset) < (1ull << 48) && stride < 65536);
         #ifndef MAGNUM_TARGET_GLES
         if(size == GL_BGRA) {
