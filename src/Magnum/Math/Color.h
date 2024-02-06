@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Color3, @ref Magnum::Math::Color4, literal @link Magnum::Math::Literals::operator""_rgb() @endlink, @link Magnum::Math::Literals::operator""_rgba() @endlink, @link Magnum::Math::Literals::operator""_rgbf() @endlink, @link Magnum::Math::Literals::operator""_rgbaf() @endlink, @link Magnum::Math::Literals::operator""_srgb() @endlink, @link Magnum::Math::Literals::operator""_srgba() @endlink, @link Magnum::Math::Literals::operator""_srgbf() @endlink, @link Magnum::Math::Literals::operator""_srgbaf() @endlink
+ * @brief Class @ref Magnum::Math::Color3, @ref Magnum::Math::Color4, literal @link Magnum::Math::Literals::ColorLiterals::operator""_rgb() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgba() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgbf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgbaf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgb() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgba() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgbf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgbaf() @endlink
  */
 
 /* std::declval() is said to be in <utility> but libstdc++, libc++ and MSVC STL
@@ -299,8 +299,10 @@ Conversion from and to HSV is done always using floating-point types, so hue
 is always in range in range @f$ [0.0\degree, 360.0\degree] @f$, saturation and
 value in range @f$ [0.0, 1.0] @f$.
 
-@see @link operator""_rgb() @endlink, @link operator""_rgbf() @endlink,
-    @link operator""_srgb() @endlink, @link operator""_srgbf() @endlink,
+@see @link Literals::ColorLiterals::operator""_rgb() @endlink,
+    @link Literals::ColorLiterals::operator""_rgbf() @endlink,
+    @link Literals::ColorLiterals::operator""_srgb() @endlink,
+    @link Literals::ColorLiterals::operator""_srgbf() @endlink,
     @ref Color4, @ref Magnum::Color3, @ref Magnum::Color3h,
     @ref Magnum::Color3ub, @ref Magnum::Color3us
 */
@@ -723,8 +725,10 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
 @brief Color in linear RGBA color space
 
 See @ref Color3 for more information.
-@see @link operator""_rgba() @endlink, @link operator""_rgbaf() @endlink,
-    @link operator""_srgba() @endlink, @link operator""_srgbaf() @endlink,
+@see @link Literals::ColorLiterals::operator""_rgba() @endlink,
+    @link Literals::ColorLiterals::operator""_rgbaf() @endlink,
+    @link Literals::ColorLiterals::operator""_srgba() @endlink,
+    @link Literals::ColorLiterals::operator""_srgbaf() @endlink,
     @ref Magnum::Color4, @ref Magnum::Color4h, @ref Magnum::Color4ub,
     @ref Magnum::Color4us
 */
@@ -1297,7 +1301,23 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const ColorHsv<Float>&);
 #endif
 #endif
 
+/* Unlike STL, where there's e.g. std::literals::string_literals with both
+   being inline, here's just the second inline because making both would cause
+   the literals to be implicitly available to all code in Math. Which isn't
+   great if there are eventually going to be conflicts. In case of STL the
+   expected use case was that literals are available to anybody who does
+   `using namespace std;`, that doesn't apply here as most APIs are in
+   subnamespaces that *should not* be pulled in via `using` as a whole. */
 namespace Literals {
+    /** @todoc The inline causes "error: non-const getClassDef() called on
+        aliased member. Please report as a bug." on Doxygen 1.8.18, plus the
+        fork I have doesn't even mark them as inline in the XML output yet. And
+        it also duplicates the literal reference to parent namespace, adding
+        extra noise. Revisit once upgrading to a newer version. */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    inline
+    #endif
+    namespace ColorLiterals {
 
 /** @relatesalso Magnum::Math::Color3
 @brief 8bit-per-channel linear RGB literal
@@ -1465,7 +1485,7 @@ inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
     return Color4<Float>::fromSrgbAlphaInt(UnsignedInt(value));
 }
 
-}
+}}
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /**
@@ -1553,8 +1573,9 @@ namespace Corrade { namespace Utility {
 /**
 @tweakableliteral{Magnum::Math::Color3}
 
-Parses the @link Magnum::Math::Literals::operator""_rgb @endlink and
-@link Magnum::Math::Literals::operator""_srgb @endlink literals.
+Parses the @link Magnum::Math::Literals::ColorLiterals::operator""_rgb @endlink
+and @link Magnum::Math::Literals::ColorLiterals::operator""_srgb @endlink
+literals.
 @experimental
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color3<Magnum::UnsignedByte>> {
@@ -1571,8 +1592,8 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Vector3<Magnum::Un
 /**
 @tweakableliteral{Magnum::Math::Color4}
 
-Parses the @link Magnum::Math::Literals::operator""_rgba @endlink and
-@link Magnum::Math::Literals::operator""_srgba @endlink literals.
+Parses the @link Magnum::Math::Literals::ColorLiterals::operator""_rgba @endlink
+and @link Magnum::Math::Literals::ColorLiterals::operator""_srgba @endlink literals.
 @experimental
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>> {
@@ -1589,8 +1610,9 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Vector4<Magnum::Un
 /**
 @tweakableliteral{Magnum::Math::Color3}
 
-Parses the @link Magnum::Math::Literals::operator""_rgbf @endlink and
-@link Magnum::Math::Literals::operator""_srgbf @endlink literals.
+Parses the @link Magnum::Math::Literals::ColorLiterals::operator""_rgbf @endlink
+and @link Magnum::Math::Literals::ColorLiterals::operator""_srgbf @endlink
+literals.
 @experimental
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color3<Magnum::Float>> {
@@ -1603,8 +1625,9 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color3<Magnum::Flo
 /**
 @tweakableliteral{Magnum::Math::Color4}
 
-Parses the @link Magnum::Math::Literals::operator""_rgbaf @endlink and
-@link Magnum::Math::Literals::operator""_srgbaf @endlink literals.
+Parses the @link Magnum::Math::Literals::ColorLiterals::operator""_rgbaf @endlink
+and @link Magnum::Math::Literals::ColorLiterals::operator""_srgbaf @endlink
+literals.
 @experimental
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color4<Magnum::Float>> {

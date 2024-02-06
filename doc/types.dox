@@ -110,16 +110,16 @@ equivalently (e.g. @ref Math::Vector "Math::Vector<Float>" or @ref Color3
 instead of @ref Vector3).
 
 For easier entering of (s)RGB colors in hexadecimal format there are
-@link Math::Literals::operator""_srgb() _srgb @endlink /
-@link Math::Literals::operator""_srgbf() _srgbf @endlink,
-@link Math::Literals::operator""_srgba() _srgba @endlink /
-@link Math::Literals::operator""_srgbaf() _srgbaf @endlink,
-@link Math::Literals::operator""_rgb() _rgb @endlink /
-@link Math::Literals::operator""_rgbf() _rgbf @endlink and
-@link Math::Literals::operator""_rgba() _rgba @endlink /
-@link Math::Literals::operator""_rgbaf() _rgbaf @endlink literals in
-@ref Math::Literals namespace. See their documentation for more information
-about the differences.
+@link Math::Literals::ColorLiterals::operator""_srgb() _srgb @endlink /
+@link Math::Literals::ColorLiterals::operator""_srgbf() _srgbf @endlink,
+@link Math::Literals::ColorLiterals::operator""_srgba() _srgba @endlink /
+@link Math::Literals::ColorLiterals::operator""_srgbaf() _srgbaf @endlink,
+@link Math::Literals::ColorLiterals::operator""_rgb() _rgb @endlink /
+@link Math::Literals::ColorLiterals::operator""_rgbf() _rgbf @endlink and
+@link Math::Literals::ColorLiterals::operator""_rgba() _rgba @endlink /
+@link Math::Literals::ColorLiterals::operator""_rgbaf() _rgbaf @endlink
+literals in the @ref Math::Literals namespace. See their documentation for more
+information about the differences.
 
 @snippet MagnumMath.cpp types-literals-colors
 
@@ -146,8 +146,8 @@ operations as not all CPU architecture have native support for half-floats and
 thus the operations would be done faster in a regular single-precision
 @ref Float. The class provides explicit constructors and conversion operators
 from/to @ref Float and @ref UnsignedShort and you can also use the
-@link Math::Literals::operator""_h() _h @endlink literal that is provided in
-the @ref Math::Literals namespace:
+@link Math::Literals::HalfLiterals::operator""_h() _h @endlink literal that is
+provided in the @ref Math::Literals namespace:
 
 @snippet MagnumMath.cpp types-literals-half
 
@@ -169,10 +169,11 @@ outweight that in most practical use cases.
 
 These classes are *not* implicitly constructible or convertible from/to
 @ref Float or @ref Double, you have to either construct/convert them explicitly
-or use custom @link Math::Literals::operator""_degf() _degf @endlink /
-@link Math::Literals::operator""_deg() _deg @endlink and @link Math::Literals::operator""_radf() _radf @endlink
-/ @link Math::Literals::operator""_rad() _rad @endlink literals that are
-provided in the @ref Math::Literals namespace:
+or use custom @link Math::Literals::AngleLiterals::operator""_degf() _degf @endlink
+/ @link Math::Literals::AngleLiterals::operator""_deg() _deg @endlink and
+@link Math::Literals::AngleLiterals::operator""_radf() _radf @endlink /
+@link Math::Literals::AngleLiterals::operator""_rad() _rad @endlink literals
+that are provided in the @ref Math::Literals namespace:
 
 @snippet MagnumMath.cpp types-literals-angles
 

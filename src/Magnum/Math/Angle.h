@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Deg, @ref Magnum::Math::Rad, literal @link Magnum::Math::Literals::operator""_degf() @endlink, @link Magnum::Math::Literals::operator""_radf() @endlink, @link Magnum::Math::Literals::operator""_deg() @endlink, @link Magnum::Math::Literals::operator""_rad() @endlink
+ * @brief Class @ref Magnum::Math::Deg, @ref Magnum::Math::Rad, literal @link Magnum::Math::Literals::AngleLiterals::operator""_degf() @endlink, @link Magnum::Math::Literals::AngleLiterals::operator""_radf() @endlink, @link Magnum::Math::Literals::AngleLiterals::operator""_deg() @endlink, @link Magnum::Math::Literals::AngleLiterals::operator""_rad() @endlink
  */
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
@@ -95,7 +95,9 @@ These silent errors are easily avoided by requiring explicit conversions:
 
 @snippet MagnumMath.cpp Deg-usage-explicit-conversion
 
-@see @ref Magnum::Deg, @ref Magnum::Degh, @ref Magnum::Degd
+@see @link Literals::AngleLiterals::operator""_degf() @endlink,
+    @link Literals::AngleLiterals::operator""_deg() @endlink, @ref Magnum::Deg,
+    @ref Magnum::Degh, @ref Magnum::Degd
 */
 template<class T> class Deg: public Unit<Deg, T> {
     public:
@@ -135,7 +137,23 @@ template<class T> class Deg: public Unit<Deg, T> {
         constexpr /*implicit*/ Deg(Unit<Rad, T> value);
 };
 
+/* Unlike STL, where there's e.g. std::literals::string_literals with both
+   being inline, here's just the second inline because making both would cause
+   the literals to be implicitly available to all code in Math. Which isn't
+   great if there are eventually going to be conflicts. In case of STL the
+   expected use case was that literals are available to anybody who does
+   `using namespace std;`, that doesn't apply here as most APIs are in
+   subnamespaces that *should not* be pulled in via `using` as a whole. */
 namespace Literals {
+    /** @todoc The inline causes "error: non-const getClassDef() called on
+        aliased member. Please report as a bug." on Doxygen 1.8.18, plus the
+        fork I have doesn't even mark them as inline in the XML output yet. And
+        it also duplicates the literal reference to parent namespace, adding
+        extra noise. Revisit once upgrading to a newer version. */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    inline
+    #endif
+    namespace AngleLiterals {
 
 /** @relatesalso Magnum::Math::Deg
 @brief Double-precision degree value literal
@@ -161,13 +179,15 @@ Example usage:
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(Float(value)); }
 
-}
+}}
 
 /**
 @brief Angle in radians
 
 See @ref Deg for more information.
-@see @ref Magnum::Rad, @ref Magnum::Radh, @ref Magnum::Radd
+@see @link Literals::AngleLiterals::operator""_radf() @endlink,
+    @link Literals::AngleLiterals::operator""_rad() @endlink, @ref Magnum::Rad,
+    @ref Magnum::Radh, @ref Magnum::Radd
 */
 template<class T> class Rad: public Unit<Rad, T> {
     public:
@@ -204,7 +224,23 @@ template<class T> class Rad: public Unit<Rad, T> {
         constexpr /*implicit*/ Rad(Unit<Deg, T> value);
 };
 
+/* Unlike STL, where there's e.g. std::literals::string_literals with both
+   being inline, here's just the second inline because making both would cause
+   the literals to be implicitly available to all code in Math. Which isn't
+   great if there are eventually going to be conflicts. In case of STL the
+   expected use case was that literals are available to anybody who does
+   `using namespace std;`, that doesn't apply here as most APIs are in
+   subnamespaces that *should not* be pulled in via `using` as a whole. */
 namespace Literals {
+    /** @todoc The inline causes "error: non-const getClassDef() called on
+        aliased member. Please report as a bug." on Doxygen 1.8.18, plus the
+        fork I have doesn't even mark them as inline in the XML output yet. And
+        it also duplicates the literal reference to parent namespace, adding
+        extra noise. Revisit once upgrading to a newer version. */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    inline
+    #endif
+    namespace AngleLiterals {
 
 /** @relatesalso Magnum::Math::Rad
 @brief Double-precision radian value literal
@@ -224,7 +260,7 @@ See @link operator""_degf() @endlink for more information.
 */
 constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(Float(value)); }
 
-}
+}}
 
 template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
 template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
@@ -261,7 +297,8 @@ namespace Corrade { namespace Utility {
 /**
 @tweakableliteral{Magnum::Math::Deg}
 
-Parses the @link Magnum::Math::Literals::operator""_degf @endlink literal.
+Parses the @link Magnum::Math::Literals::AngleLiterals::operator""_degf @endlink
+literal.
 @experimental
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Deg<Magnum::Float>> {
@@ -279,7 +316,8 @@ template<> struct TweakableParser<Magnum::Math::Unit<Magnum::Math::Deg, Magnum::
 /**
 @tweakableliteral{Magnum::Math::Deg}
 
-Parses the @link Magnum::Math::Literals::operator""_deg @endlink literal.
+Parses the @link Magnum::Math::Literals::AngleLiterals::operator""_deg @endlink
+literal.
 @experimental
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Deg<Magnum::Double>> {
@@ -297,7 +335,8 @@ template<> struct TweakableParser<Magnum::Math::Unit<Magnum::Math::Deg, Magnum::
 /**
 @tweakableliteral{Magnum::Math::Rad}
 
-Parses the @link Magnum::Math::Literals::operator""_radf @endlink literal.
+Parses the @link Magnum::Math::Literals::AngleLiterals::operator""_radf @endlink
+literal.
 @experimental
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Float>> {
@@ -315,7 +354,8 @@ template<> struct TweakableParser<Magnum::Math::Unit<Magnum::Math::Rad, Magnum::
 /**
 @tweakableliteral{Magnum::Math::Rad}
 
-Parses the @link Magnum::Math::Literals::operator""_rad @endlink literal.
+Parses the @link Magnum::Math::Literals::AngleLiterals::operator""_rad @endlink
+literal.
 @experimental
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Double>> {

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Half, literal @link Magnum::Math::Literals::operator""_h() @endlink
+ * @brief Class @ref Magnum::Math::Half, literal @link Magnum::Math::Literals::HalfLiterals::operator""_h() @endlink
  */
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
@@ -59,7 +59,7 @@ thus the operations would be done faster in a regular single-precision
 
 The class provides explicit conversion from and to @ref Magnum::Float "Float",
 equality comparison with correct treatment of NaN values, promotion and
-negation operator, an @link Literals::operator""_h() operator""_h() @endlink
+negation operator, a @link Literals::HalfLiterals::operator""_h() @endlink
 literal and an @ref operator<<(Debug&, Half) debug operator. Internally the
 class uses @ref packHalf() and @ref unpackHalf(). Example usage:
 
@@ -165,7 +165,23 @@ class Half {
         UnsignedShort _data;
 };
 
+/* Unlike STL, where there's e.g. std::literals::string_literals with both
+   being inline, here's just the second inline because making both would cause
+   the literals to be implicitly available to all code in Math. Which isn't
+   great if there are eventually going to be conflicts. In case of STL the
+   expected use case was that literals are available to anybody who does
+   `using namespace std;`, that doesn't apply here as most APIs are in
+   subnamespaces that *should not* be pulled in via `using` as a whole. */
 namespace Literals {
+    /** @todoc The inline causes "error: non-const getClassDef() called on
+        aliased member. Please report as a bug." on Doxygen 1.8.18, plus the
+        fork I have doesn't even mark them as inline in the XML output yet. And
+        it also duplicates the literal reference to parent namespace, adding
+        extra noise. Revisit once upgrading to a newer version. */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    inline
+    #endif
+    namespace HalfLiterals {
 
 /** @relatesalso Magnum::Math::Half
 @brief Half-float literal
@@ -174,7 +190,7 @@ See @ref Half for more information.
 */
 inline Half operator "" _h(long double value) { return Half(Float(value)); }
 
-}
+}}
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /**
@@ -208,7 +224,7 @@ namespace Corrade { namespace Utility {
 /**
 @tweakableliteral{Magnum::Math::Half}
 
-Parses the @link Magnum::Math::Literals::operator""_h @endlink literal.
+Parses the @link Magnum::Math::Literals::HalfLiterals::operator""_h @endlink literal.
 */
 template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Half> {
     TweakableParser() = delete;

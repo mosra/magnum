@@ -684,7 +684,7 @@ a high-level overview.
 -   New @ref Math::Frustum class and @ref Math::Geometry::Intersection::pointFrustum(),
     `Math::Geometry::Intersection::boxFrustum()` functions (see
     [mosra/magnum#185](https://github.com/mosra/magnum/pull/185)
--   New @ref Math::Half class, @link Math::Literals::operator""_h @endlink
+-   New @ref Math::Half class, @link Math::Literals::HalfLiterals::operator""_h @endlink
     literal and @ref Math::packHalf() and @ref Math::unpackHalf() functions
 -   New @ref Math::Color3::fromSrgb(), @ref Math::Color3::toSrgb(),
     @ref Math::Color4::fromSrgbAlpha(), @ref Math::Color4::toSrgbAlpha()

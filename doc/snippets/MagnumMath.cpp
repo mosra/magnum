@@ -640,6 +640,13 @@ static_cast<void>(q2);
 }
 
 {
+/* [Literals-using] */
+using namespace Math::Literals;
+using namespace Math::Literals::ColorLiterals;
+/* [Literals-using] */
+}
+
+{
 /* [Deg-usage] */
 using namespace Math::Literals;
 
