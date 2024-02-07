@@ -246,7 +246,6 @@ set(SDL_LOCALE OFF CACHE BOOL "" FORCE)
 set(SDL_POWER OFF CACHE BOOL "" FORCE)
 set(SDL_RENDER OFF CACHE BOOL "" FORCE)
 set(SDL_SENSOR OFF CACHE BOOL "" FORCE)
-set(SDL_THREADS OFF CACHE BOOL "" FORCE)
 # This assumes you want to have SDL as a static library. If not, set SDL_STATIC
 # to OFF instead.
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
