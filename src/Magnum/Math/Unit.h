@@ -160,6 +160,54 @@ template<template<class> class Derived, class T> class Unit {
             return Unit<Derived, T>{value._value*number};
         }
 
+        /**
+         * @brief Multiply an integral value with a floating-point number and assign
+         * @m_since_latest
+         *
+         * Similar to @ref operator*=(T), except that the multiplication is
+         * done in floating-point.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Unit<Derived, T>&
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>&>::type
+        #endif
+        operator*=(FloatingPoint number) {
+            _value = T(_value*number);
+            return *this;
+        }
+
+        /**
+         * @brief Multiply an integral value with a floating-point number
+         * @m_since_latest
+         *
+         * Similar to @ref operator*(T) const, except that the multiplication
+         * is done in floating-point.
+        */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> constexpr Unit<Derived, T>
+        #else
+        template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>>::type
+        #endif
+        operator*(FloatingPoint number) const {
+            return Unit<Derived, T>{T(_value*number)};
+        }
+
+        /**
+         * @brief Multiply a floating-point number with an integral value
+         * @m_since_latest
+         *
+         * Same as @ref operator*(FloatingPoint) const.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> friend constexpr Unit<Derived, T>
+        #else
+        template<class FloatingPoint, class Integral = T> friend constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>>::type
+        #endif
+        operator*(FloatingPoint number, const Unit<Derived, T>& value) {
+            return Unit<Derived, T>{T(value._value*number)};
+        }
+
         /** @brief Divide with a number and assign */
         Unit<Derived, T>& operator/=(T number) {
             _value /= number;
@@ -169,6 +217,39 @@ template<template<class> class Derived, class T> class Unit {
         /** @brief Divide with a number */
         constexpr Unit<Derived, T> operator/(T number) const {
             return Unit<Derived, T>(_value/number);
+        }
+
+        /**
+         * @brief Divide an integral value with a floating-point number and assign
+         * @m_since_latest
+         *
+         * Similar to @ref operator/=(T), except that the division is done in
+         * floating-point.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> Unit<Derived, T>&
+        #else
+        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>&>::type
+        #endif
+        operator/=(FloatingPoint number) {
+            _value = T(_value/number);
+            return *this;
+        }
+
+        /**
+         * @brief Divide an integral value with a floating-point number
+         * @m_since_latest
+         *
+         * Similar to @ref operator/(T) const, except that the division is done
+         * in floating-point.
+        */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class FloatingPoint> constexpr Unit<Derived, T>
+        #else
+        template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>>::type
+        #endif
+        operator/(FloatingPoint number) const {
+            return Unit<Derived, T>{T(_value/number)};
         }
 
         /** @brief Ratio of two values */

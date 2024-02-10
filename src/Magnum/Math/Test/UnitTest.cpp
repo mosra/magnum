@@ -47,6 +47,7 @@ struct UnitTest: TestSuite::Tester {
     void promotedNegated();
     void addSubtract();
     void multiplyDivide();
+    void multiplyDivideIntegral();
 };
 
 UnitTest::UnitTest() {
@@ -61,7 +62,8 @@ UnitTest::UnitTest() {
 
               &UnitTest::promotedNegated,
               &UnitTest::addSubtract,
-              &UnitTest::multiplyDivide});
+              &UnitTest::multiplyDivide,
+              &UnitTest::multiplyDivideIntegral});
 }
 
 /* What's a typedef and not a using differs from the typedefs in root Magnum
@@ -73,6 +75,9 @@ using Magnum::Constants;
 
 inline Debug& operator<<(Debug& debug, Sec value) {
     return debug << Float(value);
+}
+inline Debug& operator<<(Debug& debug, Seci value) {
+    return debug << Int(value);
 }
 
 void UnitTest::construct() {
@@ -272,6 +277,24 @@ void UnitTest::multiplyDivide() {
 
     constexpr Float cf = cb/ca;
     CORRADE_COMPARE(cf, -1.5f);
+}
+
+void UnitTest::multiplyDivideIntegral() {
+    CORRADE_COMPARE(Seci{100}*1.25f, Seci{125});
+    CORRADE_COMPARE(Seci{100}/0.8f, Seci{125});
+
+    Seci a{100};
+    Seci b{125};
+    a *= 1.25f;
+    b /= 1.25f;
+    CORRADE_COMPARE(a, Seci{125});
+    CORRADE_COMPARE(b, Seci{100});
+
+    constexpr Seci ca{100};
+    constexpr Seci cb = ca*1.25f;
+    constexpr Seci cc = ca/0.8f;
+    CORRADE_COMPARE(cb, Seci{125});
+    CORRADE_COMPARE(cc, Seci{125});
 }
 
 }}}}
