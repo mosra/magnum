@@ -172,10 +172,15 @@ AngleTest::AngleTest() {
 }
 
 void AngleTest::construct() {
-    constexpr Deg b(25.0);
-    CORRADE_COMPARE(Float(b), 25.0f);
-    constexpr Radd n(3.14);
-    CORRADE_COMPARE(Double(n), 3.14);
+    Deg a{25.0f};
+    Radd b{3.14};
+    CORRADE_COMPARE(Float(a), 25.0f);
+    CORRADE_COMPARE(Double(b), 3.14);
+
+    constexpr Deg ca{25.0f};
+    constexpr Radd cb(3.14);
+    CORRADE_COMPARE(Float(ca), 25.0f);
+    CORRADE_COMPARE(Double(cb), 3.14);
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!std::is_convertible<Float, Rad>::value);
@@ -186,14 +191,23 @@ void AngleTest::construct() {
 }
 
 void AngleTest::constructDefault() {
-    constexpr Deg m1;
-    constexpr Deg m2{ZeroInit};
-    CORRADE_COMPARE(Float(m1), 0.0f);
-    CORRADE_COMPARE(Float(m2), 0.0f);
-    constexpr Radd a1;
-    constexpr Radd a2{ZeroInit};
-    CORRADE_COMPARE(Double(a1), 0.0);
-    CORRADE_COMPARE(Double(a2), 0.0);
+    Deg a1;
+    Deg a2{ZeroInit};
+    Radd b1;
+    Radd b2{ZeroInit};
+    CORRADE_COMPARE(Float(a1), 0.0f);
+    CORRADE_COMPARE(Float(a2), 0.0f);
+    CORRADE_COMPARE(Double(b1), 0.0);
+    CORRADE_COMPARE(Double(b2), 0.0);
+
+    constexpr Deg ca1;
+    constexpr Deg ca2{ZeroInit};
+    constexpr Radd cb1;
+    constexpr Radd cb2{ZeroInit};
+    CORRADE_COMPARE(Float(ca1), 0.0f);
+    CORRADE_COMPARE(Float(ca2), 0.0f);
+    CORRADE_COMPARE(Double(cb1), 0.0);
+    CORRADE_COMPARE(Double(cb2), 0.0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Deg>::value);
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Rad>::value);
@@ -243,13 +257,19 @@ void AngleTest::constructNoInit() {
 }
 
 void AngleTest::constructConversion() {
-    constexpr Deg a(25.0);
-    constexpr Radd b(3.14);
-
-    constexpr Rad c(b);
+    Deg a{25.0f};
+    Radd b{3.14};
+    Rad c{b};
+    Degd d{a};
     CORRADE_COMPARE(Float(c), 3.14f);
-    constexpr Degd d(a);
     CORRADE_COMPARE(Double(d), 25.0);
+
+    constexpr Deg ca{25.0f};
+    constexpr Radd cb{3.14};
+    constexpr Rad cc{cb};
+    constexpr Degd cd{ca};
+    CORRADE_COMPARE(Float(cc), 3.14f);
+    CORRADE_COMPARE(Double(cd), 25.0);
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!std::is_convertible<Degd, Deg>::value);
