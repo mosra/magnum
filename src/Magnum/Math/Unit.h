@@ -144,6 +144,22 @@ template<template<class> class Derived, class T> class Unit {
             return Unit<Derived, T>(_value*number);
         }
 
+        /**
+         * @brief Multiply a number with a value
+         *
+         * Same as @ref operator*(T) const.
+         */
+        constexpr friend Unit<Derived, T> operator*(
+            #ifdef DOXYGEN_GENERATING_OUTPUT
+            T
+            #else
+            typename std::common_type<T>::type
+            #endif
+            number, Unit<Derived, T> value)
+        {
+            return Unit<Derived, T>{value._value*number};
+        }
+
         /** @brief Divide with a number and assign */
         Unit<Derived, T>& operator/=(T number) {
             _value /= number;
@@ -163,13 +179,6 @@ template<template<class> class Derived, class T> class Unit {
     private:
         T _value;
 };
-
-/** @relates Unit
-@brief Multiply number with value
-*/
-template<template<class> class Derived, class T> constexpr Unit<Derived, T> operator*(typename std::common_type<T>::type number, const Unit<Derived, T>& value) {
-    return value*number;
-}
 
 }}
 
