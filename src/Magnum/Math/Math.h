@@ -77,6 +77,8 @@ template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
 template<template<class> class, class> class Unit;
 template<class> class Deg;
 template<class> class Rad;
+template<class> class Nanoseconds;
+template<class> class Seconds;
 
 class Half;
 

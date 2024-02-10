@@ -155,7 +155,7 @@ Half-precision vector and matrix types such as @ref Vector3h or @ref Matrix3x3h
 work similarly --- you can construct them and convert them from/to other types,
 but can't perform any arithmetic.
 
-@section types-special Special types
+@section types-angle Angle types
 
 Magnum has a special type for strongly-typed representation of angles, namely
 the @ref Deg and @ref Rad classes (or @ref Degd / @ref Degh and @ref Radd /
@@ -189,6 +189,27 @@ implicit conversion you can seamlessly use either radians or degrees without
 any need to care about what input the function expects:
 
 @snippet MagnumMath.cpp types-literals-usage
+
+@section types-time Time types
+
+Similarly to @ref Deg and @ref Rad, there's @ref Nanoseconds and @ref Seconds
+for strongly-typed representation of time values. The @ref Nanoseconds is a
+64-bit integer type, giving the best possible precision over a range of ±292
+years, while @ref Seconds is a 32-bit floating-point type that should be
+sufficient for most practical uses where neither large precision nor a large
+range is needed, such as animation keyframe timing. As with the angle types,
+they're *not* implicitly constructible from their underlying representation,
+instead you can construct them explicitly or use the
+@link Math::Literals::TimeLiterals::operator""_sec() _sec @endlink,
+@link Math::Literals::TimeLiterals::operator""_msec() _msec @endlink,
+@link Math::Literals::TimeLiterals::operator""_usec() _usec @endlink and
+@link Math::Literals::TimeLiterals::operator""_nsec() _nsec @endlink
+convenience literals that are provided in the @ref Math::Literals namespace.
+The time types are similar in spirit to @ref std::chrono type definitions, but
+without a dependency on STL. An opt-in conversion is available if you include
+@link Magnum/Math/TimeStl.h @endlink.
+
+@snippet MagnumMath-stl.cpp types-time
 
 @section types-other Other types
 
@@ -234,13 +255,14 @@ Example:
 
 @snippet MagnumMath.cpp types-literals-init
 
-@section types-thirdparty-integration Integration with types from 3rd party APIs
+@section types-thirdparty-integration Integration with types from the STL and 3rd party APIs
 
 To simplify the workflow when interacting with 3rd party APIs, all Magnum math
-types can be made explicitly convertible to and from types coming from external
-libraries. Currently, various Magnum libraries provide these conversion, see
-documentation of each `Integration.h` header for details:
+types can be made explicitly convertible to and from types coming from the STL
+or external libraries. Currently, various Magnum libraries provide these
+conversions, see documentation of each header for details:
 
+-   @ref std::chrono types --- @ref Magnum/Math/TimeStl.h
 -   Math-related Vulkan structures --- @ref Magnum/Vk/Integration.h, part of
     the @ref Vk library
 -   All Eigen types --- @ref Magnum/EigenIntegration/Integration.h and

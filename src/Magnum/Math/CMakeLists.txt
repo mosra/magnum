@@ -59,6 +59,8 @@ set(MagnumMath_HEADERS
     StrictWeakOrdering.h
     Swizzle.h
     Tags.h
+    Time.h
+    TimeStl.h
     Unit.h
     Vector.h
     Vector2.h

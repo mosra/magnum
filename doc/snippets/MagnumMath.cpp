@@ -35,6 +35,7 @@
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/Swizzle.h"
+#include "Magnum/Math/Time.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
@@ -733,6 +734,80 @@ Float tan2 = Math::tan(1.047_radf); // tan2 = 1.732f
 /* [_degf] */
 static_cast<void>(tan1);
 static_cast<void>(tan2);
+}
+
+{
+/* [Nanoseconds-usage] */
+using namespace Math::Literals;
+
+Nanoseconds fiveSeconds = 5.0_sec;  // 5000000000
+Seconds frameTime = 16.667_msec;    // 0.016667
+/* [Nanoseconds-usage] */
+static_cast<void>(fiveSeconds);
+static_cast<void>(frameTime);
+}
+
+{
+/* [Nanoseconds-usage-operations] */
+Seconds a = 0.15_sec + 16.67_msec;  // 0.16667
+Nanoseconds b = 1000.0_usec*1.25;   // 1250000
+//auto c = 10.0_msec*10.0_sec;      // error, undefined resulting unit
+/* [Nanoseconds-usage-operations] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* The DOXYGEN_IGNORE() is to avoid -Wvexing-parse */
+void stillCanDoSomething(void);
+/* [Nanoseconds-usage-comparison] */
+Nanoseconds frameTime(DOXYGEN_IGNORE(void));
+
+if(frameTime() < 15.0_msec)
+    stillCanDoSomething();
+/* [Nanoseconds-usage-comparison] */
+}
+
+{
+/* [_nsec] */
+using namespace Math::Literals;
+
+Nanoseconds twoSeconds = 2000000000_nsec;
+/* [_nsec] */
+static_cast<void>(twoSeconds);
+}
+
+{
+/* [_usec] */
+using namespace Math::Literals;
+
+Nanoseconds a = 2000000.0_usec;
+Seconds b = 2000000.0_usec;
+/* [_usec] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [_msec] */
+using namespace Math::Literals;
+
+Nanoseconds a = 16.67_msec;
+Seconds b = 16.67_msec;
+/* [_msec] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [_sec] */
+using namespace Math::Literals;
+
+Nanoseconds a = 45.0_sec;
+Seconds b = 45.0_sec;
+/* [_sec] */
+static_cast<void>(a);
+static_cast<void>(b);
 }
 
 {

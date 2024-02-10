@@ -150,6 +150,7 @@ set(MagnumMath_SRCS
     Math/Color.cpp
     Math/Half.cpp
     Math/Packing.cpp
+    Math/Time.cpp
     Math/instantiation.cpp)
 
 set(MagnumMath_GracefulAssert_SRCS

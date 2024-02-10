@@ -922,6 +922,18 @@ typedef Math::Range3D<Int> Range3Di;
 /** @brief Float frustum */
 typedef Math::Frustum<Float> Frustum;
 
+/**
+@brief 64-bit signed integer nanoseconds
+@m_since_latest
+*/
+typedef Math::Nanoseconds<Long> Nanoseconds;
+
+/**
+@brief 32-bit float seconds
+@m_since_latest
+*/
+typedef Math::Seconds<Float> Seconds;
+
 /* Since 1.8.17, the original short-hand group closing doesn't work anymore.
    FFS. */
 /**

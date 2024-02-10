@@ -124,10 +124,11 @@ more information.
 /** @namespace Magnum::Math::Literals
 @brief Math literals
 
-Literals for easy construction of angle, color and other values. The namespace
-is further split to prevent potential ambiguity and conflicts with literals
-defined by other code, but the second namespace level is @cpp inline @ce so to
-get for example the color literals you can do either of these two:
+Literals for easy construction of angle, color, time and other values. The
+namespace is further split to prevent potential ambiguity and conflicts with
+literals defined by other code, but the second namespace level is
+@cpp inline @ce so to get for example the color literals you can do either of
+these two:
 
 @snippet MagnumMath.cpp Literals-using
 
@@ -170,6 +171,13 @@ more information.
 @m_since_latest
 
 See the @ref Literals namespace and the @ref Half class for more information.
+*/
+/** @namespace Magnum::Math::Literals::TimeLiterals
+@brief Math time literals
+@m_since_latest
+
+See the @ref Literals namespace and the @ref Nanoseconds and @ref Seconds
+classes for more information.
 */
 
 /** @dir Magnum/Math/Algorithms

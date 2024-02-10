@@ -66,6 +66,8 @@ corrade_add_test(MathMatrix4Test Matrix4Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathSwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathUnitTest UnitTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAngleTest AngleTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathTimeTest TimeTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathTimeStlTest TimeStlTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathRangeTest RangeTest.cpp LIBRARIES MagnumMathTestLib)
 
 corrade_add_test(MathDualTest DualTest.cpp LIBRARIES MagnumMathTestLib)
