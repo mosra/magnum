@@ -27,7 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
-#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Containers/String.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Tweakable.h>
@@ -136,7 +136,7 @@ struct ColorTest: TestSuite::Tester {
     void debugUbColorColorsDisabled();
     void debugHsv();
 
-    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+    #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     void tweakableRgb();
     void tweakableSrgb();
     void tweakableRgbf();
@@ -170,7 +170,7 @@ using Magnum::Deg;
 
 using namespace Literals;
 
-#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 const struct {
     const char* name;
     const char* dataRgb;
@@ -266,7 +266,7 @@ ColorTest::ColorTest() {
               &ColorTest::debugUbColorColorsDisabled,
               &ColorTest::debugHsv});
 
-    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+    #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests({&ColorTest::tweakableRgb,
                        &ColorTest::tweakableSrgb,
                        &ColorTest::tweakableRgba,
@@ -1230,7 +1230,7 @@ void ColorTest::debugHsv() {
     CORRADE_COMPARE(out.str(), "ColorHsv(Deg(135), 0.75, 0.3)\n");
 }
 
-#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 void ColorTest::tweakableRgb() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
