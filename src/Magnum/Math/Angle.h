@@ -124,6 +124,8 @@ template<class T> class Deg: public Unit<Deg, T> {
         template<class U> constexpr explicit Deg(Unit<Math::Deg, U> value) noexcept: Unit<Math::Deg, T>(value) {}
 
         /** @brief Copy constructor */
+        /* Needed in order to make arithmetic operations (which have a Unit
+           return type) convertible to Deg */
         constexpr /*implicit*/ Deg(Unit<Math::Deg, T> other) noexcept: Unit<Math::Deg, T>(other) {}
 
         /**
@@ -211,6 +213,8 @@ template<class T> class Rad: public Unit<Rad, T> {
         template<class U> constexpr explicit Rad(Unit<Math::Rad, U> value) noexcept: Unit<Math::Rad, T>(value) {}
 
         /** @brief Copy constructor */
+        /* Needed in order to make arithmetic operations (which have a Unit
+           return type) convertible to Rad */
         constexpr /*implicit*/ Rad(Unit<Math::Rad, T> value) noexcept: Unit<Math::Rad, T>(value) {}
 
         /**

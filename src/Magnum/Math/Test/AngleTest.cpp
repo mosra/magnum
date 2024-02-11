@@ -46,6 +46,7 @@ struct AngleTest: TestSuite::Tester {
     void constructNoInit();
     void constructConversion();
     void constructCopy();
+    void constructFromBase();
 
     void literals();
     void conversion();
@@ -137,6 +138,7 @@ AngleTest::AngleTest() {
               &AngleTest::constructNoInit,
               &AngleTest::constructConversion,
               &AngleTest::constructCopy,
+              &AngleTest::constructFromBase,
 
               &AngleTest::literals,
               &AngleTest::conversion,
@@ -298,6 +300,15 @@ void AngleTest::constructCopy() {
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Rad>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Deg>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Rad>::value);
+}
+
+void AngleTest::constructFromBase() {
+    /* The operation returns Unit instead of the leaf type, so this can work
+       only if the base class has a "copy constructor" from the base type */
+    Deg a = 35.0_degf + 0.15_degf;
+    Radd b = 1.0_rad + 0.25_rad;
+    CORRADE_COMPARE(a, 35.15_degf);
+    CORRADE_COMPARE(b, 1.25_rad);
 }
 
 void AngleTest::literals() {
