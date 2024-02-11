@@ -23,9 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <map>
-#include <set>
-
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
@@ -37,7 +34,6 @@
 #include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Math/StrictWeakOrdering.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
 
@@ -1231,15 +1227,6 @@ Matrix4x3 m;
 Float a = m[2][1];
 /* [RectangularMatrix-access] */
 static_cast<void>(a);
-}
-
-{
-/* [StrictWeakOrdering] */
-std::set<Vector2, Math::StrictWeakOrdering> mySet;
-std::map<Vector4, Int, Math::StrictWeakOrdering> myMap;
-/* [StrictWeakOrdering] */
-static_cast<void>(myMap);
-static_cast<void>(mySet);
 }
 
 {

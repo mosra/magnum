@@ -41,6 +41,7 @@ set(snippets_Magnum_SRCS
     MagnumAnimation.cpp
     MagnumAnimation-custom.cpp
     MagnumMath.cpp
+    MagnumMath-stl.cpp
     MagnumMathAlgorithms.cpp)
 if(CORRADE_TARGET_EMSCRIPTEN)
     list(APPEND snippets_Magnum_SRCS platforms-html5.cpp)

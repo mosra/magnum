@@ -50,7 +50,7 @@ set. With it an ordering can be achieved between the elements. This is useful
 mainly for interoperability with ordering containers from the C++ standard
 library, like @ref std::map and @link std::set @endlink:
 
-@snippet MagnumMath.cpp StrictWeakOrdering
+@snippet MagnumMath-stl.cpp StrictWeakOrdering
 
 The implementation is done for all types in the @ref Math library, check the
 source for defails if you want to create an implementation for your own types.
