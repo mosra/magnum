@@ -37,11 +37,12 @@
 #include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Math/Algorithms/GramSchmidt.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 #include "Magnum/Math/Swizzle.h"
+#include "Magnum/Math/Algorithms/GramSchmidt.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -658,13 +659,9 @@ static_cast<void>(radians);
 }
 
 {
-#if (defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11) || defined(CORRADE_TARGET_CLANG)
-#pragma GCC diagnostic push
-/* Stupid thing. YES I WANT THIS TO BE A FUNCTION, CAN YOU SHUT UP */
-#pragma GCC diagnostic ignored "-Wvexing-parse"
-#endif
+/* The DOXYGEN_IGNORE() is to avoid -Wvexing-parse */
 /* [Deg-usage-convert] */
-Double foo();
+Double foo(DOXYGEN_IGNORE(void));
 
 Deg degrees{35.0f};
 Radd radians{foo()};
@@ -672,9 +669,6 @@ Radd radians{foo()};
 /* [Deg-usage-convert] */
 static_cast<void>(degrees);
 static_cast<void>(radians);
-#if (defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11) || defined(CORRADE_TARGET_CLANG)
-#pragma GCC diagnostic pop
-#endif
 }
 
 {
@@ -687,22 +681,15 @@ static_cast<void>(b);
 }
 
 {
-#if (defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11) || defined(CORRADE_TARGET_CLANG)
-#pragma GCC diagnostic push
-/* Stupid thing. YES I WANT THIS TO BE A FUNCTION, CAN YOU SHUT UP */
-#pragma GCC diagnostic ignored "-Wvexing-parse"
-#endif
-Double foo();
+/* The void and DOXYGEN_IGNORE(void) is to avoid -Wvexing-parse */
+Double foo(void);
 /* [Deg-usage-comparison] */
-Rad angle();
+Rad angle(DOXYGEN_IGNORE(void));
 
 Deg x = angle();                // convert to degrees for easier comparison
 if(x < 30.0_degf) foo();
 //if(x > 1.57_radf) bar();      // error, both need to be of the same type
 /* [Deg-usage-comparison] */
-#if (defined(CORRADE_TARGET_GCC) && __GNUC__ >= 11) || defined(CORRADE_TARGET_CLANG)
-#pragma GCC diagnostic pop
-#endif
 }
 
 {
