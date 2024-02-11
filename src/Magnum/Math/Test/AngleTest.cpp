@@ -334,6 +334,9 @@ void AngleTest::conversion() {
 
     constexpr Rad b = 90.0_degf;
     CORRADE_COMPARE(Float(b), 1.57079633f);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Deg, Rad>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Radd, Degd>::value);
 }
 
 void AngleTest::debugDeg() {

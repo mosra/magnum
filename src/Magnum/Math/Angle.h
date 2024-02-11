@@ -136,7 +136,7 @@ template<class T> class Deg: public Unit<Deg, T> {
          * @f]
          * @m_keyword{degrees(),GLSL degrees(),}
          */
-        constexpr /*implicit*/ Deg(Unit<Rad, T> value);
+        constexpr /*implicit*/ Deg(Unit<Rad, T> value) noexcept;
 };
 
 /* Unlike STL, where there's e.g. std::literals::string_literals with both
@@ -225,7 +225,7 @@ template<class T> class Rad: public Unit<Rad, T> {
          * @f]
          * @m_keyword{radians(),GLSL radians(),}
          */
-        constexpr /*implicit*/ Rad(Unit<Deg, T> value);
+        constexpr /*implicit*/ Rad(Unit<Deg, T> value) noexcept;
 };
 
 /* Unlike STL, where there's e.g. std::literals::string_literals with both
@@ -266,8 +266,8 @@ constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(Fl
 
 }}
 
-template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
-template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
+template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value) noexcept: Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
+template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value) noexcept: Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Rad} */
