@@ -257,6 +257,37 @@ template<template<class> class Derived, class T> class Unit {
             return _value/other._value;
         }
 
+        /**
+         * @brief Do modulo of a value and assign
+         * @m_since_latest
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Unit<Derived, T>&
+        #else
+        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Unit<Derived, T>&>::type
+        #endif
+        operator%=(Unit<Derived, T> other) {
+            _value %= other._value;
+            return *this;
+        }
+
+        /**
+         * @brief Modulo of a value
+         * @m_since_latest
+         *
+         * Enabled only for integral types.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        constexpr Unit<Derived, T>
+        #else
+        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Unit<Derived, T>>::type
+        #endif
+        operator%(Unit<Derived, T> other) const {
+            return Unit<Derived, T>{_value%other._value};
+        }
+
     private:
         T _value;
 };

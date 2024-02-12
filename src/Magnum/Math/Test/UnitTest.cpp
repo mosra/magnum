@@ -48,6 +48,7 @@ struct UnitTest: TestSuite::Tester {
     void addSubtract();
     void multiplyDivide();
     void multiplyDivideIntegral();
+    void modulo();
 };
 
 UnitTest::UnitTest() {
@@ -63,7 +64,8 @@ UnitTest::UnitTest() {
               &UnitTest::promotedNegated,
               &UnitTest::addSubtract,
               &UnitTest::multiplyDivide,
-              &UnitTest::multiplyDivideIntegral});
+              &UnitTest::multiplyDivideIntegral,
+              &UnitTest::modulo});
 }
 
 /* What's a typedef and not a using differs from the typedefs in root Magnum
@@ -295,6 +297,25 @@ void UnitTest::multiplyDivideIntegral() {
     constexpr Seci cc = ca/0.8f;
     CORRADE_COMPARE(cb, Seci{125});
     CORRADE_COMPARE(cc, Seci{125});
+}
+
+void UnitTest::modulo() {
+    CORRADE_COMPARE(Seci{255}%Seci{64}, Seci{63});
+    CORRADE_COMPARE(Seci{-6}%Seci{-4}, Seci{-2});
+
+    Seci a{255};
+    Seci b{-6};
+    a %= Seci{64};
+    b %= Seci{-4};
+    CORRADE_COMPARE(a, Seci{63});
+    CORRADE_COMPARE(b, Seci{-2});
+
+    constexpr Seci ca{255};
+    constexpr Seci cb{-6};
+    constexpr Seci cc = ca % Seci{64};
+    constexpr Seci cd = cb % Seci{-4};
+    CORRADE_COMPARE(cc, Seci{63});
+    CORRADE_COMPARE(cd, Seci{-2});
 }
 
 }}}}
