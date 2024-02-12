@@ -735,9 +735,9 @@ template<std::size_t size, class T> class Vector {
         #else
         template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Vector<size, T>&>::type
         #endif
-        operator%=(T other) {
+        operator%=(T scalar) {
             for(std::size_t i = 0; i != size; ++i)
-                _data[i] %= other;
+                _data[i] %= scalar;
 
             return *this;
         }
