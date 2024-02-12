@@ -1644,7 +1644,11 @@ See also:
     pointer, which was deemed a more useful property.
 -   @ref Math::sign() now always returns a unitless type instead of the
     input type itself, so it's possible to e.g. extract a sign of an angle
-    value and multiply other angles with it.
+    value and multiply other angles with it. In a similar spirit,
+    @ref Math::select() now enforces the interpolation phase to be a unitless
+    type. That was the case with @ref Math::lerp() already, where using angles
+    for `t` didn't even compile, this makes the behavior consistently strict
+    for both.
 -   @ref MeshTools::primitiveCount() now requires the element count to follow
     rules defined by a particular primitive to be consistent with requirements
     of @ref MeshTools::generateIndices() and related APIs. Before it was just

@@ -598,6 +598,7 @@ A constant interpolation counterpart to @ref lerp(): @f[
 Equivalent to calling @cpp Math::lerp(a, b, t >= U(1)) @ce.
 */
 template<class T, class U> constexpr T select(const T& a, const T& b, U t) {
+    static_assert(IsUnitless<U>::value, "expecting an unitless type for the interpolation phase");
     return lerp(a, b, t >= U(1));
 }
 
