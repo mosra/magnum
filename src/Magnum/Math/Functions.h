@@ -397,15 +397,15 @@ template<std::size_t size, class T> inline Vector<size, T> clamp(const Vector<si
 
 Returns `1` if @p x > 0, `0` if @p x = 0 and `-1` if @p x < 0.
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sign(T scalar) {
-    if(scalar > T(0)) return T(1);
-    if(scalar < T(0)) return T(-1);
-    return T(0);
+template<class T> inline typename std::enable_if<IsScalar<T>::value, UnderlyingTypeOf<T>>::type sign(T scalar) {
+    if(scalar > T(0)) return UnderlyingTypeOf<T>(1);
+    if(scalar < T(0)) return UnderlyingTypeOf<T>(-1);
+    return UnderlyingTypeOf<T>(0);
 }
 
 /** @overload */
-template<std::size_t size, class T> inline Vector<size, T> sign(const Vector<size, T>& a) {
-    Vector<size, T> out{Magnum::NoInit};
+template<std::size_t size, class T> inline Vector<size, UnderlyingTypeOf<T>> sign(const Vector<size, T>& a) {
+    Vector<size, UnderlyingTypeOf<T>> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::sign(a[i]);
     return out;

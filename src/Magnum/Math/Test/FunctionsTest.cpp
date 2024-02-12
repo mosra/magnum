@@ -263,8 +263,12 @@ void FunctionsTest::sign() {
     CORRADE_COMPARE(Math::sign(-3.7), -1.0);
     CORRADE_COMPARE(Math::sign(Vector3i(0, -3, 2)), Vector3i(0, -1, 1));
 
-    /* Wrapped types */
-    CORRADE_COMPARE(Math::sign(-3.7_degf), -1.0_degf);
+    /* Wrapped types. Returns the underlying type instead of the type itself as
+       it should be possible to do e.g. angle*Math::sign(angle) and get an
+       angle value back. With returning the type itself such operation wouldn't
+       have any definable unit. */
+    CORRADE_COMPARE(Math::sign(-3.7_degf), -1.0f);
+    CORRADE_COMPARE(Math::sign(Math::Vector2<Deg>{3.5_degf, -1.9_degf}), (Vector2{1.0f, -1.0f}));
 }
 
 void FunctionsTest::abs() {
