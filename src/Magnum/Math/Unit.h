@@ -184,6 +184,10 @@ template<template<class> class Derived, class T> class Unit {
          * Similar to @ref operator*(T) const, except that the multiplication
          * is done in floating-point.
         */
+        /* Note that this one isn't correctly picked up on MSVC 2015, there's
+           an out-of-class overload wrapped in CORRADE_MSVC2015_COMPATIBILITY
+           which is (and the two don't conflict, apparently, so both are
+           present) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class FloatingPoint> constexpr Unit<Derived, T>
         #else
@@ -291,6 +295,18 @@ template<template<class> class Derived, class T> class Unit {
     private:
         T _value;
 };
+
+#ifdef CORRADE_MSVC2015_COMPATIBILITY
+/* MSVC 2015 doesn't correctly pick up the in-class inline friend that does
+   this, resulting in float*Unit<int> expressions being wrongly executed as
+   int*Unit<int> due to an implicit conversion fallback. This overload is
+   picked up correctly (and doesn't conflict with the in-class one). See
+   UnitTest::multiplyDivideIntegral() for regression tests, the same issue and
+   a matching workaround is done in Vector as well. */
+template<template<class> class Derived, class FloatingPoint, class Integral> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, Integral>>::type operator*(FloatingPoint number, const Unit<Derived, Integral>& value) {
+    return value*number;
+}
+#endif
 
 }}
 

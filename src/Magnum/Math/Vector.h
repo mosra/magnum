@@ -1509,7 +1509,8 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
    need to use the MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION() overloads as well
    to return a correct subtype. See VectorTest::multiplyDivideIntegral(),
    VectorTest::subclass() and corresponding cases in Vector2Test, Vector3Test,
-   Vector4Test and ColorTest for regression tests. */
+   Vector4Test and ColorTest for regression tests. The same issue and a
+   matching workaround is done in Unit as well. */
 template<std::size_t size, class FloatingPoint, class Integral> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Vector<size, Integral>>::type operator*(FloatingPoint scalar, const Vector<size, Integral>& vector) {
     return vector*scalar;
 }
