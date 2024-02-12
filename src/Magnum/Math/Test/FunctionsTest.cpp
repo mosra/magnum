@@ -29,6 +29,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Time.h"
 #include "Magnum/Math/Vector4.h"
 
 namespace Magnum { namespace Math { namespace Test { namespace {
@@ -93,6 +94,7 @@ using namespace Literals;
 using Magnum::Constants;
 using Magnum::Deg;
 using Magnum::Rad;
+using Magnum::Seconds;
 using Magnum::Vector2;
 using Magnum::Vector3;
 using Magnum::Vector4;
@@ -196,6 +198,7 @@ void FunctionsTest::min() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::min(5.0_degf, 9.0_degf), 5.0_degf);
+    CORRADE_COMPARE(Math::min(6.0_sec, 5500.0_msec), 5.5_sec);
 }
 
 void FunctionsTest::max() {
@@ -205,6 +208,7 @@ void FunctionsTest::max() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::max(5.0_degf, 9.0_degf), 9.0_degf);
+    CORRADE_COMPARE(Math::max(6.0_sec, 5500.0_msec), 6000.0_msec);
 }
 
 void FunctionsTest::minmax() {
@@ -220,6 +224,7 @@ void FunctionsTest::minmax() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::minmax(4.0_degf, 5.0_degf), Containers::pair(4.0_degf, 5.0_degf));
+    CORRADE_COMPARE(Math::minmax(6.0_sec, 5500.0_msec), Containers::pair(5.5_sec, 6.0_sec));
 }
 
 void FunctionsTest::clamp() {
@@ -237,6 +242,7 @@ void FunctionsTest::clamp() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::clamp(0.5_degf, 0.75_degf, 1.0_degf), 0.75_degf);
+    CORRADE_COMPARE(Math::clamp(0.5_sec, 0.75_sec, 799.9_msec), 0.75_sec);
 }
 
 void FunctionsTest::nanPropagation() {
@@ -268,6 +274,7 @@ void FunctionsTest::sign() {
        angle value back. With returning the type itself such operation wouldn't
        have any definable unit. */
     CORRADE_COMPARE(Math::sign(-3.7_degf), -1.0f);
+    CORRADE_COMPARE(Math::sign(-2.5_usec), -1.0f);
     CORRADE_COMPARE(Math::sign(Math::Vector2<Deg>{3.5_degf, -1.9_degf}), (Vector2{1.0f, -1.0f}));
 }
 
@@ -278,6 +285,7 @@ void FunctionsTest::abs() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::abs(-5.0_degf), 5.0_degf);
+    CORRADE_COMPARE(Math::abs(-5.0_msec), 5.0_msec);
 }
 
 void FunctionsTest::floor() {
@@ -286,6 +294,8 @@ void FunctionsTest::floor() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::floor(2.7_degf), 2.0_degf);
+    /* Nanoseconds are an integer type */
+    CORRADE_COMPARE(Math::floor(Seconds{2.7_sec}), Seconds{2.0_sec});
 }
 
 void FunctionsTest::round() {
@@ -303,6 +313,8 @@ void FunctionsTest::round() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::round(2.7_degf), 3.0_degf);
+    /* Nanoseconds are an integer type */
+    CORRADE_COMPARE(Math::round(Seconds{2.7_sec}), Seconds{3.0_sec});
 }
 
 void FunctionsTest::ceil() {
@@ -311,6 +323,8 @@ void FunctionsTest::ceil() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::ceil(2.7_degf), 3.0_degf);
+    /* Nanoseconds are an integer type */
+    CORRADE_COMPARE(Math::ceil(Seconds{2.7_sec}), Seconds{3.0_sec});
 }
 
 void FunctionsTest::binomialCoefficient() {
@@ -347,6 +361,8 @@ void FunctionsTest::fmod() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::fmod(2.7_degf, 1.3_degf), 0.1_degf);
+    /* Nanoseconds are an integer type */
+    CORRADE_COMPARE(Math::fmod(Seconds{2.7_sec}, Seconds{1.3_sec}), Seconds{0.1_sec});
 }
 
 void FunctionsTest::sqrt() {
@@ -383,6 +399,7 @@ void FunctionsTest::lerp() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::lerp(2.0_degf, 5.0_degf, 0.5f), 3.5_degf);
+    CORRADE_COMPARE(Math::lerp(2.0_usec, 5.0_usec, 0.5f), 3.5_usec);
 }
 
 void FunctionsTest::lerpBool() {
@@ -396,6 +413,7 @@ void FunctionsTest::lerpBool() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::lerp(2.0_degf, 5.0_degf, true), 5.0_degf);
+    CORRADE_COMPARE(Math::lerp(2.0_msec, 5.0_msec, true), 5.0_msec);
 }
 
 void FunctionsTest::lerpInverted() {
@@ -409,6 +427,12 @@ void FunctionsTest::lerpInverted() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::lerpInverted(2.0_degf, 5.0_degf, 3.5_degf), 0.5f);
+    /* Nanoseconds are an integer type */
+    CORRADE_COMPARE(Math::lerpInverted(Seconds{2.0_sec}, Seconds{5.0_sec}, Seconds{3.5_sec}), 0.5f);
+    {
+        CORRADE_EXPECT_FAIL("This doesn't work correctly with (integer) Nanoseconds.");
+        CORRADE_COMPARE(Math::lerpInverted(2.0_sec, 5.0_sec, 3.5_sec), 0.5f);
+    }
 }
 
 void FunctionsTest::select() {
@@ -429,6 +453,7 @@ void FunctionsTest::select() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::select(2.0_degf, 5.0_degf, 0.5f), 2.0_degf);
+    CORRADE_COMPARE(Math::select(2.0_msec, 5.0_msec, 0.5f), 2.0_msec);
 }
 
 void FunctionsTest::selectBool() {
@@ -476,7 +501,10 @@ void FunctionsTest::isInf() {
 
     /* Wrapped types */
     CORRADE_VERIFY(Math::isInf(-Rad(Constants::inf())));
+    CORRADE_VERIFY(Math::isInf(Seconds{-Constants::inf()}));
     CORRADE_VERIFY(!Math::isInf(5.3_degf));
+    /* Nanoseconds are an integer type */
+    CORRADE_VERIFY(!Math::isInf(Seconds{5.3_msec}));
 }
 
 void FunctionsTest::isInfVector() {
@@ -492,7 +520,9 @@ void FunctionsTest::isNan() {
 
     /* Wrapped types */
     CORRADE_VERIFY(Math::isNan(-Rad(Constants::nan())));
+    CORRADE_VERIFY(Math::isNan(Seconds(Constants::nan())));
     CORRADE_VERIFY(!Math::isNan(5.3_degf));
+    CORRADE_VERIFY(!Math::isNan(Seconds{5.3_usec}));
 }
 
 void FunctionsTest::isNanfVector() {

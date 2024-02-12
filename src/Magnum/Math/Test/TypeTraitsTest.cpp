@@ -172,6 +172,8 @@ void TypeTraitsTest::isScalar() {
     CORRADE_VERIFY(IsScalar<Deg<Float>>::value);
     CORRADE_VERIFY(IsScalar<Half>::value);
     CORRADE_VERIFY(IsScalar<Unit<Rad, Double>>::value);
+    CORRADE_VERIFY(IsScalar<Nanoseconds<Long>>::value);
+    CORRADE_VERIFY(IsScalar<Unit<Seconds, Float>>::value);
     CORRADE_VERIFY(!IsScalar<Vector2<Float>>::value);
     CORRADE_VERIFY(!IsVector<Matrix2x3<Float>>::value);
     CORRADE_VERIFY(!IsScalar<Color3<Half>>::value);
@@ -182,6 +184,7 @@ void TypeTraitsTest::isScalar() {
 void TypeTraitsTest::isVector() {
     CORRADE_VERIFY(!IsVector<UnsignedByte>::value);
     CORRADE_VERIFY(!IsVector<Deg<UnsignedByte>>::value);
+    CORRADE_VERIFY(!IsVector<Seconds<Float>>::value);
     CORRADE_VERIFY(IsVector<Vector<2, Deg<Float>>>::value);
     CORRADE_VERIFY(IsVector<Color3<UnsignedByte>>::value);
     CORRADE_VERIFY(IsVector<Color3<Half>>::value);
@@ -198,8 +201,10 @@ void TypeTraitsTest::isIntegral() {
     CORRADE_VERIFY(IsIntegral<Int>::value);
     CORRADE_VERIFY(IsIntegral<Vector<7, UnsignedInt>>::value);
     CORRADE_VERIFY(IsIntegral<Vector2<Long>>::value);
+    CORRADE_VERIFY(IsIntegral<Nanoseconds<Long>>::value);
     CORRADE_VERIFY(!IsIntegral<Half>::value);
     CORRADE_VERIFY(!IsIntegral<Deg<Float>>::value);
+    CORRADE_VERIFY(!IsIntegral<Seconds<Float>>::value);
     CORRADE_VERIFY(!IsIntegral<char*>::value);
     CORRADE_VERIFY(!IsIntegral<bool>::value);
 }
@@ -207,12 +212,15 @@ void TypeTraitsTest::isIntegral() {
 void TypeTraitsTest::isFloatingPoint() {
     CORRADE_VERIFY(!IsFloatingPoint<Int>::value);
     CORRADE_VERIFY(!IsFloatingPoint<Vector<7, UnsignedInt>>::value);
+    CORRADE_VERIFY(!IsFloatingPoint<Nanoseconds<Long>>::value);
     CORRADE_VERIFY(IsFloatingPoint<Double>::value);
     CORRADE_VERIFY(IsFloatingPoint<Vector<2, Float>>::value);
     CORRADE_VERIFY(IsFloatingPoint<Vector2<long double>>::value);
     CORRADE_VERIFY(IsFloatingPoint<Deg<Float>>::value);
+    CORRADE_VERIFY(IsFloatingPoint<Seconds<Float>>::value);
     CORRADE_VERIFY(IsFloatingPoint<Color4<Half>>::value);
     CORRADE_VERIFY(IsFloatingPoint<Unit<Rad, Float>>::value);
+    CORRADE_VERIFY(IsFloatingPoint<Unit<Seconds, Float>>::value);
     CORRADE_VERIFY(IsFloatingPoint<Deg<Half>>::value);
     CORRADE_VERIFY(!IsFloatingPoint<char*>::value);
 }
@@ -223,6 +231,8 @@ void TypeTraitsTest::isUnitless() {
     CORRADE_VERIFY(IsUnitless<Color4<Float>>::value);
     CORRADE_VERIFY(!IsUnitless<Deg<Float>>::value);
     CORRADE_VERIFY(!IsUnitless<Unit<Rad, Double>>::value);
+    CORRADE_VERIFY(!IsUnitless<Nanoseconds<Long>>::value);
+    CORRADE_VERIFY(!IsUnitless<Unit<Seconds, Float>>::value);
     CORRADE_VERIFY(!IsUnitless<char*>::value);
 }
 
@@ -230,7 +240,9 @@ void TypeTraitsTest::underlyingTypeOf() {
     CORRADE_VERIFY(std::is_same<UnderlyingTypeOf<Int>, Int>::value);
 
     CORRADE_VERIFY(std::is_same<UnderlyingTypeOf<Deg<Float>>, Float>::value);
+    CORRADE_VERIFY(std::is_same<UnderlyingTypeOf<Nanoseconds<Long>>, Long>::value);
     CORRADE_VERIFY(std::is_same<UnderlyingTypeOf<Unit<Rad, Double>>, Double>::value);
+    CORRADE_VERIFY(std::is_same<UnderlyingTypeOf<Unit<Seconds, Float>>, Float>::value);
 
     CORRADE_VERIFY(std::is_same<UnderlyingTypeOf<Vector2<UnsignedByte>>, UnsignedByte>::value);
     CORRADE_VERIFY(std::is_same<UnderlyingTypeOf<Color3<Float>>, Float>::value);
