@@ -144,6 +144,21 @@ See also:
     the capabilities of @ref GL::Context::detectedDriver() on WebGL. It also
     resulted in a new @cpp "firefox-deprecated-debug-renderer-info" @ce
     workaround being added, see @ref opengl-workarounds for more info.
+-   Implemented the @webgl_extension{EXT,depth_clamp} WebGL extension, making
+    @ref GL::Renderer::Feature::DepthClamp available on all platforms
+-   Implemented the @gl_extension{EXT,texture_mirror_clamp_to_edge} ES and
+    WebGL extensions, making @ref GL::SamplerWrapping::MirrorClampToEdge
+    available on all platforms
+-   Implemented the @m_class{m-doc-external} [ANGLE_provoking_vertex](https://chromium.googlesource.com/angle/angle/+/main/extensions/ANGLE_provoking_vertex.txt)
+    and @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt)
+    ES extensions. Recognized also on WebGL as
+    @webgl_extension{WEBGL,provoking_vertex} and
+    @webgl_extension{WEBGL,polygon_mode} but with no implementation as
+    Emscripten doesn't have the required entrypoints yet.
+-   Implemented the @m_class{m-doc-external} [ANGLE_stencil_texturing](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_stencil_texturing.txt)
+    ES and @webgl_extension{WEBGL,stencil_texturing} WebGL extensions
+-   Implemented the @gl_extension{EXT,blend_func_extended} ES and
+    @webgl_extension{WEBGL,blend_func_extended} WebGL extensions
 -   Recognizing @webgl_extension{EXT,float_blend} and
     @webgl_extension{WEBGL,debug_shaders} WebGL extensions, no implementation
     done yet
