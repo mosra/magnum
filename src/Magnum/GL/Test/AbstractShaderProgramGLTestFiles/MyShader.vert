@@ -2,7 +2,7 @@
 #define mediump
 #endif
 
-#if defined(GL_ES) || __VERSION__ == 120
+#if (defined(GL_ES) && __VERSION__ == 100) || __VERSION__ == 120
 #define in attribute
 #endif
 

@@ -77,7 +77,7 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
 
     void create();
     void createMultipleOutputs();
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     void createMultipleOutputsIndexed();
     #endif
     void createAsync();
@@ -179,7 +179,7 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
 
     addInstancedTests({
         &AbstractShaderProgramGLTest::createMultipleOutputs,
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
         #endif
     }, Containers::arraySize(CreateMultipleOutputsData));
@@ -292,7 +292,7 @@ void AbstractShaderProgramGLTest::label() {
 struct MyPublicShader: AbstractShaderProgram {
     using AbstractShaderProgram::attachShaders;
     using AbstractShaderProgram::bindAttributeLocation;
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     using AbstractShaderProgram::bindFragmentDataLocationIndexed;
     using AbstractShaderProgram::bindFragmentDataLocation;
     #endif
@@ -452,14 +452,21 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     auto&& data = CreateMultipleOutputsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::blend_func_extended>())
+        CORRADE_SKIP(GL::Extensions::EXT::blend_func_extended::string() << "is not supported.");
+    #endif
 
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
     Shader vert(
-        #ifndef CORRADE_TARGET_APPLE
+        #ifdef MAGNUM_TARGET_GLES
+        Version::GLES300
+        #elif !defined(CORRADE_TARGET_APPLE)
         Version::GL210
         #else
         Version::GL310
@@ -469,7 +476,9 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     const bool vertCompiled = vert.compile();
 
     Shader frag(
-        #ifndef CORRADE_TARGET_APPLE
+        #ifdef MAGNUM_TARGET_GLES
+        Version::GLES300
+        #elif !defined(CORRADE_TARGET_APPLE)
         Version::GL300
         #else
         Version::GL310
@@ -503,27 +512,35 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
         #endif
         CORRADE_VERIFY(valid);
     }
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    CORRADE_SKIP("Only explicit location specification supported in ES 3.0.");
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_SKIP("Only explicit location specification supported in WebGL 2.0.");
     #else
     CORRADE_SKIP("Only gl_FragData[n] supported in ES 2.0.");
     #endif
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     auto&& data = CreateMultipleOutputsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::blend_func_extended>())
         CORRADE_SKIP(GL::Extensions::ARB::blend_func_extended::string() << "is not supported.");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::blend_func_extended>())
+        CORRADE_SKIP(GL::Extensions::EXT::blend_func_extended::string() << "is not supported.");
+    #endif
 
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
     Shader vert(
-        #ifndef CORRADE_TARGET_APPLE
+        #ifdef MAGNUM_TARGET_GLES
+        Version::GLES300
+        #elif !defined(CORRADE_TARGET_APPLE)
         Version::GL210
         #else
         Version::GL310
@@ -533,7 +550,9 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     const bool vertCompiled = vert.compile();
 
     Shader frag(
-        #ifndef CORRADE_TARGET_APPLE
+        #ifdef MAGNUM_TARGET_GLES
+        Version::GLES300
+        #elif !defined(CORRADE_TARGET_APPLE)
         Version::GL300
         #else
         Version::GL310
@@ -565,6 +584,9 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
         #endif
         CORRADE_VERIFY(valid);
     }
+    #else
+    CORRADE_SKIP("Only explicit location specification supported in WebGL 2.0.");
+    #endif
 }
 #endif
 

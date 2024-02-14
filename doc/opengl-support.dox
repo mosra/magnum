@@ -481,7 +481,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_norm16}           | done
 @gl_extension{EXT,texture_sRGB_R8}          | done
 @gl_extension{EXT,texture_sRGB_RG8}         | done
-@gl_extension{EXT,blend_func_extended}      | |
+@gl_extension{EXT,blend_func_extended}      | done
 @gl_extension{EXT,polygon_offset_clamp}     | |
 @gl_extension{EXT,clip_cull_distance}       | done
 @gl_extension{EXT,texture_compression_rgtc} | done
@@ -596,7 +596,7 @@ Extension                                   | Status
 @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | done
 @webgl_extension{WEBGL,provoking_vertex}    | missing support in Emscripten
 @webgl_extension{WEBGL,polygon_mode}        | missing support in Emscripten
-@webgl_extension{WEBGL,blend_func_extended} | |
+@webgl_extension{WEBGL,blend_func_extended} | done
 @webgl_extension{WEBGL,stencil_texturing}   | done
 
 @section opengl-unsupported Unsupported OpenGL features

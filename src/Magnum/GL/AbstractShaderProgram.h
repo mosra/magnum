@@ -178,13 +178,20 @@ out vec3 normal;
     supported in OpenGL ES 2.0, use @ref bindAttributeLocation()
     instead.
 @requires_gles30 Multiple fragment shader outputs are not available in OpenGL
-    ES 2.0, similar functionality is available in extension
-    @gl_extension{EXT,draw_buffers} or @gl_extension{NV,draw_buffers}.
+    ES 2.0, similar functionality is available in the
+    @gl_extension{EXT,draw_buffers} or @gl_extension{NV,draw_buffers}
+    extensions
+@requires_es_extension OpenGL ES 3.0 and extension
+    @gl_extension{EXT,blend_func_extended} for using
+    @ref bindFragmentDataLocation() or @ref bindFragmentDataLocationIndexed()
 @requires_webgl20 Explicit location specification of input attributes is not
     supported in WebGL 1.0, use @ref bindAttributeLocation() instead.
 @requires_webgl20 Multiple fragment shader outputs are not available in WebGL
-    1.0, similar functionality is available in extension
-    @webgl_extension{WEBGL,draw_buffers}.
+    1.0, similar functionality is available in the
+    @webgl_extension{WEBGL,draw_buffers} or
+    @webgl_extension{WEBGL,blend_func_extended} extensions. Additionally, the
+    @webgl_extension{WEBGL,blend_func_extended} extension doesn't support
+    application-side binding of fragment data locations.
 
 @todo @gl_extension2{EXT,separate_shader_objects,EXT_separate_shader_objects.gles}
     supports explicit attrib location
@@ -1437,7 +1444,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         void bindAttributeLocation(UnsignedInt location, Containers::StringView name);
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Bind fragment data to given location and color input index
          * @param location      Location
@@ -1454,8 +1461,11 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref GL-AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
-         * @requires_gl Multiple blend function inputs are not available in
-         *      OpenGL ES or WebGL.
+         * @requires_es_extension OpenGL ES 3.0 and extension
+         *      @gl_extension{EXT,blend_func_extended}
+         * @requires_gles The @webgl_extension{WEBGL,blend_func_extended}
+         *      extension doesn't support application-side binding of fragment
+         *      data locations
          */
         void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, Containers::StringView name);
 
@@ -1472,10 +1482,16 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref GL-AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
-         * @requires_gl Use explicit location specification in OpenGL ES 3.0 or
-         *      WebGL 2.0 and `gl_FragData[n]` provided by @gl_extension{NV,draw_buffers}
-         *      in OpenGL ES 2.0 and @webgl_extension{WEBGL,draw_buffers} in
-         *      WebGL 1.0.
+         * @requires_es_extension OpenGL ES 3.0 and extension
+         *      @gl_extension{EXT,blend_func_extended}. Alternatively use
+         *      explicit location specification in OpenGL ES 3.0 and
+         *      `gl_FragData[n]` provided by @gl_extension{NV,draw_buffers} in
+         *      OpenGL ES 2.0
+         * @requires_gles The @webgl_extension{WEBGL,blend_func_extended}
+         *      extension doesn't support application-side binding of fragment
+         *      data locations. Alternatively use explicit location
+         *      specification in WebGL 2.0 and `gl_FragData[n]` provided by
+         *      @webgl_extension{WEBGL,draw_buffers} in WebGL 1.0.
          */
         void bindFragmentDataLocation(UnsignedInt location, Containers::StringView name);
         #endif

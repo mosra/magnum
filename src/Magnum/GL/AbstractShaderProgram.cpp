@@ -551,12 +551,23 @@ void AbstractShaderProgram::bindAttributeLocation(const UnsignedInt location, co
     glBindAttribLocation(_id, location, Containers::String::nullTerminatedView(name).data());
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractShaderProgram::bindFragmentDataLocation(const UnsignedInt location, const Containers::StringView name) {
-    glBindFragDataLocation(_id, location, Containers::String::nullTerminatedView(name).data());
+    #ifndef MAGNUM_TARGET_GLES
+    glBindFragDataLocation
+    #else
+    glBindFragDataLocationEXT
+    #endif
+        (_id, location, Containers::String::nullTerminatedView(name).data());
 }
+
 void AbstractShaderProgram::bindFragmentDataLocationIndexed(const UnsignedInt location, UnsignedInt index, const Containers::StringView name) {
-    glBindFragDataLocationIndexed(_id, location, index, Containers::String::nullTerminatedView(name).data());
+    #ifndef MAGNUM_TARGET_GLES
+    glBindFragDataLocationIndexed
+    #else
+    glBindFragDataLocationIndexedEXT
+    #endif
+        (_id, location, index, Containers::String::nullTerminatedView(name).data());
 }
 #endif
 

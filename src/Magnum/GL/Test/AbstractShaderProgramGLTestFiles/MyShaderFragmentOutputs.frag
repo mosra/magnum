@@ -1,5 +1,5 @@
-out vec4 first;
-out vec3 second;
+out lowp vec4 first;
+out lowp vec3 second;
 
 void main() {
     first = vec4(1.0, 0.3, 0.5, 0.1);

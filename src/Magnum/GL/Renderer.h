@@ -1700,16 +1700,20 @@ class MAGNUM_GL_EXPORT Renderer {
             /** Source color (@f$ RGB = (R_{s0}, G_{s0}, B_{s0}); A = A_{s0} @f$) */
             SourceColor = GL_SRC_COLOR,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Second source color (@f$ RGB = (R_{s1}, G_{s1}, B_{s1}); A = A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
-             * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES and WebGL.
+             * @requires_es_extension Extension
+             *      @gl_extension{EXT,blend_func_extended}
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_func_extended}
              */
+            #ifndef MAGNUM_TARGET_GLES
             SecondSourceColor = GL_SRC1_COLOR,
+            #else
+            SecondSourceColor = GL_SRC1_COLOR_EXT,
             #endif
 
             /**
@@ -1717,16 +1721,20 @@ class MAGNUM_GL_EXPORT Renderer {
              */
             OneMinusSourceColor = GL_ONE_MINUS_SRC_COLOR,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * One minus second source color (@f$ RGB = (1.0 - R_{s1}, 1.0 - G_{s1}, 1.0 - B_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
-             * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES and WebGL.
+             * @requires_es_extension Extension
+             *      @gl_extension{EXT,blend_func_extended}
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_func_extended}
              */
+            #ifndef MAGNUM_TARGET_GLES
             OneMinusSecondSourceColor = GL_ONE_MINUS_SRC1_COLOR,
+            #else
+            OneMinusSecondSourceColor = GL_ONE_MINUS_SRC1_COLOR_EXT,
             #endif
 
             /** Source alpha (@f$ RGB = (A_{s0}, A_{s0}, A_{s0}); A = A_{s0} @f$) */
@@ -1739,16 +1747,20 @@ class MAGNUM_GL_EXPORT Renderer {
              */
             SourceAlphaSaturate = GL_SRC_ALPHA_SATURATE,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Second source alpha (@f$ RGB = (A_{s1}, A_{s1}, A_{s1}); A = A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
-             * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES and WebGL.
+             * @requires_es_extension Extension
+             *      @gl_extension{EXT,blend_func_extended}
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_func_extended}
              */
+            #ifndef MAGNUM_TARGET_GLES
             SecondSourceAlpha = GL_SRC1_ALPHA,
+            #else
+            SecondSourceAlpha = GL_SRC1_ALPHA_EXT,
             #endif
 
             /**
@@ -1756,16 +1768,20 @@ class MAGNUM_GL_EXPORT Renderer {
              */
             OneMinusSourceAlpha = GL_ONE_MINUS_SRC_ALPHA,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * One minus second source alpha (@f$ RGB = (1.0 - A_{s1}, 1.0 - A_{s1}, 1.0 - A_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
-             * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES and WebGL.
+             * @requires_es_extension Extension
+             *      @gl_extension{EXT,blend_func_extended}
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_func_extended}
              */
+            #ifndef MAGNUM_TARGET_GLES
             OneMinusSecondSourceAlpha = GL_ONE_MINUS_SRC1_ALPHA,
+            #else
+            OneMinusSecondSourceAlpha = GL_ONE_MINUS_SRC1_ALPHA_EXT,
             #endif
 
             /** Destination color (@f$ RGB = (R_d, G_d, B_d); A = A_d @f$) */
