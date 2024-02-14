@@ -45,6 +45,12 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.MultiDrawElementsANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei)>(loader.load("glMultiDrawElementsANGLE"));
     flextGL.MultiDrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei)>(loader.load("glMultiDrawElementsInstancedANGLE"));
 
+    /* GL_ANGLE_polygon_mode */
+    flextGL.PolygonModeANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glPolygonModeANGLE"));
+
+    /* GL_ANGLE_provoking_vertex */
+    flextGL.ProvokingVertexANGLE = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glProvokingVertexANGLE"));
+
     /* GL_ES_VERSION_3_1 */
     flextGL.ActiveShaderProgram = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint)>(loader.load("glActiveShaderProgram"));
     flextGL.BindImageTexture = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLint, GLboolean, GLint, GLenum, GLenum)>(loader.load("glBindImageTexture"));
@@ -160,6 +166,12 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.TexParameterIiv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLint *)>(loader.load("glTexParameterIiv"));
     flextGL.TexParameterIuiv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLuint *)>(loader.load("glTexParameterIuiv"));
     flextGL.TexStorage3DMultisample = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean)>(loader.load("glTexStorage3DMultisample"));
+
+    /* GL_EXT_blend_func_extended */
+    flextGL.BindFragDataLocationEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, const GLchar *)>(loader.load("glBindFragDataLocationEXT"));
+    flextGL.BindFragDataLocationIndexedEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLuint, const GLchar *)>(loader.load("glBindFragDataLocationIndexedEXT"));
+    flextGL.GetFragDataIndexEXT = reinterpret_cast<GLint(APIENTRY*)(GLuint, const GLchar *)>(loader.load("glGetFragDataIndexEXT"));
+    flextGL.GetProgramResourceLocationIndexEXT = reinterpret_cast<GLint(APIENTRY*)(GLuint, GLenum, const GLchar *)>(loader.load("glGetProgramResourceLocationIndexEXT"));
 
     /* GL_EXT_clip_control */
     flextGL.ClipControlEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glClipControlEXT"));

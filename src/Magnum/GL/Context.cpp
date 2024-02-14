@@ -271,6 +271,7 @@ constexpr Extension ExtensionList460[]{
 };
 #elif defined(MAGNUM_TARGET_WEBGL)
 constexpr Extension ExtensionList[]{
+    Extensions::EXT::clip_control{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::clip_cull_distance{},
     #endif
@@ -278,6 +279,7 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::color_buffer_float{},
     #endif
     Extensions::EXT::color_buffer_half_float{},
+    Extensions::EXT::depth_clamp{},
     #ifdef MAGNUM_TARGET_GLES2
     Extensions::EXT::disjoint_timer_query{},
     #endif
@@ -288,14 +290,17 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::draw_buffers_indexed{},
     #endif
     Extensions::EXT::float_blend{},
+    Extensions::EXT::polygon_offset_clamp{},
     Extensions::EXT::texture_compression_bptc{},
     Extensions::EXT::texture_compression_rgtc{},
     Extensions::EXT::texture_filter_anisotropic{},
+    Extensions::EXT::texture_mirror_clamp_to_edge{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::texture_norm16{},
     #endif
     Extensions::KHR::parallel_shader_compile{},
     #ifndef MAGNUM_TARGET_GLES2
+    Extensions::NV::shader_noperspective_interpolation{},
     Extensions::OES::draw_buffers_indexed{},
     #endif
     Extensions::OES::texture_float_linear{},
@@ -303,6 +308,7 @@ constexpr Extension ExtensionList[]{
     Extensions::OVR::multiview2{},
     #endif
     Extensions::WEBGL::blend_equation_advanced_coherent{},
+    Extensions::WEBGL::blend_func_extended{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::WEBGL::clip_cull_distance{},
     #endif
@@ -320,6 +326,11 @@ constexpr Extension ExtensionList[]{
     Extensions::WEBGL::multi_draw{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance{},
+    #endif
+    Extensions::WEBGL::polygon_mode{},
+    #ifndef MAGNUM_TARGET_GLES2
+    Extensions::WEBGL::provoking_vertex{},
+    Extensions::WEBGL::stencil_texturing{},
     #endif
 };
 constexpr Extension ExtensionListES300[]{
@@ -356,6 +367,11 @@ constexpr Extension ExtensionList[]{
     #endif
     Extensions::ANGLE::compressed_texture_etc{},
     Extensions::ANGLE::multi_draw{},
+    Extensions::ANGLE::polygon_mode{},
+    #ifndef MAGNUM_TARGET_GLES2
+    Extensions::ANGLE::provoking_vertex{},
+    Extensions::ANGLE::stencil_texturing{},
+    #endif
     Extensions::ANGLE::texture_compression_dxt1{},
     Extensions::ANGLE::texture_compression_dxt3{},
     Extensions::ANGLE::texture_compression_dxt5{},
@@ -363,6 +379,7 @@ constexpr Extension ExtensionList[]{
     Extensions::APPLE::texture_format_BGRA8888{},
     Extensions::ARM::shader_framebuffer_fetch{},
     Extensions::ARM::shader_framebuffer_fetch_depth_stencil{},
+    Extensions::EXT::blend_func_extended{},
     Extensions::EXT::clip_control{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::clip_cull_distance{},
@@ -395,6 +412,7 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::texture_compression_s3tc_srgb{},
     Extensions::EXT::texture_filter_anisotropic{},
     Extensions::EXT::texture_format_BGRA8888{},
+    Extensions::EXT::texture_mirror_clamp_to_edge{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::texture_norm16{},
     Extensions::EXT::texture_sRGB_R8{},

@@ -33,6 +33,12 @@
 #undef glMultiDrawArraysInstancedANGLE
 #undef glMultiDrawElementsANGLE
 #undef glMultiDrawElementsInstancedANGLE
+#undef glPolygonModeANGLE
+#undef glProvokingVertexANGLE
+#undef glBindFragDataLocationEXT
+#undef glBindFragDataLocationIndexedEXT
+#undef glGetFragDataIndexEXT
+#undef glGetProgramResourceLocationIndexEXT
 #undef glClipControlEXT
 #undef glCopyImageSubDataEXT
 #undef glGetObjectLabelEXT
@@ -183,6 +189,24 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.MultiDrawArraysInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei)>(glMultiDrawArraysInstancedANGLE);
     flextGL.MultiDrawElementsANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei)>(glMultiDrawElementsANGLE);
     flextGL.MultiDrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei)>(glMultiDrawElementsInstancedANGLE);
+    #endif
+
+    /* GL_ANGLE_polygon_mode */
+    #if GL_ANGLE_polygon_mode
+    flextGL.PolygonModeANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(glPolygonModeANGLE);
+    #endif
+
+    /* GL_ANGLE_provoking_vertex */
+    #if GL_ANGLE_provoking_vertex
+    flextGL.ProvokingVertexANGLE = reinterpret_cast<void(APIENTRY*)(GLenum)>(glProvokingVertexANGLE);
+    #endif
+
+    /* GL_EXT_blend_func_extended */
+    #if GL_EXT_blend_func_extended
+    flextGL.BindFragDataLocationEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, const GLchar *)>(glBindFragDataLocationEXT);
+    flextGL.BindFragDataLocationIndexedEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLuint, const GLchar *)>(glBindFragDataLocationIndexedEXT);
+    flextGL.GetFragDataIndexEXT = reinterpret_cast<GLint(APIENTRY*)(GLuint, const GLchar *)>(glGetFragDataIndexEXT);
+    flextGL.GetProgramResourceLocationIndexEXT = reinterpret_cast<GLint(APIENTRY*)(GLuint, GLenum, const GLchar *)>(glGetProgramResourceLocationIndexEXT);
     #endif
 
     /* GL_EXT_clip_control */

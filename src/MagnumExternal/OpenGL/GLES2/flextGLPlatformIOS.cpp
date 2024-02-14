@@ -34,6 +34,7 @@
 #undef glMultiDrawArraysInstancedANGLE
 #undef glMultiDrawElementsANGLE
 #undef glMultiDrawElementsInstancedANGLE
+#undef glPolygonModeANGLE
 #undef glRenderbufferStorageMultisampleAPPLE
 #undef glResolveMultisampleFramebufferAPPLE
 #undef glClipControlEXT
@@ -195,6 +196,11 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.MultiDrawArraysInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei)>(glMultiDrawArraysInstancedANGLE);
     flextGL.MultiDrawElementsANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei)>(glMultiDrawElementsANGLE);
     flextGL.MultiDrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei)>(glMultiDrawElementsInstancedANGLE);
+    #endif
+
+    /* GL_ANGLE_polygon_mode */
+    #if GL_ANGLE_polygon_mode
+    flextGL.PolygonModeANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(glPolygonModeANGLE);
     #endif
 
     /* GL_APPLE_framebuffer_multisample */

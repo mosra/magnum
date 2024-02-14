@@ -520,6 +520,24 @@ typedef khronos_uint64_t GLuint64;
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT 0x8C4E
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT 0x8C4F
 
+/* GL_EXT_depth_clamp */
+
+#define GL_DEPTH_CLAMP_EXT 0x864F
+
+/* GL_EXT_texture_mirror_clamp_to_edge */
+
+#define GL_MIRROR_CLAMP_TO_EDGE_EXT 0x8743
+
+/* GL_EXT_blend_func_extended */
+
+#define GL_SRC1_COLOR_EXT 0x88F9
+#define GL_SRC1_ALPHA_EXT 0x8589
+#define GL_ONE_MINUS_SRC1_COLOR_EXT 0x88FA
+#define GL_ONE_MINUS_SRC1_ALPHA_EXT 0x88FB
+#define GL_SRC_ALPHA_SATURATE_EXT 0x0308
+#define GL_LOCATION_INDEX_EXT 0x930F
+#define GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT 0x88FC
+
 /* GL_IMG_texture_compression_pvrtc */
 
 #define GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG 0x8C00

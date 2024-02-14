@@ -452,6 +452,9 @@ Extension                                   | Status
 @gl_extension2{ANGLE,texture_compression_dxt5,ANGLE_texture_compression_dxt} | done
 @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt) (unlisted) | done
 @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt) (unlisted) | done
+@m_class{m-doc-external} [ANGLE_provoking_vertex](https://chromium.googlesource.com/angle/angle/+/main/extensions/ANGLE_provoking_vertex.txt) (unlisted) | |
+@m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt) (unlisted) | |
+@m_class{m-doc-external} [ANGLE_stencil_texturing](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_stencil_texturing.txt) (unlisted) | |
 @gl_extension{APPLE,texture_format_BGRA8888} | done
 @gl_extension{APPLE,clip_distance}          | done
 @gl_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
@@ -478,12 +481,14 @@ Extension                                   | Status
 @gl_extension{EXT,texture_norm16}           | done
 @gl_extension{EXT,texture_sRGB_R8}          | done
 @gl_extension{EXT,texture_sRGB_RG8}         | done
+@gl_extension{EXT,blend_func_extended}      | |
 @gl_extension{EXT,polygon_offset_clamp}     | |
 @gl_extension{EXT,clip_cull_distance}       | done
 @gl_extension{EXT,texture_compression_rgtc} | done
 @gl_extension{EXT,texture_compression_bptc} | done
 @gl_extension{EXT,texture_compression_s3tc_srgb} | done
 @gl_extension{EXT,clip_control}             | done
+@gl_extension{EXT,texture_mirror_clamp_to_edge} | |
 @gl_extension{EXT,depth_clamp}              | done
 @gl_extension{IMG,texture_compression_pvrtc} | done
 @gl_extension2{KHR,texture_compression_astc_hdr,KHR_texture_compression_astc_hdr} | done
@@ -567,7 +572,12 @@ Extension                                   | Status
 @webgl_extension{EXT,texture_compression_rgtc} | done
 @webgl_extension{EXT,texture_compression_bptc} | done
 @webgl_extension{EXT,texture_norm16}        | done
+@webgl_extension{EXT,polygon_offset_clamp}  | missing support in Emscripten
+@webgl_extension{EXT,clip_control}          | missing support in Emscripten
+@webgl_extension{EXT,depth_clamp}           | |
+@webgl_extension{EXT,texture_mirror_clamp_to_edge} | |
 @webgl_extension{KHR,parallel_shader_compile} | done
+@webgl_extension{NV,shader_noperspective_interpolation} | done (shading language only)
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OES,draw_buffers_indexed} \n (originally named `EXT_draw_buffers_indexed`) | done
 @webgl_extension{OVR,multiview2}            | |
@@ -584,6 +594,10 @@ Extension                                   | Status
 @webgl_extension{WEBGL,clip_cull_distance} \n (originally named `EXT_clip_cull_distance`) | done
 @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | done
 @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | done
+@webgl_extension{WEBGL,provoking_vertex}    | missing support in Emscripten
+@webgl_extension{WEBGL,polygon_mode}        | missing support in Emscripten
+@webgl_extension{WEBGL,blend_func_extended} | |
+@webgl_extension{WEBGL,stencil_texturing}   | |
 
 @section opengl-unsupported Unsupported OpenGL features
 

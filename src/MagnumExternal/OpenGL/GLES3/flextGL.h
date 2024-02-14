@@ -1590,6 +1590,16 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 
 #define GL_SRG8_EXT 0x8FBE
 
+/* GL_EXT_blend_func_extended */
+
+#define GL_SRC1_COLOR_EXT 0x88F9
+#define GL_SRC1_ALPHA_EXT 0x8589
+#define GL_ONE_MINUS_SRC1_COLOR_EXT 0x88FA
+#define GL_ONE_MINUS_SRC1_ALPHA_EXT 0x88FB
+#define GL_SRC_ALPHA_SATURATE_EXT 0x0308
+#define GL_LOCATION_INDEX_EXT 0x930F
+#define GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT 0x88FC
+
 /* GL_EXT_polygon_offset_clamp */
 
 #define GL_POLYGON_OFFSET_CLAMP_EXT 0x8E1B
@@ -1637,6 +1647,10 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_ZERO_TO_ONE_EXT 0x935F
 #define GL_CLIP_ORIGIN_EXT 0x935C
 #define GL_CLIP_DEPTH_MODE_EXT 0x935D
+
+/* GL_EXT_texture_mirror_clamp_to_edge */
+
+#define GL_MIRROR_CLAMP_TO_EDGE_EXT 0x8743
 
 /* GL_EXT_depth_clamp */
 
@@ -1718,6 +1732,19 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_BASE_VIEW_INDEX_OVR 0x9632
 #define GL_MAX_VIEWS_OVR 0x9631
 #define GL_FRAMEBUFFER_INCOMPLETE_VIEW_TARGETS_OVR 0x9633
+
+/* GL_ANGLE_provoking_vertex */
+
+#define GL_FIRST_VERTEX_CONVENTION_ANGLE 0x8E4D
+#define GL_LAST_VERTEX_CONVENTION_ANGLE 0x8E4E
+#define GL_PROVOKING_VERTEX_ANGLE 0x8E4F
+
+/* GL_ANGLE_polygon_mode */
+
+#define GL_POLYGON_MODE_ANGLE 0x0B40
+#define GL_LINE_ANGLE 0x1B01
+#define GL_FILL_ANGLE 0x1B02
+#define GL_POLYGON_OFFSET_LINE_ANGLE 0x2A02
 
 /* Function prototypes */
 
@@ -1992,6 +2019,14 @@ struct FlextGL {
     void(APIENTRY *MultiDrawElementsANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
     void(APIENTRY *MultiDrawElementsInstancedANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei);
 
+    /* GL_ANGLE_polygon_mode */
+
+    void(APIENTRY *PolygonModeANGLE)(GLenum, GLenum);
+
+    /* GL_ANGLE_provoking_vertex */
+
+    void(APIENTRY *ProvokingVertexANGLE)(GLenum);
+
     /* GL_ES_VERSION_3_1 */
 
     void(APIENTRY *ActiveShaderProgram)(GLuint, GLuint);
@@ -2109,6 +2144,13 @@ struct FlextGL {
     void(APIENTRY *TexParameterIiv)(GLenum, GLenum, const GLint *);
     void(APIENTRY *TexParameterIuiv)(GLenum, GLenum, const GLuint *);
     void(APIENTRY *TexStorage3DMultisample)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean);
+
+    /* GL_EXT_blend_func_extended */
+
+    void(APIENTRY *BindFragDataLocationEXT)(GLuint, GLuint, const GLchar *);
+    void(APIENTRY *BindFragDataLocationIndexedEXT)(GLuint, GLuint, GLuint, const GLchar *);
+    GLint(APIENTRY *GetFragDataIndexEXT)(GLuint, const GLchar *);
+    GLint(APIENTRY *GetProgramResourceLocationIndexEXT)(GLuint, GLenum, const GLchar *);
 
     /* GL_EXT_clip_control */
 
@@ -2347,6 +2389,14 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glMultiDrawElementsANGLE flextGL.MultiDrawElementsANGLE
 #define glMultiDrawElementsInstancedANGLE flextGL.MultiDrawElementsInstancedANGLE
 
+/* GL_ANGLE_polygon_mode */
+
+#define glPolygonModeANGLE flextGL.PolygonModeANGLE
+
+/* GL_ANGLE_provoking_vertex */
+
+#define glProvokingVertexANGLE flextGL.ProvokingVertexANGLE
+
 /* GL_ES_VERSION_3_1 */
 
 #define glActiveShaderProgram flextGL.ActiveShaderProgram
@@ -2464,6 +2514,13 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glTexParameterIiv flextGL.TexParameterIiv
 #define glTexParameterIuiv flextGL.TexParameterIuiv
 #define glTexStorage3DMultisample flextGL.TexStorage3DMultisample
+
+/* GL_EXT_blend_func_extended */
+
+#define glBindFragDataLocationEXT flextGL.BindFragDataLocationEXT
+#define glBindFragDataLocationIndexedEXT flextGL.BindFragDataLocationIndexedEXT
+#define glGetFragDataIndexEXT flextGL.GetFragDataIndexEXT
+#define glGetProgramResourceLocationIndexEXT flextGL.GetProgramResourceLocationIndexEXT
 
 /* GL_EXT_clip_control */
 

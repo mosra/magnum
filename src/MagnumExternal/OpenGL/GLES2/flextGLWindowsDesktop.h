@@ -989,6 +989,16 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV2_IMG 0x93F0
 #define GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV2_IMG 0x93F1
 
+/* GL_EXT_blend_func_extended */
+
+#define GL_SRC1_COLOR_EXT 0x88F9
+#define GL_SRC1_ALPHA_EXT 0x8589
+#define GL_ONE_MINUS_SRC1_COLOR_EXT 0x88FA
+#define GL_ONE_MINUS_SRC1_ALPHA_EXT 0x88FB
+#define GL_SRC_ALPHA_SATURATE_EXT 0x0308
+#define GL_LOCATION_INDEX_EXT 0x930F
+#define GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT 0x88FC
+
 /* GL_EXT_polygon_offset_clamp */
 
 #define GL_POLYGON_OFFSET_CLAMP_EXT 0x8E1B
@@ -1008,6 +1018,10 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_ZERO_TO_ONE_EXT 0x935F
 #define GL_CLIP_ORIGIN_EXT 0x935C
 #define GL_CLIP_DEPTH_MODE_EXT 0x935D
+
+/* GL_EXT_texture_mirror_clamp_to_edge */
+
+#define GL_MIRROR_CLAMP_TO_EDGE_EXT 0x8743
 
 /* GL_EXT_depth_clamp */
 
@@ -1082,6 +1096,13 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 /* GL_OES_stencil4 */
 
 #define GL_STENCIL_INDEX4_OES 0x8D47
+
+/* GL_ANGLE_polygon_mode */
+
+#define GL_POLYGON_MODE_ANGLE 0x0B40
+#define GL_LINE_ANGLE 0x1B01
+#define GL_FILL_ANGLE 0x1B02
+#define GL_POLYGON_OFFSET_LINE_ANGLE 0x2A02
 
 /* Function prototypes. First an intersection of GL 1.0 / 1.1 functions that
    are also available in ES 2.0, which we can access directly. */
@@ -1159,6 +1180,10 @@ struct FlextGL {
     void(APIENTRY *MultiDrawArraysInstancedANGLE)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei);
     void(APIENTRY *MultiDrawElementsANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
     void(APIENTRY *MultiDrawElementsInstancedANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei);
+
+    /* GL_ANGLE_polygon_mode */
+
+    void(APIENTRY *PolygonModeANGLE)(GLenum, GLenum);
 
     /* GL_APPLE_framebuffer_multisample */
 
@@ -1517,6 +1542,10 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glMultiDrawArraysInstancedANGLE flextGL.MultiDrawArraysInstancedANGLE
 #define glMultiDrawElementsANGLE flextGL.MultiDrawElementsANGLE
 #define glMultiDrawElementsInstancedANGLE flextGL.MultiDrawElementsInstancedANGLE
+
+/* GL_ANGLE_polygon_mode */
+
+#define glPolygonModeANGLE flextGL.PolygonModeANGLE
 
 /* GL_APPLE_framebuffer_multisample */
 

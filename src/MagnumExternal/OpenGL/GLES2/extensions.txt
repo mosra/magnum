@@ -91,9 +91,11 @@ extension EXT_sRGB_write_control                optional
 extension EXT_texture_compression_s3tc          optional
 extension EXT_pvrtc_sRGB                        optional
 extension EXT_draw_elements_base_vertex         optional
+extension EXT_blend_func_extended               optional
 extension EXT_polygon_offset_clamp              optional
 extension EXT_texture_compression_s3tc_srgb     optional
 extension EXT_clip_control                      optional
+extension EXT_texture_mirror_clamp_to_edge      optional
 extension EXT_depth_clamp                       optional
 extension IMG_texture_compression_pvrtc         optional
 # extension KHR_texture_compression_astc_hdr    optional
@@ -120,6 +122,7 @@ extension ANGLE_multi_draw                      optional
 # Haha you wish, OF COURSE it's not included in gl_angle_ext.xml so I have to
 # hardcode the numeric values there. GOOGLE!!!
 # extension ANGLE_compressed_texture_etc        optional
+extension ANGLE_polygon_mode                    optional
 
 begin functions blacklist
     # These are listed in EXT_separate_shader_objects with only the comment
@@ -155,6 +158,12 @@ begin functions blacklist
     TextureStorage1DEXT
     TextureStorage2DEXT
     TextureStorage3DEXT
+
+    # These are listed in EXT_blend_func_extended only for ES3+
+    BindFragDataLocationEXT
+    BindFragDataLocationIndexedEXT
+    GetFragDataIndexEXT
+    GetProgramResourceLocationIndexEXT
 
     # EXT/OES_draw_elements_base_vertex lists those are only present in ES3
     DrawRangeElementsBaseVertexEXT
