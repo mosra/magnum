@@ -303,23 +303,28 @@ enum class SamplerCompareFunction: GLenum {
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, SamplerCompareFunction value);
 #endif
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES2
 /**
 @brief Texture sampler depth/stencil mode
 
 @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
 @m_enum_values_as_keywords
 @requires_gl43 Extension @gl_extension{ARB,stencil_texturing}
-@requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
-    and older.
-@requires_gles Stencil texturing is not available in WebGL.
+@requires_gles31 Extension @m_class{m-doc-external} [ANGLE_stencil_texturing](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_stencil_texturing.txt)
+    in OpenGL ES 3.0.
+@requires_webgl_extension WebGL 2.0 and extension
+    @webgl_extension{WEBGL,stencil_texturing}
 */
 enum class SamplerDepthStencilMode: GLenum {
     /** Sample depth component */
     DepthComponent = GL_DEPTH_COMPONENT,
 
     /** Sample stencil index (as unsigned integer texture) */
+    #ifndef MAGNUM_TARGET_WEBGL
     StencilIndex = GL_STENCIL_INDEX
+    #else
+    StencilIndex = GL_STENCIL_INDEX_ANGLE
+    #endif
 };
 
 /** @debugoperatorenum{SamplerDepthStencilMode} */

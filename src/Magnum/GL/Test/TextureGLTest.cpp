@@ -140,7 +140,7 @@ struct TextureGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void samplingDepthStencilMode1D();
     #endif
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES2
     void samplingDepthStencilMode2D();
     void samplingDepthStencilMode3D();
     #endif
@@ -542,7 +542,7 @@ TextureGLTest::TextureGLTest() {
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::samplingDepthStencilMode1D,
         #endif
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         &TextureGLTest::samplingDepthStencilMode2D,
         &TextureGLTest::samplingDepthStencilMode3D,
         #endif
@@ -1197,14 +1197,19 @@ void TextureGLTest::samplingBorderInteger2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::samplingDepthStencilMode2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() << "is not supported.");
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isVersionSupported(Version::GLES310) && !Context::current().isExtensionSupported<Extensions::ANGLE::stencil_texturing>())
+        CORRADE_SKIP("Neither OpenGL ES 3.1 nor" << Extensions::ANGLE::stencil_texturing::string() << "is supported.");
     #else
-    if(!Context::current().isVersionSupported(Version::GLES310))
-        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::stencil_texturing>())
+        CORRADE_SKIP(Extensions::WEBGL::stencil_texturing::string() << "is not supported.");
     #endif
 
     Texture2D texture;
@@ -1326,14 +1331,19 @@ void TextureGLTest::samplingBorderInteger3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::samplingDepthStencilMode3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() << "is not supported.");
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isVersionSupported(Version::GLES310) && !Context::current().isExtensionSupported<Extensions::ANGLE::stencil_texturing>())
+        CORRADE_SKIP("Neither OpenGL ES 3.1 nor" << Extensions::ANGLE::stencil_texturing::string() << "is supported.");
     #else
-    if(!Context::current().isVersionSupported(Version::GLES310))
-        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::stencil_texturing>())
+        CORRADE_SKIP(Extensions::WEBGL::stencil_texturing::string() << "is not supported.");
     #endif
 
     Texture3D texture;

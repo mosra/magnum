@@ -150,7 +150,7 @@ enum class SamplerCompareMode: GLenum;
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 enum class SamplerCompareFunction: GLenum;
 #endif
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES2
 enum class SamplerDepthStencilMode: GLenum;
 #endif
 

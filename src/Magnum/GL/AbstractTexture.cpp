@@ -498,9 +498,15 @@ void AbstractTexture::setCompareFunction(const SamplerCompareFunction function) 
 }
 #endif
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::setDepthStencilMode(const SamplerDepthStencilMode mode) {
-    Context::current().state().texture.parameteriImplementation(*this, GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
+    Context::current().state().texture.parameteriImplementation(*this,
+        #ifndef MAGNUM_TARGET_WEBGL
+        GL_DEPTH_STENCIL_TEXTURE_MODE
+        #else
+        GL_DEPTH_STENCIL_TEXTURE_MODE_ANGLE
+        #endif
+        , GLenum(mode));
 }
 #endif
 

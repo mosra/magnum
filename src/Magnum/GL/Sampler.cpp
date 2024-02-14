@@ -219,7 +219,7 @@ Debug& operator<<(Debug& debug, const SamplerCompareFunction value) {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 Debug& operator<<(Debug& debug, const SamplerDepthStencilMode value) {
     debug << "GL::SamplerDepthStencilMode" << Debug::nospace;
 

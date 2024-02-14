@@ -82,6 +82,8 @@ struct CubeMapTextureGLTest: OpenGLTester {
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void samplingBorderInteger();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     void samplingDepthStencilMode();
     #endif
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
@@ -351,6 +353,8 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               #endif
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &CubeMapTextureGLTest::samplingBorderInteger,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::samplingDepthStencilMode,
               #endif
               #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
@@ -688,14 +692,19 @@ void CubeMapTextureGLTest::samplingBorderInteger() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 void CubeMapTextureGLTest::samplingDepthStencilMode() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() << "is not supported.");
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isVersionSupported(Version::GLES310) && !Context::current().isExtensionSupported<Extensions::ANGLE::stencil_texturing>())
+        CORRADE_SKIP("Neither OpenGL ES 3.1 nor" << Extensions::ANGLE::stencil_texturing::string() << "is supported.");
     #else
-    if(!Context::current().isVersionSupported(Version::GLES310))
-        CORRADE_SKIP("OpenGL ES 3.1 not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::stencil_texturing>())
+        CORRADE_SKIP(Extensions::WEBGL::stencil_texturing::string() << "is not supported.");
     #endif
 
     CubeMapTexture texture;

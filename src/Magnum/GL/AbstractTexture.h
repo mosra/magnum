@@ -488,7 +488,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         void setCompareMode(SamplerCompareMode mode);
         void setCompareFunction(SamplerCompareFunction function);
         #endif
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         void setDepthStencilMode(SamplerDepthStencilMode mode);
         #endif
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))

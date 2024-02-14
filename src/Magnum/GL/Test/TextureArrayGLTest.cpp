@@ -112,9 +112,7 @@ struct TextureArrayGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void samplingDepthStencilMode1D();
     #endif
-    #ifndef MAGNUM_TARGET_WEBGL
     void samplingDepthStencilMode2D();
-    #endif
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     void samplingBorder2D();
     #endif
@@ -356,9 +354,7 @@ TextureArrayGLTest::TextureArrayGLTest() {
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingDepthStencilMode1D,
         #endif
-        #ifndef MAGNUM_TARGET_WEBGL
         &TextureArrayGLTest::samplingDepthStencilMode2D,
-        #endif
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
         &TextureArrayGLTest::samplingBorder2D,
         #endif
@@ -879,16 +875,18 @@ void TextureArrayGLTest::samplingBorderInteger2D() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_WEBGL
 void TextureArrayGLTest::samplingDepthStencilMode2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
         CORRADE_SKIP(Extensions::EXT::texture_array::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() << "is not supported.");
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isVersionSupported(Version::GLES310) && !Context::current().isExtensionSupported<Extensions::ANGLE::stencil_texturing>())
+        CORRADE_SKIP("Neither OpenGL ES 3.1 nor" << Extensions::ANGLE::stencil_texturing::string() << "is supported.");
     #else
-    if(!Context::current().isVersionSupported(Version::GLES310))
-        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::stencil_texturing>())
+        CORRADE_SKIP(Extensions::WEBGL::stencil_texturing::string() << "is not supported.");
     #endif
 
     Texture2DArray texture;
@@ -896,7 +894,6 @@ void TextureArrayGLTest::samplingDepthStencilMode2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
-#endif
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
 void TextureArrayGLTest::samplingBorder2D() {

@@ -771,7 +771,7 @@ Texture: public AbstractTexture {
         }
         #endif
 
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Set depth/stencil texture mode
          * @return Reference to self (for method chaining)
@@ -786,9 +786,10 @@ Texture: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{DEPTH_STENCIL_TEXTURE_MODE}
          * @requires_gl43 Extension @gl_extension{ARB,stencil_texturing}
-         * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
-         *      and older.
-         * @requires_gles Stencil texturing is not available in WebGL.
+         * @requires_gles31 Extension @m_class{m-doc-external} [ANGLE_stencil_texturing](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_stencil_texturing.txt)
+         *      in OpenGL ES 3.0.
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,stencil_texturing}
          */
         Texture<dimensions>& setDepthStencilMode(SamplerDepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);

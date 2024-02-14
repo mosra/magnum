@@ -454,7 +454,7 @@ Extension                                   | Status
 @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt) (unlisted) | done
 @m_class{m-doc-external} [ANGLE_provoking_vertex](https://chromium.googlesource.com/angle/angle/+/main/extensions/ANGLE_provoking_vertex.txt) (unlisted) | done
 @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt) (unlisted) | done
-@m_class{m-doc-external} [ANGLE_stencil_texturing](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_stencil_texturing.txt) (unlisted) | |
+@m_class{m-doc-external} [ANGLE_stencil_texturing](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_stencil_texturing.txt) (unlisted) | done
 @gl_extension{APPLE,texture_format_BGRA8888} | done
 @gl_extension{APPLE,clip_distance}          | done
 @gl_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
@@ -597,7 +597,7 @@ Extension                                   | Status
 @webgl_extension{WEBGL,provoking_vertex}    | missing support in Emscripten
 @webgl_extension{WEBGL,polygon_mode}        | missing support in Emscripten
 @webgl_extension{WEBGL,blend_func_extended} | |
-@webgl_extension{WEBGL,stencil_texturing}   | |
+@webgl_extension{WEBGL,stencil_texturing}   | done
 
 @section opengl-unsupported Unsupported OpenGL features
 
