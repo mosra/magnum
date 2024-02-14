@@ -294,12 +294,12 @@ namespace ANGLE {
     #ifndef MAGNUM_TARGET_GLES2
     /* Replaces WEBGL_color_buffer_float from WebGL 1 */
     _extension( 9,EXT,color_buffer_float,           GLES300,    None) // #31
-    /* Replaces WEBGL_disjoint_timer_query from WebGL 1 */
+    /* Replaces EXT_disjoint_timer_query from WebGL 1 */
     _extension(10,EXT,disjoint_timer_query_webgl2,  GLES300,    None) // #33
     #endif
     _extension(11,EXT,float_blend,                  GLES200,    None) // #35
-    _extension(12,EXT,texture_compression_rgtc,     GLES200,    None) // #38
-    _extension(13,EXT,texture_compression_bptc,     GLES200,    None) // #39
+    _extension(12,EXT,texture_compression_bptc,     GLES200,    None) // #38
+    _extension(13,EXT,texture_compression_rgtc,     GLES200,    None) // #39
     #ifndef MAGNUM_TARGET_GLES2
     /* This one was renamed to WEBGL_clip_cull_distance in January 2023,
        recognizing both for compatibility: https://github.com/KhronosGroup/WebGL/commit/c06fc8230ce4b1748be89ce3279cbe5348c9c9c9 */
@@ -350,6 +350,8 @@ namespace ANGLE {
     _extension(37,WEBGL,color_buffer_float,         GLES200,    None) // #14
     _extension(38,WEBGL,draw_buffers,               GLES200, GLES300) // #18
     #endif
+    /* WEBGL_compressed_texture_etc1 (24) not exposed as the ES
+       OES_compressed_ETC1_RGB8_texture extension isn't exposed either */
     _extension(39,WEBGL,compressed_texture_etc,     GLES200,    None) // #29
     _extension(40,WEBGL,compressed_texture_astc,    GLES200,    None) // #30
     _extension(41,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
