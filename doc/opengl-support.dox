@@ -561,7 +561,7 @@ Extension                                   | Status
 @webgl_extension{EXT,texture_filter_anisotropic} | done
 @webgl_extension{EXT,color_buffer_half_float} | |
 @webgl_extension{EXT,disjoint_timer_query}  | only time elapsed query
-@webgl_extension{EXT,disjoint_timer_query_webgl2}  | [missing support in Emscripten](https://github.com/emscripten-core/emscripten/pull/9652)
+@webgl_extension{EXT,disjoint_timer_query_webgl2} | done
 @webgl_extension{EXT,color_buffer_float}    | |
 @webgl_extension{EXT,float_blend}           | |
 @webgl_extension{EXT,texture_compression_rgtc} | done
