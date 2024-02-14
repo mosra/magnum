@@ -206,6 +206,20 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
     #endif
     #endif
 
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(context.isExtensionSupported<Extensions::NV::polygon_mode>()) {
+        extensions[Extensions::NV::polygon_mode::Index] =
+                   Extensions::NV::polygon_mode::string();
+        polygonModeImplementation = glPolygonModeNV;
+    } else if(context.isExtensionSupported<Extensions::ANGLE::polygon_mode>()) {
+        extensions[Extensions::ANGLE::polygon_mode::Index] =
+                   Extensions::ANGLE::polygon_mode::string();
+        polygonModeImplementation = glPolygonModeANGLE;
+    } else {
+        polygonModeImplementation = nullptr;
+    }
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     /* On compatibility profile we need to explicitly enable GL_POINT_SPRITE
        in order to have gl_PointCoord working (on NVidia at least, Mesa behaves

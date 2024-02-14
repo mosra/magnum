@@ -126,9 +126,14 @@ void Renderer::setFaceCullingMode(const PolygonFacing mode) {
     glCullFace(GLenum(mode));
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void Renderer::setProvokingVertex(const ProvokingVertex mode) {
-    glProvokingVertex(GLenum(mode));
+    #ifndef MAGNUM_TARGET_GLES
+    glProvokingVertex
+    #else
+    glProvokingVertexANGLE
+    #endif
+        (GLenum(mode));
 }
 #endif
 
@@ -137,7 +142,7 @@ void Renderer::setPolygonMode(const PolygonMode mode) {
     #ifndef MAGNUM_TARGET_GLES
     glPolygonMode
     #else
-    glPolygonModeNV
+    Context::current().state().renderer.polygonModeImplementation
     #endif
         (GL_FRONT_AND_BACK, GLenum(mode));
 }

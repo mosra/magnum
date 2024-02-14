@@ -61,6 +61,9 @@ struct RendererGLTest: OpenGLTester {
 
     void maxLineWidth();
     void pointCoord();
+    #ifndef MAGNUM_TARGET_WEBGL
+    void polygonMode();
+    #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void patchParameters();
     #endif
@@ -86,6 +89,9 @@ using namespace Math::Literals;
 RendererGLTest::RendererGLTest() {
     addTests({&RendererGLTest::maxLineWidth,
               &RendererGLTest::pointCoord,
+              #ifndef MAGNUM_TARGET_WEBGL
+              &RendererGLTest::polygonMode,
+              #endif
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &RendererGLTest::patchParameters,
               #endif
@@ -252,6 +258,22 @@ void RendererGLTest::pointCoord() {
         Utility::Path::join(_testDir, "pointcoord.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void RendererGLTest::polygonMode() {
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::NV::polygon_mode>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::polygon_mode>())
+        CORRADE_SKIP("Neither" << Extensions::NV::polygon_mode::string() << "nor" << Extensions::ANGLE::polygon_mode::string() << "is supported.");
+    #endif
+
+    /* Just check for crashes and GL errors, revert back to the default mode to
+       not break other tests */
+    Renderer::setPolygonMode(Renderer::PolygonMode::Line);
+    Renderer::setPolygonMode(Renderer::PolygonMode::Fill);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void RendererGLTest::patchParameters() {

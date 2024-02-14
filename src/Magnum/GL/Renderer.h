@@ -411,6 +411,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetPoint,
              *      @ref setPolygonOffset()
              * @requires_es_extension Extension @gl_extension{NV,polygon_offset}
+             *      or @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt)
              * @requires_gles Only @ref Feature::PolygonOffsetFill is available
              *      in WebGL.
              */
@@ -796,7 +797,7 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setFaceCullingMode(PolygonFacing mode);
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Provoking vertex
          *
@@ -804,15 +805,27 @@ class MAGNUM_GL_EXPORT Renderer {
          * @m_enum_values_as_keywords
          * @requires_gl32 Extension @gl_extension{ARB,provoking_vertex}. Older
          *      versions behave always like @ref ProvokingVertex::LastVertexConvention.
-         * @requires_gl OpenGL ES and WebGL behave always like
+         * @requires_es_extension OpenGL ES 3.0 and extension
+         *      @m_class{m-doc-external} [ANGLE_provoking_vertex](https://chromium.googlesource.com/angle/angle/+/main/extensions/ANGLE_provoking_vertex.txt).
+         *      Without the extension behaves always like
+         *      @ref ProvokingVertex::LastVertexConvention.
+         * @requires_gles WebGL behaves always like
          *      @ref ProvokingVertex::LastVertexConvention.
          */
         enum class ProvokingVertex: GLenum {
             /** Use first vertex of each polygon. */
+            #ifndef MAGNUM_TARGET_GLES
             FirstVertexConvention = GL_FIRST_VERTEX_CONVENTION,
+            #else
+            FirstVertexConvention = GL_FIRST_VERTEX_CONVENTION_ANGLE,
+            #endif
 
             /** Use last vertex of each polygon (default). */
+            #ifndef MAGNUM_TARGET_GLES
             LastVertexConvention = GL_LAST_VERTEX_CONVENTION
+            #else
+            LastVertexConvention = GL_LAST_VERTEX_CONVENTION_ANGLE
+            #endif
         };
 
         /**
@@ -822,7 +835,9 @@ class MAGNUM_GL_EXPORT Renderer {
          * @see @fn_gl_keyword{ProvokingVertex}
          * @requires_gl32 Extension @gl_extension{ARB,provoking_vertex}. Older
          *      versions behave always like the default.
-         * @requires_gl OpenGL ES and WebGL behave always like the default.
+         * @requires_es_extension OpenGL ES 3.0 and extension
+         *      @m_class{m-doc-external} [ANGLE_provoking_vertex](https://chromium.googlesource.com/angle/angle/+/main/extensions/ANGLE_provoking_vertex.txt)
+         * @requires_gles WebGL behaves always like the default.
          */
         static void setProvokingVertex(ProvokingVertex mode);
         #endif
@@ -833,11 +848,12 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * @see @ref setPolygonMode()
          * @m_enum_values_as_keywords
-         * @requires_es_extension Extension @gl_extension{NV,polygon_mode}.
+         * @requires_es_extension Extension @gl_extension{NV,polygon_mode} or
+         *      @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt).
          *      Otherwise behaves always like @ref PolygonMode::Fill. See
-         *      @ref Mesh::setPrimitive() for possible workaround.
+         *      @ref Mesh::setPrimitive() for a possible workaround.
          * @requires_gles WebGL behaves always like @ref PolygonMode::Fill. See
-         *      @ref Mesh::setPrimitive() for possible workaround.
+         *      @ref Mesh::setPrimitive() for a possible workaround.
          */
         enum class PolygonMode: GLenum {
             /**
@@ -861,6 +877,8 @@ class MAGNUM_GL_EXPORT Renderer {
             /**
              * Starts of boundary edges are drawn as points. See also
              * @ref setPointSize().
+             * @requires_es_extension Extension @gl_extension{NV,polygon_mode},
+             *      not available with @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt)
              */
             #ifndef MAGNUM_TARGET_GLES
             Point = GL_POINT
@@ -874,7 +892,8 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * Initial value is @ref PolygonMode::Fill.
          * @see @fn_gl_keyword{PolygonMode}
-         * @requires_es_extension Extension @gl_extension{NV,polygon_mode}.
+         * @requires_es_extension Extension @gl_extension{NV,polygon_mode} or
+         *      @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt).
          *      Otherwise behaves always like the default. See
          *      @ref Mesh::setPrimitive() for possible workaround.
          * @requires_gles WebGL behaves always like the default. See

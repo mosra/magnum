@@ -59,6 +59,9 @@ struct RendererState {
     void(APIENTRY *blendFuncSeparateiImplementation)(GLuint, GLenum, GLenum, GLenum, GLenum);
     void(APIENTRY *colorMaskiImplementation)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
     #endif
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    void(APIENTRY *polygonModeImplementation)(GLenum, GLenum);
+    #endif
     #ifndef MAGNUM_TARGET_WEBGL
     GLenum(APIENTRY *graphicsResetStatusImplementation)();
 
