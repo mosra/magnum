@@ -1257,8 +1257,8 @@ struct FlextGL {
 
     void(APIENTRY *MultiDrawArraysANGLE)(GLenum, const GLint *, const GLsizei *, GLsizei);
     void(APIENTRY *MultiDrawArraysInstancedANGLE)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei);
-    void(APIENTRY *MultiDrawElementsANGLE)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei);
-    void(APIENTRY *MultiDrawElementsInstancedANGLE)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei*, GLsizei);
+    void(APIENTRY *MultiDrawElementsANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
+    void(APIENTRY *MultiDrawElementsInstancedANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei);
 
     /* GL_APPLE_framebuffer_multisample */
 

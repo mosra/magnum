@@ -1981,16 +1981,16 @@ struct FlextGL {
     /* GL_ANGLE_base_vertex_base_instance */
 
     void(APIENTRY *DrawArraysInstancedBaseInstanceANGLE)(GLenum, GLint, GLsizei, GLsizei, GLuint);
-    void(APIENTRY *DrawElementsInstancedBaseVertexBaseInstanceANGLE)(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei, GLint, GLuint);
+    void(APIENTRY *DrawElementsInstancedBaseVertexBaseInstanceANGLE)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint, GLuint);
     void(APIENTRY *MultiDrawArraysInstancedBaseInstanceANGLE)(GLenum, const GLint *, const GLsizei *, const GLsizei *, const GLuint *, GLsizei);
-    void(APIENTRY *MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei *, const GLint *, const GLuint *, GLsizei);
+    void(APIENTRY *MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei *, const GLint *, const GLuint *, GLsizei);
 
     /* GL_ANGLE_multi_draw */
 
     void(APIENTRY *MultiDrawArraysANGLE)(GLenum, const GLint *, const GLsizei *, GLsizei);
     void(APIENTRY *MultiDrawArraysInstancedANGLE)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei);
-    void(APIENTRY *MultiDrawElementsANGLE)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei);
-    void(APIENTRY *MultiDrawElementsInstancedANGLE)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei*, GLsizei);
+    void(APIENTRY *MultiDrawElementsANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
+    void(APIENTRY *MultiDrawElementsInstancedANGLE)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei);
 
     /* GL_ES_VERSION_3_1 */
 

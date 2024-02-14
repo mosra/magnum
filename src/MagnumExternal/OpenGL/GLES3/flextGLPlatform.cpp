@@ -35,15 +35,15 @@ void flextGLInit(Magnum::GL::Context&) {
 
     /* GL_ANGLE_base_vertex_base_instance */
     flextGL.DrawArraysInstancedBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLsizei, GLsizei, GLuint)>(loader.load("glDrawArraysInstancedBaseInstanceANGLE"));
-    flextGL.DrawElementsInstancedBaseVertexBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei, GLint, GLuint)>(loader.load("glDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
+    flextGL.DrawElementsInstancedBaseVertexBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint, GLuint)>(loader.load("glDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
     flextGL.MultiDrawArraysInstancedBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, const GLsizei *, const GLuint *, GLsizei)>(loader.load("glMultiDrawArraysInstancedBaseInstanceANGLE"));
-    flextGL.MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei *, const GLint *, const GLuint *, GLsizei)>(loader.load("glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
+    flextGL.MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei *, const GLint *, const GLuint *, GLsizei)>(loader.load("glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
 
     /* GL_ANGLE_multi_draw */
     flextGL.MultiDrawArraysANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, GLsizei)>(loader.load("glMultiDrawArraysANGLE"));
     flextGL.MultiDrawArraysInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei)>(loader.load("glMultiDrawArraysInstancedANGLE"));
-    flextGL.MultiDrawElementsANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei)>(loader.load("glMultiDrawElementsANGLE"));
-    flextGL.MultiDrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei*, GLsizei)>(loader.load("glMultiDrawElementsInstancedANGLE"));
+    flextGL.MultiDrawElementsANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei)>(loader.load("glMultiDrawElementsANGLE"));
+    flextGL.MultiDrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei)>(loader.load("glMultiDrawElementsInstancedANGLE"));
 
     /* GL_ES_VERSION_3_1 */
     flextGL.ActiveShaderProgram = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint)>(loader.load("glActiveShaderProgram"));

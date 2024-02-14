@@ -586,9 +586,9 @@ typedef khronos_uint64_t GLuint64;
 /* GL_ANGLE_base_vertex_base_instance */
 
 GLAPI void glDrawArraysInstancedBaseInstanceANGLE(GLenum, GLint, GLsizei, GLsizei, GLuint);
-GLAPI void glDrawElementsInstancedBaseVertexBaseInstanceANGLE(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei, GLint, GLuint);
+GLAPI void glDrawElementsInstancedBaseVertexBaseInstanceANGLE(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint, GLuint);
 GLAPI void glMultiDrawArraysInstancedBaseInstanceANGLE(GLenum, const GLint *, const GLsizei *, const GLsizei *, const GLuint *, GLsizei);
-GLAPI void glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei *, const GLint *, const GLuint *, GLsizei);
+GLAPI void glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei *, const GLint *, const GLuint *, GLsizei);
 
 /* GL_ANGLE_instanced_arrays */
 
@@ -600,8 +600,8 @@ GLAPI void glVertexAttribDivisorANGLE(GLuint, GLuint);
 
 GLAPI void glMultiDrawArraysANGLE(GLenum, const GLint *, const GLsizei *, GLsizei);
 GLAPI void glMultiDrawArraysInstancedANGLE(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei);
-GLAPI void glMultiDrawElementsANGLE(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei);
-GLAPI void glMultiDrawElementsInstancedANGLE(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei*, GLsizei);
+GLAPI void glMultiDrawElementsANGLE(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
+GLAPI void glMultiDrawElementsInstancedANGLE(GLenum, const GLsizei *, GLenum, const void *const*, const GLsizei*, GLsizei);
 
 /* GL_ES_VERSION_2_0 */
 
