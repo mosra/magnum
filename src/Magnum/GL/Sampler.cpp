@@ -173,9 +173,7 @@ Debug& operator<<(Debug& debug, const SamplerWrapping value) {
         #ifndef MAGNUM_TARGET_WEBGL
         _c(ClampToBorder)
         #endif
-        #ifndef MAGNUM_TARGET_GLES
         _c(MirrorClampToEdge)
-        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }

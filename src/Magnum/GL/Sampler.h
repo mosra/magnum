@@ -165,17 +165,18 @@ enum class SamplerWrapping: GLint {
     #endif
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
     /**
      * Mirror the texture once in negative coordinates and clamp to
      * edge after that. **Unavailable on rectangle textures.**
      * @requires_gl44 Extension @gl_extension{ARB,texture_mirror_clamp_to_edge},
      *      @gl_extension{ATI,texture_mirror_once} or @gl_extension{EXT,texture_mirror_clamp}
-     * @requires_gl Only separate @ref SamplerWrapping::MirroredRepeat or
-     *      @ref SamplerWrapping::ClampToEdge is available in OpenGL ES and
-     *      WebGL.
+     * @requires_es_extension Extension @gl_extension{EXT,texture_mirror_clamp_to_edge}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_mirror_clamp_to_edge}
      */
+    #ifndef MAGNUM_TARGET_GLES
     MirrorClampToEdge = GL_MIRROR_CLAMP_TO_EDGE
+    #else
+    MirrorClampToEdge = GL_MIRROR_CLAMP_TO_EDGE_EXT
     #endif
 };
 

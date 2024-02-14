@@ -488,7 +488,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_compression_bptc} | done
 @gl_extension{EXT,texture_compression_s3tc_srgb} | done
 @gl_extension{EXT,clip_control}             | done
-@gl_extension{EXT,texture_mirror_clamp_to_edge} | |
+@gl_extension{EXT,texture_mirror_clamp_to_edge} | done
 @gl_extension{EXT,depth_clamp}              | done
 @gl_extension{IMG,texture_compression_pvrtc} | done
 @gl_extension2{KHR,texture_compression_astc_hdr,KHR_texture_compression_astc_hdr} | done
@@ -575,7 +575,7 @@ Extension                                   | Status
 @webgl_extension{EXT,polygon_offset_clamp}  | missing support in Emscripten
 @webgl_extension{EXT,clip_control}          | missing support in Emscripten
 @webgl_extension{EXT,depth_clamp}           | done
-@webgl_extension{EXT,texture_mirror_clamp_to_edge} | |
+@webgl_extension{EXT,texture_mirror_clamp_to_edge} | done
 @webgl_extension{KHR,parallel_shader_compile} | done
 @webgl_extension{NV,shader_noperspective_interpolation} | done (shading language only)
 @webgl_extension{OES,texture_float_linear}  | done
