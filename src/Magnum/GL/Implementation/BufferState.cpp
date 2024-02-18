@@ -105,9 +105,7 @@ BufferState::BufferState(Context& context, Containers::StaticArrayView<Implement
 
         createImplementation = &Buffer::createImplementationDSA;
         copyImplementation = &Buffer::copyImplementationDSA;
-        #ifndef MAGNUM_TARGET_GLES
         storageImplementation = &Buffer::storageImplementationDSA;
-        #endif
         getParameterImplementation = &Buffer::getParameterImplementationDSA;
         getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
         dataImplementation = &Buffer::dataImplementationDSA;
