@@ -481,6 +481,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_norm16}           | done
 @gl_extension{EXT,texture_sRGB_R8}          | done
 @gl_extension{EXT,texture_sRGB_RG8}         | done
+@gl_extension{EXT,buffer_storage}           | done
 @gl_extension{EXT,blend_func_extended}      | done
 @gl_extension{EXT,polygon_offset_clamp}     | |
 @gl_extension{EXT,clip_cull_distance}       | done

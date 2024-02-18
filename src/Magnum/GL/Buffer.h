@@ -530,25 +530,35 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
             Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT_EXT,
             #endif
 
-            #ifndef MAGNUM_TARGET_GLES
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * Allow reading from or writing to the buffer while it is mapped.
              * @m_since_latest
-             * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
-             * @requires_gl Buffer storage is not available in OpenGL ES and
-             *      WebGL, use @ref setData() instead.
+             * @requires_es_extension OpenGL ES 3.1 and extension
+             *      @gl_extension{EXT,buffer_storage}
+             * @requires_gles Buffer storage is not available in WebGL, use
+             *      @ref setData() instead.
              */
+            #ifndef MAGNUM_TARGET_GLES
             Persistent = GL_MAP_PERSISTENT_BIT,
+            #else
+            Persistent = GL_MAP_PERSISTENT_BIT_EXT,
+            #endif
 
             /**
              * Shared access to buffer that's both mapped and used will be
              * coherent.
              * @m_since_latest
-             * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
-             * @requires_gl Buffer storage is not available in OpenGL ES and
-             *      WebGL, use @ref setData() instead.
+             * @requires_es_extension OpenGL ES 3.1 and extension
+             *      @gl_extension{EXT,buffer_storage}
+             * @requires_gles Buffer storage is not available in WebGL, use
+             *      @ref setData() instead.
              */
+            #ifndef MAGNUM_TARGET_GLES
             Coherent = GL_MAP_COHERENT_BIT
+            #else
+            Coherent = GL_MAP_COHERENT_BIT_EXT
+            #endif
             #endif
         };
 
@@ -564,7 +574,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         typedef Containers::EnumSet<MapFlag> MapFlags;
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Buffer storage flag
          * @m_since_latest
@@ -572,8 +582,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @see @ref StorageFlags, @ref setStorage()
          * @m_enum_values_as_keywords
          * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
-         * @requires_gl Buffer storage is not available in OpenGL ES and WebGL,
-         *      use @ref setData() instead.
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{EXT,buffer_storage}
+         * @requires_gles Buffer storage is not available in WebGL, use
+         *      @ref setData() instead.
          */
         enum class StorageFlag: GLbitfield {
             /** Allow the buffer to be mapped with @ref MapFlag::Read. */
@@ -583,20 +595,36 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
             MapWrite = GL_MAP_WRITE_BIT,
 
             /** Allow the buffer to be mapped with @ref MapFlag::Persistent. */
+            #ifndef MAGNUM_TARGET_GLES
             MapPersistent = GL_MAP_PERSISTENT_BIT,
+            #else
+            MapPersistent = GL_MAP_PERSISTENT_BIT_EXT,
+            #endif
 
             /** Allow the buffer to be mapped with @ref MapFlag::Coherent. */
+            #ifndef MAGNUM_TARGET_GLES
             MapCoherent = GL_MAP_COHERENT_BIT,
+            #else
+            MapCoherent = GL_MAP_COHERENT_BIT_EXT,
+            #endif
 
             /**
              * Allow the buffer to be updated with @ref setSubData(). Note that
              * the buffer can still be updated through @ref copy() even without
              * this flag present.
              */
+            #ifndef MAGNUM_TARGET_GLES
             DynamicStorage = GL_DYNAMIC_STORAGE_BIT,
+            #else
+            DynamicStorage = GL_DYNAMIC_STORAGE_BIT_EXT,
+            #endif
 
             /** Prefer to allocate the memory in client memory space. */
+            #ifndef MAGNUM_TARGET_GLES
             ClientStorage = GL_CLIENT_STORAGE_BIT
+            #else
+            ClientStorage = GL_CLIENT_STORAGE_BIT_EXT
+            #endif
         };
 
         /**
@@ -605,8 +633,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *
          * @see @ref setStorage()
          * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
-         * @requires_gl Buffer storage is not available in OpenGL ES and WebGL,
-         *      use @ref setData() instead.
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{EXT,buffer_storage}
+         * @requires_gles Buffer storage is not available in WebGL, use
+         *      @ref setData() instead.
          */
         typedef Containers::EnumSet<StorageFlag> StorageFlags;
         #endif
@@ -1073,7 +1103,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         Buffer& bind(Target target, UnsignedInt index);
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Set storage
          * @param data      Data
@@ -1087,8 +1117,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      @fn_gl2_keyword{NamedBufferStorage,BufferStorage}, eventually
          *      @fn_gl{BindBuffer} and @fn_gl_keyword{BufferStorage}
          * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
-         * @requires_gl Buffer storage is not available in OpenGL ES and WebGL,
-         *      use @ref setData() instead.
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{EXT,buffer_storage}
+         * @requires_gles Buffer storage is not available in WebGL, use
+         *      @ref setData() instead.
          */
         Buffer& setStorage(Containers::ArrayView<const void> data, StorageFlags flags);
 
@@ -1380,8 +1412,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         static void MAGNUM_GL_LOCAL storageImplementationDefault(Buffer& self, Containers::ArrayView<const void> data, StorageFlags flags);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL storageImplementationDSA(Buffer& self, Containers::ArrayView<const void> data, StorageFlags flags);
         #endif
 
@@ -1474,7 +1508,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 CORRADE_ENUMSET_OPERATORS(Buffer::StorageFlags)
 #endif
 

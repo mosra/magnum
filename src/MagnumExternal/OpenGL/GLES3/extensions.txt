@@ -64,6 +64,7 @@ extension EXT_draw_elements_base_vertex             optional
 extension EXT_texture_norm16                        optional
 extension EXT_texture_sRGB_R8                       optional
 extension EXT_texture_sRGB_RG8                      optional
+extension EXT_buffer_storage                        optional
 extension EXT_blend_func_extended                   optional
 extension EXT_polygon_offset_clamp                  optional
 extension EXT_clip_cull_distance                    optional

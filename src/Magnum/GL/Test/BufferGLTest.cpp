@@ -62,7 +62,7 @@ struct BufferGLTest: OpenGLTester {
     #endif
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void storage();
     void storagePreinitialized();
     #endif
@@ -129,7 +129,7 @@ BufferGLTest::BufferGLTest() {
     #endif
 
     addTests({
-              #ifndef MAGNUM_TARGET_GLES
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &BufferGLTest::storage,
               &BufferGLTest::storagePreinitialized,
               #endif
@@ -407,10 +407,15 @@ void BufferGLTest::bindBaseRangeCreatesObject() {
 #endif
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void BufferGLTest::storage() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::buffer_storage>())
         CORRADE_SKIP(Extensions::ARB::buffer_storage::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::buffer_storage>())
+        CORRADE_SKIP(Extensions::EXT::buffer_storage::string() << "is not supported.");
+    #endif
 
     Buffer buffer;
 
@@ -420,14 +425,22 @@ void BufferGLTest::storage() {
         .setSubData(0, data);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(Containers::arrayCast<Int>(buffer.data()),
         Containers::arrayView(data),
         TestSuite::Compare::Container);
+    #endif
 }
 
 void BufferGLTest::storagePreinitialized() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::buffer_storage>())
         CORRADE_SKIP(Extensions::ARB::buffer_storage::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::buffer_storage>())
+        CORRADE_SKIP(Extensions::EXT::buffer_storage::string() << "is not supported.");
+    #endif
 
     Buffer buffer;
 
@@ -436,9 +449,12 @@ void BufferGLTest::storagePreinitialized() {
     buffer.setStorage(data, Buffer::StorageFlag::MapRead|Buffer::StorageFlag::ClientStorage);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(Containers::arrayCast<Int>(buffer.data()),
         Containers::arrayView(data),
         TestSuite::Compare::Container);
+    #endif
 }
 #endif
 

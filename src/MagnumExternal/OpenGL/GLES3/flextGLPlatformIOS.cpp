@@ -39,6 +39,7 @@
 #undef glBindFragDataLocationIndexedEXT
 #undef glGetFragDataIndexEXT
 #undef glGetProgramResourceLocationIndexEXT
+#undef glBufferStorageEXT
 #undef glClipControlEXT
 #undef glCopyImageSubDataEXT
 #undef glGetObjectLabelEXT
@@ -207,6 +208,11 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.BindFragDataLocationIndexedEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLuint, const GLchar *)>(glBindFragDataLocationIndexedEXT);
     flextGL.GetFragDataIndexEXT = reinterpret_cast<GLint(APIENTRY*)(GLuint, const GLchar *)>(glGetFragDataIndexEXT);
     flextGL.GetProgramResourceLocationIndexEXT = reinterpret_cast<GLint(APIENTRY*)(GLuint, GLenum, const GLchar *)>(glGetProgramResourceLocationIndexEXT);
+    #endif
+
+    /* GL_EXT_buffer_storage */
+    #if GL_EXT_buffer_storage
+    flextGL.BufferStorageEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizeiptr, const void *, GLbitfield)>(glBufferStorageEXT);
     #endif
 
     /* GL_EXT_clip_control */

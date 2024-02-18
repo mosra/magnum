@@ -186,7 +186,8 @@ See also:
 -   Recognizing the @gl_extension{NV,geometry_shader_passthrough} extension
 -   Added a @ref GL::AbstractTexture::target() getter to simplify interaction
     with raw GL code
--   Exposed @gl_extension{ARB,buffer_storage} as
+-   Exposed the @gl_extension{ARB,buffer_storage} desktop and
+    @gl_extension{EXT,buffer_storage} ES extensions as
     @ref GL::Buffer::setStorage() together with additions to
     @ref GL::Buffer::MapFlag
 -   It's now possible to modify index offset via @ref GL::Mesh::setIndexOffset()

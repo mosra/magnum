@@ -1583,6 +1583,18 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 
 #define GL_SRG8_EXT 0x8FBE
 
+/* GL_EXT_buffer_storage */
+
+#define GL_MAP_READ_BIT 0x0001
+#define GL_MAP_WRITE_BIT 0x0002
+#define GL_MAP_PERSISTENT_BIT_EXT 0x0040
+#define GL_MAP_COHERENT_BIT_EXT 0x0080
+#define GL_DYNAMIC_STORAGE_BIT_EXT 0x0100
+#define GL_CLIENT_STORAGE_BIT_EXT 0x0200
+#define GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT_EXT 0x00004000
+#define GL_BUFFER_IMMUTABLE_STORAGE_EXT 0x821F
+#define GL_BUFFER_STORAGE_FLAGS_EXT 0x8220
+
 /* GL_EXT_blend_func_extended */
 
 #define GL_SRC1_COLOR_EXT 0x88F9
@@ -2155,6 +2167,10 @@ struct FlextGL {
     void(APIENTRY *BindFragDataLocationIndexedEXT)(GLuint, GLuint, GLuint, const GLchar *);
     GLint(APIENTRY *GetFragDataIndexEXT)(GLuint, const GLchar *);
     GLint(APIENTRY *GetProgramResourceLocationIndexEXT)(GLuint, GLenum, const GLchar *);
+
+    /* GL_EXT_buffer_storage */
+
+    void(APIENTRY *BufferStorageEXT)(GLenum, GLsizeiptr, const void *, GLbitfield);
 
     /* GL_EXT_clip_control */
 
@@ -2729,6 +2745,10 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glBindFragDataLocationIndexedEXT flextGL.BindFragDataLocationIndexedEXT
 #define glGetFragDataIndexEXT flextGL.GetFragDataIndexEXT
 #define glGetProgramResourceLocationIndexEXT flextGL.GetProgramResourceLocationIndexEXT
+
+/* GL_EXT_buffer_storage */
+
+#define glBufferStorageEXT flextGL.BufferStorageEXT
 
 /* GL_EXT_clip_control */
 

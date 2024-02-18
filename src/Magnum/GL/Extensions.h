@@ -513,20 +513,21 @@ namespace ANDROID {
     _extension( 75,EXT,texture_norm16,              GLES310,    None) // #207
     _extension( 76,EXT,texture_sRGB_R8,             GLES300,    None) // #221
     _extension( 77,EXT,texture_sRGB_RG8,            GLES300,    None) // #223
+    _extension( 78,EXT,buffer_storage,              GLES310,    None) // #239
     #endif
-    _extension( 78,EXT,blend_func_extended,         GLES200,    None) // #247
-    _extension( 79,EXT,polygon_offset_clamp,        GLES200,    None) // #252
+    _extension( 79,EXT,blend_func_extended,         GLES200,    None) // #247
+    _extension( 80,EXT,polygon_offset_clamp,        GLES200,    None) // #252
     #ifndef MAGNUM_TARGET_GLES2
-    _extension( 80,EXT,clip_cull_distance,          GLES300,    None) // #257
-    _extension( 81,EXT,texture_compression_rgtc,    GLES300,    None) // #286
-    _extension( 82,EXT,texture_compression_bptc,    GLES300,    None) // #287
+    _extension( 81,EXT,clip_cull_distance,          GLES300,    None) // #257
+    _extension( 82,EXT,texture_compression_rgtc,    GLES300,    None) // #286
+    _extension( 83,EXT,texture_compression_bptc,    GLES300,    None) // #287
     #endif
-    _extension( 83,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
-    _extension( 84,EXT,clip_control,                GLES200,    None) // #290
-    _extension( 85,EXT,texture_mirror_clamp_to_edge, GLES200,   None) // #291
-    _extension( 86,EXT,depth_clamp,                 GLES200,    None) // #309
+    _extension( 84,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
+    _extension( 85,EXT,clip_control,                GLES200,    None) // #290
+    _extension( 86,EXT,texture_mirror_clamp_to_edge, GLES200,   None) // #291
+    _extension( 87,EXT,depth_clamp,                 GLES200,    None) // #309
 } namespace IMG {
-    _extension( 87,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
+    _extension( 88,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
 } namespace KHR {
     _extension( 89,KHR,texture_compression_astc_ldr,GLES200, GLES320) // #117
     _extension( 90,KHR,texture_compression_astc_hdr,GLES200,    None) // #117

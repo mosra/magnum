@@ -66,7 +66,7 @@ struct BufferState {
     #endif
     void(*createImplementation)(Buffer&);
     void(*setTargetHintImplementation)(Buffer&, Buffer::TargetHint);
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(*storageImplementation)(Buffer&, Containers::ArrayView<const void>, Buffer::StorageFlags);
     #endif
     void(*getParameterImplementation)(Buffer&, GLenum, GLint*);

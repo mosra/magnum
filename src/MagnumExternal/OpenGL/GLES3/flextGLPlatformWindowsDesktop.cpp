@@ -375,6 +375,9 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.GetFragDataIndexEXT = reinterpret_cast<GLint(APIENTRY*)(GLuint, const GLchar *)>(loader.load("glGetFragDataIndexEXT"));
     flextGL.GetProgramResourceLocationIndexEXT = reinterpret_cast<GLint(APIENTRY*)(GLuint, GLenum, const GLchar *)>(loader.load("glGetProgramResourceLocationIndexEXT"));
 
+    /* GL_EXT_buffer_storage */
+    flextGL.BufferStorageEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizeiptr, const void *, GLbitfield)>(loader.load("glBufferStorageEXT"));
+
     /* GL_EXT_clip_control */
     flextGL.ClipControlEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glClipControlEXT"));
 

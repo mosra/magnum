@@ -121,7 +121,7 @@ BufferState::BufferState(Context& context, Containers::StaticArrayView<Implement
         #ifndef MAGNUM_TARGET_GLES2
         copyImplementation = &Buffer::copyImplementationDefault;
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         storageImplementation = &Buffer::storageImplementationDefault;
         #endif
         getParameterImplementation = &Buffer::getParameterImplementationDefault;

@@ -345,7 +345,7 @@ Buffer& Buffer::bind(const Target target, const UnsignedInt index) {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Buffer& Buffer::setStorage(const Containers::ArrayView<const void> data, const StorageFlags flags) {
     Context::current().state().buffer.storageImplementation(*this, data, flags);
     return *this;
@@ -488,11 +488,18 @@ void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, const GLintptr r
 #endif
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void Buffer::storageImplementationDefault(Buffer& self, Containers::ArrayView<const void> data, StorageFlags flags) {
-    glBufferStorage(GLenum(self.bindSomewhereInternal(self._targetHint)), data.size(), data.data(), GLbitfield(flags));
+    #ifndef MAGNUM_TARGET_GLES
+    glBufferStorage
+    #else
+    glBufferStorageEXT
+    #endif
+        (GLenum(self.bindSomewhereInternal(self._targetHint)), data.size(), data.data(), GLbitfield(flags));
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void Buffer::storageImplementationDSA(Buffer& self, Containers::ArrayView<const void> data, const StorageFlags flags) {
     glNamedBufferStorage(self._id, data.size(), data.data(), GLbitfield(flags));
 }

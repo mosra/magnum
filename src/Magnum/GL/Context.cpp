@@ -380,6 +380,9 @@ constexpr Extension ExtensionList[]{
     Extensions::ARM::shader_framebuffer_fetch{},
     Extensions::ARM::shader_framebuffer_fetch_depth_stencil{},
     Extensions::EXT::blend_func_extended{},
+    #ifndef MAGNUM_TARGET_GLES2
+    Extensions::EXT::buffer_storage{},
+    #endif
     Extensions::EXT::clip_control{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::clip_cull_distance{},
