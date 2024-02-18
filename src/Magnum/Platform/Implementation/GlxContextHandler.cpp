@@ -107,12 +107,10 @@ void GlxContextHandler::createContext(const AbstractXApplication::GLConfiguratio
     #ifdef MAGNUM_TARGET_GLES
     else {
         attributes[0] = GLX_CONTEXT_MAJOR_VERSION_ARB;
-        #ifdef MAGNUM_TARGET_GLES3
-        attributes[1] = 3;
-        #elif defined(MAGNUM_TARGET_GLES2)
+        #ifdef MAGNUM_TARGET_GLES2
         attributes[1] = 2;
         #else
-        #error unsupported OpenGL ES version
+        attributes[1] = 3;
         #endif
         attributes[2] = GLX_CONTEXT_MINOR_VERSION_ARB;
         attributes[3] = 0;

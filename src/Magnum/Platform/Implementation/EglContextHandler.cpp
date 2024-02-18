@@ -67,12 +67,10 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
         EGL_DEPTH_SIZE, 1,
         #ifndef MAGNUM_TARGET_GLES
         EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-        #elif defined(MAGNUM_TARGET_GLES3)
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
         #elif defined(MAGNUM_TARGET_GLES2)
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         #else
-        #error unsupported OpenGL edition
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
         #endif
         EGL_NONE
     };
@@ -130,12 +128,10 @@ void EglContextHandler::createContext(const AbstractXApplication::GLConfiguratio
     #ifdef MAGNUM_TARGET_GLES
     else {
         attributes[0] = EGL_CONTEXT_CLIENT_VERSION;
-        #ifdef MAGNUM_TARGET_GLES3
-        attributes[1] = 3;
-        #elif defined(MAGNUM_TARGET_GLES2)
+        #ifdef MAGNUM_TARGET_GLES2
         attributes[1] = 2;
         #else
-        #error unsupported OpenGL ES version
+        attributes[1] = 3;
         #endif
     }
     #endif

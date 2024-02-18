@@ -1137,7 +1137,7 @@ Containers::Array<Containers::StringView> Context::extensionStrings() const {
        on GL 2.1. Happens with Mesa's zink that's just 2.1 currently (Apr 2020)
        even though for other backends Mesa exposes this. */
     #ifndef MAGNUM_TARGET_GLES2
-    #ifndef MAGNUM_TARGET_GLES3
+    #ifndef MAGNUM_TARGET_GLES
     if(isVersionSupported(Version::GL300))
     #endif
     {
@@ -1148,14 +1148,15 @@ Containers::Array<Containers::StringView> Context::extensionStrings() const {
             extensions[i] = {reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)), Containers::StringViewFlag::Global};
         return extensions;
     }
-    #ifndef MAGNUM_TARGET_GLES3
+    #ifndef MAGNUM_TARGET_GLES
     else
     #endif
     #endif
-
-    #ifndef MAGNUM_TARGET_GLES3
-    /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
-    return Containers::StringView{reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), Containers::StringViewFlag::Global}.splitOnWhitespaceWithoutEmptyParts();
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
+    {
+        /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
+        return Containers::StringView{reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), Containers::StringViewFlag::Global}.splitOnWhitespaceWithoutEmptyParts();
+    }
     #endif
 }
 

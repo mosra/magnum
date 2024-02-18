@@ -594,7 +594,7 @@ endif()
 
 # Dependent configuration variables
 if(MAGNUM_TARGET_GLES)
-    if(NOT MAGNUM_TARGET_GLES2)
+    if(MAGNUM_BUILD_DEPRECATED AND NOT MAGNUM_TARGET_GLES2)
         set(MAGNUM_TARGET_GLES3 1)
     endif()
     if(CORRADE_TARGET_EMSCRIPTEN)

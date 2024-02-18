@@ -153,7 +153,7 @@ bool AndroidApplication::tryCreate(const Configuration& configuration, const GLC
     const EGLint contextAttributes[] = {
         #ifdef MAGNUM_TARGET_GLES2
         EGL_CONTEXT_CLIENT_VERSION, 2,
-        #elif defined(MAGNUM_TARGET_GLES3)
+        #elif defined(MAGNUM_TARGET_GLES)
         EGL_CONTEXT_CLIENT_VERSION, 3,
         #else
         #error Android with desktop OpenGL? Wow, that is a new thing.

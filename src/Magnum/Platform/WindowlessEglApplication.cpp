@@ -337,10 +337,8 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
            the `-s USE_WEBGL2=1` flag anyway, so it doesn't matter that we ask
            for ES2 on WebGL 2 as well. */
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-        #elif defined(MAGNUM_TARGET_GLES3)
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
         #else
-        #error unsupported OpenGL edition
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
         #endif
         EGL_NONE
     };
@@ -376,10 +374,8 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                anyway, so it doesn't matter that we ask for ES2 on WebGL 2 as
                well. https://github.com/emscripten-core/emscripten/pull/7858 */
             2,
-            #elif defined(MAGNUM_TARGET_GLES3)
-            3,
             #else
-            #error unsupported OpenGL ES version
+            3,
             #endif
             #else
             3,

@@ -123,12 +123,10 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
     /* Optimistically choose core context first */
     GLint contextAttributes[11] = {
         #ifdef MAGNUM_TARGET_GLES
-        #ifdef MAGNUM_TARGET_GLES3
-        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-        #elif defined(MAGNUM_TARGET_GLES2)
+        #ifdef MAGNUM_TARGET_GLES2
         GLX_CONTEXT_MAJOR_VERSION_ARB, 2,
         #else
-        #error unsupported OpenGL ES version
+        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
         #endif
         GLX_CONTEXT_MINOR_VERSION_ARB, 0,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,

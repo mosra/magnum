@@ -373,12 +373,10 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     attrs.enableExtensionsByDefault =
         !!(glConfiguration.flags() & GLConfiguration::Flag::EnableExtensionsByDefault);
 
-    #ifdef MAGNUM_TARGET_GLES3 /* WebGL 2 */
-    attrs.majorVersion = 2;
-    #elif defined(MAGNUM_TARGET_GLES2) /* WebGL 1 */
-    attrs.minorVersion = 1;
-    #else
-    #error unsupported OpenGL ES version
+    #ifdef MAGNUM_TARGET_GLES2 /* WebGL 1 */
+    attrs.majorVersion = 1;
+    #else                      /* WebGL 2 */
+    attrs.minorVersion = 2;
     #endif
 
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;

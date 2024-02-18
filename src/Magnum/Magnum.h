@@ -139,7 +139,7 @@ Enabled by default in a static build. On Windows see also the
 Defined if the engine is built with OpenGL interoperability enabled --- extra
 APIs in various libraries interacting with the @ref Magnum::GL "GL" library.
 Enabled by default in case the @ref Magnum::GL "GL" library is built.
-@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3,
+@see @ref MAGNUM_TARGET_GLES, @ref MAGNUM_TARGET_GLES2,
     @ref MAGNUM_TARGET_EGL, @ref building, @ref cmake
 */
 #define MAGNUM_TARGET_GL
@@ -149,47 +149,45 @@ Enabled by default in case the @ref Magnum::GL "GL" library is built.
 @brief OpenGL ES target
 
 Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
-@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3,
-    @ref MAGNUM_TARGET_EGL, @ref building, @ref cmake
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_EGL, @ref building,
+    @ref cmake
 */
 #define MAGNUM_TARGET_GLES
 #undef MAGNUM_TARGET_GLES
 
 /**
-@brief OpenGL ES 2.0 target
+@brief WebGL target
 
-Defined if the engine is built for OpenGL ES 2.0. Implies also
-@ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES3, @ref MAGNUM_TARGET_EGL, @ref building,
-    @ref cmake
+Defined if the engine is built for WebGL (using Emscripten). WebGL 1 is nearly
+equivalent to OpenGL ES 2.0 and WebGL 2 to OpenGL ES 3.0, thus in most cases
+you don't need to treat it differently, but there are some specific
+restrictions and differences [compared to OpenGL ES 2.0](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
+and to [OpenGL ES 3.0](https://registry.khronos.org/webgl/specs/latest/2.0/#5)
+which you might want to be aware of. Implies also @ref MAGNUM_TARGET_GLES.
+@see @ref MAGNUM_TARGET_GLES2 @ref CORRADE_TARGET_EMSCRIPTEN, @ref building, @ref cmake
+*/
+#define MAGNUM_TARGET_WEBGL
+#undef MAGNUM_TARGET_WEBGL
+
+/**
+@brief OpenGL ES 2.0 / WebGL 1.0 target
+
+Defined if the engine is built for OpenGL ES 2.0 / WebGL 1.0 instead of OpenGL
+ES 3.0+ / WebGL 2. Implies also @ref MAGNUM_TARGET_GLES.
+@see @ref MAGNUM_TARGET_EGL, @ref building, @ref cmake
 */
 #define MAGNUM_TARGET_GLES2
 #undef MAGNUM_TARGET_GLES2
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief OpenGL ES 3.0 target
-
-Defined if the engine is built for OpenGL ES 3.0. Implies also
-@ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_EGL, @ref building,
-    @ref cmake
+@brief OpenGL ES 3.0+ / WebGL 2.0 target
+@m_deprecated_since_latest This macro is simply an inverse of
+    @ref MAGNUM_TARGET_GLES2, use that one instead.
 */
 #define MAGNUM_TARGET_GLES3
 #undef MAGNUM_TARGET_GLES3
-
-/**
-@brief WebGL target
-
-Defined if the engine is built for WebGL (using Emscripten). WebGL is nearly
-equivalent to OpenGL ES 2.0, thus in most cases you don't need to treat it
-differently, but there are some
-[specific restrictions and features](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
-which you might want to be aware of. Implies also @ref MAGNUM_TARGET_GLES and
-@ref MAGNUM_TARGET_GLES2.
-@see @ref CORRADE_TARGET_EMSCRIPTEN, @ref building, @ref cmake
-*/
-#define MAGNUM_TARGET_WEBGL
-#undef MAGNUM_TARGET_WEBGL
+#endif
 
 /**
 @brief EGL target

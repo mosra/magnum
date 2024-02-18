@@ -494,12 +494,10 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, glFlags >= GLConfiguration::Flag::ForwardCompatible);
         #else
         /* For ES the major context version is compile-time constant */
-        #ifdef MAGNUM_TARGET_GLES3
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        #elif defined(MAGNUM_TARGET_GLES2)
+        #ifdef MAGNUM_TARGET_GLES2
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         #else
-        #error unsupported OpenGL ES version
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         #endif
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);

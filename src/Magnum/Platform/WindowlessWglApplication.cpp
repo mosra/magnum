@@ -136,12 +136,10 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
     /* Optimistically choose core context first */
     GLint contextAttributes[11] = {
         #ifdef MAGNUM_TARGET_GLES
-        #ifdef MAGNUM_TARGET_GLES3
-        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-        #elif defined(MAGNUM_TARGET_GLES2)
+        #ifdef MAGNUM_TARGET_GLES2
         WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
         #else
-        #error unsupported OpenGL ES version
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
         #endif
         WGL_CONTEXT_MINOR_VERSION_ARB, 0,
         WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT,

@@ -42,9 +42,9 @@ format is not supported.
 If you include @ref Magnum.h, you get these predefined macros:
 
 -   @ref MAGNUM_TARGET_GLES if targeting OpenGL ES
--   @ref MAGNUM_TARGET_GLES2 if targeting OpenGL ES 2.0
--   @ref MAGNUM_TARGET_GLES3 if targeting OpenGL ES 3.0
 -   @ref MAGNUM_TARGET_WEBGL if targeting WebGL
+-   @ref MAGNUM_TARGET_GLES2 if targeting OpenGL ES 2.0 / WebGL 1 instead of
+    OpenGL ES 3.0+ / WebGL 2
 
 Example usage:
 

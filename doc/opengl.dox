@@ -146,10 +146,8 @@ The following symbols are not defined when targeting OpenGL ES or WebGL.
 */
 
 /** @page requires-gles30 Functionality requiring OpenGL ES 3.0
-@m_footernavigation
-
-@see @ref MAGNUM_TARGET_GLES3
-*/
+ * @m_footernavigation
+ */
 
 /** @page requires-gles31 Functionality requiring OpenGL ES 3.1
 @m_footernavigation

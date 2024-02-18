@@ -31,7 +31,6 @@
 #cmakedefine MAGNUM_TARGET_GL
 #cmakedefine MAGNUM_TARGET_GLES
 #cmakedefine MAGNUM_TARGET_GLES2
-#cmakedefine MAGNUM_TARGET_GLES3
 #cmakedefine MAGNUM_TARGET_WEBGL
 #cmakedefine MAGNUM_TARGET_EGL
 #cmakedefine MAGNUM_TARGET_VK
@@ -60,6 +59,14 @@
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_EGL)
 #define  MAGNUM_TARGET_DESKTOP_GLES
 #endif
+#endif
+/* MAGNUM_TARGET_GLES3 used to be an inverse of MAGNUM_TARGET_GLES2 in an
+   anticipation of there eventually being GLES 4. Used very rarely in the
+   internals and only led to confusion. Deliberate double space after the
+   #define to avoid being unconditionally matched by older FindMagnum
+   modules. */
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+#define  MAGNUM_TARGET_GLES3
 #endif
 #endif
 
