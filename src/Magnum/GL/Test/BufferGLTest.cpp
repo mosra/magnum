@@ -79,6 +79,7 @@ struct BufferGLTest: OpenGLTester {
     void invalidate();
 };
 
+#ifndef MAGNUM_TARGET_GLES2
 const struct {
     const char* name;
     bool bindRange;
@@ -98,6 +99,7 @@ const struct {
     {"bind base", false},
     {"bind bases", true},
 };
+#endif
 #endif
 
 BufferGLTest::BufferGLTest() {
