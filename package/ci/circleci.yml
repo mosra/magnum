@@ -39,7 +39,7 @@ executors:
     - image: emscripten/emsdk:2.0.25
   android-29:
     machine:
-      image: android:202102-01
+      image: android:2021.10.1
   arm64:
     machine:
       image: ubuntu-2004:2023.07.1
@@ -175,6 +175,9 @@ commands:
     parameters:
       version:
         type: string
+      suffix:
+        type: string
+        default: Linux
       sudo:
         type: string
         default: ""
@@ -186,8 +189,8 @@ commands:
           version_short="${version_short%.*}"
           << parameters.sudo >> apt install -y wget
           mkdir -p $HOME/cmake && cd $HOME/cmake
-          wget -nc --no-check-certificate https://cmake.org/files/v$version_short/cmake-<< parameters.version >>-Linux-x86_64.tar.gz
-          tar --strip-components=1 -xzf cmake-<< parameters.version >>-Linux-x86_64.tar.gz
+          wget -nc --no-check-certificate https://cmake.org/files/v$version_short/cmake-<< parameters.version >>-<< parameters.suffix >>-x86_64.tar.gz
+          tar --strip-components=1 -xzf cmake-<< parameters.version >>-<< parameters.suffix >>-x86_64.tar.gz
           echo 'export PATH=$HOME/cmake/bin:$PATH' >> $BASH_ENV
           source $BASH_ENV
           cmake --version | grep << parameters.version >>
@@ -652,10 +655,12 @@ jobs:
       TARGET_GLES2: "ON"
     steps:
     - install-base-android
-    # We need ctest --timeout for flaky adb push, which is since 3.17. The
-    # image had 3.16.3 by default, so it's just a small jump.
+    # CMake older than 3.20 doesn't work with NDK r22+ which removed some
+    # deprecated paths. NDK r21 is only on deprecated CircleCI Android images
+    # now.
     - install-cmake:
-        version: "3.17.5"
+        version: "3.20.6"
+        suffix: linux
         sudo: sudo
     - build:
         script: android-x86-gles.sh
@@ -667,10 +672,12 @@ jobs:
       TARGET_GLES2: "OFF"
     steps:
     - install-base-android
-    # We need ctest --timeout for flaky adb push, which is since 3.17. The
-    # image had 3.16.3 by default, so it's just a small jump.
+    # CMake older than 3.20 doesn't work with NDK r22+ which removed some
+    # deprecated paths. NDK r21 is only on deprecated CircleCI Android images
+    # now.
     - install-cmake:
-        version: "3.17.5"
+        version: "3.20.6"
+        suffix: linux
         sudo: sudo
     - build:
         script: android-x86-gles.sh
@@ -679,10 +686,12 @@ jobs:
     executor: android-29
     steps:
     - install-base-android
-    # We need ctest --timeout for flaky adb push, which is since 3.17. The
-    # image had 3.16.3 by default, so it's just a small jump.
+    # CMake older than 3.20 doesn't work with NDK r22+ which removed some
+    # deprecated paths. NDK r21 is only on deprecated CircleCI Android images
+    # now.
     - install-cmake:
-        version: "3.17.5"
+        version: "3.20.6"
+        suffix: linux
         sudo: sudo
     - build:
         script: android-x86-vulkan.sh
