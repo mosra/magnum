@@ -62,12 +62,10 @@
 #endif
 /* MAGNUM_TARGET_GLES3 used to be an inverse of MAGNUM_TARGET_GLES2 in an
    anticipation of there eventually being GLES 4. Used very rarely in the
-   internals and only led to confusion. Deliberate double space after the
-   #define to avoid being unconditionally matched by older FindMagnum
-   modules. */
-#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-#define  MAGNUM_TARGET_GLES3
-#endif
+   internals and only led to confusion. It's however still a cmakedefine so old
+   FindMagnum modules, which use it for linking OpenGLES3 libraries, can detect
+   and use it. */
+#cmakedefine MAGNUM_TARGET_GLES3
 #endif
 
 #endif // kate: hl c++
