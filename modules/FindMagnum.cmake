@@ -293,7 +293,6 @@ set(_magnumFlags
     TARGET_GL
     TARGET_GLES
     TARGET_GLES2
-    TARGET_GLES3
     TARGET_WEBGL
     TARGET_EGL
     TARGET_VK)
@@ -317,6 +316,9 @@ if(MAGNUM_BUILD_DEPRECATED)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_EGL)
             set(MAGNUM_TARGET_DESKTOP_GLES 1)
         endif()
+    endif()
+    if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
+        set(MAGNUM_TARGET_GLES3 1)
     endif()
 endif()
 
