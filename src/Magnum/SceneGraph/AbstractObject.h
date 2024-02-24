@@ -311,11 +311,7 @@ template<class T> using AbstractBasicObject3D = AbstractObject<3, T>;
 
 @see @ref AbstractObject2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicObject3D<Float> AbstractObject3D;
-#else
-typedef AbstractObject<3, Float> AbstractObject3D;
-#endif
 
 #if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractObject<2, Float>;
