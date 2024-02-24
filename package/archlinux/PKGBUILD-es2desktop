@@ -24,6 +24,7 @@ build() {
     # with CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_CXX_FLAGS_DEBUG="-g -gz=zstd" \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DMAGNUM_TARGET_GLES=ON \
