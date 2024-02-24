@@ -1199,7 +1199,7 @@ See also:
     disabling it on GLES will force creation of a GLES context using the GLX /
     WGL libraries (if available); enabling it on desktop GL will allow running
     windowless applications on headless machines.
--   The @cpp MAGNUM_TARGET_GLES3 @&e CMake and preprocessor variable existed
+-   The @cpp MAGNUM_TARGET_GLES3 @ce CMake and preprocessor variable existed
     solely in anticipation of there eventually being OpenGL ES 4.0. That is
     increasingly unlikely to happen and most of the internal code treated it as
     a simple inverse of @ref MAGNUM_TARGET_GLES2, thus it's deprecated in favor
