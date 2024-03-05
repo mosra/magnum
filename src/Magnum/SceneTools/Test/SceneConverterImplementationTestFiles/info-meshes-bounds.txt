@@ -1,20 +1,20 @@
 Mesh 0:
   Level 0: 2 vertices @ Lines (0.2 kB, {})
     Position @ Vector3, offset 0, stride 12
-      Bounds: {Vector(0.1, -0.1, -0.2), Vector(0.2, 0, 0.2)}
+      Bounds: {{0.1, -0.1, -0.2}, {0.2, 0, 0.2}}
     Tangent @ Vector3, offset 24, stride 12
-      Bounds: {Vector(0.2, -0.2, 0.2), Vector(0.3, 0.8, 0.8)}
+      Bounds: {{0.2, -0.2, 0.2}, {0.3, 0.8, 0.8}}
     Bitangent @ Vector3, offset 48, stride 12
-      Bounds: {Vector(0.3, 0.2, 0), Vector(0.4, 0.9, 1)}
+      Bounds: {{0.3, 0.2, 0}, {0.4, 0.9, 1}}
     ObjectId @ UnsignedShort, offset 72, stride 2
       Bounds: {12, 155}
     Normal @ Vector3bNormalized, offset 76, stride 3
-      Bounds: {Vector(-1, 0, 0), Vector(0, 1, 1)}
+      Bounds: {{-1, 0, 0}, {0, 1, 1}}
     Custom(25:normalButCustomSoNoBoundsPrinted) @ Vector3b, offset 76, stride 3
     TextureCoordinates @ Vector2, offset 84, stride 8
-      Bounds: {Vector(0.5, 0.5), Vector(1.5, 0.5)}
+      Bounds: {{0.5, 0.5}, {1.5, 0.5}}
     Color @ Vector4, offset 100, stride 16
-      Bounds: {Vector(0.6, 0.2, 0.2, 0), Vector(1, 0.4, 0.4, 0.2)}
+      Bounds: {{0.6, 0.2, 0.2, 0}, {1, 0.4, 0.4, 0.2}}
     ObjectId @ UnsignedInt, offset 132, stride 4
       Bounds: {15, 337}
     JointIds @ UnsignedByte[3], offset 140, stride 3
