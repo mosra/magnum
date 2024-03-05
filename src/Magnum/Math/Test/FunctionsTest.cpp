@@ -63,6 +63,8 @@ struct FunctionsTest: TestSuite::Tester {
     void sqrt();
     void sqrtInverted();
     void lerp();
+    void lerpLimits();
+    void lerpInfinity();
     void lerpBool();
     void lerpInverted();
     void select();
@@ -128,6 +130,8 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::sqrt,
               &FunctionsTest::sqrtInverted,
               &FunctionsTest::lerp,
+              &FunctionsTest::lerpLimits,
+              &FunctionsTest::lerpInfinity,
               &FunctionsTest::lerpBool,
               &FunctionsTest::lerpInverted,
               &FunctionsTest::select,
@@ -401,6 +405,44 @@ void FunctionsTest::lerp() {
     /* Wrapped types */
     CORRADE_COMPARE(Math::lerp(2.0_degf, 5.0_degf, 0.5f), 3.5_degf);
     CORRADE_COMPARE(Math::lerp(2.0_usec, 5.0_usec, 0.5f), 3.5_usec);
+}
+
+template<class T, class U> T lerpOptimized(const T& a, const T& b, U t) {
+    /* One multiplication and two additions, while `T((U(1) - t)*a + t*b)` is
+       two multiplications, addition and subtraction. Doesn't correctly
+       preserve boundary values. */
+    return t*(b - a) + a;
+}
+
+void FunctionsTest::lerpLimits() {
+    CORRADE_COMPARE(Math::lerp(1.0e10f, 1.0e-5f, 0.0f), 1.0e10f);
+    CORRADE_COMPARE(Math::lerp(1.0e10f, 1.0e-5f, 1.0f), 1.0e-5f);
+    CORRADE_COMPARE(Math::lerp(1.0e-5f, 1.0e10f, 0.0f), 1.0e-5f);
+    CORRADE_COMPARE(Math::lerp(1.0e-5f, 1.0e10f, 1.0f), 1.0e10f);
+
+    CORRADE_COMPARE(lerpOptimized(1.0e10f, 1.0e-5f, 0.0f), 1.0e10f);
+    {
+        CORRADE_EXPECT_FAIL("\"Optimized\" version of a lerp doesn't correctly preserve boundary values with wildly different magnitudes.");
+        CORRADE_COMPARE(lerpOptimized(1.0e10f, 1.0e-5f, 1.0f), 1.0e-5f);
+    }
+}
+
+void FunctionsTest::lerpInfinity() {
+    CORRADE_COMPARE(Math::lerp(Constants::inf(), 0.0f, 0.0f), Constants::inf());
+    CORRADE_COMPARE(Math::lerp(0.0f, Constants::inf(), 1.0f), Constants::inf());
+    {
+        CORRADE_EXPECT_FAIL("Lerp with infinity doesn't correctly preserve the other boundary value.");
+        CORRADE_COMPARE(Math::lerp(Constants::inf(), 0.0f, 1.0f), 0.0f);
+        CORRADE_COMPARE(Math::lerp(0.0f, Constants::inf(), 0.0f), 0.0f);
+    }
+
+    CORRADE_COMPARE(lerpOptimized(0.0f, Constants::inf(), 1.0f), Constants::inf());
+    {
+        CORRADE_EXPECT_FAIL("\"Optimized\" version of a lerp doesn't correctly preserve boundary values if an infinity is present.");
+        CORRADE_COMPARE(lerpOptimized(Constants::inf(), 0.0f, 0.0f), Constants::inf());
+        CORRADE_COMPARE(lerpOptimized(Constants::inf(), 0.0f, 1.0f), 0.0f);
+        CORRADE_COMPARE(lerpOptimized(0.0f, Constants::inf(), 0.0f), 0.0f);
+    }
 }
 
 void FunctionsTest::lerpBool() {

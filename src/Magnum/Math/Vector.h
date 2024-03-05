@@ -74,6 +74,9 @@ namespace Implementation {
     template<std::size_t, class, class> struct VectorConverter;
     /* Needed by DualQuaternion and Functions.h (to avoid dependency between them) */
     template<class T, class U> T lerp(const T& a, const T& b, U t) {
+        /* While `t*(b - a) + a` is one ALU op less, the following is
+           guaranteed to correctly preserves exact boundary values with t being
+           0 or 1. See FunctionsTest::lerpLimits() for details. */
         return T((U(1) - t)*a + t*b);
     }
 
