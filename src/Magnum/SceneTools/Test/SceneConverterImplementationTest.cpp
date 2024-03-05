@@ -176,9 +176,17 @@ SceneConverterImplementationTest::SceneConverterImplementationTest() {
 
     /* To avoid warnings that printImageConverterInfo() / printImporterInfo()
        is unused. Again, those are tested in ImageConverterImplementationTest
-       already. */
+       already. MSVC says "warning C4551: function call missing argument list"
+       here. No shit, you stupid thing. */
+    #ifdef CORRADE_TARGET_MSVC
+    #pragma warning(push)
+    #pragma warning(disable: 4551)
+    #endif
     static_cast<void>(Trade::Implementation::printImageConverterInfo);
     static_cast<void>(Trade::Implementation::printImporterInfo);
+    #ifdef CORRADE_TARGET_MSVC
+    #pragma warning(pop)
+    #endif
 }
 
 void SceneConverterImplementationTest::converterInfo() {

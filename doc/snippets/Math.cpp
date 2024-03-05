@@ -709,6 +709,13 @@ static_cast<void>(d);
 Float sine(Rad angle);
 Float a = 60.0f;
 Deg b;
+/* "warning C4312: discarding return value of function with [[nodiscard]]
+   attribute". Yeah, of course it is. Am I not allowed to write succint code
+   snippets anymore?! */
+#ifdef CORRADE_TARGET_MSVC
+#pragma warning(push)
+#pragma warning(disable: 4312)
+#endif
 /* [Deg-usage-explicit-conversion] */
 //sine(a);                      // compilation error
 sine(Deg{a});                   // explicitly specifying unit
@@ -718,6 +725,9 @@ std::sin(Float(Rad{b}));        // required explicit conversion hints to user
                                 // that this case needs special attention
                                 // (i.e., conversion to radians)
 /* [Deg-usage-explicit-conversion] */
+#ifdef CORRADE_TARGET_MSVC
+#pragma warning(pop)
+#endif
 }
 
 {
@@ -1216,6 +1226,13 @@ static_cast<void>(axis);
 }
 
 {
+/* The second expression gives "warning C4245: 'argument': conversion from
+   'char' to 'const Magnum::UnsignedByte', signed/unsigned mismatch". Well,
+   yes. Shut up. */
+#ifdef CORRADE_TARGET_MSVC
+#pragma warning(push)
+#pragma warning(disable: 4245)
+#endif
 /* [unpack-template-explicit] */
 // Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
 Float a = Math::unpack<Float>('\xFF');
@@ -1223,6 +1240,9 @@ Float a = Math::unpack<Float>('\xFF');
 // b = 1.0f
 Float b = Math::unpack<Float, UnsignedByte>('\xFF');
 /* [unpack-template-explicit] */
+#ifdef CORRADE_TARGET_MSVC
+#pragma warning(pop)
+#endif
 static_cast<void>(a);
 static_cast<void>(b);
 }

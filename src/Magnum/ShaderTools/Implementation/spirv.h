@@ -73,8 +73,9 @@ Containers::ArrayView<const UnsignedInt> spirvFindInstruction(Containers::ArrayV
         }
 
         /* This is the instruction we're looking for, return it and update the
-           view to point after it. */
-        if(instructionOp == op) {
+           view to point after it. SpvOp cast is needed to avoid a MSVC
+           "warning C4389: '==': signed/unsigned mismatch". */
+        if(SpvOp(instructionOp) == op) {
             data = dataIteration.exceptPrefix(instructionSize);
             return dataIteration.prefix(instructionSize);
         }

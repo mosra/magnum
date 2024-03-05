@@ -91,8 +91,14 @@ template<UnsignedInt dimensions, class T> class CORRADE_DEPRECATED("use Math::Ve
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr /*implicit*/ Array(T value);
         #else
+        #ifdef CORRADE_TARGET_MSVC /* MSVC warns for the constructor delegation */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        #endif
         template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, T>::type>
         constexpr /*implicit*/ Array(U value): Array(typename Containers::Implementation::GenerateSequence<dimensions>::Type{}, value) {}
+        #ifdef CORRADE_TARGET_MSVC
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
         #endif
 
         /** @brief Convert to a vector */
