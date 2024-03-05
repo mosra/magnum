@@ -113,7 +113,7 @@ Debug& operator<<(Debug& debug, const ObjectInstanceType3D value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const ObjectFlag3D value) {
@@ -127,7 +127,7 @@ Debug& operator<<(Debug& debug, const ObjectFlag3D value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const ObjectFlags3D value) {

@@ -142,7 +142,7 @@ Debug& operator<<(Debug& debug, const SamplerFilter value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SamplerMipmap value) {
@@ -158,7 +158,7 @@ Debug& operator<<(Debug& debug, const SamplerMipmap value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SamplerWrapping value) {
@@ -178,7 +178,7 @@ Debug& operator<<(Debug& debug, const SamplerWrapping value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << ")";
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -194,7 +194,7 @@ Debug& operator<<(Debug& debug, const SamplerCompareMode value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SamplerCompareFunction value) {
@@ -215,7 +215,7 @@ Debug& operator<<(Debug& debug, const SamplerCompareFunction value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 
@@ -232,7 +232,7 @@ Debug& operator<<(Debug& debug, const SamplerDepthStencilMode value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 #endif

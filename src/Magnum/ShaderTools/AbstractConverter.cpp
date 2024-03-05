@@ -751,7 +751,7 @@ Debug& operator<<(Debug& debug, const ConverterFeature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const ConverterFeatures value) {
@@ -786,7 +786,7 @@ Debug& operator<<(Debug& debug, const ConverterFlag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const ConverterFlags value) {
@@ -816,7 +816,7 @@ Debug& operator<<(Debug& debug, const Format value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 }}

@@ -408,7 +408,7 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
     #pragma GCC diagnostic pop
     #endif
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const PixelType value) {
@@ -474,7 +474,7 @@ Debug& operator<<(Debug& debug, const PixelType value) {
     #pragma GCC diagnostic pop
     #endif
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 namespace {
@@ -690,7 +690,7 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
     #pragma GCC diagnostic pop
     #endif
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 

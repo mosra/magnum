@@ -298,7 +298,7 @@ Debug& operator<<(Debug& debug, const FontConverterFeature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(Containers::enumCastUnderlyingType(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << Containers::enumCastUnderlyingType(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const FontConverterFeatures value) {

@@ -1341,7 +1341,7 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const Context::Flags value) {
@@ -1388,7 +1388,7 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {

@@ -579,7 +579,7 @@ void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>
 
 Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
     CORRADE_ASSERT(!mesh.isIndexed() || !isMeshIndexTypeImplementationSpecific(mesh.indexType()),
-        "MeshTools::generateIndices(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
+        "MeshTools::generateIndices(): mesh has an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(mesh.indexType()),
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
     const UnsignedInt vertexCount = mesh.vertexCount();

@@ -71,7 +71,7 @@ Debug& operator<<(Debug& debug, const SceneMappingType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 UnsignedInt sceneMappingTypeSize(const SceneMappingType type) {
@@ -137,7 +137,7 @@ Debug& operator<<(Debug& debug, const SceneField value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const SceneFieldType value) {
@@ -259,7 +259,7 @@ Debug& operator<<(Debug& debug, const SceneFieldType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
@@ -545,7 +545,7 @@ Debug& operator<<(Debug& debug, const SceneFieldFlag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const SceneFieldFlags value) {

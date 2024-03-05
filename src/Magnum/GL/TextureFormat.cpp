@@ -299,7 +299,7 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
     #pragma GCC diagnostic pop
     #endif
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 

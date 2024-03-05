@@ -1346,7 +1346,7 @@ remaining 31 bits. Use @ref vertexFormatUnwrap() for the inverse operation.
 template<class T> constexpr VertexFormat vertexFormatWrap(T implementationSpecific) {
     static_assert(sizeof(T) <= 4, "types larger than 32bits are not supported");
     return CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(implementationSpecific) & (1u << 31)),
-        "vertexFormatWrap(): implementation-specific value" << reinterpret_cast<void*>(implementationSpecific) << "already wrapped or too large"),
+        "vertexFormatWrap(): implementation-specific value" << Debug::hex << UnsignedInt(implementationSpecific) << "already wrapped or too large"),
         VertexFormat((1u << 31)|UnsignedInt(implementationSpecific));
 }
 

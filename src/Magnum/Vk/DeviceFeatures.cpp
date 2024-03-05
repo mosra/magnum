@@ -53,7 +53,7 @@ Debug& operator<<(Debug& debug, const DeviceFeature value) {
         return debug << "::" << Debug::nospace << FeatureNames[UnsignedInt(value)];
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DeviceFeatures& value) {

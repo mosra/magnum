@@ -1051,6 +1051,9 @@ See also:
     libraries, as that breaks builds with version 3.1.52+. See
     [mosra/magnum#633](https://github.com/mosra/magnum/issues/633) for more
     information.
+-   Fixed most remaining warnings on MSVC, in particular those related to
+    "conversion from T to void * of greater size" (see
+    [mosra/magnum#544](https://github.com/mosra/magnum/issues/544)).
 
 @subsection changelog-latest-bugfixes Bug fixes
 

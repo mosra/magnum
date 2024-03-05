@@ -43,7 +43,7 @@ inline Debug& printFourCC(Debug& debug, UnsignedInt value) {
             const char data[]{'\'', char(c), '\'', '\0'};
             debug << data;
         } else {
-            debug << reinterpret_cast<void*>(c);
+            debug << Debug::hex << c;
         }
 
         value >>= 8;

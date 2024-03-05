@@ -2289,7 +2289,7 @@ namespace Implementation {
 template<class T, class> MeshIndexData::MeshIndexData(const MeshIndexType type, T&& data) noexcept: _type{type} {
     const Containers::ArrayView<const void> erased = data;
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(type),
-        "Trade::MeshIndexData: can't create index data from a contiguous view and an implementation-specific type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(type)) << Debug::nospace << ", pass a strided view instead", );
+        "Trade::MeshIndexData: can't create index data from a contiguous view and an implementation-specific type" << Debug::hex << meshIndexTypeUnwrap(type) << Debug::nospace << ", pass a strided view instead", );
     const std::size_t typeSize = meshIndexTypeSize(type);
     CORRADE_ASSERT(erased.size()%typeSize == 0,
         "Trade::MeshIndexData: view size" << erased.size() << "does not correspond to" << type, );
@@ -2657,7 +2657,7 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::indices() co
     if(!data.stride()[1]) return {};
     #endif
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
-        "Trade::MeshData::indices(): can't cast data from an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(_indexType)), {});
+        "Trade::MeshData::indices(): can't cast data from an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(_indexType), {});
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
         "Trade::MeshData::indices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), {});
     return Containers::arrayCast<1, const T>(data);
@@ -2671,7 +2671,7 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableIndices() {
     if(!data.stride()[1]) return {};
     #endif
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
-        "Trade::MeshData::mutableIndices(): can't cast data from an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(_indexType)), {});
+        "Trade::MeshData::mutableIndices(): can't cast data from an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(_indexType), {});
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
         "Trade::MeshData::mutableIndices(): indices are" << _indexType << "but requested" << Implementation::meshIndexTypeFor<T>(), {});
     return Containers::arrayCast<1, T>(data);
@@ -2684,7 +2684,7 @@ template<class T> bool MeshData::checkVertexFormatCompatibility(const MeshAttrib
     #endif
 ) const {
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        prefix << "can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), false);
+        prefix << "can't cast data from an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), false);
     CORRADE_ASSERT(Implementation::isVertexFormatCompatible<typename std::remove_extent<T>::type>(attribute._format),
         prefix << attribute._name << "is" << attribute._format << "but requested a type equivalent to" << Implementation::vertexFormatFor<typename std::remove_extent<T>::type>(), false);
     CORRADE_ASSERT(!attribute._arraySize || std::is_array<T>::value,

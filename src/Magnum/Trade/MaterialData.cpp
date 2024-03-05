@@ -1151,7 +1151,7 @@ Debug& operator<<(Debug& debug, const MaterialLayer value) {
     debug << "Trade::MaterialLayer" << Debug::nospace;
 
     if(UnsignedInt(value) - 1 >= Containers::arraySize(LayerMap))
-        return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+        return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
 
     return debug << "::" << Debug::nospace << LayerMap[UnsignedInt(value) - 1];
 }
@@ -1160,7 +1160,7 @@ Debug& operator<<(Debug& debug, const MaterialAttribute value) {
     debug << "Trade::MaterialAttribute" << Debug::nospace;
 
     if(UnsignedInt(value) - 1 >= Containers::arraySize(AttributeMap))
-        return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+        return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
 
     /* LayerName is prefixed with a single space, drop that */
     Containers::StringView string = AttributeMap[UnsignedInt(value) - 1].name;
@@ -1226,7 +1226,7 @@ Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const MaterialType value) {
@@ -1247,7 +1247,7 @@ Debug& operator<<(Debug& debug, const MaterialType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const MaterialTypes value) {
@@ -1273,7 +1273,7 @@ Debug& operator<<(Debug& debug, const MaterialData::Flag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const MaterialData::Flags value) {
@@ -1300,7 +1300,7 @@ Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 }}

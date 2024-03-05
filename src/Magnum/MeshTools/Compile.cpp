@@ -126,7 +126,7 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
         const VertexFormat format = meshData.attributeFormat(i);
         if(isVertexFormatImplementationSpecific(format)) {
             if(!(flags & CompileFlag::NoWarnOnCustomAttributes))
-                Warning{} << "MeshTools::compile(): ignoring attribute" << meshData.attributeName(i) << "with an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format));
+                Warning{} << "MeshTools::compile(): ignoring attribute" << meshData.attributeName(i) << "with an implementation-specific format" << Debug::hex << vertexFormatUnwrap(format);
             continue;
         }
 

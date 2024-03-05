@@ -50,14 +50,14 @@ Debug& operator<<(Debug& debug, const MeshPrimitive value) {
         debug << "MeshPrimitive" << Debug::nospace;
 
     if(isMeshPrimitiveImplementationSpecific(value)) {
-        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(meshPrimitiveUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << Debug::hex << meshPrimitiveUnwrap(value) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(MeshPrimitiveNames)) {
         return debug << (packed ? "" : "::") << Debug::nospace << MeshPrimitiveNames[UnsignedInt(value) - 1];
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 namespace {
@@ -77,20 +77,20 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
         debug << "MeshIndexType" << Debug::nospace;
 
     if(isMeshIndexTypeImplementationSpecific(value)) {
-        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(meshIndexTypeUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << Debug::hex << meshIndexTypeUnwrap(value) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(MeshIndexTypeNames)) {
         return debug << (packed ? "" : "::") << Debug::nospace << MeshIndexTypeNames[UnsignedInt(value) - 1];
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 
 UnsignedInt meshIndexTypeSize(const MeshIndexType type) {
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(type),
-        "meshIndexTypeSize(): can't determine size of an implementation-specific type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(type)), {});
+        "meshIndexTypeSize(): can't determine size of an implementation-specific type" << Debug::hex << meshIndexTypeUnwrap(type), {});
 
     switch(type) {
         case MeshIndexType::UnsignedByte: return 1;

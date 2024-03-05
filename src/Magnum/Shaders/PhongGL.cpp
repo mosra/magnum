@@ -1370,7 +1370,7 @@ Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const PhongGL::Flags value) {

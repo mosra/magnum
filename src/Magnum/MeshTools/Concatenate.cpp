@@ -102,7 +102,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
         /* If the mesh is indexed, copy the indices over, expanded to 32bit */
         if(mesh.isIndexed()) {
             CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(mesh.indexType()),
-                assertPrefix << "mesh" << i << "has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
+                assertPrefix << "mesh" << i << "has an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(mesh.indexType()),
                 (Trade::MeshData{MeshPrimitive{}, 0}));
 
             Containers::ArrayView<UnsignedInt> dst = indices.slice(indexOffset, indexOffset + mesh.indexCount());
@@ -176,7 +176,7 @@ Trade::MeshData concatenate(const Containers::Iterable<const Trade::MeshData>& m
     for(std::size_t i = 0; i != meshes.front().attributeCount(); ++i) {
         const VertexFormat format = meshes.front().attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-            "MeshTools::concatenate(): attribute" << i << "of the first mesh has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+            "MeshTools::concatenate(): attribute" << i << "of the first mesh has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(format),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
     }
     #endif

@@ -46,7 +46,7 @@ void VersionTest::test() {
     Debug{} << "MAGNUM_VERSION_MONTH:" << MAGNUM_VERSION_MONTH;
     #ifdef MAGNUM_VERSION_COMMIT
     Debug{} << "MAGNUM_VERSION_COMMIT:" << MAGNUM_VERSION_COMMIT;
-    Debug{} << "MAGNUM_VERSION_HASH:" << reinterpret_cast<void*>(MAGNUM_VERSION_HASH);
+    Debug{} << "MAGNUM_VERSION_HASH:" << Debug::hex << MAGNUM_VERSION_HASH;
     Debug{} << "MAGNUM_VERSION_STRING:" << MAGNUM_VERSION_STRING;
     #else
     Debug{} << "No Git version information available.";

@@ -45,7 +45,7 @@ Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transfor
     #endif
     const VertexFormat positionAttributeFormat = mesh.attributeFormat(*positionAttributeId);
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(positionAttributeFormat),
-        "MeshTools::transform2D(): positions have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(positionAttributeFormat)),
+        "MeshTools::transform2D(): positions have an implementation-specific format" << Debug::hex << vertexFormatUnwrap(positionAttributeFormat),
         (Trade::MeshData{MeshPrimitive::Points, 0}));
     CORRADE_ASSERT(vertexFormatComponentCount(positionAttributeFormat) == 2,
         "MeshTools::transform2D(): expected 2D positions but got" << positionAttributeFormat,
@@ -142,7 +142,7 @@ Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transfor
     #endif
     const VertexFormat positionAttributeFormat = mesh.attributeFormat(*positionAttributeId);
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(positionAttributeFormat),
-        "MeshTools::transform3D(): positions have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(positionAttributeFormat)),
+        "MeshTools::transform3D(): positions have an implementation-specific format" << Debug::hex << vertexFormatUnwrap(positionAttributeFormat),
         (Trade::MeshData{MeshPrimitive::Points, 0}));
     CORRADE_ASSERT(vertexFormatComponentCount(positionAttributeFormat) == 3,
         "MeshTools::transform3D(): expected 3D positions but got" << positionAttributeFormat,
@@ -168,7 +168,7 @@ Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transfor
     if(tangentAttributeId) {
         tangentAttributeFormat = mesh.attributeFormat(*tangentAttributeId);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(tangentAttributeFormat),
-        "MeshTools::transform3D(): tangents have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(tangentAttributeFormat)),
+        "MeshTools::transform3D(): tangents have an implementation-specific format" << Debug::hex << vertexFormatUnwrap(tangentAttributeFormat),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
         desiredTangentVertexFormat = vertexFormatComponentCount(mesh.attributeFormat(*tangentAttributeId)) == 4 ?
         VertexFormat::Vector4 : VertexFormat::Vector3;
@@ -179,7 +179,7 @@ Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transfor
     if(bitangentAttributeId) {
         bitangentAttributeFormat = mesh.attributeFormat(*bitangentAttributeId);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(bitangentAttributeFormat),
-        "MeshTools::transform3D(): bitangents have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(bitangentAttributeFormat)),
+        "MeshTools::transform3D(): bitangents have an implementation-specific format" << Debug::hex << vertexFormatUnwrap(bitangentAttributeFormat),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
         if(bitangentAttributeFormat != VertexFormat::Vector3)
             attributes[*bitangentAttributeId] = Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, VertexFormat::Vector3, nullptr, 0, morphTargetId};
@@ -188,7 +188,7 @@ Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transfor
     if(normalAttributeId) {
         normalAttributeFormat = mesh.attributeFormat(*normalAttributeId);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(normalAttributeFormat),
-        "MeshTools::transform3D(): normals have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(normalAttributeFormat)),
+        "MeshTools::transform3D(): normals have an implementation-specific format" << Debug::hex << vertexFormatUnwrap(normalAttributeFormat),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
         if(normalAttributeFormat != VertexFormat::Vector3)
             attributes[*normalAttributeId] = Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr, 0, morphTargetId};
@@ -323,7 +323,7 @@ Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const
     #endif
     const VertexFormat textureCoordinateAttributeFormat = mesh.attributeFormat(*textureCoordinateAttributeId);
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(textureCoordinateAttributeFormat),
-        "MeshTools::transformTextureCoordinates2D(): texture coordinates have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(textureCoordinateAttributeFormat)),
+        "MeshTools::transformTextureCoordinates2D(): texture coordinates have an implementation-specific format" << Debug::hex << vertexFormatUnwrap(textureCoordinateAttributeFormat),
         (Trade::MeshData{MeshPrimitive::Points, 0}));
 
     /* Copy original attributes to a mutable array so we can update the

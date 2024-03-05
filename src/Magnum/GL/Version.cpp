@@ -72,7 +72,7 @@ Debug& operator<<(Debug& debug, const Version value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Invalid(" << Debug::nospace << reinterpret_cast<void*>(Int(value)) << Debug::nospace << ")";
+    return debug << "Invalid(" << Debug::nospace << Debug::hex << Int(value) << Debug::nospace << ")";
 }
 #endif
 

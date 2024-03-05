@@ -111,7 +111,7 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
     for(std::size_t i = 0; i != destination.attributeCount(); ++i) {
         const VertexFormat format = destination.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-            "MeshTools::concatenateInto(): attribute" << i << "of the destination mesh has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), );
+            "MeshTools::concatenateInto(): attribute" << i << "of the destination mesh has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(format), );
     }
     #endif
 

@@ -83,19 +83,19 @@ void duplicateInto(const Containers::StridedArrayView2D<const char>& indices, co
 Trade::MeshData duplicate(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
     CORRADE_ASSERT(mesh.isIndexed(), "MeshTools::duplicate(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(mesh.indexType()),
-        "MeshTools::duplicate(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
+        "MeshTools::duplicate(): mesh has an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(mesh.indexType()),
         (Trade::MeshData{MeshPrimitive{}, 0}));
     #ifndef CORRADE_NO_ASSERT
     for(std::size_t i = 0; i != mesh.attributeCount(); ++i) {
         const VertexFormat format = mesh.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-            "MeshTools::duplicate(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+            "MeshTools::duplicate(): attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(format),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
     }
     for(std::size_t i = 0; i != extra.size(); ++i) {
         const VertexFormat format = extra[i].format();
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-            "MeshTools::duplicate(): extra attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+            "MeshTools::duplicate(): extra attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(format),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
     }
     #endif

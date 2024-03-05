@@ -427,7 +427,7 @@ Debug& operator<<(Debug& debug, const FrameProfiler::Units value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 #ifdef MAGNUM_TARGET_GL
@@ -656,7 +656,7 @@ Debug& operator<<(Debug& debug, const FrameProfilerGL::Value value) {
     if(1 << bit == UnsignedShort(value))
         return debug << "::" << Debug::nospace << FrameProfilerGLValueNames[bit];
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const FrameProfilerGL::Values value) {

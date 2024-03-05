@@ -144,7 +144,7 @@ Debug& operator<<(Debug& debug, const MeshPrimitive value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const MeshIndexType value) {
@@ -160,7 +160,7 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 

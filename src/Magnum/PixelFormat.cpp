@@ -36,7 +36,7 @@ namespace Magnum {
 
 UnsignedInt pixelFormatSize(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "pixelFormatSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "pixelFormatSize(): can't determine size of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -120,7 +120,7 @@ UnsignedInt pixelFormatSize(const PixelFormat format) {
 
 PixelFormat pixelFormatChannelFormat(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "pixelFormatChannelFormat(): can't determine channel format of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "pixelFormatChannelFormat(): can't determine channel format of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -211,7 +211,7 @@ PixelFormat pixelFormatChannelFormat(const PixelFormat format) {
 
 UnsignedInt pixelFormatChannelCount(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "pixelFormatChannelCount(): can't determine channel count of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "pixelFormatChannelCount(): can't determine channel count of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -292,7 +292,7 @@ UnsignedInt pixelFormatChannelCount(const PixelFormat format) {
 
 bool isPixelFormatNormalized(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "isPixelFormatNormalized(): can't determine type of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "isPixelFormatNormalized(): can't determine type of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -371,7 +371,7 @@ bool isPixelFormatNormalized(const PixelFormat format) {
 
 bool isPixelFormatIntegral(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "isPixelFormatIntegral(): can't determine type of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "isPixelFormatIntegral(): can't determine type of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -450,7 +450,7 @@ bool isPixelFormatIntegral(const PixelFormat format) {
 
 bool isPixelFormatFloatingPoint(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "isPixelFormatFloatingPoint(): can't determine type of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "isPixelFormatFloatingPoint(): can't determine type of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -529,7 +529,7 @@ bool isPixelFormatFloatingPoint(const PixelFormat format) {
 
 bool isPixelFormatSrgb(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "isPixelFormatSrgb(): can't determine colorspace of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "isPixelFormatSrgb(): can't determine colorspace of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -608,7 +608,7 @@ bool isPixelFormatSrgb(const PixelFormat format) {
 
 bool isPixelFormatDepthOrStencil(const PixelFormat format) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "isPixelFormatDepthOrStencil(): can't determine type of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "isPixelFormatDepthOrStencil(): can't determine type of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
 
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic push
@@ -686,7 +686,7 @@ bool isPixelFormatDepthOrStencil(const PixelFormat format) {
 
 PixelFormat pixelFormat(const PixelFormat format, const UnsignedInt channelCount, const bool srgb) {
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
-        "pixelFormat(): can't assemble a format out of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+        "pixelFormat(): can't assemble a format out of an implementation-specific format" << Debug::hex << pixelFormatUnwrap(format), {});
     CORRADE_ASSERT(!isPixelFormatDepthOrStencil(format),
         "pixelFormat(): can't assemble a format out of" << format, {});
 
@@ -747,14 +747,14 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         debug << "PixelFormat" << Debug::nospace;
 
     if(isPixelFormatImplementationSpecific(value)) {
-        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(pixelFormatUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << Debug::hex << pixelFormatUnwrap(value) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(PixelFormatNames)) {
         return debug << (packed ? "" : "::") << Debug::nospace << PixelFormatNames[UnsignedInt(value) - 1];
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 
@@ -787,7 +787,7 @@ constexpr UnsignedShort CompressedBlockData[] {
 
 Vector3i compressedPixelFormatBlockSize(const CompressedPixelFormat format) {
     CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
-        "compressedPixelFormatBlockSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(compressedPixelFormatUnwrap(format)), {});
+        "compressedPixelFormatBlockSize(): can't determine size of an implementation-specific format" << Debug::hex << compressedPixelFormatUnwrap(format), {});
 
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
         "compressedPixelFormatBlockSize(): invalid format" << format, {});
@@ -807,7 +807,7 @@ Vector3i compressedBlockSize(const CompressedPixelFormat format) {
 
 UnsignedInt compressedPixelFormatBlockDataSize(const CompressedPixelFormat format) {
     CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
-        "compressedPixelFormatBlockDataSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(compressedPixelFormatUnwrap(format)), {});
+        "compressedPixelFormatBlockDataSize(): can't determine size of an implementation-specific format" << Debug::hex << compressedPixelFormatUnwrap(format), {});
 
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
         "compressedPixelFormatBlockDataSize(): invalid format" << format, {});
@@ -822,14 +822,14 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         debug << "CompressedPixelFormat" << Debug::nospace;
 
     if(isCompressedPixelFormatImplementationSpecific(value)) {
-        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << reinterpret_cast<void*>(compressedPixelFormatUnwrap(value)) << Debug::nospace << ")";
+        return debug << (packed ? "ImplementationSpecific(" : "::ImplementationSpecific(") << Debug::nospace << Debug::hex << compressedPixelFormatUnwrap(value) << Debug::nospace << ")";
     }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(CompressedPixelFormatNames)) {
         return debug << (packed ? "" : "::") << Debug::nospace << CompressedPixelFormatNames[UnsignedInt(value) - 1];
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 

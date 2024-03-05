@@ -70,7 +70,7 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 UnsignedInt animationTrackTypeSize(const AnimationTrackType type) {
@@ -189,7 +189,7 @@ Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
         #endif
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 namespace {

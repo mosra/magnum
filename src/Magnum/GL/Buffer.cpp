@@ -716,7 +716,7 @@ Debug& operator<<(Debug& debug, const Buffer::TargetHint value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -733,7 +733,7 @@ Debug& operator<<(Debug& debug, const Buffer::Target value) {
         #undef _c
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 #endif

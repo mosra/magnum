@@ -501,7 +501,7 @@ Debug& operator<<(Debug& debug, const DynamicRasterizationState value) {
         return debug << "::" << Debug::nospace << DynamicRasterizationStateNames[UnsignedInt(value)];
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DynamicRasterizationStates& value) {

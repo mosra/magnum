@@ -139,7 +139,7 @@ Debug& operator<<(Debug& debug, const Source::State value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << ALint(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Source::Type value) {
@@ -155,7 +155,7 @@ Debug& operator<<(Debug& debug, const Source::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << ALint(value) << Debug::nospace << ")";
 }
 
 }}

@@ -716,7 +716,7 @@ Debug& operator<<(Debug& debug, const QueueFlag value) {
     }
 
     /* Flag bits should be in hex, unlike plain values */
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const QueueFlags value) {
@@ -740,7 +740,7 @@ Debug& operator<<(Debug& debug, const MemoryHeapFlag value) {
     }
 
     /* Flag bits should be in hex, unlike plain values */
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const MemoryHeapFlags value) {

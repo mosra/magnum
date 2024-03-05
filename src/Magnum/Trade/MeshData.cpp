@@ -583,7 +583,7 @@ void MeshData::indicesInto(const Containers::StridedArrayView1D<UnsignedInt>& de
         "Trade::MeshData::indicesInto(): the mesh is not indexed", );
     CORRADE_ASSERT(destination.size() == indexCount(), "Trade::MeshData::indicesInto(): expected a view with" << indexCount() << "elements but got" << destination.size(), );
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
-        "Trade::MeshData::indicesInto(): can't extract data out of an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(_indexType)), );
+        "Trade::MeshData::indicesInto(): can't extract data out of an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(_indexType), );
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
     const Containers::StridedArrayView2D<const char> indexData = indices();
@@ -617,7 +617,7 @@ void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2>& de
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::positions2DInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::positions2DInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const auto destination2f = Containers::arrayCast<2, Float>(destination);
 
@@ -672,7 +672,7 @@ void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3>& de
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions3DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::positions3DInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::positions3DInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const Containers::StridedArrayView2D<Float> destination2f = Containers::arrayCast<2, Float>(Containers::arrayCast<Vector2>(destination));
     const Containers::StridedArrayView2D<Float> destination3f = Containers::arrayCast<2, Float>(destination);
@@ -776,7 +776,7 @@ void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3>& desti
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::tangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::tangentsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::tangentsInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
 
     /* If the tangent is four-component, ignore the last component; otherwise
        copy/unpack given format directly */
@@ -810,7 +810,7 @@ void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float>& d
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentSignsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::bitangentSignsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::bitangentSignsInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const auto destination1f = Containers::arrayCast<2, Float>(destination);
 
@@ -842,7 +842,7 @@ void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3>& des
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::bitangentsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::bitangentsInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, attribute._format);
 }
 
@@ -863,7 +863,7 @@ void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3>& destin
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::normalsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, attribute._format);
 }
 
@@ -884,7 +884,7 @@ void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vec
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::textureCoordinates2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const auto destination2f = Containers::arrayCast<2, Float>(destination);
 
@@ -928,7 +928,7 @@ void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4>& destinat
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::colorsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const Containers::StridedArrayView2D<Float> destination3f = Containers::arrayCast<2, Float>(Containers::arrayCast<Vector3>(destination));
     const Containers::StridedArrayView2D<Float> destination4f = Containers::arrayCast<2, Float>(destination);
@@ -989,7 +989,7 @@ void MeshData::jointIdsInto(const Containers::StridedArrayView2D<UnsignedInt>& d
     CORRADE_ASSERT(destination.isContiguous<1>(),
         "Trade::MeshData::jointIdsInto(): second view dimension is not contiguous", );
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::jointIdsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::jointIdsInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
 
     if(attribute._format == VertexFormat::UnsignedInt)
@@ -1026,7 +1026,7 @@ void MeshData::weightsInto(const Containers::StridedArrayView2D<Float>& destinat
     CORRADE_ASSERT(destination.isContiguous<1>(),
         "Trade::MeshData::weightsInto(): second view dimension is not contiguous", );
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::weightsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::weightsInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
 
     if(attribute._format == VertexFormat::Float)
@@ -1057,7 +1057,7 @@ void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& 
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::objectIdsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+        "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format" << Debug::hex << vertexFormatUnwrap(attribute._format), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
@@ -1120,7 +1120,7 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 }}

@@ -141,7 +141,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
         minOffset = 0;
         for(UnsignedInt i = 0, max = mesh.attributeCount(); i != max; ++i) {
             CORRADE_ASSERT(!isVertexFormatImplementationSpecific(mesh.attributeFormat(i)),
-                "MeshTools::interleavedLayout(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(mesh.attributeFormat(i))), {});
+                "MeshTools::interleavedLayout(): attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(mesh.attributeFormat(i)), {});
             stride += attributeSize(mesh, i);
         }
     }
@@ -156,7 +156,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
             stride += extra[i].stride();
         } else {
             CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-                "MeshTools::interleavedLayout(): extra attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
+                "MeshTools::interleavedLayout(): extra attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(format), {});
             stride += attributeSize(extra[i]);
             ++extraAttributeCount;
         }
@@ -292,7 +292,7 @@ Trade::MeshData interleave(Trade::MeshData&& mesh, const Containers::ArrayView<c
            an implementation-specific index type */
         } else {
             CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(indexType),
-                "MeshTools::interleave(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(indexType)) << Debug::nospace << ", enable MeshTools::InterleaveFlag::PreserveStridedIndices to pass the array through unchanged",
+                "MeshTools::interleave(): mesh has an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(indexType) << Debug::nospace << ", enable MeshTools::InterleaveFlag::PreserveStridedIndices to pass the array through unchanged",
                 (Trade::MeshData{MeshPrimitive{}, 0}));
 
             const std::size_t indexTypeSize = meshIndexTypeSize(indexType);

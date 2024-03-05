@@ -406,7 +406,7 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& mesh) {
     for(std::size_t i = 0; i != mesh.attributeCount(); ++i) {
         const VertexFormat format = mesh.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-            "MeshTools::removeDuplicates(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+            "MeshTools::removeDuplicates(): attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(format),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
     }
     #endif
@@ -414,7 +414,7 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& mesh) {
     /* This has to be checked before passing the data to interleave() as there
        it would die also, but with a confusing function name in the message */
     CORRADE_ASSERT(!mesh.isIndexed() || !isMeshIndexTypeImplementationSpecific(mesh.indexType()),
-        "MeshTools::removeDuplicates(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
+        "MeshTools::removeDuplicates(): mesh has an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(mesh.indexType()),
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
     /* Turn the passed data into an interleaved owned mutable instance we can
@@ -489,7 +489,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, const Float f
     for(UnsignedInt i = 0; i != owned.attributeCount(); ++i) {
         const VertexFormat format = owned.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-            "MeshTools::removeDuplicatesFuzzy(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+            "MeshTools::removeDuplicatesFuzzy(): attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(format),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
 
         /* Floats, with special attribute-dependent handling */
@@ -574,7 +574,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, const Float f
         indexType = MeshIndexType::UnsignedInt;
     } else {
         CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(owned.indexType()),
-            "MeshTools::removeDuplicatesFuzzy(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(owned.indexType())),
+            "MeshTools::removeDuplicatesFuzzy(): mesh has an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(owned.indexType()),
             (Trade::MeshData{MeshPrimitive{}, 0}));
         vertexCount = removeDuplicatesIndexedInPlace(
             owned.mutableIndices(),

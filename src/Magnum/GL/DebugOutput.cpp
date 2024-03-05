@@ -248,7 +248,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
@@ -270,7 +270,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
@@ -285,7 +285,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
         #undef _c
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 
@@ -330,7 +330,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
@@ -348,7 +348,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
         #undef _c
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 
@@ -434,7 +434,7 @@ Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 
