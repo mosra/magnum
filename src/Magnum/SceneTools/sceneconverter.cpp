@@ -1389,11 +1389,11 @@ well, the IDs reference attributes of the first mesh.)")
 
             if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Materials)) {
                 Warning{} << "Ignoring" << materials.size() << "materials not supported by the converter";
-            } else for(UnsignedInt i = 0; i != materials.size(); ++i) {
+            } else for(UnsignedInt j = 0; j != materials.size(); ++j) {
                 Trade::Implementation::Duration d{conversionTime};
 
-                if(!converter->add(materials[i], contents & Trade::SceneContent::Names ? importer->materialName(i) : Containers::String{})) {
-                    Error{} << "Cannot add material" << i;
+                if(!converter->add(materials[j], contents & Trade::SceneContent::Names ? importer->materialName(j) : Containers::String{})) {
+                    Error{} << "Cannot add material" << j;
                     return 1;
                 }
             }
@@ -1441,11 +1441,11 @@ well, the IDs reference attributes of the first mesh.)")
 
             if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Scenes)) {
                 Warning{} << "Ignoring" << scenes.size() << "scenes not supported by the converter";
-            } else for(UnsignedInt i = 0; i != scenes.size(); ++i) {
+            } else for(UnsignedInt j = 0; j != scenes.size(); ++j) {
                 Trade::Implementation::Duration d{conversionTime};
 
-                if(!converter->add(scenes[i], contents & Trade::SceneContent::Names ? importer->sceneName(i) : Containers::String{})) {
-                    Error{} << "Cannot add scene" << i;
+                if(!converter->add(scenes[j], contents & Trade::SceneContent::Names ? importer->sceneName(j) : Containers::String{})) {
+                    Error{} << "Cannot add scene" << j;
                     return 1;
                 }
             }
