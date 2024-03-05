@@ -64,11 +64,11 @@ void CopyTest::singleLayer() {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColor, 0xff3366ff_rgbaf},
         {"baseColorTextureName", "yesss.png"},
-    }, {3}, reinterpret_cast<void*>(0xdeadbeef)};
+    }, {3}, reinterpret_cast<void*>(std::size_t{0xdeadbeef})};
 
     Trade::MaterialData copy = MaterialTools::copy(material);
     CORRADE_COMPARE(copy.types(), Trade::MaterialType::PbrMetallicRoughness);
-    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(0xdeadbeef));
+    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
 
     CORRADE_COMPARE(copy.layerDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.layerCount(), 1);
@@ -93,11 +93,11 @@ void CopyTest::singleLayerNoLayerData() {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColor, 0xff3366ff_rgbaf},
         {"baseColorTextureName", "yesss.png"},
-    }, reinterpret_cast<void*>(0xdeadbeef)};
+    }, reinterpret_cast<void*>(std::size_t{0xdeadbeef})};
 
     Trade::MaterialData copy = MaterialTools::copy(material);
     CORRADE_COMPARE(copy.types(), Trade::MaterialType::PbrMetallicRoughness);
-    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(0xdeadbeef));
+    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
 
     CORRADE_COMPARE(copy.layerDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.layerCount(), 1);
@@ -116,11 +116,11 @@ void CopyTest::multipleLayers() {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColor, 0xff3366ff_rgbaf},
         {"baseColorTextureName", "yesss.png"},
-    }, {2, 3}, reinterpret_cast<void*>(0xdeadbeef)};
+    }, {2, 3}, reinterpret_cast<void*>(std::size_t{0xdeadbeef})};
 
     Trade::MaterialData copy = MaterialTools::copy(material);
     CORRADE_COMPARE(copy.types(), Trade::MaterialType::PbrMetallicRoughness);
-    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(0xdeadbeef));
+    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
 
     CORRADE_COMPARE(copy.layerDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.layerCount(), 2);
@@ -150,9 +150,9 @@ void CopyTest::rvalueNotOwned() {
     Trade::MaterialData copy = MaterialTools::copy(Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness,
         Trade::DataFlag::Mutable, attributes,
         Trade::DataFlag::Mutable|Trade::DataFlag::ExternallyOwned, layers,
-        reinterpret_cast<void*>(0xdeadbeef)});
+        reinterpret_cast<void*>(std::size_t{0xdeadbeef})});
     CORRADE_COMPARE(copy.types(), Trade::MaterialType::PbrMetallicRoughness);
-    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(0xdeadbeef));
+    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
 
     CORRADE_COMPARE(copy.layerDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.layerCount(), 2);
@@ -175,9 +175,9 @@ void CopyTest::rvalueOwnedAttributesLayers() {
     const void* originalAttributes = attributes.data();
     const void* originalLayers = layers.data();
 
-    Trade::MaterialData copy = MaterialTools::copy(Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, Utility::move(attributes), Utility::move(layers), reinterpret_cast<void*>(0xdeadbeef)});
+    Trade::MaterialData copy = MaterialTools::copy(Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, Utility::move(attributes), Utility::move(layers), reinterpret_cast<void*>(std::size_t{0xdeadbeef})});
     CORRADE_COMPARE(copy.types(), Trade::MaterialType::PbrMetallicRoughness);
-    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(0xdeadbeef));
+    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
 
     CORRADE_COMPARE(copy.layerDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.layerData().data(), originalLayers);
@@ -201,9 +201,9 @@ void CopyTest::rvalueOwnedAttributesNoLayerData() {
     Containers::Array<UnsignedInt> layers{InPlaceInit, {2, 3}};
     const void* originalAttributes = attributes.data();
 
-    Trade::MaterialData copy = MaterialTools::copy(Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, Utility::move(attributes), reinterpret_cast<void*>(0xdeadbeef)});
+    Trade::MaterialData copy = MaterialTools::copy(Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, Utility::move(attributes), reinterpret_cast<void*>(std::size_t{0xdeadbeef})});
     CORRADE_COMPARE(copy.types(), Trade::MaterialType::PbrMetallicRoughness);
-    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(0xdeadbeef));
+    CORRADE_COMPARE(copy.importerState(), reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
 
     CORRADE_COMPARE(copy.layerDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.layerCount(), 1);

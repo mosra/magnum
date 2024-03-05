@@ -1861,7 +1861,7 @@ void AbstractSceneConverterTest::beginEnd() {
                 bool doIsOpened() const override { return true; }
 
                 const void* doImporterState() const override {
-                    return reinterpret_cast<const void*>(0xdeadbeef);
+                    return reinterpret_cast<const void*>(std::size_t{0xdeadbeef});
                 }
             };
 
@@ -1879,7 +1879,7 @@ void AbstractSceneConverterTest::beginEnd() {
 
     Containers::Pointer<AbstractImporter> out = converter.end();
     CORRADE_VERIFY(out);
-    CORRADE_COMPARE(out->importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+    CORRADE_COMPARE(out->importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
     CORRADE_VERIFY(converter.endCalled);
     CORRADE_VERIFY(!converter.isConverting());
 }
@@ -2775,7 +2775,7 @@ void AbstractSceneConverterTest::addScene() {
             CORRADE_COMPARE(id, sceneCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(scene.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(scene.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -2786,10 +2786,10 @@ void AbstractSceneConverterTest::addScene() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.sceneCount(), 0);
-    CORRADE_COMPARE(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.sceneCount(), 1);
-    CORRADE_COMPARE(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.sceneCount(), 2);
 }
 
@@ -3041,7 +3041,7 @@ void AbstractSceneConverterTest::addAnimation() {
             CORRADE_COMPARE(id, animationCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(animation.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(animation.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -3052,10 +3052,10 @@ void AbstractSceneConverterTest::addAnimation() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.animationCount(), 0);
-    CORRADE_COMPARE(converter.add(AnimationData{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(AnimationData{nullptr, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.animationCount(), 1);
-    CORRADE_COMPARE(converter.add(AnimationData{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(AnimationData{nullptr, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.animationCount(), 2);
 }
 
@@ -3185,7 +3185,7 @@ void AbstractSceneConverterTest::addLight() {
             CORRADE_COMPARE(id, lightCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(light.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(light.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -3196,10 +3196,10 @@ void AbstractSceneConverterTest::addLight() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.lightCount(), 0);
-    CORRADE_COMPARE(converter.add(LightData{LightType::Point, {}, 0.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(LightData{LightType::Point, {}, 0.0f, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.lightCount(), 1);
-    CORRADE_COMPARE(converter.add(LightData{LightType::Point, {}, 0.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(LightData{LightType::Point, {}, 0.0f, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.lightCount(), 2);
 }
 
@@ -3268,7 +3268,7 @@ void AbstractSceneConverterTest::addCamera() {
             CORRADE_COMPARE(id, cameraCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(camera.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(camera.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -3279,10 +3279,10 @@ void AbstractSceneConverterTest::addCamera() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.cameraCount(), 0);
-    CORRADE_COMPARE(converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.cameraCount(), 1);
-    CORRADE_COMPARE(converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.cameraCount(), 2);
 }
 
@@ -3351,7 +3351,7 @@ void AbstractSceneConverterTest::addSkin2D() {
             CORRADE_COMPARE(id, skin2DCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(skin.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(skin.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -3362,10 +3362,10 @@ void AbstractSceneConverterTest::addSkin2D() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.skin2DCount(), 0);
-    CORRADE_COMPARE(converter.add(SkinData2D{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(SkinData2D{nullptr, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.skin2DCount(), 1);
-    CORRADE_COMPARE(converter.add(SkinData2D{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(SkinData2D{nullptr, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.skin2DCount(), 2);
 }
 
@@ -3434,7 +3434,7 @@ void AbstractSceneConverterTest::addSkin3D() {
             CORRADE_COMPARE(id, skin3DCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(skin.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(skin.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -3445,10 +3445,10 @@ void AbstractSceneConverterTest::addSkin3D() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.skin3DCount(), 0);
-    CORRADE_COMPARE(converter.add(SkinData3D{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(SkinData3D{nullptr, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.skin3DCount(), 1);
-    CORRADE_COMPARE(converter.add(SkinData3D{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(SkinData3D{nullptr, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.skin3DCount(), 2);
 }
 
@@ -3517,7 +3517,7 @@ void AbstractSceneConverterTest::addMesh() {
             CORRADE_COMPARE(id, meshCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(mesh.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(mesh.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -3528,10 +3528,10 @@ void AbstractSceneConverterTest::addMesh() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.meshCount(), 0);
-    CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.meshCount(), 1);
-    CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.meshCount(), 2);
 }
 
@@ -4070,7 +4070,7 @@ void AbstractSceneConverterTest::addMeshLevels() {
 
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(meshLevels.size(), 3);
-            CORRADE_COMPARE(meshLevels[1].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(meshLevels[1].importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -4083,14 +4083,14 @@ void AbstractSceneConverterTest::addMeshLevels() {
     CORRADE_COMPARE(converter.meshCount(), 0);
     CORRADE_COMPARE(converter.add({
         MeshData{MeshPrimitive::Lines, 0},
-        MeshData{MeshPrimitive::Triangles, 3, reinterpret_cast<const void*>(0xdeadbeef)},
+        MeshData{MeshPrimitive::Triangles, 3, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})},
         MeshData{MeshPrimitive::Faces, 0},
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.meshCount(), 1);
     CORRADE_COMPARE(converter.add({
         MeshData{MeshPrimitive::Faces, 2},
-        MeshData{MeshPrimitive::Meshlets, 1, reinterpret_cast<const void*>(0xdeadbeef)},
+        MeshData{MeshPrimitive::Meshlets, 1, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})},
         MeshData{MeshPrimitive::Points, 0},
     }, "hello"), 1);
     CORRADE_COMPARE(converter.meshCount(), 2);
@@ -4188,7 +4188,7 @@ void AbstractSceneConverterTest::addMeshThroughLevels() {
         bool doAdd(UnsignedInt, const Containers::Iterable<const MeshData>& meshLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(meshLevels.size(), 1);
-            CORRADE_COMPARE(meshLevels[0].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(meshLevels[0].importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -4198,7 +4198,7 @@ void AbstractSceneConverterTest::addMeshThroughLevels() {
     } converter;
 
     CORRADE_VERIFY(converter.begin());
-    CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.meshCount(), 1);
 }
@@ -4287,7 +4287,7 @@ void AbstractSceneConverterTest::addMaterial() {
             CORRADE_COMPARE(id, materialCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(material.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(material.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -4298,10 +4298,10 @@ void AbstractSceneConverterTest::addMaterial() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.materialCount(), 0);
-    CORRADE_COMPARE(converter.add(MaterialData{{}, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(MaterialData{{}, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.materialCount(), 1);
-    CORRADE_COMPARE(converter.add(MaterialData{{}, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(MaterialData{{}, nullptr, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.materialCount(), 2);
 }
 
@@ -4370,7 +4370,7 @@ void AbstractSceneConverterTest::addTexture() {
             CORRADE_COMPARE(id, textureCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(texture.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(texture.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -4381,10 +4381,10 @@ void AbstractSceneConverterTest::addTexture() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.textureCount(), 0);
-    CORRADE_COMPARE(converter.add(TextureData{{}, {}, {}, {}, {}, 0, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(TextureData{{}, {}, {}, {}, {}, 0, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.textureCount(), 1);
-    CORRADE_COMPARE(converter.add(TextureData{{}, {}, {}, {}, {}, 0, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(TextureData{{}, {}, {}, {}, {}, 0, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.textureCount(), 2);
 }
 
@@ -4453,7 +4453,7 @@ void AbstractSceneConverterTest::addImage1D() {
             CORRADE_COMPARE(id, image1DCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(image.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(image.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -4466,10 +4466,10 @@ void AbstractSceneConverterTest::addImage1D() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
-    CORRADE_COMPARE(converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image1DCount(), 1);
-    CORRADE_COMPARE(converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.image1DCount(), 2);
 }
 
@@ -4639,7 +4639,7 @@ void AbstractSceneConverterTest::addImage2D() {
             CORRADE_COMPARE(id, image2DCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(image.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(image.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -4652,10 +4652,10 @@ void AbstractSceneConverterTest::addImage2D() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
-    CORRADE_COMPARE(converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
-    CORRADE_COMPARE(converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.image2DCount(), 2);
 }
 
@@ -4849,7 +4849,7 @@ void AbstractSceneConverterTest::addImage3D() {
             CORRADE_COMPARE(id, image3DCount());
 
             CORRADE_COMPARE(name, "hello");
-            CORRADE_COMPARE(image.importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(image.importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -4862,10 +4862,10 @@ void AbstractSceneConverterTest::addImage3D() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
-    CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);
-    CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 1);
     CORRADE_COMPARE(converter.image3DCount(), 2);
 }
 
@@ -5039,7 +5039,7 @@ void AbstractSceneConverterTest::addImageLevels1D() {
 
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 3);
-            CORRADE_COMPARE(imageLevels[1].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(imageLevels[1].importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -5055,14 +5055,14 @@ void AbstractSceneConverterTest::addImageLevels1D() {
     CORRADE_COMPARE(converter.add({
         /* Arbitrary dimensions should be fine */
         ImageData1D{PixelFormat::RGBA8Unorm, 4, DataFlags{}, imageData},
-        ImageData1D{PixelFormat::RGBA8Unorm, 2, DataFlags{}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(0xdeadbeef)},
+        ImageData1D{PixelFormat::RGBA8Unorm, 2, DataFlags{}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})},
         ImageData1D{PixelFormat::RGBA8Unorm, 3, DataFlags{}, imageData}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image1DCount(), 1);
     CORRADE_COMPARE(converter.add({
         ImageData1D{PixelFormat::RGBA8Unorm, 2, DataFlags{}, imageData},
-        ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(0xdeadbeef)},
+        ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})},
         ImageData1D{PixelFormat::RGBA8Unorm, 4, DataFlags{}, imageData}
     }, "hello"), 1);
     CORRADE_COMPARE(converter.image1DCount(), 2);
@@ -5257,7 +5257,7 @@ void AbstractSceneConverterTest::addImageLevels2D() {
 
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 3);
-            CORRADE_COMPARE(imageLevels[1].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(imageLevels[1].importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -5273,14 +5273,14 @@ void AbstractSceneConverterTest::addImageLevels2D() {
     CORRADE_COMPARE(converter.add({
         /* Arbitrary dimensions should be fine */
         ImageData2D{PixelFormat::RGBA8Unorm, {4, 1}, DataFlags{}, imageData},
-        ImageData2D{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(0xdeadbeef)},
+        ImageData2D{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})},
         ImageData2D{PixelFormat::RGBA8Unorm, {1, 3}, DataFlags{}, imageData}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
     CORRADE_COMPARE(converter.add({
         ImageData2D{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData},
-        ImageData2D{PixelFormat::RGBA8Unorm, {1, 3}, DataFlags{}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(0xdeadbeef)},
+        ImageData2D{PixelFormat::RGBA8Unorm, {1, 3}, DataFlags{}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})},
         ImageData2D{PixelFormat::RGBA8Unorm, {4, 1}, DataFlags{}, imageData}
     }, "hello"), 1);
     CORRADE_COMPARE(converter.image2DCount(), 2);
@@ -5664,7 +5664,7 @@ void AbstractSceneConverterTest::addImageLevels3D() {
 
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 3);
-            CORRADE_COMPARE(imageLevels[1].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(imageLevels[1].importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -5680,14 +5680,14 @@ void AbstractSceneConverterTest::addImageLevels3D() {
     CORRADE_COMPARE(converter.add({
         /* Arbitrary dimensions should be fine */
         ImageData3D{PixelFormat::RGBA8Unorm, {4, 1, 1}, DataFlags{}, imageData},
-        ImageData3D{PixelFormat::RGBA8Unorm, {2, 2, 1}, DataFlags{}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(0xdeadbeef)},
+        ImageData3D{PixelFormat::RGBA8Unorm, {2, 2, 1}, DataFlags{}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})},
         ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 3}, DataFlags{}, imageData}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);
     CORRADE_COMPARE(converter.add({
         ImageData3D{PixelFormat::RGBA8Unorm, {2, 1, 2}, DataFlags{}, imageData},
-        ImageData3D{PixelFormat::RGBA8Unorm, {1, 3, 1}, DataFlags{}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(0xdeadbeef)},
+        ImageData3D{PixelFormat::RGBA8Unorm, {1, 3, 1}, DataFlags{}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})},
         ImageData3D{PixelFormat::RGBA8Unorm, {1, 4, 1}, DataFlags{}, imageData}
     }, "hello"), 1);
     CORRADE_COMPARE(converter.image3DCount(), 2);
@@ -5878,7 +5878,7 @@ void AbstractSceneConverterTest::addImage1DThroughLevels() {
         bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 1);
-            CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -5890,7 +5890,7 @@ void AbstractSceneConverterTest::addImage1DThroughLevels() {
     const char imageData[4]{};
 
     CORRADE_VERIFY(converter.begin());
-    CORRADE_COMPARE(converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image1DCount(), 1);
 }
@@ -5908,7 +5908,7 @@ void AbstractSceneConverterTest::addImage2DThroughLevels() {
         bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 1);
-            CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -5920,7 +5920,7 @@ void AbstractSceneConverterTest::addImage2DThroughLevels() {
     const char imageData[4]{};
 
     CORRADE_VERIFY(converter.begin());
-    CORRADE_COMPARE(converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
 }
@@ -5938,7 +5938,7 @@ void AbstractSceneConverterTest::addImage3DThroughLevels() {
         bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 1);
-            CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
+            CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(std::size_t{0xdeadbeef}));
 
             addCalled = true;
             return true;
@@ -5950,7 +5950,7 @@ void AbstractSceneConverterTest::addImage3DThroughLevels() {
     const char imageData[4]{};
 
     CORRADE_VERIFY(converter.begin());
-    CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);
 }
@@ -5994,7 +5994,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("Scene {}", id);
         }
         Containers::Optional<SceneData> doScene(UnsignedInt id) override {
-            return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}, reinterpret_cast<const void*>(0x5ce00000 + id)};
+            return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}, reinterpret_cast<const void*>(std::size_t{0x5ce00000 + id})};
         }
 
         UnsignedInt doAnimationCount() const override {
@@ -6009,7 +6009,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("Animation {}", id);
         }
         Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override {
-            return AnimationData{nullptr, {}, reinterpret_cast<const void*>(0x40100000 + id)};
+            return AnimationData{nullptr, {}, reinterpret_cast<const void*>(std::size_t{0x40100000 + id})};
         }
 
         UnsignedInt doLightCount() const override {
@@ -6024,7 +6024,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("Light {}", id);
         }
         Containers::Optional<LightData> doLight(UnsignedInt id) override {
-            return LightData{LightType::Point, {}, {}, reinterpret_cast<const void*>(0x11600000 + id)};
+            return LightData{LightType::Point, {}, {}, reinterpret_cast<const void*>(std::size_t{0x11600000 + id})};
         }
 
         UnsignedInt doCameraCount() const override {
@@ -6039,7 +6039,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("Camera {}", id);
         }
         Containers::Optional<CameraData> doCamera(UnsignedInt id) override {
-            return CameraData{CameraType::Orthographic2D, {}, 0.0f, 0.0f, reinterpret_cast<const void*>(0xca0e0000 + id)};
+            return CameraData{CameraType::Orthographic2D, {}, 0.0f, 0.0f, reinterpret_cast<const void*>(std::size_t{0xca0e0000 + id})};
         }
 
         UnsignedInt doSkin2DCount() const override {
@@ -6054,7 +6054,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("2D skin {}", id);
         }
         Containers::Optional<SkinData2D> doSkin2D(UnsignedInt id) override {
-            return SkinData2D{{}, {}, reinterpret_cast<const void*>(0x50102d00 + id)};
+            return SkinData2D{{}, {}, reinterpret_cast<const void*>(std::size_t{0x50102d00 + id})};
         }
 
         UnsignedInt doSkin3DCount() const override {
@@ -6069,7 +6069,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("3D skin {}", id);
         }
         Containers::Optional<SkinData3D> doSkin3D(UnsignedInt id) override {
-            return SkinData3D{{}, {}, reinterpret_cast<const void*>(0x50103d00 + id)};
+            return SkinData3D{{}, {}, reinterpret_cast<const void*>(std::size_t{0x50103d00 + id})};
         }
 
         UnsignedInt doMeshCount() const override {
@@ -6088,7 +6088,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("Mesh {}", id);
         }
         Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
-            return MeshData{{}, 0, reinterpret_cast<const void*>(0x0e500000 + id + level*16)};
+            return MeshData{{}, 0, reinterpret_cast<const void*>(std::size_t{0x0e500000 + id + level*16})};
         }
 
         UnsignedInt doMaterialCount() const override {
@@ -6103,7 +6103,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("Material {}", id);
         }
         Containers::Optional<MaterialData> doMaterial(UnsignedInt id) override {
-            return MaterialData{{}, {}, reinterpret_cast<const void*>(0x0a7e0000 + id)};
+            return MaterialData{{}, {}, reinterpret_cast<const void*>(std::size_t{0x0a7e0000 + id})};
         }
 
         UnsignedInt doTextureCount() const override {
@@ -6118,7 +6118,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("Texture {}", id);
         }
         Containers::Optional<TextureData> doTexture(UnsignedInt id) override {
-            return TextureData{TextureType::Texture1D, SamplerFilter::Nearest, SamplerFilter::Nearest, SamplerMipmap::Nearest, SamplerWrapping::ClampToEdge, 0, reinterpret_cast<const void*>(0x7e070000 + id)};
+            return TextureData{TextureType::Texture1D, SamplerFilter::Nearest, SamplerFilter::Nearest, SamplerMipmap::Nearest, SamplerWrapping::ClampToEdge, 0, reinterpret_cast<const void*>(std::size_t{0x7e070000 + id})};
         }
 
         UnsignedInt doImage1DCount() const override {
@@ -6137,7 +6137,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("1D image {}", id);
         }
         Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override {
-            return ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, "yes", {}, reinterpret_cast<const void*>(0x10a91d00 + id + level*16)};
+            return ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, "yes", {}, reinterpret_cast<const void*>(std::size_t{0x10a91d00 + id + level*16})};
         }
 
         UnsignedInt doImage2DCount() const override {
@@ -6156,7 +6156,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("2D image {}", id);
         }
         Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override {
-            return ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, "yes", {}, reinterpret_cast<const void*>(0x10a92d00 + id + level*16)};
+            return ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, "yes", {}, reinterpret_cast<const void*>(std::size_t{0x10a92d00 + id + level*16})};
         }
 
         UnsignedInt doImage3DCount() const override {
@@ -6175,7 +6175,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("3D image {}", id);
         }
         Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override {
-            return ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, "yes", {}, reinterpret_cast<const void*>(0x10a93d00 + id + level*16)};
+            return ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, "yes", {}, reinterpret_cast<const void*>(std::size_t{0x10a93d00 + id + level*16})};
         }
 
         SceneContents contents;

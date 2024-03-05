@@ -2782,7 +2782,7 @@ void MeshDataTest::constructAttributelessNotOwned() {
 #ifndef CORRADE_TARGET_32BIT
 void MeshDataTest::constructIndicesOver4GB() {
     /* For some reason 2500 doesn't trigger an assertion, 3000 does */
-    Containers::ArrayView<UnsignedInt> indices{reinterpret_cast<UnsignedInt*>(0xdeadbeef), 3000ull*1000*1000};
+    Containers::ArrayView<UnsignedInt> indices{reinterpret_cast<UnsignedInt*>(std::size_t{0xdeadbeef}), 3000ull*1000*1000};
 
     MeshData data{MeshPrimitive::Triangles,
         {}, indices, MeshIndexData{indices}, 5};
@@ -2792,7 +2792,7 @@ void MeshDataTest::constructIndicesOver4GB() {
 
 void MeshDataTest::constructAttributeOver4GB() {
     /* For some reason 2500 doesn't trigger an assertion, 3000 does */
-    Containers::ArrayView<UnsignedInt> vertices{reinterpret_cast<UnsignedInt*>(0xdeadbeef), 3000ull*1000*1000};
+    Containers::ArrayView<UnsignedInt> vertices{reinterpret_cast<UnsignedInt*>(std::size_t{0xdeadbeef}), 3000ull*1000*1000};
 
     MeshData data{MeshPrimitive::Triangles, {}, vertices, {
         MeshAttributeData{meshAttributeCustom(15), vertices}

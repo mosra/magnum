@@ -612,7 +612,7 @@ void AbstractGlyphCacheTest::setInvalidGlyph2DNot2D() {
 void AbstractGlyphCacheTest::addFont() {
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}};
 
-    const AbstractFont* font = reinterpret_cast<const AbstractFont*>(0xdeadbeef);
+    const AbstractFont* font = reinterpret_cast<const AbstractFont*>(std::size_t{0xdeadbeef});
     CORRADE_COMPARE(cache.findFont(*font), Containers::NullOpt);
 
     CORRADE_COMPARE(cache.addFont(35, nullptr), 0);
@@ -636,7 +636,7 @@ void AbstractGlyphCacheTest::addFontDuplicatePointer() {
 
     cache.addFont(7, nullptr);
 
-    const AbstractFont* font = reinterpret_cast<const AbstractFont*>(0xdeadbeef);
+    const AbstractFont* font = reinterpret_cast<const AbstractFont*>(std::size_t{0xdeadbeef});
     cache.addFont(35, font);
 
     std::ostringstream out;
@@ -649,7 +649,7 @@ void AbstractGlyphCacheTest::fontOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}};
 
-    const AbstractFont* font = reinterpret_cast<const AbstractFont*>(0xdeadbeef);
+    const AbstractFont* font = reinterpret_cast<const AbstractFont*>(std::size_t{0xdeadbeef});
     cache.addFont(35, nullptr);
     cache.addFont(12, font);
     CORRADE_COMPARE(cache.fontCount(), 2);

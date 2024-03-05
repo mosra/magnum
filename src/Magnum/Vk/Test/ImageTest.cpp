@@ -481,8 +481,8 @@ void ImageTest::imageCopyConvertDisallowed() {
 void ImageTest::copyImageInfoConstruct() {
     /* The double reinterpret_cast is needed because the handle is an uint64_t
        instead of a pointer on 32-bit builds and only this works on both */
-    auto a = reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xdead));
-    auto b = reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xcafe));
+    auto a = reinterpret_cast<VkImage>(reinterpret_cast<void*>(std::size_t{0xdead}));
+    auto b = reinterpret_cast<VkImage>(reinterpret_cast<void*>(std::size_t{0xcafe}));
 
     CopyImageInfo info{a, ImageLayout::Preinitialized, b, ImageLayout::General, {
         {ImageAspect::Color, 3, 0, 0, {}, 0, 0, 0, {}, {}},
@@ -716,8 +716,8 @@ void ImageTest::bufferImageCopyConvertDisallowed() {
 void ImageTest::copyBufferToImageInfoConstruct() {
     /* The double reinterpret_cast is needed because the handle is an uint64_t
        instead of a pointer on 32-bit builds and only this works on both */
-    auto a = reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xdead));
-    auto b = reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xcafe));
+    auto a = reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(std::size_t{0xdead}));
+    auto b = reinterpret_cast<VkImage>(reinterpret_cast<void*>(std::size_t{0xcafe}));
 
     CopyBufferToImageInfo info{a, b, ImageLayout::TransferDestination, {
         BufferImageCopy1D{5, ImageAspect::Color, 0, {}},
@@ -771,8 +771,8 @@ void ImageTest::copyBufferToImageInfoConvertToVk() {
 void ImageTest::copyImageToBufferInfoConstruct() {
     /* The double reinterpret_cast is needed because the handle is an uint64_t
        instead of a pointer on 32-bit builds and only this works on both */
-    auto a = reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xcafe));
-    auto b = reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xdead));
+    auto a = reinterpret_cast<VkImage>(reinterpret_cast<void*>(std::size_t{0xcafe}));
+    auto b = reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(std::size_t{0xdead}));
 
     CopyImageToBufferInfo info{a, ImageLayout::TransferSource, b, {
         BufferImageCopy1D{5, ImageAspect::Color, 0, {}},

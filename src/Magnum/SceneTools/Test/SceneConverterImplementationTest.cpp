@@ -627,8 +627,8 @@ void SceneConverterImplementationTest::infoMaterials() {
                 {"notAColour4", Vector4{0.1f, 0.2f, 0.3f, 0.4f}},
                 {"notAColour3", Vector3{0.2f, 0.3f, 0.4f}},
                 {"data", Containers::ArrayView<const void>{"0123456789abcdef", 17}},
-                {"deadBeef", reinterpret_cast<const void*>(0xdeadbeef)},
-                {"undeadBeef", reinterpret_cast<void*>(0xbeefbeef)},
+                {"deadBeef", reinterpret_cast<const void*>(std::size_t(0xdeadbeef))},
+                {"undeadBeef", reinterpret_cast<void*>(std::size_t(0xbeefbeef))},
             }};
 
             /* Second has layers, custom layers, unnamed layers and a name */

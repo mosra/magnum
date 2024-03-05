@@ -176,7 +176,7 @@ void AbstractShaperTest::featureRangeConstructBeginEnd() {
     CORRADE_COMPARE(cc.end(), 26);
 }
 
-AbstractFont& FakeFont = *reinterpret_cast<AbstractFont*>(0xdeadbeef);
+AbstractFont& FakeFont = *reinterpret_cast<AbstractFont*>(std::size_t{0xdeadbeef});
 
 struct DummyShaper: AbstractShaper {
     using AbstractShaper::AbstractShaper;
@@ -210,7 +210,7 @@ void AbstractShaperTest::constructMove() {
     CORRADE_COMPARE(&b.font(), &FakeFont);
     CORRADE_COMPARE(b.glyphCount(), 0);
 
-    DummyShaper c{*reinterpret_cast<AbstractFont*>(0xcafebabe)};
+    DummyShaper c{*reinterpret_cast<AbstractFont*>(std::size_t{0xcafebabe})};
     c = Utility::move(b);
     CORRADE_COMPARE(&b.font(), &FakeFont);
     CORRADE_COMPARE(b.glyphCount(), 0);

@@ -109,7 +109,7 @@ ImageViewTest::ImageViewTest() {
 
 /* The double reinterpret_cast is needed because the handle is an uint64_t
    instead of a pointer on 32-bit builds and only this works on both */
-const VkImage imageHandle{reinterpret_cast<VkImage>(reinterpret_cast<void*>(0xdeadbeef))};
+const VkImage imageHandle{reinterpret_cast<VkImage>(reinterpret_cast<void*>(std::size_t{0xdeadbeef}))};
 
 template<class T> void ImageViewTest::createInfoConstruct() {
     /** @todo use a real flag once it exists */

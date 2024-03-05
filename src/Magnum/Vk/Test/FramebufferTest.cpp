@@ -64,20 +64,20 @@ void FramebufferTest::createInfoConstruct() {
     /* The double reinterpret_cast is needed because the handle is an uint64_t
        instead of a pointer on 32-bit builds and only this works on both */
     Device device{NoCreate};
-    auto renderPass = reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef));
-    auto a = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe1)), {});
-    auto b = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe2)), {});
-    auto c = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe3)), {});
+    auto renderPass = reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
+    auto a = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe1})), {});
+    auto b = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe2})), {});
+    auto c = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe3})), {});
 
     /** @todo use a real flag once it exists */
     FramebufferCreateInfo info{renderPass, {a, b, c}, {256, 512}, FramebufferCreateInfo::Flag(0xbadda9)};
     CORRADE_COMPARE(info->flags, 0xbadda9);
-    CORRADE_COMPARE(info->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef)));
+    CORRADE_COMPARE(info->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(std::size_t{0xdeadbeef})));
     CORRADE_COMPARE(info->attachmentCount, 3);
     CORRADE_VERIFY(info->pAttachments);
-    CORRADE_COMPARE(info->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe1)));
-    CORRADE_COMPARE(info->pAttachments[1], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe2)));
-    CORRADE_COMPARE(info->pAttachments[2], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe3)));
+    CORRADE_COMPARE(info->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe1})));
+    CORRADE_COMPARE(info->pAttachments[1], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe2})));
+    CORRADE_COMPARE(info->pAttachments[2], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe3})));
     CORRADE_COMPARE(info->width, 256);
     CORRADE_COMPARE(info->height, 512);
     CORRADE_COMPARE(info->layers, 1);
@@ -87,20 +87,20 @@ void FramebufferTest::createInfoConstructLayered() {
     /* The double reinterpret_cast is needed because the handle is an uint64_t
        instead of a pointer on 32-bit builds and only this works on both */
     Device device{NoCreate};
-    auto renderPass = reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef));
-    auto a = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe1)), {});
-    auto b = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe2)), {});
-    auto c = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe3)), {});
+    auto renderPass = reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
+    auto a = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe1})), {});
+    auto b = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe2})), {});
+    auto c = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe3})), {});
 
     /** @todo use a real flag once it exists */
     FramebufferCreateInfo info{renderPass, {a, b, c}, {256, 512, 5}, FramebufferCreateInfo::Flag(0xbadda9)};
     CORRADE_COMPARE(info->flags, 0xbadda9);
-    CORRADE_COMPARE(info->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef)));
+    CORRADE_COMPARE(info->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(std::size_t{0xdeadbeef})));
     CORRADE_COMPARE(info->attachmentCount, 3);
     CORRADE_VERIFY(info->pAttachments);
-    CORRADE_COMPARE(info->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe1)));
-    CORRADE_COMPARE(info->pAttachments[1], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe2)));
-    CORRADE_COMPARE(info->pAttachments[2], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe3)));
+    CORRADE_COMPARE(info->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe1})));
+    CORRADE_COMPARE(info->pAttachments[1], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe2})));
+    CORRADE_COMPARE(info->pAttachments[2], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe3})));
     CORRADE_COMPARE(info->width, 256);
     CORRADE_COMPARE(info->height, 512);
     CORRADE_COMPARE(info->layers, 5);
@@ -135,27 +135,27 @@ void FramebufferTest::createInfoConstructMove() {
     /* The double reinterpret_cast is needed because the handle is an uint64_t
        instead of a pointer on 32-bit builds and only this works on both */
     Device device{NoCreate};
-    auto renderPass = reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef));
-    auto view = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe)), {});
+    auto renderPass = reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(std::size_t{0xdeadbeef}));
+    auto view = ImageView::wrap(device, reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe})), {});
 
     FramebufferCreateInfo a{renderPass, {view}, {256, 512}};
 
     FramebufferCreateInfo b = Utility::move(a);
     CORRADE_COMPARE(a->attachmentCount, 0);
     CORRADE_VERIFY(!a->pAttachments);
-    CORRADE_COMPARE(b->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef)));
+    CORRADE_COMPARE(b->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(std::size_t{0xdeadbeef})));
     CORRADE_COMPARE(b->attachmentCount, 1);
     CORRADE_VERIFY(b->pAttachments);
-    CORRADE_COMPARE(b->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe)));
+    CORRADE_COMPARE(b->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe})));
 
     FramebufferCreateInfo c{VkFramebufferCreateInfo{}};
     c = Utility::move(b);
     CORRADE_COMPARE(b->attachmentCount, 0);
     CORRADE_VERIFY(!b->pAttachments);
-    CORRADE_COMPARE(c->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef)));
+    CORRADE_COMPARE(c->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(std::size_t{0xdeadbeef})));
     CORRADE_COMPARE(c->attachmentCount, 1);
     CORRADE_VERIFY(c->pAttachments);
-    CORRADE_COMPARE(c->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe)));
+    CORRADE_COMPARE(c->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(std::size_t{0xcafe})));
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<FramebufferCreateInfo>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<FramebufferCreateInfo>::value);

@@ -1026,7 +1026,7 @@ void AbstractImporterTest::openState() {
         void doClose() override { _opened = false; }
 
         void doOpenState(const void* state, Containers::StringView filePath) override {
-            CORRADE_COMPARE(state, reinterpret_cast<const void*>(0xbadcafe));
+            CORRADE_COMPARE(state, reinterpret_cast<const void*>(std::size_t{0xbadcafe}));
             CORRADE_COMPARE(filePath, "yello/foo/");
             _opened = true;
         }
@@ -1035,7 +1035,7 @@ void AbstractImporterTest::openState() {
     } importer;
 
     CORRADE_VERIFY(!importer.isOpened());
-    CORRADE_VERIFY(importer.openState(reinterpret_cast<const void*>(0xbadcafe), "yello/foo/"));
+    CORRADE_VERIFY(importer.openState(reinterpret_cast<const void*>(std::size_t{0xbadcafe}), "yello/foo/"));
     CORRADE_VERIFY(importer.isOpened());
 
     importer.close();

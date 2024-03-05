@@ -208,12 +208,12 @@ const struct {
         "       -  OcclusionTexture @ UnsignedInt: 3\n"},
     {"different attribute types",
         Trade::MaterialData{{}, {
-            {"pointer", reinterpret_cast<void*>(0xdead)},
+            {"pointer", reinterpret_cast<void*>(std::size_t{0xdead})},
             {"integer", 5u},
             {"scale", 0.5f},
         }},
         Trade::MaterialData{{}, {
-            {"pointer", reinterpret_cast<const void*>(0xdead)},
+            {"pointer", reinterpret_cast<const void*>(std::size_t{0xdead})},
             {"integer", 5},
             {"scale", "small"},
         }},
@@ -239,16 +239,16 @@ const struct {
             {Trade::MaterialAttribute::NormalTexture, 5u},
             {Trade::MaterialAttribute::NormalTextureSwizzle, Trade::MaterialTextureSwizzle::RGB},
             {"buffer", Containers::ArrayView<const void>{"\x56\x78\x22"}},
-            {"pointer", reinterpret_cast<const void*>(0xbeef)},
-            {"pointerMutable", reinterpret_cast<void*>(0xdead)},
+            {"pointer", reinterpret_cast<const void*>(std::size_t{0xbeef})},
+            {"pointerMutable", reinterpret_cast<void*>(std::size_t{0xdead})},
         }},
         Trade::MaterialData{{}, {
             {Trade::MaterialAttribute::Metalness, 5.5f},
             {Trade::MaterialAttribute::NormalTexture, 5u},
             {Trade::MaterialAttribute::NormalTextureSwizzle, Trade::MaterialTextureSwizzle::RG},
             {"buffer", Containers::ArrayView<const void>{"\x56\x78\x22"}},
-            {"pointer", reinterpret_cast<const void*>(0xbeef)},
-            {"pointerMutable", reinterpret_cast<void*>(0xdead)},
+            {"pointer", reinterpret_cast<const void*>(std::size_t{0xbeef})},
+            {"pointerMutable", reinterpret_cast<void*>(std::size_t{0xdead})},
         }},
         "Materials a and b have different attribute values. Actual (+) vs expected (-):\n"
         "        Base layer:\n"
@@ -276,13 +276,13 @@ const struct {
             {Trade::MaterialAttribute::NormalTexture, 5u},
             {Trade::MaterialAttribute::NormalTextureScale, 0.5f},
             {Trade::MaterialAttribute::OcclusionTexture, 3u},
-            {"texturePointer", reinterpret_cast<void*>(0xdead)},
+            {"texturePointer", reinterpret_cast<void*>(std::size_t{0xdead})},
         }, {3, 5}},
         Trade::MaterialData{{}, {
             {Trade::MaterialAttribute::DoubleSided, false},
             {Trade::MaterialAttribute::NormalTexture, 5u},
             {Trade::MaterialAttribute::OcclusionTexture, 3u},
-            {"texturePointer", reinterpret_cast<const void*>(0xdead)},
+            {"texturePointer", reinterpret_cast<const void*>(std::size_t{0xdead})},
             {Trade::MaterialAttribute::NormalTextureLayer, 2u},
         }, {2, 4, 5}},
         "Materials a and b have different layers. Actual (+) vs expected (-):\n"

@@ -3586,7 +3586,7 @@ void SceneDataTest::constructDeprecatedBoth2DAnd3D() {
 
 #ifndef CORRADE_TARGET_32BIT
 void SceneDataTest::constructMappingOver4GB() {
-    Containers::ArrayView<UnsignedInt> mappingData{reinterpret_cast<UnsignedInt*>(0xdeadbeef), 3000ull*1000*1000};
+    Containers::ArrayView<UnsignedInt> mappingData{reinterpret_cast<UnsignedInt*>(std::size_t{0xdeadbeef}), 3000ull*1000*1000};
     Containers::StridedArrayView1D<UnsignedByte> fieldData{mappingData, reinterpret_cast<UnsignedByte*>(mappingData.data()), 3000ull*1000*1000, 0};
 
     SceneData data{SceneMappingType::UnsignedInt, 1, {}, mappingData, {
@@ -3597,7 +3597,7 @@ void SceneDataTest::constructMappingOver4GB() {
 }
 
 void SceneDataTest::constructFieldOver4GB() {
-    Containers::ArrayView<UnsignedInt> fieldData{reinterpret_cast<UnsignedInt*>(0xdeadbeef), 3000ull*1000*1000};
+    Containers::ArrayView<UnsignedInt> fieldData{reinterpret_cast<UnsignedInt*>(std::size_t{0xdeadbeef}), 3000ull*1000*1000};
     Containers::StridedArrayView1D<UnsignedByte> mappingData{fieldData, reinterpret_cast<UnsignedByte*>(fieldData.data()), 3000ull*1000*1000, 0};
 
     SceneData data{SceneMappingType::UnsignedByte, 1, {}, fieldData, {
@@ -3773,11 +3773,11 @@ void SceneDataTest::constructBitFieldDataNotContained() {
     const Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
     Containers::Array<char> sameDataButMovable{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
     Containers::ArrayView<UnsignedByte> mappingData{reinterpret_cast<UnsignedByte*>(0xbadda9), 10};
-    Containers::StridedBitArrayView1D dataOneByteOut{Containers::BitArrayView{reinterpret_cast<void*>(0xbaddaa), 0, 80}, 10, 8};
-    Containers::StridedBitArrayView1D dataTwoBitsOut{Containers::BitArrayView{reinterpret_cast<void*>(0xbadda9), 0, 90}, 10, 9};
-    Containers::StridedBitArrayView1D dataOneBitOffsetOut{Containers::BitArrayView{reinterpret_cast<void*>(0xbadda9), 4, 95}, 5, 19};
-    Containers::StridedBitArrayView1D dataOneBitOffsetBeforeOut{Containers::BitArrayView{reinterpret_cast<void*>(0xbadda8), 7, 80}, 10, 8};
-    Containers::BitArrayView dataOut{reinterpret_cast<void*>(0xdead), 7, 10};
+    Containers::StridedBitArrayView1D dataOneByteOut{Containers::BitArrayView{reinterpret_cast<void*>(std::size_t{0xbaddaa}), 0, 80}, 10, 8};
+    Containers::StridedBitArrayView1D dataTwoBitsOut{Containers::BitArrayView{reinterpret_cast<void*>(std::size_t{0xbadda9}), 0, 90}, 10, 9};
+    Containers::StridedBitArrayView1D dataOneBitOffsetOut{Containers::BitArrayView{reinterpret_cast<void*>(std::size_t{0xbadda9}), 4, 95}, 5, 19};
+    Containers::StridedBitArrayView1D dataOneBitOffsetBeforeOut{Containers::BitArrayView{reinterpret_cast<void*>(std::size_t{0xbadda8}), 7, 80}, 10, 8};
+    Containers::BitArrayView dataOut{reinterpret_cast<void*>(std::size_t{0xdead}), 7, 10};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3807,7 +3807,7 @@ void SceneDataTest::constructBitFieldDataNotContained() {
     /* Verify array size is taken into account as well. If not, the data would
        span only 9 bytes instead of 11, which would pass. */
     SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
-        SceneFieldData{sceneFieldCustom(773), mappingData.prefix(9), Containers::StridedBitArrayView2D{Containers::BitArrayView{reinterpret_cast<void*>(0xbadda9), 0, 81}, {9, 9}}}
+        SceneFieldData{sceneFieldCustom(773), mappingData.prefix(9), Containers::StridedBitArrayView2D{Containers::BitArrayView{reinterpret_cast<void*>(std::size_t{0xbadda9}), 0, 81}, {9, 9}}}
     }};
     /* Not checking for nullptr data, since that got checked for mapping view
        already and there's no way to trigger it for fields */
@@ -3934,7 +3934,7 @@ void SceneDataTest::constructNotOwnedFlagOwned() {
 void SceneDataTest::constructMismatchedTRSViews() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::ArrayView<const char> data{reinterpret_cast<char*>(0xcafe0000),
+    Containers::ArrayView<const char> data{reinterpret_cast<char*>(std::size_t{0xcafe0000}),
         4 + 3*24 + 3*4};
     Containers::ArrayView<const UnsignedInt> mappingData{
         reinterpret_cast<const UnsignedInt*>(data.data() + 4 + 3*24), 3};
@@ -4163,7 +4163,7 @@ void SceneDataTest::constructMismatchedMeshMaterialView() {
     /* Different sizes, strides and offset-only field handling tested
        thoroughly in constructMismatchedTRSViews() already */
 
-    Containers::ArrayView<const char> data{reinterpret_cast<char*>(0xcafe0000),
+    Containers::ArrayView<const char> data{reinterpret_cast<char*>(std::size_t{0xcafe0000}),
         4 + 3*8 + 3*4};
     Containers::ArrayView<const UnsignedInt> mappingData{
         reinterpret_cast<const UnsignedInt*>(data.data() + 4 + 3*8), 3};

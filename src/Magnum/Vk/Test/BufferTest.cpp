@@ -219,8 +219,8 @@ void BufferTest::bufferCopyConvertDisallowed() {
 void BufferTest::copyBufferInfoConstruct() {
     /* The double reinterpret_cast is needed because the handle is an uint64_t
        instead of a pointer on 32-bit builds and only this works on both */
-    auto a = reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xdead));
-    auto b = reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xcafe));
+    auto a = reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(std::size_t{0xdead}));
+    auto b = reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(std::size_t{0xcafe}));
 
     CopyBufferInfo info{a, b, {
         {3, 0, 0},
