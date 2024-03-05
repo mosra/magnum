@@ -51,3 +51,5 @@ int MyApplication::exec() {
 /* main() function implementation */
 MAGNUM_WINDOWLESSAPPLICATION_MAIN(MyApplication)
 /* [windowless] */
+/* In this case `int main()` won't conflict with any other snippets as the
+   source is compiled into a standalone static library */

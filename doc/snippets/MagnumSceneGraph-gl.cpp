@@ -215,7 +215,11 @@ void MyApplication::drawEvent() {
 
 }
 
-int main() {
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainSceneGraphGL();
+void mainSceneGraphGL() {
 /* [Drawable-usage-instance] */
 Scene3D scene;
 SceneGraph::DrawableGroup3D drawables;
@@ -234,6 +238,4 @@ new RedCubeDrawable{*redCube, &drawables};
     ->translate(Vector3::yAxis(-0.3f))
     .rotateX(30.0_degf);
 /* [Drawable-usage-instance-multiple-inheritance] */
-
-return 0; /* on iOS SDL redefines main to SDL_main and then return is needed */
 }

@@ -35,6 +35,9 @@ using namespace Magnum;
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
+/* Namespace used to avoid a conflict with MyApplication defined in
+   MagnumPlatform.cpp where it *has to* be in the root namespace */
+namespace C {
 /* [opengl-wrapping-nocreate] */
 class MyApplication: public Platform::Application {
     DOXYGEN_ELLIPSIS(explicit MyApplication(const Arguments& arguments);)
@@ -57,6 +60,7 @@ MyApplication::MyApplication(const Arguments& arguments):
     _shader = Shaders::PhongGL{};
 }
 /* [opengl-wrapping-nocreate] */
+}
 
 struct A: Platform::Sdl2Application {
 /* [DefaultFramebuffer-usage-viewport] */
@@ -99,8 +103,11 @@ void drawEvent() override {
 /* [Framebuffer-usage-draw] */
 };
 
-int main() {
-
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainGLApplication();
+void mainGLApplication() {
 {
 SDL_Window* _window{};
 SDL_GLContext* _otherGLContext{};
@@ -123,6 +130,4 @@ Platform::GLContext::makeCurrent(&other);
 GL::Buffer b; // implicitly tied to `other`
 /* [Context-makeCurrent] */
 }
-
-return 0; /* on iOS SDL redefines main to SDL_main and then return is needed */
 }

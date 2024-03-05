@@ -30,7 +30,11 @@
 
 using namespace Magnum;
 
-int main() {
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainPrimitives();
+void mainPrimitives() {
 {
 Color4 colorLeft, colorRight, colorBottom, colorTop;
 /* [gradient2DHorizontal] */

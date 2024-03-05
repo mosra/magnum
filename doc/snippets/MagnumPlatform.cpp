@@ -61,6 +61,8 @@ void MyApplication::drawEvent() {
 /* main() function implementation */
 MAGNUM_APPLICATION_MAIN(MyApplication)
 /* [windowed] */
+/* In this case `int main()` can't be avoided, but other snippets compiled into
+   the same static library all use a different name so it shouldn't conflict */
 
 namespace B {
 

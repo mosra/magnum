@@ -31,6 +31,10 @@ using namespace Magnum;
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 #define DOXYGEN_IGNORE(...) __VA_ARGS__
 
+/* Wrapping in a namespace to not conflict with MyApplication defined in
+   Platform.cpp */
+namespace A {
+
 class MyApplication: public Platform::Application {
     public:
         explicit MyApplication(const Arguments& arguments);
@@ -67,6 +71,11 @@ void MyApplication::drawEvent() {
 }
 /* [Timeline-usage] */
 
-int main() {
-    return 0; /* on iOS SDL redefines main to SDL_main and then return is needed */
 }
+
+/* To prevent macOS ranlib from complaining that there are no symbols. OTOH
+   also make sure the name doesn't conflict with any other snippets to avoid
+   linker warnings, AND unlike with `int main()` there now has to be a
+   declaration to avoid -Wmisssing-prototypes */
+void mainMagnum();
+void mainMagnum() {}

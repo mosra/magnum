@@ -139,7 +139,11 @@ void MyApp::drawEventAgain() {
 }
 /* [FrameProfiler-usage-console] */
 
-int main() {
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainDebugTools();
+void mainDebugTools() {
 {
 /* [FrameProfiler-setup-immediate] */
 using std::chrono::high_resolution_clock;

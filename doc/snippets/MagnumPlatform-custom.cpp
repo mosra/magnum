@@ -27,6 +27,8 @@
 
 using namespace Magnum;
 
+/* In this case `int main()` won't conflict with any other snippets as the
+   source is compiled into a standalone static library */
 /* [custom] */
 int main() {
     // Create OpenGL context ...

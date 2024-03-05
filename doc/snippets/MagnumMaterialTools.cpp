@@ -37,7 +37,11 @@
 
 using namespace Magnum;
 
-int main() {
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainMaterialTools();
+void mainMaterialTools() {
 {
 /* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
    the font pointer. I don't care, I just want you to check compilation errors,

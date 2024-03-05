@@ -130,8 +130,11 @@ CORRADE_PLUGIN_REGISTER(MySceneConverter, MyNamespace::MySceneConverter,
     MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE)
 /* [MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE] */
 
-int main() {
-
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainTrade();
+void mainTrade() {
 {
 Vector2i size;
 /* [AbstractImageConverter-usage-file] */

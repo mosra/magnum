@@ -32,6 +32,8 @@ EGLDisplay display{};
 EGLSurface surface{};
 EGLContext anotherContext{};
 
+/* In this case `int main()` won't conflict with any other snippets as the
+   source is compiled into a standalone static library */
 /* [custom] */
 int main(int argc, char** argv) {
     Platform::WindowlessGLContext glContext{{}};

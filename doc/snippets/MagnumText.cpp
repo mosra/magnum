@@ -92,8 +92,11 @@ CORRADE_PLUGIN_REGISTER(MyFontConverter, MyNamespace::MyFontConverter,
     MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE)
 /* [MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE] */
 
-int main() {
-
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainText();
+void mainText() {
 {
 PluginManager::Manager<Text::AbstractFont> manager;
 Containers::Pointer<Text::AbstractFont> font =

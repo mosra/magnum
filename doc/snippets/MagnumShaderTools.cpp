@@ -62,7 +62,11 @@ CORRADE_PLUGIN_REGISTER(MyShaderConverter, MyNamespace::MyShaderConverter,
     MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE)
 /* [MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE] */
 
-int main() {
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainShaderTools();
+void mainShaderTools() {
 {
 /* [AbstractConverter-usage-validation] */
 PluginManager::Manager<ShaderTools::AbstractConverter> manager;

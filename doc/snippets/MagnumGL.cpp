@@ -285,8 +285,11 @@ MyShader::MyShader(DOXYGEN_ELLIPSIS(int a)): MyShader{compile(DOXYGEN_ELLIPSIS(a
 }
 #endif
 
-int main() {
-
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainGL();
+void mainGL() {
 #ifndef MAGNUM_TARGET_GLES2
 {
 ImageView2D diffuse{PixelFormat::RGBA8Unorm, {}};

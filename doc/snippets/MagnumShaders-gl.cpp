@@ -82,8 +82,11 @@
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
-int main() {
-
+/* Make sure the name doesn't conflict with any other snippets to avoid linker
+   warnings, unlike with `int main()` there now has to be a declaration to
+   avoid -Wmisssing-prototypes */
+void mainShadersGL();
+void mainShadersGL() {
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
    on GCC 4.8 in the [60] array */
 #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5

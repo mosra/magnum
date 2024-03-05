@@ -47,3 +47,5 @@ class MyApplication: public Platform::Application {
 
 MAGNUM_APPLICATION_MAIN(MyApplication)
 /* [application] */
+/* In this case `int main()` won't conflict with any other snippets as the
+   source is compiled into a standalone static library */
