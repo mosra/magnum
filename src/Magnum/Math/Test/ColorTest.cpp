@@ -1199,6 +1199,11 @@ void ColorTest::debugUb() {
     o.str({});
     Debug(&o) << 0x12345678_rgba << 0x90abcdef_rgba;
     CORRADE_COMPARE(o.str(), "#12345678 #90abcdef\n");
+
+    /* The Hex flag shouldn't affect this at all */
+    o.str({});
+    Debug{&o, Debug::Flag::Hex} << 0x789abc_rgb << 0x12345678_rgba;
+    CORRADE_COMPARE(o.str(), "#789abc #12345678\n");
 }
 
 void ColorTest::debugUbColor() {
