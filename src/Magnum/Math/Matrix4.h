@@ -95,7 +95,7 @@ recommended usage is by creating elementary transformation matrices with
 transformation --- the rightmost transformation is applied first, leftmost
 last:
 
-@snippet MagnumMath.cpp Matrix4-usage
+@snippet Math.cpp Matrix4-usage
 
 Conversely, the transformation parts can be extracted back using the member
 @ref rotation() const "rotation()", @ref scaling() const "scaling()" and their
@@ -719,7 +719,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @ref determinant() is negative, and apply the sign flip to the
          * corresponding scaling component instead:
          *
-         * @snippet MagnumMath.cpp Matrix4-rotation-extract-reflection
+         * @snippet Math.cpp Matrix4-rotation-extract-reflection
          *
          * @note Extracting rotation part of a matrix with this function may
          *      cause assertions in case you have unsanitized input (for

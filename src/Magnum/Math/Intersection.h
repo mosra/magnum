@@ -298,7 +298,7 @@ template<class T> bool pointCone(const Vector3<T>& point, const Vector3<T>& cone
 
 The @p tanAngleSqPlusOne parameter can be precomputed like this:
 
-@snippet MagnumMath.cpp Intersection-tanAngleSqPlusOne
+@snippet Math.cpp Intersection-tanAngleSqPlusOne
 */
 template<class T> bool pointCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T tanAngleSqPlusOne);
 
@@ -327,7 +327,7 @@ template<class T> bool pointDoubleCone(const Vector3<T>& point, const Vector3<T>
 
 The @p tanAngleSqPlusOne parameter can be precomputed like this:
 
-@snippet MagnumMath.cpp Intersection-tanAngleSqPlusOne
+@snippet Math.cpp Intersection-tanAngleSqPlusOne
 */
 template<class T> bool pointDoubleCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T tanAngleSqPlusOne);
 
@@ -359,7 +359,7 @@ Transforms the sphere center into cone space (using the cone view matrix) and
 performs sphere-cone intersection with the zero-origin -Z axis-aligned cone.
 The @p sinAngle and @p tanAngle can be precomputed like this:
 
-@snippet MagnumMath.cpp Intersection-sinAngle-tanAngle
+@snippet Math.cpp Intersection-sinAngle-tanAngle
 
 @see @ref MeshTools::boundingSphereBouncingBubble()
 */
@@ -400,7 +400,7 @@ normal direction), and behind the plane, where the test is equivalent to
 testing whether the origin of the original cone intersects the sphere. The
 @p sinAngle and @p tanAngleSqPlusOne parameters can be precomputed like this:
 
-@snippet MagnumMath.cpp Intersection-sinAngle-tanAngleSqPlusOne
+@snippet Math.cpp Intersection-sinAngle-tanAngleSqPlusOne
 
 @see @ref MeshTools::boundingSphereBouncingBubble()
 */
@@ -446,7 +446,7 @@ cone's axis and are tested for intersection with the cone using
 
 The @p tanAngleSqPlusOne parameter can be precomputed like this:
 
-@snippet MagnumMath.cpp Intersection-tanAngleSqPlusOne
+@snippet Math.cpp Intersection-tanAngleSqPlusOne
 */
 template<class T> bool aabbCone(const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T tanAngleSqPlusOne);
 
@@ -478,7 +478,7 @@ Converts the range into center/extents representation and passes it on to
 @ref aabbCone(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, T) "aabbCone()".
 The @p tanAngleSqPlusOne parameter can be precomputed like this:
 
-@snippet MagnumMath.cpp Intersection-tanAngleSqPlusOne
+@snippet Math.cpp Intersection-tanAngleSqPlusOne
 */
 template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const T tanAngleSqPlusOne);
 

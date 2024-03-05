@@ -116,7 +116,7 @@ for and the entrypoint name --- usually it'd be @cpp main() @ce, but there can
 be also SPIR-V shader modules with multiple entry points, which is why this
 parameter is needed.
 
-@snippet MagnumVk.cpp ShaderSet-usage
+@snippet Vk.cpp ShaderSet-usage
 
 <b></b>
 
@@ -135,7 +135,7 @@ via an additional parameter, taking a list of @ref ShaderSpecialization
 instances. The constant can be an integer, float or a boolean; constant IDs not
 present in the SPIR-V module are ignored.
 
-@snippet MagnumVk.cpp ShaderSet-usage-specializations
+@snippet Vk.cpp ShaderSet-usage-specializations
 
 @subsection Vk-ShaderSet-usage-ownership-transfer Shader ownership transfer
 
@@ -144,7 +144,7 @@ instances into the class using the @ref addShader(ShaderStage, Shader&&, Contain
 overload. If you have a multi-entrypoint shader, move only the last specified
 stage, for example:
 
-@snippet MagnumVk.cpp ShaderSet-usage-ownership-transfer
+@snippet Vk.cpp ShaderSet-usage-ownership-transfer
 */
 class MAGNUM_VK_EXPORT ShaderSet {
     public:

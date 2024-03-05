@@ -96,7 +96,7 @@ be done with interpolation result values. The simplest option is specifying a
 destination location when adding the track using @ref add() --- that'll mean
 you get a fresh set of animated values at your disposal after every iteration:
 
-@snippet MagnumAnimation.cpp Player-usage
+@snippet Animation.cpp Player-usage
 
 The Player stores just @ref TrackView instances, for every @ref Track instance
 you have to ensure that it stays alive for the whole lifetime of the player
@@ -110,7 +110,7 @@ instead of a reference to a concrete type. Below is an example of animating
 @ref SceneGraph::TranslationRotationScalingTransformation3D transformation
 implementation:
 
-@snippet MagnumAnimation.cpp Player-usage-callback
+@snippet Animation.cpp Player-usage-callback
 
 The @ref addWithCallbackOnChange() variant will fire the callback only if the
 interpolated value changes, which is useful for triggering other events. See
@@ -181,7 +181,7 @@ the @ref Timeline in particular, it's recommended to never call
 See @ref Animation-Player-time-type "below" for more information about using
 different time types.
 
-@snippet MagnumAnimation.cpp Player-usage-playback
+@snippet Animation.cpp Player-usage-playback
 
 @section Animation-Player-time-type Using custom time/key types
 
@@ -196,7 +196,7 @@ if the tracks *are* long, you can always use a different key type for them as
 well. A good choice is @ref std::chrono::nanoseconds as a time type and keeping
 track key values as @ref Magnum::Float "Float" seconds:
 
-@snippet MagnumAnimation.cpp Player-usage-chrono
+@snippet Animation.cpp Player-usage-chrono
 
 While there's a builtin support for the above, you are free to use any other
 type combination --- for that you need to provide a *scaler* function that will
@@ -207,7 +207,7 @@ basic arithmetic and comparison operators. In order to reduce header size, the
 to include to get all needed template function definitions. See also
 @ref compilation-speedup-hpp for more information.
 
-@snippet MagnumAnimation-custom.cpp Player-usage-custom
+@snippet Animation-custom.cpp Player-usage-custom
 
 @section Animation-Player-higher-order Higher-order players, animating time
 
@@ -216,7 +216,7 @@ animate player state. That's doable by creating specialized tracks that control
 given player via a state change callback. By adding more tracks you can control
 multiple players from a central location.
 
-@snippet MagnumAnimation.cpp Player-higher-order
+@snippet Animation.cpp Player-higher-order
 
 Besides state, you can also animate @ref setDuration() and @ref setPlayCount(),
 but be aware that setting those while the animation is playing might cause
@@ -224,7 +224,7 @@ unwanted jumps and abrupt stops. Time is also completely in your control and
 you can employ another @ref Player instance to speed it up or slow it down for
 a particular animation:
 
-@snippet MagnumAnimation.cpp Player-higher-order-animated-time
+@snippet Animation.cpp Player-higher-order-animated-time
 
 @section Animation-Player-explicit-specializations Explicit template specializations
 
@@ -602,7 +602,7 @@ template<class T, class K
          * @ref addWithCallbackOnChange() API using this function, using a
          * custom callback to add a value to a vector if it changes:
          *
-         * @snippet MagnumAnimation.cpp Player-addRawCallback
+         * @snippet Animation.cpp Player-addRawCallback
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R, class Callback> Player<T, K>& addRawCallback(const TrackView<const K, const V, R>& track, void(*callback)(const TrackViewStorage<const K>&, K, std::size_t&, void*, void(*)(), void*), void* destination, void(*userCallback)(), void* userData);

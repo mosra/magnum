@@ -80,11 +80,11 @@ working on the framebuffer, you need to enable
 
 Common mesh setup:
 
-@snippet MagnumShaders-gl.cpp VectorGL-usage1
+@snippet Shaders-gl.cpp VectorGL-usage1
 
 Common rendering setup:
 
-@snippet MagnumShaders-gl.cpp VectorGL-usage2
+@snippet Shaders-gl.cpp VectorGL-usage2
 
 @section Shaders-VectorGL-ubo Uniform buffers
 
@@ -101,7 +101,7 @@ texture transformation a per-draw @ref TextureTransformationUniform buffer
 bound with @ref bindTextureTransformationBuffer() can be supplied as well. A
 uniform buffer setup equivalent to the above would look like this:
 
-@snippet MagnumShaders-gl.cpp VectorGL-ubo
+@snippet Shaders-gl.cpp VectorGL-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw, supply desired material
 and draw count via @ref Configuration::setMaterialCount() and

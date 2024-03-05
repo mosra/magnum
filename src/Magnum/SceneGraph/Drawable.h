@@ -46,7 +46,7 @@ The class is used via subclassing and implementing the @ref draw() function.
 The simplest option is to do it via single inheritance. Example drawable object
 that draws a blue sphere:
 
-@snippet MagnumSceneGraph-gl.cpp Drawable-usage
+@snippet SceneGraph-gl.cpp Drawable-usage
 
 For brevity the class has its own shader and mesh instance and a hardcoded
 light position, usually you'll have them stored in a central location, shared
@@ -62,7 +62,7 @@ In that case you need to combine the two matrices manually like in the
 following code. Some shaders might have additional requirements, see their
 respective documentation for details.
 
-@snippet MagnumSceneGraph-gl.cpp Drawable-usage-shader
+@snippet SceneGraph-gl.cpp Drawable-usage-shader
 
 @section SceneGraph-Drawable-usage Drawing the scene
 
@@ -74,7 +74,7 @@ If you don't need to change any properties of the drawable later, you can just
 "create and forget", the scene graph will take care of all memory management
 from there, deleting the drawable when the object is attached to is deleted.
 
-@snippet MagnumSceneGraph-gl.cpp Drawable-usage-instance
+@snippet SceneGraph-gl.cpp Drawable-usage-instance
 
 The last thing you need is a camera attached to some object (thus using its
 transformation). With the camera and the drawable group you can perform drawing
@@ -82,7 +82,7 @@ in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation. See @ref Camera2D and @ref Camera3D documentation for more
 information.
 
-@snippet MagnumSceneGraph-gl.cpp Drawable-usage-camera
+@snippet SceneGraph-gl.cpp Drawable-usage-camera
 
 @section SceneGraph-Drawable-multiple-inheritance Using multiple inheritance
 
@@ -91,7 +91,7 @@ Besides single inheritance, it's also possible to derive your class from both
 object transformation and parent/child relationship from within the drawable
 object.
 
-@snippet MagnumSceneGraph-gl.cpp Drawable-usage-multiple-inheritance
+@snippet SceneGraph-gl.cpp Drawable-usage-multiple-inheritance
 
 The @ref draw() implementation is the same as in the above snippet. Note that,
 in contrast to the single inheritance case, where the @ref Drawable constructor
@@ -99,7 +99,7 @@ got the holder @cpp object @ce, here we pass it @cpp *this @ce, because this
 class is both the holder object and the drawable. Instantiating the drawable
 object is then done in a single step:
 
-@snippet MagnumSceneGraph-gl.cpp Drawable-usage-instance-multiple-inheritance
+@snippet SceneGraph-gl.cpp Drawable-usage-instance-multiple-inheritance
 
 @section SceneGraph-Drawable-multiple-groups Using multiple drawable groups to improve performance
 
@@ -109,7 +109,7 @@ setup etc into one group, then put all transparent into another and set common
 parameters once for whole group instead of setting them again in each
 @ref draw() implementation. Example:
 
-@snippet MagnumSceneGraph-gl.cpp Drawable-multiple-groups
+@snippet SceneGraph-gl.cpp Drawable-multiple-groups
 
 @section SceneGraph-Drawable-draw-order Custom draw order and object culling
 
@@ -122,7 +122,7 @@ example to have correctly sorted transparent objects) or draw just a subset
 For example, to have the objects sorted back-to-front, apply @ref std::sort()
 with a custom predicate on the drawable transformation list:
 
-@snippet MagnumSceneGraph.cpp Drawable-draw-order
+@snippet SceneGraph.cpp Drawable-draw-order
 
 Another use case is object-level culling --- assuming each drawable instance
 provides an *absolute* AABB, one can calculate the transformations, cull them
@@ -131,7 +131,7 @@ vector to @ref Camera::draw(). To be clear, this approach depends on AABBs
 provided as relative to world origin, the actual object transformations don't
 get used in any way except being passed to the draw function:
 
-@snippet MagnumSceneGraph.cpp Drawable-culling
+@snippet SceneGraph.cpp Drawable-culling
 
 @section SceneGraph-Drawable-explicit-specializations Explicit template specializations
 

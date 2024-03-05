@@ -51,12 +51,12 @@ The default-constructed @ref SamplerCreateInfo uses a conservative setup with
 nearest neighbor filtering and will produce valid results with no need to set
 up anything else:
 
-@snippet MagnumVk.cpp Sampler-creation
+@snippet Vk.cpp Sampler-creation
 
 Usually, however, you'll want to set up filtering and mip level selection at
 least, along with other properties:
 
-@snippet MagnumVk.cpp Sampler-creation-linear
+@snippet Vk.cpp Sampler-creation-linear
 
 */
 class MAGNUM_VK_EXPORT Sampler {

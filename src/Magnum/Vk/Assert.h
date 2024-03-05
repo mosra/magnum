@@ -91,7 +91,7 @@ return any of the specified results in addition to
 accepts any number of @ref Magnum::Vk::Result "Result" values, the macro then
 returns the actual result value. Example usage:
 
-@snippet MagnumVk.cpp MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR
+@snippet Vk.cpp MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR
 
 Similarly to @ref CORRADE_INTERNAL_ASSERT_EXPRESSION() this macro is usable in
 any expression such as @cpp if @ce and @cpp return @ce statements. You can

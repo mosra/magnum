@@ -65,7 +65,7 @@ value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$
     To ensure the integral type is correctly detected when using literals, this
     function should be called with both template parameters explicit, e.g.:
 @attention
-    @snippet MagnumMath.cpp unpack-template-explicit
+    @snippet Math.cpp unpack-template-explicit
 
 @see @ref pack(), @ref unpackInto()
 */
@@ -77,7 +77,7 @@ template<class FloatingPoint, class Integral> inline FloatingPoint unpack(const 
 Alternative to the above with ability to specify how many bits of the integral
 representation to use. Example usage:
 
-@snippet MagnumMath.cpp unpack
+@snippet Math.cpp unpack
 */
 template<class FloatingPoint, class Integral, UnsignedInt bits> inline FloatingPoint unpack(const Integral& value);
 #else
@@ -161,7 +161,7 @@ template<class Integral, std::size_t size, class FloatingPoint, UnsignedInt bits
 Alternative to the above with ability to specify how many bits of the integral
 representation to use. Example usage:
 
-@snippet MagnumMath.cpp pack
+@snippet Math.cpp pack
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class Integral, UnsignedInt bits, class FloatingPoint> inline Integral pack(FloatingPoint value);

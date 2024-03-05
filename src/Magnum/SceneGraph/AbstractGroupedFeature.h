@@ -46,7 +46,7 @@ Used together with @ref FeatureGroup.
 Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 and @cpp typedef @ce'ing @ref FeatureGroup to accept only given type, e.g.:
 
-@snippet MagnumSceneGraph.cpp AbstractGroupedFeature-subclassing
+@snippet SceneGraph.cpp AbstractGroupedFeature-subclassing
 
 @section SceneGraph-AbstractGroupedFeature-explicit-specializations Explicit template specializations
 

@@ -522,7 +522,7 @@ case we *know* that @ref AnyImageConverter supports
 especially when dealing with compressed image formats it might be good to check
 against the reported @ref features() first.
 
-@snippet MagnumTrade.cpp AbstractImageConverter-usage-file
+@snippet Trade.cpp AbstractImageConverter-usage-file
 
 See @ref plugins for more information about general plugin usage,
 @ref file-formats to compare implementations of common file formats and the
@@ -546,7 +546,7 @@ the following snippet we'll save three mip levels to an EXR file, again using
 the @ref AnyImageConverter plugin, which will then most likely delegate to
 @link OpenExrImageConverter @endlink:
 
-@snippet MagnumTrade.cpp AbstractImageConverter-usage-file-levels
+@snippet Trade.cpp AbstractImageConverter-usage-file-levels
 
 @subsection Trade-AbstractImageConverter-usage-image Converting image data
 
@@ -560,7 +560,7 @@ a compressed image and so we can put in just a sanity assert, but in the
 general case it's converter-dependent and may even rely on configuration
 options set for the plugin.
 
-@snippet MagnumTrade.cpp AbstractImageConverter-usage-image
+@snippet Trade.cpp AbstractImageConverter-usage-image
 
 Commonly, when operating directly on the image data, each plugin exposes a set
 of configuration options to specify what actually gets done and how, and the
@@ -1958,7 +1958,7 @@ Same string as returned by
 be used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
 interface string by hand every time the version gets bumped:
 
-@snippet MagnumTrade.cpp MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE
+@snippet Trade.cpp MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE
 
 The interface string version gets increased on every ABI break to prevent
 silent crashes and memory corruption. Plugins built against the previous

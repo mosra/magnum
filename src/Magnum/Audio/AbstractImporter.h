@@ -247,7 +247,7 @@ Same string as returned by
 used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
 interface string by hand every time the version gets bumped:
 
-@snippet MagnumAudio.cpp MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE
+@snippet Audio.cpp MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE
 
 The interface string version gets increased on every ABI break to prevent
 silent crashes and memory corruption. Plugins built against the previous

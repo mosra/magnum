@@ -299,7 +299,7 @@ class OpenGLTester: public TestSuite::Tester {
 
 Equivalent to
 
-@snippet MagnumGL.cpp OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR
+@snippet GL.cpp OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR
 */
 #define MAGNUM_VERIFY_NO_GL_ERROR() CORRADE_COMPARE(Magnum::GL::Renderer::error(), Magnum::GL::Renderer::Error::NoError)
 

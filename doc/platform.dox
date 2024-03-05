@@ -64,7 +64,7 @@ blue color is shown in the following code listing.
     `base` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
 
-@snippet MagnumPlatform.cpp windowed
+@snippet Platform.cpp windowed
 
 @subsection platform-windowed-viewport Responding to viewport size changes
 
@@ -74,7 +74,7 @@ example by resizing the default framebuffer, you need to reimplement
 @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()" function and
 pass the new size to the framebuffer:
 
-@snippet MagnumPlatform.cpp size
+@snippet Platform.cpp size
 
 @section platform-windowless Windowless applications
 
@@ -109,7 +109,7 @@ renderer string and exits is in the following code listing.
     is available in `windowless` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
 
-@snippet MagnumPlatform-windowless.cpp windowless
+@snippet Platform-windowless.cpp windowless
 
 @section platform-compilation Compilation with CMake
 
@@ -141,7 +141,7 @@ window size 800x600 pixels). If you want something else, you can pass
 application constructor. Using method chaining it can be done conveniently like
 this:
 
-@snippet MagnumPlatform.cpp configuration
+@snippet Platform.cpp configuration
 
 @subsection platform-configuration-delayed Delayed context creation
 
@@ -151,7 +151,7 @@ initializer. You can specify @ref NoCreate in the constructor instead and pass
 the @relativeref{Platform::Sdl2Application,Configuration} later to a
 @relativeref{Platform::Sdl2Application,create()} function:
 
-@snippet MagnumPlatform.cpp createcontext
+@snippet Platform.cpp createcontext
 
 If context creation in the constructor or in
 @relativeref{Platform::Sdl2Application,create()} fails, the application prints
@@ -163,7 +163,7 @@ you abort the launch or retry with different configuration. You can for example
 try enabling MSAA first, and if the context creation fails, fall back to no-AA
 rendering:
 
-@snippet MagnumPlatform.cpp trycreatecontext
+@snippet Platform.cpp trycreatecontext
 
 <b></b>
 
@@ -206,7 +206,7 @@ following code listing.
 @note
     There's also an example showing @ref examples-triangle-plain-glfw "usage of plain GLFW to render a basic triangle".
 
-@snippet MagnumPlatform-custom.cpp custom
+@snippet Platform-custom.cpp custom
 
 @attention The @ref Platform::GLContext instance is bound to a single OpenGL
     context, which must be always set as current when calling any Magnum APIs
@@ -260,7 +260,7 @@ windowless application header is included.
     contexts, but make sure that Magnum is used only with its own OpenGL
     context.
 
-@snippet MagnumPlatform-windowless-custom.cpp custom
+@snippet Platform-windowless-custom.cpp custom
 
 The main purpose of windowless contexts is threaded OpenGL, used for example
 for background data processing. The workflow is to create the windowless
@@ -273,6 +273,6 @@ information.
 @note Context creation is not thread safe on all platforms, that's why it still
     has to be done on the main thread.
 
-@snippet MagnumPlatform-windowless-thread.cpp thread
+@snippet Platform-windowless-thread.cpp thread
 */
 }

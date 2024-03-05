@@ -90,7 +90,7 @@ subpass index and the count of color attachments. Apart from that you need to
 set a viewport using @ref RasterizationPipelineCreateInfo::setViewport()
 and you end up with a minimal setup needed for color-only rendering:
 
-@snippet MagnumVk.cpp Pipeline-creation-rasterization
+@snippet Vk.cpp Pipeline-creation-rasterization
 
 Certain aspects of the pipeline can be set as dynamic using
 @relativeref{RasterizationPipelineCreateInfo,setDynamicStates()} --- in that
@@ -103,7 +103,7 @@ Compared to a rasterization pipeline, @ref ComputePipelineCreateInfo only takes
 a @ref ShaderSet containing a single @ref ShaderStage::Compute shader and a
 @link PipelineLayout @endlink:
 
-@snippet MagnumVk.cpp Pipeline-creation-compute
+@snippet Vk.cpp Pipeline-creation-compute
 
 @section Vk-Pipeline-usage Pipeline usage
 
@@ -111,7 +111,7 @@ A pipeline is bound to a compatible command buffer using
 @ref CommandBuffer::bindPipeline(), which replaces any pipeline bound
 previously to the same @ref bindPoint():
 
-@snippet MagnumVk.cpp Pipeline-usage
+@snippet Vk.cpp Pipeline-usage
 */
 class MAGNUM_VK_EXPORT Pipeline {
     public:

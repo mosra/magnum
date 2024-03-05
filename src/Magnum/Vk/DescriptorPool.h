@@ -53,7 +53,7 @@ descriptor counts for desired @ref DescriptorType "DescriptorTypes". The
 following snippet creates a pool allowing to allocate at most 8 descriptor sets
 with 24 sampler bindings and 16 uniform bindings:
 
-@snippet MagnumVk.cpp DescriptorPool-creation
+@snippet Vk.cpp DescriptorPool-creation
 
 With a descriptor pool created, you can allocate descriptor sets from it. See
 the @ref DescriptorSet class for details.

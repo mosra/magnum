@@ -49,7 +49,7 @@ order to reflect transformation changes from the scene in the spatial audio,
 the playable should be added to some @ref PlayableGroup, which is periodically
 updated from a currently active @ref Listener using @ref Listener::update():
 
-@snippet MagnumAudio-scenegraph.cpp Playable-usage
+@snippet Audio-scenegraph.cpp Playable-usage
 
 Note that @ref Source::setPosition(), @ref Source::setDirection() and
 @ref Source::setGain() called on @ref source() will be overwritten on next call

@@ -141,7 +141,7 @@ to which any container is convertible, it can also take ownership of a
 keeping a loaded file in scope until it's consumed by the @ref Shader
 constructor:
 
-@snippet MagnumVk.cpp Shader-creation
+@snippet Vk.cpp Shader-creation
 
 @see @ref CORRADE_INTERNAL_ASSERT_EXPRESSION()
 */

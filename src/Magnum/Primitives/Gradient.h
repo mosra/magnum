@@ -56,7 +56,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient2D(const Vector2& a, const Colo
 
 Equivalent to calling @ref gradient2D() like this:
 
-@snippet MagnumPrimitives.cpp gradient2DHorizontal
+@snippet Primitives.cpp gradient2DHorizontal
 
 @image html primitives-gradient2dhorizontal.png width=256px
 
@@ -69,7 +69,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient2DHorizontal(const Color4& colo
 
 Equivalent to calling @ref gradient2D() like this:
 
-@snippet MagnumPrimitives.cpp gradient2DVertical
+@snippet Primitives.cpp gradient2DVertical
 
 @image html primitives-gradient2dvertical.png width=256px
 
@@ -99,7 +99,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient3D(const Vector3& a, const Colo
 
 Equivalent to calling @ref gradient3D() like this:
 
-@snippet MagnumPrimitives.cpp gradient3DHorizontal
+@snippet Primitives.cpp gradient3DHorizontal
 
 @image html primitives-gradient3dhorizontal.png width=256px
 
@@ -112,7 +112,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient3DHorizontal(const Color4& colo
 
 Equivalent to calling @ref gradient3D() like this:
 
-@snippet MagnumPrimitives.cpp gradient3DVertical
+@snippet Primitives.cpp gradient3DVertical
 
 @image html primitives-gradient3dvertical.png width=256px
 

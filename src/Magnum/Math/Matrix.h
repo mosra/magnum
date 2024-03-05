@@ -95,7 +95,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
          *
-         * @snippet MagnumMath.cpp Matrix-conversion
+         * @snippet Math.cpp Matrix-conversion
          */
         template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other) noexcept: RectangularMatrix<size, size, T>(other) {}
 

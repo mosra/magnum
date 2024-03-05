@@ -135,7 +135,7 @@ width set to 1024 and height unbounded. The algorithm by default makes all
 images the same orientation as that significantly improves the layout
 efficiency while not making any difference for texture mapping.
 
-@snippet MagnumTextureTools.cpp AtlasLandfill-usage
+@snippet TextureTools.cpp AtlasLandfill-usage
 
 Calculating a texture coordinate transformation matrix for a particular image
 can then be done with @ref atlasTextureCoordinateTransformation(), see its
@@ -148,7 +148,7 @@ linear rasterizer later, they can be disabled by clearing appropriate
 @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector2i>&)
 overload without the rotations argument.
 
-@snippet MagnumTextureTools.cpp AtlasLandfill-usage-no-rotation
+@snippet TextureTools.cpp AtlasLandfill-usage-no-rotation
 
 @subsection TextureTools-AtlasLandfill-usage-atlas Array atlas
 
@@ -156,7 +156,7 @@ The packing can be extended to a third dimension as well, in which case the
 packing overflows to next slices instead of expanding to potentially unbounded
 height.
 
-@snippet MagnumTextureTools.cpp AtlasLandfill-usage-array
+@snippet TextureTools.cpp AtlasLandfill-usage-array
 
 The layer has to be taken into an account in addition to the texture coordinate
 transformation matrix calculated with @ref atlasTextureCoordinateTransformation(),
@@ -461,7 +461,7 @@ matrix for a particular image can then be done with
 calculate and apply the matrix to either the mesh directly or to a material /
 shader.
 
-@snippet MagnumTextureTools.cpp atlasArrayPowerOfTwo
+@snippet TextureTools.cpp atlasArrayPowerOfTwo
 
 The algorithm first sorts the textures by size using @ref std::stable_sort(),
 which is usually @f$ \mathcal{O}(n \log{} n) @f$, and then performs the actual
@@ -514,13 +514,13 @@ With a concrete `atlasSize`, `sizes` being the input sizes passed to
 @ref AtlasLandfill::add() (i.e., without any potential rotations applied yet),
 and `offsets` and `rotations` being the output, the usage is as follows:
 
-@snippet MagnumTextureTools.cpp atlasTextureCoordinateTransformation
+@snippet TextureTools.cpp atlasTextureCoordinateTransformation
 
 The resulting matrix can be then directly used to adjust texture coordinates,
 like below with @ref MeshTools::transformTextureCoordinates2DInPlace() on a
 @link Trade::MeshData @endlink:
 
-@snippet MagnumTextureTools.cpp atlasTextureCoordinateTransformation-meshdata
+@snippet TextureTools.cpp atlasTextureCoordinateTransformation-meshdata
 
 Alternatively, for example in cases where a single mesh is used with several different textures, the transformation can be applied at draw time, such as
 with @ref Shaders::FlatGL::setTextureMatrix(). In case there's already a
@@ -529,7 +529,7 @@ transformation has to happen *after*, so multiplied from the left side. For
 example with a @ref Trade::MaterialData that contains a
 @link Trade::MaterialAttribute::TextureMatrix @endlink:
 
-@snippet MagnumTextureTools.cpp atlasTextureCoordinateTransformation-materialdata
+@snippet TextureTools.cpp atlasTextureCoordinateTransformation-materialdata
 */
 MAGNUM_TEXTURETOOLS_EXPORT Matrix3 atlasTextureCoordinateTransformation(const Vector2i& atlasSize, const Vector2i& size, const Vector2i& offset);
 

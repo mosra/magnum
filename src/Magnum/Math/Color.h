@@ -293,7 +293,7 @@ instead. For convenience, conversion from and to 8bpp representation without
 sRGB conversion is possible with @ref fromLinearRgbInt() and
 @ref toLinearRgbInt().
 
-@snippet MagnumMath.cpp Color3
+@snippet Math.cpp Color3
 
 Conversion from and to HSV is done always using floating-point types, so hue
 is always in range in range @f$ [0.0\degree, 360.0\degree] @f$, saturation and
@@ -429,12 +429,12 @@ template<class T> class Color3: public Vector3<T> {
          * representation and want to create a floating-point linear RGB color
          * out of it:
          *
-         * @snippet MagnumMath.cpp Color3-fromSrgb
+         * @snippet Math.cpp Color3-fromSrgb
          *
          * For conversion from a *linear* 24-bit representation (i.e, without
          * applying the sRGB curve), use @ref unpack():
          *
-         * @snippet MagnumMath.cpp Color3-unpack
+         * @snippet Math.cpp Color3-unpack
          *
          * @see @ref fromSrgbInt(), @link operator""_srgbf() @endlink,
          *      @ref Color4::fromSrgbAlpha(const Vector4<Integral>&)
@@ -455,7 +455,7 @@ template<class T> class Color3: public Vector3<T> {
          * that does this conversion directly from hexadecimal literals. The
          * following two statements are equivalent:
          *
-         * @snippet MagnumMath.cpp Color3-fromSrgbInt
+         * @snippet Math.cpp Color3-fromSrgbInt
          *
          * Note that the integral value is endian-dependent (the red channel
          * being in the *last* byte on little-endian platforms), for conversion
@@ -490,7 +490,7 @@ template<class T> class Color3: public Vector3<T> {
          * conversion directly from hexadecimal literals. The following two
          * statements are equivalent:
          *
-         * @snippet MagnumMath.cpp Color3-fromLinearRgbInt
+         * @snippet Math.cpp Color3-fromLinearRgbInt
          *
          * Note that the integral value is endian-dependent (the red channel
          * being in the *last* byte on little-endian platforms), for conversion
@@ -646,12 +646,12 @@ template<class T> class Color3: public Vector3<T> {
          * Useful in cases where you have a floating-point linear RGB color and
          * want to create for example an 8-bit sRGB representation out of it:
          *
-         * @snippet MagnumMath.cpp Color3-toSrgb
+         * @snippet Math.cpp Color3-toSrgb
          *
          * For conversion to a *linear* 24-bit representation (i.e, without
          * applying the sRGB curve), use @ref pack():
          *
-         * @snippet MagnumMath.cpp Color3-pack
+         * @snippet Math.cpp Color3-pack
          *
          * @see @ref toSrgbInt(), @ref Color4::toSrgbAlpha(),
          *      @ref toLinearRgbInt()
@@ -841,12 +841,12 @@ class Color4: public Vector4<T> {
          * representation and want to create a floating-point linear RGBA color
          * out of it:
          *
-         * @snippet MagnumMath.cpp Color4-fromSrgbAlpha
+         * @snippet Math.cpp Color4-fromSrgbAlpha
          *
          * For conversion from a *linear* 32-bit representation (i.e, without
          * applying the sRGB curve), use @ref unpack():
          *
-         * @snippet MagnumMath.cpp Color4-unpack
+         * @snippet Math.cpp Color4-unpack
          *
          * @see @ref fromSrgbAlphaInt(UnsignedInt)
          */
@@ -901,7 +901,7 @@ class Color4: public Vector4<T> {
          * directly from hexadecimal literals. The following two statements are
          * equivalent:
          *
-         * @snippet MagnumMath.cpp Color4-fromSrgbAlphaInt
+         * @snippet Math.cpp Color4-fromSrgbAlphaInt
          *
          * Note that the integral value is endian-dependent (the red channel
          * being in the *last* byte on little-endian platforms), for conversion
@@ -961,7 +961,7 @@ class Color4: public Vector4<T> {
          * does this conversion directly from hexadecimal literals. The
          * following two statements are equivalent:
          *
-         * @snippet MagnumMath.cpp Color4-fromLinearRgbaInt
+         * @snippet Math.cpp Color4-fromLinearRgbaInt
          *
          * Note that the integral value is endian-dependent (the red channel
          * being in the *last* byte on little-endian platforms), for conversion
@@ -1117,12 +1117,12 @@ class Color4: public Vector4<T> {
          * and want to create for example an 8-bit sRGB + alpha representation
          * out of it:
          *
-         * @snippet MagnumMath.cpp Color4-toSrgbAlpha
+         * @snippet Math.cpp Color4-toSrgbAlpha
          *
          * For conversion to a *linear* 32-bit representation (i.e, without
          * applying the sRGB curve), use @ref pack():
          *
-         * @snippet MagnumMath.cpp Color4-pack
+         * @snippet Math.cpp Color4-pack
          *
          * @see @ref toSrgbAlphaInt(), @ref toLinearRgbaInt()
          */
@@ -1324,7 +1324,7 @@ namespace Literals {
 
 Unpacks the literal into three 8-bit values. Example usage:
 
-@snippet MagnumMath.cpp _rgb
+@snippet Math.cpp _rgb
 
 @attention 8bit-per-channel colors are commonly treated as being in sRGB color
     space, which is not directly usable in calculations and has to be converted
@@ -1346,7 +1346,7 @@ Behaves identically to @link operator""_rgb() @endlink though it doesn't
 return a @ref Color3 type to indicate that the resulting value is not linear
 RGB. Use this literal to document that given value is in sRGB. Example usage:
 
-@snippet MagnumMath.cpp _srgb
+@snippet Math.cpp _srgb
 
 @attention Note that colors in sRGB representation should not be used directly
     in calculations --- they should be converted to linear RGB, calculation
@@ -1369,7 +1369,7 @@ constexpr Vector3<UnsignedByte> operator "" _srgb(unsigned long long value) {
 
 Unpacks the literal into four 8-bit values. Example usage:
 
-@snippet MagnumMath.cpp _rgba
+@snippet Math.cpp _rgba
 
 @attention 8bit-per-channel colors are commonly treated as being in sRGB color
     space, which is not directly usable in calculations and has to be converted
@@ -1392,7 +1392,7 @@ return a @ref Color4 type to indicate that the resulting value is not linear
 RGBA. Use this literal to document that given value is in sRGB + alpha. Example
 usage:
 
-@snippet MagnumMath.cpp _srgba
+@snippet Math.cpp _srgba
 
 @attention Note that colors in sRGB representation should not be used directly
     in calculations --- they should be converted to linear RGB, calculation
@@ -1416,7 +1416,7 @@ constexpr Vector4<UnsignedByte> operator "" _srgba(unsigned long long value) {
 Equivalent to calling @ref Color3::fromLinearRgbInt() on the literal value.
 Example usage:
 
-@snippet MagnumMath.cpp _rgbf
+@snippet Math.cpp _rgbf
 
 @attention 8bit-per-channel colors are commonly treated as being in sRGB color
     space, which is not directly usable in calculations and has to be converted
@@ -1437,7 +1437,7 @@ constexpr Color3<Float> operator "" _rgbf(unsigned long long value) {
 
 Calls @ref Color3::fromSrgbInt() on the literal value. Example usage:
 
-@snippet MagnumMath.cpp _srgbf
+@snippet Math.cpp _srgbf
 
 @see @link operator""_srgbaf() @endlink, @link operator""_srgb() @endlink,
     @link operator""_rgbf() @endlink
@@ -1453,7 +1453,7 @@ inline Color3<Float> operator "" _srgbf(unsigned long long value) {
 Equivalent to calling @ref Color4::fromLinearRgbaInt() on the literal value.
 Example usage:
 
-@snippet MagnumMath.cpp _rgbaf
+@snippet Math.cpp _rgbaf
 
 @attention 8bit-per-channel colors are commonly treated as being in sRGB color
     space, which is not directly usable in calculations and has to be converted
@@ -1475,7 +1475,7 @@ constexpr Color4<Float> operator "" _rgbaf(unsigned long long value) {
 
 Calls @ref Color4::fromSrgbAlphaInt() on the literal value. Example usage:
 
-@snippet MagnumMath.cpp _srgbaf
+@snippet Math.cpp _srgbaf
 
 @see @link operator""_srgbf() @endlink, @link operator""_srgba() @endlink,
     @link operator""_rgbaf() @endlink
@@ -1508,7 +1508,7 @@ If @ref Debug::Flag::Color is not enabled, the value is printed as a hex color
 
 For example, the following snippet:
 
-@snippet MagnumMath.cpp Color3-debug
+@snippet Math.cpp Color3-debug
 
 <b></b>
 
@@ -1541,7 +1541,7 @@ If @ref Debug::Flag::Color is not enabled, the value is printed as a hex color
 
 For example, the following snippet:
 
-@snippet MagnumMath.cpp Color4-debug
+@snippet Math.cpp Color4-debug
 
 <b></b>
 

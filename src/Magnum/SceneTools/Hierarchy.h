@@ -49,7 +49,7 @@ Extracts the @ref Trade::SceneField::Parent field mapping and data from
 This form is useful primarily for calculating absolute object transformations,
 for example:
 
-@snippet MagnumSceneTools.cpp parentsBreadthFirst-transformations
+@snippet SceneTools.cpp parentsBreadthFirst-transformations
 
 The operation is done in an @f$ \mathcal{O}(n) @f$ execution time and memory
 complexity, with @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The
@@ -100,7 +100,7 @@ object is the first top-level object (i.e., with a parent equal to
 
 This form is useful primarily for marking and extracting subtrees, for example:
 
-@snippet MagnumSceneTools.cpp childrenDepthFirst-extract-tree
+@snippet SceneTools.cpp childrenDepthFirst-extract-tree
 
 The operation is done in an @f$ \mathcal{O}(n) @f$ execution time and memory
 complexity, with @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The
@@ -155,7 +155,7 @@ This function can be used for example to flatten a mesh hierarchy, bake
 the transformations to actual meshes and then concatenate them together into a
 single mesh:
 
-@snippet MagnumSceneTools.cpp absoluteFieldTransformations2D-mesh-concatenate
+@snippet SceneTools.cpp absoluteFieldTransformations2D-mesh-concatenate
 
 @experimental
 
@@ -253,7 +253,7 @@ This function can be used for example to flatten a mesh hierarchy, bake
 the transformations to actual meshes and then concatenate them together into a
 single mesh:
 
-@snippet MagnumSceneTools.cpp absoluteFieldTransformations3D-mesh-concatenate
+@snippet SceneTools.cpp absoluteFieldTransformations3D-mesh-concatenate
 
 @experimental
 

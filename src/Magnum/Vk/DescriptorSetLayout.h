@@ -57,7 +57,7 @@ example one uniform buffer binding @cpp 0 @ce is accessible by any stages and
 one combined image/sampler binding @cpp 1 @ce is accessed only by
 @link ShaderStage::Fragment @endlink:
 
-@snippet MagnumVk.cpp DescriptorSetLayout-creation
+@snippet Vk.cpp DescriptorSetLayout-creation
 
 <b></b>
 
@@ -76,7 +76,7 @@ of the descriptor count argument. The descriptor count is then implicitly taken
 from size of the array. The above snippet with immutable samplers would look
 like this:
 
-@snippet MagnumVk.cpp DescriptorSetLayout-creation-immutable-samplers
+@snippet Vk.cpp DescriptorSetLayout-creation-immutable-samplers
 
 @subsection Vk-DescriptorSetLayout-creation-binding-flags Descriptor binding flags
 
@@ -85,7 +85,7 @@ specify additional flags per binding. All of them require a certain
 @ref DeviceFeature to be supported and enabled, see particular
 @ref DescriptorSetLayoutBinding::Flag for more information:
 
-@snippet MagnumVk.cpp DescriptorSetLayout-creation-binding-flags
+@snippet Vk.cpp DescriptorSetLayout-creation-binding-flags
 
 @section Vk-DescriptorSetLayout-usage Descriptor set layout usage
 

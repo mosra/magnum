@@ -70,12 +70,12 @@ recommended to pass a @ref InstanceCreateInfo with at least the `argc` / `argv`
 pair, which allows you to use various `--magnum-*`
 @ref Vk-Instance-command-line "command-line options":
 
-@snippet MagnumVk.cpp Instance-creation-minimal
+@snippet Vk.cpp Instance-creation-minimal
 
 In addition to command-line arguments, setting application info isn't strictly
 required either, but may be beneficial for the driver:
 
-@snippet MagnumVk.cpp Instance-creation
+@snippet Vk.cpp Instance-creation
 
 <b></b>
 
@@ -96,14 +96,14 @@ both string names as well as predefined *instance* extensions from the
 @ref Extensions namespace. Later on, presence of predefined extensions can be
 checked with @ref isExtensionEnabled().
 
-@snippet MagnumVk.cpp Instance-creation-layers-extensions
+@snippet Vk.cpp Instance-creation-layers-extensions
 
 However, with the above approach, if any layer or extension isn't available,
 the instance creation will abort. The recommended workflow is thus first
 checking layer and extension availability using @ref enumerateLayerProperties()
 and @ref enumerateInstanceExtensionProperties():
 
-@snippet MagnumVk.cpp Instance-creation-check-supported
+@snippet Vk.cpp Instance-creation-check-supported
 
 Next step after creating a Vulkan instance is picking and creating a
 @ref Device.
@@ -170,7 +170,7 @@ In addition to the common properties explained in @ref vulkan-wrapping-raw, the
 @ref Instance contains instance-level Vulkan function pointers, accessible
 through @ref operator->():
 
-@snippet MagnumVk.cpp Instance-function-pointers
+@snippet Vk.cpp Instance-function-pointers
 
 These functions are by default not accessible globally (and neither there is a
 global "current instance"), which is done in order to avoid multiple
@@ -180,7 +180,7 @@ operate on the same instance, or when writing quick prototype code --- and then
 it's possible to populate those using @ref populateGlobalFunctionPointers().
 Compared to the above, the same custom code would then look like this:
 
-@snippet MagnumVk.cpp Instance-global-function-pointers
+@snippet Vk.cpp Instance-global-function-pointers
 
 Similarly you can use @ref Device::populateGlobalFunctionPointers() to populate
 device-level global function pointers.
@@ -195,7 +195,7 @@ a difference compared to other Vulkan object wrappers, where you can use the
 member) and do a delayed creation by moving a new instance over the empty one.
 Here you have to use the @ref create() function instead:
 
-@snippet MagnumVk.cpp Instance-delayed-creation
+@snippet Vk.cpp Instance-delayed-creation
 
 Similar case is with @ref wrap() --- instead of being @cpp static @ce, you have
 to call it on a @ref Instance(NoCreateT) "NoCreate"'d instance.
@@ -374,7 +374,7 @@ class MAGNUM_VK_EXPORT Instance {
          * listed also in the @ref vulkan-support "Vulkan support tables".
          * Search complexity is @f$ \mathcal{O}(1) @f$. Example usage:
          *
-         * @snippet MagnumVk.cpp Instance-isExtensionEnabled
+         * @snippet Vk.cpp Instance-isExtensionEnabled
          *
          * Note that this returns @cpp true @ce only if given extension is
          * supported by the driver *and* it was enabled via

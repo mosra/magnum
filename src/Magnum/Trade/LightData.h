@@ -111,20 +111,20 @@ parameters and let the class set the rest implicitly. For example, a
 @ref attenuation() implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce and cone
 angles to @cpp 360.0_degf @ce:
 
-@snippet MagnumTrade.cpp LightData-populating-range
+@snippet Trade.cpp LightData-populating-range
 
 Or, a @ref LightType::Spot light constructed from a constant / linear /
 quadratic attenuation will have @ref range() implicitly set to
 @ref Constants::inf():
 
-@snippet MagnumTrade.cpp LightData-populating-attenuation
+@snippet Trade.cpp LightData-populating-attenuation
 
 And a @ref LightType::Directional light that doesn't attenuate can be
 constructed without either, causing @ref attenuation() to be
 @cpp {1.0f, 0.0f, 0.0f} @ce and @ref range() @ref Constants::inf(), cancelling
 out the attenuation equation:
 
-@snippet MagnumTrade.cpp LightData-populating-none
+@snippet Trade.cpp LightData-populating-none
 
 @section Trade-LightData-attenuation Attenuation calculation
 

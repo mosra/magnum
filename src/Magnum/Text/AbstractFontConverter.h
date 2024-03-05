@@ -448,7 +448,7 @@ Same string as returned by
 be used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
 interface string by hand every time the version gets bumped:
 
-@snippet MagnumText.cpp MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE
+@snippet Text.cpp MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE
 
 The interface string version gets increased on every ABI break to prevent
 silent crashes and memory corruption. Plugins built against the previous

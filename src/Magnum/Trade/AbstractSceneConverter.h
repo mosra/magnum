@@ -633,7 +633,7 @@ case we *know* that @ref AnySceneConverter supports
 @ref SceneConverterFeature::ConvertMeshToFile, however in a more general case
 it might be good to check against the reported @ref features() first.
 
-@snippet MagnumTrade.cpp AbstractSceneConverter-usage-mesh-file
+@snippet Trade.cpp AbstractSceneConverter-usage-mesh-file
 
 See @ref plugins for more information about general plugin usage,
 @ref file-formats to compare implementations of common file formats and the
@@ -648,7 +648,7 @@ a set of optimizations on the mesh to make it render faster. While
 here it would have no way to know what we want and so we request the concrete
 plugin name directly.
 
-@snippet MagnumTrade.cpp AbstractSceneConverter-usage-mesh
+@snippet Trade.cpp AbstractSceneConverter-usage-mesh
 
 Commonly, when operating directly on the mesh data, each plugin exposes a set
 of configuration options to specify what actually gets done and how, and the
@@ -668,7 +668,7 @@ plugin docs before use.
 An equivalent to the above operation, but performed in-place, would be the
 following:
 
-@snippet MagnumTrade.cpp AbstractSceneConverter-usage-mesh-in-place
+@snippet Trade.cpp AbstractSceneConverter-usage-mesh-in-place
 
 @subsection Trade-AbstractSceneConverter-usage-multiple Converting multiple data
 
@@ -689,14 +689,14 @@ through only data actually supported by the converter, printing a warning for
 the rest. In the following example, a COLLADA file is converted to a glTF using
 @ref GltfSceneConverter delegated from @link AnySceneConverter @endlink:
 
-@snippet MagnumTrade.cpp AbstractSceneConverter-usage-multiple-file
+@snippet Trade.cpp AbstractSceneConverter-usage-multiple-file
 
 This API takes an optional second parameter, @ref SceneContents, allowing you
 to selectively perform operations on certain data types while still making use
 of the convenience passthrough for the rest. The following snippet will remove
 duplicates from all meshes before saving them to the output:
 
-@snippet MagnumTrade.cpp AbstractSceneConverter-usage-multiple-file-selective
+@snippet Trade.cpp AbstractSceneConverter-usage-multiple-file-selective
 
 <b></b>
 
@@ -2472,7 +2472,7 @@ Same string as returned by
 be used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
 interface string by hand every time the version gets bumped:
 
-@snippet MagnumTrade.cpp MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE
+@snippet Trade.cpp MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE
 
 The interface string version gets increased on every ABI break to prevent
 silent crashes and memory corruption. Plugins built against the previous

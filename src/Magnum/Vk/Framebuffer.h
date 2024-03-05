@@ -52,7 +52,7 @@ A framebuffer is created using @ref FramebufferCreateInfo that takes a
 previously-created @ref RenderPass together with @ref ImageView "ImageViews"
 onto @ref Image "Images" of desired sizes and compatible formats for all its attachments:
 
-@snippet MagnumVk.cpp Framebuffer-creation
+@snippet Vk.cpp Framebuffer-creation
 */
 class MAGNUM_VK_EXPORT Framebuffer {
     public:

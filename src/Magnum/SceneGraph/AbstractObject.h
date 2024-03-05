@@ -49,13 +49,13 @@ subclass instead. See also @ref scenegraph for more information.
 Uses @ref Corrade::Containers::LinkedList for efficient feature management.
 Traversing through the feature list can be done using range-based for:
 
-@snippet MagnumSceneGraph.cpp AbstractObject-features-range
+@snippet SceneGraph.cpp AbstractObject-features-range
 
 Or, if you need more flexibility, like in the following code. It is also
 possible to go in reverse order using @ref Corrade::Containers::LinkedList::last()
 and @ref AbstractFeature::previousFeature().
 
-@snippet MagnumSceneGraph.cpp AbstractObject-features
+@snippet SceneGraph.cpp AbstractObject-features
 
 @section SceneGraph-AbstractObject-explicit-specializations Explicit template specializations
 

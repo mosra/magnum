@@ -55,7 +55,7 @@ constructed directly using @ref Fence(Device&, const FenceCreateInfo&), leaving
 the @p info parameter at its default. If you want to pass additional parameters
 to it, include the @ref FenceCreateInfo class as usual:
 
-@snippet MagnumVk.cpp Fence-creation
+@snippet Vk.cpp Fence-creation
 
 @section Vk-Fence-usage Basic usage
 

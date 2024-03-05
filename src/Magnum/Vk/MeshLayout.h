@@ -189,7 +189,7 @@ normals in locations @cpp 0 @ce, @cpp 1 @ce and @cpp 5 @ce, respectively. If
 we'd have them stored interleaved in a single buffer, the layout description
 could look like this:
 
-@snippet MagnumVk.cpp MeshLayout-usage
+@snippet Vk.cpp MeshLayout-usage
 
 The `Binding` is then subsequently used as a binding index for a concrete
 vertex buffer when drawing, which is described in the @ref Mesh class

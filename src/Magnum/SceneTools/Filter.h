@@ -133,7 +133,7 @@ translations and lights away. Filtering translations means the rotations have
 to be filtered as well, however neither meshes nor materials (which share the
 mapping as well) need to be listed if they're not filtered:
 
-@snippet MagnumSceneTools.cpp filterFieldEntries-shared-mapping
+@snippet SceneTools.cpp filterFieldEntries-shared-mapping
 
 At the moment, @ref Trade::SceneFieldType::Bit and string fields can't be
 filtered, only passed through.

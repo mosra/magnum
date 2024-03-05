@@ -142,7 +142,7 @@ tag to constructors of these objects), it consists of these steps:
 The following example allocates a single block memory for two buffers, one
 containing vertex and the other index data:
 
-@snippet MagnumVk.cpp Memory-allocation
+@snippet Vk.cpp Memory-allocation
 
 @section Vk-Memory-mapping Memory mapping
 
@@ -165,7 +165,7 @@ means that in order to upload vertex and index data, there are two options:
 The following example maps the memory allocated above and copies index and
 vertex data to it:
 
-@snippet MagnumVk.cpp Memory-mapping
+@snippet Vk.cpp Memory-mapping
 
 <b></b>
 

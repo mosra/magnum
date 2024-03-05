@@ -51,7 +51,7 @@ translation.
 
 Example usage:
 
-@snippet MagnumMeshTools.cpp transformVectors
+@snippet MeshTools.cpp transformVectors
 
 @see @ref transformVectors(), @ref transform2DInPlace(),
     @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),
@@ -105,7 +105,7 @@ translation.
 
 Example usage:
 
-@snippet MagnumMeshTools.cpp transformPoints
+@snippet MeshTools.cpp transformPoints
 
 @see @ref transformPoints(), @ref transform2DInPlace(),
     @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),

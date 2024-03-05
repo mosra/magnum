@@ -60,24 +60,24 @@ You can create the value by using one of the time literals. For all of them the
 result type is @ref Nanoseconds for preserving maximum precision, but you can
 directly convert the literal value @link Seconds @endlink:
 
-@snippet MagnumMath.cpp Nanoseconds-usage
+@snippet Math.cpp Nanoseconds-usage
 
 Or by explicitly converting a unitless value (such as an output from some
 function) to either nanoseconds or seconds. And same can be done in the other direction:
 
-@snippet MagnumMath-stl.cpp Nanoseconds-usage-convert
+@snippet Math-stl.cpp Nanoseconds-usage-convert
 
 The classes support all arithmetic operations, such as addition, subtraction
 or multiplication/division by a unitless number:
 
-@snippet MagnumMath.cpp Nanoseconds-usage-operations
+@snippet Math.cpp Nanoseconds-usage-operations
 
 It is also possible to compare time values with all comparison operators. As
 the literals are all producing @ref Nanoseconds, it's most convenient to
 compare to nanosecond values. Comparison of @ref Nanoseconds and @ref Seconds
 is not possible without conversion to a common type first.
 
-@snippet MagnumMath.cpp Nanoseconds-usage-comparison
+@snippet Math.cpp Nanoseconds-usage-comparison
 
 @section Math-Nanoseconds-stl STL compatibility
 
@@ -104,7 +104,7 @@ Magnum type      | ↭ | STL type
 
 Example:
 
-@snippet MagnumMath-stl.cpp Nanoseconds-usage
+@snippet Math-stl.cpp Nanoseconds-usage
 
 <b></b>
 
@@ -116,7 +116,7 @@ Example:
     it's not possible to provide safe conversion for it. Thus a simple
     conversion, while it may compile, won't do the right thing:
 @par
-    @snippet MagnumMath-stl.cpp Nanoseconds-usage-time
+    @snippet Math-stl.cpp Nanoseconds-usage-time
 
 @see @link Literals::TimeLiterals::operator""_nsec() @endlink,
     @link Literals::TimeLiterals::operator""_usec() @endlink,
@@ -296,7 +296,7 @@ Compared to the microsecond, millisecond and second literals, this literal is
 an integer value and not a floating-point, as it's not possible to represent
 fractions of nanoseconds. Usage example:
 
-@snippet MagnumMath.cpp _nsec
+@snippet Math.cpp _nsec
 
 @see @link operator""_usec() @endlink, @link operator""_msec() @endlink,
     @link operator""_sec() @endlink
@@ -319,7 +319,7 @@ instead. On the other hand, if nanosecond-level precision isn't needed, it's
 possible to convert directly to @ref Seconds that offer a microsecond-level
 precision on a range of roughly ±8 seconds. For example:
 
-@snippet MagnumMath.cpp _usec
+@snippet Math.cpp _usec
 
 @see @link operator""_msec() @endlink, @link operator""_sec() @endlink,
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
@@ -342,7 +342,7 @@ instead. On the other hand, if nanosecond-level precision isn't needed, it's
 possible to convert directly to @ref Seconds that offer a millisecond-level
 precision on a range of roughly ±2 hours. For example:
 
-@snippet MagnumMath.cpp _msec
+@snippet Math.cpp _msec
 
 @see @link operator""_usec() @endlink, @link operator""_sec() @endlink,
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
@@ -365,7 +365,7 @@ instead. On the other hand, if nanosecond-level precision isn't needed, it's
 possible to convert directly to @ref Seconds that offer a millisecond-level
 precision on a range of roughly ±2 hours. For example:
 
-@snippet MagnumMath.cpp _sec
+@snippet Math.cpp _sec
 
 @see @link operator""_usec() @endlink, @link operator""_msec() @endlink,
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE

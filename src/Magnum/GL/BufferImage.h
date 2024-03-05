@@ -56,7 +56,7 @@ corresponding image size and pixel format properties. Because this is a
 GL-centric class, it's common to specify the format using @ref GL::PixelFormat
 and @link GL::PixelType @endlink:
 
-@snippet MagnumGL.cpp BufferImage-usage
+@snippet GL.cpp BufferImage-usage
 
 It's also possible to pass the generic @ref Magnum::PixelFormat to it, however
 the @ref format() and @ref type() queries will always return the GL-specific
@@ -71,13 +71,13 @@ it, for example to use buffer storage and other advanced functionality. The
 image will take an ownership of the buffer, you can use @ref Buffer::wrap() to
 make a non-owning copy.
 
-@snippet MagnumGL.cpp BufferImage-usage-wrap
+@snippet GL.cpp BufferImage-usage-wrap
 
 It's also possible to create just an image placeholder, storing only the image
 properties without data or size. That is useful for example to specify desired
 format of image queries in graphics APIs:
 
-@snippet MagnumGL.cpp BufferImage-usage-query
+@snippet GL.cpp BufferImage-usage-query
 
 Similarly to @ref ImageView, this class supports extra storage parameters.
 See @ref ImageView-usage for more information.
@@ -404,7 +404,7 @@ corresponding image size and compression format properties. Because this is a
 GL-centric class, it's common to specify the format using
 @link GL::CompressedPixelFormat @endlink:
 
-@snippet MagnumGL.cpp CompressedBufferImage-usage
+@snippet GL.cpp CompressedBufferImage-usage
 
 It's also possible to pass the generic @ref Magnum::CompressedPixelFormat to
 it, however the @ref format() query will always return the GL-specific value.
@@ -414,13 +414,13 @@ it, for example to use buffer storage and other advanced functionality. The
 image will take an ownership of the buffer, you can use @ref Buffer::wrap() to
 make a non-owning copy.
 
-@snippet MagnumGL.cpp CompressedBufferImage-usage-wrap
+@snippet GL.cpp CompressedBufferImage-usage-wrap
 
 It's also possible to create just an image placeholder, storing only the image
 properties without data or size. That is useful for example to specify desired
 format of image queries in graphics APIs:
 
-@snippet MagnumGL.cpp CompressedBufferImage-usage-query
+@snippet GL.cpp CompressedBufferImage-usage-query
 
 Similarly to @ref CompressedImageView, this class supports extra storage
 parameters. See @ref CompressedImageView-usage for more information.

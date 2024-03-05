@@ -72,7 +72,7 @@ Full @f$ \boldsymbol{U} @f$, @f$ \boldsymbol{\Sigma} @f$ matrices and original
 @f$ \boldsymbol{M} @f$ matrix can be reconstructed from the values as
 following:
 
-@snippet MagnumMathAlgorithms.cpp svd
+@snippet MathAlgorithms.cpp svd
 
 One possible use is to decompose a transformation matrix into separate rotation
 and scaling parts. Note, however, that the decomposition is not unique. See the

@@ -104,13 +104,13 @@ Continuing from the @ref Vk-MeshLayout-usage "mesh layout setup", the @ref Mesh
 gets concrete buffers bound using @ref addVertexBuffer() and vertex count
 specified with @ref setCount():
 
-@snippet MagnumVk.cpp Mesh-populating
+@snippet Vk.cpp Mesh-populating
 
 For an indexed mesh, the index buffer can be specified via @ref setIndexBuffer().
 With an index buffer present, @ref setCount() then describes count of indices,
 instead of vertices:
 
-@snippet MagnumVk.cpp Mesh-populating-indexed
+@snippet Vk.cpp Mesh-populating-indexed
 
 @subsection Vk-Mesh-populating-owned Transferring buffer and layout ownership
 
@@ -121,7 +121,7 @@ or by directly passing a r-value. If a single buffer is used for multiple
 bindings (for example as both a vertex and an index buffer), perform the move
 last:
 
-@snippet MagnumVk.cpp Mesh-populating-owned
+@snippet Vk.cpp Mesh-populating-owned
 
 @section Vk-Mesh-drawing Drawing a mesh
 
@@ -129,7 +129,7 @@ Assuming a rasterization pipeline with the same @ref MeshLayout was bound, a
 mesh can be then drawn using @ref CommandBuffer::draw(). The function takes
 care of binding all buffers and executing an appropriate draw command:
 
-@snippet MagnumVk.cpp Mesh-drawing
+@snippet Vk.cpp Mesh-drawing
 
 @subsection Vk-Mesh-drawing-dynamic Dynamic pipeline state
 
@@ -146,7 +146,7 @@ binding for each attribute you can make the pipeline accept basically any mesh
 as long as just the attribute locations and types are the same --- offsets and
 strided of particular attributes are then fully dynamic.
 
-@snippet MagnumVk.cpp Mesh-drawing-dynamic
+@snippet Vk.cpp Mesh-drawing-dynamic
 
 <b></b>
 

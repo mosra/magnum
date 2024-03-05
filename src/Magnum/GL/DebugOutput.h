@@ -93,7 +93,7 @@ application itself by setting up message callback using @ref setCallback() or
     is passed for context creation, both with windowed and windowless
     application implementations.
 
-@snippet MagnumGL.cpp DebugOutput-usage
+@snippet GL.cpp DebugOutput-usage
 
 With default callback the group entering/leaving and the inserted message (and
 possibly also other messages) will be printed on standard output:
@@ -424,7 +424,7 @@ class MAGNUM_GL_EXPORT DebugOutput {
          * to @ref Corrade::Utility::Debug "Debug" output in the following
          * format:
          *
-         * @snippet MagnumGL.cpp DebugOutput-setDefaultCallback
+         * @snippet GL.cpp DebugOutput-setDefaultCallback
          *
          * @code{.shell-session}
          * Debug output: application marker (1337): Hello from OpenGL command stream!
@@ -480,7 +480,7 @@ available and default debug output callback is enabled for given kind of
 messages, the inserted message will be printed on standard output in the
 following form:
 
-@snippet MagnumGL.cpp DebugMessage-usage
+@snippet GL.cpp DebugMessage-usage
 
 <p>
 @code{.shell-session}
@@ -648,12 +648,12 @@ See @ref DebugOutput for introduction.
 Easiest way is to push debug group by creating instance and pop it
 automatically at the end of scope:
 
-@snippet MagnumGL.cpp DebugGroup-usage1
+@snippet GL.cpp DebugGroup-usage1
 
 If, for some reason, you need to pop in different scope, you can call @ref push()
 and @ref pop() manually:
 
-@snippet MagnumGL.cpp DebugGroup-usage2
+@snippet GL.cpp DebugGroup-usage2
 
 If OpenGL 4.3 / OpenGL ES 3.2 is supported or @gl_extension{KHR,debug} desktop or
 ES extension (covered also by @gl_extension{ANDROID,extension_pack_es31a}) is

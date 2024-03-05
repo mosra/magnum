@@ -233,14 +233,14 @@ If you're using @ref GL::AbstractShaderProgram::bindAttributeLocation(), it's
 rather easy, as you can simply use the @ref GL::Attribute::Location of given
 attribute:
 
-@snippet MagnumShaders-gl.cpp GenericGL-custom-bind
+@snippet Shaders-gl.cpp GenericGL-custom-bind
 
 For attribute location defined directly in shader code (which is the
 recommended way unless you need compatibility with WebGL 1.0 and OpenGL ES
 2.0), the attribute locations can be propagated using a preprocessor define.
 For example:
 
-@snippet MagnumShaders-gl.cpp GenericGL-custom-preprocessor
+@snippet Shaders-gl.cpp GenericGL-custom-preprocessor
 
 Then, the attribute definition in a shader will look like this:
 
@@ -329,7 +329,7 @@ template<UnsignedInt dimensions> struct GenericGL {
      * of the tangent basis. Reconstructing the @ref Bitangent attribute can be
      * then done like this:
      *
-     * @snippet MagnumTrade.cpp MeshAttribute-bitangent-from-tangent
+     * @snippet Trade.cpp MeshAttribute-bitangent-from-tangent
      *
      * Use either this or the @ref Tangent attribute. Corresponds to
      * @ref Trade::MeshAttribute::Tangent.

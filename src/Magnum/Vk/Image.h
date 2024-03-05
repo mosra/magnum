@@ -236,7 +236,7 @@ Pass one of the @ref ImageCreateInfo subclasses depending on desired image type
 with desired usage, format, size and other propoerties to the @ref Image
 constructor together with specifying @ref MemoryFlags for memory allocation.
 
-@snippet MagnumVk.cpp Image-creation
+@snippet Vk.cpp Image-creation
 
 @attention At this point, a dedicated allocation is used, subsequently
     accessible through @ref dedicatedMemory(). This behavior may change in the
@@ -251,7 +251,7 @@ be created without any memory attached. Image memory requirements can be
 subsequently queried using @ref memoryRequirements() and an allocated memory
 bound with @ref bindMemory(). See @ref Memory for further details about memory allocation.
 
-@snippet MagnumVk.cpp Image-creation-custom-allocation
+@snippet Vk.cpp Image-creation-custom-allocation
 
 Using @ref bindDedicatedMemory() instead of @ref bindMemory() will transfer
 ownership of the @ref Memory to the image instance, making it subsequently
@@ -276,7 +276,7 @@ need to do a clear outside of a render pass, it can be done using
 you'll also need to perform a layout transition first using a
 @ref CommandBuffer::pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const ImageMemoryBarrier>, DependencyFlags) "pipelineBarrier()":
 
-@snippet MagnumVk.cpp Image-usage-clear
+@snippet Vk.cpp Image-usage-clear
 
 @todoc expand with @fn_vk{CmdClearAttachments} when exposed
 
@@ -299,7 +299,7 @@ image type. In most cases you'll also need to add two
 commands to perform a layout transition before, and make the memory visible for
 subsequent operations after. For example:
 
-@snippet MagnumVk.cpp Image-usage-copy-from-buffer
+@snippet Vk.cpp Image-usage-copy-from-buffer
 
 Alternatively you can use @ref CopyBufferToImageInfo1D /
 @ref CopyImageToBufferInfo1D, @ref CopyBufferToImageInfo2D /
@@ -308,7 +308,7 @@ Alternatively you can use @ref CopyBufferToImageInfo1D /
 constructors. This can be handy when uploading multiple regions --- for example
 uploading all mip levels of an image at the same time:
 
-@snippet MagnumVk.cpp Image-usage-copy-from-buffer-multiple
+@snippet Vk.cpp Image-usage-copy-from-buffer-multiple
 
 Image/image copy is possible as well and is done using
 @ref CommandBuffer::copyImage(). Because there's a lot of combinations of
@@ -317,7 +317,7 @@ case. Together with a layout transition
 @ref CommandBuffer::pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const ImageMemoryBarrier>, DependencyFlags) "pipelineBarrier()"
 for both images it could look like this:
 
-@snippet MagnumVk.cpp Image-usage-copy-from-image
+@snippet Vk.cpp Image-usage-copy-from-image
 
 @see @ref Buffer
 */

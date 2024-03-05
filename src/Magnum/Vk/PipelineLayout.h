@@ -53,7 +53,7 @@ case a default-constructed @ref PipelineLayoutCreateInfo would be enough,
 you'll want to list @ref DescriptorSetLayout instances for all descriptor sets
 needed by shaders in the pipeline:
 
-@snippet MagnumVk.cpp PipelineLayout-creation
+@snippet Vk.cpp PipelineLayout-creation
 
 @section Vk-PipelineLayout-usage Pipeline layout usage
 

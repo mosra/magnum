@@ -111,7 +111,7 @@ In the following example a font is loaded from the filesystem using the
 @ref StbTrueTypeFont plugin, prerendering all needed glyphs, completely with
 all error handling:
 
-@snippet MagnumText-gl.cpp AbstractFont-usage
+@snippet Text-gl.cpp AbstractFont-usage
 
 See @ref plugins for more information about general plugin usage and the list
 of @m_class{m-doc} [derived classes](#derived-classes) for available font
@@ -147,7 +147,7 @@ shown above, it's possible to use @ref openData() to import data from memory.
 Note that the particular importer implementation must support
 @ref FontFeature::OpenData for this method to work.
 
-@snippet MagnumText.cpp AbstractFont-usage-data
+@snippet Text.cpp AbstractFont-usage-data
 
 Some font formats consist of more than one file and in that case you may want
 to intercept those references and load them in a custom way as well. For font
@@ -161,7 +161,7 @@ file loading callback affects @ref openFile() as well --- you don't have to
 load the top-level file manually and pass it to @ref openData(), any font
 plugin supporting the callback feature handles that correctly.
 
-@snippet MagnumText.cpp AbstractFont-usage-callbacks
+@snippet Text.cpp AbstractFont-usage-callbacks
 
 For importers that don't support @ref FontFeature::FileCallback directly, the
 base @ref openFile() implementation will use the file callback to pass the
@@ -321,7 +321,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * See the overload below for a more convenient type-safe way to pass
          * the user data pointer.
          *
-         * @snippet MagnumText.cpp AbstractFont-setFileCallback
+         * @snippet Text.cpp AbstractFont-setFileCallback
          *
          * @see @ref Text-AbstractFont-usage-callbacks
          */
@@ -337,7 +337,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @ref Corrade::Utility::Resource instance to avoid a potentially slow
          * resource group lookup every time:
          *
-         * @snippet MagnumText.cpp AbstractFont-setFileCallback-template
+         * @snippet Text.cpp AbstractFont-setFileCallback-template
          *
          * @see @ref Text-AbstractFont-usage-callbacks
          */
@@ -763,7 +763,7 @@ Same string as returned by
 inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the interface
 string by hand every time the version gets bumped:
 
-@snippet MagnumText.cpp MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE
+@snippet Text.cpp MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE
 
 The interface string version gets increased on every ABI break to prevent
 silent crashes and memory corruption. Plugins built against the previous

@@ -228,7 +228,7 @@ template<std::size_t size, class T> class Vector {
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
          *
-         * @snippet MagnumMath.cpp Vector-conversion
+         * @snippet Math.cpp Vector-conversion
          */
         template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(typename Containers::Implementation::GenerateSequence<size>::Type{}, other) {}
 
@@ -983,13 +983,13 @@ template<std::size_t size, class T> class Vector {
          * floating-point value of desired precision, cast to a floating-point
          * vector first:
          *
-         * @snippet MagnumMath.cpp Vector-length-integer
+         * @snippet Math.cpp Vector-length-integer
          *
          * A [Manhattan length](https://en.wikipedia.org/wiki/Taxicab_geometry)
          * might be more suitable than @ref length() in certain cases where the
          * square root is undesirable --- it's a sum of absolute values:
          *
-         * @snippet MagnumMath.cpp Vector-length-manhattan
+         * @snippet Math.cpp Vector-length-manhattan
          *
          * @see @ref lengthInverted(), @ref Math::sqrt(), @ref normalized(),
          *      @ref resized(), @ref Distance::pointPoint(),
@@ -1035,7 +1035,7 @@ template<std::size_t size, class T> class Vector {
          * this function is faster than the obvious way of sizing
          * a @ref normalized() vector. Enabled only for floating-point types.
          *
-         * @snippet MagnumMath.cpp Vector-resized
+         * @snippet Math.cpp Vector-resized
          *
          * @see @ref normalized()
          */

@@ -602,7 +602,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * Convenience equivalent to the following:
          *
-         * @snippet MagnumGL.cpp Renderer-setFeature
+         * @snippet GL.cpp Renderer-setFeature
          *
          * Prefer to use @ref enable() and @ref disable() directly to avoid
          * unnecessary branching.
@@ -1875,7 +1875,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * whether your colors / textures have a [premultiplied alpha](https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre)
          * (RGB channels always less than or equal to the alpha) or not:
          *
-         * @snippet MagnumGL.cpp Renderer-setBlendFunction
+         * @snippet GL.cpp Renderer-setBlendFunction
          *
          * Note that in 3D you need to sort and render transparent objects
          * back-to-front after all opaque objects in order for them to appear

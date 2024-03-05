@@ -63,13 +63,13 @@ negation operator, a @link Literals::HalfLiterals::operator""_h() @endlink
 literal and an @ref operator<<(Debug&, Half) debug operator. Internally the
 class uses @ref packHalf() and @ref unpackHalf(). Example usage:
 
-@snippet MagnumMath.cpp Half-usage
+@snippet Math.cpp Half-usage
 
 Note that it is also possible to use this type inside @ref Vector classes,
 though, again, only for passing data around and converting them, without any
 arithmetic operations:
 
-@snippet MagnumMath.cpp Half-usage-vector
+@snippet Math.cpp Half-usage-vector
 
 @see @ref Magnum::Half
 */

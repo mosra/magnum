@@ -251,7 +251,7 @@ If you have a @ref Trade::MeshData instance that you got for example from
 @ref Trade::AbstractImporter::mesh() or from the @ref Primitives library, the
 simplest possible way is to use @ref MeshTools::compile():
 
-@snippet MagnumTrade.cpp MeshData-usage-compile
+@snippet Trade.cpp MeshData-usage-compile
 
 This one-liner uploads the data and configures the mesh for all attributes
 known by Magnum that are present in it, making it suitable to be drawn by
@@ -286,7 +286,7 @@ type expected by @ref Shaders::FlatGL3D::Position, so the default constructor
 is sufficient for it. The @ref GL-Mesh-configuration-formats section below
 shows cases where the types don't match.
 
-@snippet MagnumGL.cpp Mesh-vertices
+@snippet GL.cpp Mesh-vertices
 
 Here's a mesh with a position and a normal interleaved together, as is needed
 for @ref Shaders::PhongGL. See the docs of @ref addVertexBuffer() for
@@ -296,12 +296,12 @@ specified. Note that @ref Shaders::FlatGL::Position and
 @ref Shaders::GenericGL::Position, meaning you can render a mesh configured for
 the Phong shader with the Flat shader as well:
 
-@snippet MagnumGL.cpp Mesh-vertices-interleaved
+@snippet GL.cpp Mesh-vertices-interleaved
 
 Indexed meshes have the index buffer and corresponding index type set using
 @ref setIndexBuffer().
 
-@snippet MagnumGL.cpp Mesh-indices
+@snippet GL.cpp Mesh-indices
 
 <b></b>
 
@@ -331,13 +331,13 @@ use @ref MeshTools::interleave() to interleave them together. The usage
 including the padding specification, is similar to @ref addVertexBuffer(). The
 above vertex buffer setup but with separate position and normal arrays that get interleaved can be expressed like this:
 
-@snippet MagnumGL.cpp Mesh-vertices-interleaved-tool
+@snippet GL.cpp Mesh-vertices-interleaved-tool
 
 For indices it's often beneficial to store them in a 16-bit type if they don't
 need the full 32-bit range. That's what @ref MeshTools::compressIndices() is
 for:
 
-@snippet MagnumGL.cpp Mesh-indices-tool
+@snippet GL.cpp Mesh-indices-tool
 
 The ultimate generic tool is the already-shown @ref MeshTools::compile(),
 together with all @ref MeshTools APIs that operate on @ref Trade::MeshData
@@ -355,7 +355,7 @@ the normal is a packed normalized @relativeref{Magnum,Vector3s}, together with
 padding for having vertex boundaries aligned to four bytes to make the GPU
 happier:
 
-@snippet MagnumGL.cpp Mesh-formats
+@snippet GL.cpp Mesh-formats
 
 @subsection GL-Mesh-configuration-dynamic Dynamically specified attributes
 
@@ -368,7 +368,7 @@ specifying also the stride. Adding a RGB attribute at location 3 normalized
 from unsigned byte to float with one byte padding at the end (or, in other
 words, stride of four bytes) could then look like this:
 
-@snippet MagnumGL.cpp Mesh-dynamic
+@snippet GL.cpp Mesh-dynamic
 
 The @ref DynamicAttribute also allows @ref VertexFormat to be used for
 specifying attribute types instead of the rather verbose
@@ -376,7 +376,7 @@ specifying attribute types instead of the rather verbose
 @relativeref{GL::Attribute,DataOptions} tuple that GL itself accepts. The above
 packed position + normal attribute specification would then look like this:
 
-@snippet MagnumGL.cpp Mesh-formats-vertexformat
+@snippet GL.cpp Mesh-formats-vertexformat
 
 @subsection GL-Mesh-buffer-ownership Transferring buffer ownership
 
@@ -388,20 +388,20 @@ a @ref Buffer as a rvalue. While this allows you to discard the buffer
 instances and pass just the mesh around, it also means you lose a way to access
 or update the buffers afterwards.
 
-@snippet MagnumGL.cpp Mesh-buffer-ownership
+@snippet GL.cpp Mesh-buffer-ownership
 
 If adding the same buffer multiple times or using it for both vertex and index
 data, be sure to transfer the ownership last to avoid the other functions
 getting only a moved-out instance. For example:
 
-@snippet MagnumGL.cpp Mesh-buffer-ownership-multiple
+@snippet GL.cpp Mesh-buffer-ownership-multiple
 
 @section GL-Mesh-rendering Rendering meshes
 
 With a framebuffer bound and a compatible shader set up, it's only a matter of
 calling @ref AbstractShaderProgram::draw():
 
-@snippet MagnumGL.cpp Mesh-draw
+@snippet GL.cpp Mesh-draw
 
 @section GL-Mesh-webgl-restrictions WebGL restrictions
 
@@ -866,14 +866,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * accepts only a position and a normal, so you have to skip the weight
          * and the texture coordinate in each vertex:
          *
-         * @snippet MagnumGL.cpp Mesh-addVertexBuffer1
+         * @snippet GL.cpp Mesh-addVertexBuffer1
          *
          * You can also achieve the same effect by calling @ref addVertexBuffer()
          * more times with explicitly specified gaps before and after the
          * attributes. This can be used for e.g. runtime-dependent
          * configuration, as it isn't dependent on the variadic template:
          *
-         * @snippet MagnumGL.cpp Mesh-addVertexBuffer2
+         * @snippet GL.cpp Mesh-addVertexBuffer2
          *
          * If specifying more than one attribute, the function assumes that
          * the array is interleaved. Adding non-interleaved vertex buffer can
@@ -881,7 +881,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * Above example with the position and normal arrays one after another
          * (non-interleaved):
          *
-         * @snippet MagnumGL.cpp Mesh-addVertexBuffer3
+         * @snippet GL.cpp Mesh-addVertexBuffer3
          *
          * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
          * ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in OpenGL

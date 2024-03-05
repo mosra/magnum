@@ -164,14 +164,14 @@ implicitly convertible from statically sized C arrays or can be constructed
 from a pair of a pointer and a size. You can optionally specify a usage hint
 in the second argument, which defaults to @ref BufferUsage::StaticDraw.
 
-@snippet MagnumGL.cpp Buffer-setdata
+@snippet GL.cpp Buffer-setdata
 
 Furthermore, if you @cpp #include @ce @ref Corrade/Containers/ArrayViewStl.h,
 you can also directly pass STL types such as a @ref std::vector or a
 @ref std::array; with @ref Corrade/Containers/ArrayViewStlSpan.h the
 @ref std::span is convertible to it as well:
 
-@snippet MagnumGL.cpp Buffer-setdata-stl
+@snippet GL.cpp Buffer-setdata-stl
 
 An alternative to @ref setData() that provides more flexibility and better
 performance guarantees is @ref setStorage(). It's similar in spirit to texture
@@ -181,27 +181,27 @@ textures. The minimal variant of the call shown below creates an immutable
 buffer from given data in device memory, in the second argument you can specify
 @ref StorageFlags that make it CPU-accessible, (persistently) mappable etc.
 
-@snippet MagnumGL.cpp Buffer-setstorage
+@snippet GL.cpp Buffer-setstorage
 
 @section GL-Buffer-data-mapping Memory mapping
 
 Buffer data can be also updated asynchronously. First you need to allocate
 the buffer to desired size by passing @cpp nullptr @ce to @ref setData(), e.g.:
 
-@snippet MagnumGL.cpp Buffer-setdata-allocate
+@snippet GL.cpp Buffer-setdata-allocate
 
 Then you can map the buffer to client memory and operate with the memory
 directly. After you are done with the operation, call @ref unmap() to unmap the
 buffer again. The @ref map() functions return a view on a @cpp char @ce array
 and you may want to cast it to some useful type first using @ref Containers::arrayCast():
 
-@snippet MagnumGL.cpp Buffer-map
+@snippet GL.cpp Buffer-map
 
 If you are updating only a few discrete portions of the buffer, you can use
 @ref MapFlag::FlushExplicit and @ref flushMappedRange() to reduce number of
 memory operations performed by OpenGL on unmapping. Example:
 
-@snippet MagnumGL.cpp Buffer-flush
+@snippet GL.cpp Buffer-flush
 
 @section GL-Buffer-webgl-restrictions WebGL restrictions
 
@@ -212,13 +212,13 @@ default uses any sufficient target when binding the buffer internally (e.g. for
 setting data). Which means the following, while completely fine on desktop and
 OpenGL ES, is not sufficient on WebGL:
 
-@snippet MagnumGL.cpp Buffer-webgl-nope
+@snippet GL.cpp Buffer-webgl-nope
 
 To avoid GL errors, you have to set target hint to desired target, either in
 the constructor or using @ref setTargetHint(). A similar care needs to be taken
 for uniform buffers and other types of buffers.
 
-@snippet MagnumGL.cpp Buffer-webgl
+@snippet GL.cpp Buffer-webgl
 
 To simplify debugging, the @ref Mesh class checks proper target hint when
 adding vertex and index buffers under WebGL.

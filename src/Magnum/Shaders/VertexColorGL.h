@@ -81,11 +81,11 @@ working on the framebuffer, you need to enable
 Common mesh setup. The shader accepts either three- or four-component color
 attribute, use either @ref Color3 or @ref Color4 to specify which one you use.
 
-@snippet MagnumShaders-gl.cpp VertexColorGL-usage1
+@snippet Shaders-gl.cpp VertexColorGL-usage1
 
 Common rendering setup:
 
-@snippet MagnumShaders-gl.cpp VertexColorGL-usage2
+@snippet Shaders-gl.cpp VertexColorGL-usage2
 
 @section Shaders-VertexColorGL-ubo Uniform buffers
 
@@ -97,7 +97,7 @@ buffer bound with @ref bindTransformationProjectionBuffer(). This is also the
 only buffer supplied, as there are no other draw parameters. A uniform buffer
 setup equivalent to the above would look like this:
 
-@snippet MagnumShaders-gl.cpp VectorGL-ubo
+@snippet Shaders-gl.cpp VectorGL-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw and supply desired draw
 count via @ref Configuration::setDrawCount(). The usage is similar for all

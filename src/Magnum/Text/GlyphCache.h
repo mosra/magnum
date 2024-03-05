@@ -47,7 +47,7 @@ Contains font glyphs rendered into a texture atlas.
 Create the @ref GlyphCache object with sufficient size and then call
 @ref AbstractFont::createGlyphCache() to fill it with glyphs.
 
-@snippet MagnumText-gl.cpp GlyphCache-usage
+@snippet Text-gl.cpp GlyphCache-usage
 
 See the @ref Renderer class for information about text rendering. The
 @ref AbstractGlyphCache base class has more information about general glyph

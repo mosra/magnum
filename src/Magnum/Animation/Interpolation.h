@@ -230,7 +230,7 @@ Useful to create a new function out of one of the interpolators from
 @ref transformations-interpolation and an easing function from @ref Easing. For
 example, the following two expressions give the same result:
 
-@snippet MagnumAnimation.cpp ease
+@snippet Animation.cpp ease
 
 @see @ref unpack(), @ref unpackEase()
 */
@@ -256,7 +256,7 @@ Similar to @ref ease(), but for adding an unpacker function to interpolator
 inputs instead of modifying the interpolator phase. The following two
 expressions give the same result:
 
-@snippet MagnumAnimation.cpp unpack
+@snippet Animation.cpp unpack
 
 @see @ref unpackEase()
 */
@@ -272,7 +272,7 @@ unpack the interpolator inputs, then modifies the interpolator phase and
 finally passes that to the interpolator function. The following two expressions
 give the same result:
 
-@snippet MagnumAnimation.cpp unpackEase
+@snippet Animation.cpp unpackEase
 */
 template<class T, class V, ResultOf<V>(*interpolator)(const V&, const V&, Float), V(*unpacker)(const T&), Float(*easer)(Float)> constexpr auto unpackEase() -> ResultOf<V>(*)(const V&, const V&, Float) {
     return [](const V& a, const V& b, Float t) { return interpolator(unpacker(a), unpacker(b), easer(t)); };

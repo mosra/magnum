@@ -100,7 +100,7 @@ enum class MeshAttribute: UnsignedShort {
      * tangent basis. Reconstructing the @ref MeshAttribute::Bitangent can be
      * then done like this:
      *
-     * @snippet MagnumTrade.cpp MeshAttribute-bitangent-from-tangent
+     * @snippet Trade.cpp MeshAttribute-bitangent-from-tangent
      *
      * When used as a morph target attribute, the handedness shouldn't change
      * compared to the base attribute. It's not checked or enforced in any way
@@ -281,7 +281,7 @@ introduction.
 The most straightforward usage is constructing the instance from a view on the
 index array. The @ref MeshIndexType gets inferred from the view type:
 
-@snippet MagnumTrade.cpp MeshIndexData-usage
+@snippet Trade.cpp MeshIndexData-usage
 
 Alternatively, you can pass a typeless @cpp const void @ce view and supply
 @ref MeshIndexType explicitly, or a contiguous 2D view and let the class detect
@@ -413,7 +413,7 @@ The most straightforward usage is constructing an instance from a pair of a
 @ref MeshAttribute and a strided view. The @ref VertexFormat gets inferred from
 the view type:
 
-@snippet MagnumTrade.cpp MeshAttributeData-usage
+@snippet Trade.cpp MeshAttributeData-usage
 
 Alternatively, you can pass a typeless @cpp const void @ce or a 2D view and
 supply @ref VertexFormat explicitly.
@@ -428,7 +428,7 @@ pointer patching during data serialization, but also for example when vertex
 layout is static (and thus can be defined at compile time), but the actual data
 is allocated / populated at runtime.
 
-@snippet MagnumTrade.cpp MeshAttributeData-usage-offset-only
+@snippet Trade.cpp MeshAttributeData-usage-offset-only
 
 See @ref Trade-MeshData-populating-non-owned "the corresponding MeshData documentation"
 for a complete usage example. Offset-only attributes return @cpp true @ce for
@@ -446,7 +446,7 @@ implementation-specific formats as well. Formats that don't have a generic
 however note that most APIs and @ref MeshTools functions can't work with those
 as their size or contents can't be known:
 
-@snippet MagnumTrade.cpp MeshAttributeData-custom-vertex-format
+@snippet Trade.cpp MeshAttributeData-custom-vertex-format
 
 @see @ref MeshIndexData
 */
@@ -773,7 +773,7 @@ the @ref Primitives library as well as from various @ref MeshTools algorithms.
 If all you want is to create a @ref GL::Mesh that can be rendered by builtin
 shaders, a simple yet efficient way is to use @ref MeshTools::compile():
 
-@snippet MagnumTrade.cpp MeshData-usage-compile
+@snippet Trade.cpp MeshData-usage-compile
 
 This one-liner uploads the data and configures the mesh for all attributes
 known by Magnum that are present in it. It's however rather opaque and doesn't
@@ -804,7 +804,7 @@ you are creating a @ref GL::Mesh, the usual path forward is then to
 The mesh can be also indexed, in which case the index buffer is exposed through
 @ref indicesAsArray().
 
-@snippet MagnumTrade.cpp MeshData-usage
+@snippet Trade.cpp MeshData-usage
 
 @section Trade-MeshData-usage-advanced Advanced usage
 
@@ -821,7 +821,7 @@ also a pair of @ref GL::Attribute defined by the shader and the actual
 @ref VertexFormat, figuring out the GL-specific properties such as component
 count or element data type for you:
 
-@snippet MagnumTrade.cpp MeshData-usage-advanced
+@snippet Trade.cpp MeshData-usage-advanced
 
 This approach is especially useful when dealing with custom attributes. See
 also @ref MeshTools::compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
@@ -842,7 +842,7 @@ first, and if not then you may want to make a mutable copy first using
 @ref MeshTools::copy(). The following snippet applies a transformation to the
 mesh positions:
 
-@snippet MagnumTrade.cpp MeshData-usage-mutable
+@snippet Trade.cpp MeshData-usage-mutable
 
 If the transformation includes a rotation or non-uniform scaling, you may want
 to do a similar operation with normals and tangents as well.
@@ -855,7 +855,7 @@ and similar) searches only through the base attributes. Meshes that have morph
 targets can have the additional attributes accessed by passing a
 `morphTargetId` argument to these functions:
 
-@snippet MagnumTrade.cpp MeshData-usage-morph-targets
+@snippet Trade.cpp MeshData-usage-morph-targets
 
 If a base attribute doesn't have a corresponding morph target attribute (which
 can be checked using @ref hasAttribute(MeshAttribute, Int) const with
@@ -895,7 +895,7 @@ when configuring meshes directly like shown in the
 @ref Trade-MeshData-usage-advanced chapter above, you may want to check the
 constraints explicitly before passing the values over.
 
-@snippet MagnumTrade.cpp MeshData-usage-special-layouts
+@snippet Trade.cpp MeshData-usage-special-layouts
 
 In order to convert a mesh with a special data layout to something the GPU
 vertex pipeline is able to consume, @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "MeshTools::interleave()"
@@ -917,7 +917,7 @@ example, an interleaved indexed mesh with 3D positions and RGBA colors would
 look like this --- and variants with just vertex data or just index data or
 neither are possible too:
 
-@snippet MagnumTrade.cpp MeshData-populating
+@snippet Trade.cpp MeshData-populating
 
 @subsection Trade-MeshData-populating-non-owned Non-owned instances and static vertex layouts
 
@@ -931,7 +931,7 @@ describing data mutability and ownership together with
 constructor. The following snippet is a variant of the above where the index
 data is constant and vertex data mutable, both referenced externally:
 
-@snippet MagnumTrade.cpp MeshData-populating-non-owned
+@snippet Trade.cpp MeshData-populating-non-owned
 
 There are also other constructor overloads allowing you to mix and match owned
 vertex data with non-owned index data and vice versa. The @ref MeshAttributeData
@@ -941,7 +941,7 @@ instead if desired. Finally, if the vertex layout is constant but the actual
 data is allocated / populated at runtime, the @ref MeshAttributeData instances
 can be defined in a global array as offset-only:
 
-@snippet MagnumTrade.cpp MeshData-populating-offset-only
+@snippet Trade.cpp MeshData-populating-offset-only
 
 See also the @ref Trade-MeshAttributeData-usage-offset-only "corresponding MeshAttributeData documentation for offset-only fields".
 
@@ -954,12 +954,12 @@ snippet below describes a custom per-face structure that exposes faces as
 higher-order polygons combining multiple triangles together ---in this case,
 each face has an array of 15 IDs, which is exposed as a 2D array:
 
-@snippet MagnumTrade.cpp MeshData-populating-custom
+@snippet Trade.cpp MeshData-populating-custom
 
 Later, the (array) attributes can be retrieved back using the same custom
 identifiers --- note the use of @cpp [] @ce to get back a 2D array again:
 
-@snippet MagnumTrade.cpp MeshData-populating-custom-retrieve
+@snippet Trade.cpp MeshData-populating-custom-retrieve
 
 When a custom attribute is exposed through @ref AbstractImporter, it's possible
 to map custom @ref MeshAttribute values to human-readable string names using
@@ -2092,7 +2092,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * elements. You can make a 2D view onto the result to conveniently
          * index the data:
          *
-         * @snippet MagnumTrade.cpp MeshData-jointIdsAsArray
+         * @snippet Trade.cpp MeshData-jointIdsAsArray
          *
          * @see @ref weightsAsArray(), @ref jointIdsInto(),
          *      @ref attributeFormat(),

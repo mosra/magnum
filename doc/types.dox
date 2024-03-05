@@ -121,7 +121,7 @@ For easier entering of (s)RGB colors in hexadecimal format there are
 literals in the @ref Math::Literals namespace. See their documentation for more
 information about the differences.
 
-@snippet MagnumMath.cpp types-literals-colors
+@snippet Math.cpp types-literals-colors
 
 @section types-binary Binary representation
 
@@ -149,7 +149,7 @@ from/to @ref Float and @ref UnsignedShort and you can also use the
 @link Math::Literals::HalfLiterals::operator""_h() _h @endlink literal that is
 provided in the @ref Math::Literals namespace:
 
-@snippet MagnumMath.cpp types-literals-half
+@snippet Math.cpp types-literals-half
 
 Half-precision vector and matrix types such as @ref Vector3h or @ref Matrix3x3h
 work similarly --- you can construct them and convert them from/to other types,
@@ -175,20 +175,20 @@ or use custom @link Math::Literals::AngleLiterals::operator""_degf() _degf @endl
 @link Math::Literals::AngleLiterals::operator""_rad() _rad @endlink literals
 that are provided in the @ref Math::Literals namespace:
 
-@snippet MagnumMath.cpp types-literals-angles
+@snippet Math.cpp types-literals-angles
 
 They can be implicitly converted to each other, but conversion to different
 underlying type is *explicit* to avoid precision loss (or, on the other hand,
 unnecessarily high precision) during computations:
 
-@snippet MagnumMath.cpp types-literals-angle-conversion
+@snippet Math.cpp types-literals-angle-conversion
 
 These classes are used exclusively in all functions taking and returning angles
 --- trigonometry, angle computation, rotating transformation etc. Thanks to
 implicit conversion you can seamlessly use either radians or degrees without
 any need to care about what input the function expects:
 
-@snippet MagnumMath.cpp types-literals-usage
+@snippet Math.cpp types-literals-usage
 
 @section types-time Time types
 
@@ -209,7 +209,7 @@ The time types are similar in spirit to @ref std::chrono type definitions, but
 without a dependency on STL. An opt-in conversion is available if you include
 @link Magnum/Math/TimeStl.h @endlink.
 
-@snippet MagnumMath-stl.cpp types-time
+@snippet Math-stl.cpp types-time
 
 @section types-other Other types
 
@@ -253,7 +253,7 @@ explicit:
 
 Example:
 
-@snippet MagnumMath.cpp types-literals-init
+@snippet Math.cpp types-literals-init
 
 @section types-thirdparty-integration Integration with types from the STL and 3rd party APIs
 

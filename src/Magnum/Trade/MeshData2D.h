@@ -57,7 +57,7 @@ It's possible to use @ref MeshTools::transformPointsInPlace() and
 vertex data. For example, baking a particular translation + rotation + scaling
 directly to vertex positions:
 
-@snippet MagnumTrade.cpp MeshData2D-transform
+@snippet Trade.cpp MeshData2D-transform
 
 @m_deprecated_since{2020,06} Use @ref MeshData instead.
 

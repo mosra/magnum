@@ -116,7 +116,7 @@ template<class T> class Dual {
          * Performs only default casting on the values, no rounding or anything
          * else. Example usage:
          *
-         * @snippet MagnumMath.cpp Dual-conversion
+         * @snippet Math.cpp Dual-conversion
          */
         template<class U> constexpr explicit Dual(const Dual<U>& other) noexcept: _real{T(other._real)}, _dual{T(other._dual)} {}
 

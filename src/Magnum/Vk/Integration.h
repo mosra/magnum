@@ -61,7 +61,7 @@ unsigned + signed type, which corresponds to a signed range on Magnum side.
 
 Example usage:
 
-@snippet MagnumVk.cpp Integration
+@snippet Vk.cpp Integration
 
 @see @ref types-thirdparty-integration
 */

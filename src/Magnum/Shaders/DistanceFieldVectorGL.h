@@ -82,11 +82,11 @@ working on the framebuffer, you need to enable
 
 Common mesh setup:
 
-@snippet MagnumShaders-gl.cpp DistanceFieldVectorGL-usage1
+@snippet Shaders-gl.cpp DistanceFieldVectorGL-usage1
 
 Common rendering setup:
 
-@snippet MagnumShaders-gl.cpp DistanceFieldVectorGL-usage2
+@snippet Shaders-gl.cpp DistanceFieldVectorGL-usage2
 
 @section Shaders-DistanceFieldVectorGL-ubo Uniform buffers
 
@@ -104,7 +104,7 @@ optional texture transformation a per-draw @ref TextureTransformationUniform
 buffer bound with @ref bindTextureTransformationBuffer() can be supplied as
 well. A uniform buffer setup equivalent to the above would look like this:
 
-@snippet MagnumShaders-gl.cpp DistanceFieldVectorGL-ubo
+@snippet Shaders-gl.cpp DistanceFieldVectorGL-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw, supply desired material
 and draw count via @ref Configuration::setMaterialCount() and

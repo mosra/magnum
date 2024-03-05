@@ -130,7 +130,7 @@ literals defined by other code, but the second namespace level is
 @cpp inline @ce so to get for example the color literals you can do either of
 these two:
 
-@snippet MagnumMath.cpp Literals-using
+@snippet Math.cpp Literals-using
 
 This library is built as part of Magnum by default. To use this library with
 CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:

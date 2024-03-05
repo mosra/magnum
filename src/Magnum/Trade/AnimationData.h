@@ -694,7 +694,7 @@ keep using the animations later, you need to take ownership of the data using
 In the following snippet all animated positions are stored in an array. The
 array is then updated during calls to @ref Animation::Player::advance().
 
-@snippet MagnumTrade.cpp AnimationData-usage
+@snippet Trade.cpp AnimationData-usage
 
 It's also possible to directly update object transformations using callbacks,
 among other things. See documentation of the @ref Animation::Player class for
@@ -711,7 +711,7 @@ these, you need to check that the data are mutable using @ref dataFlags()
 first. The following snippet inverts the Y coordinate of a translation
 animation:
 
-@snippet MagnumTrade.cpp AnimationData-usage-mutable
+@snippet Trade.cpp AnimationData-usage-mutable
 
 @experimental
 */

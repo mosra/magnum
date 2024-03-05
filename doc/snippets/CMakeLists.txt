@@ -38,11 +38,11 @@ set_directory_properties(PROPERTIES
 
 set(snippets_Magnum_SRCS
     Magnum.cpp
-    MagnumAnimation.cpp
-    MagnumAnimation-custom.cpp
-    MagnumMath.cpp
-    MagnumMath-stl.cpp
-    MagnumMathAlgorithms.cpp)
+    Animation.cpp
+    Animation-custom.cpp
+    Math.cpp
+    Math-stl.cpp
+    MathAlgorithms.cpp)
 if(CORRADE_TARGET_EMSCRIPTEN)
     list(APPEND snippets_Magnum_SRCS platforms-html5.cpp)
 endif()
@@ -61,7 +61,7 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERS
    (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.9") OR
    (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.0") OR
    (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
-    add_library(snippets-Magnum-cpp14 STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumMath-cpp14.cpp)
+    add_library(snippets-Magnum-cpp14 STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} Math-cpp14.cpp)
     target_link_libraries(snippets-Magnum-cpp14 PRIVATE Magnum)
     set_target_properties(snippets-Magnum-cpp14 PROPERTIES CORRADE_CXX_STANDARD 14)
     if(CORRADE_TESTSUITE_TEST_TARGET)
@@ -70,102 +70,102 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERS
 endif()
 
 if(MAGNUM_WITH_AUDIO)
-    add_library(snippets-MagnumAudio STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumAudio.cpp)
-    target_link_libraries(snippets-MagnumAudio PRIVATE MagnumAudio)
+    add_library(snippets-Audio STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} Audio.cpp)
+    target_link_libraries(snippets-Audio PRIVATE MagnumAudio)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumAudio)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Audio)
     endif()
 
     if(MAGNUM_WITH_SCENEGRAPH)
-        add_library(snippets-MagnumAudio-scenegraph STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-            MagnumAudio-scenegraph.cpp)
-        target_link_libraries(snippets-MagnumAudio-scenegraph PRIVATE
+        add_library(snippets-Audio-scenegraph STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+            Audio-scenegraph.cpp)
+        target_link_libraries(snippets-Audio-scenegraph PRIVATE
             MagnumAudio
             MagnumSceneGraph)
         if(CORRADE_TESTSUITE_TEST_TARGET)
-            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumAudio-scenegraph)
+            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Audio-scenegraph)
         endif()
     endif()
 endif()
 
 if(MAGNUM_WITH_GL)
-    add_library(snippets-MagnumGL STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumGL.cpp
-        MagnumMeshTools-gl.cpp
-        MagnumShaders-gl.cpp
-        MagnumText-gl.cpp)
-    target_link_libraries(snippets-MagnumGL PRIVATE MagnumGL)
+    add_library(snippets-GL STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        GL.cpp
+        MeshTools-gl.cpp
+        Shaders-gl.cpp
+        Text-gl.cpp)
+    target_link_libraries(snippets-GL PRIVATE MagnumGL)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumGL)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-GL)
     endif()
 endif()
 
 if(MAGNUM_WITH_MATERIALTOOLS)
-    add_library(snippets-MagnumMaterialTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumMaterialTools.cpp)
-    target_link_libraries(snippets-MagnumMaterialTools PRIVATE MagnumMaterialTools)
+    add_library(snippets-MaterialTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        MaterialTools.cpp)
+    target_link_libraries(snippets-MaterialTools PRIVATE MagnumMaterialTools)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumMaterialTools)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MaterialTools)
     endif()
 endif()
 
 if(MAGNUM_WITH_MESHTOOLS)
-    add_library(snippets-MagnumMeshTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumMeshTools.cpp)
-    target_link_libraries(snippets-MagnumMeshTools PRIVATE MagnumMeshTools)
+    add_library(snippets-MeshTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        MeshTools.cpp)
+    target_link_libraries(snippets-MeshTools PRIVATE MagnumMeshTools)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumMeshTools)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MeshTools)
     endif()
 endif()
 
 if(MAGNUM_WITH_SHADERTOOLS)
-    add_library(snippets-MagnumShaderTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumShaderTools.cpp)
-    target_link_libraries(snippets-MagnumShaderTools PRIVATE MagnumShaderTools)
+    add_library(snippets-ShaderTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        ShaderTools.cpp)
+    target_link_libraries(snippets-ShaderTools PRIVATE MagnumShaderTools)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumShaderTools)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-ShaderTools)
     endif()
 endif()
 
 if(MAGNUM_WITH_TEXT)
-    add_library(snippets-MagnumText STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumText.cpp)
-    target_link_libraries(snippets-MagnumText PRIVATE MagnumText)
+    add_library(snippets-Text STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        Text.cpp)
+    target_link_libraries(snippets-Text PRIVATE MagnumText)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumText)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Text)
     endif()
 endif()
 
 if(MAGNUM_WITH_TEXTURETOOLS)
-    add_library(snippets-MagnumTextureTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumTextureTools.cpp)
-    target_link_libraries(snippets-MagnumTextureTools PRIVATE MagnumTextureTools)
+    add_library(snippets-TextureTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        TextureTools.cpp)
+    target_link_libraries(snippets-TextureTools PRIVATE MagnumTextureTools)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumTextureTools)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-TextureTools)
     endif()
 endif()
 
 if(MAGNUM_WITH_TRADE)
-    add_library(snippets-MagnumTrade STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+    add_library(snippets-Trade STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         plugins.cpp
-        MagnumTrade.cpp)
-    target_link_libraries(snippets-MagnumTrade PRIVATE MagnumTrade)
+        Trade.cpp)
+    target_link_libraries(snippets-Trade PRIVATE MagnumTrade)
     if(MAGNUM_TARGET_GL)
-        target_link_libraries(snippets-MagnumTrade PRIVATE MagnumGL)
+        target_link_libraries(snippets-Trade PRIVATE MagnumGL)
     endif()
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumTrade)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Trade)
     endif()
 endif()
 
 find_package(Corrade COMPONENTS TestSuite)
 
 if(MAGNUM_WITH_DEBUGTOOLS)
-    add_library(snippets-MagnumDebugTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumDebugTools.cpp)
-    target_link_libraries(snippets-MagnumDebugTools PRIVATE MagnumDebugTools)
+    add_library(snippets-DebugTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        DebugTools.cpp)
+    target_link_libraries(snippets-DebugTools PRIVATE MagnumDebugTools)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumDebugTools)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-DebugTools)
     endif()
 
     if(MAGNUM_BUILD_GL_TESTS AND NOT MAGNUM_TARGET_GLES)
@@ -200,36 +200,36 @@ if(MAGNUM_WITH_DEBUGTOOLS)
     endif()
 
     if(MAGNUM_TARGET_GL)
-        add_library(snippets-MagnumDebugTools-gl STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-            MagnumDebugTools-gl.cpp)
-        target_link_libraries(snippets-MagnumDebugTools-gl PRIVATE MagnumDebugTools)
+        add_library(snippets-DebugTools-gl STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+            DebugTools-gl.cpp)
+        target_link_libraries(snippets-DebugTools-gl PRIVATE MagnumDebugTools)
         if(CORRADE_TESTSUITE_TEST_TARGET)
-            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumDebugTools-gl)
+            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-DebugTools-gl)
         endif()
     endif()
 endif()
 
 if(MAGNUM_WITH_PRIMITIVES)
-    add_library(snippets-MagnumPrimitives STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumPrimitives.cpp)
-    target_link_libraries(snippets-MagnumPrimitives PRIVATE MagnumPrimitives)
+    add_library(snippets-Primitives STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        Primitives.cpp)
+    target_link_libraries(snippets-Primitives PRIVATE MagnumPrimitives)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumPrimitives)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Primitives)
     endif()
 endif()
 
 if(MAGNUM_WITH_SCENEGRAPH)
-    add_library(snippets-MagnumSceneGraph STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumSceneGraph.cpp)
-    target_link_libraries(snippets-MagnumSceneGraph PRIVATE MagnumSceneGraph)
+    add_library(snippets-SceneGraph STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        SceneGraph.cpp)
+    target_link_libraries(snippets-SceneGraph PRIVATE MagnumSceneGraph)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumSceneGraph)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-SceneGraph)
     endif()
 
     if(MAGNUM_WITH_SDL2APPLICATION AND MAGNUM_WITH_GL AND MAGNUM_WITH_PRIMITIVES AND MAGNUM_WITH_SHADERS AND MAGNUM_WITH_MESHTOOLS)
-        add_library(snippets-MagnumSceneGraph-gl STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-            MagnumSceneGraph-gl.cpp)
-        target_link_libraries(snippets-MagnumSceneGraph-gl PRIVATE
+        add_library(snippets-SceneGraph-gl STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+            SceneGraph-gl.cpp)
+        target_link_libraries(snippets-SceneGraph-gl PRIVATE
             MagnumGL
             MagnumMeshTools
             MagnumPrimitives
@@ -237,25 +237,25 @@ if(MAGNUM_WITH_SCENEGRAPH)
             MagnumSdl2Application
             MagnumShaders)
         if(CORRADE_TESTSUITE_TEST_TARGET)
-            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumSceneGraph-gl)
+            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-SceneGraph-gl)
         endif()
     endif()
 endif()
 
 if(MAGNUM_WITH_SCENETOOLS)
-    add_library(snippets-MagnumSceneTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumSceneTools.cpp)
-    target_link_libraries(snippets-MagnumSceneTools PRIVATE MagnumSceneTools)
+    add_library(snippets-SceneTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        SceneTools.cpp)
+    target_link_libraries(snippets-SceneTools PRIVATE MagnumSceneTools)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumSceneTools)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-SceneTools)
     endif()
 endif()
 
 if(MAGNUM_WITH_VK)
-    add_library(snippets-MagnumVk STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumVk.cpp)
-    target_link_libraries(snippets-MagnumVk PRIVATE MagnumVk)
+    add_library(snippets-Vk STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} Vk.cpp)
+    target_link_libraries(snippets-Vk PRIVATE MagnumVk)
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumVk)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Vk)
     endif()
 endif()
 
@@ -265,48 +265,48 @@ if(MAGNUM_WITH_SDL2APPLICATION AND MAGNUM_TARGET_GL)
     target_link_libraries(getting-started PRIVATE MagnumSdl2Application)
     target_link_libraries(getting-started-blue PRIVATE MagnumSdl2Application)
 
-    add_library(snippets-MagnumPlatform STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+    add_library(snippets-Platform STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         Magnum-application.cpp
-        MagnumPlatform.cpp
-        MagnumGL-application.cpp)
-    target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)
+        Platform.cpp
+        GL-application.cpp)
+    target_link_libraries(snippets-Platform PRIVATE MagnumSdl2Application)
 
     if(CORRADE_TESTSUITE_TEST_TARGET)
         add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET}
             getting-started
             getting-started-blue
-            snippets-MagnumPlatform)
+            snippets-Platform)
     endif()
 endif()
 
 if((NOT MAGNUM_TARGET_GLES AND MAGNUM_WITH_SDL2APPLICATION) OR (MAGNUM_TARGET_GLES AND MAGNUM_WITH_XEGLAPPLICATION))
-    add_library(snippets-MagnumPlatform-portability STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-portability.cpp)
+    add_library(snippets-Platform-portability STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} Platform-portability.cpp)
     if(MAGNUM_TARGET_GLES)
-        target_link_libraries(snippets-MagnumPlatform-portability PRIVATE MagnumXEglApplication)
+        target_link_libraries(snippets-Platform-portability PRIVATE MagnumXEglApplication)
     else()
-        target_link_libraries(snippets-MagnumPlatform-portability PRIVATE MagnumSdl2Application)
+        target_link_libraries(snippets-Platform-portability PRIVATE MagnumSdl2Application)
     endif()
     if(CORRADE_TESTSUITE_TEST_TARGET)
-        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumPlatform-portability)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Platform-portability)
     endif()
 endif()
 
 if(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION)
-    add_library(snippets-MagnumPlatform-custom STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-custom.cpp)
-    add_library(snippets-MagnumPlatform-windowless STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-windowless.cpp)
-    add_library(snippets-MagnumPlatform-windowless-custom STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-windowless-custom.cpp)
-    add_library(snippets-MagnumPlatform-windowless-thread STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-windowless-thread.cpp)
+    add_library(snippets-Platform-custom STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} Platform-custom.cpp)
+    add_library(snippets-Platform-windowless STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} Platform-windowless.cpp)
+    add_library(snippets-Platform-windowless-custom STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} Platform-windowless-custom.cpp)
+    add_library(snippets-Platform-windowless-thread STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} Platform-windowless-thread.cpp)
 
-    target_link_libraries(snippets-MagnumPlatform-custom PRIVATE MagnumWindowlessEglApplication)
-    target_link_libraries(snippets-MagnumPlatform-windowless PRIVATE MagnumWindowlessEglApplication)
-    target_link_libraries(snippets-MagnumPlatform-windowless-custom PRIVATE MagnumWindowlessEglApplication)
-    target_link_libraries(snippets-MagnumPlatform-windowless-thread PRIVATE MagnumWindowlessEglApplication)
+    target_link_libraries(snippets-Platform-custom PRIVATE MagnumWindowlessEglApplication)
+    target_link_libraries(snippets-Platform-windowless PRIVATE MagnumWindowlessEglApplication)
+    target_link_libraries(snippets-Platform-windowless-custom PRIVATE MagnumWindowlessEglApplication)
+    target_link_libraries(snippets-Platform-windowless-thread PRIVATE MagnumWindowlessEglApplication)
 
     if(CORRADE_TESTSUITE_TEST_TARGET)
         add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET}
-            snippets-MagnumPlatform-custom
-            snippets-MagnumPlatform-windowless
-            snippets-MagnumPlatform-windowless-custom
-            snippets-MagnumPlatform-windowless-thread)
+            snippets-Platform-custom
+            snippets-Platform-windowless
+            snippets-Platform-windowless-custom
+            snippets-Platform-windowless-thread)
     endif()
 endif()

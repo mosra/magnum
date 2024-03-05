@@ -58,7 +58,7 @@ ID of the underlying without releasing it using @cpp id() @ce). It is also
 possible to do the opposite --- wrapping an existing OpenGL object ID into a
 Magnum object instance using @cpp wrap() @ce:
 
-@snippet MagnumGL.cpp opengl-wrapping-transfer
+@snippet GL.cpp opengl-wrapping-transfer
 
 The @cpp wrap() @ce and @cpp release() @ce functions are available for all
 OpenGL classes except for @ref GL::AbstractShaderProgram, where the desired
@@ -89,7 +89,7 @@ circumvented by constructing the OpenGL objects using the @ref NoCreate tag
 first and populating them with live instances once the context is ready. For
 example:
 
-@snippet MagnumGL-application.cpp opengl-wrapping-nocreate
+@snippet GL-application.cpp opengl-wrapping-nocreate
 
 Please note that objects constructed using the @ref NoCreate tag are equivalent
 to the moved-from state, and thus again calling anything on these may result in
@@ -112,7 +112,7 @@ tracks OpenGL state such as currently bound objects, activated renderer
 features etc. When combining Magnum with third-party code, the internal state
 tracker may get confused and you need to reset it using @ref GL::Context::resetState():
 
-@snippet MagnumGL.cpp opengl-wrapping-state
+@snippet GL.cpp opengl-wrapping-state
 
 Note that by design it's not possible to reset all state touched by Magnum to
 previous values --- it would involve impractically large amount of queries and
@@ -138,7 +138,7 @@ GL version/extension is required. The information is also aggregated on
 @ref opengl-required-extensions documentation page. Use
 @ref GL::Context::isVersionSupported() or @ref GL::Context::isExtensionSupported():
 
-@snippet MagnumGL.cpp opengl-wrapping-extensions
+@snippet GL.cpp opengl-wrapping-extensions
 
 @attention Using API that requires OpenGL version or extension that is not
     provided by the driver results in undefined behavior --- the best you can
@@ -160,7 +160,7 @@ is simply no-op when required extensions are not available,
 etc. The goal is to abstract away the (mostly unimportant) differences for
 easier porting.
 
-@snippet MagnumGL.cpp opengl-wrapping-dsa
+@snippet GL.cpp opengl-wrapping-dsa
 
 */
 }

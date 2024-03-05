@@ -46,7 +46,7 @@ to know anything about the `CreateInfo`-related definitions anymore. Then, for
 convenience, each `ThingCreateInfo.h` header is guaranteed to include the
 `Thing.h` as well, so if you want both you can do for example just
 
-@snippet MagnumVk.cpp wrapping-include-createinfo
+@snippet Vk.cpp wrapping-include-createinfo
 
 <b></b>
 
@@ -54,7 +54,7 @@ convenience, each `ThingCreateInfo.h` header is guaranteed to include the
 
 instead of having to verbosely include both:
 
-@snippet MagnumVk.cpp wrapping-include-both
+@snippet Vk.cpp wrapping-include-both
 
 Unless said otherwise in the particular constructor docs, a `Vk::*CreateInfo`
 instance has all required fields set to valid values upon construction, with
@@ -90,7 +90,7 @@ stores instance- and device-level function pointers locally in each
 @ref Vk::Instance and @ref Vk::Device to avoid this overhead --- these are then
 accessible through @ref Vk::Instance::operator->() "operator->()" on both:
 
-@snippet MagnumVk.cpp Instance-function-pointers
+@snippet Vk.cpp Instance-function-pointers
 
 For convenience and for easier interaction with 3rd party code, such pointers
 can be made global by calling @ref Vk::Instance::populateGlobalFunctionPointers()
@@ -98,7 +98,7 @@ and @ref Vk::Device::populateGlobalFunctionPointers(), after which you can use
 the `vk*` functions as usual. However, all implications coming from these being
 tied to a particular instance/device still apply:
 
-@snippet MagnumVk.cpp Instance-global-function-pointers
+@snippet Vk.cpp Instance-global-function-pointers
 
 @section vulkan-wrapping-host-allocation Host memory allocation
 
@@ -130,7 +130,7 @@ directly to Vulkan APIs. You can create them from an existing
 structure to supply additional parameters not exposed by Magnum. However take
 care to not clash with values and pointers already set:
 
-@snippet MagnumVk.cpp wrapping-extending-create-info
+@snippet Vk.cpp wrapping-extending-create-info
 
 Similarly to the @ref NoInit constructors, constructing a `Vk::*CreateInfo`
 from the underlying Vulkan structure is guaranteed to not allocate as well ---
@@ -170,7 +170,7 @@ able to take pointers to existing @ref Vk::LayerProperties and
 availability of implicitly enabled layers and extensions. If they're not
 passed, the class may (but also might not) create its own instances internally:
 
-@snippet MagnumVk.cpp wrapping-optimizing-properties-instance
+@snippet Vk.cpp wrapping-optimizing-properties-instance
 
 For @ref Vk::Device creation, the @ref Vk::DeviceProperties should ideally be
 * *moved* all the way to the @ref Vk::Device constructor, at which point it's
@@ -179,7 +179,7 @@ If you have @ref Vk::pickDevice(), @ref Vk::DeviceCreateInfo and
 @ref Vk::Device constructor all in a single expression, the optimal operation
 is done implicitly:
 
-@snippet MagnumVk.cpp wrapping-optimizing-properties-device-single-expression
+@snippet Vk.cpp wrapping-optimizing-properties-device-single-expression
 
 However, if you instantiate @ref Vk::DeviceProperties and/or
 @ref Vk::DeviceCreateInfo separately, you have to
@@ -187,7 +187,7 @@ However, if you instantiate @ref Vk::DeviceProperties and/or
 them to achieve the desired effect. An existing @ref Vk::ExtensionProperties
 instance can be also passed to @ref Vk::DeviceCreateInfo to allow reuse:
 
-@snippet MagnumVk.cpp wrapping-optimizing-properties-device-move
+@snippet Vk.cpp wrapping-optimizing-properties-device-move
 
 @section vulkan-wrapping-naming-differences Important differences in naming
 

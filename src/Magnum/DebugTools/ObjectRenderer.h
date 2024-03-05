@@ -82,7 +82,7 @@ Visualizes object position, rotation and scale using colored axes. See
 
 Example code:
 
-@snippet MagnumDebugTools-gl.cpp ObjectRenderer
+@snippet DebugTools-gl.cpp ObjectRenderer
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" and `MAGNUM_WITH_SCENEGRAPH` enabled

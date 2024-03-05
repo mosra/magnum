@@ -187,7 +187,7 @@ instanced one. It'll take per-instance transformation from the
 @ref setTransformationProjectionMatrix(). The snippet below shows adding a
 buffer with per-instance transformation to a mesh:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL2D-usage-instancing
+@snippet Shaders-gl.cpp MeshVisualizerGL2D-usage-instancing
 
 If @ref Flag::ObjectIdTexture is used and @ref Flag::InstancedTextureOffset is
 enabled, the @ref TextureOffset attribute (or @ref TextureOffsetLayer in case
@@ -1456,28 +1456,28 @@ function. See @ref GL::Renderer::setBlendFunction() for details.
 
 Common mesh setup:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-geom1
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-geom1
 
 Common rendering setup:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-geom2
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-geom2
 
 @subsection Shaders-MeshVisualizerGL3D-wireframe-no-geom Example setup for indexed meshes without a geometry shader
 
 The vertices have to be converted to a non-indexed array first. Mesh setup:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-no-geom1
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-no-geom1
 
 Rendering setup:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-no-geom2
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-no-geom2
 
 @subsection Shaders-MeshVisualizerGL3D-usage-wireframe-no-geom-old Wireframe visualization of non-indexed meshes without a geometry shader on older hardware
 
 You need to provide also the @ref VertexIndex attribute. Mesh setup *in
 addition to the above*:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-no-geom-old
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-no-geom-old
 
 Rendering setup the same as above.
 
@@ -1508,11 +1508,11 @@ case you'll enable @ref Flag::BitangentDirection). Note that these two are
 mutually exclusive, so you need to choose either of them based on what given
 mesh contains. Example for the first case:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-tbn1
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-tbn1
 
 Rendering setup:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-tbn2
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-tbn2
 
 @section Shaders-MeshVisualizerGL3D-object-id Object, vertex and primitive ID visualization
 
@@ -1523,7 +1523,7 @@ and use @ref setColorMapTransformation() to map given range of discrete IDs to
 the @f$ [0, 1] @f$ texture range. Various colormap presets are in the
 @ref DebugTools::ColorMap namespace. Example usage:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-object-id
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-object-id
 
 Consistently with the other shaders, textured object ID is also supported if
 @ref Flag::ObjectIdTexture is enabled. In that case you need to provide also
@@ -1603,7 +1603,7 @@ taken, applied before the matrix set by @ref setNormalMatrix(). The snippet
 below shows adding a buffer with per-instance transformation to a mesh,
 including a normal matrix attribute for correct TBN visualization:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-usage-instancing
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-usage-instancing
 
 If @ref Flag::ObjectIdTexture is used and @ref Flag::InstancedTextureOffset is
 enabled, the @ref TextureOffset attribute (or @ref TextureOffsetLayer in case
@@ -1641,7 +1641,7 @@ buffer setup equivalent to the
 look like this --- note that @ref setViewportSize() is an immediate uniform
 here as well, as it's assumed to be set globally and rarely changed:
 
-@snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-ubo
+@snippet Shaders-gl.cpp MeshVisualizerGL3D-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw, supply desired material
 and draw count via @ref Configuration::setMaterialCount() and

@@ -129,7 +129,7 @@ inserted into) an @ref AbstractGlyphCache, and the rendered glyphs positioned
 at @p offsets with the cursor moving by @p advances is what makes up the final
 shaped text.
 
-@snippet MagnumText.cpp AbstractShaper-shape
+@snippet Text.cpp AbstractShaper-shape
 
 For best results, it's recommended to call (a subset of) @ref setScript(),
 @ref setLanguage() and @ref setDirection() if at least some properties of the
@@ -153,7 +153,7 @@ capitals (and the particular @ref AbstractFont plugin would recognize and use
 the feature), we could render the "world" part with small caps, resulting in
 "Hello, ᴡᴏʀʟᴅ!".
 
-@snippet MagnumText.cpp AbstractShaper-shape-features
+@snippet Text.cpp AbstractShaper-shape-features
 
 Similarly, features can be enabled for the whole text by omitting the begin and
 end parameters, or for example a feature that a particular @ref AbstractFont
@@ -168,7 +168,7 @@ Sometimes it's desirable to render different parts of the text with different
 fonts, not just different features of the same font. A variation of the above
 example could be rendering the "world" part with a bold font:
 
-@snippet MagnumText.cpp AbstractShaper-shape-multiple
+@snippet Text.cpp AbstractShaper-shape-multiple
 
 The resulting `glyphs` array is usable the same way as in the above case, with
 a difference that the glyph IDs have to be looked up in an

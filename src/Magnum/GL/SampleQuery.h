@@ -43,7 +43,7 @@ Queries count of samples passed from fragment shader or boolean value
 indicating whether any samples passed. Can be used for example for conditional
 rendering:
 
-@snippet MagnumGL.cpp SampleQuery-usage
+@snippet GL.cpp SampleQuery-usage
 
 This approach has some drawbacks, as the rendering is blocked until result is
 available for the CPU to decide. This can be improved by using conditional
@@ -51,7 +51,7 @@ rendering on GPU itself. The drawing commands will be sent to the GPU and
 processed or discarded later, so CPU can continue executing the code without
 waiting for the result.
 
-@snippet MagnumGL.cpp SampleQuery-conditional-render
+@snippet GL.cpp SampleQuery-conditional-render
 
 @see @ref PipelineStatisticsQuery, @ref PrimitiveQuery, @ref TimeQuery
 @requires_gles30 Extension @gl_extension{EXT,occlusion_query_boolean} in

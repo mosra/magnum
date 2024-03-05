@@ -63,7 +63,7 @@ GPU time.
 Measurements are performed by calling @ref beginFrame() and @ref endFrame() at
 designated points in the frame:
 
-@snippet MagnumDebugTools.cpp FrameProfiler-usage
+@snippet DebugTools.cpp FrameProfiler-usage
 
 In order to have stable profiling results, the application needs to redraw
 constantly. However for applications that otherwise redraw only on change it
@@ -82,7 +82,7 @@ the output will be colored and refreshing itself in place. Together with the
 on-demand profiling, it could look like this, refreshing the output every 10
 frames:
 
-@snippet MagnumDebugTools.cpp FrameProfiler-usage-console
+@snippet DebugTools.cpp FrameProfiler-usage-console
 
 And here's a sample output on the terminal --- using a fully configured
 @link FrameProfilerGL @endlink:
@@ -97,7 +97,7 @@ function or to the constructor, together with specifying count of frames for
 the moving average. A CPU duration measurements using the @ref std::chrono APIs
 over last 50 frames can be done like this:
 
-@snippet MagnumDebugTools.cpp FrameProfiler-setup-immediate
+@snippet DebugTools.cpp FrameProfiler-setup-immediate
 
 In the above case, the measurement result is available immediately on frame
 end. That's not always the case, and for example GPU queries need a few frames
@@ -108,7 +108,7 @@ two frames later. The profiler automatically takes care of choosing one of the
 three instances for each measurement via additional `current` / `previous`
 parameters passed to each callback:
 
-@snippet MagnumDebugTools-gl.cpp FrameProfiler-setup-delayed
+@snippet DebugTools-gl.cpp FrameProfiler-setup-delayed
 
 <b></b>
 
@@ -519,7 +519,7 @@ A @ref FrameProfiler with OpenGL-specific measurements. Instantiate with a
 desired subset of measured values and then continue the same way as described
 in the @ref DebugTools-FrameProfiler-usage "FrameProfiler usage documentation":
 
-@snippet MagnumDebugTools-gl.cpp FrameProfilerGL-usage
+@snippet DebugTools-gl.cpp FrameProfilerGL-usage
 
 If none if @ref Value::GpuDuration, @ref Value::VertexFetchRatio and
 @ref Value::PrimitiveClipRatio is not enabled, the class can operate without an

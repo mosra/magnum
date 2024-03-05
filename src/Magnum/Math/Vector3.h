@@ -81,7 +81,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * Usable for translation or rotation along given axis, for example:
          *
-         * @snippet MagnumMath.cpp Vector3-xAxis
+         * @snippet Math.cpp Vector3-xAxis
          *
          * @see @ref yAxis(), @ref zAxis(), @ref xScale(), @ref Color3::red(),
          *      @ref Matrix4::right()
@@ -109,7 +109,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * Usable for scaling along given direction, for example:
          *
-         * @snippet MagnumMath.cpp Vector3-xScale
+         * @snippet Math.cpp Vector3-xScale
          *
          * @see @ref yScale(), @ref zScale(), @ref Color3::cyan(), @ref xAxis()
          */

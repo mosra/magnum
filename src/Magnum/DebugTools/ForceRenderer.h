@@ -110,7 +110,7 @@ it must be available for the whole lifetime of the renderer. The renderer is
 automatically added to object's features so you don't need to keep a reference
 to it.
 
-@snippet MagnumDebugTools-gl.cpp ForceRenderer
+@snippet DebugTools-gl.cpp ForceRenderer
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" and `MAGNUM_WITH_SCENEGRAPH` enabled

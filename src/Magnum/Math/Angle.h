@@ -51,28 +51,28 @@ and conversion less error-prone.
 
 You can create the value either by using a literal:
 
-@snippet MagnumMath.cpp Deg-usage
+@snippet Math.cpp Deg-usage
 
 Or explicitly convert a unitless value (such as an output from some function)
 to either degrees or radians:
 
-@snippet MagnumMath.cpp Deg-usage-convert
+@snippet Math.cpp Deg-usage-convert
 
 The classes support all arithmetic operations, such as addition, subtraction
 or multiplication/division by a unitless number:
 
-@snippet MagnumMath.cpp Deg-usage-operations
+@snippet Math.cpp Deg-usage-operations
 
 It is also possible to compare angles with all comparison operators, but
 comparison of degrees and radians is not possible without explicit conversion
 to a common type:
 
-@snippet MagnumMath.cpp Deg-usage-comparison
+@snippet Math.cpp Deg-usage-comparison
 
 It is possible to seamlessly convert between degrees and radians and explicitly
 convert the value back to the underlying type:
 
-@snippet MagnumMath.cpp Deg-usage-conversion
+@snippet Math.cpp Deg-usage-conversion
 
 @section Math-Angle-explicit-conversion Requirement of explicit conversion
 
@@ -93,7 +93,7 @@ std::sin(b);                    // silent error, std::sin() expected radians
 
 These silent errors are easily avoided by requiring explicit conversions:
 
-@snippet MagnumMath.cpp Deg-usage-explicit-conversion
+@snippet Math.cpp Deg-usage-explicit-conversion
 
 @see @link Literals::AngleLiterals::operator""_degf() @endlink,
     @link Literals::AngleLiterals::operator""_deg() @endlink, @ref Magnum::Deg,
@@ -162,7 +162,7 @@ namespace Literals {
 
 Example usage:
 
-@snippet MagnumMath.cpp _deg
+@snippet Math.cpp _deg
 
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
 @m_keywords{_deg deg}
@@ -174,7 +174,7 @@ constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(D
 
 Example usage:
 
-@snippet MagnumMath.cpp _degf
+@snippet Math.cpp _degf
 
 @see @link operator""_deg() @endlink, @link operator""_radf() @endlink
 @m_keywords{_degf degf}

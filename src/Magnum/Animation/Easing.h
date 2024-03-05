@@ -241,12 +241,12 @@ See @ref building, @ref cmake and @ref animation for more information.
 
 The easing function is meant to be used to modify the interpolation factor, such as:
 
-@snippet MagnumAnimation.cpp Easing-factor
+@snippet Animation.cpp Easing-factor
 
 The @ref Animation library also provides the @ref ease() utility that combines
 the interpolator together with the easing function:
 
-@snippet MagnumAnimation.cpp Easing-ease
+@snippet Animation.cpp Easing-ease
 
 @section Animation-Easing-equations Equations
 
@@ -261,7 +261,7 @@ range and produces a NaN. You may want to ensure the factor stays in bounds,
 using either @ref Math::clamp() or the @ref easeClamped() function --- the
 following two expressions are equivalent:
 
-@snippet MagnumAnimation.cpp Easing-clamp
+@snippet Animation.cpp Easing-clamp
 
 Out-function @f$ f_\text{out} @f$ for a corresponding in-function @f$ f_\text{in} @f$
 is defined as the following, the equations in the docs usually just show the
@@ -289,7 +289,7 @@ plots it with a thin blue line. The curve is always normalized to go from
 @f$ (0, 0)^T @f$ to @f$ (1, 1)^T @f$, apply arbitrary transformation to each
 point as needed:
 
-@snippet MagnumAnimation.cpp Easing-bezier-transform
+@snippet Animation.cpp Easing-bezier-transform
 
 @section Animation-Easing-references References
 
@@ -343,7 +343,7 @@ template<class T> struct BasicEasing {
      * Implementation matching the GLSL @glsl smoothstep() @ce function.
      * Combine with @ref Math::lerp() to get the equivalent result:
      *
-     * @snippet MagnumAnimation.cpp Easing-smoothstep
+     * @snippet Animation.cpp Easing-smoothstep
      *
      * @htmlinclude easings-smoothstep.svg
      *

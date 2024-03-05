@@ -43,7 +43,7 @@ Common usage is to typedef @ref Scene with desired transformation type to save
 unnecessary typing later, along with @ref Object and possibly other types,
 e.g.:
 
-@snippet MagnumSceneGraph.cpp Object-typedef
+@snippet SceneGraph.cpp Object-typedef
 
 See @ref scenegraph for an introduction.
 */

@@ -438,7 +438,7 @@ methods, returning result either as data arrays or as fully configured mesh.
 The text can be then drawn as usual by configuring the shader and drawing the
 mesh:
 
-@snippet MagnumText-gl.cpp Renderer-usage1
+@snippet Text-gl.cpp Renderer-usage1
 
 See @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, Alignment)
 and @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, GL::Buffer&, GL::Buffer&, GL::BufferUsage, Alignment)
@@ -448,7 +448,7 @@ While this method is sufficient for one-shot rendering of static texts, for
 mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
 
-@snippet MagnumText-gl.cpp Renderer-usage2
+@snippet Text-gl.cpp Renderer-usage2
 
 @subsection Text-Renderer-usage-font-size Font size
 
@@ -510,12 +510,12 @@ documented thoroughly in @ref Platform-Sdl2Application-dpi, for this particular
 case a scaled interface size, used instead of window size for the projection,
 would be calculated like this:
 
-@snippet MagnumText-gl.cpp Renderer-dpi-interface-size
+@snippet Text-gl.cpp Renderer-dpi-interface-size
 
 And a multiplier for the @ref AbstractFont and @ref GlyphCache font size like
 this. The @ref Renderer keeps using the size without this multiplier.
 
-@snippet MagnumText-gl.cpp Renderer-dpi-size-multiplier
+@snippet Text-gl.cpp Renderer-dpi-size-multiplier
 
 @section Text-Renderer-required-opengl-functionality Required OpenGL functionality
 

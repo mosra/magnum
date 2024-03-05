@@ -58,7 +58,7 @@ You have to allocate the memory for all layers and faces first by calling
 @ref setStorage(). Example: array with 4 layers of cube maps, each cube map
 consisting of six 64x64 images, i.e. 24 layers total:
 
-@snippet MagnumGL.cpp CubeMapTextureArray-usage
+@snippet GL.cpp CubeMapTextureArray-usage
 
 In shader, the texture is used via @glsl samplerCubeArray @ce,
 @glsl samplerCubeArrayShadow @ce, @glsl isamplerCubeArray @ce or
@@ -531,7 +531,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @snippet MagnumGL.cpp CubeMapTextureArray-image1
+         * @snippet GL.cpp CubeMapTextureArray-image1
          */
         Image3D image(Int level, Image3D&& image);
 
@@ -567,7 +567,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @snippet MagnumGL.cpp CubeMapTextureArray-image2
+         * @snippet GL.cpp CubeMapTextureArray-image2
          */
         BufferImage3D image(Int level, BufferImage3D&& image, BufferUsage usage);
 
@@ -593,7 +593,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @snippet MagnumGL.cpp CubeMapTextureArray-compressedImage1
+         * @snippet GL.cpp CubeMapTextureArray-compressedImage1
          */
         CompressedImage3D compressedImage(Int level, CompressedImage3D&& image);
 
@@ -632,7 +632,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @snippet MagnumGL.cpp CubeMapTextureArray-compressedImage2
+         * @snippet GL.cpp CubeMapTextureArray-compressedImage2
          */
         CompressedBufferImage3D compressedImage(Int level, CompressedBufferImage3D&& image, BufferUsage usage);
 
@@ -661,7 +661,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @snippet MagnumGL.cpp CubeMapTextureArray-subImage1
+         * @snippet GL.cpp CubeMapTextureArray-subImage1
          */
         Image3D subImage(Int level, const Range3Di& range, Image3D&& image);
 
@@ -698,7 +698,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @snippet MagnumGL.cpp CubeMapTextureArray-subImage2
+         * @snippet GL.cpp CubeMapTextureArray-subImage2
          */
         BufferImage3D subImage(Int level, const Range3Di& range, BufferImage3D&& image, BufferUsage usage);
 
@@ -733,7 +733,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @snippet MagnumGL.cpp CubeMapTextureArray-compressedSubImage1
+         * @snippet GL.cpp CubeMapTextureArray-compressedSubImage1
          */
         CompressedImage3D compressedSubImage(Int level, const Range3Di& range, CompressedImage3D&& image);
 
@@ -776,7 +776,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @snippet MagnumGL.cpp CubeMapTextureArray-compressedSubImage2
+         * @snippet GL.cpp CubeMapTextureArray-compressedSubImage2
          */
         CompressedBufferImage3D compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D&& image, BufferUsage usage);
         #endif

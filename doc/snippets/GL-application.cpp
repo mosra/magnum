@@ -36,7 +36,7 @@ using namespace Magnum;
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 /* Namespace used to avoid a conflict with MyApplication defined in
-   MagnumPlatform.cpp where it *has to* be in the root namespace */
+   Platform.cpp where it *has to* be in the root namespace */
 namespace C {
 /* [opengl-wrapping-nocreate] */
 class MyApplication: public Platform::Application {

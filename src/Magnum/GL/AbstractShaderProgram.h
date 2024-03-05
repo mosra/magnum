@@ -80,35 +80,35 @@ functions and properties:
 <li> **Attribute definitions** using @ref Attribute typedefs with location and
     type for configuring meshes, for example:
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-input-attributes
+    @snippet GL.cpp AbstractShaderProgram-input-attributes
 </li>
 <li> **Output attribute locations**, if desired, for example:
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-output-attributes
+    @snippet GL.cpp AbstractShaderProgram-output-attributes
 </li>
 <li> **Constructor**, which loads, compiles and attaches particular shaders and
     links the program together, for example:
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-constructor
+    @snippet GL.cpp AbstractShaderProgram-constructor
 </li>
 <li> **Uniform setting functions**, which will provide public interface for
     protected @ref setUniform() functions. For usability purposes you can
     implement also method chaining. Example:
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-uniforms
+    @snippet GL.cpp AbstractShaderProgram-uniforms
 </li>
 <li> **Texture and texture image binding functions** in which you bind the
     textures/images to particular texture/image units using
     @ref Texture::bind() "*Texture::bind()" /
     @ref Texture::bindImage() "*Texture::bindImage()" and similar, for example:
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-textures
+    @snippet GL.cpp AbstractShaderProgram-textures
 </li>
 <li> **Transform feedback setup function**, if needed, in which you bind
     buffers to particular indices using @ref TransformFeedback::attachBuffer()
     and similar, possibly with overloads based on desired use cases, e.g.:
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-xfb
+    @snippet GL.cpp AbstractShaderProgram-xfb
 </li>
 <li>And optionally, **return derived type from relevant draw/dispatch functions**
     to make it possible for users to easily chain draw calls; and on the other
@@ -120,7 +120,7 @@ functions and properties:
     @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION() or
     @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION():
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-subclass-macro
+    @snippet GL.cpp AbstractShaderProgram-subclass-macro
 </ul>
 
 @subsection GL-AbstractShaderProgram-attribute-location Binding attribute and fragment data location
@@ -163,7 +163,7 @@ out vec4 color;
 out vec3 normal;
 @endcode
 
-@snippet MagnumGL.cpp AbstractShaderProgram-binding
+@snippet GL.cpp AbstractShaderProgram-binding
 
 @see @ref maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
 @requires_gl30 Extension @gl_extension{EXT,gpu_shader4} for using
@@ -221,7 +221,7 @@ uniform mat4 transformationMatrix;
 uniform mat3 normalMatrix;
 @endcode
 
-@snippet MagnumGL.cpp AbstractShaderProgram-uniform-location
+@snippet GL.cpp AbstractShaderProgram-uniform-location
 
 @see @ref maxUniformLocations()
 @requires_gl43 Extension @gl_extension{ARB,explicit_uniform_location} for
@@ -266,7 +266,7 @@ layout(std140) uniform material {
 };
 @endcode
 
-@snippet MagnumGL.cpp AbstractShaderProgram-uniform-block-binding
+@snippet GL.cpp AbstractShaderProgram-uniform-block-binding
 
 @see @ref Buffer::maxUniformBindings()
 @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
@@ -324,7 +324,7 @@ uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 @endcode
 
-@snippet MagnumGL.cpp AbstractShaderProgram-texture-uniforms
+@snippet GL.cpp AbstractShaderProgram-texture-uniforms
 
 @see @ref Shader::maxTextureImageUnits(), @ref maxImageUnits()
 @requires_gl42 Extension @gl_extension{ARB,shading_language_420pack} for explicit
@@ -361,7 +361,7 @@ out block {
 out vec3 velocity;
 @endcode
 
-@snippet MagnumGL.cpp AbstractShaderProgram-xfb-outputs
+@snippet GL.cpp AbstractShaderProgram-xfb-outputs
 
 @see @ref TransformFeedback::maxInterleavedComponents(),
     @ref TransformFeedback::maxSeparateAttributes(),
@@ -387,7 +387,7 @@ needed (see @ref GL-Framebuffer-usage "Framebuffer documentation" for more
 information). In each draw event set all required shader parameters, bind
 specific framebuffer (if needed) and then call @ref draw(). Example:
 
-@snippet MagnumGL.cpp AbstractShaderProgram-rendering
+@snippet GL.cpp AbstractShaderProgram-rendering
 
 @section GL-AbstractShaderProgram-compute-workflow Compute workflow
 
@@ -497,14 +497,14 @@ creation capability while keeping also the simple constructor is the following:
 5.  The original @cpp MyShader(…) @ce constructor now only passes the result of
     @cpp compile() @ce to @cpp MyShader(CompileState&&) @ce.
 
-@snippet MagnumGL.cpp AbstractShaderProgram-async
+@snippet GL.cpp AbstractShaderProgram-async
 
 Usage-wise, it can look for example like below, with the last line waiting for
 linking to finish and making the shader ready to use. On drivers that don't
 perform any async compilation this will behave the same as if the construction
 was done the usual way.
 
-@snippet MagnumGL.cpp AbstractShaderProgram-async-usage
+@snippet GL.cpp AbstractShaderProgram-async-usage
 
 @section GL-AbstractShaderProgram-performance-optimization Performance optimizations
 

@@ -118,7 +118,7 @@ A glyph cache is created in an appropriate @ref PixelFormat and a size.
 @ref PixelFormat::R8Unorm is the usual choice, @ref PixelFormat::RGBA8Unorm is
 useful for emoji fonts or when arbitrary icon data are put into the cache.
 
-@snippet MagnumText-gl.cpp AbstractGlyphCache-filling-construct
+@snippet Text-gl.cpp AbstractGlyphCache-filling-construct
 
 The rest of this section describes low level usage of the glyph cache filling
 APIs, which are useful mainly when implementing an @ref AbstractFont itself or
@@ -132,7 +132,7 @@ don't necessarily need to be a font per se. Assuming the input images are
 stored in a simple array, and the goal is to put them all together into the
 cache and reference them later simply by their array indices.
 
-@snippet MagnumText.cpp AbstractGlyphCache-filling-images
+@snippet Text.cpp AbstractGlyphCache-filling-images
 
 @subsection Text-AbstractGlyphCache-filling-font Adding a font
 
@@ -144,7 +144,7 @@ it with a concrete @ref AbstractFont instance to look it up later with
 querying glyphs. In our case the glyph IDs are simply indices into the array,
 so the upper bound is the array size:
 
-@snippet MagnumText.cpp AbstractGlyphCache-filling-font
+@snippet Text.cpp AbstractGlyphCache-filling-font
 
 @subsection Text-AbstractGlyphCache-filling-atlas Reserving space in the glyph atlas
 
@@ -157,7 +157,7 @@ simple, rotations are disabled as well, see the atlas packer class docs for
 information about how to deal with them and achieve potentially better packing
 efficiency.
 
-@snippet MagnumText.cpp AbstractGlyphCache-filling-atlas
+@snippet Text.cpp AbstractGlyphCache-filling-atlas
 
 In case the layouting fails, triggering the assertion, the cache size was
 picked too small or there was already enough glyphs added that the new ones
@@ -179,7 +179,7 @@ this case is the third *glyph offset* argument, which describes how the glyph
 image is positioned relative to the text layouting cursor (used for example for
 letters *j* or *q* that reach below the baseline).
 
-@snippet MagnumText.cpp AbstractGlyphCache-filling-glyphs
+@snippet Text.cpp AbstractGlyphCache-filling-glyphs
 
 Important is to call @ref flushImage() at the end, which makes the glyph cache
 update its actual GPU-side texture based on what area of the image was updated.
@@ -230,14 +230,14 @@ glyph was added yet, the function returns @cpp 0 @ce, i.e. the invalid glyph.
 The @ref glyph() function then directly returns data for given glyph, or the
 invalid glyph data in case the glyph wasn't found.
 
-@snippet MagnumText.cpp AbstractGlyphCache-querying
+@snippet Text.cpp AbstractGlyphCache-querying
 
 As text rendering is potentially happening very often, batch
 @ref glyphIdsInto(), @ref glyphOffsets(), @ref glyphLayers() and
 @ref glyphRectangles() APIs are provided as well to trim down the amount of
 function calls and redundant lookups:
 
-@snippet MagnumText.cpp AbstractGlyphCache-querying-batch
+@snippet Text.cpp AbstractGlyphCache-querying-batch
 
 For invalid glyphs it's the caller choice to either use the invalid glyph
 as-is (as done above), leading to blank spaces in the text, or remember the

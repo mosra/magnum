@@ -95,7 +95,7 @@ A @ref CommandPoolCreateInfo doesn't need many inputs --- the only required is
 queue family index coming from @ref DeviceProperties of the device it's created
 on:
 
-@snippet MagnumVk.cpp CommandPool-creation
+@snippet Vk.cpp CommandPool-creation
 
 After that, you can allocate command buffers and use them. See
 @ref CommandBuffer class docs for details.

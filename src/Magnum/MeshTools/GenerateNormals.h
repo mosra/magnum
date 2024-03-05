@@ -51,7 +51,7 @@ indexed mesh, @ref duplicate() the vertices first, after the operation you
 might want to remove the duplicates again using @ref removeDuplicatesInPlace().
 Example usage:
 
-@snippet MagnumMeshTools.cpp generateFlatNormals
+@snippet MeshTools.cpp generateFlatNormals
 
 @see @ref generateFlatNormalsInto(), @ref generateSmoothNormals(),
     @ref MeshTools::CompileFlag::GenerateFlatNormals,
@@ -73,7 +73,7 @@ Useful when you need to interface for example with STL containers --- in that
 case @cpp #include @ce @ref Corrade/Containers/ArrayViewStl.h to get implicit
 conversions:
 
-@snippet MagnumMeshTools-stl.cpp generateFlatNormalsInto
+@snippet MeshTools-stl.cpp generateFlatNormalsInto
 
 @see @ref generateSmoothNormalsInto()
 */
@@ -161,7 +161,7 @@ Useful when you need to interface for example with STL containers --- in that
 case @cpp #include @ce @ref Corrade/Containers/ArrayViewStl.h to get implicit
 conversions:
 
-@snippet MagnumMeshTools-stl.cpp generateSmoothNormalsInto
+@snippet MeshTools-stl.cpp generateSmoothNormalsInto
 
 @see @ref generateFlatNormalsInto()
 */

@@ -145,7 +145,7 @@ either clamp or repeat wrapping. For a sRGB workflow don't forget to set the
 texture format to sRGB, to ensure the values are interpreted and interpolated
 done correctly.
 
-@snippet MagnumDebugTools-gl.cpp ColorMap
+@snippet DebugTools-gl.cpp ColorMap
 
 */
 namespace ColorMap {

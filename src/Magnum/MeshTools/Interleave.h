@@ -127,12 +127,12 @@ attributes have the same element count.
 
 Example usage:
 
-@snippet MagnumMeshTools-gl.cpp interleave1
+@snippet MeshTools-gl.cpp interleave1
 
 It's often desirable to align data for one vertex on 32bit boundaries. To
 achieve that, you can specify gaps between the attributes:
 
-@snippet MagnumMeshTools.cpp interleave2
+@snippet MeshTools.cpp interleave2
 
 All gap bytes are set zero. This way vertex stride is 24 bytes, without gaps it
 would be 21 bytes, causing possible performance loss.
@@ -253,13 +253,13 @@ instance. By default the attributes are tightly packed, you can add arbitrary
 padding using instances constructed via
 @ref Trade::MeshAttributeData::MeshAttributeData(Int). Example:
 
-@snippet MagnumMeshTools.cpp interleavedLayout-extra
+@snippet MeshTools.cpp interleavedLayout-extra
 
 This function doesn't preserve index data information in any way, making the
 output non-indexed. If you want to preserve index data, create a new indexed
 instance with attribute and vertex data transferred from the returned instance:
 
-@snippet MagnumMeshTools.cpp interleavedLayout-indices
+@snippet MeshTools.cpp interleavedLayout-indices
 
 This function will unconditionally allocate a new array to store all
 @ref Trade::MeshAttributeData, use @ref interleavedLayout(Trade::MeshData&&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags)

@@ -92,13 +92,13 @@ to convert an existing line @ref Trade::MeshData to a form accepted by this
 shader with @ref MeshTools::generateLines() and then compile it to a
 @ref GL::Mesh with @ref MeshTools::compileLines():
 
-@snippet MagnumShaders-gl.cpp LineGL-usage
+@snippet Shaders-gl.cpp LineGL-usage
 
 For rendering use @ref setTransformationProjectionMatrix(),
 @ref setColor(), @ref setWidth() and others. It's important to pass viewport
 size in @ref setViewportSize() as the line width is interpreted relative to it.
 
-@snippet MagnumShaders-gl.cpp LineGL-usage2
+@snippet Shaders-gl.cpp LineGL-usage2
 
 @subsection Shaders-LineGL-usage-triangulation Line triangulation
 
@@ -166,7 +166,7 @@ single-color background, you can @ref setBackgroundColor() to a color matching
 the background and keep blending disabled, but note that you may get artifacts
 if the lines are self-overlapping.
 
-@snippet MagnumShaders-gl.cpp LineGL-usage-antialiasing
+@snippet Shaders-gl.cpp LineGL-usage-antialiasing
 
 @subsection Shaders-LineGL-usage-3d Lines in 3D
 
@@ -221,7 +221,7 @@ equivalent to the @ref Shaders-LineGL-usage "snippet at the top" would look
 like this --- note that @ref setViewportSize() is an immediate uniform
 here as well, as it's assumed to be set globally and rarely changed:
 
-@snippet MagnumShaders-gl.cpp LineGL-ubo
+@snippet Shaders-gl.cpp LineGL-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw and supply desired
 material and draw count via @ref Configuration::setMaterialCount() and

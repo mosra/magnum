@@ -384,7 +384,7 @@ class EmscriptenApplication {
          * that, however, you need to explicitly @cpp return @ce after calling
          * it, as it can't exit the constructor on its own:
          *
-         * @snippet MagnumPlatform.cpp exit-from-constructor
+         * @snippet Platform.cpp exit-from-constructor
          *
          * When called from the main loop, the application exits cleanly
          * before next main loop iteration is executed.

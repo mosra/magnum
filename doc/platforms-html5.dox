@@ -551,12 +551,12 @@ requirement for unique buffer target binding, aligned buffer offset and
 stride and some other restrictions. The most prominent difference is that while
 the following was enough on desktop:
 
-@snippet MagnumGL.cpp Buffer-webgl-nope
+@snippet GL.cpp Buffer-webgl-nope
 
 On WebGL (even 2.0) you always have to initialize the buffers like this (and
 other target hints for UBOs etc.):
 
-@snippet MagnumGL.cpp Buffer-webgl
+@snippet GL.cpp Buffer-webgl
 
 See @ref GL-Buffer-webgl-restrictions "GL::Buffer",
 @ref GL-Mesh-webgl-restrictions "GL::Mesh",

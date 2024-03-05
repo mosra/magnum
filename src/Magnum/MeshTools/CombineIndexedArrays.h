@@ -168,7 +168,7 @@ avoid explicit verbose specification of tuple type, you can write it with help
 of some STL functions like shown below. Also if one index array is shared by
 more than one attribute array, just pass the index array more times. Example:
 
-@snippet MagnumMeshTools.cpp combineIndexedArrays
+@snippet MeshTools.cpp combineIndexedArrays
 
 See @ref combineIndexArrays() documentation for more information about the
 procedure.

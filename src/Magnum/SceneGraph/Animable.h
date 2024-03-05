@@ -79,7 +79,7 @@ First thing is to add @ref Animable feature to some object and implement
 to implement your animation, the function provides both absolute animation
 time and time delta. Example:
 
-@snippet MagnumSceneGraph.cpp Animable-usage-definition
+@snippet SceneGraph.cpp Animable-usage-definition
 
 Similarly to @ref Drawable feature, there is no way to just animate all the
 objects in the scene. You need to create animable group and use it to control
@@ -89,14 +89,14 @@ The animation is initially in stopped state and without repeat, see
 @ref setState(), @ref setRepeated() and @ref setRepeatCount() for more
 information.
 
-@snippet MagnumSceneGraph.cpp Animable-usage
+@snippet SceneGraph.cpp Animable-usage
 
 Animation step is performed by calling @ref AnimableGroup::step() in your draw
 event implementation. The function expects absolute time from relative to some
 fixed point in the past and time delta (i.e. duration of the frame). You can
 use @ref Timeline for that, see its documentation for more information.
 
-@snippet MagnumSceneGraph-gl.cpp Animable-usage-timeline
+@snippet SceneGraph-gl.cpp Animable-usage-timeline
 
 @section SceneGraph-Animable-multiple-groups Using multiple animable groups to improve performance
 

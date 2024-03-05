@@ -61,7 +61,7 @@ data from an already indexed array, use
 @ref removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<char>&)
 instead. Usage example:
 
-@snippet MagnumMeshTools.cpp removeDuplicates
+@snippet MeshTools.cpp removeDuplicates
 
 See @ref removeDuplicates(const Containers::StridedArrayView2D<const char>&)
 for a variant that doesn't modify the input data in any way but instead returns
@@ -220,7 +220,7 @@ duplicates in multiple incidental arrays --- first remove duplicates in each
 array separately and then combine the resulting index arrays to single index
 array, and reorder the data accordingly:
 
-@snippet MagnumMeshTools.cpp removeDuplicates-multiple
+@snippet MeshTools.cpp removeDuplicates-multiple
 */
 template<class Vector> CORRADE_DEPRECATED("use removeDuplicatesInPlace() instead") std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
 #endif

@@ -85,7 +85,7 @@ code that expects a vector type for any dimension. Solution is to
 unconditionally cast the value to a vector type or explicitly specify template
 parameters to choose a vector function overload. For example:
 
-@snippet MagnumMath.cpp Range-generic
+@snippet Math.cpp Range-generic
 */
 template<UnsignedInt dimensions, class T> class Range {
     template<UnsignedInt, class> friend class Range;
@@ -116,7 +116,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * For creating integer center ranges you can use @ref fromSize()
          * together with @ref padded(), for example:
          *
-         * @snippet MagnumMath.cpp Range-fromCenter-integer
+         * @snippet Math.cpp Range-fromCenter-integer
          */
         static Range<dimensions, T> fromCenter(const VectorType& center, const VectorType& halfSize) {
             return {center - halfSize, center + halfSize};
@@ -153,7 +153,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * Useful in combination with e.g. @ref minmax(), here for example to
          * calculate bounds of a triangle:
          *
-         * @snippet MagnumMath.cpp Range-construct-minmax3D
+         * @snippet Math.cpp Range-construct-minmax3D
          */
         constexpr /*implicit*/ Range(const Containers::Pair<VectorType, VectorType>& minmax) noexcept:
             _min{minmax.first()}, _max{minmax.second()} {}
@@ -170,7 +170,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
          *
-         * @snippet MagnumMath.cpp Range-conversion
+         * @snippet Math.cpp Range-conversion
          */
         template<class U> constexpr explicit Range(const Range<dimensions, U>& other) noexcept: _min(other._min), _max(other._max) {}
 
@@ -454,7 +454,7 @@ template<class T> class Range2D: public Range<2, T> {
          * Useful in combination with e.g. @ref minmax(), here for example to
          * calculate texture bounds:
          *
-         * @snippet MagnumMath.cpp Range-construct-minmax2D
+         * @snippet Math.cpp Range-construct-minmax2D
          */
         constexpr /*implicit*/ Range2D(const Containers::Pair<Vector2<T>, Vector2<T>>& minmax) noexcept: Range<2, T>{minmax.first(), minmax.second()} {}
 
@@ -605,7 +605,7 @@ template<class T> class Range3D: public Range<3, T> {
          * Useful in combination with e.g. @ref minmax(), here for example to
          * calculate bounds of a triangle:
          *
-         * @snippet MagnumMath.cpp Range-construct-minmax3D
+         * @snippet Math.cpp Range-construct-minmax3D
          */
         constexpr /*implicit*/ Range3D(const Containers::Pair<Vector3<T>, Vector3<T>>& minmax) noexcept: Range<3, T>{minmax.first(), minmax.second()} {}
 

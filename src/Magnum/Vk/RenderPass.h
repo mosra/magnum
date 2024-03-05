@@ -84,7 +84,7 @@ pass, in this case it'll get transferred to the host, as indicated by
 @ref ImageLayout::TransferSource. That will also need an explicit subpass
 dependency, as explained below.
 
-@snippet MagnumVk.cpp RenderPass-creation
+@snippet Vk.cpp RenderPass-creation
 
 <b></b>
 
@@ -120,7 +120,7 @@ some point* before the start of the renderpass, and the transition to
 In this case the initial transition is fine; for the transfer layout transition
 we however need it to happen before we do the actual transfer:
 
-@snippet MagnumVk.cpp RenderPass-dependencies
+@snippet Vk.cpp RenderPass-dependencies
 
 @section Vk-RenderPass-usage Render pass recording
 
@@ -132,7 +132,7 @@ and a clear value for each attachment that had
 @ref AttachmentLoadOperation::Clear specified. After that you can execute
 @ref CommandBuffer commands that are allowed inside a render pass:
 
-@snippet MagnumVk.cpp RenderPass-usage-begin
+@snippet Vk.cpp RenderPass-usage-begin
 
 Advancing to the next subpass (if any) can be done with
 @ref CommandBuffer::nextSubpass() "nextSubpass()", and finally
@@ -140,7 +140,7 @@ Advancing to the next subpass (if any) can be done with
 with render pass begin, these make Vulkan schedule implicit layout transitions
 between subpasses and at render pass end.
 
-@snippet MagnumVk.cpp RenderPass-usage-end
+@snippet Vk.cpp RenderPass-usage-end
 */
 class MAGNUM_VK_EXPORT RenderPass {
     public:

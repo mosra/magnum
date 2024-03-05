@@ -246,7 +246,7 @@ class CORRADE_DEPRECATED("use SceneData instead") MAGNUM_TRADE_EXPORT ObjectData
          *
          * The corresponding code is as follows:
          *
-         * @snippet MagnumTrade.cpp ObjectData2D-transformation
+         * @snippet Trade.cpp ObjectData2D-transformation
          *
          * @see @ref flags()
          */

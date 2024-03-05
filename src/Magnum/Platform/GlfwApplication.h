@@ -289,7 +289,7 @@ class GlfwApplication {
          * you need to explicitly @cpp return @ce after calling it, as it can't
          * exit the constructor on its own:
          *
-         * @snippet MagnumPlatform.cpp exit-from-constructor
+         * @snippet Platform.cpp exit-from-constructor
          */
         void exit(int exitCode = 0);
 

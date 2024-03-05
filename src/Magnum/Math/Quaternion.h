@@ -502,7 +502,7 @@ template<class T> class Quaternion {
          * back, you do the following, replace it with an X axis for a zero
          * angle:
          *
-         * @snippet MagnumMath.cpp Quaternion-axis-nan
+         * @snippet Math.cpp Quaternion-axis-nan
          *
          * @see @ref isNormalized(), @ref rotation()
          */
@@ -523,7 +523,7 @@ template<class T> class Quaternion {
          * Expects that the quaternion is normalized. Returns the angles in an
          * XYZ order, you can combine them back to a quaternion like this:
          *
-         * @snippet MagnumMath.cpp Quaternion-fromEuler
+         * @snippet Math.cpp Quaternion-fromEuler
          *
          * @see @ref rotation(), @ref DualQuaternion::rotation()
          */

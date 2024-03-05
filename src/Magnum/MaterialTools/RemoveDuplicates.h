@@ -66,7 +66,7 @@ The output index array can be passed to @ref SceneTools::mapIndexField() to
 update a @ref Trade::SceneField::MeshMaterial field to reference only the
 unique materials. For example:
 
-@snippet MagnumMaterialTools.cpp removeDuplicatesInPlace
+@snippet MaterialTools.cpp removeDuplicatesInPlace
 
 @see @ref removeDuplicatesInPlaceInto()
 */

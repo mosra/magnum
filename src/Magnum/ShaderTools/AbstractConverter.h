@@ -371,7 +371,7 @@ As is common with other plugin interfaces, the
 file extension, load an appropriate validator plugin for given format and
 validate it:
 
-@snippet MagnumShaderTools.cpp AbstractConverter-usage-validation
+@snippet ShaderTools.cpp AbstractConverter-usage-validation
 
 In most cases, the validation result depends on the format version and target
 environment used. Formats and versions set by @ref setInputFormat() /
@@ -390,7 +390,7 @@ directly on data, the plugin would have no chance to know the desired input /
 output format otherwise. Same goes for the shader stage, which has to be
 supplied explicitly:
 
-@snippet MagnumShaderTools.cpp AbstractConverter-usage-compilation
+@snippet ShaderTools.cpp AbstractConverter-usage-compilation
 
 @todoc document linking when SpirvToolsShaderConverter implements that
 
@@ -420,7 +420,7 @@ load the top-level file manually and pass it to @ref validateData() /
 @ref convertDataToData() / @ref linkDataToData(), any converter supporting the
 callback feature handles that correctly.
 
-@snippet MagnumShaderTools.cpp AbstractConverter-usage-callbacks
+@snippet ShaderTools.cpp AbstractConverter-usage-callbacks
 
 For converters that don't support @ref ConverterFeature::InputFileCallback
 directly, the base @ref validateFile() / @ref convertFileToFile() /
@@ -632,7 +632,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * See the overload below for a more convenient type-safe way to pass
          * the user data pointer.
          *
-         * @snippet MagnumShaderTools.cpp AbstractConverter-setInputFileCallback
+         * @snippet ShaderTools.cpp AbstractConverter-setInputFileCallback
          *
          * @see @ref ShaderTools-AbstractConverter-usage-callbacks
          */
@@ -653,7 +653,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref Corrade::Utility::Resource instance to avoid a potentially slow
          * resource group lookup every time:
          *
-         * @snippet MagnumShaderTools.cpp AbstractConverter-setInputFileCallback-template
+         * @snippet ShaderTools.cpp AbstractConverter-setInputFileCallback-template
          *
          * @see @ref ShaderTools-AbstractConverter-usage-callbacks
          */
@@ -1199,7 +1199,7 @@ Same string as returned by
 to be used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
 interface string by hand every time the version gets bumped:
 
-@snippet MagnumShaderTools.cpp MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE
+@snippet ShaderTools.cpp MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE
 
 The interface string version gets increased on every ABI break to prevent
 silent crashes and memory corruption. Plugins built against the previous

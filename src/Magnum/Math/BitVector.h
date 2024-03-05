@@ -66,7 +66,7 @@ Value at position 0 is the lowest bit of the first byte passed in constructor.
 Value at position 8 is the lowest bit of the second byte passed in constructor.
 For example:
 
-@snippet MagnumMath-cpp14.cpp BitVector-indexing
+@snippet Math-cpp14.cpp BitVector-indexing
 
 @section Math-BitVector-boolean Boolean operations
 
@@ -80,7 +80,7 @@ returning @cpp true @ce only if all bits are set, this means the condition will
 be passed only if @cpp b @ce is around @cpp a @ce in *all dimensions*, and work
 the same way as if the variables were just scalars:
 
-@snippet MagnumMath.cpp BitVector-boolean
+@snippet Math.cpp BitVector-boolean
 
 @see @ref Magnum::BitVector2, @ref Magnum::BitVector3, @ref Magnum::BitVector4
 */
@@ -339,7 +339,7 @@ template<std::size_t size> class BitVector {
 In order to avoid potential confusion, prints the value as a comma-separated sequence of binary literals, so the output corresponds to how the value would
 be constructed. For example,
 
-@snippet MagnumMath-cpp14.cpp BitVector-debug
+@snippet Math-cpp14.cpp BitVector-debug
 
 <b></b>
 

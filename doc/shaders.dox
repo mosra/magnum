@@ -65,7 +65,7 @@ position in the buffer. See @ref GL::Mesh::addVertexBuffer() for details and
 usage examples. Example mesh configuration for the @ref Shaders::PhongGL
 shader:
 
-@snippet MagnumShaders-gl.cpp shaders-setup
+@snippet Shaders-gl.cpp shaders-setup
 
 Each shader then has its own set of configuration functions. Some configuration
 is static, specified commonly as flags in constructor, directly affecting
@@ -87,7 +87,7 @@ Example configuration and rendering using @link Shaders::PhongGL @endlink ---
 by default it's just colored and uses a single light, and we set a color of
 both in addition to transformation, projection and normal matrices:
 
-@snippet MagnumShaders-gl.cpp shaders-classic
+@snippet Shaders-gl.cpp shaders-classic
 
 @subsection shaders-usage-ubo Using uniform buffers
 
@@ -117,7 +117,7 @@ then via @ref Shaders::PhongDrawUniform, @ref Shaders::PhongMaterialUniform and
 fields directly, the data layout may be non-trivial and it's thus recommended
 to use the setters unless they prove to be a performance bottleneck:
 
-@snippet MagnumShaders-gl.cpp shaders-ubo
+@snippet Shaders-gl.cpp shaders-ubo
 
 Altogether, this results in the same output as in the classic uniform case
 shown above. Similarly to the classic uniforms, default-constructed structures
@@ -169,7 +169,7 @@ The following snippet shows drawing three different meshes, where two of them
 share the same material definition. The projection and light buffer is the same
 as above:
 
-@snippet MagnumShaders-gl.cpp shaders-multi
+@snippet Shaders-gl.cpp shaders-multi
 
 While this minimizes the state changes to just a single immediate uniform being
 changed between draws, it's possible to go even further by using
@@ -185,7 +185,7 @@ which will make it use the @glsl gl_DrawID @ce builtin to pick the per-draw
 parameters on its own. The above snippet modified for multidraw would then look
 like this, uniform upload and binding is the same as before:
 
-@snippet MagnumShaders-gl.cpp shaders-multidraw
+@snippet Shaders-gl.cpp shaders-multidraw
 
 <b></b>
 
@@ -233,7 +233,7 @@ it's just the same sphere drawn three times in different locations and with a
 different material applied. Note that the per-instance color is achieved by
 using the usual vertex color attribute, only instanced:
 
-@snippet MagnumShaders-gl.cpp shaders-instancing
+@snippet Shaders-gl.cpp shaders-instancing
 
 @subsection shaders-usage-skinning Skinning
 
@@ -246,7 +246,7 @@ hierarchy and associated animations. The following snippet shows compiling a
 set up shader parameters and finally uploading calculated joint matrices to
 perform the skinning animation:
 
-@snippet MagnumShaders-gl.cpp shaders-skinning
+@snippet Shaders-gl.cpp shaders-skinning
 
 The above hardcodes the joint counts in the shader, which makes it the most
 optimal for rendering given mesh. However, with multiple skinned meshes it'd
@@ -257,7 +257,7 @@ for a particular draw upload just a subset of joint matrices the mesh would
 reference and set the count of actually used per-vertex joints via
 @ref Shaders::PhongGL::setPerVertexJointCount(). Thus, compared to above:
 
-@snippet MagnumShaders-gl.cpp shaders-skinning-dynamic
+@snippet Shaders-gl.cpp shaders-skinning-dynamic
 
 @subsection shaders-usage-textures Using textures
 
@@ -268,7 +268,7 @@ shaders are just colored. Enabling a texture is done via a flag (such as
 an appropriate `bind*Texture()` call. In most cases the texture value is
 multiplied with the corresponding color uniform.
 
-@snippet MagnumShaders-gl.cpp shaders-textures
+@snippet Shaders-gl.cpp shaders-textures
 
 All shaders that support textures are also able to apply arbitrary
 transformation to the texture coordinate attribute by enabling
@@ -312,7 +312,7 @@ and light buffers are the same as before, there's a new per-draw
 @ref Shaders::TextureTransformationUniform buffer supplying the layer
 information:
 
-@snippet MagnumShaders-gl.cpp shaders-texture-arrays
+@snippet Shaders-gl.cpp shaders-texture-arrays
 
 While the primary use case of texture arrays is with uniform buffers and
 multidraw, they work in the classic uniform workflow as well --- use
@@ -336,7 +336,7 @@ forming temporary @ref Shaders::FlatGL::CompileState "Shaders::*GL::CompileState
 instances, then possibly doing other work until it's completed, and finally
 constructing final shader instances out of the temporary state:
 
-@snippet MagnumShaders-gl.cpp shaders-async
+@snippet Shaders-gl.cpp shaders-async
 
 The above code will work correctly also on drivers that implement async
 compilation partially or not at all --- there
@@ -355,7 +355,7 @@ Definition of all generic attributes is available in the
 @ref Shaders::GenericGL class. Setup of the mesh @ref shaders-usage "shown above"
 using generic attributes could then look like this:
 
-@snippet MagnumShaders-gl.cpp shaders-generic
+@snippet Shaders-gl.cpp shaders-generic
 
 Note that in this particular case both setups are equivalent, because
 @ref Shaders::PhongGL attribute definitions are just aliases to the generic
@@ -364,7 +364,7 @@ above, or use for example @ref Shaders::FlatGL3D or even
 @ref Shaders::MeshVisualizerGL3D with the same mesh reconfiguration. The unused
 attributes will be simply ignored.
 
-@snippet MagnumShaders-gl.cpp shaders-meshvisualizer
+@snippet Shaders-gl.cpp shaders-meshvisualizer
 
 The @ref MeshTools::compile() utility configures meshes using generic vertex
 attribute definitions to make them usable with any builtin shader.
@@ -376,6 +376,6 @@ offer an object ID output as well. A setup equivalent to what's done in Flat
 shader's @ref Shaders-FlatGL-object-id but using the generic definitions would
 look like this:
 
-@snippet MagnumShaders-gl.cpp shaders-generic-object-id
+@snippet Shaders-gl.cpp shaders-generic-object-id
 */
 }

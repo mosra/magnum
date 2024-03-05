@@ -82,7 +82,7 @@ template<class T> class CubicHermite {
          * the end of a curve, simply pass a dummy Bézier segment that
          * satisfies this constraint as the other parameter:
          *
-         * @snippet MagnumMath.cpp CubicHermite-fromBezier
+         * @snippet Math.cpp CubicHermite-fromBezier
          *
          * Enabled only on vector underlying types. See
          * @ref Bezier::fromCubicHermite() for the inverse operation.

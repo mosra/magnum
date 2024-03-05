@@ -55,7 +55,7 @@ for more textures or store more than one data in it.
 
 Example usage:
 
-@snippet MagnumGL.cpp BufferTexture-usage
+@snippet GL.cpp BufferTexture-usage
 
 In shader, the texture is used via @glsl samplerBuffer @ce,
 @glsl isamplerBuffer @ce or @glsl usamplerBuffer @ce. Unlike in classic

@@ -53,7 +53,7 @@ Similarly to @ref Image, a view is created by passing one of the
 subclass as @ref ImageCreateInfo, but other combinations are possible as well
 --- see docs of each subclass for more information.
 
-@snippet MagnumVk.cpp ImageView-creation
+@snippet Vk.cpp ImageView-creation
 
 While it would be *technically* possible to infer a view type from the
 originating @ref Image and thus avoid having to specify the type twice, the

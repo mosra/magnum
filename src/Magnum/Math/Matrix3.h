@@ -74,7 +74,7 @@ recommended usage is by creating elementary transformation matrices with
 and multiplying them together to form the final transformation --- the
 rightmost transformation is applied first, leftmost last:
 
-@snippet MagnumMath.cpp Matrix3-usage
+@snippet Math.cpp Matrix3-usage
 
 Conversely, the transformation parts can be extracted back using the member
 @ref rotation() const "rotation()", @ref scaling() const "scaling()" and their
@@ -440,7 +440,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @ref determinant() is negative, and apply the sign flip to the
          * corresponding scaling component instead:
          *
-         * @snippet MagnumMath.cpp Matrix3-rotation-extract-reflection
+         * @snippet Math.cpp Matrix3-rotation-extract-reflection
          *
          * @note Extracting rotation part of a matrix with this function may
          *      cause assertions in case you have unsanitized input (for

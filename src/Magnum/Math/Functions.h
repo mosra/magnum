@@ -71,11 +71,11 @@ namespace Implementation {
 
 Example usage:
 
-@snippet MagnumMath.cpp div
+@snippet Math.cpp div
 
 Equivalent to the following, but possibly done in a single CPU instruction:
 
-@snippet MagnumMath.cpp div-equivalent
+@snippet Math.cpp div-equivalent
 */
 template<class Integral> inline Containers::Pair<Integral, Integral> div(Integral x, Integral y) {
     static_assert(IsIntegral<Integral>::value && IsScalar<Integral>::value,
@@ -368,7 +368,7 @@ template<std::size_t size, class T> inline Containers::Pair<Vector<size, T>, Vec
 Values smaller than @p min are set to @p min, values larger than @p max are
 set to @p max. Equivalent to:
 
-@snippet MagnumMath.cpp clamp
+@snippet Math.cpp clamp
 
 <em>NaN</em>s passed in @p value parameter are propagated.
 @see @ref min(), @ref max()
@@ -569,7 +569,7 @@ another --- for example, the following snippet maps `a` from a range
 @f$ [ -1; +1 ] @f$ to a range @f$ [ 5\degree; 15\degree ] @f$; the second
 expression combines that with @ref clamp() to ensure the value is in bounds:
 
-@snippet MagnumMath.cpp lerpInverted-map
+@snippet Math.cpp lerpInverted-map
 
 @see @ref select()
 */

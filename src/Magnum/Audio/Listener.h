@@ -50,7 +50,7 @@ features, managed in one or more @ref PlayableGroup instances. In order to
 reflect transformation changes affecting the scene, you need to call
 @ref update() after each change (or simply every frame):
 
-@snippet MagnumAudio-scenegraph.cpp Listener-usage
+@snippet Audio-scenegraph.cpp Listener-usage
 
 For two-dimensional scenes simply replace all `3D` with `2D`. See @ref Playable
 for more info about how to set up and group audio sources.

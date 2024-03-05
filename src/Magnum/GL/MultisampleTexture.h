@@ -78,7 +78,7 @@ also @ref AbstractTexture documentation for more information.
 As multisample textures have no sampler state, the only thing you need is to
 set storage:
 
-@snippet MagnumGL.cpp MultisampleTexture-usage
+@snippet GL.cpp MultisampleTexture-usage
 
 In shader, the texture is used via @glsl sampler2DMS @ce / @glsl sampler2DMSArray @ce,
 @glsl isampler2DMS @ce / @glsl isampler2DMSArray @ce or @glsl usampler2DMS @ce

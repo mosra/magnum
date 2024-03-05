@@ -82,7 +82,7 @@ compressed properties through @ref compressedStorage() and
 @ref compressedFormat(). Example of uploading the image to a
 @link GL::Texture @endlink:
 
-@snippet MagnumTrade.cpp ImageData-usage
+@snippet Trade.cpp ImageData-usage
 
 Uncompressed image data instances provide pixel data access via @ref pixels()
 in the same way as the @ref Image class. See @ref Image-pixel-access "its documentation for more information".
@@ -97,7 +97,7 @@ there's the @ref mutableData() and @ref mutablePixels() set of functions. To
 use these, you need to check that the data are mutable using @ref dataFlags()
 first. The following snippet flips the R and B channels of the imported image:
 
-@snippet MagnumTrade.cpp ImageData-usage-mutable
+@snippet Trade.cpp ImageData-usage-mutable
 
 @section Trade-ImageData-populating Populating an instance
 
@@ -106,7 +106,7 @@ An @ref ImageData instance by default takes over the ownership of an
 with size and either @ref PixelFormat or @ref CompressedPixelFormat, similarly
 to the @ref Image and @ref CompressedImage classes:
 
-@snippet MagnumTrade.cpp ImageData-populating
+@snippet Trade.cpp ImageData-populating
 
 The constructor internally checks that the passed array is large enough and as
 with other image classes, care must be taken in presence of
@@ -114,12 +114,12 @@ non-four-byte-aligned rows. This often closely depends on behavior of the code
 or library that operates with the image data and the recommended way is to pad
 the row data to satisfy the alignment:
 
-@snippet MagnumTrade.cpp ImageData-populating-padding
+@snippet Trade.cpp ImageData-populating-padding
 
 Alternatively, if padding is not possible or desirable, you can pass a
 @ref PixelStorage instance with the alignment overriden to @cpp 1 @ce:
 
-@snippet MagnumTrade.cpp ImageData-populating-alignment
+@snippet Trade.cpp ImageData-populating-alignment
 
 As with @ref Image / @ref ImageView, this class supports extra storage
 parameters and implementation-specific format specification, if the importer
@@ -134,7 +134,7 @@ global data etc. For that, instead of moving in an
 mutability and ownership together with an
 @relativeref{Corrade,Containers::ArrayView}:
 
-@snippet MagnumTrade.cpp ImageData-populating-non-owned
+@snippet Trade.cpp ImageData-populating-non-owned
 
 @see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
 */

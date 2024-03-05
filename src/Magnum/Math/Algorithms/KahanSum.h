@@ -52,14 +52,14 @@ significantly reduces numerical error in the total. See the
 article on Wikipedia for an in-depth explanation. Example with summation of a
 hundred million ones:
 
-@snippet MagnumMathAlgorithms.cpp kahanSum
+@snippet MathAlgorithms.cpp kahanSum
 
 If required, it is also possible to use this algorithm on non-contiguous ranges
 or single values (for example when calculating sum of pixel values in an image
 with some row padding or when the inputs are generated / converted from other
 values):
 
-@snippet MagnumMathAlgorithms.cpp kahanSum-iterative
+@snippet MathAlgorithms.cpp kahanSum-iterative
 */
 template<class Iterator, class T = typename std::decay<decltype(*std::declval<Iterator>())>::type> T kahanSum(Iterator begin, Iterator end, T sum = T(0), T* compensation = nullptr) {
     T c = compensation ? *compensation : T(0);

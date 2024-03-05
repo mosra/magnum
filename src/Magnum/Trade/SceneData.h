@@ -829,7 +829,7 @@ The most straightforward usage is constructing an instance from a
 @ref SceneField and a strided view for the field data and object mapping. The
 @ref SceneMappingType and @ref SceneFieldType get inferred from the view types:
 
-@snippet MagnumTrade.cpp SceneFieldData-usage
+@snippet Trade.cpp SceneFieldData-usage
 
 Alternatively, you can pass typeless @cpp const void @ce or 2D views and supply
 @ref SceneMappingType and @ref SceneFieldType explicitly.
@@ -844,7 +844,7 @@ is useful mainly to avoid pointer patching during data serialization, but also
 for example when the data layout is static (and thus can be defined at compile
 time), but the actual data is allocated / populated at runtime.
 
-@snippet MagnumTrade.cpp SceneFieldData-usage-offset-only
+@snippet Trade.cpp SceneFieldData-usage-offset-only
 
 See @ref Trade-SceneData-populating-non-owned "the corresponding SceneData documentation"
 for a complete usage example. Offset-only fields are marked with
@@ -888,7 +888,7 @@ particular type can correspond to more than one @ref SceneFieldType (such as
 @ref SceneFieldType::StringRangeNullTerminated32 being both represented with an
 @relativeref{Magnum,UnsignedInt}), the type has to be specified explicitly:
 
-@snippet MagnumTrade.cpp SceneFieldData-usage-strings
+@snippet Trade.cpp SceneFieldData-usage-strings
 
 Offset-only constructors have it similar, containing an extra base string
 offset. Due to packing in the internal layout, string fields can't be arrays.
@@ -1644,7 +1644,7 @@ upper bound to all object identifiers referenced by the scene, but as mentioned
 above, not all of them may be actual nodes so we don't allocate actual scene
 graph object instances for them yet. Alternatively, for very sparse ranges, a hashmap could be also used here.
 
-@snippet MagnumTrade.cpp SceneData-usage1
+@snippet Trade.cpp SceneData-usage1
 
 <b></b>
 
@@ -1654,7 +1654,7 @@ Next we go through objects that have an associated parent using
 @ref parentsAsArray(). Those are the actual nodes we want, so we allocate a
 scene graph object for each ...
 
-@snippet MagnumTrade.cpp SceneData-usage2
+@snippet Trade.cpp SceneData-usage2
 
 @m_class{m-noindent}
 
@@ -1666,7 +1666,7 @@ object is already allocated by the time we pass it to
 @ref SceneGraph::Object::setParent() --- generally there's no guarantee that a
 parent appears in the field before its children.
 
-@snippet MagnumTrade.cpp SceneData-usage3
+@snippet Trade.cpp SceneData-usage3
 
 With the hierarchy done, we assign transformations. The transformation field
 can be present for only a subset of the nodes, with the rest implicitly having
@@ -1676,7 +1676,7 @@ nodes, so we only set it for objects present in our hierarchy. The
 transformation / rotation / scaling fields into a matrix for us, if the scene
 contains only those.
 
-@snippet MagnumTrade.cpp SceneData-usage4
+@snippet Trade.cpp SceneData-usage4
 
 Finally, assuming there's a `Drawable` class derived from
 @ref SceneGraph::Drawable that accepts a mesh and material ID (retrieving them
@@ -1685,7 +1685,7 @@ subsequently from @ref AbstractImporter::mesh() /
 assigning actual meshes to corresponding scene nodes is just another
 @cpp for @ce loop over @ref meshesMaterialsAsArray():
 
-@snippet MagnumTrade.cpp SceneData-usage5
+@snippet Trade.cpp SceneData-usage5
 
 <b></b>
 
@@ -1716,7 +1716,7 @@ in a textual form, @ref GltfImporter will always parse the data into canonical
 32-bit types. With that assumption, the above snippet that used
 @ref transformations3DAsArray() can be rewritten to a zero-copy form like this:
 
-@snippet MagnumTrade.cpp SceneData-usage-advanced
+@snippet Trade.cpp SceneData-usage-advanced
 
 @section Trade-SceneData-usage-per-object Per-object access
 
@@ -1735,7 +1735,7 @@ For example, together with an @ref AbstractImporter instance the scene comes
 from, the following snippet lists meshes and material names that are associated
 with a "Chair" object, assuming such object exists:
 
-@snippet MagnumTrade.cpp SceneData-per-object
+@snippet Trade.cpp SceneData-per-object
 
 The actual object ID lookup is done by @ref findFieldObjectOffset() and
 depending on what @ref SceneFieldFlags are present for given field, it can be
@@ -1756,7 +1756,7 @@ the data are mutable using @ref dataFlags() first. The following snippet
 updates all transformations with the live state of a scene imported earlier,
 for example in order to bake in a certain animation state:
 
-@snippet MagnumTrade.cpp SceneData-usage-mutable
+@snippet Trade.cpp SceneData-usage-mutable
 
 @section Trade-SceneData-populating Populating an instance
 
@@ -1768,7 +1768,7 @@ stored together in a @cpp struct @ce, while a subset of them has a mesh and a
 material assigned, which are stored in separate arrays. And because the scene
 is small, we save space by using just 16-bit indices for everything.
 
-@snippet MagnumTrade.cpp SceneData-populating
+@snippet Trade.cpp SceneData-populating
 
 Note that the above layout is just an example, you're free to choose any
 representation that matches your use case best, with fields interleaved
@@ -1786,7 +1786,7 @@ mutability and ownership together with an
 @ref SceneData(SceneMappingType, UnsignedLong, DataFlags, Containers::ArrayView<const void>, Containers::Array<SceneFieldData>&&, const void*)
 constructor:
 
-@snippet MagnumTrade.cpp SceneData-populating-non-owned
+@snippet Trade.cpp SceneData-populating-non-owned
 
 The @ref SceneFieldData list is still implicitly allocated in the above case,
 but it can also be defined externally and referenced via
@@ -1796,7 +1796,7 @@ layout is constant but the actual data is allocated / populated at runtime, the
 and then subsequently referenced from a @ref SceneData with a concrete data
 array:
 
-@snippet MagnumTrade.cpp SceneData-populating-offset-only
+@snippet Trade.cpp SceneData-populating-offset-only
 
 See also the @ref Trade-SceneFieldData-usage-offset-only "corresponding SceneFieldData documentation for offset-only fields".
 
@@ -1814,7 +1814,7 @@ cells, and we save calculated frustums for inspection as well. For the new data
 we allocate object IDs from a range after `nodeCount`, and copy in the actual
 data.
 
-@snippet MagnumTrade.cpp SceneData-populating-custom1
+@snippet Trade.cpp SceneData-populating-custom1
 
 Then, similarly as with @ref MeshData, the scene can have custom fields as
 well, created with @ref sceneFieldCustom(). We create one for the cell light
@@ -1822,13 +1822,13 @@ reference array and one for the cell frustum and then use them to annotate
 the views allocated above. Note that we also increased the total object count
 to include the light culling grid cells as well.
 
-@snippet MagnumTrade.cpp SceneData-populating-custom2
+@snippet Trade.cpp SceneData-populating-custom2
 
 Later, the fields can be retrieved back using the same custom identifiers.
 The light references are actually a 2D array (8 lights for each cell), so a
 @cpp [] @ce needs to be used:
 
-@snippet MagnumTrade.cpp SceneData-populating-custom-retrieve
+@snippet Trade.cpp SceneData-populating-custom-retrieve
 
 @subsection Trade-SceneData-populating-strings String fields
 
@@ -1874,12 +1874,12 @@ assuming there's enough stored data --- the space efficiency is the same as if
 a just a numeric value of an 8-bit @cpp enum @ce would be stored, but here it
 includes human-readable string names.
 
-@snippet MagnumTrade.cpp SceneData-populating-strings
+@snippet Trade.cpp SceneData-populating-strings
 
 While there's many options how to store the string, retrieving of any string
 @ref SceneFieldType can be conveniently done using @ref fieldStrings():
 
-@snippet MagnumTrade.cpp SceneData-populating-strings-retrieve
+@snippet Trade.cpp SceneData-populating-strings-retrieve
 */
 class MAGNUM_TRADE_EXPORT SceneData {
     public:

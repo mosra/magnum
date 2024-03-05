@@ -65,11 +65,11 @@ ratio correction.
 
 Common setup example for 2D scenes:
 
-@snippet MagnumSceneGraph.cpp Camera-2D
+@snippet SceneGraph.cpp Camera-2D
 
 Common setup example for 3D scenes:
 
-@snippet MagnumSceneGraph.cpp Camera-3D
+@snippet SceneGraph.cpp Camera-3D
 
 @section SceneGraph-Camera-explicit-specializations Explicit template specializations
 
@@ -160,13 +160,13 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          * to floating-point coordinates on near XY plane with origin at camera
          * position and Y up can be done using the following snippet:
          *
-         * @snippet MagnumSceneGraph-gl.cpp Camera-projectionSize
+         * @snippet SceneGraph-gl.cpp Camera-projectionSize
          *
          * This is position relative to camera transformation, getting absolute
          * transformation in 2D scene can be done for example using
          * @ref SceneGraph::Object::absoluteTransformation():
          *
-         * @snippet MagnumSceneGraph-gl.cpp Camera-projectionSize-absolute
+         * @snippet SceneGraph-gl.cpp Camera-projectionSize-absolute
          *
          * @see @ref projectionMatrix()
          */

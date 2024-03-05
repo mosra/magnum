@@ -48,7 +48,7 @@ If you include @ref Magnum.h, you get these predefined macros:
 
 Example usage:
 
-@snippet MagnumGL.cpp portability-targets
+@snippet GL.cpp portability-targets
 
 Each feature is marked accordingly if it is not available in some targets. See
 also @ref requires-gl, @ref requires-gles30, @ref requires-gles-only,
@@ -79,7 +79,7 @@ thus the decision cannot be made at compile time. Header @ref GL/Extensions.h
 contains list of extensions, which you can pass to
 @ref GL::Context::isExtensionSupported() and decide based on that:
 
-@snippet MagnumGL.cpp portability-extensions
+@snippet GL.cpp portability-extensions
 
 You can also decide on particular OpenGL version using
 @ref GL::Context::isVersionSupported(), but remember that some features from
@@ -91,7 +91,7 @@ extensions, you can use macros @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED() or
 @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED() to add mandatory requirement of given
 extension or version:
 
-@snippet MagnumGL.cpp portability-extension-assert
+@snippet GL.cpp portability-extension-assert
 
 Each class, function or enum value is marked accordingly if it needs specific
 extension or specific OpenGL version. Various classes in Magnum are taking
@@ -115,7 +115,7 @@ you can decide on the syntax in your shader code. You can also use
 version from a list:
 
 <p>
-@snippet MagnumGL.cpp portability-shaders
+@snippet GL.cpp portability-shaders
 </p>
 
 @code{.vert}
@@ -141,7 +141,7 @@ be available in given GLSL version (e.g. causing compilation errors). You can
 use @ref GL::Context::isExtensionSupported(Version) const to check that the
 extension is present in given version:
 
-@snippet MagnumGL.cpp portability-shaders-bind
+@snippet GL.cpp portability-shaders-bind
 
 See also @ref GL::AbstractShaderProgram class documentation for information
 about specifying attribute location, uniform location and texture binding unit
@@ -173,7 +173,7 @@ and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
 functions will work on both without changes, the main difference might (or
 might not, depending what you use) be in particular event handlers:
 
-@snippet MagnumPlatform-portability.cpp application
+@snippet Platform-portability.cpp application
 
 And corresponding CMake code. Note that we need to call @cmake find_package() @ce
 twice, first to get the @ref MAGNUM_TARGET_GLES variable and then again to find

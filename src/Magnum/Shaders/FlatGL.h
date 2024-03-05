@@ -88,11 +88,11 @@ configure the shader.
 
 Common mesh setup:
 
-@snippet MagnumShaders-gl.cpp FlatGL-usage-colored1
+@snippet Shaders-gl.cpp FlatGL-usage-colored1
 
 Common rendering setup:
 
-@snippet MagnumShaders-gl.cpp FlatGL-usage-colored2
+@snippet Shaders-gl.cpp FlatGL-usage-colored2
 
 @section Shaders-FlatGL-textured Textured rendering
 
@@ -102,11 +102,11 @@ If you want to use a texture, you need to provide also the
 also the texture via @ref bindTexture(). The texture is multiplied by the
 color, which is by default set to @cpp 0xffffffff_rgbaf @ce. Common mesh setup:
 
-@snippet MagnumShaders-gl.cpp FlatGL-usage-textured1
+@snippet Shaders-gl.cpp FlatGL-usage-textured1
 
 Common rendering setup:
 
-@snippet MagnumShaders-gl.cpp FlatGL-usage-textured2
+@snippet Shaders-gl.cpp FlatGL-usage-textured2
 
 For coloring the texture based on intensity you can use the @ref VectorGL
 shader. The 3D version of this shader is equivalent to @ref PhongGL with zero
@@ -138,7 +138,7 @@ portability you should use @ref GL::Framebuffer::clearColor() instead of
 @ref GL::Framebuffer::clear() as the former usually emits GL errors when called
 on framebuffers with integer attachments.
 
-@snippet MagnumShaders-gl.cpp FlatGL-usage-object-id
+@snippet Shaders-gl.cpp FlatGL-usage-object-id
 
 If you have a batch of meshes with different object IDs, enable
 @ref Flag::InstancedObjectId and supply per-vertex IDs to the @ref ObjectId
@@ -190,7 +190,7 @@ enabled (similarly to transformation, applied before @ref setTextureMatrix()).
 The snippet below shows adding a buffer with per-instance transformation and
 color to a mesh:
 
-@snippet MagnumShaders-gl.cpp FlatGL-usage-instancing
+@snippet Shaders-gl.cpp FlatGL-usage-instancing
 
 For instanced skinning the joint buffer is assumed to contain joint
 transformations for all instances. By default all instances use the same joint
@@ -221,7 +221,7 @@ transformation a per-draw @ref TextureTransformationUniform buffer bound with
 buffer setup equivalent to
 the @ref Shaders-FlatGL-colored "colored case at the top" would look like this:
 
-@snippet MagnumShaders-gl.cpp FlatGL-ubo
+@snippet Shaders-gl.cpp FlatGL-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
 @ref Flag::TextureArrays), supply desired material and draw count via

@@ -825,7 +825,7 @@ enum class MaterialAttribute: UnsignedInt {
      * Shader code that is able to reconstruct a XYZ normal from both RG and GA
      * variants assuming constant values in other channels ([source](https://github.com/KhronosGroup/glTF/issues/1682#issuecomment-557880407)):
      *
-     * @snippet MagnumTrade.glsl unpackTwoChannelNormal
+     * @snippet Trade.glsl unpackTwoChannelNormal
      *
      * Default value is @ref MaterialTextureSwizzle::RGB.
      * @see @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture(),
@@ -1461,7 +1461,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * name. Apart from the type check, the following two instances are
          * equivalent:
          *
-         * @snippet MagnumTrade.cpp MaterialAttributeData-name
+         * @snippet Trade.cpp MaterialAttributeData-name
          */
         template<class T
             #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -1814,7 +1814,7 @@ those. In addition there's @ref findAttribute() and @ref attributeOr() that
 return a @ref Containers::NullOpt or a default value in case given attribute is
 not found.
 
-@snippet MagnumTrade.cpp MaterialData-usage
+@snippet Trade.cpp MaterialData-usage
 
 It's also possible to iterate through all attributes using @ref attributeName(),
 @ref attributeType() and @ref attribute() taking indices instead of names, with
@@ -1839,7 +1839,7 @@ you can convert any @ref MaterialData instance to a reference to one of those.
 These convenience APIs then take care of default values when an attribute isn't
 present or handle fallbacks when an attribute can be defined in multiple ways:
 
-@snippet MagnumTrade.cpp MaterialData-usage-types
+@snippet Trade.cpp MaterialData-usage-types
 
 Each @ref MaterialAttribute is exposed through one or more of those convenience
 APIs, see the documentation of of a particular enum value for more information.
@@ -1858,7 +1858,7 @@ there are queries like @ref PbrSpecularGlossinessMaterialData::hasSpecularGlossi
 @ref PbrSpecularGlossinessMaterialData::hasCommonTextureTransformation() to
 help narrowing the options down:
 
-@snippet MagnumTrade.cpp MaterialData-usage-texture-complexity
+@snippet Trade.cpp MaterialData-usage-texture-complexity
 
 @subsection Trade-MaterialData-usage-layers Material layers
 
@@ -1879,13 +1879,13 @@ the factor is applied is left to the layer implementation.
 Here's an example showing retrieval of a clear coat layer parameters, if
 present:
 
-@snippet MagnumTrade.cpp MaterialData-usage-layers
+@snippet Trade.cpp MaterialData-usage-layers
 
 Like with base material attributes, builtin layers also have convenience
 accessor APIs. The above can be written in a more compact way using
 @link PbrClearCoatMaterialData @endlink:
 
-@snippet MagnumTrade.cpp MaterialData-usage-layers-types
+@snippet Trade.cpp MaterialData-usage-layers-types
 
 @subsection Trade-MaterialData-usage-mutable Mutable data access
 
@@ -1898,7 +1898,7 @@ there's a set of @ref mutableAttribute() functions. To use these, you need to
 check that the data are mutable using @ref attributeDataFlags() first. The
 following snippet desaturates the base color of a PBR material:
 
-@snippet MagnumTrade.cpp MaterialData-usage-mutable
+@snippet Trade.cpp MaterialData-usage-mutable
 
 Because the class internally expects the attribute data to be sorted and
 partitioned into layers, it's not possible to modify attribute names,
@@ -1918,7 +1918,7 @@ names, but you're encouraged to use the predefined names from
 that it's in an expected type. Attribute order doesn't matter, the array gets
 internally sorted by name to allow a @f$ \mathcal{O}(\log n) @f$ lookup.
 
-@snippet MagnumTrade.cpp MaterialData-populating
+@snippet Trade.cpp MaterialData-populating
 
 @subsection Trade-MaterialData-populating-non-owned Non-owned instances
 
@@ -1932,7 +1932,7 @@ allocating it implicitly from an initializer list in the constructor, pass
 attribute data is treated as immutable, you *have to* ensure the list is
 already sorted by name.
 
-@snippet MagnumTrade.cpp MaterialData-populating-non-owned
+@snippet Trade.cpp MaterialData-populating-non-owned
 
 <b></b>
 
@@ -1954,7 +1954,7 @@ greater flexibility, custom attributes can be also strings, untyped buffers
 or pointers, allowing you to store arbitrary properties such as image
 filenames or direct texture pointers instead of IDs:
 
-@snippet MagnumTrade.cpp MaterialData-populating-custom
+@snippet Trade.cpp MaterialData-populating-custom
 
 @subsection Trade-MaterialData-populating-layers Adding material layers
 
@@ -1967,7 +1967,7 @@ snippet we have two layers (one base material and one clear coat layer), the
 base material being the first two attributes and the clear coat layer being
 attributes in range @cpp 2 @ce to @cpp 6 @ce (thus four attributes):
 
-@snippet MagnumTrade.cpp MaterialData-populating-layers
+@snippet Trade.cpp MaterialData-populating-layers
 
 Like with just a base material, the attributes get sorted for a
 @f$ \mathcal{O}(\log n) @f$ lookup --- but not as a whole, each layer
@@ -1984,7 +1984,7 @@ Apart from builtin layers, there's no limit in what the layers can be used for
 of authored `rockTile`, `sandTile`, `grassTile` textures and procedurally
 generated blend factors `a`, `b`, `c`, `d`:
 
-@snippet MagnumTrade.cpp MaterialData-populating-layers-custom
+@snippet Trade.cpp MaterialData-populating-layers-custom
 
 @section Trade-MaterialData-representation Internal representation
 

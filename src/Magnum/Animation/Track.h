@@ -51,7 +51,7 @@ the @ref Player class, but it's possible to use it separately as well.
 Animation track is defined by a list of keyframes (time+value pairs),
 interpolator function and extrapolation behavior.
 
-@snippet MagnumAnimation.cpp Track-usage
+@snippet Animation.cpp Track-usage
 
 @section Animation-Track-interpolators Types and interpolators
 
@@ -80,7 +80,7 @@ The @ref Track and @ref TrackView classes are fully stateless and the
 the beginning every time. You can use @ref at(K, std::size_t&) const to
 remember last used keyframe index and pass it in the next iteration as a hint:
 
-@snippet MagnumAnimation.cpp Track-performance-hint
+@snippet Animation.cpp Track-performance-hint
 
 @subsection Animation-Track-performance-strict Strict interpolation
 
@@ -91,7 +91,7 @@ implicit @ref Extrapolation::Extrapolated behavior and assumes there are always
 at least two keyframes, resulting in more compact interpolation code. If your
 animation data satisfy the prerequisites, simply use it in place of @ref at():
 
-@snippet MagnumAnimation.cpp Track-performance-strict
+@snippet Animation.cpp Track-performance-strict
 
 @subsection Animation-Track-performance-cache Cache-efficient data layout
 
@@ -102,7 +102,7 @@ interleaving the data and passing them using
 instead of having data duplicated scattered across disjoint allocations of
 @ref Track instances:
 
-@snippet MagnumAnimation.cpp Track-performance-cache
+@snippet Animation.cpp Track-performance-cache
 
 @subsection Animation-Track-performance-interpolator Interpolator function choice
 

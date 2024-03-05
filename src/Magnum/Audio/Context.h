@@ -391,7 +391,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @ref Extensions namespace in the @ref Magnum/Audio/Extensions.h
          * header. Example usage:
          *
-         * @snippet MagnumAudio.cpp Context-isExtensionSupported
+         * @snippet Audio.cpp Context-isExtensionSupported
          *
          * @see @ref isExtensionSupported(const Extension&) const,
          *      @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
@@ -590,7 +590,7 @@ By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
 
-@snippet MagnumAudio.cpp MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED
+@snippet Audio.cpp MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED
 
 @see @ref Magnum::Audio::Context::isExtensionSupported() "Audio::Context::isExtensionSupported()",
     @ref CORRADE_ASSERT(), @ref CORRADE_INTERNAL_ASSERT()

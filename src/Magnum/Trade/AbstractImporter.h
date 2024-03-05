@@ -238,7 +238,7 @@ treated as a programmer error and will produce the usual assertions.
 In the following example an image is loaded from the filesystem using the
 @ref AnyImageImporter plugin, completely with all needed error handling:
 
-@snippet MagnumTrade.cpp AbstractImporter-usage
+@snippet Trade.cpp AbstractImporter-usage
 
 See @ref plugins for more information about general plugin usage,
 @ref file-formats to compare implementations of common file formats and the
@@ -260,7 +260,7 @@ data from memory (for example from @relativeref{Corrade,Utility::Resource}).
 Note that the particular importer implementation has to support
 @ref ImporterFeature::OpenData for this method to work:
 
-@snippet MagnumTrade.cpp AbstractImporter-usage-data
+@snippet Trade.cpp AbstractImporter-usage-data
 
 Complex scene files often reference other files such as images and in that case
 you may want to intercept those references and load them in a custom way as
@@ -276,7 +276,7 @@ well --- you don't have to load the top-level file manually and pass it to
 @ref openData(), any importer supporting the callback feature handles that
 correctly.
 
-@snippet MagnumTrade.cpp AbstractImporter-usage-callbacks
+@snippet Trade.cpp AbstractImporter-usage-callbacks
 
 For importers that don't support @ref ImporterFeature::FileCallback directly,
 the base @ref openFile() implementation will use the file callback to pass the
@@ -613,7 +613,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * See the overload below for a more convenient type-safe way to pass
          * the user data pointer.
          *
-         * @snippet MagnumTrade.cpp AbstractImporter-setFileCallback
+         * @snippet Trade.cpp AbstractImporter-setFileCallback
          *
          * @see @ref Trade-AbstractImporter-usage-callbacks
          */
@@ -628,7 +628,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref Corrade::Utility::Resource instance to avoid a potentially slow
          * resource group lookup every time:
          *
-         * @snippet MagnumTrade.cpp AbstractImporter-setFileCallback-template
+         * @snippet Trade.cpp AbstractImporter-setFileCallback-template
          *
          * @see @ref Trade-AbstractImporter-usage-callbacks
          */
@@ -1861,7 +1861,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Example workflow in a plugin that needs to preserve access to the
          * input data but wants to avoid allocating a copy if possible:
          *
-         * @snippet MagnumTrade.cpp AbstractImporter-doOpenData-ownership
+         * @snippet Trade.cpp AbstractImporter-doOpenData-ownership
          *
          * The @p dataFlags can never be @ref DataFlag::Mutable without
          * any other flag set. The case of @ref DataFlag::Mutable with
@@ -2628,7 +2628,7 @@ Same string as returned by
 used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
 interface string by hand every time the version gets bumped:
 
-@snippet MagnumTrade.cpp MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE
+@snippet Trade.cpp MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE
 
 The interface string version gets increased on every ABI break to prevent
 silent crashes and memory corruption. Plugins built against the previous

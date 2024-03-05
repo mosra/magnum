@@ -53,7 +53,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line2D(const Vector2& a, const Vector2&
 
 Equivalent to calling @ref line2D(const Vector2&, const Vector2&) as
 
-@snippet MagnumPrimitives.cpp line2D-identity
+@snippet Primitives.cpp line2D-identity
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line2D();
 
@@ -76,7 +76,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line3D(const Vector3& a, const Vector3&
 Unit-size line in direction of positive X axis. Equivalent to calling
 @ref line3D(const Vector3&, const Vector3&) as
 
-@snippet MagnumPrimitives.cpp line3D-identity
+@snippet Primitives.cpp line3D-identity
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line3D();
 

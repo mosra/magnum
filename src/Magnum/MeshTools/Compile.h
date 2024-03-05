@@ -187,14 +187,14 @@ Assumes the whole vertex / index data are already uploaded to @p indices /
 index/vertex buffer when multiple @ref Trade::MeshData instances share the same
 data arrays, or to allow buffer access later. For example:
 
-@snippet MagnumMeshTools-gl.cpp compile-external
+@snippet MeshTools-gl.cpp compile-external
 
 Another use case is specifying additional vertex attributes that are not
 recognized by the function itself. You can choose among various r-value
 overloads depending on whether you want to have the index/vertex buffers owned
 by the mesh or not:
 
-@snippet MagnumMeshTools-gl.cpp compile-external-attributes
+@snippet MeshTools-gl.cpp compile-external-attributes
 
 If @p mesh is not indexed, the @p indices parameter is ignored --- in that case
 you can pass a @ref NoCreate "NoCreate"-d instance to avoid allocating an

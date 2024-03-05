@@ -202,7 +202,7 @@ template<class T> class Frustum {
          * to check for a point/frustum intersection, similarly to
          * @ref Intersection::pointFrustum():
          *
-         * @snippet MagnumMath.cpp Frustum-range
+         * @snippet Math.cpp Frustum-range
          */
         Vector4<T>* begin() { return _data; }
 

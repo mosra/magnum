@@ -101,7 +101,7 @@ caching is disabled. You can enable it using @ref setCachedTransformations()
 and then implement corresponding cleaning function(s) --- either @ref clean(),
 @ref cleanInverted() or both. Example:
 
-@snippet MagnumSceneGraph.cpp AbstractFeature-caching
+@snippet SceneGraph.cpp AbstractFeature-caching
 
 Before using the cached value explicitly request object cleaning by calling
 @cpp object()->setClean() @ce.
@@ -113,7 +113,7 @@ know about any used transformation. By using small template trick in the
 constructor it is possible to gain access to transformation interface in the
 constructor:
 
-@snippet MagnumSceneGraph.cpp AbstractFeature-object-transformation
+@snippet SceneGraph.cpp AbstractFeature-object-transformation
 
 See @ref scenegraph-features-transformation for more detailed information.
 

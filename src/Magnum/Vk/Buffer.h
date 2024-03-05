@@ -56,7 +56,7 @@ Wraps a @type_vk_keyword{Buffer} and its memory.
 Pass a @ref BufferCreateInfo with desired usage and size to the @ref Buffer
 constructor together with specifying @ref MemoryFlags for the allocation.
 
-@snippet MagnumVk.cpp Buffer-creation
+@snippet Vk.cpp Buffer-creation
 
 @attention At this point, a dedicated allocation is used, subsequently
     accessible through @ref dedicatedMemory(). This behavior may change in the
@@ -69,7 +69,7 @@ will be created without any memory bound. Buffer memory requirements can be
 then queried using @ref memoryRequirements() and an allocated memory bound with
 @ref bindMemory(). See @ref Memory for further details about memory allocation.
 
-@snippet MagnumVk.cpp Buffer-creation-custom-allocation
+@snippet Vk.cpp Buffer-creation-custom-allocation
 
 Using @ref bindDedicatedMemory() instead of @ref bindMemory() will transfer
 ownership of the @ref Memory to the buffer instance, making it subsequently
@@ -85,7 +85,7 @@ memory.
 The following snippet shows zero-filling the whole buffer using
 @ref CommandBuffer::fillBuffer():
 
-@snippet MagnumVk.cpp Buffer-usage-fill
+@snippet Vk.cpp Buffer-usage-fill
 
 @subsection Vk-Buffer-usage-copy Copying buffer data
 
@@ -99,7 +99,7 @@ want to combine it with a @ref CommandBuffer::pipelineBarrier(PipelineStages, Pi
 after to make the memory visible for subsequent operations. The following
 snippet shows populating a device-local vertex buffer from host-visible memory:
 
-@snippet MagnumVk.cpp Buffer-usage-copy
+@snippet Vk.cpp Buffer-usage-copy
 
 It's also possible to copy data between buffers and images, see
 @ref Vk-Image-usage-copy for examples.

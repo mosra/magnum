@@ -142,19 +142,19 @@ called *before* all @ref BasicScreen::viewportEvent() "Screen::viewportEvent()",
 in this case to make it possible to handle viewport changes on the default
 framebuffer:
 
-@snippet MagnumPlatform.cpp ScreenedApplication-global-events
+@snippet Platform.cpp ScreenedApplication-global-events
 
 Uses @ref Corrade::Containers::LinkedList for efficient screen management.
 Traversing front-to-back through the list of screens can be done using
 range-based for:
 
-@snippet MagnumPlatform.cpp ScreenedApplication-for-range
+@snippet Platform.cpp ScreenedApplication-for-range
 
 Or, if you need more flexibility, like in the following code. Traversing
 back-to-front can be done using @ref Corrade::Containers::LinkedList::last()
 and @ref BasicScreen::nextNearerScreen().
 
-@snippet MagnumPlatform.cpp ScreenedApplication-for
+@snippet Platform.cpp ScreenedApplication-for
 
 @section Platform-ScreenedApplication-template-specializations Explicit template specializations
 

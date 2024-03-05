@@ -66,7 +66,7 @@ MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level,
 
 Convenience alternative to the above, example usage:
 
-@snippet MagnumDebugTools-gl.cpp textureSubImage-2D-rvalue
+@snippet DebugTools-gl.cpp textureSubImage-2D-rvalue
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -97,7 +97,7 @@ MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::C
 
 Convenience alternative to the above, example usage:
 
-@snippet MagnumDebugTools-gl.cpp textureSubImage-cubemap-rvalue
+@snippet DebugTools-gl.cpp textureSubImage-cubemap-rvalue
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -133,7 +133,7 @@ MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level,
 
 Convenience alternative to the above, example usage:
 
-@snippet MagnumDebugTools-gl.cpp textureSubImage-2D-rvalue-buffer
+@snippet DebugTools-gl.cpp textureSubImage-2D-rvalue-buffer
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
@@ -166,7 +166,7 @@ MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::C
 
 Convenience alternative to the above, example usage:
 
-@snippet MagnumDebugTools-gl.cpp textureSubImage-cubemap-rvalue-buffer
+@snippet DebugTools-gl.cpp textureSubImage-cubemap-rvalue-buffer
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See

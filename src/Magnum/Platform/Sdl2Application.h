@@ -465,7 +465,7 @@ With @ref windowSize(), @ref framebufferSize() and @ref dpiScaling() having a
 different relation on each platform, the way to calculate context scaling
 consistently everywhere is using this expression:
 
-@snippet MagnumPlatform.cpp Sdl2Application-dpi-scaling
+@snippet Platform.cpp Sdl2Application-dpi-scaling
 
 If your application is saving and restoring window size, it's advisable to take
 @ref dpiScaling() into account:
@@ -610,7 +610,7 @@ class Sdl2Application {
          * you need to explicitly @cpp return @ce after calling it, as it can't
          * exit the constructor on its own:
          *
-         * @snippet MagnumPlatform.cpp exit-from-constructor
+         * @snippet Platform.cpp exit-from-constructor
          */
         void exit(int exitCode = 0);
 
