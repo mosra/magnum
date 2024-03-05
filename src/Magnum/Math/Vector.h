@@ -1316,15 +1316,24 @@ template<std::size_t size, class T> inline BitVector<size> notEqual(const Vector
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Vector} */
 template<std::size_t size, class T> Debug& operator<<(Debug& debug, const Vector<size, T>& value) {
-    /** @todo might make sense to propagate the flags also, for hex value
-        printing etc */
+    /* Nested values should get printed with the same flags, so make all
+       immediate flags temporarily global -- except NoSpace, unless it's also
+       set globally */
+    const Utility::Debug::Flags prevFlags = debug.flags();
+    debug.setFlags(prevFlags | (debug.immediateFlags() & ~Utility::Debug::Flag::NoSpace));
+
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
     debug << (packed ? "{" : "Vector(") << Debug::nospace;
     for(std::size_t i = 0; i != size; ++i) {
         if(i != 0) debug << Debug::nospace << ",";
         debug << value[i];
     }
-    return debug << Debug::nospace << (packed ? "}" : ")");
+    debug << Debug::nospace << (packed ? "}" : ")");
+
+    /* Reset the original flags back */
+    debug.setFlags(prevFlags);
+
+    return debug;
 }
 
 /* Explicit instantiation for commonly used types */

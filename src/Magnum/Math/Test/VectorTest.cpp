@@ -119,6 +119,7 @@ struct VectorTest: TestSuite::Tester {
 
     void debug();
     void debugPacked();
+    void debugPropagateFlags();
 };
 
 /* What's a typedef and not a using differs from the typedefs in root Magnum
@@ -197,7 +198,8 @@ VectorTest::VectorTest() {
               &VectorTest::strictWeakOrdering,
 
               &VectorTest::debug,
-              &VectorTest::debugPacked});
+              &VectorTest::debugPacked,
+              &VectorTest::debugPropagateFlags});
 }
 
 void VectorTest::construct() {
@@ -1330,6 +1332,14 @@ void VectorTest::debugPacked() {
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << Vector4(0.5f, 15.0f, 1.0f, 1.0f) << Vector4();
     CORRADE_COMPARE(out.str(), "{0.5, 15, 1, 1} Vector(0, 0, 0, 0)\n");
+}
+
+void VectorTest::debugPropagateFlags() {
+    std::ostringstream out;
+    /* The modifier shouldn't become persistent for values after. The nospace
+       modifier shouldn't get propagated. */
+    Debug{&out} << ">" << Debug::nospace  << Debug::hex << Vector2i(0xab, 0xcd) << Vector2i(12, 13);
+    CORRADE_COMPARE(out.str(), ">Vector(0xab, 0xcd) Vector(12, 13)\n");
 }
 
 }}}}
