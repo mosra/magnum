@@ -1347,6 +1347,14 @@ Vector4i integral{floatingPoint}; // {1, 2, -15, 7}
 }
 
 {
+/* [Vector-conversion-bit] */
+BitVector3 mask = DOXYGEN_ELLIPSIS({});
+Vector3ub a = Math::lerp(Vector3ub{0}, Vector3ub{255}, mask);
+/* [Vector-conversion-bit] */
+static_cast<void>(a);
+}
+
+{
 /* [Vector-length-integer] */
 Vector2i a{25, -1};
 Float length = Vector2{a}.length();         // ~25.099

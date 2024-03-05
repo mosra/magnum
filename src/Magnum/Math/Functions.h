@@ -545,6 +545,7 @@ template<class T> inline T lerp(const T& a, const T& b, bool t) {
 Similar to the above, but instead of multiplication and addition it just does
 component-wise selection from either @p a or @p b based on values in @p t.
 @m_keyword{mix(),GLSL mix(),}
+@see @ref Vector::Vector(const BitVector<size>&)
 */
 template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, const BitVector<size>& t) {
     Vector<size, T> out{Magnum::NoInit};

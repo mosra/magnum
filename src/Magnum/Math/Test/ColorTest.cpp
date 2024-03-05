@@ -84,6 +84,7 @@ struct ColorTest: TestSuite::Tester {
     void constructOneValue();
     void constructParts();
     void constructConversion();
+    void constructBit();
     void constructPacking();
     void constructCopy();
     void convert();
@@ -212,6 +213,7 @@ ColorTest::ColorTest() {
               &ColorTest::constructOneValue,
               &ColorTest::constructParts,
               &ColorTest::constructConversion,
+              &ColorTest::constructBit,
               &ColorTest::constructPacking,
               &ColorTest::constructCopy,
               &ColorTest::convert,
@@ -424,6 +426,27 @@ void ColorTest::constructConversion() {
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Color3ub, Color3>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<Color4, Color4ub>::value);
+}
+
+void ColorTest::constructBit() {
+    BitVector3 a3{'\x5'}; /* 0b101 */
+    BitVector4 a4{'\xa'}; /* 0b1010 */
+    CORRADE_COMPARE(Color3{a3}, (Color3{1.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(Color4ub{a4}, (Color4ub{0, 1, 0, 1}));
+
+    constexpr BitVector3 ca3{'\x5'}; /* 0b101 */
+    constexpr BitVector4 ca4{'\xa'}; /* 0b1010 */
+    constexpr Color3 cb3{ca3};
+    constexpr Color4ub cb4{ca4};
+    CORRADE_COMPARE(cb3, (Color3{1.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(cb4, (Color4ub{0, 1, 0, 1}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<BitVector3, Color3>::value);
+    CORRADE_VERIFY(!std::is_convertible<BitVector4, Color4>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color3, BitVector3>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color4, BitVector4>::value);
 }
 
 void ColorTest::constructPacking() {

@@ -62,6 +62,7 @@ struct Vector3Test: TestSuite::Tester {
     void constructOneValue();
     void constructParts();
     void constructConversion();
+    void constructBit();
     void constructCopy();
     void convert();
 
@@ -89,6 +90,7 @@ Vector3Test::Vector3Test() {
               &Vector3Test::constructOneValue,
               &Vector3Test::constructParts,
               &Vector3Test::constructConversion,
+              &Vector3Test::constructBit,
               &Vector3Test::constructCopy,
               &Vector3Test::convert,
 
@@ -172,6 +174,20 @@ void Vector3Test::constructConversion() {
     CORRADE_VERIFY(!std::is_convertible<Vector3, Vector3i>::value);
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, Vector3i>::value);
+}
+
+void Vector3Test::constructBit() {
+    BitVector3 a{'\x5'}; /* 0b101 */
+    CORRADE_COMPARE(Vector3{a}, (Vector3{1.0f, 0.0f, 1.0f}));
+
+    constexpr BitVector3 ca{'\x5'}; /* 0b101 */
+    constexpr Vector3 cb{ca};
+    CORRADE_COMPARE(cb, (Vector3{1.0f, 0.0f, 1.0f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<BitVector3, Vector3>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, BitVector3>::value);
 }
 
 void Vector3Test::constructCopy() {

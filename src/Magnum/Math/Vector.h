@@ -235,6 +235,20 @@ template<std::size_t size, class T> class Vector {
          */
         template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(typename Containers::Implementation::GenerateSequence<size>::Type{}, other) {}
 
+        /**
+         * @brief Construct a vector from a BitVector
+         * @m_since_latest
+         *
+         * Bits that are unset are converted to @cpp 0 @ce, set bits to
+         * @cpp 1 @ce. If you need a different behavior, for example converting
+         * a bit mask to @cpp 0 @ce or @cpp 255 @ce for a color representation,
+         * use @ref lerp(const Vector<size, T>&, const Vector<size, T>&, const BitVector<size>&)
+         * instead, for example:
+         *
+         * @snippet Math.cpp Vector-conversion-bit
+         */
+        constexpr explicit Vector(const BitVector<size>& other) noexcept: Vector{typename Containers::Implementation::GenerateSequence<size>::Type{}, other} {}
+
         /** @brief Construct a vector from external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other) noexcept: Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
 
@@ -1251,6 +1265,9 @@ template<std::size_t size, class T> class Vector {
 
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit Vector(Containers::Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
+
+        /* Implementation for Vector<size, T>::Vector(const BitVector<size>&) */
+        template<std::size_t ...sequence> constexpr explicit Vector(Containers::Implementation::Sequence<sequence...>, const BitVector<size>& bitVector) noexcept: _data{T(bitVector[sequence])...} {}
 
         /* Implementation for Vector<size, T>::Vector(U) */
         template<std::size_t ...sequence> constexpr explicit Vector(Containers::Implementation::Sequence<sequence...>, T value) noexcept: _data{Implementation::repeat(value, sequence)...} {}

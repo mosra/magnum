@@ -61,6 +61,7 @@ struct Vector2Test: TestSuite::Tester {
     void constructNoInit();
     void constructOneValue();
     void constructConversion();
+    void constructBit();
     void constructCopy();
     void convert();
 
@@ -87,6 +88,7 @@ Vector2Test::Vector2Test() {
               &Vector2Test::constructNoInit,
               &Vector2Test::constructOneValue,
               &Vector2Test::constructConversion,
+              &Vector2Test::constructBit,
               &Vector2Test::constructCopy,
               &Vector2Test::convert,
 
@@ -163,6 +165,20 @@ void Vector2Test::constructConversion() {
     CORRADE_VERIFY(!std::is_convertible<Vector2, Vector2i>::value);
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, Vector2i>::value);
+}
+
+void Vector2Test::constructBit() {
+    BitVector2 a{'\x1'}; /* 0b01 */
+    CORRADE_COMPARE(Vector2{a}, (Vector2{1.0f, 0.0f}));
+
+    constexpr BitVector2 ca{'\x1'}; /* 0b01 */
+    constexpr Vector2 cb{ca};
+    CORRADE_COMPARE(cb, (Vector2{1.0f, 0.0f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<BitVector2, Vector2>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, BitVector2>::value);
 }
 
 void Vector2Test::constructCopy() {

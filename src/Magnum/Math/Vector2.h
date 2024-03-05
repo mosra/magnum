@@ -140,6 +140,9 @@ template<class T> class Vector2: public Vector<2, T> {
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
         template<class U> constexpr explicit Vector2(const Vector<2, U>& other) noexcept: Vector<2, T>(other) {}
 
+        /** @copydoc Vector::Vector(const BitVector<size>&) */
+        constexpr explicit Vector2(const BitVector2& other) noexcept: Vector<2, T>{other} {}
+
         /** @brief Construct a vector from external representation */
         template<class U, class V =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */

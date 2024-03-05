@@ -571,6 +571,9 @@ template<class T> class Color3: public Vector3<T> {
          */
         template<class U> constexpr explicit Color3(const Vector<3, U>& other) noexcept: Vector3<T>(other) {}
 
+        /** @copydoc Vector::Vector(const BitVector<size>&) */
+        constexpr explicit Color3(const BitVector3& other) noexcept: Vector3<T>{other} {}
+
         /** @brief Construct color from external representation */
         template<class U, class V =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
@@ -1055,6 +1058,9 @@ class Color4: public Vector4<T> {
          *      @ref Color3 class documentation for more information.
          */
         template<class U> constexpr explicit Color4(const Vector<4, U>& other) noexcept: Vector4<T>(other) {}
+
+        /** @copydoc Vector::Vector(const BitVector<size>&) */
+        constexpr explicit Color4(const BitVector4& other) noexcept: Vector4<T>{other} {}
 
         /** @brief Construct color from external representation */
         template<class U, class V =
