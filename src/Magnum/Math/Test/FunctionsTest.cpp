@@ -357,7 +357,8 @@ void FunctionsTest::binomialCoefficientOverflow() {
 
 void FunctionsTest::fmod() {
     CORRADE_COMPARE(Math::fmod(5.1f, 3.0f), 2.1f);
-    CORRADE_COMPARE(Math::fmod(Vector3(5.1f, -5.1f, 6.8f), Vector3(3.0f, 3.0f, 1.1f)), Vector3(2.1f, -2.1f, 0.2f));
+    CORRADE_COMPARE(Math::fmod(Vector3(5.1f, -5.1f, 6.8f), Vector3(3.0f, -2.0f, 1.1f)), Vector3(2.1f, -1.1f, 0.2f));
+    CORRADE_COMPARE(Math::fmod(Vector3(5.1f, -5.1f, 6.8f), 3.0f), Vector3(2.1f, -2.1f, 0.8f));
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::fmod(2.7_degf, 1.3_degf), 0.1_degf);

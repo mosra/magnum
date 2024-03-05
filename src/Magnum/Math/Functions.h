@@ -495,6 +495,17 @@ template<std::size_t size, class T> inline Vector<size, T> fmod(const Vector<siz
 }
 
 /**
+@overload
+@m_since_latest
+*/
+template<std::size_t size, class T> inline Vector<size, T> fmod(const Vector<size, T>& a, T b) {
+    Vector<size, T> out{Magnum::NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = Math::fmod(a[i], b);
+    return out;
+}
+
+/**
 @brief Linear interpolation of two values
 @param a     First value
 @param b     Second value
