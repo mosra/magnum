@@ -85,6 +85,20 @@ class MAGNUM_GL_EXPORT Renderer {
         enum class Feature: GLenum {
             #ifndef MAGNUM_TARGET_WEBGL
             /**
+             * Disable all rendering operations.
+             *
+             * @requires_extension OpenGL 3.0 and extension
+             *      @gl_extension{INTEL,blackhole_render}
+             * @requires_es_extension Extension
+             *      @gl_extension{INTEL,blackhole_render}
+             * @requires_gles Blackhole render is not available in WebGL.
+             * @m_since_latest
+             */
+            BlackholeRender = GL_BLACKHOLE_RENDER_INTEL,
+            #endif
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
              * Coherent advanced blending. Enabled by default if desktop/ES
              * extension @gl_extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced}
              * is available. See @ref blendBarrier() for more information.

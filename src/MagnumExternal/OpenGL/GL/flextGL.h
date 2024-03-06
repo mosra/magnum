@@ -1720,6 +1720,10 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 #define GL_SRG8_EXT 0x8FBE
 
+/* GL_INTEL_blackhole_render */
+
+#define GL_BLACKHOLE_RENDER_INTEL 0x83FC
+
 /* GL_KHR_texture_compression_astc_ldr */
 
 #define GL_COMPRESSED_RGBA_ASTC_4x4_KHR 0x93B0

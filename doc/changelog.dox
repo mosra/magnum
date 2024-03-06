@@ -159,6 +159,8 @@ See also:
     ES and @webgl_extension{WEBGL,stencil_texturing} WebGL extensions
 -   Implemented the @gl_extension{EXT,blend_func_extended} ES and
     @webgl_extension{WEBGL,blend_func_extended} WebGL extensions
+-   Implemented the @gl_extension{INTEL,blackhole_render} desktop and ES
+    extension
 -   Recognizing @webgl_extension{EXT,float_blend} and
     @webgl_extension{WEBGL,debug_shaders} WebGL extensions, no implementation
     done yet

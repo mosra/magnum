@@ -36,6 +36,7 @@ extension EXT_debug_marker                      optional
 extension EXT_texture_sRGB_R8                   optional
 extension EXT_texture_sRGB_RG8                  optional
 extension GREMEDY_string_marker                 optional
+extension INTEL_blackhole_render                optional
 extension KHR_texture_compression_astc_ldr      optional
 # extension KHR_texture_compression_astc_hdr    optional
 extension KHR_blend_equation_advanced           optional

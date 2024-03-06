@@ -98,6 +98,7 @@ extension EXT_clip_control                      optional
 extension EXT_texture_mirror_clamp_to_edge      optional
 extension EXT_depth_clamp                       optional
 extension IMG_texture_compression_pvrtc         optional
+extension INTEL_blackhole_render                optional
 # extension KHR_texture_compression_astc_hdr    optional
 extension KHR_blend_equation_advanced_coherent  optional
 extension KHR_context_flush_control             optional

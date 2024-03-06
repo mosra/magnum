@@ -104,6 +104,7 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::texture_sRGB_RG8{},
     Extensions::EXT::texture_sRGB_decode{},
     Extensions::GREMEDY::string_marker{},
+    Extensions::INTEL::blackhole_render{},
     Extensions::KHR::blend_equation_advanced{},
     Extensions::KHR::blend_equation_advanced_coherent{},
     Extensions::KHR::parallel_shader_compile{},
@@ -428,6 +429,7 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::texture_view{},
     #endif
     Extensions::IMG::texture_compression_pvrtc{},
+    Extensions::INTEL::blackhole_render{},
     Extensions::KHR::blend_equation_advanced_coherent{},
     Extensions::KHR::context_flush_control{},
     Extensions::KHR::no_error{},

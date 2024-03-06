@@ -323,6 +323,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_sRGB_R8}          | done
 @gl_extension{EXT,texture_sRGB_RG8}         | done
 @gl_extension{GREMEDY,string_marker}        | done
+@gl_extension{INTEL,blackhole_render}       | done
 @gl_extension{NV,geometry_shader_passthrough} | done (shading language only)
 @gl_extension{NV,sample_locations}          | |
 @gl_extension{NV,fragment_shader_barycentric} | done (shading language only)
@@ -492,6 +493,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_mirror_clamp_to_edge} | done
 @gl_extension{EXT,depth_clamp}              | done
 @gl_extension{IMG,texture_compression_pvrtc} | done
+@gl_extension{INTEL,blackhole_render}       | done
 @gl_extension2{KHR,texture_compression_astc_hdr,KHR_texture_compression_astc_hdr} | done
 @gl_extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced} | done
 @gl_extension{KHR,context_flush_control}    | |
