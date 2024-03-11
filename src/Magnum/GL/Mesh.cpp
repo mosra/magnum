@@ -438,7 +438,7 @@ UnsignedInt Mesh::indexTypeSize() const {
 }
 #endif
 
-Mesh& Mesh::setIndexOffset(Int offset) {
+Mesh& Mesh::setIndexOffset(GLintptr offset) {
     CORRADE_ASSERT(_indexBuffer.id(),
         "GL::Mesh::setIndexOffset(): mesh is not indexed", *this);
     _indexOffset = offset;
@@ -871,7 +871,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 {
     const Implementation::MeshState& state = Context::current().state().mesh;
 
-    const UnsignedInt indexByteOffset = _indexBuffer.id() ?
+    const GLintptr indexByteOffset = _indexBuffer.id() ?
         _indexBufferOffset + indexOffset*meshIndexTypeSize(_indexType) :
         0;
 
@@ -900,7 +900,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
                 #else
                 state.drawRangeElementsBaseVertexImplementation
                 #endif
-                    (GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(std::size_t(indexByteOffset)), baseVertex);
+                    (GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexByteOffset), baseVertex);
 
             /* Indexed mesh */
             } else
@@ -911,7 +911,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
                 #else
                 state.drawElementsBaseVertexImplementation
                 #endif
-                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(std::size_t(indexByteOffset)), baseVertex);
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexByteOffset), baseVertex);
             }
             #else
             CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): indexed mesh draw with base vertex specification possible only since WebGL 2.0", );
@@ -922,7 +922,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
             #ifndef MAGNUM_TARGET_GLES2
             /* Indexed mesh with specified range */
             if(indexEnd) {
-                glDrawRangeElements(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(std::size_t(indexByteOffset)));
+                glDrawRangeElements(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexByteOffset));
 
             /* Indexed mesh */
             } else
@@ -931,7 +931,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
             static_cast<void>(indexEnd);
             #endif
             {
-                glDrawElements(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(std::size_t(indexByteOffset)));
+                glDrawElements(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexByteOffset));
             }
         }
 
@@ -971,7 +971,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
                 #else
                 state.drawElementsInstancedBaseVertexBaseInstanceImplementation
                 #endif
-                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(std::size_t(indexByteOffset)), instanceCount, baseVertex, baseInstance);
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexByteOffset), instanceCount, baseVertex, baseInstance);
 
             /* Indexed mesh with base vertex */
             } else {
@@ -980,7 +980,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
                 #else
                 state.drawElementsInstancedBaseVertexImplementation
                 #endif
-                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(std::size_t(indexByteOffset)), instanceCount, baseVertex);
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexByteOffset), instanceCount, baseVertex);
             }
             #else
             CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): instanced indexed mesh draw with base vertex specification possible only since OpenGL ES 3.0", );
@@ -996,7 +996,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
                 #else
                 state.drawElementsInstancedBaseInstanceImplementation
                 #endif
-                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(std::size_t(indexByteOffset)), instanceCount, baseInstance);
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexByteOffset), instanceCount, baseInstance);
 
             /* Instanced mesh */
             } else
@@ -1007,7 +1007,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
                 #else
                 state.drawElementsInstancedImplementation
                 #endif
-                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(std::size_t(indexByteOffset)), instanceCount);
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexByteOffset), instanceCount);
             }
         }
     }

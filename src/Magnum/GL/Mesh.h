@@ -753,7 +753,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @brief Index offset
          * @m_since_latest
          */
-        Int indexOffset() const { return _indexOffset; }
+        GLintptr indexOffset() const { return _indexOffset; }
 
         /**
          * @brief Set index offset
@@ -768,7 +768,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @p start and @p end parameters may help to improve memory access
          * performance, as only a portion of vertex buffer needs to be
          * acccessed. On OpenGL ES 2.0 this function behaves the same as
-         * @ref setIndexOffset(Int), as index range functionality is not
+         * @ref setIndexOffset(GLintptr), as index range functionality is not
          * available there. Ignored when calling
          * @ref AbstractShaderProgram::drawTransformFeedback().
          *
@@ -776,7 +776,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @see @ref setCount(), @ref isIndexed()
          */
         /* MinGW/MSVC needs inline also here to avoid linkage conflicts */
-        inline Mesh& setIndexOffset(Int offset, UnsignedInt start, UnsignedInt end);
+        inline Mesh& setIndexOffset(GLintptr offset, UnsignedInt start, UnsignedInt end);
 
         /**
          * @brief Set index offset
@@ -785,14 +785,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *
          * The offset gets multiplied by index type size and added to the base
          * offset that was specified in @ref Mesh::setIndexBuffer(). Prefer to
-         * use @ref setIndexOffset(Int, UnsignedInt, UnsignedInt) for potential
-         * better performance on certain drivers. Ignored when calling
-         * @ref AbstractShaderProgram::drawTransformFeedback().
+         * use @ref setIndexOffset(GLintptr, UnsignedInt, UnsignedInt) for
+         * potential better performance on certain drivers. Ignored when
+         * calling @ref AbstractShaderProgram::drawTransformFeedback().
          *
          * Expects that the mesh is indexed.
          * @see @ref setCount(), @ref isIndexed()
          */
-        Mesh& setIndexOffset(Int offset);
+        Mesh& setIndexOffset(GLintptr offset);
 
         /** @brief Instance count */
         Int instanceCount() const { return _instanceCount; }
@@ -1443,7 +1443,7 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
 /** @debugoperatorenum{MeshIndexType} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, MeshIndexType value);
 
-inline Mesh& Mesh::setIndexOffset(Int first, UnsignedInt start, UnsignedInt end) {
+inline Mesh& Mesh::setIndexOffset(GLintptr first, UnsignedInt start, UnsignedInt end) {
     setIndexOffset(first);
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart = start;
