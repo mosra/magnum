@@ -80,8 +80,11 @@ environment:
     ENABLE_VULKAN: ON
   - TARGET: desktop
     COMPILER: msvc
-    # Not playing with fire and using /EHsc on 2022 as well
-    COMPILER_EXTRA: -DCMAKE_CXX_FLAGS="/permissive- /EHsc" -DMSVC_COMPATIBILITY=OFF
+    # Not playing with fire and using /EHsc on 2022 as well. Testing with the
+    # conformant preprocessor also, but just on one of the two permissive
+    # builds to avoid a false impression that the differences are depending on
+    # /permissive- alone.
+    COMPILER_EXTRA: -DCMAKE_CXX_FLAGS="/permissive- /EHsc /Zc:preprocessor" -DMSVC_COMPATIBILITY=OFF
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
     APPVEYOR_JOB_NAME: windows-conforming-msvc2022
