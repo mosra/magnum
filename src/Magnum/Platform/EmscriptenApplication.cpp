@@ -376,7 +376,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     #ifdef MAGNUM_TARGET_GLES2 /* WebGL 1 */
     attrs.majorVersion = 1;
     #else                      /* WebGL 2 */
-    attrs.minorVersion = 2;
+    attrs.majorVersion = 2;
     #endif
 
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
