@@ -106,13 +106,17 @@ static_cast<void>(b);
 /* [Nanoseconds-usage-time] */
 Nanoseconds a1{std::time(nullptr)};              // wrong, the input is seconds
 Nanoseconds a2{std::time(nullptr)*1000000000ll}; // correct
+Nanoseconds a3 = std::time(nullptr)*1.0_sec;     // or, alternatively
 std::time_t b1(35.0_sec);                    // wrong, the input is nanoseconds
 std::time_t b2(35.0_sec/1000000000ll);       // correct
+std::time_t b3 = 35.0_sec/1.0_sec;           // or, alternatively
 /* [Nanoseconds-usage-time] */
 static_cast<void>(a1);
 static_cast<void>(a2);
+static_cast<void>(a3);
 static_cast<void>(b1);
 static_cast<void>(b2);
+static_cast<void>(b3);
 }
 #endif
 }
