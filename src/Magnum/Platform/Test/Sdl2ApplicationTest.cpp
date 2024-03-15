@@ -138,14 +138,32 @@ struct Sdl2ApplicationTest: Platform::Application {
             Debug{} << "requesting an exit with code 5";
             exit(5);
         }
+
+        /* With EmscriptenApplication, this makes the event stop from
+           propagating further to the page (such as when pressing F1).
+           Unfortunately on SDL this doesn't as there's no API to actually mark
+           events as accepted. */
+        event.setAccepted();
     }
 
     void keyReleaseEvent(KeyEvent& event) override {
         Debug{} << "key release event:" << SDL_Keycode(event.key()) << event.keyName();
+
+        /* With EmscriptenApplication, this makes the event stop from
+           propagating further to the page (such as when pressing F1).
+           Unfortunately on SDL this doesn't as there's no API to actually mark
+           events as accepted. */
+        event.setAccepted();
     }
 
     void textInputEvent(TextInputEvent& event) override {
         Debug{} << "text input event:" << event.text();
+
+        /* With EmscriptenApplication, this makes the event stop from
+           propagating further to the page (such as when pressing F1).
+           Unfortunately on SDL this doesn't as there's no API to actually mark
+           events as accepted. */
+        event.setAccepted();
     }
 
     /* Should fire on currently not handled events, such as minimize/maximize
