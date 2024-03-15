@@ -1194,6 +1194,12 @@ See also:
     work on Firefox again. The reported renderer string got changed, possibly
     in relation to @webgl_extension{WEBGL,debug_renderer_info} being
     deprecated, which broke Firefox detection in the workaround enabling code.
+-   @ref Platform::EmscriptenApplication was emitting only a text input event
+    if text input was active, not a key press event as well, making it
+    impossible to handle keyboard shortcuts such as copy / paste when editing
+    text. Now it emits both, consistently with @ref Platform::Sdl2Application
+    and @ref Platform::GlfwApplication, and in the same order as in those. See
+    [mosra/magnum#637](https://github.com/mosra/magnum/issues/637).
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

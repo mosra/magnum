@@ -583,16 +583,23 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
             EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
             const Containers::StringView key = event->key;
-            /* If the key name is a single letter or a start of an UTF-8
-               sequence, pass it to the text input event as well */
-            if(app.isTextInputActive() && key.size() == 1 || (key.size() >= 1 && UnsignedByte(key[0]) > 127)) {
-                TextInputEvent e{*event, key};
-                app.textInputEvent(e);
-                return e.isAccepted();
-            }
             KeyEvent e{*event};
             app.keyPressEvent(e);
-            return e.isAccepted();
+            bool accepted = e.isAccepted();
+
+            /* If the key name is a single letter or a start of an UTF-8
+               sequence, pass it to the text input event as well. Both SDL and
+               GLFW emit key press first and text input after, do it in the
+               same order here. */
+            if(app.isTextInputActive() && key.size() == 1 || (key.size() >= 1 && UnsignedByte(key[0]) > 127)) {
+                TextInputEvent te{*event, key};
+                app.textInputEvent(te);
+                accepted = accepted || te.isAccepted();
+            }
+
+            /* Accepting either the key event, the text input event, or both
+               should stop it from propagating further */
+            return accepted;
         }));
 
     emscripten_set_keyup_callback(keyboardListeningElement, this, false,
