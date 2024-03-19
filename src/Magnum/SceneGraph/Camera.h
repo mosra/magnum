@@ -156,7 +156,7 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          *
          * Conversion from integer window-space coordinates with origin in top
          * left corner and Y down (e.g. from
-         * @ref Platform::Sdl2Application::MouseEvent "Platform::*Application::MouseEvent")
+         * @ref Platform::Sdl2ApplicationWindow::MouseEvent "Platform::*Application::MouseEvent")
          * to floating-point coordinates on near XY plane with origin at camera
          * position and Y up can be done using the following snippet:
          *

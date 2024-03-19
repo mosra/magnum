@@ -42,6 +42,7 @@
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #endif
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Arguments.h>
 
@@ -78,142 +79,91 @@ namespace Magnum { namespace Platform {
 
 using namespace Containers::Literals;
 
-namespace {
-
-/*
- * Fix up the modifiers -- we want >= operator to work properly on Shift,
- * Ctrl, Alt, but SDL generates different event for left / right keys, thus
- * (modifiers >= Shift) would pass only if both left and right were pressed,
- * which is usually not what the developers wants.
- */
-Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
-    Sdl2Application::InputEvent::Modifiers modifiers(static_cast<Sdl2Application::InputEvent::Modifier>(mod));
-    if(modifiers & Sdl2Application::InputEvent::Modifier::Shift) modifiers |= Sdl2Application::InputEvent::Modifier::Shift;
-    if(modifiers & Sdl2Application::InputEvent::Modifier::Ctrl) modifiers |= Sdl2Application::InputEvent::Modifier::Ctrl;
-    if(modifiers & Sdl2Application::InputEvent::Modifier::Alt) modifiers |= Sdl2Application::InputEvent::Modifier::Alt;
-    if(modifiers & Sdl2Application::InputEvent::Modifier::Super) modifiers |= Sdl2Application::InputEvent::Modifier::Super;
-    return modifiers;
-}
-
-}
-
-enum class Sdl2Application::Flag: UnsignedByte {
+enum class Sdl2ApplicationWindow::WindowFlag: UnsignedByte {
     Redraw = 1 << 0,
-    VSyncEnabled = 1 << 1,
-    NoTickEvent = 1 << 2,
-    NoAnyEvent = 1 << 3,
-    Exit = 1 << 4,
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    TextInputActive = 1 << 5,
-    Resizable = 1 << 6,
-    #endif
-    #ifdef CORRADE_TARGET_APPLE
-    HiDpiWarningPrinted = 1 << 7
+    TextInputActive = 1 << 1,
+    Resizable = 1 << 2,
     #endif
 };
 
-Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}} {}
+Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application, NoCreateT): _application{application}, _windowFlags{WindowFlag::Redraw} {}
 
-Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration): Sdl2Application{arguments, NoCreate} {
-    create(configuration);
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application, const Configuration& configuration): Sdl2ApplicationWindow{application, NoCreate} {
+    if(!tryCreateWindow(configuration)) std::exit(1);
 }
 
-#ifdef MAGNUM_TARGET_GL
-Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): Sdl2Application{arguments, NoCreate} {
-    create(configuration, glConfiguration);
-}
+Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application): Sdl2ApplicationWindow{application, Configuration{}} {}
 #endif
 
-Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
+Sdl2ApplicationWindow::~Sdl2ApplicationWindow() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    _minimalLoopPeriod{0},
+    /* If the window isn't created yet because tryCreateWindow(), nothing to
+       do. This also covers the case for the main application window, which
+       gets destroyed (and reset to null) from within ~Sdl2Application()
+       because it has to be done before SDL_Quit(), and this destructor is
+       called after that. There it also means that it's not needed to remove
+       itself from the window list, as the list is already gone at this
+       point. */
+    if(_window)
+        destroyWindow();
     #endif
-    _flags{Flag::Redraw}
-{
-    Utility::Arguments args{Implementation::windowScalingArguments()};
-    #ifdef MAGNUM_TARGET_GL
-    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
-    #else
-    /** @todo this is duplicated here, in GlfwApplication and in
-        EmscriptenApplication, figure out a nice non-duplicated way to handle
-        this */
-    args.addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
-        .setFromEnvironment("log")
-        .parse(arguments.argc, arguments.argv);
-    #endif
+}
 
-    /* Available since 2.0.4, disables interception of SIGINT and SIGTERM so
-       it's possible to Ctrl-C the application even if exitEvent() doesn't set
-       event.setAccepted(). */
-    #ifdef SDL_HINT_NO_SIGNAL_HANDLERS
-    SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
-    #endif
-    /* Available since 2.0.6, uses dedicated OpenGL ES drivers if EGL is used,
-       and desktop GLES context otherwise. */
-    #if defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_EGL) && defined(SDL_HINT_OPENGL_ES_DRIVER)
-    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
-    #endif
-    /* Available since 2.0.8, disables compositor bypass on X11, which causes
-       flickering on KWin as the compositor gets shut down on every startup */
-    #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR
-    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
-    #endif
-    /* By default, SDL behaves like if it was playing a video or whatever,
-       preventing the computer from turning off the screen or going to sleep.
-       While it sorta makes sense for games, it's useless and annoying for
-       regular apps. Together with the compositor disabling those two are the
-       most stupid defaults. */
-    #ifdef SDL_HINT_VIDEO_ALLOW_SCREENSAVER
-    SDL_SetHint(SDL_HINT_VIDEO_ALLOW_SCREENSAVER, "1");
-    #endif
-    /* Available since 2.0.12, use EGL if desired */
-    #if defined(MAGNUM_TARGET_EGL) && defined(SDL_HINT_VIDEO_X11_FORCE_EGL)
-    SDL_SetHint(SDL_HINT_VIDEO_X11_FORCE_EGL, "1");
-    #endif
+bool Sdl2ApplicationWindow::tryCreateWindow(const Configuration& configuration) {
+    CORRADE_ASSERT(!_window,
+        "Platform::Sdl2ApplicationWindow::tryCreateWindow(): window already created", false);
 
-    if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-        Error() << "Cannot initialize SDL:" << SDL_GetError();
-        std::exit(1);
+    /* Save DPI scaling values from configuration for future use, scale window
+       based on those */
+    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
+    _configurationDpiScaling = configuration.dpiScaling();
+    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
+
+    /* Create a window */
+    if(!(_window = SDL_CreateWindow(
+        #ifndef CORRADE_TARGET_IOS
+        configuration.title().data(),
+        #else
+        nullptr,
+        #endif
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        scaledWindowSize.x(), scaledWindowSize.y(),
+        SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags())|_application._configurationFlags)))
+    {
+        Error() << "Platform::Sdl2ApplicationWindow::tryCreateWindow(): cannot create a window:" << SDL_GetError();
+        return false;
     }
 
-    /* Save command-line arguments */
-    if(args.value("log") == "verbose") _verboseLog = true;
-    const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
-    if(dpiScaling == "default"_s)
-        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Default;
-    #ifdef CORRADE_TARGET_APPLE
-    else if(dpiScaling == "framebuffer"_s)
-        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Framebuffer;
-    #endif
-    #ifndef CORRADE_TARGET_APPLE
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
-    else if(dpiScaling == "virtual"_s)
-        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Virtual;
-    #endif
-    else if(dpiScaling == "physical"_s)
-        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Physical;
-    #endif
-    else if(dpiScaling.containsAny(" \t\n"_s))
-        _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
-    else
-        _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
+    /* Add itself to the window list */
+    const std::size_t windowId = SDL_GetWindowID(_window);
+    if(windowId >= _application._windows.size()) {
+        for(Sdl2ApplicationWindow*& i: arrayAppend(_application._windows, NoInit, windowId - _application._windows.size() + 1))
+            i = nullptr;
+    }
+    CORRADE_INTERNAL_ASSERT(!_application._windows[windowId]);
+    _application._windows[windowId] = this;
+
+    return true;
 }
 
-void Sdl2Application::create() {
-    create(Configuration{});
-}
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2ApplicationWindow::destroyWindow() {
+    /* To prevent accidental double destructions and such, this function should
+       only be called if a window is actually created */
+    CORRADE_INTERNAL_ASSERT(_window);
 
-void Sdl2Application::create(const Configuration& configuration) {
-    if(!tryCreate(configuration)) std::exit(1);
-}
+    /* Remove itself from the window list */
+    const std::size_t id = SDL_GetWindowID(_window);
+    CORRADE_INTERNAL_ASSERT(id < _application._windows.size());
+    _application._windows[id] = nullptr;
 
-#ifdef MAGNUM_TARGET_GL
-void Sdl2Application::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    if(!tryCreate(configuration, glConfiguration)) std::exit(1);
+    SDL_DestroyWindow(_window);
 }
 #endif
 
-Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
+Vector2 Sdl2ApplicationWindow::dpiScaling(const Configuration& configuration) {
     /* Print a helpful warning in case some extra steps are needed for HiDPI
        support */
     #ifdef CORRADE_TARGET_APPLE
@@ -229,18 +179,18 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     return dpiScalingInternal(configuration.dpiScalingPolicy(), configuration.dpiScaling());
 }
 
-Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling) const {
-    std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
+Vector2 Sdl2ApplicationWindow::dpiScalingInternal(const Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling) const {
+    std::ostream* verbose = _application._verboseLog ? Debug::output() : nullptr;
 
     /* Use values from the configuration only if not overridden on command line
        to something non-default. In any case explicit scaling has a precedence
        before the policy. */
     Implementation::Sdl2DpiScalingPolicy dpiScalingPolicy{};
-    if(!_commandLineDpiScaling.isZero()) {
-        Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _commandLineDpiScaling;
-        return _commandLineDpiScaling;
-    } else if(_commandLineDpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Default) {
-        dpiScalingPolicy = _commandLineDpiScalingPolicy;
+    if(!_application._commandLineDpiScaling.isZero()) {
+        Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _application._commandLineDpiScaling;
+        return _application._commandLineDpiScaling;
+    } else if(_application._commandLineDpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Default) {
+        dpiScalingPolicy = _application._commandLineDpiScalingPolicy;
     } else if(!configurationDpiScaling.isZero()) {
         Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << configurationDpiScaling;
         return configurationDpiScaling;
@@ -346,7 +296,7 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     #endif
 }
 
-void Sdl2Application::setWindowTitle(const Containers::StringView title) {
+void Sdl2ApplicationWindow::setWindowTitle(const Containers::StringView title) {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_SetWindowTitle(_window,
         Containers::String::nullTerminatedGlobalView(title).data());
@@ -359,7 +309,7 @@ void Sdl2Application::setWindowTitle(const Containers::StringView title) {
 }
 
 #if !defined(CORRADE_TARGET_EMSCRIPTEN) && SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
-void Sdl2Application::setWindowIcon(const ImageView2D& image) {
+void Sdl2ApplicationWindow::setWindowIcon(const ImageView2D& image) {
     Uint32 format; /** @todo handle sRGB differently? */
     switch(image.format()) {
         case PixelFormat::RGB8Srgb:
@@ -371,7 +321,7 @@ void Sdl2Application::setWindowIcon(const ImageView2D& image) {
             format = SDL_PIXELFORMAT_RGBA32;
             break;
         default:
-            CORRADE_ASSERT_UNREACHABLE("Platform::Sdl2Application::setWindowIcon(): unexpected format" << image.format(), );
+            CORRADE_ASSERT_UNREACHABLE("Platform::Sdl2ApplicationWindow::setWindowIcon(): unexpected format" << image.format(), );
     }
 
     /* Images are loaded with origin at bottom left, flip it to top left. SDL
@@ -391,33 +341,312 @@ void Sdl2Application::setWindowIcon(const ImageView2D& image) {
 }
 #endif
 
+Vector2i Sdl2ApplicationWindow::windowSize() const {
+    Vector2i size;
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::windowSize(): no window opened", {});
+    SDL_GetWindowSize(_window, &size.x(), &size.y());
+    #else
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::windowSize(): no window opened", {});
+    emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
+    #endif
+    return size;
+}
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2ApplicationWindow::setWindowSize(const Vector2i& size) {
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setWindowSize(): no window opened", );
+
+    const Vector2i newSize = dpiScaling()*size;
+    SDL_SetWindowSize(_window, newSize.x(), newSize.y());
+}
+
+void Sdl2ApplicationWindow::setMinWindowSize(const Vector2i& size) {
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setMinWindowSize(): no window opened", );
+
+    const Vector2i newSize = dpiScaling()*size;
+    SDL_SetWindowMinimumSize(_window, newSize.x(), newSize.y());
+}
+
+void Sdl2ApplicationWindow::setMaxWindowSize(const Vector2i& size) {
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setMaxWindowSize(): no window opened", );
+
+    const Vector2i newSize = dpiScaling()*size;
+    SDL_SetWindowMaximumSize(_window, newSize.x(), newSize.y());
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GL
+Vector2i Sdl2ApplicationWindow::framebufferSize() const {
+    Vector2i size;
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
+    SDL_GL_GetDrawableSize(_window, &size.x(), &size.y());
+    #else
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
+    emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
+    #endif
+    return size;
+}
+#endif
+
+Vector2 Sdl2ApplicationWindow::dpiScaling() const {
+    return dpiScalingInternal(_application._configurationDpiScalingPolicy, _application._configurationDpiScaling);
+}
+
+void Sdl2ApplicationWindow::redraw() { _windowFlags |= WindowFlag::Redraw; }
+
+namespace {
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+constexpr SDL_SystemCursor CursorMap[] {
+    SDL_SYSTEM_CURSOR_ARROW,
+    SDL_SYSTEM_CURSOR_IBEAM,
+    SDL_SYSTEM_CURSOR_WAIT,
+    SDL_SYSTEM_CURSOR_CROSSHAIR,
+    SDL_SYSTEM_CURSOR_WAITARROW,
+    SDL_SYSTEM_CURSOR_SIZENWSE,
+    SDL_SYSTEM_CURSOR_SIZENESW,
+    SDL_SYSTEM_CURSOR_SIZEWE,
+    SDL_SYSTEM_CURSOR_SIZENS,
+    SDL_SYSTEM_CURSOR_SIZEALL,
+    SDL_SYSTEM_CURSOR_NO,
+    SDL_SYSTEM_CURSOR_HAND
+};
+#else
+constexpr Containers::StringView CursorMap[] {
+    "default"_s,
+    "text"_s,
+    "wait"_s,
+    "crosshair"_s,
+    "progress"_s,
+    "nwse-resize"_s,
+    "nesw-resize"_s,
+    "ew-resize"_s,
+    "ns-resize"_s,
+    "move"_s,
+    "not-allowed"_s,
+    "pointer"_s,
+    "none"_s
+    /* Hidden & locked not supported yet */
+};
+#endif
+
+}
+
+void Sdl2ApplicationWindow::setCursor(Cursor cursor) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_ASSERT(_window, "Platform::Sdl2ApplicationWindow::setCursor(): no window opened", );
+
+    if(cursor == Cursor::Hidden) {
+        SDL_ShowCursor(SDL_DISABLE);
+        SDL_SetWindowGrab(_window, SDL_FALSE);
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+        return;
+    } else if(cursor == Cursor::HiddenLocked) {
+        SDL_SetWindowGrab(_window, SDL_TRUE);
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+        return;
+    } else {
+        SDL_ShowCursor(SDL_ENABLE);
+        SDL_SetWindowGrab(_window, SDL_FALSE);
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+    }
+
+    /* The second condition could be a static assert but it doesn't let me
+       because "this pointer only accessible in a constexpr function". Thanks
+       for nothing, C++. */
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_application._cursors) && Containers::arraySize(_application._cursors) == Containers::arraySize(CursorMap));
+
+    if(!_application._cursors[UnsignedInt(cursor)])
+        _application._cursors[UnsignedInt(cursor)] = SDL_CreateSystemCursor(CursorMap[UnsignedInt(cursor)]);
+
+    SDL_SetCursor(_application._cursors[UnsignedInt(cursor)]);
+    #else
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::setCursor(): no window opened", );
+    _cursor = cursor;
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
+    magnumPlatformSetCursor(CursorMap[UnsignedInt(cursor)].data(),
+                            CursorMap[UnsignedInt(cursor)].size());
+    #endif
+}
+
+Sdl2Application::Cursor Sdl2ApplicationWindow::cursor() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    if(SDL_GetRelativeMouseMode())
+        return Cursor::HiddenLocked;
+    else if(!SDL_ShowCursor(SDL_QUERY))
+        return Cursor::Hidden;
+
+    SDL_Cursor* cursor = SDL_GetCursor();
+
+    if(cursor) for(UnsignedInt i = 0; i < sizeof(_application._cursors); i++)
+        if(_application._cursors[i] == cursor) return Cursor(i);
+
+    return Cursor::Arrow;
+    #else
+    return _cursor;
+    #endif
+}
+
+void Sdl2ApplicationWindow::viewportEvent(ViewportEvent&) {}
+void Sdl2ApplicationWindow::keyPressEvent(KeyEvent&) {}
+void Sdl2ApplicationWindow::keyReleaseEvent(KeyEvent&) {}
+void Sdl2ApplicationWindow::mousePressEvent(MouseEvent&) {}
+void Sdl2ApplicationWindow::mouseReleaseEvent(MouseEvent&) {}
+void Sdl2ApplicationWindow::mouseMoveEvent(MouseMoveEvent&) {}
+void Sdl2ApplicationWindow::mouseScrollEvent(MouseScrollEvent&) {}
+void Sdl2ApplicationWindow::multiGestureEvent(MultiGestureEvent&) {}
+void Sdl2ApplicationWindow::textInputEvent(TextInputEvent&) {}
+void Sdl2ApplicationWindow::textEditingEvent(TextEditingEvent&) {}
+
+namespace {
+
+/*
+ * Fix up the modifiers -- we want >= operator to work properly on Shift,
+ * Ctrl, Alt, but SDL generates different event for left / right keys, thus
+ * (modifiers >= Shift) would pass only if both left and right were pressed,
+ * which is usually not what the developers wants.
+ */
+Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
+    Sdl2Application::InputEvent::Modifiers modifiers(static_cast<Sdl2Application::InputEvent::Modifier>(mod));
+    if(modifiers & Sdl2Application::InputEvent::Modifier::Shift) modifiers |= Sdl2Application::InputEvent::Modifier::Shift;
+    if(modifiers & Sdl2Application::InputEvent::Modifier::Ctrl) modifiers |= Sdl2Application::InputEvent::Modifier::Ctrl;
+    if(modifiers & Sdl2Application::InputEvent::Modifier::Alt) modifiers |= Sdl2Application::InputEvent::Modifier::Alt;
+    if(modifiers & Sdl2Application::InputEvent::Modifier::Super) modifiers |= Sdl2Application::InputEvent::Modifier::Super;
+    return modifiers;
+}
+
+}
+
+enum class Sdl2Application::Flag: UnsignedByte {
+    VSyncEnabled = 1 << 0,
+    NoTickEvent = 1 << 1,
+    NoAnyEvent = 1 << 2,
+    Exit = 1 << 3,
+    #ifdef CORRADE_TARGET_APPLE
+    HiDpiWarningPrinted = 1 << 4
+    #endif
+};
+
+Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}} {}
+
+Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration): Sdl2Application{arguments, NoCreate} {
+    create(configuration);
+}
+
+#ifdef MAGNUM_TARGET_GL
+Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): Sdl2Application{arguments, NoCreate} {
+    create(configuration, glConfiguration);
+}
+#endif
+
+Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT): Sdl2ApplicationWindow{*this, NoCreate}
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    , _minimalLoopPeriod{0}
+    #endif
+{
+    Utility::Arguments args{Implementation::windowScalingArguments()};
+    #ifdef MAGNUM_TARGET_GL
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
+    #else
+    /** @todo this is duplicated here, in GlfwApplication and in
+        EmscriptenApplication, figure out a nice non-duplicated way to handle
+        this */
+    args.addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
+        .setFromEnvironment("log")
+        .parse(arguments.argc, arguments.argv);
+    #endif
+
+    /* Available since 2.0.4, disables interception of SIGINT and SIGTERM so
+       it's possible to Ctrl-C the application even if exitEvent() doesn't set
+       event.setAccepted(). */
+    #ifdef SDL_HINT_NO_SIGNAL_HANDLERS
+    SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+    #endif
+    /* Available since 2.0.6, uses dedicated OpenGL ES drivers if EGL is used,
+       and desktop GLES context otherwise. */
+    #if defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_EGL) && defined(SDL_HINT_OPENGL_ES_DRIVER)
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+    #endif
+    /* Available since 2.0.8, disables compositor bypass on X11, which causes
+       flickering on KWin as the compositor gets shut down on every startup */
+    #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR
+    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
+    #endif
+    /* By default, SDL behaves like if it was playing a video or whatever,
+       preventing the computer from turning off the screen or going to sleep.
+       While it sorta makes sense for games, it's useless and annoying for
+       regular apps. Together with the compositor disabling those two are the
+       most stupid defaults. */
+    #ifdef SDL_HINT_VIDEO_ALLOW_SCREENSAVER
+    SDL_SetHint(SDL_HINT_VIDEO_ALLOW_SCREENSAVER, "1");
+    #endif
+    /* Available since 2.0.12, use EGL if desired */
+    #if defined(MAGNUM_TARGET_EGL) && defined(SDL_HINT_VIDEO_X11_FORCE_EGL)
+    SDL_SetHint(SDL_HINT_VIDEO_X11_FORCE_EGL, "1");
+    #endif
+
+    if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+        Error() << "Cannot initialize SDL:" << SDL_GetError();
+        std::exit(1);
+    }
+
+    /* Save command-line arguments */
+    if(args.value("log") == "verbose") _verboseLog = true;
+    const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
+    if(dpiScaling == "default"_s)
+        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Default;
+    #ifdef CORRADE_TARGET_APPLE
+    else if(dpiScaling == "framebuffer"_s)
+        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Framebuffer;
+    #endif
+    #ifndef CORRADE_TARGET_APPLE
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+    else if(dpiScaling == "virtual"_s)
+        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Virtual;
+    #endif
+    else if(dpiScaling == "physical"_s)
+        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Physical;
+    #endif
+    else if(dpiScaling.containsAny(" \t\n"_s))
+        _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
+    else
+        _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
+}
+
+void Sdl2Application::create() {
+    create(Configuration{});
+}
+
+void Sdl2Application::create(const Configuration& configuration) {
+    if(!tryCreate(configuration)) std::exit(1);
+}
+
+#ifdef MAGNUM_TARGET_GL
+void Sdl2Application::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
+    if(!tryCreate(configuration, glConfiguration)) std::exit(1);
+}
+#endif
+
 bool Sdl2Application::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless))
+    if(!(configuration.flags() & Configuration::Flag::Contextless))
         return tryCreate(configuration, GLConfiguration{});
     #endif
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Save DPI scaling values from configuration for future use, scale window
-       based on those */
-    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
-    _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
+    /* Save the application-global configuration flags to be used to create all
+       windows */
+    _configurationFlags = Uint32(configuration.flags());
 
-    /* Create window */
-    if(!(_window = SDL_CreateWindow(
-        #ifndef CORRADE_TARGET_IOS
-        configuration.title().data(),
-        #else
-        nullptr,
-        #endif
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        scaledWindowSize.x(), scaledWindowSize.y(),
-        SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags() & ~Configuration::WindowFlag::Contextless))))
-    {
-        Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Create the main window */
+    if(!tryCreateWindow(configuration))
         return false;
-    }
+
+    /* Register the main window in the window list */
+    CORRADE_INTERNAL_ASSERT(_windows.isEmpty());
+    arrayAppend(_windows, this);
 
     /* Emscripten-specific initialization */
     #else
@@ -449,7 +678,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
        based on those */
     _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
     _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2i scaledWindowSize = windowSize*dpiScaling(configuration);
+    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
 
     Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
     if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
@@ -470,10 +699,15 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
 
 #ifdef MAGNUM_TARGET_GL
 bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    CORRADE_ASSERT(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless),
-        "Platform::Sdl2Application::tryCreate(): cannot pass Configuration::WindowFlag::Contextless when creating an OpenGL context", false);
+    CORRADE_ASSERT(!(configuration.flags() & Configuration::Flag::Contextless),
+        "Platform::Sdl2Application::tryCreate(): cannot pass Configuration::Flag::Contextless when creating an OpenGL context", false);
     CORRADE_ASSERT(_context->version() == GL::Version::None,
         "Platform::Sdl2Application::tryCreate(): context already created", false);
+
+    /* Save the application-global configuration flags to be used to create all
+       windows. Since we're creating a GL context, request the window to also
+       be OpenGL-enabled. */
+    _configurationFlags = Uint32(configuration.flags()|Configuration::Flag::OpenGL);
 
     /* Enable double buffering, set up buffer sizes */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -494,12 +728,6 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Save DPI scaling values from configuration for future use, scale window
-       based on those */
-    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
-    _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
-
     /* Request debug context if GpuValidation is enabled either via the
        configuration or via command-line */
     GLConfiguration::Flags glFlags = glConfiguration.flags();
@@ -559,25 +787,18 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         #endif
     }
 
-    /* Create a window. Hide it by default so we don't have distracting window
+    /* Hide the main window by default so we don't have distracting window
        blinking in case the context creation fails due to unsupported
        configuration or if it gets destroyed for fallback context creation
        below. */
-    if(!(_window = SDL_CreateWindow(
-        #ifndef CORRADE_TARGET_IOS
-        configuration.title().data(),
-        #else
-        nullptr,
-        #endif
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        scaledWindowSize.x(), scaledWindowSize.y(),
-        SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()))))
-    {
-        Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
-        return false;
-    }
+    Sdl2ApplicationWindow::Configuration hiddenWindowConfiguration{configuration};
+    hiddenWindowConfiguration.addWindowFlags(Sdl2ApplicationWindow::Configuration::WindowFlag::Hidden);
 
-    /* Create context */
+    /* Create a window */
+    if(!tryCreateWindow(hiddenWindowConfiguration))
+        return false;
+
+    /* Create a context */
     _glContext = SDL_GL_CreateContext(_window);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -618,7 +839,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
            on Linux at least, but better stay on the safe side as this way
            worked correctly for 10+ years on all platforms and reusing an
            existing window might not. */
-        SDL_DestroyWindow(_window);
+        destroyWindow();
+        _window = nullptr;
 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -631,14 +853,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags & ~GLConfiguration::Flag::ForwardCompatible) & 0xffffffffu));
 
         /* Create a new window using the refreshed GL attributes */
-        if(!(_window = SDL_CreateWindow(configuration.title().data(),
-            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            scaledWindowSize.x(), scaledWindowSize.y(),
-            SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()))))
-        {
-            Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
+        if(!tryCreateWindow(hiddenWindowConfiguration))
             return false;
-        }
 
         /* Create compatibility context */
         _glContext = SDL_GL_CreateContext(_window);
@@ -648,7 +864,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     /* Cannot create context (or fallback compatibility context on desktop) */
     if(!_glContext) {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create context:" << SDL_GetError();
-        SDL_DestroyWindow(_window);
+        destroyWindow();
         _window = nullptr;
         return false;
     }
@@ -694,7 +910,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
        based on those */
     _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
     _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2i scaledWindowSize = windowSize*dpiScaling();
+    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
 
     Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
     if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
@@ -714,7 +930,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     if(!_context->tryCreate(glConfiguration)) {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GL_DeleteContext(_glContext);
-        SDL_DestroyWindow(_window);
+        destroyWindow();
         _window = nullptr;
         #else
         SDL_FreeSurface(_surface);
@@ -733,66 +949,13 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 }
 #endif
 
-Vector2i Sdl2Application::windowSize() const {
-    Vector2i size;
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_ASSERT(_window, "Platform::Sdl2Application::windowSize(): no window opened", {});
-    SDL_GetWindowSize(_window, &size.x(), &size.y());
-    #else
-    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::windowSize(): no window opened", {});
-    emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
-    #endif
-    return size;
-}
-
-#ifndef CORRADE_TARGET_EMSCRIPTEN
-void Sdl2Application::setWindowSize(const Vector2i& size) {
-    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setWindowSize(): no window opened", );
-
-    const Vector2i newSize = dpiScaling()*size;
-    SDL_SetWindowSize(_window, newSize.x(), newSize.y());
-}
-
-void Sdl2Application::setMinWindowSize(const Vector2i& size) {
-    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setMinWindowSize(): no window opened", );
-
-    const Vector2i newSize = dpiScaling()*size;
-    SDL_SetWindowMinimumSize(_window, newSize.x(), newSize.y());
-}
-
-void Sdl2Application::setMaxWindowSize(const Vector2i& size) {
-    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setMaxWindowSize(): no window opened", );
-
-    const Vector2i newSize = dpiScaling()*size;
-    SDL_SetWindowMaximumSize(_window, newSize.x(), newSize.y());
-}
-#endif
-
-#ifdef MAGNUM_TARGET_GL
-Vector2i Sdl2Application::framebufferSize() const {
-    Vector2i size;
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_ASSERT(_window, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
-    SDL_GL_GetDrawableSize(_window, &size.x(), &size.y());
-    #else
-    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
-    emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
-    #endif
-    return size;
-}
-#endif
-
-Vector2 Sdl2Application::dpiScaling() const {
-    return dpiScalingInternal(_configurationDpiScalingPolicy, _configurationDpiScaling);
-}
-
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 void Sdl2Application::setContainerCssClass(const Containers::StringView cssClass) {
     magnumPlatformSetContainerCssClass(cssClass.data(), cssClass.size());
 }
 #endif
 
-void Sdl2Application::swapBuffers() {
+void Sdl2ApplicationWindow::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_SwapWindow(_window);
     #else
@@ -825,13 +988,21 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
     return true;
 }
 
-void Sdl2Application::redraw() { _flags |= Flag::Redraw; }
-
 Sdl2Application::~Sdl2Application() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Destroy the main SDL window first. After that, there should be no
+       remaining registered windows. */
+    if(_window)
+        destroyWindow();
+    for(Sdl2ApplicationWindow* i: _windows)
+        CORRADE_ASSERT(!i, "Sdl2Application: destructed with windows still open", );
+    #else
     /* SDL_DestroyWindow(_window) crashes on windows when _window is nullptr
        (it doesn't seem to crash on Linux). Because this seems to be yet
        another pointless platform difference, to be safe do the same check with
-       all. */
+       all APIs. */
+    if(_window) SDL_DestroyWindow(_window);
+    #endif
 
     #ifdef MAGNUM_TARGET_GL
     /* Destroy Magnum context first to avoid it potentially accessing the
@@ -850,9 +1021,6 @@ Sdl2Application::~Sdl2Application() {
         SDL_FreeCursor(cursor);
     #endif
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    if(_window) SDL_DestroyWindow(_window);
-    #endif
     SDL_Quit();
 }
 
@@ -875,6 +1043,28 @@ void Sdl2Application::exit(const int exitCode) {
     emscripten_cancel_main_loop();
     #endif
     _exitCode = exitCode;
+}
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::makeContextCurrent(Sdl2ApplicationWindow& window) {
+    /* Only do it if it is not active already */
+    if(_activeGlContextWindow != window._window) {
+        SDL_GL_MakeCurrent(window._window, _glContext);
+        _activeGlContextWindow = window._window;
+#warning TODO
+        // Context::current().resetState(Context::State::WindowSpecific);
+    }
+}
+#endif
+
+template<class ...Args> inline void Sdl2Application::callEventHandler(std::size_t windowId, void(Sdl2ApplicationWindow::*eventHandler)(Args...), Args&&... args) {
+    // if(!(windowId < _windows.size() && _windows[windowId])) {
+    //     Debug() << "HUH" << windowId << _windows.size();
+    //     return;
+    // }
+
+    CORRADE_INTERNAL_ASSERT(windowId < _windows.size() && _windows[windowId]);
+    (_windows[windowId]->*eventHandler)(std::forward<Args>(args)...);
 }
 
 bool Sdl2Application::mainLoopIteration() {
@@ -922,6 +1112,7 @@ bool Sdl2Application::mainLoopIteration() {
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
             case SDL_WINDOWEVENT:
+                CORRADE_INTERNAL_ASSERT(event.window.windowID < _windows.size() && _windows[event.window.windowID]);
                 switch(event.window.event) {
                     /* Not using SDL_WINDOWEVENT_RESIZED, because that doesn't
                        get fired when the window is resized programmatically
@@ -943,15 +1134,18 @@ bool Sdl2Application::mainLoopIteration() {
                             #endif
                             dpiScaling()};
                         /** @todo handle also WM_DPICHANGED events when a window is moved between displays with different DPI */
-                        viewportEvent(e);
-                        _flags |= Flag::Redraw;
+#warning make context current here? probably??
+                        makeContextCurrent(*_windows[event.window.windowID]);
+                        callEventHandler(event.window.windowID, &Sdl2ApplicationWindow::viewportEvent, e);
+                        _windows[event.window.windowID]->_windowFlags |= WindowFlag::Redraw;
                         #endif
                     } break;
+#warning SDL_WINDOWEVENT_CLOSE
                     /* Direct everything that wasn't exposed via a callback to
                        anyEvent(), so users can implement event handling for
                        things not present in the Application APIs */
                     case SDL_WINDOWEVENT_EXPOSED:
-                        _flags |= Flag::Redraw;
+                        _windows[event.window.windowID]->_windowFlags |= WindowFlag::Redraw;
                         if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
                         break;
                     default:
@@ -961,7 +1155,9 @@ bool Sdl2Application::mainLoopIteration() {
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
                 KeyEvent e{event, static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0};
-                event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
+                callEventHandler(event.key.windowID,
+                    event.type == SDL_KEYDOWN ? &Sdl2ApplicationWindow::keyPressEvent : &Sdl2ApplicationWindow::keyReleaseEvent,
+                    e);
             } break;
 
             case SDL_MOUSEBUTTONDOWN:
@@ -971,34 +1167,37 @@ bool Sdl2Application::mainLoopIteration() {
                     , event.button.clicks
                     #endif
                     };
-                event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
+                callEventHandler(event.key.windowID,
+                    event.type == SDL_MOUSEBUTTONDOWN ? &Sdl2ApplicationWindow::mousePressEvent : &Sdl2ApplicationWindow::mouseReleaseEvent,
+                    e);
             } break;
 
             case SDL_MOUSEWHEEL: {
                 MouseScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
-                mouseScrollEvent(e);
+                callEventHandler(event.wheel.windowID, &Sdl2ApplicationWindow::mouseScrollEvent, e);
             } break;
 
             case SDL_MOUSEMOTION: {
                 MouseMoveEvent e{event, {event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state)};
-                mouseMoveEvent(e);
+                callEventHandler(event.motion.windowID, &Sdl2ApplicationWindow::mouseMoveEvent, e);
                 break;
             }
 
             case SDL_MULTIGESTURE: {
                 MultiGestureEvent e{event, {event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers};
+#warning wtf, why no window ID?!
                 multiGestureEvent(e);
                 break;
             }
 
             case SDL_TEXTINPUT: {
                 TextInputEvent e{event, event.text.text};
-                textInputEvent(e);
+                callEventHandler(event.text.windowID, &Sdl2ApplicationWindow::textInputEvent, e);
             } break;
 
             case SDL_TEXTEDITING: {
                 TextEditingEvent e{event, event.edit.text, event.edit.start, event.edit.length};
-                textEditingEvent(e);
+                callEventHandler(event.edit.windowID, &Sdl2ApplicationWindow::textEditingEvent, e);
             } break;
 
             case SDL_QUIT: {
@@ -1024,11 +1223,18 @@ bool Sdl2Application::mainLoopIteration() {
     /* Tick event */
     if(!(_flags & Flag::NoTickEvent)) tickEvent();
 
-    /* Draw event */
-    if(_flags & Flag::Redraw) {
-        _flags &= ~Flag::Redraw;
-        drawEvent();
+    /* Draw events */
+    bool somethingDrawn = false;
+    for(std::size_t i = 0; i != _windows.size(); ++i) {
+        if(!_windows[i] || !(_windows[i]->_windowFlags & WindowFlag::Redraw)) continue;
 
+        _windows[i]->_windowFlags &= ~WindowFlag::Redraw;
+        callEventHandler(i,
+            &Sdl2ApplicationWindow::drawEvent);
+        somethingDrawn = true;
+    }
+
+    if(somethingDrawn) {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /* If VSync is not enabled, delay to prevent CPU hogging (if set) */
         if(!(_flags & Flag::VSyncEnabled) && _minimalLoopPeriod) {
@@ -1054,99 +1260,6 @@ bool Sdl2Application::mainLoopIteration() {
     if(_flags & Flag::NoTickEvent) SDL_WaitEvent(nullptr);
     #endif
     return !(_flags & Flag::Exit);
-}
-
-namespace {
-
-#ifndef CORRADE_TARGET_EMSCRIPTEN
-constexpr SDL_SystemCursor CursorMap[] {
-    SDL_SYSTEM_CURSOR_ARROW,
-    SDL_SYSTEM_CURSOR_IBEAM,
-    SDL_SYSTEM_CURSOR_WAIT,
-    SDL_SYSTEM_CURSOR_CROSSHAIR,
-    SDL_SYSTEM_CURSOR_WAITARROW,
-    SDL_SYSTEM_CURSOR_SIZENWSE,
-    SDL_SYSTEM_CURSOR_SIZENESW,
-    SDL_SYSTEM_CURSOR_SIZEWE,
-    SDL_SYSTEM_CURSOR_SIZENS,
-    SDL_SYSTEM_CURSOR_SIZEALL,
-    SDL_SYSTEM_CURSOR_NO,
-    SDL_SYSTEM_CURSOR_HAND
-};
-#else
-constexpr Containers::StringView CursorMap[] {
-    "default"_s,
-    "text"_s,
-    "wait"_s,
-    "crosshair"_s,
-    "progress"_s,
-    "nwse-resize"_s,
-    "nesw-resize"_s,
-    "ew-resize"_s,
-    "ns-resize"_s,
-    "move"_s,
-    "not-allowed"_s,
-    "pointer"_s,
-    "none"_s
-    /* Hidden & locked not supported yet */
-};
-#endif
-
-}
-
-void Sdl2Application::setCursor(Cursor cursor) {
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setCursor(): no window opened", );
-
-    if(cursor == Cursor::Hidden) {
-        SDL_ShowCursor(SDL_DISABLE);
-        SDL_SetWindowGrab(_window, SDL_FALSE);
-        SDL_SetRelativeMouseMode(SDL_FALSE);
-        return;
-    } else if(cursor == Cursor::HiddenLocked) {
-        SDL_SetWindowGrab(_window, SDL_TRUE);
-        SDL_SetRelativeMouseMode(SDL_TRUE);
-        return;
-    } else {
-        SDL_ShowCursor(SDL_ENABLE);
-        SDL_SetWindowGrab(_window, SDL_FALSE);
-        SDL_SetRelativeMouseMode(SDL_FALSE);
-    }
-
-    /* The second condition could be a static assert but it doesn't let me
-       because "this pointer only accessible in a constexpr function". Thanks
-       for nothing, C++. */
-    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors) && Containers::arraySize(_cursors) == Containers::arraySize(CursorMap));
-
-    if(!_cursors[UnsignedInt(cursor)])
-        _cursors[UnsignedInt(cursor)] = SDL_CreateSystemCursor(CursorMap[UnsignedInt(cursor)]);
-
-    SDL_SetCursor(_cursors[UnsignedInt(cursor)]);
-    #else
-    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::setCursor(): no window opened", );
-    _cursor = cursor;
-    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
-    magnumPlatformSetCursor(CursorMap[UnsignedInt(cursor)].data(),
-                            CursorMap[UnsignedInt(cursor)].size());
-    #endif
-}
-
-Sdl2Application::Cursor Sdl2Application::cursor() {
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    if(SDL_GetRelativeMouseMode())
-        return Cursor::HiddenLocked;
-    else if(!SDL_ShowCursor(SDL_QUERY))
-        return Cursor::Hidden;
-
-    SDL_Cursor* cursor = SDL_GetCursor();
-
-    if(cursor) for(UnsignedInt i = 0; i < sizeof(_cursors); i++)
-        if(_cursors[i] == cursor) return Cursor(i);
-
-    return Cursor::Arrow;
-    #else
-    return _cursor;
-    #endif
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -1205,16 +1318,99 @@ void Sdl2Application::anyEvent(SDL_Event&) {
     _flags |= Flag::NoAnyEvent;
 }
 
-void Sdl2Application::viewportEvent(ViewportEvent&) {}
-void Sdl2Application::keyPressEvent(KeyEvent&) {}
-void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
-void Sdl2Application::mousePressEvent(MouseEvent&) {}
-void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
-void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
-void Sdl2Application::mouseScrollEvent(MouseScrollEvent&) {}
-void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
-void Sdl2Application::textInputEvent(TextInputEvent&) {}
-void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
+Sdl2ApplicationWindow::Configuration::Configuration():
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
+    _title(Containers::String::nullTerminatedGlobalView("Magnum SDL2 Application"_s)),
+    #endif
+    #if !defined(CORRADE_TARGET_IOS) && !defined(CORRADE_TARGET_EMSCRIPTEN)
+    _size{800, 600},
+    #else
+    _size{}, /* SDL2 detects someting for us */
+    #endif
+    _dpiScalingPolicy{DpiScalingPolicy::Default} {}
+
+Sdl2ApplicationWindow::Configuration::~Configuration() = default;
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    constexpr Sdl2ApplicationWindow::Configuration::WindowFlags DeprecatedWindowFlags = Sdl2ApplicationWindow::Configuration::WindowFlag::Contextless|Sdl2ApplicationWindow::Configuration::WindowFlag::OpenGL|Sdl2ApplicationWindow::Configuration::WindowFlag::Vulkan;
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
+Sdl2Application::Configuration& Sdl2Application::Configuration::setWindowFlags(WindowFlags flags) {
+    /* If deprecated flags are present, reset these bits in the application
+       flags instead and remove them from the to-be-set window flags */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    if(const WindowFlags deprecatedFlags = flags & DeprecatedWindowFlags) {
+        _flags &= ~Flags(Uint32(DeprecatedWindowFlags));
+        _flags |= Flags(Uint32(deprecatedFlags));
+        flags &= ~deprecatedFlags;
+    }
+    #endif
+
+    Sdl2ApplicationWindow::Configuration::setWindowFlags(flags);
+    return *this;
+}
+
+Sdl2Application::Configuration& Sdl2Application::Configuration::addWindowFlags(WindowFlags flags) {
+    /* If deprecated flags are present, add these bits in the application
+       flags instead and remove them from the to-be-added window flags */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    if(const WindowFlags deprecatedFlags = flags & DeprecatedWindowFlags) {
+        _flags |= Flags(Uint32(deprecatedFlags));
+        flags &= ~deprecatedFlags;
+    }
+    #endif
+
+    Sdl2ApplicationWindow::Configuration::addWindowFlags(flags);
+    return *this;
+}
+
+Sdl2Application::Configuration& Sdl2Application::Configuration::clearWindowFlags(WindowFlags flags) {
+    /* If deprecated flags are present, add these bits in the application
+       flags instead and remove them from the to-be-cleared window flags */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    if(const WindowFlags deprecatedFlags = flags & DeprecatedWindowFlags) {
+        _flags &= ~Flags(Uint32(deprecatedFlags));
+        flags &= ~deprecatedFlags;
+    }
+    #endif
+
+    Sdl2ApplicationWindow::Configuration::clearWindowFlags(flags);
+    return *this;
+}
+
+Containers::StringView Sdl2ApplicationWindow::KeyEvent::keyName(const Key key) {
+    return SDL_GetKeyName(SDL_Keycode(key));
+}
+
+Containers::StringView Sdl2ApplicationWindow::KeyEvent::keyName() const {
+    return keyName(_key);
+}
+
+Sdl2ApplicationWindow::InputEvent::Modifiers Sdl2ApplicationWindow::MouseEvent::modifiers() {
+    if(_modifiers) return *_modifiers;
+    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
+}
+
+Sdl2ApplicationWindow::InputEvent::Modifiers Sdl2ApplicationWindow::MouseMoveEvent::modifiers() {
+    if(_modifiers) return *_modifiers;
+    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
+}
+
+Vector2i Sdl2ApplicationWindow::MouseScrollEvent::position() {
+    if(_position) return *_position;
+    _position = Vector2i{};
+    SDL_GetMouseState(&_position->x(), &_position->y());
+    return *_position;
+}
+
+Sdl2ApplicationWindow::InputEvent::Modifiers Sdl2ApplicationWindow::MouseScrollEvent::modifiers() {
+    if(_modifiers) return *_modifiers;
+    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
+}
 
 #ifdef MAGNUM_TARGET_GL
 Sdl2Application::GLConfiguration::GLConfiguration():
@@ -1231,49 +1427,6 @@ Sdl2Application::GLConfiguration::GLConfiguration():
 
 Sdl2Application::GLConfiguration::~GLConfiguration() = default;
 #endif
-
-Sdl2Application::Configuration::Configuration():
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
-    _title(Containers::String::nullTerminatedGlobalView("Magnum SDL2 Application"_s)),
-    #endif
-    #if !defined(CORRADE_TARGET_IOS) && !defined(CORRADE_TARGET_EMSCRIPTEN)
-    _size{800, 600},
-    #else
-    _size{}, /* SDL2 detects someting for us */
-    #endif
-    _dpiScalingPolicy{DpiScalingPolicy::Default} {}
-
-Sdl2Application::Configuration::~Configuration() = default;
-
-Containers::StringView Sdl2Application::KeyEvent::keyName(const Key key) {
-    return SDL_GetKeyName(SDL_Keycode(key));
-}
-
-Containers::StringView Sdl2Application::KeyEvent::keyName() const {
-    return keyName(_key);
-}
-
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
-    if(_modifiers) return *_modifiers;
-    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
-}
-
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
-    if(_modifiers) return *_modifiers;
-    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
-}
-
-Vector2i Sdl2Application::MouseScrollEvent::position() {
-    if(_position) return *_position;
-    _position = Vector2i{};
-    SDL_GetMouseState(&_position->x(), &_position->y());
-    return *_position;
-}
-
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
-    if(_modifiers) return *_modifiers;
-    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
-}
 
 template class BasicScreen<Sdl2Application>;
 template class BasicScreenedApplication<Sdl2Application>;
