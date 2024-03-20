@@ -60,7 +60,7 @@ template<class T> class CubicHermite {
         typedef T Type;             /**< @brief Underlying data type */
 
         /**
-         * @brief Create cubic Hermite spline point from adjacent Bézier curve segments
+         * @brief Create a cubic Hermite spline point from adjacent Bézier curve segments
          *
          * Given two adjacent cubic Bézier curve segments defined by points
          * @f$ \boldsymbol{a}_i @f$ and @f$ \boldsymbol{b}_i @f$,
@@ -125,11 +125,11 @@ template<class T> class CubicHermite {
          */
         template<class U = T, class = typename std::enable_if<std::is_constructible<U, IdentityInitT>::value>::type> constexpr explicit CubicHermite(IdentityInitT) noexcept: _inTangent{ZeroInit}, _point{IdentityInit}, _outTangent{ZeroInit} {}
 
-        /** @brief Construct cubic Hermite spline point without initializing its contents */
+        /** @brief Construct a cubic Hermite spline point without initializing its contents */
         explicit CubicHermite(Magnum::NoInitT) noexcept: CubicHermite{Magnum::NoInit, typename std::conditional<std::is_constructible<T, Magnum::NoInitT>::value, Magnum::NoInitT*, void*>::type{}} {}
 
         /**
-         * @brief Construct cubic Hermite spline point with given control points
+         * @brief Construct a cubic Hermite spline point with given control points
          * @param inTangent     In-tangent @f$ \boldsymbol{m} @f$
          * @param point         Point @f$ \boldsymbol{p} @f$
          * @param outTangent    Out-tangent @f$ \boldsymbol{n} @f$
@@ -137,7 +137,7 @@ template<class T> class CubicHermite {
         constexpr /*implicit*/ CubicHermite(const T& inTangent, const T& point, const T& outTangent) noexcept: _inTangent{inTangent}, _point{point}, _outTangent{outTangent} {}
 
         /**
-         * @brief Construct cubic Hermite spline point from another of different type
+         * @brief Construct a cubic Hermite spline point from another of different type
          *
          * Performs only default casting on the values, no rounding or
          * anything else.

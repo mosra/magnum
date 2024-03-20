@@ -67,7 +67,7 @@ bottom (index `2`), top (index `3`), near (index `4`) and far (index `5`).
 */
 template<class T> class Frustum {
     public:
-        /** @brief Create a frustum from projection matrix */
+        /** @brief Create a frustum from a projection matrix */
         static Frustum<T> fromMatrix(const Matrix4<T>& m) {
             return {m.row(3) + m.row(0),
                     m.row(3) - m.row(0),
@@ -105,17 +105,17 @@ template<class T> class Frustum {
         constexpr /*implicit*/ Frustum(const Vector4<T>& left, const Vector4<T>& right, const Vector4<T>& bottom, const Vector4<T>& top, const Vector4<T>& near, const Vector4<T>& far) noexcept: _data{left, right, bottom, top, near, far} {}
 
         /**
-         * @brief Construct frustum from another of different type
+         * @brief Construct a frustum from another of different type
          *
          * Performs only default casting on the values, no rounding or
          * anything else.
          */
         template<class U> constexpr explicit Frustum(const Frustum<U>& other) noexcept;
 
-        /** @brief Construct frustum from external representation */
+        /** @brief Construct a frustum from external representation */
         template<class U, class = decltype(Implementation::FrustumConverter<T, U>::from(std::declval<U>()))> constexpr explicit Frustum(const U& other) noexcept: Frustum<T>{Implementation::FrustumConverter<T, U>::from(other)} {}
 
-        /** @brief Convert frustum to external representation */
+        /** @brief Convert the frustum to external representation */
         template<class U, class = decltype(Implementation::FrustumConverter<T, U>::to(std::declval<Frustum<T>>()))> constexpr explicit operator U() const {
             return Implementation::FrustumConverter<T, U>::to(*this);
         }

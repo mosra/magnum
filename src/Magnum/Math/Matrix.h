@@ -99,7 +99,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          */
         template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other) noexcept: RectangularMatrix<size, size, T>(other) {}
 
-        /** @brief Construct matrix from external representation */
+        /** @brief Construct a matrix from external representation */
         template<class U, class = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(std::declval<U>()))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>&, T) */

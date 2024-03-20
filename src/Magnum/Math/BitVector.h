@@ -100,14 +100,14 @@ template<std::size_t size> class BitVector {
          */
         constexpr /*implicit*/ BitVector() noexcept: _data{} {}
 
-        /** @brief Construct a zero-filled boolean vector */
+        /** @brief Construct a zero-filled bit vector */
         constexpr explicit BitVector(ZeroInitT) noexcept: _data{} {}
 
         /** @brief Construct without initializing the contents */
         explicit BitVector(Magnum::NoInitT) noexcept {}
 
         /**
-         * @brief Construct a boolean vector from segment values
+         * @brief Construct a bit vector from segment values
          * @param first Value for first 8bit segment
          * @param next  Values for next Bbit segments
          */
@@ -117,17 +117,17 @@ template<std::size_t size> class BitVector {
         template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> constexpr /*implicit*/ BitVector(UnsignedByte first, T... next) noexcept: _data{first, UnsignedByte(next)...} {}
         #endif
 
-        /** @brief Construct a boolean vector with one value for all fields */
+        /** @brief Construct a bit vector with one value for all fields */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit BitVector(T value) noexcept;
         #else
         template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BitVector(T value) noexcept: BitVector(typename Containers::Implementation::GenerateSequence<DataSize>::Type{}, value ? FullSegmentMask : 0) {}
         #endif
 
-        /** @brief Construct a boolean vector from external representation */
+        /** @brief Construct a bit vector from external representation */
         template<class U, class = decltype(Implementation::BitVectorConverter<size, U>::from(std::declval<U>()))> constexpr explicit BitVector(const U& other) noexcept: BitVector{Implementation::BitVectorConverter<size, U>::from(other)} {}
 
-        /** @brief Convert a boolean vector to external representation */
+        /** @brief Convert the bit vector to external representation */
         template<class U, class = decltype(Implementation::BitVectorConverter<size, U>::to(std::declval<BitVector<size>>()))> constexpr explicit operator U() const {
             return Implementation::BitVectorConverter<size, U>::to(*this);
         }

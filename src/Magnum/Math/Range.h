@@ -100,7 +100,7 @@ template<UnsignedInt dimensions, class T> class Range {
         typedef typename Implementation::RangeTraits<dimensions, T>::Type VectorType;
 
         /**
-         * @brief Create a range from minimal coordinates and size
+         * @brief Create a range from minimal coordinates and a size
          * @param min   Minimal coordinates
          * @param size  Range size
          */
@@ -109,7 +109,7 @@ template<UnsignedInt dimensions, class T> class Range {
         }
 
         /**
-         * @brief Create a range from center and half size
+         * @brief Create a range from a center and a half size
          * @param center    Range center
          * @param halfSize  Half size
          *
@@ -165,7 +165,7 @@ template<UnsignedInt dimensions, class T> class Range {
         constexpr /*implicit*/ Range(const Containers::Pair<Vector<dimensions, T>, Vector<dimensions, T>>& minmax) noexcept: _min{minmax.first()}, _max{minmax.second()} {}
 
         /**
-         * @brief Construct range from another of different type
+         * @brief Construct a range from another of different type
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
@@ -174,10 +174,10 @@ template<UnsignedInt dimensions, class T> class Range {
          */
         template<class U> constexpr explicit Range(const Range<dimensions, U>& other) noexcept: _min(other._min), _max(other._max) {}
 
-        /** @brief Construct range from external representation */
+        /** @brief Construct a range from external representation */
         template<class U, class = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
 
-        /** @brief Convert range to external representation */
+        /** @brief Convert the range to external representation */
         template<class U, class = decltype(Implementation::RangeConverter<dimensions, T, U>::to(std::declval<Range<dimensions, T>>()))> constexpr explicit operator U() const {
             return Implementation::RangeConverter<dimensions, T, U>::to(*this);
         }
@@ -467,9 +467,7 @@ template<class T> class Range2D: public Range<2, T> {
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range2D(const Range2D<U>& other) noexcept: Range<2, T>(other) {}
 
-        /**
-         * @brief Construct range from external representation
-         */
+        /** @brief Construct a range from external representation */
         template<class U, class =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
             decltype(Implementation::RangeConverter<2, T, U>::from(std::declval<U>()))
@@ -618,9 +616,7 @@ template<class T> class Range3D: public Range<3, T> {
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range3D(const Range3D<U>& other) noexcept: Range<3, T>(other) {}
 
-        /**
-         * @brief Construct range from external representation
-         */
+        /** @brief Construct a range from external representation */
         template<class U, class = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other) noexcept: Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)} {}
 
         /** @brief Copy constructor */

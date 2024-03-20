@@ -95,7 +95,7 @@ template<class T> class Dual {
         #endif
 
         /**
-         * @brief Construct dual number from real and dual part
+         * @brief Construct a dual number from real and dual part
          *
          * @f[
          *      \hat a = a_0 + \epsilon a_\epsilon
@@ -111,7 +111,7 @@ template<class T> class Dual {
         #endif
 
         /**
-         * @brief Construct dual number from another of different type
+         * @brief Construct a dual number from another of different type
          *
          * Performs only default casting on the values, no rounding or anything
          * else. Example usage:

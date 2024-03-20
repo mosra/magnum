@@ -120,26 +120,26 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          */
         constexpr explicit Bezier(ZeroInitT) noexcept: Bezier<order, dimensions, T>{typename Containers::Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit} {}
 
-        /** @brief Construct Bézier without initializing the contents */
+        /** @brief Construct a Bézier without initializing the contents */
         explicit Bezier(Magnum::NoInitT) noexcept: Bezier<order, dimensions, T>{typename Containers::Implementation::GenerateSequence<order + 1>::Type{}, Magnum::NoInit} {}
 
-        /** @brief Construct Bézier curve with given array of control points */
+        /** @brief Construct a Bézier curve with given array of control points */
         template<typename... U> constexpr /*implicit*/ Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {
             static_assert(sizeof...(U) + 1 == order + 1, "Wrong number of arguments");
         }
 
         /**
-         * @brief Construct Bézier curve from another of different type
+         * @brief Construct a Bézier curve from another of different type
          *
          * Performs only default casting on the values, no rounding or
          * anything else.
          */
         template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Containers::Implementation::GenerateSequence<order + 1>::Type{}, other} {}
 
-        /** @brief Construct Bézier curve from external representation */
+        /** @brief Construct a Bézier curve from external representation */
         template<class U, class = decltype(Implementation::BezierConverter<order, dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Bezier(const U& other) noexcept: Bezier<order, dimensions, T>{Implementation::BezierConverter<order, dimensions, T, U>::from(other)} {}
 
-        /** @brief Convert Bézier curve to external representation */
+        /** @brief Convert the Bézier curve to external representation */
         template<class U, class = decltype(Implementation::BezierConverter<order, dimensions, T, U>::to(std::declval<Bezier<order, dimensions, T>>()))> constexpr explicit operator U() const {
             return Implementation::BezierConverter<order, dimensions, T, U>::to(*this);
         }

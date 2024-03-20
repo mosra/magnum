@@ -258,7 +258,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         static Matrix3<T> projection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight);
 
         /**
-         * @brief Create matrix from rotation/scaling part and translation part
+         * @brief Create a matrix from a rotation/scaling part and a translation part
          * @param rotationScaling   Rotation/scaling part (upper-left 2x2
          *      matrix)
          * @param translation       Translation part (first two elements of

@@ -116,7 +116,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Create complex number from rotation matrix
+         * @brief Create a complex number from a rotation matrix
          *
          * Expects that the matrix is a pure rotation, i.e. orthogonal and
          * without any reflection. See @ref Matrix3::rotation() const for an
@@ -179,7 +179,7 @@ template<class T> class Complex {
         /** @brief Construct a complex number from external representation */
         template<class U, class = decltype(Implementation::ComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit Complex(const U& other): Complex{Implementation::ComplexConverter<T, U>::from(other)} {}
 
-        /** @brief Convert a complex number to external representation */
+        /** @brief Convert the complex number to external representation */
         template<class U, class = decltype(Implementation::ComplexConverter<T, U>::to(std::declval<Complex<T>>()))> constexpr explicit operator U() const {
             return Implementation::ComplexConverter<T, U>::to(*this);
         }
