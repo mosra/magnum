@@ -575,7 +575,7 @@ template<class T> class Color3: public Vector3<T> {
         constexpr explicit Color3(const BitVector3& other) noexcept: Vector3<T>{other} {}
 
         /** @brief Construct color from external representation */
-        template<class U, class V =
+        template<class U, class =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
             decltype(Implementation::VectorConverter<3, T, U>::from(std::declval<U>()))
             #else
@@ -1063,7 +1063,7 @@ class Color4: public Vector4<T> {
         constexpr explicit Color4(const BitVector4& other) noexcept: Vector4<T>{other} {}
 
         /** @brief Construct color from external representation */
-        template<class U, class V =
+        template<class U, class =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
             decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))
             #else

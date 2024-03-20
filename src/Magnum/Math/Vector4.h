@@ -118,7 +118,7 @@ template<class T> class Vector4: public Vector<4, T> {
         constexpr explicit Vector4(const BitVector4& other) noexcept: Vector<4, T>{other} {}
 
         /** @brief Construct a vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))> constexpr explicit Vector4(const U& other): Vector<4, T>(Implementation::VectorConverter<4, T, U>::from(other)) {}
+        template<class U, class = decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))> constexpr explicit Vector4(const U& other): Vector<4, T>(Implementation::VectorConverter<4, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ Vector4(const Vector<4, T>& other) noexcept: Vector<4, T>(other) {}

@@ -213,10 +213,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         template<std::size_t otherCols, std::size_t otherRows> constexpr explicit RectangularMatrix(const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: RectangularMatrix<cols, rows, T>{ZeroInit, typename Containers::Implementation::GenerateSequence<cols>::Type{}, other} {}
 
         /** @brief Construct a matrix from external representation */
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
+        template<class U, class = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
 
         /** @brief Convert a matrix to external representation */
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
+        template<class U, class = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
             return Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*this);
         }
 

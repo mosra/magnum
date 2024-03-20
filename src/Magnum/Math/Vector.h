@@ -250,10 +250,10 @@ template<std::size_t size, class T> class Vector {
         constexpr explicit Vector(const BitVector<size>& other) noexcept: Vector{typename Containers::Implementation::GenerateSequence<size>::Type{}, other} {}
 
         /** @brief Construct a vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other) noexcept: Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+        template<class U, class = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other) noexcept: Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
 
         /** @brief Convert a vector to external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
+        template<class U, class = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
             return Implementation::VectorConverter<size, T, U>::to(*this);
         }
 

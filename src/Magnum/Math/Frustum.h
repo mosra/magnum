@@ -113,10 +113,10 @@ template<class T> class Frustum {
         template<class U> constexpr explicit Frustum(const Frustum<U>& other) noexcept;
 
         /** @brief Construct frustum from external representation */
-        template<class U, class V = decltype(Implementation::FrustumConverter<T, U>::from(std::declval<U>()))> constexpr explicit Frustum(const U& other) noexcept: Frustum<T>{Implementation::FrustumConverter<T, U>::from(other)} {}
+        template<class U, class = decltype(Implementation::FrustumConverter<T, U>::from(std::declval<U>()))> constexpr explicit Frustum(const U& other) noexcept: Frustum<T>{Implementation::FrustumConverter<T, U>::from(other)} {}
 
         /** @brief Convert frustum to external representation */
-        template<class U, class V = decltype(Implementation::FrustumConverter<T, U>::to(std::declval<Frustum<T>>()))> constexpr explicit operator U() const {
+        template<class U, class = decltype(Implementation::FrustumConverter<T, U>::to(std::declval<Frustum<T>>()))> constexpr explicit operator U() const {
             return Implementation::FrustumConverter<T, U>::to(*this);
         }
 

@@ -175,10 +175,10 @@ template<UnsignedInt dimensions, class T> class Range {
         template<class U> constexpr explicit Range(const Range<dimensions, U>& other) noexcept: _min(other._min), _max(other._max) {}
 
         /** @brief Construct range from external representation */
-        template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
+        template<class U, class = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
 
         /** @brief Convert range to external representation */
-        template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::to(std::declval<Range<dimensions, T>>()))> constexpr explicit operator U() const {
+        template<class U, class = decltype(Implementation::RangeConverter<dimensions, T, U>::to(std::declval<Range<dimensions, T>>()))> constexpr explicit operator U() const {
             return Implementation::RangeConverter<dimensions, T, U>::to(*this);
         }
 
@@ -470,7 +470,7 @@ template<class T> class Range2D: public Range<2, T> {
         /**
          * @brief Construct range from external representation
          */
-        template<class U, class V =
+        template<class U, class =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
             decltype(Implementation::RangeConverter<2, T, U>::from(std::declval<U>()))
             #else
@@ -621,7 +621,7 @@ template<class T> class Range3D: public Range<3, T> {
         /**
          * @brief Construct range from external representation
          */
-        template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other) noexcept: Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)} {}
+        template<class U, class = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other) noexcept: Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)} {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ Range3D(const Range<3, T>& other) noexcept: Range<3, T>(other) {}

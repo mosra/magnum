@@ -305,7 +305,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other) noexcept: Matrix3x3<T>(other) {}
 
         /** @brief Construct a matrix from external representation */
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other) noexcept: Matrix3x3<T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
+        template<class U, class = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other) noexcept: Matrix3x3<T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>&, T) */
         template<std::size_t otherCols, std::size_t otherRows> constexpr explicit Matrix3(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>& other, T value = T(1)) noexcept: Matrix3x3<T>{IdentityInit, other, value} {}

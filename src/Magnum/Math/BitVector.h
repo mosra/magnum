@@ -125,10 +125,10 @@ template<std::size_t size> class BitVector {
         #endif
 
         /** @brief Construct a boolean vector from external representation */
-        template<class U, class V = decltype(Implementation::BitVectorConverter<size, U>::from(std::declval<U>()))> constexpr explicit BitVector(const U& other) noexcept: BitVector{Implementation::BitVectorConverter<size, U>::from(other)} {}
+        template<class U, class = decltype(Implementation::BitVectorConverter<size, U>::from(std::declval<U>()))> constexpr explicit BitVector(const U& other) noexcept: BitVector{Implementation::BitVectorConverter<size, U>::from(other)} {}
 
         /** @brief Convert a boolean vector to external representation */
-        template<class U, class V = decltype(Implementation::BitVectorConverter<size, U>::to(std::declval<BitVector<size>>()))> constexpr explicit operator U() const {
+        template<class U, class = decltype(Implementation::BitVectorConverter<size, U>::to(std::declval<BitVector<size>>()))> constexpr explicit operator U() const {
             return Implementation::BitVectorConverter<size, U>::to(*this);
         }
 

@@ -172,7 +172,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr explicit Vector3(const BitVector3& other) noexcept: Vector<3, T>{other} {}
 
         /** @brief Construct a vector from external representation */
-        template<class U, class V =
+        template<class U, class =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
             decltype(Implementation::VectorConverter<3, T, U>::from(std::declval<U>()))
             #else

@@ -137,10 +137,10 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Containers::Implementation::GenerateSequence<order + 1>::Type{}, other} {}
 
         /** @brief Construct Bézier curve from external representation */
-        template<class U, class V = decltype(Implementation::BezierConverter<order, dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Bezier(const U& other) noexcept: Bezier<order, dimensions, T>{Implementation::BezierConverter<order, dimensions, T, U>::from(other)} {}
+        template<class U, class = decltype(Implementation::BezierConverter<order, dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Bezier(const U& other) noexcept: Bezier<order, dimensions, T>{Implementation::BezierConverter<order, dimensions, T, U>::from(other)} {}
 
         /** @brief Convert Bézier curve to external representation */
-        template<class U, class V = decltype(Implementation::BezierConverter<order, dimensions, T, U>::to(std::declval<Bezier<order, dimensions, T>>()))> constexpr explicit operator U() const {
+        template<class U, class = decltype(Implementation::BezierConverter<order, dimensions, T, U>::to(std::declval<Bezier<order, dimensions, T>>()))> constexpr explicit operator U() const {
             return Implementation::BezierConverter<order, dimensions, T, U>::to(*this);
         }
 

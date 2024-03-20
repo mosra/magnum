@@ -144,7 +144,7 @@ template<class T> class Vector2: public Vector<2, T> {
         constexpr explicit Vector2(const BitVector2& other) noexcept: Vector<2, T>{other} {}
 
         /** @brief Construct a vector from external representation */
-        template<class U, class V =
+        template<class U, class =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
             decltype(Implementation::VectorConverter<2, T, U>::from(std::declval<U>()))
             #else
