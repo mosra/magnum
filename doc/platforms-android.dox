@@ -285,6 +285,22 @@ if(CMAKE_ANDROID_NDK)
 endif()
 @endcode
 
+Besides packing the main library, the function can also copy resources and
+assets:
+
+@code{.cmake}
+android_create_apk(<target> <manifest>
+    [RESOURCE_DIRECTORY <res>]
+    [ASSET_DIRECTORY <assets>])
+@endcode
+
+The optional `RESOURCE_DIRECTORY` and `ASSET_DIRECTORY` arguments take relative
+or absolute paths to directories containing resources (usually named `res/`)
+and assets (usually named `assets/`). Both options track file dependencies, so
+the APK gets repacked when any files in the directories change contents, are
+added or removed. CMake before 3.12 checks the directories only during CMake
+runs, on newer versions at every incremental build.
+
 @subsection platforms-android-apps-gradle Using Gradle
 
 Besides plain CMake and Gradle it's also possible to use the classic
