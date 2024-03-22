@@ -1200,6 +1200,10 @@ See also:
     text. Now it emits both, consistently with @ref Platform::Sdl2Application
     and @ref Platform::GlfwApplication, and in the same order as in those. See
     [mosra/magnum#637](https://github.com/mosra/magnum/issues/637).
+-   Fixed swapped middle and right buttons in
+    @ref Platform::EmscriptenApplication::MouseMoveEvent, caused by the
+    JavaScript events themselves having an unexplainable inconsistency in
+    button numbering
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

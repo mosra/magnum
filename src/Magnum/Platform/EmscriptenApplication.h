@@ -1561,9 +1561,10 @@ class EmscriptenApplication::MouseEvent: public EmscriptenApplication::InputEven
          * @see @ref button()
          */
         enum class Button: std::int32_t {
-            Left,       /**< Left mouse button */
-            Middle,     /**< Middle mouse button */
-            Right       /**< Right mouse button */
+            /* https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button */
+            Left = 0,       /**< Left mouse button */
+            Middle = 1,     /**< Middle mouse button */
+            Right = 2       /**< Right mouse button */
         };
 
         /** @brief Button */
@@ -1599,14 +1600,13 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
          * @see @ref buttons()
          */
         enum class Button: Int {
-            /** Left mouse button */
-            Left = 1 << 0,
+            /* https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons,
+               note that Middle and Right has order swapped compared to
+               button / MouseEvent::Button, for some unexplainable reason */
 
-            /** Middle mouse button */
-            Middle = 1 << 1,
-
-            /** Right mouse button */
-            Right = 1 << 2
+            Left = 1 << 0,      /** Left mouse button */
+            Middle = 1 << 2,    /** Middle mouse button */
+            Right = 1 << 1      /** Right mouse button */
         };
 
         /**
