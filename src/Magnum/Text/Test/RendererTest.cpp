@@ -361,7 +361,8 @@ struct DummyGlyphCache: AbstractGlyphCache {
 };
 
 DummyGlyphCache testGlyphCache(AbstractFont& font) {
-    DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20}};
+    /* Default padding is 1 to avoid artifacts, set that to 0 to simplify */
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20}, {}};
 
     /* Add one more font to verify the right one gets picked */
     cache.addFont(96);
@@ -378,7 +379,8 @@ DummyGlyphCache testGlyphCache(AbstractFont& font) {
 }
 
 DummyGlyphCache testGlyphCacheArray(AbstractFont& font) {
-    DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20, 3}};
+    /* Default padding is 1 to avoid artifacts, set that to 0 to simplify */
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20, 3}, {}};
 
     /* Add one more font to verify the right one gets picked */
     cache.addFont(96);
@@ -1049,8 +1051,9 @@ void RendererTest::multiline() {
     } font;
     font.openFile({}, 0.5f);
 
-    /* Just a single glyph that scales to {1, 1} in the end */
-    DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20}};
+    /* Just a single glyph that scales to {1, 1} in the end. Default padding is
+       1 which would prevent this, set it back to 0. */
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20}, {}};
     UnsignedInt fontId = cache.addFont(1, &font);
     cache.addGlyph(fontId, 0, {}, {{}, {2, 2}});
 

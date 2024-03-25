@@ -132,16 +132,16 @@ AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i&
     arrayAppend(_state->fonts, InPlaceInit, 0u, nullptr);
 }
 
-AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size): AbstractGlyphCache{format, size, {}} {}
+AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size): AbstractGlyphCache{format, size, Vector2i{1}} {}
 
 AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector2i& size, const Vector2i& padding): AbstractGlyphCache{format, Vector3i{size, 1}, padding} {}
 
-AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector2i& size): AbstractGlyphCache{format, size, {}} {}
+AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector2i& size): AbstractGlyphCache{format, size, Vector2i{1}} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 AbstractGlyphCache::AbstractGlyphCache(const Vector2i& size, const Vector2i& padding): AbstractGlyphCache{PixelFormat::R8Unorm, size, padding} {}
 
-AbstractGlyphCache::AbstractGlyphCache(const Vector2i& size): AbstractGlyphCache{PixelFormat::R8Unorm, size, {}} {}
+AbstractGlyphCache::AbstractGlyphCache(const Vector2i& size): AbstractGlyphCache{PixelFormat::R8Unorm, size, Vector2i{1}} {}
 #endif
 
 AbstractGlyphCache::AbstractGlyphCache(NoCreateT) noexcept {}

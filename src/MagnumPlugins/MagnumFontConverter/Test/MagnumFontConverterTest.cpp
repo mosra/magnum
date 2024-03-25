@@ -323,7 +323,8 @@ void MagnumFontConverterTest::exportFontEmptyCache() {
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
-    } cache{PixelFormat::R8Unorm, {8, 4}};
+    /* Default padding is 1 to avoid artifacts, set that to 0 to simplify */
+    } cache{PixelFormat::R8Unorm, {8, 4}, {}};
 
     /* Associate the font with the cache. The case where it's not even that is
        tested in exportFontNotFoundInCache() below. */

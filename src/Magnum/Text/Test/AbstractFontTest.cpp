@@ -1228,7 +1228,8 @@ void AbstractFontTest::layout() {
     font.openFile({}, {});
     CORRADE_COMPARE(font.size(), 0.5f);
 
-    DummyGlyphCache cache{PixelFormat::R8Unorm, {10, 20}};
+    /* Default padding is 1 to avoid artifacts, set that to 0 to simplify */
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {10, 20}, {}};
 
     UnsignedInt fontId = cache.addFont(15, &font);
 

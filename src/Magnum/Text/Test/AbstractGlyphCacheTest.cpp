@@ -309,7 +309,8 @@ void AbstractGlyphCacheTest::constructNoPadding() {
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
     CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 3}));
-    CORRADE_COMPARE(cache.padding(), Vector2i{});
+    /* 1 by default to avoid artifacts */
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
     CORRADE_COMPARE(cache.fontCount(), 0);
     /* Invalid glyph is always present */
     CORRADE_COMPARE(cache.glyphCount(), 1);
@@ -317,7 +318,7 @@ void AbstractGlyphCacheTest::constructNoPadding() {
     CORRADE_COMPARE(cache.atlas().size(), (Vector3i{1024, 512, 3}));
     CORRADE_COMPARE(cache.atlas().filledSize(), (Vector3i{1024, 512, 0}));
     CORRADE_COMPARE(cache.atlas().flags(), TextureTools::AtlasLandfillFlag::WidestFirst);
-    CORRADE_COMPARE(cache.atlas().padding(), Vector2i{});
+    CORRADE_COMPARE(cache.atlas().padding(), Vector2i{1});
     CORRADE_COMPARE(cache.image().format(), PixelFormat::R32F);
     CORRADE_COMPARE(cache.image().size(), (Vector3i{1024, 512, 3}));
 
@@ -356,14 +357,15 @@ void AbstractGlyphCacheTest::construct2DNoPadding() {
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}};
     CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 1}));
-    CORRADE_COMPARE(cache.padding(), Vector2i{});
+    /* 1 by default to avoid artifacts */
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
     CORRADE_COMPARE(cache.fontCount(), 0);
     /* Invalid glyph is always present */
     CORRADE_COMPARE(cache.glyphCount(), 1);
     CORRADE_COMPARE(cache.atlas().size(), (Vector3i{1024, 512, 1}));
     CORRADE_COMPARE(cache.atlas().filledSize(), (Vector3i{1024, 0, 1}));
     CORRADE_COMPARE(cache.atlas().flags(), TextureTools::AtlasLandfillFlag::WidestFirst);
-    CORRADE_COMPARE(cache.atlas().padding(), Vector2i{});
+    CORRADE_COMPARE(cache.atlas().padding(), Vector2i{1});
 
     /* The rest shouldn't be any different */
 }
@@ -416,13 +418,14 @@ void AbstractGlyphCacheTest::constructDeprecatedNoPadding() {
     CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(cache.textureSize(), (Vector2i{1024, 512}));
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(cache.padding(), Vector2i{});
+    /* 1 by default to avoid artifacts */
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
     CORRADE_COMPARE(cache.fontCount(), 0);
     CORRADE_COMPARE(cache.glyphCount(), 1);
     CORRADE_COMPARE(cache.atlas().size(), (Vector3i{1024, 512, 1}));
     CORRADE_COMPARE(cache.atlas().filledSize(), (Vector3i{1024, 0, 1}));
     CORRADE_COMPARE(cache.atlas().flags(), TextureTools::AtlasLandfillFlag::WidestFirst);
-    CORRADE_COMPARE(cache.atlas().padding(), Vector2i{});
+    CORRADE_COMPARE(cache.atlas().padding(), Vector2i{1});
 }
 #endif
 
@@ -538,7 +541,8 @@ void AbstractGlyphCacheTest::setInvalidGlyph2D() {
 void AbstractGlyphCacheTest::setInvalidGlyphOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
+    /* Default padding is 1, test that it works for zero as well */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, {}};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -804,7 +808,10 @@ void AbstractGlyphCacheTest::addGlyphIndexOutOfRange() {
 void AbstractGlyphCacheTest::addGlyphAlreadyAdded() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
+    /* Default padding of 1 makes it impossible to add a glyph at zero offset
+       as it's out of range. Don't want to bother with that here so resetting
+       it to 0. */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, {}};
 
     cache.addFont(9);
     UnsignedInt fontId = cache.addFont(3);
@@ -822,7 +829,8 @@ void AbstractGlyphCacheTest::addGlyphAlreadyAdded() {
 void AbstractGlyphCacheTest::addGlyphOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
+    /* Default padding is 1, test that it works for zero as well */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, {}};
 
     UnsignedInt fontId = cache.addFont(9);
 
@@ -889,7 +897,10 @@ void AbstractGlyphCacheTest::addGlyphOutOfRangePadded() {
 void AbstractGlyphCacheTest::addGlyphTooMany() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}};
+    /* Default padding of 1 makes it impossible to add a glyph at zero offset
+       as it's out of range. Don't want to bother with that here so resetting
+       it to 0. */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}, {}};
 
     /* Adding a font with over 65k potential glyphs is okay */
     UnsignedInt fontId = cache.addFont(100000);
@@ -1472,8 +1483,8 @@ void AbstractGlyphCacheTest::processedImageNotImplemented() {
 }
 
 void AbstractGlyphCacheTest::access() {
-    /* Padding tested well enough in addGlyph(), not using it here */
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
+    /* Padding tested well enough in addGlyph(), resetting it back to 0 here */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, {}};
 
     cache.setInvalidGlyph({5, 7}, 2, {{5, 10}, {15, 30}});
 
@@ -1540,8 +1551,8 @@ void AbstractGlyphCacheTest::access() {
 }
 
 void AbstractGlyphCacheTest::accessBatch() {
-    /* Padding tested well enough in addGlyph(), not using it here */
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
+    /* Padding tested well enough in addGlyph(), resetting it back to 0 here */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, {}};
 
     cache.setInvalidGlyph({5, 7}, 2, {{5, 10}, {15, 30}});
 
@@ -1594,7 +1605,10 @@ void AbstractGlyphCacheTest::accessInvalid() {
     /* Silly test name, but these all test debug asserts while
        accessBatchInvalid() tests non-debug asserts */
 
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
+    /* Default padding of 1 makes it impossible to add a glyph at zero offset
+       as it's out of range. Don't want to bother with that here so resetting
+       it to 0. */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, {}};
 
     cache.addFont(9);
     UnsignedInt fontId = cache.addFont(3);
@@ -1628,7 +1642,10 @@ void AbstractGlyphCacheTest::accessInvalid() {
 void AbstractGlyphCacheTest::accessBatchInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
+    /* Default padding of 1 makes it impossible to add a glyph at zero offset
+       as it's out of range. Don't want to bother with that here so resetting
+       it to 0. */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, {}};
 
     cache.addFont(9);
     UnsignedInt fontId = cache.addFont(3);

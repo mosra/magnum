@@ -106,7 +106,8 @@ struct TestFont: AbstractFont {
 };
 
 GlyphCache testGlyphCache(AbstractFont& font) {
-    GlyphCache cache{{20, 20}};
+    /* Default padding is 1 to avoid artifacts, set that to 0 to simplify */
+    GlyphCache cache{{20, 20}, {}};
 
     /* Add one more font to verify the right one gets picked */
     cache.addFont(96);

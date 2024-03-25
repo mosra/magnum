@@ -245,6 +245,27 @@ font-specific glyph IDs that resolved to @cpp 0 @ce with @ref glyphId(),
 rasterize them to the cache in the next round, and then update the rendered
 text again.
 
+@section Text-AbstractGlyphCache-padding Glyph padding
+
+Fonts commonly shape the glyphs to sub-pixel positions, the GPU rasterizer then
+rounds the actual quads to nearest pixels, which then can lead to neighboring
+pixels to leak into the rendered glyph or, conversely, the rendered glyph
+having an edge cut. Because of that, by default the glyphs are padded with one
+pixel on each side, which should prevent such artifacts even if rendering the
+glyphs 2x supersampled.
+
+If you have a pixel-perfect font that gets always shaped to whole pixel
+positions, you can set it back to zero in the constructor. Or for example if
+you can ensure that at least lines get placed on whole pixel positions and the
+line advance is whole pixels as well, you can se it to zero in one dimension at
+least, assuming neither @ref TextureTools::AtlasLandfillFlag::RotatePortrait
+nor @relativeref{TextureTools::AtlasLandfillFlag,RotateLandscape} is enabled in
+@ref atlas().
+
+On the other hand, if you're rendering more than 2x supersampled or for example
+using the cache for generating a distance field, you may want to increase the
+padding even further.
+
 @section Text-AbstractGlyphCache-subclassing Subclassing
 
 A subclass needs to implement the @ref doFeatures() and @ref doSetImage()
@@ -264,14 +285,16 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @brief Construct a 2D array glyph cache
          * @param format     Source image format
          * @param size       Source image size in pixels
-         * @param padding    Padding around every glyph in pixels
+         * @param padding    Padding around every glyph in pixelss. See
+         *      @ref Text-AbstractGlyphCache-padding for more information about
+         *      the default.
          * @m_since_latest
          *
          * The @p size is expected to be non-zero.
          * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size, const Vector2i& padding = {});
+        explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size, const Vector2i& padding = Vector2i{1});
         #else
         /* To not need to include Vector */
         explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size, const Vector2i& padding);
@@ -282,7 +305,9 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @brief Construct a 2D glyph cache
          * @param format     Source image format
          * @param size       Source image size in pixels
-         * @param padding    Padding around every glyph in pixels
+         * @param padding    Padding around every glyph in pixels. See
+         *      @ref Text-AbstractGlyphCache-padding for more information about
+         *      the default.
          * @m_since_latest
          *
          * Equivalent to calling
@@ -290,7 +315,7 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * with depth set to @cpp 1 @ce.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, const Vector2i& padding = {});
+        explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, const Vector2i& padding = Vector2i{1});
         #else
         /* To not need to include Vector */
         explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, const Vector2i& padding);
@@ -301,7 +326,9 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
         /**
          * @brief Construct a 2D glyph cache
          * @param size       Source image size in pixels
-         * @param padding    Padding around every glyph in pixels
+         * @param padding    Padding around every glyph in pixelss. See
+         *      @ref Text-AbstractGlyphCache-padding for more information about
+         *      the default.
          *
          * Calls @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
          * with @p format set to @ref PixelFormat::R8Unorm.
@@ -309,7 +336,7 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          *      instead.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit AbstractGlyphCache(const Vector2i& size, const Vector2i& padding = {});
+        explicit AbstractGlyphCache(const Vector2i& size, const Vector2i& padding = Vector2i{1});
         #else
         /* To not need to include Vector */
         CORRADE_DEPRECATED("use AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&) instead") explicit AbstractGlyphCache(const Vector2i& size, const Vector2i& padding);
@@ -385,7 +412,11 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
         CORRADE_DEPRECATED("use size() instead") Vector2i textureSize() const;
         #endif
 
-        /** @brief Glyph padding */
+        /**
+         * @brief Glyph padding
+         *
+         * @see @ref Text-AbstractGlyphCache-padding
+         */
         Vector2i padding() const;
 
         /**

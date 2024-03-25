@@ -80,9 +80,10 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
          * @brief Constructor
          *
          * Same as calling the above with @p originalSize and @p size being set
-         * to the same value.
+         * to the same value. See @ref Text-AbstractGlyphCache-padding for more
+         * information about the default @p padding.
          */
-        explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = {});
+        explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = Vector2i{1});
 
         /**
          * @brief Constructor
@@ -103,9 +104,10 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
          * @brief Constructor
          *
          * Same as calling the above with @p originalSize and @p size being set
-         * to the same value.
+         * to the same value. See @ref Text-AbstractGlyphCache-padding for more
+         * information about the default @p padding.
          */
-        explicit GlyphCache(const Vector2i& size, const Vector2i& padding = {});
+        explicit GlyphCache(const Vector2i& size, const Vector2i& padding = Vector2i{1});
 
         /**
          * @brief Construct without creating the internal state and the OpenGL texture object
