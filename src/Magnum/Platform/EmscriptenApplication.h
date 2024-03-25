@@ -1821,11 +1821,30 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
             Comma,              /**< Comma */
             Period,             /**< Period */
             Minus,              /**< Minus */
-            /* Note: This may only be represented as SHIFT + = */
-            Plus,               /**< Plus */
+
+            /**
+             * Plus
+             * @todo Impossible to represent via a scancode on US layout
+             *      (Shift + =). The reason this was included is that it was in
+             *      Sdl2App which historically uses layout-dependent keycodes
+             *      instead of scancodes because otherwise Z and Y would be
+             *      swapped on QWERTZ layouts (unlike GLFW and HTML5), which is
+             *      a far worse problem.
+             */
+            Plus,
+
             Slash,              /**< Slash */
-            /* Note: This may only be represented as SHIFT + 5 */
-            Percent,            /**< Percent */
+
+            /**
+             * Percent
+             * @todo Impossible to represent via a scancode on US layout
+             *      (Shift + 5). The reason this was included is that it was in
+             *      Sdl2App which historically uses layout-dependent keycodes
+             *      instead of scancodes because otherwise Z and Y would be
+             *      swapped on QWERTZ layouts (unlike GLFW and HTML5), which is
+             *      a far worse problem.
+             */
+            Percent,
 
             /**
              * Semicolon (`;`)
@@ -1840,6 +1859,8 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
             Backquote,          /**< Backquote (<tt>`</tt>) */
 
             /* no equivalent for GlfwApplication's World1 / World2 */
+            /** @todo there's IntlBackslash for World1, implement once there's
+                consensus about naming */
 
             CapsLock,           /**< Caps lock */
             ScrollLock,         /**< Scroll lock */

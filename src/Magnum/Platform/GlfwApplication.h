@@ -1704,11 +1704,31 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Comma = GLFW_KEY_COMMA,             /**< Comma */
             Period = GLFW_KEY_PERIOD,           /**< Period */
             Minus = GLFW_KEY_MINUS,             /**< Minus */
-            /* Note: This may only be represented as SHIFT + = */
-            Plus = '+',                         /**< Plus */
+
+            /**
+             * Plus
+             * @todo Impossible to represent via a scancode on US layout
+             *      (Shift + =). The reason this was included is that it was in
+             *      Sdl2App which historically uses layout-dependent keycodes
+             *      instead of scancodes because otherwise Z and Y would be
+             *      swapped on QWERTZ layouts (unlike GLFW and HTML5), which is
+             *      a far worse problem.
+             */
+            Plus = '+',
+
             Slash = GLFW_KEY_SLASH,             /**< Slash */
-            /* Note: This may only be represented as SHIFT + 5 */
-            Percent = '%',                      /**< Percent */
+
+            /**
+             * Percent
+             * @todo Impossible to represent via a scancode on US layout
+             *      (Shift + 5). The reason this was included is that it was in
+             *      Sdl2App which historically uses layout-dependent keycodes
+             *      instead of scancodes because otherwise Z and Y would be
+             *      swapped on QWERTZ layouts (unlike GLFW and HTML5), which is
+             *      a far worse problem.
+             */
+            Percent = '%',
+
             Semicolon = GLFW_KEY_SEMICOLON,     /**< Semicolon (`;`) */
 
             #ifdef MAGNUM_BUILD_DEPRECATED
@@ -1734,6 +1754,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
 
             /**
              * Backslash (`\`)
+             * @see @ref Key::World1, @ref Key::World2
              * @m_since{2020,06}
              */
             Backslash = GLFW_KEY_BACKSLASH,
@@ -1745,13 +1766,20 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Backquote = GLFW_KEY_GRAVE_ACCENT,
 
             /**
-             * Non-US \#1
+             * Non-US \#1. Can be for example a backslash (`\`) next to left
+             * Shift.
+             * @see @ref Key::Backslash
              * @m_since{2020,06}
+             * @todo Revisit / rename together with World2 once
+             *      https://github.com/glfw/glfw/issues/2481 is resolved. SDL
+             *      scancode for this key is SDL_SCANCODE_NONUSBACKSLASH, HTML5
+             *      names it IntlBackslash.
              */
             World1 = GLFW_KEY_WORLD_1,
 
             /**
              * Non-US \#2
+             * @see @ref Key::Backslash
              * @m_since{2020,06}
              */
             World2 = GLFW_KEY_WORLD_2,

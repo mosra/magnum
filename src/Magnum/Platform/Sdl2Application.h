@@ -2166,6 +2166,7 @@ class Sdl2Application::InputEvent {
              * AltGr
              *
              * @see @ref KeyEvent::Key::AltGr
+             * @todo AltGr gets reported as RightAlt, what's this for?
              */
             AltGr = KMOD_MODE,
 
@@ -2304,6 +2305,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
              * AltGr
              *
              * @see @ref InputEvent::Modifier::AltGr
+             * @todo AltGr gets reported as RightAlt, what's this for?
              */
             AltGr = SDLK_MODE,
 
@@ -2347,9 +2349,31 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             Comma = SDLK_COMMA,         /**< Comma */
             Period = SDLK_PERIOD,       /**< Period */
             Minus = SDLK_MINUS,         /**< Minus */
-            Plus = SDLK_PLUS,           /**< Plus */
+
+            /**
+             * Plus
+             * @todo Impossible to represent via a scancode on US layout
+             *      (Shift + =). The reason this was included is that Sdl2App
+             *      historically uses layout-dependent keycodes instead of
+             *      scancodes because otherwise Z and Y would be swapped on
+             *      QWERTZ layouts (unlike GLFW and HTML5), which is a far
+             *      worse problem.
+             */
+            Plus = SDLK_PLUS,
+
             Slash = SDLK_SLASH,         /**< Slash */
-            Percent = SDLK_PERCENT,     /**< Percent */
+
+            /**
+             * Percent
+             * @todo Impossible to represent via a scancode on US layout
+             *      (Shift + 5). The reason this was included is that Sdl2App
+             *      historically uses layout-dependent keycodes instead of
+             *      scancodes because otherwise Z and Y would be swapped on
+             *      QWERTZ layouts (unlike GLFW and HTML5), which is a far
+             *      worse problem.
+             */
+            Percent = SDLK_PERCENT,
+
             Semicolon = SDLK_SEMICOLON, /**< Semicolon (`;`) */
             Equal = SDLK_EQUALS,        /**< Equal */
 
