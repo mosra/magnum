@@ -46,6 +46,125 @@
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
+Debug& operator<<(Debug& debug, const Application::KeyEvent::Key value) {
+    debug << "Key" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::KeyEvent::Key::value: return debug << "::" #value;
+        _c(Unknown)
+        _c(LeftShift)
+        _c(RightShift)
+        _c(LeftCtrl)
+        _c(RightCtrl)
+        _c(LeftAlt)
+        _c(RightAlt)
+        _c(LeftSuper)
+        _c(RightSuper)
+        _c(Enter)
+        _c(Esc)
+        _c(Up)
+        _c(Down)
+        _c(Left)
+        _c(Right)
+        _c(Home)
+        _c(End)
+        _c(PageUp)
+        _c(PageDown)
+        _c(Backspace)
+        _c(Insert)
+        _c(Delete)
+        _c(F1)
+        _c(F2)
+        _c(F3)
+        _c(F4)
+        _c(F5)
+        _c(F6)
+        _c(F7)
+        _c(F8)
+        _c(F9)
+        _c(F10)
+        _c(F11)
+        _c(F12)
+        _c(Zero)
+        _c(One)
+        _c(Two)
+        _c(Three)
+        _c(Four)
+        _c(Five)
+        _c(Six)
+        _c(Seven)
+        _c(Eight)
+        _c(Nine)
+        _c(A)
+        _c(B)
+        _c(C)
+        _c(D)
+        _c(E)
+        _c(F)
+        _c(G)
+        _c(H)
+        _c(I)
+        _c(J)
+        _c(K)
+        _c(L)
+        _c(M)
+        _c(N)
+        _c(O)
+        _c(P)
+        _c(Q)
+        _c(R)
+        _c(S)
+        _c(T)
+        _c(U)
+        _c(V)
+        _c(W)
+        _c(X)
+        _c(Y)
+        _c(Z)
+        _c(Space)
+        _c(Tab)
+        _c(Quote)
+        _c(Comma)
+        _c(Period)
+        _c(Minus)
+        _c(Plus)
+        _c(Slash)
+        _c(Percent)
+        _c(Semicolon)
+        _c(Equal)
+        _c(LeftBracket)
+        _c(RightBracket)
+        _c(Backslash)
+        _c(Backquote)
+        _c(CapsLock)
+        _c(ScrollLock)
+        _c(NumLock)
+        _c(PrintScreen)
+        _c(Pause)
+        _c(Menu)
+        _c(NumZero)
+        _c(NumOne)
+        _c(NumTwo)
+        _c(NumThree)
+        _c(NumFour)
+        _c(NumFive)
+        _c(NumSix)
+        _c(NumSeven)
+        _c(NumEight)
+        _c(NumNine)
+        _c(NumDecimal)
+        _c(NumDivide)
+        _c(NumMultiply)
+        _c(NumSubtract)
+        _c(NumAdd)
+        _c(NumEnter)
+        _c(NumEqual)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+}
+
 using namespace Containers::Literals;
 using namespace Math::Literals;
 
@@ -95,11 +214,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     void keyPressEvent(KeyEvent& event) override {
         {
             Debug d;
-            if(event.key() != KeyEvent::Key::Unknown) {
-                d << "keyPressEvent(" << Debug::nospace << event.keyName().data() << Debug::nospace << "): ✔";
-            } else {
-                d << "keyPressEvent(" << Debug::nospace << event.keyName().data() << Debug::nospace << "): ✘";
-            }
+            d << "key press event:" << event.key() << event.keyName();
 
             if(event.modifiers() & KeyEvent::Modifier::Shift) d << "Shift";
             if(event.modifiers() & KeyEvent::Modifier::Ctrl) d << "Ctrl";
@@ -134,11 +249,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     void keyReleaseEvent(KeyEvent& event) override {
         {
             Debug d;
-            if(event.key() != KeyEvent::Key::Unknown) {
-                d << "keyReleaseEvent(" << Debug::nospace << event.keyName() << Debug::nospace << "): ✔";
-            } else {
-                d << "keyReleaseEvent(" << Debug::nospace << event.keyName() << Debug::nospace << "): ✘";
-            }
+            d << "key release event:" << event.key() << event.keyName();
 
             if(event.modifiers() & KeyEvent::Modifier::Shift) d << "Shift";
             if(event.modifiers() & KeyEvent::Modifier::Ctrl) d << "Ctrl";
