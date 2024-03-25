@@ -44,7 +44,7 @@
 #include <emscripten/version.h>
 #endif
 
-namespace Magnum { namespace Platform { namespace Test {
+namespace Magnum { namespace Platform { namespace Test { namespace {
 
 using namespace Containers::Literals;
 using namespace Math::Literals;
@@ -203,6 +203,6 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
     GL::Mesh mesh;
 }
 
-}}}
+}}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::EmscriptenApplicationTest)
