@@ -648,10 +648,15 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @m_since_latest
          *
          * Call after copying glyph data to @ref image() in order to reflect
-         * the updates to the GPU-side data. The @p layer and @p range is
-         * expected to be in bounds for @ref size(). You can use
-         * @ref Math::join() on rectangles passed to @ref addGlyph() to
-         * calculate the area that spans all glyphs that were added.
+         * the updates to the GPU-side data. The @p range is expected to be in
+         * bounds for @ref size(). You can use @ref Math::join() on rectangles
+         * passed to @ref addGlyph() to calculate the area that spans all
+         * glyphs that were added.
+         *
+         * The function assumes the @p range excludes @ref padding(). The image
+         * data get copied to the GPU including the padding to make sure the
+         * padded glyph area doesn't contain leftovers of uninitialized GPU
+         * memory.
          */
         void flushImage(const Range3Di& range);
 

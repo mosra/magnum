@@ -380,18 +380,25 @@ void AbstractGlyphCache::flushImage(const Range3Di& range) {
     CORRADE_ASSERT((rangeu.min() <= rangeu.max()).all() && (rangeu.max() <= Vector3ui{state.image.size()}).all(),
         "Text::AbstractGlyphCache::flushImage():" << Debug::packed << range << "out of range for size" << Debug::packed << state.image.size(), );
 
+    /* Set the image including padding, to make sure the sampled glyph area
+       doesn't contain potentially uninitialized GPU memory */
+    const Vector3i paddedMin = Math::max(Vector3i{0},
+        range.min() - Vector3i{padding(), 0});
+    const Vector3i paddedMax = Math::min(size(),
+        range.max() + Vector3i{padding(), 0});
+
     /** @todo ugh have slicing on images directly already */
     PixelStorage storage;
     storage.setRowLength(state.image.size().x())
-        .setSkip(range.min());
+        .setSkip(paddedMin);
     /* Set image height only if it's an array glyph cache, as otherwise it'd
        cause errors on ES2 that doesn't support this pixel storage state */
     if(state.image.size().z() != 1)
         storage.setImageHeight(state.image.size().y());
-    doSetImage(range.min(), ImageView3D{
+    doSetImage(paddedMin, ImageView3D{
         storage,
         state.image.format(),
-        range.size(),
+        paddedMax - paddedMin,
         state.image.data()});
 }
 

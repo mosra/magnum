@@ -112,24 +112,14 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
     #endif
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     {
-        /* Create an image view that includes the distance field radius as
-           well, to be sure the edges are processed appropriately as well */
-        /** @todo this feels more like a hack than a real solution, any better
-            idea? Tried to make TextureTools::DistanceField pad the processing
-            area on its own, but eventually gave up as it would (a) made the
-            processing do more work than necessary in many cases, with no easy
-            way to opt out of that, (b) wasn't really working if the input
-            didn't have a black strip around the edge on platforms that don't
-            support border clamp, (c) required the input texture to have
-            certain wrapping mode set */
+        /* The image range was already expanded to include the padding in
+           flushImage() */
         CORRADE_INTERNAL_ASSERT(image.storage().skip().xy() == offset);
         #ifdef CORRADE_NO_ASSERT
         static_cast<void>(offset);
         #endif
-        const Vector2i paddedMin = Math::max(Vector2i{0},
-            image.storage().skip().xy() - padding());
-        const Vector2i paddedMax = Math::min(size().xy(),
-            image.size() + image.storage().skip().xy() + padding());
+        const Vector2i paddedMin = image.storage().skip().xy();
+        const Vector2i paddedMax = image.size() + image.storage().skip().xy();
 
         /* TextureTools::DistanceField expects the input size and output
            rectangle size ratio to be a multiple of 2 in order for the shader

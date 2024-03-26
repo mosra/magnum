@@ -142,6 +142,14 @@ struct AbstractGlyphCacheTest: TestSuite::Tester {
 
 const struct {
     const char* name;
+    Vector2i padding;
+} FlushImageData[]{
+    {"", {}},
+    {"with padding", {2, 3}},
+};
+
+const struct {
+    const char* name;
     GlyphCacheFeatures features;
 } ProcessedImageNotSupportedData[]{
     {"no processing", {}},
@@ -205,25 +213,33 @@ AbstractGlyphCacheTest::AbstractGlyphCacheTest() {
               &AbstractGlyphCacheTest::insertNot2D,
               &AbstractGlyphCacheTest::insertMultiFont,
               #endif
+              });
 
-              &AbstractGlyphCacheTest::flushImage,
-              &AbstractGlyphCacheTest::flushImageWholeArea,
-              &AbstractGlyphCacheTest::flushImageLayer,
-              &AbstractGlyphCacheTest::flushImage2D,
-              &AbstractGlyphCacheTest::flushImage2DPassthrough2D,
-              &AbstractGlyphCacheTest::flushImageNotImplemented,
-              &AbstractGlyphCacheTest::flushImagePassthrough2DNotImplemented,
-              &AbstractGlyphCacheTest::flushImageOutOfRange,
-              &AbstractGlyphCacheTest::flushImage2DNot2D,
+    addInstancedTests({&AbstractGlyphCacheTest::flushImage,
+                       &AbstractGlyphCacheTest::flushImageWholeArea,
+                       &AbstractGlyphCacheTest::flushImageLayer,
+                       &AbstractGlyphCacheTest::flushImage2D,
+                       &AbstractGlyphCacheTest::flushImage2DPassthrough2D},
+        Containers::arraySize(FlushImageData));
 
-              #ifdef MAGNUM_BUILD_DEPRECATED
-              &AbstractGlyphCacheTest::setImage,
-              &AbstractGlyphCacheTest::setImageOutOfRange,
+    addTests({&AbstractGlyphCacheTest::flushImageNotImplemented,
+              &AbstractGlyphCacheTest::flushImagePassthrough2DNotImplemented});
+
+    addInstancedTests({&AbstractGlyphCacheTest::flushImageOutOfRange},
+        Containers::arraySize(FlushImageData));
+
+    addTests({&AbstractGlyphCacheTest::flushImage2DNot2D});
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addInstancedTests({&AbstractGlyphCacheTest::setImage},
+        Containers::arraySize(FlushImageData));
+
+    addTests({&AbstractGlyphCacheTest::setImageOutOfRange,
               &AbstractGlyphCacheTest::setImageInvalidFormat,
-              &AbstractGlyphCacheTest::setImageNot2D,
-              #endif
+              &AbstractGlyphCacheTest::setImageNot2D});
+    #endif
 
-              &AbstractGlyphCacheTest::processedImage});
+    addTests({&AbstractGlyphCacheTest::processedImage});
 
     addInstancedTests({&AbstractGlyphCacheTest::processedImageNotSupported},
         Containers::arraySize(ProcessedImageNotSupportedData));
@@ -1014,6 +1030,9 @@ void AbstractGlyphCacheTest::insertMultiFont() {
 #endif
 
 void AbstractGlyphCacheTest::flushImage() {
+    auto&& data = FlushImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
@@ -1021,27 +1040,56 @@ void AbstractGlyphCacheTest::flushImage() {
         void doSetImage(const Vector3i& offset, const ImageView3D& image) override {
             called = true;
 
-            char pixels0[]{
-                'a', 'b', 'c', 0,
-                'd', 'e', 'f', 0,
-            };
-            char pixels1[]{
-                '0', '1', '2', 0,
-                '3', '4', '5', 0,
-            };
-            CORRADE_COMPARE(offset, (Vector3i{15, 30, 3}));
-            CORRADE_COMPARE(image.size(), (Vector3i{3, 2, 2}));
-            CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
-                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels0}),
-                DebugTools::CompareImage);
-            CORRADE_COMPARE_AS(image.pixels<Byte>()[1],
-                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels1}),
-                DebugTools::CompareImage);
+            CORRADE_COMPARE(offset, (Vector3i{15, 30, 3} - Vector3i{padding(), 0}));
+            CORRADE_COMPARE(image.size(), (Vector3i{3, 2, 2} + Vector3i{2*padding(), 0}));
+
+            if(padding().isZero()) {
+                char pixels0[]{
+                    'a', 'b', 'c', 0,
+                    'd', 'e', 'f', 0,
+                };
+                char pixels1[]{
+                    '0', '1', '2', 0,
+                    '3', '4', '5', 0,
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
+                    (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels0}),
+                    DebugTools::CompareImage);
+                CORRADE_COMPARE_AS(image.pixels<Byte>()[1],
+                    (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels1}),
+                    DebugTools::CompareImage);
+            } else {
+                char pixels0[]{
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0, 'a', 'b', 'c', 0, 0, 0,
+                    0, 0, 'd', 'e', 'f', 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0
+                };
+                char pixels1[]{
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0, '0', '1', '2', 0, 0, 0,
+                    0, 0, '3', '4', '5', 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
+                    (ImageView2D{PixelFormat::R8Snorm, {7, 8}, pixels0}),
+                    DebugTools::CompareImage);
+                CORRADE_COMPARE_AS(image.pixels<Byte>()[1],
+                    (ImageView2D{PixelFormat::R8Snorm, {7, 8}, pixels1}),
+                    DebugTools::CompareImage);
+            }
         }
 
         bool called = false;
-    /* Padding should have no effect on any of this */
-    } cache{PixelFormat::R8Snorm, {45, 35, 5}, {2, 3}};
+    } cache{PixelFormat::R8Snorm, {45, 35, 5}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1062,8 +1110,12 @@ void AbstractGlyphCacheTest::flushImage() {
 }
 
 void AbstractGlyphCacheTest::flushImageWholeArea() {
+    auto&& data = FlushImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     /* Like above, but calling flushImage() with the whole size to test bounds
-       checking */
+       checking. The padding doesn't affect the call in this case -- the actual
+       range is always the whole image. */
 
     struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
@@ -1091,8 +1143,7 @@ void AbstractGlyphCacheTest::flushImageWholeArea() {
         }
 
         bool called = false;
-    /* Padding should have no effect on any of this */
-    } cache{PixelFormat::R8Snorm, {3, 2, 2}, {2, 3}};
+    } cache{PixelFormat::R8Snorm, {3, 2, 2}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1113,6 +1164,9 @@ void AbstractGlyphCacheTest::flushImageWholeArea() {
 }
 
 void AbstractGlyphCacheTest::flushImageLayer() {
+    auto&& data = FlushImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     /* Single slice subset of flushImage() */
 
     struct: AbstractGlyphCache {
@@ -1122,20 +1176,36 @@ void AbstractGlyphCacheTest::flushImageLayer() {
         void doSetImage(const Vector3i& offset, const ImageView3D& image) override {
             called = true;
 
-            char pixels[]{
-                'a', 'b', 'c', 0,
-                'd', 'e', 'f', 0,
-            };
-            CORRADE_COMPARE(offset, (Vector3i{15, 30, 3}));
-            CORRADE_COMPARE(image.size(), (Vector3i{3, 2, 1}));
-            CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
-                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels}),
-                DebugTools::CompareImage);
+            CORRADE_COMPARE(offset, (Vector3i{15, 30, 3} - Vector3i{padding(), 0}));
+            CORRADE_COMPARE(image.size(), (Vector3i{3, 2, 1} + Vector3i{2*padding(), 0}));
+
+            if(padding().isZero()) {
+                char pixels[]{
+                    'a', 'b', 'c', 0,
+                    'd', 'e', 'f', 0,
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
+                    (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels}),
+                    DebugTools::CompareImage);
+            } else {
+                char pixels[]{
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0, 'a', 'b', 'c', 0, 0, 0,
+                    0, 0, 'd', 'e', 'f', 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
+                    (ImageView2D{PixelFormat::R8Snorm, {7, 8}, pixels}),
+                    DebugTools::CompareImage);
+            }
         }
 
         bool called = false;
-    /* Padding should have no effect on any of this */
-    } cache{PixelFormat::R8Snorm, {45, 35, 5}, {2, 3}};
+    } cache{PixelFormat::R8Snorm, {45, 35, 5}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1153,6 +1223,9 @@ void AbstractGlyphCacheTest::flushImageLayer() {
 }
 
 void AbstractGlyphCacheTest::flushImage2D() {
+    auto&& data = FlushImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     /* Like flushImageLayer() but reduced to two dimensions */
 
     struct: AbstractGlyphCache {
@@ -1162,20 +1235,36 @@ void AbstractGlyphCacheTest::flushImage2D() {
         void doSetImage(const Vector3i& offset, const ImageView3D& image) override {
             called = true;
 
-            char pixels[]{
-                'a', 'b', 'c', 0,
-                'd', 'e', 'f', 0,
-            };
-            CORRADE_COMPARE(offset, (Vector3i{15, 30, 0}));
-            CORRADE_COMPARE(image.size(), (Vector3i{3, 2, 1}));
-            CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
-                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels}),
-                DebugTools::CompareImage);
+            CORRADE_COMPARE(offset, (Vector3i{15, 30, 0} - Vector3i{padding(), 0}));
+            CORRADE_COMPARE(image.size(), (Vector3i{3, 2, 1} + Vector3i{2*padding(), 0}));
+
+            if(padding().isZero()) {
+                char pixels[]{
+                    'a', 'b', 'c', 0,
+                    'd', 'e', 'f', 0,
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
+                    (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels}),
+                    DebugTools::CompareImage);
+            } else {
+                char pixels[]{
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0, 'a', 'b', 'c', 0, 0, 0,
+                    0, 0, 'd', 'e', 'f', 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
+                    (ImageView2D{PixelFormat::R8Snorm, {7, 8}, pixels}),
+                    DebugTools::CompareImage);
+            }
         }
 
         bool called = false;
-    /* Padding should have no effect on any of this */
-    } cache{PixelFormat::R8Snorm, {45, 35}, {2, 3}};
+    } cache{PixelFormat::R8Snorm, {45, 35}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1193,6 +1282,9 @@ void AbstractGlyphCacheTest::flushImage2D() {
 }
 
 void AbstractGlyphCacheTest::flushImage2DPassthrough2D() {
+    auto&& data = FlushImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     /* Like flushImage2D() but with 2D doSetImage() */
 
     struct: AbstractGlyphCache {
@@ -1202,20 +1294,36 @@ void AbstractGlyphCacheTest::flushImage2DPassthrough2D() {
         void doSetImage(const Vector2i& offset, const ImageView2D& image) override {
             called = true;
 
-            char pixels[]{
-                'a', 'b', 'c', 0,
-                'd', 'e', 'f', 0,
-            };
-            CORRADE_COMPARE(offset, (Vector2i{15, 30}));
-            CORRADE_COMPARE(image.size(), (Vector2i{3, 2}));
-            CORRADE_COMPARE_AS(image.pixels<Byte>(),
-                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels}),
-                DebugTools::CompareImage);
+            CORRADE_COMPARE(offset, (Vector2i{15, 30}) - padding());
+            CORRADE_COMPARE(image.size(), (Vector2i{3, 2}) + 2*padding());
+
+            if(padding().isZero()) {
+                char pixels[]{
+                    'a', 'b', 'c', 0,
+                    'd', 'e', 'f', 0,
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>(),
+                    (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels}),
+                    DebugTools::CompareImage);
+            } else {
+                char pixels[]{
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0, 'a', 'b', 'c', 0, 0, 0,
+                    0, 0, 'd', 'e', 'f', 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>(),
+                    (ImageView2D{PixelFormat::R8Snorm, {7, 8}, pixels}),
+                    DebugTools::CompareImage);
+            }
         }
 
         bool called = false;
-    /* Padding should have no effect on any of this */
-    } cache{PixelFormat::R8Snorm, {45, 35}, {2, 3}};
+    } cache{PixelFormat::R8Snorm, {45, 35}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1271,10 +1379,13 @@ void AbstractGlyphCacheTest::flushImagePassthrough2DNotImplemented() {
 }
 
 void AbstractGlyphCacheTest::flushImageOutOfRange() {
+    auto&& data = FlushImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    /* The padding should have no effect on this */
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 8}, {2, 3}};
+    /* The padding should not have any effect on the check */
+    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 8}, data.padding};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1322,6 +1433,9 @@ void AbstractGlyphCacheTest::flushImage2DNot2D() {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractGlyphCacheTest::setImage() {
+    auto&& data = FlushImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     CORRADE_IGNORE_DEPRECATED_PUSH
     struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
@@ -1330,20 +1444,38 @@ void AbstractGlyphCacheTest::setImage() {
         void doSetImage(const Vector2i& offset, const ImageView2D& image) override {
             called = true;
 
-            char pixels[]{
-                'a', 'b', 'c', 0,
-                'd', 'e', 'f', 0,
-            };
-            CORRADE_COMPARE(offset, (Vector2i{15, 30}));
-            CORRADE_COMPARE_AS(image,
-                (ImageView2D{PixelFormat::R8Unorm, {3, 2}, pixels}),
-                DebugTools::CompareImage);
+            CORRADE_COMPARE(offset, (Vector2i{15, 30}) - padding());
+            CORRADE_COMPARE(image.size(), (Vector2i{3, 2}) + 2*padding());
+
+            if(padding().isZero()) {
+                char pixels[]{
+                    'a', 'b', 'c', 0,
+                    'd', 'e', 'f', 0,
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>(),
+                    (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels}),
+                    DebugTools::CompareImage);
+            } else {
+                char pixels[]{
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0, 'a', 'b', 'c', 0, 0, 0,
+                    0, 0, 'd', 'e', 'f', 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0,
+                    0, 0,   0,   0,   0, 0, 0, 0
+                };
+                CORRADE_COMPARE_AS(image.pixels<Byte>(),
+                    (ImageView2D{PixelFormat::R8Snorm, {7, 8}, pixels}),
+                    DebugTools::CompareImage);
+            }
         }
 
         bool called = false;
     /* Deliberately using the deprecated PixelFormat-less constructor to verify
        that passing a R8Unorm image "just works" */
-    } cache{{45, 35}};
+    } cache{{45, 35}, data.padding};
     CORRADE_IGNORE_DEPRECATED_POP
 
     /* Capture correct function name */

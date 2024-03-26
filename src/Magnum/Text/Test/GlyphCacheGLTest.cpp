@@ -132,6 +132,11 @@ const UnsignedByte ExpectedData[]{
 void GlyphCacheGLTest::setImage() {
     GlyphCache cache{{16, 8}};
 
+    /* Fill the texture with non-zero data to verify the padding gets uploaded
+       as well */
+    cache.texture().setSubImage(0, {}, Image2D{PixelFormat::R8Unorm, {16, 8}, Containers::Array<char>{DirectInit, 16*8, '\xcd'}});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
     Utility::copy(
         Containers::StridedArrayView2D<const UnsignedByte>{InputData, {4, 8}},
         cache.image().pixels<UnsignedByte>()[0].sliceSize({4, 8}, {4, 8}));
@@ -143,24 +148,45 @@ void GlyphCacheGLTest::setImage() {
     MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    ImageView2D expected{PixelFormat::R8Unorm, {16, 8}, ExpectedData};
+    /* The CPU-side image is zero-initialized, what was set above in the
+       texture isn't present there */
     CORRADE_COMPARE_AS(actual,
-        expected,
+        (ImageView2D{PixelFormat::R8Unorm, {16, 8}, ExpectedData}),
         DebugTools::CompareImage);
 
     #ifdef MAGNUM_TARGET_GLES2
     CORRADE_SKIP("Luminance format used on GLES2 isn't usable for framebuffer reading, can't verify texture contents.");
     #else
-    /* Verify the actual texture. It should be the same as above. On GLES we
-       cannot really verify that the size matches, but at least something. */
+    /* The actual texture has just the slice updated, the rest stays. On GLES
+       we cannot really verify that the size matches, but at least
+       something. */
     #ifndef MAGNUM_TARGET_GLES
     Image2D image = cache.texture().image(0, {PixelFormat::R8Unorm});
     #else
     Image2D image = DebugTools::textureSubImage(cache.texture(), 0, {{}, {16, 8}}, {PixelFormat::R8Unorm});
     #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    const UnsignedByte expectedTextureData[]{
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+    };
     CORRADE_COMPARE_AS(image,
-        expected,
+        (ImageView2D{PixelFormat::R8Unorm, {16, 8}, expectedTextureData}),
         DebugTools::CompareImage);
     #endif
 }
