@@ -78,6 +78,8 @@ tries to convert the file with it. Supported formats:
     uncompressed 2D images.
 -   OpenVDB (`*.vdb`), converted with any plugin that provides
     `OpenVdbImageConverter`. Only uncompressed 3D images.
+-   WebP (`*.webp`), converted with @ref WebPImageConverter or any other plugin
+    that provides it. Only uncompressed 2D images.
 
 As the converter plugin is picked based on file extension, only saving to files
 is supported.

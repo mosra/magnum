@@ -132,6 +132,8 @@ bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containe
             normalizedExtension == ".icb"_s ||
             normalizedExtension ==  ".vst"_s)
         plugin = "TgaImageConverter"_s;
+    else if(normalizedExtension == ".webp"_s)
+        plugin = "WebPImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 2D image";
         return false;

@@ -161,7 +161,8 @@ constexpr struct {
     /* Have at least one test case with uppercase */
     {"JPEG uppercase", "output.JPG", "JpegImageConverter"},
     {"KTX2", "foo.ktx2", "KtxImageConverter"},
-    {"PNG", "file.png", "PngImageConverter"}
+    {"PNG", "file.png", "PngImageConverter"},
+    {"WebP", "file.webp", "WebPImageConverter"}
 };
 
 constexpr struct {
