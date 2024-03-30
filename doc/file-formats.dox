@@ -539,7 +539,7 @@ Together with @ref file-formats-image-importers "image importers" derived from
 <th rowspan="2">Stanford PLY<br/>(`*.ply`)</th>
 <td rowspan="2">`StanfordImporter`</td>
 <td>@ref Trade::StanfordImporter "StanfordImporter"</td>
-<td class="m-text-center m-warning">@ref Trade-StanfordImporter-behavior "some"</td>
+<td class="m-text-center m-success">@ref Trade-StanfordImporter-behavior "minor"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center"></td>
 </tr>
