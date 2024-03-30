@@ -54,7 +54,7 @@ namespace Magnum { namespace Trade {
 @brief Any image converter plugin
 
 Detects file type based on file extension, loads corresponding plugin and then
-tries to convert the file with it. Supported formats for uncompressed data:
+tries to convert the file with it. Supported formats:
 
 -   Basis Universal (`*.basis`), converted with @ref BasisImageConverter or any
     other plugin that provides it. Only uncompressed 2D/3D and multi-level
