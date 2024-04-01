@@ -523,6 +523,7 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
+    - cap-ninja-jobs
     - install-clang
     - install-cmake:
         version: "3.5.2"
@@ -549,6 +550,7 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
+    - cap-ninja-jobs
     - install-clang
     - install-cmake:
         version: "3.5.2"
