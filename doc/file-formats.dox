@@ -94,7 +94,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <th rowspan="2">BMP<br/>(`*.bmp`)</th>
 <td rowspan="2">`BmpImporter`</td>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center m-success">@ref Trade-StbImageImporter-behavior-bmp "minor"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageImporter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -142,7 +142,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <th rowspan="2">GIF<br/>(`*.gif`)</th>
 <td rowspan="2">`GifImporter`</td>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center m-success">@ref Trade-StbImageImporter-behavior-animated-gifs "minor"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageImporter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -158,7 +158,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <th rowspan="2">Radiance HDR<br/>(`*.hdr`)</th>
 <td rowspan="2">`HdrImporter`</td>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center m-dim">@ref Trade-StbImageImporter-behavior "none"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageImporter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -196,7 +196,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center m-warning">@ref Trade-StbImageImporter-behavior-arithmetic-jpeg "some"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageImporter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -234,7 +234,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center m-dim">@ref Trade-StbImageImporter-behavior-png "none"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageImporter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -250,7 +250,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <th rowspan="2">PSD<br/>(`*.psd`)</th>
 <td rowspan="2">`PsdImporter`</td>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center m-danger">@ref Trade-StbImageImporter-behavior-psd "severe"</td>
+<td class="m-text-center m-danger">@ref Trade-StbImageImporter-behavior "severe"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -272,7 +272,7 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 </tr>
 <tr>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
-<td class="m-text-center m-dim">@ref Trade-StbImageImporter-behavior "none"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageImporter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -335,7 +335,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <th>Windows Bitmap (`*.bmp`)</th>
 <td>`BmpImageConverter`</td>
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
-<td class="m-text-center m-dim">@ref Trade-StbImageConverter-behavior "unknown"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageConverter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -361,7 +361,7 @@ Derived from @ref Trade::AbstractImageConverter.
 <th>Radiance HDR (`*.hdr`)</th>
 <td>`HdrImageConverter`</td>
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
-<td class="m-text-center m-dim">@ref Trade-StbImageConverter-behavior "none"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageConverter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -377,7 +377,7 @@ Derived from @ref Trade::AbstractImageConverter.
 </tr>
 <tr>
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
-<td class="m-text-center m-success">@ref Trade-StbImageConverter-behavior-arithmetic-jpeg "minor"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageConverter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -403,7 +403,7 @@ Derived from @ref Trade::AbstractImageConverter.
 </tr>
 <tr>
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
-<td class="m-text-center m-warning">@ref Trade-StbImageConverter-behavior-16bit-png "some"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageConverter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
@@ -419,7 +419,7 @@ Derived from @ref Trade::AbstractImageConverter.
 </tr>
 <tr>
 <td>@ref Trade::StbImageConverter "StbImageConverter"</td>
-<td class="m-text-center m-success">@ref Trade-StbImageConverter-behavior-tga-rle "minor"</td>
+<td class="m-text-center m-warning">@ref Trade-StbImageConverter-behavior "some"</td>
 <td class="m-text-center m-primary">bundled</td>
 <td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
