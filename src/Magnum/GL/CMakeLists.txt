@@ -269,6 +269,9 @@ if(MAGNUM_WITH_OPENGLTESTER)
         # Include dependencies after Magnum itself, to avoid stale installed
         # headers being preferred over the project-local ones
         $<TARGET_PROPERTY:Corrade::TestSuite,INTERFACE_INCLUDE_DIRECTORIES>)
+    if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
+        set_target_properties(MagnumOpenGLTesterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
 
     add_library(MagnumOpenGLTester STATIC
         $<TARGET_OBJECTS:MagnumOpenGLTesterObjects>
@@ -277,6 +280,9 @@ if(MAGNUM_WITH_OPENGLTESTER)
     # OPENGLTESTER_APPLICATION defined in the root CMakeLists, because it also
     # enables the application library dependencies
     target_link_libraries(MagnumOpenGLTester PUBLIC Magnum Corrade::TestSuite ${OPENGLTESTER_APPLICATION})
+    if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
+        set_target_properties(MagnumOpenGLTester PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
 
     install(FILES ${MagnumOpenGLTester_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/GL)
     install(TARGETS MagnumOpenGLTester
