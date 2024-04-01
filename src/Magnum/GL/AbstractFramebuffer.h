@@ -45,9 +45,12 @@ namespace Magnum { namespace GL {
 @m_enum_values_as_keywords
 */
 enum class FramebufferClear: GLbitfield {
-    Color = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
-    Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth buffer */
-    Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil buffer */
+    Color = GL_COLOR_BUFFER_BIT,        /**< Color buffer */
+    Depth = GL_DEPTH_BUFFER_BIT,        /**< Depth buffer */
+    Stencil = GL_STENCIL_BUFFER_BIT,    /**< Stencil buffer */
+    #ifdef Magnum_British_h
+    Colour = Color
+    #endif
 };
 
 /**
@@ -74,9 +77,12 @@ typedef Containers::EnumSet<FramebufferClear> FramebufferClearMask;
 @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 enum class FramebufferBlit: GLbitfield {
-    Color = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
-    Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth buffer */
-    Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil buffer */
+    Color = GL_COLOR_BUFFER_BIT,        /**< Color buffer */
+    Depth = GL_DEPTH_BUFFER_BIT,        /**< Depth buffer */
+    Stencil = GL_STENCIL_BUFFER_BIT,    /**< Stencil buffer */
+    #ifdef Magnum_British_h
+    Colour = Color
+    #endif
 };
 
 /**

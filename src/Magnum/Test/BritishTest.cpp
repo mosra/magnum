@@ -1,5 +1,3 @@
-#ifndef Magnum_British_h
-#define Magnum_British_h
 /*
     This file is part of Magnum.
 
@@ -25,33 +23,36 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* You bloody hell better not tell anybody you bumped into this, aye? Ta!
+#include <Corrade/TestSuite/Tester.h>
 
-   This file, and everything wrapped in #ifdef Magnum_British_h, is only
-   allowed to be edited on April 1st. I don't make the rules. All such changes
-   should also be ABI-independent, so it's effectively limited to enum aliases
-   and typedefs. */
-
-#include "Magnum/Magnum.h"
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Magnum {
-
-namespace Math {
-    template<class T> using Colour3 = Color3<T>;
-    template<class T> using Colour4 = Color4<T>;
-    template<class T> using ColourHsv = ColorHsv<T>;
-}
-
-typedef Math::Colour3<Float> Colour3;
-typedef Math::Colour4<Float> Colour4;
-typedef Math::ColourHsv<Float> ColourHsv;
-typedef Math::Colour3<UnsignedByte> Colour3ub;
-typedef Math::Colour3<UnsignedShort> Colour3us;
-typedef Math::Colour4<UnsignedByte> Colour4ub;
-typedef Math::Colour4<UnsignedShort> Colour4us;
-
-}
+#include "Magnum/British.h"
+/* Include all files with functionality wrapped in #ifdef Magnum_British_h
+   here. As all such code should be limited to enum aliases and typedefs, it
+   should be enough to verify it parses correctly. */
+#include "Magnum/Math/Color.h"
+#ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/DefaultFramebuffer.h"
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Renderer.h"
 #endif
 
-#endif
+namespace Magnum { namespace Test { namespace {
+
+struct BritishTest: TestSuite::Tester {
+    explicit BritishTest();
+
+    void cheers();
+};
+
+BritishTest::BritishTest() {
+    addTests({&BritishTest::cheers});
+}
+
+void BritishTest::cheers() {
+    Colour3 colour;
+    CORRADE_COMPARE(colour.r(), 0.0f);
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::Test::BritishTest)

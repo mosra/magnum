@@ -29,6 +29,13 @@ set(CMAKE_FOLDER "Magnum/Test")
 
 find_package(Corrade REQUIRED PluginManager)
 
+corrade_add_test(BritishTest BritishTest.cpp LIBRARIES Magnum)
+# Just to have the GL headers pulled in correctly. Shouldn't be needed in most
+# cases as the headers are self-contained in MagnumExternal, but some platforms
+# such as iOS may disagree.
+if(MAGNUM_TARGET_GL)
+    target_link_libraries(BritishTest PRIVATE MagnumGL)
+endif()
 corrade_add_test(ConverterUtilitiesTest ConverterUtilitiesTest.cpp LIBRARIES Magnum Corrade::PluginManager)
 corrade_add_test(FileCallbackTest FileCallbackTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES MagnumTestLib)

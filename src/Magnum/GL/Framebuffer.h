@@ -146,6 +146,10 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
                 GLenum attachment;
         };
 
+        #ifdef Magnum_British_h
+        typedef ColorAttachment ColurAttachment;
+        #endif
+
         /**
          * @brief Draw attachment
          *

@@ -301,9 +301,13 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /** Invalidate stencil buffer. */
             #ifndef MAGNUM_TARGET_GLES2
-            Stencil = GL_STENCIL
+            Stencil = GL_STENCIL,
             #else
-            Stencil = GL_STENCIL_EXT
+            Stencil = GL_STENCIL_EXT,
+            #endif
+
+            #ifdef Magnum_British_h
+            Colour = Color
             #endif
         };
         #endif

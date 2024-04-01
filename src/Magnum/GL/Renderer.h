@@ -1667,7 +1667,13 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_webgl_extension Extension
              *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
-            HslLuminosity = GL_HSL_LUMINOSITY_KHR
+            HslLuminosity = GL_HSL_LUMINOSITY_KHR,
+
+            #ifdef Magnum_British_h
+            ColourDodge = ColorDodge,
+            ColourBurn = ColorBurn,
+            HslColour = HslColor
+            #endif
         };
 
         /**
@@ -1812,7 +1818,18 @@ class MAGNUM_GL_EXPORT Renderer {
             /**
              * One minus source alpha (@f$ RGB = (1.0 - A_d, 1.0 - A_d, 1.0 - A_d); A = 1.0 - A_d @f$)
              */
-            OneMinusDestinationAlpha = GL_ONE_MINUS_DST_ALPHA
+            OneMinusDestinationAlpha = GL_ONE_MINUS_DST_ALPHA,
+
+            #ifdef Magnum_British_h
+            ConstantColour = ConstantColor,
+            OneMinusConstantColour = OneMinusConstantColor,
+            SourceColour = SourceColor,
+            SecondSourceColour = SecondSourceColor,
+            OneMinusSourceColour = OneMinusSourceColor,
+            OneMinusSecondSourceColour = OneMinusSecondSourceColor,
+            DestinationColour = DestinationColor,
+            OneMinusDestinationColour = OneMinusDestinationColor
+            #endif
         };
 
         /**
