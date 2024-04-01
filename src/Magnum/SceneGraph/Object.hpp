@@ -43,7 +43,7 @@ template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~Abstra
 
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
 
-template<class Transformation> Object<Transformation>::Object(Object<Transformation>* parent): counter(0xFFFFu), flags(Flag::Dirty) {
+template<class Transformation> Object<Transformation>::Object(Object<Transformation>* parent): counter{~UnsignedInt{}}, flags{Flag::Dirty} {
     setParent(parent);
 }
 
@@ -203,7 +203,7 @@ computed and recursively concatenated together. Resulting transformations for
 joints which were originally in `object` list is then returned.
 */
 template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& finalTransformation) const {
-    CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", {});
+    CORRADE_ASSERT(objects.size() < ~UnsignedInt{}, "SceneGraph::Object::transformations(): too large scene", {});
 
     /* Remember object count for later */
     std::size_t objectCount = objects.size();
@@ -213,9 +213,9 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     for(std::size_t i = 0; i != objects.size(); ++i) {
         /* Multiple occurrences of one object in the array, don't overwrite it
            with different counter */
-        if(objects[i].get().counter != 0xFFFFu) continue;
+        if(objects[i].get().counter != ~UnsignedInt{}) continue;
 
-        objects[i].get().counter = UnsignedShort(i);
+        objects[i].get().counter = UnsignedInt(i);
         objects[i].get().flags |= Flag::Joint;
     }
     std::vector<std::reference_wrapper<Object<Transformation>>> jointObjects(objects);
@@ -254,10 +254,10 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
             /* If not already marked as joint, mark it as such and add it to
                list of joint objects */
             if(!(parent->flags & Flag::Joint)) {
-                CORRADE_ASSERT(jointObjects.size() < 0xFFFFu,
+                CORRADE_ASSERT(jointObjects.size() < ~UnsignedInt{},
                                "SceneGraph::Object::transformations(): too large scene", {});
-                CORRADE_INTERNAL_ASSERT(parent->counter == 0xFFFFu);
-                parent->counter = UnsignedShort(jointObjects.size());
+                CORRADE_INTERNAL_ASSERT(parent->counter == ~UnsignedInt{});
+                parent->counter = UnsignedInt(jointObjects.size());
                 parent->flags |= Flag::Joint;
                 jointObjects.push_back(*parent);
             }
@@ -287,9 +287,9 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     for(auto i: jointObjects) {
         /* All not-already cleaned objects (...duplicate occurrences) should
            have joint mark */
-        CORRADE_INTERNAL_ASSERT(i.get().counter == 0xFFFFu || i.get().flags & Flag::Joint);
+        CORRADE_INTERNAL_ASSERT(i.get().counter == ~UnsignedInt{} || i.get().flags & Flag::Joint);
         i.get().flags &= ~Flag::Joint;
-        i.get().counter = 0xFFFFu;
+        i.get().counter = ~UnsignedInt{};
     }
 
     /* Shrink the array to contain only transformations of requested objects and return */

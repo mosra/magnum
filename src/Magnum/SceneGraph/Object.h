@@ -400,8 +400,16 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
         typedef Implementation::ObjectFlag Flag;
         typedef Implementation::ObjectFlags Flags;
-        UnsignedShort counter;
+        UnsignedInt counter;
         Flags flags;
+        /* 3 byte padding after flags. Assuming the object is pointer-aligned
+           on 64bit and the Transformation data are a multiple of 8 bytes
+           (which is the case for all except MatrixTransformation2D), we don't
+           save anything by making the counter just 16-bit, and only cause
+           unnecessary suffering for users that have large scenes. Most of the
+           memory overhead is from all those loose allocations anyway (i.e.,
+           causing the Object instance to be put in a multiple of 16 bytes
+           even, instead of 8). */
 };
 
 }}
