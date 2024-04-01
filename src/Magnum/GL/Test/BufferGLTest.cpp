@@ -352,6 +352,19 @@ void BufferGLTest::bindBaseRangeUpdateRegularBinding() {
     large.setSubData(0, zeros);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Conversely, unbinding the indexed target then resets the regular binding
+       point as a side effect. Again verify that the state tracker accounts for
+       that by trying to upload data to the same buffer again -- it should
+       rebind it instead of assuming it's still there. */
+    if(data.multi)
+        Buffer::unbind(Buffer::Target::Uniform, 0, 1);
+    else
+        Buffer::unbind(Buffer::Target::Uniform, 0);
+
+    large.setSubData(0, zeros);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
