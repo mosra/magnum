@@ -145,6 +145,14 @@ Int Buffer::maxUniformBindings() {
 }
 
 void Buffer::unbind(const Target target, const UnsignedInt index) {
+    /* Inverse of what's in bind(Target, UnsignedInt, GLintptr, GLsizeiptr)
+       below -- unbinding a buffer via glBindBufferBase() / glBindBufferRange()
+       also unbinds it from the "regular" binding target as a side effect. */
+    Context::current().state().buffer.bindings[Implementation::BufferState::indexForTarget(
+        /* The Target enum is a subset of TargetHint and the values match, so
+           no expensive translation is necessary */
+        TargetHint(UnsignedInt(target)))] = 0;
+
     glBindBufferBase(GLenum(target), index, 0);
 }
 
