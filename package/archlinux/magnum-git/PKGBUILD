@@ -1,6 +1,6 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum-git
-pkgver=2020.06.r1626.g67d37c9ed
+pkgver=2020.06.r2855.g8538610fa
 pkgrel=1
 pkgdesc="C++11/C++14 graphics middleware for games and data visualization (Git version)"
 arch=('i686' 'x86_64')
@@ -21,6 +21,13 @@ pkgver() {
 build() {
     mkdir -p "$srcdir/build"
     cd "$srcdir/build"
+
+    # Otherwise lib*Application.a and other static libraries get broken during
+    # a strip, subsequently failing to link.
+    #   https://archlinux.org/todo/lto-fat-objects/
+    if [[ $CXXFLAGS == *"-flto"* ]]; then
+        CXXFLAGS+=" -ffat-lto-objects"
+    fi
 
     cmake "$srcdir/${pkgname%-git}" \
         -DCMAKE_BUILD_TYPE=Release \
