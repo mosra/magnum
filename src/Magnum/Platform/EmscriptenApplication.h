@@ -73,8 +73,11 @@ struct EmscriptenMouseEvent;
 struct EmscriptenWheelEvent;
 struct EmscriptenUiEvent;
 
-/* The typedef changed in 3.1.49, https://github.com/emscripten-core/emscripten/commit/40cbc2164400a7c27218b9655f1830bfc882bb01 */
-#if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30149
+/* The typedef changed in 3.1.49, https://github.com/emscripten-core/emscripten/commit/40cbc2164400a7c27218b9655f1830bfc882bb01,
+   and then again in 3.1.54, https://github.com/emscripten-core/emscripten/commit/38f9ad86a18ccc3aad911a13ffd5b89d3df304ae */
+#if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30154
+typedef std::uintptr_t EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
+#elif __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30149
 typedef std::intptr_t EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
 #else
 typedef int EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
