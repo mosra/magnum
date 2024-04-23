@@ -837,6 +837,9 @@ See also:
 -   Added a @ref Text::GlyphCache::GlyphCache(NoCreateT) and
     @ref Text::DistanceFieldGlyphCache::DistanceFieldGlyphCache(NoCreateT)
     constructor allowing to construct the object without a GL context present
+-   New @ref Text::AbstractFont::fillGlyphCache() overload taking a list of
+    glyph IDs instead of a UTF-8 string to allow filling the glyph cache with
+    glyphs that don't directly map to Unicode
 -   @ref Text::AbstractFont::fillGlyphCache() now returns a @cpp bool @ce to
     allow font plugin implementations to gracefully report failures
 

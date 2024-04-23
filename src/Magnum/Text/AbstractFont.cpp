@@ -27,7 +27,9 @@
 
 #include <string> /** @todo remove once file callbacks are <string>-free */
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/BitArray.h>
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
@@ -294,14 +296,71 @@ bool AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const Containers::S
     CORRADE_ASSERT(!(features() & FontFeature::PreparedGlyphCache),
         "Text::AbstractFont::fillGlyphCache(): feature not supported", {});
 
-    const Containers::Optional<Containers::Array<char32_t>> utf32 = Utility::Unicode::utf32(characters);
-    CORRADE_ASSERT(utf32,
-        "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string:" << characters, {});
+    struct Glyph {
+        char32_t character;
+        UnsignedInt glyph;
+    };
 
-    return doFillGlyphCache(cache, *utf32);
+    /* Convert UTF-8 to Unicode codepoints */
+    Containers::Array<Glyph> glyphs;
+    arrayReserve(glyphs, characters.size());
+    for(std::size_t i = 0; i != characters.size(); ) {
+        const Containers::Pair<char32_t, std::size_t> next = Utility::Unicode::nextChar(characters, i);
+        CORRADE_ASSERT(next.first() != U'\xffffffff',
+            "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string:" << characters, {});
+        arrayAppend(glyphs, InPlaceInit, next.first(), 0u);
+        i = next.second();
+    }
+
+    /* Convert the codepoints to glyph IDs */
+    glyphIdsInto(stridedArrayView(glyphs).slice(&Glyph::character),
+                 stridedArrayView(glyphs).slice(&Glyph::glyph));
+
+    /* If this font isn't in the cache yet, include also the invalid glyph */
+    if(!cache.findFont(*this))
+        arrayAppend(glyphs, InPlaceInit, U'\0', 0u);
+
+    /* Create a unique (ordered) set */
+    /** @todo reuse the memory from `glyphs` for this somehow? tho there could
+        be thousands of glyphs and the `glyphs` might be just a few entries */
+    Containers::BitArray uniqueGlyphs{ValueInit, _glyphCount};
+    for(const Glyph& glyph: glyphs)
+        uniqueGlyphs.set(glyph.glyph);
+
+    /* Convert the unique set back to a list of glyph IDs, reusing the original
+       glyph memory */
+    const std::size_t uniqueCount = uniqueGlyphs.count();
+    CORRADE_INTERNAL_ASSERT(uniqueCount <= glyphs.size());
+    std::size_t offset = 0;
+    for(UnsignedInt i = 0; i != uniqueGlyphs.size(); ++i)
+        if(uniqueGlyphs[i]) glyphs[offset++].glyph = i;
+    CORRADE_INTERNAL_ASSERT(offset == uniqueCount);
+
+    /* Pass the unique set to the implementation */
+    return doFillGlyphCache(cache, stridedArrayView(glyphs).slice(&Glyph::glyph).prefix(uniqueCount));
 }
 
-bool AbstractFont::doFillGlyphCache(AbstractGlyphCache&, Containers::ArrayView<const char32_t>) {
+bool AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const UnsignedInt>& glyphs) {
+    CORRADE_ASSERT(isOpened(),
+        "Text::AbstractFont::fillGlyphCache(): no font opened", {});
+    CORRADE_ASSERT(!(features() & FontFeature::PreparedGlyphCache),
+        "Text::AbstractFont::fillGlyphCache(): feature not supported", {});
+
+    #ifndef CORRADE_NO_DEBUG_ASSERT
+    Containers::BitArray uniqueGlyphs{ValueInit, _glyphCount};
+    for(const UnsignedInt& glyph: glyphs) {
+        CORRADE_DEBUG_ASSERT(glyph < _glyphCount,
+            "Text::AbstractFont::fillGlyphCache(): index" << glyph << "out of range for" << _glyphCount << "glyphs", {});
+        CORRADE_DEBUG_ASSERT(!uniqueGlyphs[glyph],
+            "Text::AbstractFont::fillGlyphCache(): duplicate glyph" << glyph, {});
+        uniqueGlyphs.set(glyph);
+    }
+    #endif
+
+    return doFillGlyphCache(cache, glyphs);
+}
+
+bool AbstractFont::doFillGlyphCache(AbstractGlyphCache&, const Containers::StridedArrayView1D<const UnsignedInt>&) {
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", {});
     return {};
 }

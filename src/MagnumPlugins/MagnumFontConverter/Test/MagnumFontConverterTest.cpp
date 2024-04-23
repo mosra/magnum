@@ -523,7 +523,10 @@ void MagnumFontConverterTest::exportFontImageConversionFailed() {
             return {16.0f, 25.0f, -10.0f, 39.7333f, 3};
         }
 
-        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) override {
+            for(UnsignedInt& i: glyphs)
+                i = 0;
+        }
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return nullptr; }

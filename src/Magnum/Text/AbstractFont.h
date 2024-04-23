@@ -503,19 +503,33 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         Vector2 glyphAdvance(UnsignedInt glyph);
 
         /**
-         * @brief Fill glyph cache with given character set
+         * @brief Fill glyph cache with given glyph IDs
          * @param cache         Glyph cache instance
-         * @param characters    UTF-8 characters to render
+         * @param glyphs        Glyph IDs to render
+         * @m_since_latest
          *
-         * Fills the cache with given characters. Fonts having
+         * Fills the cache with given glyph IDs. Fonts having
          * @ref FontFeature::PreparedGlyphCache do not support partial glyph
          * cache filling, use @ref createGlyphCache() instead. Expects that a
-         * font is opened and @p characters is valid UTF-8.
+         * font is opened and @p glyphs are all unique and less than
+         * @ref glyphCount().
          *
          * On success returns @cpp true @ce. On failure, for example if the
          * @p cache doesn't have expected format or the @p characters can't
          * fit, prints a message to @relativeref{Magnum,Error} and returns
          * @cpp false @ce.
+         */
+        bool fillGlyphCache(AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const UnsignedInt>& glyphs);
+
+        /**
+         * @brief Fill glyph cache with given character set
+         * @param cache         Glyph cache instance
+         * @param characters    UTF-8 characters to render
+         *
+         * Converts @p characters to a list of Unicode codepoints, gets glyph
+         * IDs for them using @ref glyphIdsInto(), removes duplicates, adds the
+         * glyph @cpp 0 @ce if the font is not in @p cache already, and
+         * delegates to @ref fillGlyphCache(AbstractGlyphCache&, const Containers::StridedArrayView1D<const UnsignedInt>&).
          */
         bool fillGlyphCache(AbstractGlyphCache& cache, Containers::StringView characters);
 
@@ -684,10 +698,10 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for @ref fillGlyphCache()
          *
-         * The string is converted from UTF-8 to UTF-32, duplicate characters
-         * are *not* removed.
+         * The @p glyphs are guaranteed to be unique and all less than
+         * @ref glyphCount().
          */
-        virtual bool doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters);
+        virtual bool doFillGlyphCache(AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const UnsignedInt>& glyphs);
 
         /** @brief Implementation for @ref createGlyphCache() */
         virtual Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache();
