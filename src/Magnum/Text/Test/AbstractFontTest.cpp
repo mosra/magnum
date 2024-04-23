@@ -88,6 +88,7 @@ struct AbstractFontTest: TestSuite::Tester {
     void glyphSizeAdvanceOutOfRange();
 
     void fillGlyphCache();
+    void fillGlyphCacheFailed();
     void fillGlyphCacheNotSupported();
     void fillGlyphCacheNotImplemented();
     void fillGlyphCacheNoFont();
@@ -151,6 +152,7 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::glyphSizeAdvanceOutOfRange,
 
               &AbstractFontTest::fillGlyphCache,
+              &AbstractFontTest::fillGlyphCacheFailed,
               &AbstractFontTest::fillGlyphCacheNotSupported,
               &AbstractFontTest::fillGlyphCacheNotImplemented,
               &AbstractFontTest::fillGlyphCacheNoFont,
@@ -929,12 +931,13 @@ void AbstractFontTest::fillGlyphCache() {
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
-        void doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters) override {
+        bool doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters) override {
             CORRADE_COMPARE(cache.size(), (Vector3i{100, 100, 1}));
             CORRADE_COMPARE_AS(characters, Containers::arrayView<char32_t>({
                 'h', 'e', 'l', 'o'
             }), TestSuite::Compare::Container);
             called = true;
+            return true;
         }
 
         bool called = false;
@@ -945,8 +948,34 @@ void AbstractFontTest::fillGlyphCache() {
 
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
 
-    font.fillGlyphCache(cache, "helo");
+    CORRADE_VERIFY(font.fillGlyphCache(cache, "helo"));
     CORRADE_VERIFY(font.called);
+}
+
+void AbstractFontTest::fillGlyphCacheFailed() {
+    struct MyFont: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool doFillGlyphCache(AbstractGlyphCache&, Containers::ArrayView<const char32_t>) override {
+            return false;
+        }
+
+        bool called = false;
+    } font;
+
+    /* Capture correct function name */
+    CORRADE_VERIFY(true);
+
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
+
+    CORRADE_VERIFY(!font.fillGlyphCache(cache, ""));
 }
 
 void AbstractFontTest::fillGlyphCacheNotSupported() {

@@ -501,8 +501,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @ref FontFeature::PreparedGlyphCache do not support partial glyph
          * cache filling, use @ref createGlyphCache() instead. Expects that a
          * font is opened and @p characters is valid UTF-8.
+         *
+         * On success returns @cpp true @ce. On failure, for example if the
+         * @p cache doesn't have expected format or the @p characters can't
+         * fit, prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce.
          */
-        void fillGlyphCache(AbstractGlyphCache& cache, Containers::StringView characters);
+        bool fillGlyphCache(AbstractGlyphCache& cache, Containers::StringView characters);
 
         /**
          * @brief Create glyph cache
@@ -661,7 +666,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * The string is converted from UTF-8 to UTF-32, duplicate characters
          * are *not* removed.
          */
-        virtual void doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters);
+        virtual bool doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters);
 
         /** @brief Implementation for @ref createGlyphCache() */
         virtual Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache();

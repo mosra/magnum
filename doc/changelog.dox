@@ -837,6 +837,8 @@ See also:
 -   Added a @ref Text::GlyphCache::GlyphCache(NoCreateT) and
     @ref Text::DistanceFieldGlyphCache::DistanceFieldGlyphCache(NoCreateT)
     constructor allowing to construct the object without a GL context present
+-   @ref Text::AbstractFont::fillGlyphCache() now returns a @cpp bool @ce to
+    allow font plugin implementations to gracefully report failures
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 

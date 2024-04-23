@@ -272,21 +272,22 @@ Vector2 AbstractFont::glyphAdvance(const UnsignedInt glyph) {
     return doGlyphAdvance(glyph);
 }
 
-void AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const Containers::StringView characters) {
+bool AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const Containers::StringView characters) {
     CORRADE_ASSERT(isOpened(),
-        "Text::AbstractFont::fillGlyphCache(): no font opened", );
+        "Text::AbstractFont::fillGlyphCache(): no font opened", {});
     CORRADE_ASSERT(!(features() & FontFeature::PreparedGlyphCache),
-        "Text::AbstractFont::fillGlyphCache(): feature not supported", );
+        "Text::AbstractFont::fillGlyphCache(): feature not supported", {});
 
     const Containers::Optional<Containers::Array<char32_t>> utf32 = Utility::Unicode::utf32(characters);
     CORRADE_ASSERT(utf32,
-        "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string:" << characters, );
+        "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string:" << characters, {});
 
-    doFillGlyphCache(cache, *utf32);
+    return doFillGlyphCache(cache, *utf32);
 }
 
-void AbstractFont::doFillGlyphCache(AbstractGlyphCache&, Containers::ArrayView<const char32_t>) {
-    CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
+bool AbstractFont::doFillGlyphCache(AbstractGlyphCache&, Containers::ArrayView<const char32_t>) {
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", {});
+    return {};
 }
 
 Containers::Pointer<AbstractGlyphCache> AbstractFont::createGlyphCache() {
