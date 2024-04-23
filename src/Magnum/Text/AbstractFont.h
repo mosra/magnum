@@ -477,7 +477,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Size of the glyph image in pixels when rasterized. Some
          * implementations may return fractional values, in which case
          * @ref Math::ceil() should be used to get the actual integer pixel
-         * size.
+         * size. Expects that a font is opened and @p glyph is less than
+         * @ref glyphCount().
          * @note This function is meant to be used only for font observations
          *      and conversions. In performance-critical code the
          *      @ref fillGlyphCache() and @ref layout() functions should be
