@@ -516,6 +516,11 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Available only if @ref FontFeature::PreparedGlyphCache is supported.
          * Other fonts support only partial glyph cache filling, see
          * @ref fillGlyphCache(). Expects that a font is opened.
+         *
+         * On success returns an instance of a newly created glyph cache. On
+         * failure, for example if a file containing glyph cache data cannot be
+         * open, prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp nullptr @ce.
          */
         Containers::Pointer<AbstractGlyphCache> createGlyphCache();
 
