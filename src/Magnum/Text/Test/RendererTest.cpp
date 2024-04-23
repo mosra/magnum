@@ -342,7 +342,10 @@ struct TestFont: AbstractFont {
         return {size, 4.5f, -2.5f, 10000.0f, 10};
     }
 
-    UnsignedInt doGlyphId(char32_t) override { return 0; }
+    void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) override {
+        for(UnsignedInt& i: glyphs)
+            i = 0;
+    }
     Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
@@ -1039,7 +1042,10 @@ void RendererTest::multiline() {
             return {size, 1.0f, -1.0f, 8.0f, 10};
         }
 
-        UnsignedInt doGlyphId(char32_t) override { return 0; }
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) override {
+            for(UnsignedInt& i: glyphs)
+                i = 0;
+        }
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 

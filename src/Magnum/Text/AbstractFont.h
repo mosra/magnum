@@ -452,13 +452,22 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Glyph ID for given character
          *
-         * Expects that a font is opened.
-         * @note This function is meant to be used only for font observations
-         *      and conversions. In performance-critical code the
-         *      @ref fillGlyphCache() and @ref layout() functions should be
-         *      used instead.
+         * A convenience wrapper around @ref glyphIdsInto() for querying a
+         * glyph ID for a single character. Expects that a font is opened.
          */
         UnsignedInt glyphId(char32_t character);
+
+        /**
+         * @brief Glyph IDs for given characters
+         * @param[in]  characters   Input characters
+         * @param[out] glyphs       Output glyph IDs
+         * @m_since_latest
+         *
+         * Expects that a font is opened and that the @p characters and
+         * @p glyphs views have the same size. The glyph IDs are all guaranteed
+         * to be less than @ref glyphCount().
+         */
+        void glyphIdsInto(const Containers::StridedArrayView1D<const char32_t>& characters, const Containers::StridedArrayView1D<UnsignedInt>& glyphs);
 
         /**
          * @brief Glyph size in pixels
@@ -653,8 +662,14 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
 
-        /** @brief Implementation for @ref glyphId() */
-        virtual UnsignedInt doGlyphId(char32_t character) = 0;
+        /**
+         * @brief Implementation for @ref glyphIdsInto()
+         * @m_since_latest
+         *
+         * The implementation is expected to return all @p glyphs smaller than
+         * @ref glyphCount().
+         */
+        virtual void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>& characters, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) = 0;
 
         /**
          * @brief Implementation for @ref glyphSize()

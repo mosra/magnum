@@ -142,9 +142,11 @@ auto MagnumFont::doOpenFile(const Containers::StringView filename, const Float s
     return AbstractFont::doOpenFile(filename, size);
 }
 
-UnsignedInt MagnumFont::doGlyphId(const char32_t character) {
-    auto it = _opened->glyphId.find(character);
-    return it != _opened->glyphId.end() ? it->second : 0;
+void MagnumFont::doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>& characters, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) {
+    for(std::size_t i = 0; i != characters.size(); ++i) {
+        auto it = _opened->glyphId.find(characters[i]);
+        glyphs[i] = it != _opened->glyphId.end() ? it->second : 0;
+    }
 }
 
 Vector2 MagnumFont::doGlyphSize(const UnsignedInt glyph) {

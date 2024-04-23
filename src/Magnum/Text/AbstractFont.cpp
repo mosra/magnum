@@ -29,6 +29,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
 #include <Corrade/PluginManager/Manager.hpp>
@@ -43,7 +44,6 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
-#include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Range.h"
@@ -253,9 +253,25 @@ UnsignedInt AbstractFont::glyphCount() const {
 }
 
 UnsignedInt AbstractFont::glyphId(const char32_t character) {
-    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphId(): no font opened", 0);
+    const char32_t characters[]{character};
+    UnsignedInt glyphs[1];
+    glyphIdsInto(characters, glyphs);
+    return *glyphs;
+}
 
-    return doGlyphId(character);
+void AbstractFont::glyphIdsInto(const Containers::StridedArrayView1D<const char32_t>& characters, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) {
+    CORRADE_ASSERT(isOpened(),
+        "Text::AbstractFont::glyphIdsInto(): no font opened", );
+    CORRADE_ASSERT(glyphs.size() == characters.size(),
+        "Text::AbstractFont::glyphIdsInto(): expected the characters and glyphs views to have the same size but got" << characters.size() << "and" << glyphs.size(), );
+
+    doGlyphIdsInto(characters, glyphs);
+    #ifndef CORRADE_NO_DEBUG_ASSERT
+    for(std::size_t i = 0; i != characters.size(); ++i) {
+        CORRADE_DEBUG_ASSERT(glyphs[i] < _glyphCount,
+            "Text::AbstractFont::glyphIdsInto(): implementation-returned index" << glyphs[i] << "for character" << characters[i] << "out of range for" << _glyphCount << "glyphs", );
+    }
+    #endif
 }
 
 Vector2 AbstractFont::glyphSize(const UnsignedInt glyph) {

@@ -69,7 +69,7 @@ struct MyFont: Text::AbstractFont {
     Text::FontFeatures doFeatures() const override { return {}; }
     bool doIsOpened() const override { return false; }
     void doClose() override {}
-    UnsignedInt doGlyphId(char32_t) override { return {}; }
+    void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
     Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
     Containers::Pointer<Text::AbstractShaper> doCreateShaper() override { return nullptr; }
