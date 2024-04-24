@@ -276,6 +276,26 @@ void AbstractFont::glyphIdsInto(const Containers::StridedArrayView1D<const char3
     #endif
 }
 
+Containers::String AbstractFont::glyphName(const UnsignedInt glyph) {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphName(): no font opened", {});
+    CORRADE_ASSERT(glyph < _glyphCount, "Text::AbstractFont::glyphName(): index" << glyph << "out of range for" << _glyphCount << "glyphs", {});
+
+    return doGlyphName(glyph);
+}
+
+Containers::String AbstractFont::doGlyphName(UnsignedInt) { return {}; }
+
+UnsignedInt AbstractFont::glyphForName(const Containers::StringView name) {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphForName(): no font opened", {});
+
+    const UnsignedInt glyph = doGlyphForName(name);
+    CORRADE_ASSERT(glyph < _glyphCount, "Text::AbstractFont::glyphForName(): implementation-returned index" << glyph << "out of range for" << _glyphCount << "glyphs", {});
+
+    return glyph;
+}
+
+UnsignedInt AbstractFont::doGlyphForName(Containers::StringView) { return 0; }
+
 Vector2 AbstractFont::glyphSize(const UnsignedInt glyph) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphSize(): no font opened", {});
     CORRADE_ASSERT(glyph < _glyphCount, "Text::AbstractFont::glyphSize(): index" << glyph << "out of range for" << _glyphCount << "glyphs", {});

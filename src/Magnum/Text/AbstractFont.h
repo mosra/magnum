@@ -74,7 +74,11 @@ enum class FontFeature: UnsignedByte {
      * @see @ref AbstractFont::fillGlyphCache(),
      *      @ref AbstractFont::createGlyphCache()
      */
-    PreparedGlyphCache = 1 << 2
+    PreparedGlyphCache = 1 << 2,
+
+    /* Glyph names are not exposed as a feature because even though the
+       implementation may support these, a particular font file may not, and
+       it'd give a false impression. */
 };
 
 /**
@@ -470,6 +474,31 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         void glyphIdsInto(const Containers::StridedArrayView1D<const char32_t>& characters, const Containers::StridedArrayView1D<UnsignedInt>& glyphs);
 
         /**
+         * @brief Glyph name
+         * @m_since_latest
+         *
+         * Returns a name of the glyph in the font file, if present and
+         * supported by the implementation, or an empty string. Expects that a
+         * font is opened and @p glyph is less than @ref glyphCount().
+         * @see @ref glyphForName()
+         */
+        Containers::String glyphName(UnsignedInt glyph);
+
+        /**
+         * @brief Glyph for given name
+         * @m_since_latest
+         *
+         * If the implementation supports querying glyphs by name and the name
+         * exists, returns a corresponding glyph ID, otherwise returns
+         * @cpp 0 @ce for an invalid glyph. Note that certain named glyphs can
+         * also map to glyph @cpp 0 @ce, in particular @cpp ".notdef" @ce in
+         * TTF and OTF fonts, the way to distinguish them is to ask for name of
+         * the zero glyph and compare. The returned index is guaranteed to be
+         * less than @ref glyphCount().
+         */
+        UnsignedInt glyphForName(Containers::StringView name);
+
+        /**
          * @brief Glyph size in pixels
          * @param glyph     Glyph ID
          * @m_since_latest
@@ -685,6 +714,23 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @ref glyphCount().
          */
         virtual void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>& characters, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) = 0;
+
+        /**
+         * @brief Implementation for @ref glyphName()
+         * @m_since_latest
+         *
+         * Default implementation returns an empty string.
+         */
+        virtual Containers::String doGlyphName(UnsignedInt glyph);
+
+        /**
+         * @brief Implementation for @ref glyphForName()
+         * @m_since_latest
+         *
+         * The implementation is expected to return a value smaller than
+         * @ref glyphCount(). Default implementation returns @cpp 0 @ce.
+         */
+        virtual UnsignedInt doGlyphForName(Containers::StringView name);
 
         /**
          * @brief Implementation for @ref glyphSize()

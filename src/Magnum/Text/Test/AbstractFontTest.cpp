@@ -86,6 +86,11 @@ struct AbstractFontTest: TestSuite::Tester {
     void glyphIdInvalidSize();
     void glyphIdOutOfRange();
 
+    void glyphName();
+    void glyphNameNotImplemented();
+    void glyphNameNoFont();
+    void glyphNameOutOfRange();
+
     void glyphSizeAdvance();
     void glyphSizeAdvanceNoFont();
     void glyphSizeAdvanceOutOfRange();
@@ -154,6 +159,11 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::glyphIdNoFont,
               &AbstractFontTest::glyphIdInvalidSize,
               &AbstractFontTest::glyphIdOutOfRange,
+
+              &AbstractFontTest::glyphName,
+              &AbstractFontTest::glyphNameNotImplemented,
+              &AbstractFontTest::glyphNameNoFont,
+              &AbstractFontTest::glyphNameOutOfRange,
 
               &AbstractFontTest::glyphSizeAdvance,
               &AbstractFontTest::glyphSizeAdvanceNoFont,
@@ -936,6 +946,130 @@ void AbstractFontTest::glyphIdOutOfRange() {
     Error redirectError{&out};
     font.glyphIdsInto(characters, glyphs);
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::glyphIdsInto(): implementation-returned index 4 for character U+2345 out of range for 4 glyphs\n");
+}
+
+void AbstractFontTest::glyphName() {
+    struct MyFont: AbstractFont {
+        FontFeatures doFeatures() const override {
+            return FontFeature::OpenData;
+        }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+            _opened = true;
+            return {0.0f, 0.0f, 0.0f, 0.0f, 4};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Containers::String doGlyphName(UnsignedInt glyph) override {
+            return glyph == 3 ? "WHATEVER" : "";
+        }
+        UnsignedInt doGlyphForName(Containers::StringView name) override {
+            return name == "whatever" ? 3 : 0;
+        }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Have to explicitly open in order to make glyphCount() non-zero */
+    CORRADE_VERIFY(font.openData(nullptr, 0.0f));
+
+    CORRADE_COMPARE(font.glyphName(3), "WHATEVER");
+    CORRADE_COMPARE(font.glyphForName("whatever"), 3);
+}
+
+void AbstractFontTest::glyphNameNotImplemented() {
+    struct MyFont: AbstractFont {
+        FontFeatures doFeatures() const override {
+            return FontFeature::OpenData;
+        }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+            _opened = true;
+            return {0.0f, 0.0f, 0.0f, 0.0f, 4};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Have to explicitly open in order to make glyphCount() non-zero */
+    CORRADE_VERIFY(font.openData(nullptr, 0.0f));
+
+    CORRADE_COMPARE(font.glyphName(3), "");
+    CORRADE_COMPARE(font.glyphForName("whatever"), 0);
+}
+
+void AbstractFontTest::glyphNameNoFont() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct MyFont: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    font.glyphName(0);
+    font.glyphForName("");
+    CORRADE_COMPARE(out.str(),
+        "Text::AbstractFont::glyphName(): no font opened\n"
+        "Text::AbstractFont::glyphForName(): no font opened\n");
+}
+
+void AbstractFontTest::glyphNameOutOfRange() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct MyFont: AbstractFont {
+        FontFeatures doFeatures() const override {
+            return FontFeature::OpenData;
+        }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+            _opened = true;
+            return {0.0f, 0.0f, 0.0f, 0.0f, 4};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        UnsignedInt doGlyphForName(Containers::StringView) override { return 4; }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Have to explicitly open in order to make glyphCount() non-zero */
+    CORRADE_VERIFY(font.openData(nullptr, 0.0f));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    font.glyphName(4);
+    font.glyphForName("");
+    CORRADE_COMPARE(out.str(),
+        "Text::AbstractFont::glyphName(): index 4 out of range for 4 glyphs\n"
+        "Text::AbstractFont::glyphForName(): implementation-returned index 4 out of range for 4 glyphs\n");
 }
 
 void AbstractFontTest::glyphSizeAdvance() {

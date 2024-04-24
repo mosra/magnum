@@ -840,6 +840,9 @@ See also:
 -   New @ref Text::AbstractFont::fillGlyphCache() overload taking a list of
     glyph IDs instead of a UTF-8 string to allow filling the glyph cache with
     glyphs that don't directly map to Unicode
+-   New @ref Text::AbstractFont::glyphName() and
+    @relativeref{Text::AbstractFont,glyphForName()} APIs for querying glyph
+    names and retrieving IDs for particular glyph names.
 -   @ref Text::AbstractFont::fillGlyphCache() now returns a @cpp bool @ce to
     allow font plugin implementations to gracefully report failures
 
