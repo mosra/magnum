@@ -544,7 +544,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @ref glyphCount().
          *
          * On success returns @cpp true @ce. On failure, for example if the
-         * @p cache doesn't have expected format or the @p characters can't
+         * @p cache doesn't have expected format or the @p glyphs can't
          * fit, prints a message to @relativeref{Magnum,Error} and returns
          * @cpp false @ce.
          */
