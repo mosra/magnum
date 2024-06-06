@@ -288,6 +288,17 @@ namespace Literals {
    everything already. Seeing 15.0_sec in unfamiliar code doesn't feel
    ambiguous, seeing 127_s or 0.5_h definitely does. */
 
+/* According to https://wg21.link/CWG2521, space between "" and literal name is
+   deprecated because _Uppercase or __double names could be treated as reserved
+   depending on whether the space was present or not, and whitespace is not
+   load-bearing in any other contexts. Clang 17+ adds an off-by-default warning
+   for this; GCC 4.8 however *requires* the space there, so until GCC 4.8
+   support is dropped, we suppress this warning instead of removing the
+   space. */
+#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+#endif
 /** @relatesalso Magnum::Math::Nanoseconds
 @brief Nanosecond value literal
 @m_since_latest
@@ -302,7 +313,7 @@ fractions of nanoseconds. Usage example:
     @link operator""_sec() @endlink
 @m_keywords{_nsec nsec}
 */
-constexpr Nanoseconds<Long> operator "" _nsec(unsigned long long value) {
+constexpr Nanoseconds<Long> operator"" _nsec(unsigned long long value) {
     return Nanoseconds<Long>{Long(value)};
 }
 
@@ -325,7 +336,7 @@ precision on a range of roughly ±8 seconds. For example:
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
 @m_keywords{_usec usec}
 */
-constexpr Nanoseconds<Long> operator "" _usec(long double value) {
+constexpr Nanoseconds<Long> operator"" _usec(long double value) {
     return Nanoseconds<Long>{Long(value*1000.0l)};
 }
 
@@ -348,7 +359,7 @@ precision on a range of roughly ±2 hours. For example:
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
 @m_keywords{_msec msec}
 */
-constexpr Nanoseconds<Long> operator "" _msec(long double value) {
+constexpr Nanoseconds<Long> operator"" _msec(long double value) {
     return Nanoseconds<Long>{Long(value*1000000.0l)};
 }
 
@@ -371,9 +382,12 @@ precision on a range of roughly ±2 hours. For example:
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
 @m_keywords{_sec sec}
 */
-constexpr Nanoseconds<Long> operator "" _sec(long double value) {
+constexpr Nanoseconds<Long> operator"" _sec(long double value) {
     return Nanoseconds<Long>{Long(value*1000000000.0l)};
 }
+#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+#pragma clang diagnostic pop
+#endif
 
 }}
 

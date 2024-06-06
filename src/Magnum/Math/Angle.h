@@ -157,6 +157,17 @@ namespace Literals {
     #endif
     namespace AngleLiterals {
 
+/* According to https://wg21.link/CWG2521, space between "" and literal name is
+   deprecated because _Uppercase or __double names could be treated as reserved
+   depending on whether the space was present or not, and whitespace is not
+   load-bearing in any other contexts. Clang 17+ adds an off-by-default warning
+   for this; GCC 4.8 however *requires* the space there, so until GCC 4.8
+   support is dropped, we suppress this warning instead of removing the
+   space. */
+#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+#endif
 /** @relatesalso Magnum::Math::Deg
 @brief Double-precision degree value literal
 
@@ -167,7 +178,7 @@ Example usage:
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
 @m_keywords{_deg deg}
 */
-constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(Double(value)); }
+constexpr Deg<Double> operator"" _deg(long double value) { return Deg<Double>(Double(value)); }
 
 /** @relatesalso Magnum::Math::Deg
 @brief Single-precision degree value literal
@@ -179,7 +190,10 @@ Example usage:
 @see @link operator""_deg() @endlink, @link operator""_radf() @endlink
 @m_keywords{_degf degf}
 */
-constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(Float(value)); }
+constexpr Deg<Float> operator"" _degf(long double value) { return Deg<Float>(Float(value)); }
+#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+#pragma clang diagnostic pop
+#endif
 
 }}
 
@@ -246,6 +260,17 @@ namespace Literals {
     #endif
     namespace AngleLiterals {
 
+/* According to https://wg21.link/CWG2521, space between "" and literal name is
+   deprecated because _Uppercase or __double names could be treated as reserved
+   depending on whether the space was present or not, and whitespace is not
+   load-bearing in any other contexts. Clang 17+ adds an off-by-default warning
+   for this; GCC 4.8 however *requires* the space there, so until GCC 4.8
+   support is dropped, we suppress this warning instead of removing the
+   space. */
+#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+#endif
 /** @relatesalso Magnum::Math::Rad
 @brief Double-precision radian value literal
 
@@ -253,7 +278,7 @@ See @link operator""_deg() @endlink for more information.
 @see @link operator""_radf() @endlink
 @m_keywords{_rad rad}
 */
-constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(Double(value)); }
+constexpr Rad<Double> operator"" _rad(long double value) { return Rad<Double>(Double(value)); }
 
 /** @relatesalso Magnum::Math::Rad
 @brief Single-precision radian value literal
@@ -262,7 +287,10 @@ See @link operator""_degf() @endlink for more information.
 @see @link operator""_rad() @endlink
 @m_keywords{_radf radf}
 */
-constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(Float(value)); }
+constexpr Rad<Float> operator"" _radf(long double value) { return Rad<Float>(Float(value)); }
+#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+#pragma clang diagnostic pop
+#endif
 
 }}
 

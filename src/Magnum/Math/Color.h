@@ -1325,6 +1325,17 @@ namespace Literals {
     #endif
     namespace ColorLiterals {
 
+/* According to https://wg21.link/CWG2521, space between "" and literal name is
+   deprecated because _Uppercase or __double names could be treated as reserved
+   depending on whether the space was present or not, and whitespace is not
+   load-bearing in any other contexts. Clang 17+ adds an off-by-default warning
+   for this; GCC 4.8 however *requires* the space there, so until GCC 4.8
+   support is dropped, we suppress this warning instead of removing the
+   space. */
+#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+#endif
 /** @relatesalso Magnum::Math::Color3
 @brief 8bit-per-channel linear RGB literal
 
@@ -1340,7 +1351,7 @@ Unpacks the literal into three 8-bit values. Example usage:
 @see @link operator""_rgba() @endlink, @link operator""_rgbf() @endlink
 @m_keywords{_rgb rgb}
 */
-constexpr Color3<UnsignedByte> operator "" _rgb(unsigned long long value) {
+constexpr Color3<UnsignedByte> operator"" _rgb(unsigned long long value) {
     return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 
@@ -1366,7 +1377,7 @@ RGB. Use this literal to document that given value is in sRGB. Example usage:
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
    multiplicative) semantics of a linear RGB color */
-constexpr Vector3<UnsignedByte> operator "" _srgb(unsigned long long value) {
+constexpr Vector3<UnsignedByte> operator"" _srgb(unsigned long long value) {
     return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 
@@ -1385,7 +1396,7 @@ Unpacks the literal into four 8-bit values. Example usage:
 @see @link operator""_rgb() @endlink, @link operator""_rgbaf() @endlink
 @m_keywords{_rgba rgba}
 */
-constexpr Color4<UnsignedByte> operator "" _rgba(unsigned long long value) {
+constexpr Color4<UnsignedByte> operator"" _rgba(unsigned long long value) {
     return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 
@@ -1412,7 +1423,7 @@ usage:
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
    multiplicative) semantics of a linear RGB color */
-constexpr Vector4<UnsignedByte> operator "" _srgba(unsigned long long value) {
+constexpr Vector4<UnsignedByte> operator"" _srgba(unsigned long long value) {
     return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 
@@ -1432,7 +1443,7 @@ Example usage:
 @see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink
 @m_keywords{_rgbf rgbf}
 */
-constexpr Color3<Float> operator "" _rgbf(unsigned long long value) {
+constexpr Color3<Float> operator"" _rgbf(unsigned long long value) {
     return {((value >> 16) & 0xff)/255.0f,
             ((value >>  8) & 0xff)/255.0f,
             ((value >>  0) & 0xff)/255.0f};
@@ -1449,7 +1460,7 @@ Calls @ref Color3::fromSrgbInt() on the literal value. Example usage:
     @link operator""_rgbf() @endlink
 @m_keywords{_srgbf srgbf}
 */
-inline Color3<Float> operator "" _srgbf(unsigned long long value) {
+inline Color3<Float> operator"" _srgbf(unsigned long long value) {
     return Color3<Float>::fromSrgbInt(UnsignedInt(value));
 }
 
@@ -1469,7 +1480,7 @@ Example usage:
 @see @link operator""_rgbf() @endlink, @link operator""_rgba() @endlink
 @m_keywords{_rgbaf rgbaf}
 */
-constexpr Color4<Float> operator "" _rgbaf(unsigned long long value) {
+constexpr Color4<Float> operator"" _rgbaf(unsigned long long value) {
     return {((value >> 24) & 0xff)/255.0f,
             ((value >> 16) & 0xff)/255.0f,
             ((value >>  8) & 0xff)/255.0f,
@@ -1487,9 +1498,12 @@ Calls @ref Color4::fromSrgbAlphaInt() on the literal value. Example usage:
     @link operator""_rgbaf() @endlink
 @m_keywords{_srgbaf srgbaf}
 */
-inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
+inline Color4<Float> operator"" _srgbaf(unsigned long long value) {
     return Color4<Float>::fromSrgbAlphaInt(UnsignedInt(value));
 }
+#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+#pragma clang diagnostic pop
+#endif
 
 }}
 
