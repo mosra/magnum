@@ -87,7 +87,9 @@ if(CORRADE_TARGET_WINDOWS)
             set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2017)
         elseif(MSVC_VERSION VERSION_LESS 1930)
             set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2019)
-        elseif(MSVC_VERSION VERSION_LESS 1940)
+        # MSVC 2022 17.10 overflowed the 1930 range to 1940, so assume a
+        # hypothetical MSVC 2025 will start with 1950.
+        elseif(MSVC_VERSION VERSION_LESS 1950)
             set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2022)
         else()
             message(FATAL_ERROR "Unsupported MSVC version")
