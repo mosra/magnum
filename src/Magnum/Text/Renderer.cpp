@@ -188,6 +188,10 @@ Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, const Float scale,
 Range2D alignRenderedLine(const Range2D& lineRectangle, const LayoutDirection direction, const Alignment alignment, const Containers::StridedArrayView1D<Vector2>& positions) {
     CORRADE_ASSERT(direction == LayoutDirection::HorizontalTopToBottom,
         "Text::alignRenderedLine(): only" << LayoutDirection::HorizontalTopToBottom << "is supported right now, got" << direction, {});
+    CORRADE_ASSERT(
+        (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentStart &&
+        (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentEnd,
+        "Text::alignRenderedLine():" << alignment << "has to be resolved to *Left / *Right before being passed to this function", {});
     #ifdef CORRADE_NO_ASSERT
     static_cast<void>(direction); /** @todo drop once implemented */
     #endif
@@ -218,6 +222,10 @@ Range2D alignRenderedLine(const Range2D& lineRectangle, const LayoutDirection di
 Range2D alignRenderedBlock(const Range2D& blockRectangle, const LayoutDirection direction, const Alignment alignment, const Containers::StridedArrayView1D<Vector2>& positions) {
     CORRADE_ASSERT(direction == LayoutDirection::HorizontalTopToBottom,
         "Text::alignRenderedBlock(): only" << LayoutDirection::HorizontalTopToBottom << "is supported right now, got" << direction, {});
+    CORRADE_ASSERT(
+        (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentStart &&
+        (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentEnd,
+        "Text::alignRenderedBlock():" << alignment << "has to be resolved to *Left / *Right before being passed to this function", {});
     #ifdef CORRADE_NO_ASSERT
     static_cast<void>(direction); /** @todo drop once implemented */
     #endif
@@ -335,6 +343,12 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
     /** @todo even with reusing a shaper this is all horrific, rework!! */
     Containers::Pointer<AbstractShaper> shaper = font.createShaper();
 
+    /* Start/End alignment resolved based on what the shaper detects for the
+       first line. Not great, but can't do much better with this old limited
+       API. */
+    /** @todo rework all this, again */
+    Containers::Optional<Alignment> resolvedAlignment;
+
     /* Render each line separately and align it horizontally */
     std::size_t pos, prevPos = 0;
     do {
@@ -404,14 +418,30 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
             lineVertices.slice(&Vertex::position),
             lineVertices.slice(&Vertex::textureCoordinates));
 
+        /* Resolve the alignment based on what the shaper detected (if
+           anything). Assume there are no font plugins that would produce
+           vertical shape direction by default. */
+        /** @todo drop all this once the shaper instance is configurable from
+            outside */
+        if(!resolvedAlignment) {
+            const ShapeDirection shapeDirection = shaper->direction();
+            CORRADE_INTERNAL_ASSERT(
+                shapeDirection != ShapeDirection::TopToBottom &&
+                shapeDirection != ShapeDirection::BottomToTop);
+            resolvedAlignment = alignmentForDirection(alignment,
+                /** @todo direction hardcoded here */
+                LayoutDirection::HorizontalTopToBottom,
+                shapeDirection);
+        }
+
         /* Horizontally align the line, using either of the rectangles based on
            which alignment is desired */
         const Range2D alignedLineRectangle = alignRenderedLine(
-            UnsignedByte(alignment) & Implementation::AlignmentGlyphBounds ?
+            UnsignedByte(*resolvedAlignment) & Implementation::AlignmentGlyphBounds ?
                 lineQuadRectangle : lineRectangle,
             /** @todo direction hardcoded here */
             LayoutDirection::HorizontalTopToBottom,
-            alignment,
+            *resolvedAlignment,
             lineVertices.slice(&Vertex::position));
 
         /* Extend the rectangle with final line bounds */
@@ -426,7 +456,7 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
         rectangle,
         /** @todo direction hardcoded here */
         LayoutDirection::HorizontalTopToBottom,
-        alignment,
+        *resolvedAlignment,
         Containers::stridedArrayView(vertices).slice(&Vertex::position));
 
     return std::make_tuple(Utility::move(vertices), alignedRectangle);

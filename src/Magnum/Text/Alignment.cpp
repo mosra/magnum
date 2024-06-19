@@ -25,7 +25,10 @@
 
 #include "Alignment.h"
 
+#include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
+
+#include "Magnum/Text/Direction.h"
 
 namespace Magnum { namespace Text {
 
@@ -43,6 +46,10 @@ Debug& operator<<(Debug& debug, const Alignment value) {
         _c(LineCenterGlyphBoundsIntegral)
         _c(LineRight)
         _c(LineRightGlyphBounds)
+        _c(LineStart)
+        _c(LineStartGlyphBounds)
+        _c(LineEnd)
+        _c(LineEndGlyphBounds)
         _c(BottomLeft)
         _c(BottomLeftGlyphBounds)
         _c(BottomCenter)
@@ -51,6 +58,10 @@ Debug& operator<<(Debug& debug, const Alignment value) {
         _c(BottomCenterGlyphBoundsIntegral)
         _c(BottomRight)
         _c(BottomRightGlyphBounds)
+        _c(BottomStart)
+        _c(BottomStartGlyphBounds)
+        _c(BottomEnd)
+        _c(BottomEndGlyphBounds)
         _c(MiddleLeft)
         _c(MiddleLeftIntegral)
         _c(MiddleLeftGlyphBounds)
@@ -63,6 +74,14 @@ Debug& operator<<(Debug& debug, const Alignment value) {
         _c(MiddleRightIntegral)
         _c(MiddleRightGlyphBounds)
         _c(MiddleRightGlyphBoundsIntegral)
+        _c(MiddleStart)
+        _c(MiddleStartIntegral)
+        _c(MiddleStartGlyphBounds)
+        _c(MiddleStartGlyphBoundsIntegral)
+        _c(MiddleEnd)
+        _c(MiddleEndIntegral)
+        _c(MiddleEndGlyphBounds)
+        _c(MiddleEndGlyphBoundsIntegral)
         _c(TopLeft)
         _c(TopLeftGlyphBounds)
         _c(TopCenter)
@@ -71,11 +90,36 @@ Debug& operator<<(Debug& debug, const Alignment value) {
         _c(TopCenterGlyphBoundsIntegral)
         _c(TopRight)
         _c(TopRightGlyphBounds)
+        _c(TopStart)
+        _c(TopStartGlyphBounds)
+        _c(TopEnd)
+        _c(TopEndGlyphBounds)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
     return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Alignment alignmentForDirection(const Alignment alignment, const LayoutDirection layoutDirection, const ShapeDirection shapeDirection) {
+    CORRADE_ASSERT(layoutDirection == LayoutDirection::HorizontalTopToBottom,
+        "Text::alignmentForDirection(): only" << LayoutDirection::HorizontalTopToBottom << "is supported right now, got" << layoutDirection, {});
+    CORRADE_ASSERT(shapeDirection != ShapeDirection::TopToBottom &&
+                   shapeDirection != ShapeDirection::BottomToTop,
+        "Text::alignmentForDirection():" << shapeDirection << "is not supported yet, sorry", {});
+
+    const UnsignedByte horizontal = UnsignedByte(alignment) & Implementation::AlignmentHorizontal;
+    const UnsignedByte exceptHorizontal = UnsignedByte(alignment) & ~Implementation::AlignmentHorizontal;
+    if(horizontal == Implementation::AlignmentStart)
+        return Alignment((shapeDirection == ShapeDirection::RightToLeft ?
+            Implementation::AlignmentRight :
+            Implementation::AlignmentLeft)|exceptHorizontal);
+    if(horizontal == Implementation::AlignmentEnd)
+        return Alignment((shapeDirection == ShapeDirection::RightToLeft ?
+            Implementation::AlignmentLeft :
+            Implementation::AlignmentRight)|exceptHorizontal);
+
+    return alignment;
 }
 
 }}

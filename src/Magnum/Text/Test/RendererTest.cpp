@@ -122,62 +122,106 @@ const struct {
 const struct {
     TestSuite::TestCaseDescriptionSourceLocation name;
     Alignment alignment;
+    ShapeDirection shapeDirection;
     Vector2 offset;
 } RenderDataData[]{
     /* Not testing all combinations, just making sure that each horizontal,
        vertical, glyph bounds and integer variant is covered */
-    {"line left", Alignment::LineLeft,
+    {"line left",
+        Alignment::LineLeft, ShapeDirection::Unspecified,
         /* This is the default (0) value, thus should result in no shift */
         {}},
-    {"line left, glyph bounds", Alignment::LineLeftGlyphBounds,
+    {"line left, glyph bounds",
+        Alignment::LineLeftGlyphBounds, ShapeDirection::Unspecified,
         /* The first glyph has X offset of 2.5, which is subtracted */
         {-2.5f, 0.0f}},
-    {"top left", Alignment::TopLeft,
+    {"top left",
+        Alignment::TopLeft, ShapeDirection::Unspecified,
         /* Ascent is 4.5, scaled by 0.5 */
         {0.0f, -2.25f}},
-    {"top left, glyph bounds", Alignment::TopLeftGlyphBounds,
+    {"top left, glyph bounds",
+        Alignment::TopLeftGlyphBounds, ShapeDirection::Unspecified,
         /* Largest Y value is 10.5f */
         {-2.5f, -10.5f}},
-    {"top right", Alignment::TopRight,
+    {"top right",
+        Alignment::TopRight, ShapeDirection::Unspecified,
         /* Advances were 1, 2, 3, so 6 in total, ascent is 4.5; scaled by
            0.5 */
         {-3.0f, -2.25f}},
-    {"top right, glyph bounds", Alignment::TopRightGlyphBounds,
+    {"top right, glyph bounds",
+        Alignment::TopRightGlyphBounds, ShapeDirection::Unspecified,
         /* Basically subtracting the largest vertex value */
         {-12.5f, -10.5f}},
-    {"top center", Alignment::TopCenter,
+    {"top center",
+        Alignment::TopCenter, ShapeDirection::Unspecified,
         /* Advances were 1, 2, 3, so 6 in total, center is 3, scaled by 0.5 */
         {-1.5f, -2.25f}},
-    {"top center, integral", Alignment::TopCenterIntegral,
+    {"top center, integral",
+        Alignment::TopCenterIntegral, ShapeDirection::Unspecified,
         /* The Y shift isn't whole units but only X is rounded here */
         {-2.0f, -2.25f}},
-    {"top center, glyph bounds", Alignment::TopCenterGlyphBounds,
+    {"top center, glyph bounds",
+        Alignment::TopCenterGlyphBounds, ShapeDirection::Unspecified,
         {-7.5f, -10.5f}},
-    {"top center, glyph bounds, integral", Alignment::TopCenterGlyphBoundsIntegral,
+    {"top center, glyph bounds, integral",
+        Alignment::TopCenterGlyphBoundsIntegral, ShapeDirection::Unspecified,
         /* The Y shift isn't whole units but only X is rounded here */
         {-8.0f, -10.5f}},
-    {"middle left, glyph bounds", Alignment::MiddleLeftGlyphBounds,
+    {"middle left, glyph bounds",
+        Alignment::MiddleLeftGlyphBounds, ShapeDirection::Unspecified,
         {-2.5f, -7.125f}},
-    {"middle left, glyph bounds, integral", Alignment::MiddleLeftGlyphBoundsIntegral,
+    {"middle left, glyph bounds, integral",
+        Alignment::MiddleLeftGlyphBoundsIntegral, ShapeDirection::Unspecified,
         /* The X shift isn't whole units but only Y is rounded here */
         {-2.5f, -7.0f}},
-    {"middle center", Alignment::MiddleCenter,
+    {"middle center",
+        Alignment::MiddleCenter, ShapeDirection::Unspecified,
         {-1.5f, -0.5f}},
-    {"middle center, integral", Alignment::MiddleCenterIntegral,
+    {"middle center, integral",
+        Alignment::MiddleCenterIntegral, ShapeDirection::Unspecified,
         /* Rounding happens on both X and Y in this case */
         {-2.0f, -1.0f}},
-    {"middle center, glyph bounds", Alignment::MiddleCenterGlyphBounds,
+    {"middle center, glyph bounds",
+        Alignment::MiddleCenterGlyphBounds, ShapeDirection::Unspecified,
         /* Half size of the bounds quad */
         {-7.5f, -7.125f}},
-    {"middle center, glyph bounds, integral", Alignment::MiddleCenterGlyphBoundsIntegral,
+    {"middle center, glyph bounds, integral",
+        Alignment::MiddleCenterGlyphBoundsIntegral, ShapeDirection::Unspecified,
         {-8.0f, -7.0f}},
-    {"bottom left", Alignment::BottomLeft,
+    {"bottom left",
+        Alignment::BottomLeft, ShapeDirection::Unspecified,
         /* Descent is -2.5; scaled by 0.5 */
         {0.0f, 1.25f}},
-    {"bottom right", Alignment::BottomRight,
+    {"bottom right",
+        Alignment::BottomRight, ShapeDirection::Unspecified,
         {-3.0f, 1.25f}},
-    {"bottom right, glyph bounds", Alignment::BottomRightGlyphBounds,
+    {"bottom right, glyph bounds",
+        Alignment::BottomRightGlyphBounds, ShapeDirection::Unspecified,
         {-12.5f, -3.75f}},
+    {"line start, direction unspecified",
+        Alignment::LineStart, ShapeDirection::Unspecified,
+        {}}, /* Same as line left, thus no shift */
+    {"bottom start, LTR",
+        Alignment::BottomStart, ShapeDirection::LeftToRight,
+        {0.0f, 1.25f}}, /* Same as bottom left */
+    {"line end, RTL",
+        Alignment::LineEnd, ShapeDirection::RightToLeft,
+        {}}, /* Again same as line left, thus no shift */
+    {"line end, direction unspecified",
+        Alignment::LineEnd, ShapeDirection::Unspecified,
+        {-3.0f, 0.0f}}, /* Same as line right */
+    {"top end, LTR",
+        Alignment::TopEnd, ShapeDirection::LeftToRight,
+        {-3.0f, -2.25f}}, /* Same as top right */
+    {"line start, RTL",
+        Alignment::LineStart, ShapeDirection::RightToLeft,
+        {-3.0f, 0.0f}}, /* Same as line right */
+    {"line left, RTL",
+        Alignment::LineLeft, ShapeDirection::RightToLeft,
+        {}}, /* Line left with no change */
+    {"middle center, RTL",
+        Alignment::MiddleCenter, ShapeDirection::RightToLeft,
+        {-1.5f, -0.5f}}, /* Middle center with no change */
 };
 
 const struct {
@@ -303,10 +347,14 @@ RendererTest::RendererTest() {
 }
 
 struct TestShaper: AbstractShaper {
-    using AbstractShaper::AbstractShaper;
+    explicit TestShaper(AbstractFont& font, ShapeDirection direction): AbstractShaper{font}, _direction{direction} {}
 
     UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
         return text.size();
+    }
+
+    ShapeDirection doDirection() const override {
+        return _direction;
     }
 
     void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
@@ -325,9 +373,12 @@ struct TestShaper: AbstractShaper {
             /* Offset Y and advance X is getting larger with every glyph,
                advance Y is flipping its sign with every glyph */
             offsets[i] = Vector2::yAxis(i + 1);
+            /* This is always to the right, independent of ShapeDirection */
             advances[i] = {Float(i + 1), i % 2 ? -0.5f : +0.5f};
         }
     }
+
+    ShapeDirection _direction;
 };
 
 struct TestFont: AbstractFont {
@@ -350,8 +401,10 @@ struct TestFont: AbstractFont {
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
     Containers::Pointer<AbstractShaper> doCreateShaper() override {
-        return Containers::pointer<TestShaper>(*this);
+        return Containers::pointer<TestShaper>(*this, direction);
     }
+
+    ShapeDirection direction = ShapeDirection::Unspecified;
 
     bool _opened = false;
 };
@@ -817,7 +870,11 @@ void RendererTest::alignLineInvalidDirection() {
     std::ostringstream out;
     Error redirectError{&out};
     alignRenderedLine({}, LayoutDirection::VerticalRightToLeft, Alignment::LineLeft, nullptr);
-    CORRADE_COMPARE(out.str(), "Text::alignRenderedLine(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalRightToLeft\n");
+    alignRenderedLine({}, LayoutDirection::HorizontalTopToBottom, Alignment::BottomEnd, nullptr);
+    CORRADE_COMPARE_AS(out.str(),
+        "Text::alignRenderedLine(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalRightToLeft\n"
+        "Text::alignRenderedLine(): Text::Alignment::BottomEnd has to be resolved to *Left / *Right before being passed to this function\n",
+        TestSuite::Compare::String);
 }
 
 void RendererTest::alignBlock() {
@@ -847,7 +904,11 @@ void RendererTest::alignBlockInvalidDirection() {
     std::ostringstream out;
     Error redirectError{&out};
     alignRenderedBlock({}, LayoutDirection::VerticalRightToLeft, Alignment::LineLeft, nullptr);
-    CORRADE_COMPARE(out.str(), "Text::alignRenderedBlock(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalRightToLeft\n");
+    alignRenderedBlock({}, LayoutDirection::HorizontalTopToBottom, Alignment::LineStartGlyphBounds, nullptr);
+    CORRADE_COMPARE_AS(out.str(),
+        "Text::alignRenderedBlock(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalRightToLeft\n"
+        "Text::alignRenderedBlock(): Text::Alignment::LineStartGlyphBounds has to be resolved to *Left / *Right before being passed to this function\n",
+        TestSuite::Compare::String);
 }
 
 template<class T> void RendererTest::glyphQuadIndices() {
@@ -909,6 +970,7 @@ void RendererTest::renderData() {
     setTestCaseDescription(data.name);
 
     TestFont font;
+    font.direction = data.shapeDirection;
     font.openFile({}, 0.5f);
     DummyGlyphCache cache = testGlyphCache(font);
 

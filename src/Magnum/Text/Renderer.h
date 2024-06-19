@@ -212,6 +212,11 @@ MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache,
     the alignment.
 @m_since_latest
 
+Expects that @p alignment isn't `*Start` or `*End`, those values have to be
+resolved to `*Left` or `*Right` based on desired or detected
+@ref ShapeDirection using @ref alignmentForDirection() before being passed to
+this function.
+
 If @p alignment isn't `*GlyphBounds`, this function should get glyph
 @p positions for the whole line coming from @ref renderLineGlyphPositionsInto()
 and @p lineRectangle being all rectangles returned by that function combined
@@ -243,6 +248,11 @@ MAGNUM_TEXT_EXPORT Range2D alignRenderedLine(const Range2D& lineRectangle, Layou
 @return The @p blockRectangle, translated in the direction of the layout
     advance based on the alignment.
 @m_since_latest
+
+Expects that @p alignment isn't `*Start` or `*End`, those values have to be
+resolved to `*Left` or `*Right` based on desired or detected
+@ref ShapeDirection using @ref alignmentForDirection() before being passed to
+this function.
 
 This function should get glyph or vertex @p positions for all lines as aligned
 by calls to @ref alignRenderedLine(), and @p blockRectangle being all line
