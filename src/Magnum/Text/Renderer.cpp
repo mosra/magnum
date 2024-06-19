@@ -195,7 +195,7 @@ Range2D alignRenderedLine(const Range2D& lineRectangle, const LayoutDirection di
     /** @todo this again assumes horizontal direction, needs to be updated once
         vertical (and possibly mixed horizontal/vertical) text is possible */
 
-    Float alignmentOffsetX = 0.0f;
+    Float alignmentOffsetX;
     if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentLeft)
         alignmentOffsetX = -lineRectangle.left();
     else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter) {
@@ -206,6 +206,7 @@ Range2D alignRenderedLine(const Range2D& lineRectangle, const LayoutDirection di
     }
     else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight)
         alignmentOffsetX = -lineRectangle.right();
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* Shift all positions */
     for(Vector2& i: positions)
@@ -224,8 +225,10 @@ Range2D alignRenderedBlock(const Range2D& blockRectangle, const LayoutDirection 
     /** @todo this assumes vertical layout advance, needs to be updated once
         other directions are possible */
 
-    Float alignmentOffsetY = 0.0f;
-    if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentBottom)
+    Float alignmentOffsetY;
+    if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentLine)
+        alignmentOffsetY = 0.0f;
+    else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentBottom)
         alignmentOffsetY = -blockRectangle.bottom();
     else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle) {
         alignmentOffsetY = -blockRectangle.centerY();
@@ -235,6 +238,7 @@ Range2D alignRenderedBlock(const Range2D& blockRectangle, const LayoutDirection 
     }
     else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentTop)
         alignmentOffsetY = -blockRectangle.top();
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* Shift all positions */
     for(Vector2& i: positions)
