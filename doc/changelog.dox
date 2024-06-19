@@ -834,6 +834,11 @@ See also:
     missing before, and @ref Text::Alignment::TopCenterIntegral, which is also
     needed in order to prevent aligning pixel-perfect fonts to fractional
     positions.
+-   @ref Text::Alignment gained special `*Start` and `*End` values for
+    alignment based on text direction, and a new
+    @ref Text::alignmentForDirection() utility that resolves those to concrete
+    `*Left` and `*Right` values based @ref Text::LayoutDirection and
+    @ref Text::ShapeDirection
 -   Added a @ref Text::GlyphCache::GlyphCache(NoCreateT) and
     @ref Text::DistanceFieldGlyphCache::DistanceFieldGlyphCache(NoCreateT)
     constructor allowing to construct the object without a GL context present
