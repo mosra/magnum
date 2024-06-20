@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractShaper, @ref Magnum::Text::FeatureRange
+ * @brief Class @ref Magnum::Text::AbstractShaper
  * @m_since_latest
  */
 
@@ -38,69 +38,6 @@
 #include "Magnum/Text/visibility.h"
 
 namespace Magnum { namespace Text {
-
-/**
-@brief OpenType feature for a text range
-@m_since_latest
-
-@see @ref AbstractShaper::shape()
-*/
-class FeatureRange {
-    public:
-        /**
-         * @brief Constructor
-         * @param feature   Feature to control
-         * @param begin     Beginning byte in the input text
-         * @param end       (One byte after) the end byte in the input text
-         * @param value     Feature value to set
-         */
-        constexpr /*implicit*/ FeatureRange(Feature feature, UnsignedInt begin, UnsignedInt end, UnsignedInt value = true): _feature{feature}, _value{value}, _begin{begin}, _end{end} {}
-
-        /**
-         * @brief Construct for the whole text
-         *
-         * Equivalent to calling @ref FeatureRange(Feature, UnsignedInt, UnsignedInt, UnsignedInt)
-         * with @p begin set to @cpp 0 @ce and @p end to @cpp 0xffffffffu @ce.
-         */
-        constexpr /*implicit*/ FeatureRange(Feature feature, UnsignedInt value = true): _feature{feature}, _value{value}, _begin{0}, _end{~UnsignedInt{}} {}
-
-        /** @brief Feature to control */
-        constexpr Feature feature() const { return _feature; }
-
-        /**
-         * @brief Whether to enable the feature
-         *
-         * Returns @cpp false @ce if @ref value() is @cpp 0 @ce, @cpp true @ce
-         * otherwise.
-         */
-        constexpr bool isEnabled() const { return _value; }
-
-        /** @brief Feature value to set */
-        constexpr UnsignedInt value() const { return _value; }
-
-        /**
-         * @brief Beginning byte in the input text
-         *
-         * If the feature is set for the whole text, this is @cpp 0 @ce.
-         */
-        constexpr UnsignedInt begin() const { return _begin; }
-
-        /**
-         * @brief (One byte after) the end byte in the input text
-         *
-         * If the feature is set for the whole text, this is
-         * @cpp 0xffffffffu @ce.
-         */
-        constexpr UnsignedInt end() const { return _end; }
-
-    private:
-        friend AbstractShaper;
-
-        Feature _feature;
-        UnsignedInt _value;
-        UnsignedInt _begin;
-        UnsignedInt _end;
-};
 
 /**
 @brief Base for text shapers

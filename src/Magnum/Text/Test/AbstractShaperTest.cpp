@@ -42,9 +42,6 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 struct AbstractShaperTest: TestSuite::Tester {
     explicit AbstractShaperTest();
 
-    void featureRangeConstruct();
-    void featureRangeConstructBeginEnd();
-
     void construct();
     void constructCopy();
     void constructMove();
@@ -72,10 +69,7 @@ struct AbstractShaperTest: TestSuite::Tester {
 };
 
 AbstractShaperTest::AbstractShaperTest() {
-    addTests({&AbstractShaperTest::featureRangeConstruct,
-              &AbstractShaperTest::featureRangeConstructBeginEnd,
-
-              &AbstractShaperTest::construct,
+    addTests({&AbstractShaperTest::construct,
               &AbstractShaperTest::constructCopy,
               &AbstractShaperTest::constructMove,
 
@@ -98,82 +92,6 @@ AbstractShaperTest::AbstractShaperTest() {
 
               &AbstractShaperTest::glyphsIntoEmpty,
               &AbstractShaperTest::glyphsIntoInvalidViewSizes});
-}
-
-void AbstractShaperTest::featureRangeConstruct() {
-    FeatureRange a{Feature::Kerning};
-    FeatureRange b{Feature::StandardLigatures, false};
-    FeatureRange c{Feature::AccessAllAlternates, 13};
-    CORRADE_COMPARE(a.feature(), Feature::Kerning);
-    CORRADE_COMPARE(b.feature(), Feature::StandardLigatures);
-    CORRADE_COMPARE(c.feature(), Feature::AccessAllAlternates);
-    CORRADE_VERIFY(a.isEnabled());
-    CORRADE_VERIFY(!b.isEnabled());
-    CORRADE_COMPARE(a.value(), 1);
-    CORRADE_COMPARE(b.value(), 0);
-    CORRADE_COMPARE(c.value(), 13);
-    CORRADE_COMPARE(a.begin(), 0);
-    CORRADE_COMPARE(b.begin(), 0);
-    CORRADE_COMPARE(c.begin(), 0);
-    CORRADE_COMPARE(a.end(), ~UnsignedInt{});
-    CORRADE_COMPARE(b.end(), ~UnsignedInt{});
-    CORRADE_COMPARE(c.end(), ~UnsignedInt{});
-
-    constexpr FeatureRange ca{Feature::Kerning};
-    constexpr FeatureRange cb{Feature::StandardLigatures, false};
-    constexpr FeatureRange cc{Feature::AccessAllAlternates, 13};
-    CORRADE_COMPARE(ca.feature(), Feature::Kerning);
-    CORRADE_COMPARE(cb.feature(), Feature::StandardLigatures);
-    CORRADE_COMPARE(cc.feature(), Feature::AccessAllAlternates);
-    CORRADE_VERIFY(ca.isEnabled());
-    CORRADE_VERIFY(!cb.isEnabled());
-    CORRADE_COMPARE(ca.value(), 1);
-    CORRADE_COMPARE(cb.value(), 0);
-    CORRADE_COMPARE(cc.value(), 13);
-    CORRADE_COMPARE(ca.begin(), 0);
-    CORRADE_COMPARE(cb.begin(), 0);
-    CORRADE_COMPARE(cc.begin(), 0);
-    CORRADE_COMPARE(ca.end(), ~UnsignedInt{});
-    CORRADE_COMPARE(cb.end(), ~UnsignedInt{});
-    CORRADE_COMPARE(cc.end(), ~UnsignedInt{});
-}
-
-void AbstractShaperTest::featureRangeConstructBeginEnd() {
-    FeatureRange a{Feature::Kerning, 7, 26};
-    FeatureRange b{Feature::StandardLigatures, 7, 26, false};
-    FeatureRange c{Feature::AccessAllAlternates, 7, 26, 13};
-    CORRADE_COMPARE(a.feature(), Feature::Kerning);
-    CORRADE_COMPARE(b.feature(), Feature::StandardLigatures);
-    CORRADE_COMPARE(c.feature(), Feature::AccessAllAlternates);
-    CORRADE_VERIFY(a.isEnabled());
-    CORRADE_VERIFY(!b.isEnabled());
-    CORRADE_COMPARE(a.value(), 1);
-    CORRADE_COMPARE(b.value(), 0);
-    CORRADE_COMPARE(c.value(), 13);
-    CORRADE_COMPARE(a.begin(), 7);
-    CORRADE_COMPARE(b.begin(), 7);
-    CORRADE_COMPARE(c.begin(), 7);
-    CORRADE_COMPARE(a.end(), 26);
-    CORRADE_COMPARE(b.end(), 26);
-    CORRADE_COMPARE(c.end(), 26);
-
-    constexpr FeatureRange ca{Feature::Kerning, 7, 26};
-    constexpr FeatureRange cb{Feature::StandardLigatures, 7, 26, false};
-    constexpr FeatureRange cc{Feature::AccessAllAlternates, 7, 26, 13};
-    CORRADE_COMPARE(ca.feature(), Feature::Kerning);
-    CORRADE_COMPARE(cb.feature(), Feature::StandardLigatures);
-    CORRADE_COMPARE(cc.feature(), Feature::AccessAllAlternates);
-    CORRADE_VERIFY(ca.isEnabled());
-    CORRADE_VERIFY(!cb.isEnabled());
-    CORRADE_COMPARE(ca.value(), 1);
-    CORRADE_COMPARE(cb.value(), 0);
-    CORRADE_COMPARE(cc.value(), 13);
-    CORRADE_COMPARE(ca.begin(), 7);
-    CORRADE_COMPARE(cb.begin(), 7);
-    CORRADE_COMPARE(cc.begin(), 7);
-    CORRADE_COMPARE(ca.end(), 26);
-    CORRADE_COMPARE(cb.end(), 26);
-    CORRADE_COMPARE(cc.end(), 26);
 }
 
 AbstractFont& FakeFont = *reinterpret_cast<AbstractFont*>(std::size_t{0xdeadbeef});
