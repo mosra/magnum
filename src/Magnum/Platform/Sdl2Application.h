@@ -95,6 +95,457 @@ namespace Implementation {
     enum class Sdl2DpiScalingPolicy: UnsignedByte;
 }
 
+class Sdl2Application;
+
+/**
+@brief SDL2 application window
+@m_since_latest
+
+@ref TODOTODO document
+
+See @ref Sdl2Application for more information.
+*/
+class Sdl2ApplicationWindow {
+    public:
+        class Configuration;
+        class ViewportEvent;
+        class InputEvent;
+        class KeyEvent;
+        class MouseEvent;
+        class MouseMoveEvent;
+        class MouseScrollEvent;
+        class MultiGestureEvent;
+        class TextInputEvent;
+        class TextEditingEvent;
+
+        /**
+         * @brief Constructor
+         *
+         * @ref TODOTODO document
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit Sdl2ApplicationWindow(Sdl2Application& application, const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is only forward-declared at this point */
+        explicit Sdl2ApplicationWindow(Sdl2Application& application, const Configuration& configuration);
+        explicit Sdl2ApplicationWindow(Sdl2Application& application);
+        #endif
+
+        /** @brief Copying is not allowed */
+        Sdl2ApplicationWindow(const Sdl2ApplicationWindow&) = delete;
+
+        /** @brief Moving is not allowed */
+        Sdl2ApplicationWindow(Sdl2ApplicationWindow&&) = delete;
+
+        /** @brief Copying is not allowed */
+        Sdl2ApplicationWindow& operator=(const Sdl2ApplicationWindow&) = delete;
+
+        /** @brief Moving is not allowed */
+        Sdl2ApplicationWindow& operator=(Sdl2ApplicationWindow&&) = delete;
+
+        /* Compared to the top-level application which is never deleted through
+           a pointer, standalone windows most likely will, so the destructor is
+           virtual */
+        virtual ~Sdl2ApplicationWindow();
+
+        /** @brief Application instance */
+        Sdl2Application& application() { return _application; }
+        const Sdl2Application& application() const { return _application; } /**< @overload */
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Underlying window handle
+         *
+         * Use in case you need to call SDL functionality directly. Returns
+         * @cpp nullptr @ce in case the window was not created yet.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        SDL_Window* window() { return _window; }
+        #endif
+
+        /** @{ @name Window handling */
+
+        /**
+         * @brief Window size
+         *
+         * Window size to which all input event coordinates can be related.
+         * Note that, especially on HiDPI systems, it may be different from
+         * @ref framebufferSize(). Expects that a window is already created.
+         * See @ref Platform-Sdl2Application-dpi for more information.
+         * @see @ref dpiScaling()
+         */
+        Vector2i windowSize() const;
+
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Set window size
+         * @param size    The size, in screen coordinates
+         * @m_since{2020,06}
+         *
+         * To make the sizing work independently of the display DPI, @p size is
+         * internally multiplied with @ref dpiScaling() before getting applied.
+         * Expects that a window is already created.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
+         */
+        void setWindowSize(const Vector2i& size);
+
+        /**
+         * @brief Set minimum window size
+         * @param size    The minimum size, in screen coordinates
+         * @m_since{2019,10}
+         *
+         * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
+         * to disable/remove a size limit. To make the sizing work
+         * independently of the display DPI, @p size is internally multiplied
+         * with @ref dpiScaling() before getting applied. Expects that a window
+         * is already created.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref setMaxWindowSize(), @ref setWindowSize()
+         */
+        void setMinWindowSize(const Vector2i& size);
+
+        /**
+         * @brief Set maximal window size
+         * @param size    The maximum size, in screen coordinates
+         * @m_since{2019,10}
+         *
+         * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
+         * to disable/remove a size limit. To make the sizing work
+         * independently of the display DPI, @p size is internally multiplied
+         * with @ref dpiScaling() before getting applied. Expects that a window
+         * is already created.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
+         */
+        void setMaxWindowSize(const Vector2i& size);
+        #endif
+
+        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Framebuffer size
+         *
+         * Size of the default framebuffer. Note that, especially on HiDPI
+         * systems, it may be different from @ref windowSize(). Expects that a
+         * window is already created. See @ref Platform-Sdl2Application-dpi for
+         * more information.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         *
+         * @see @ref Sdl2Application::framebufferSize(), @ref dpiScaling()
+         */
+        Vector2i framebufferSize() const;
+        #endif
+
+        /**
+         * @brief DPI scaling
+         *
+         * How the content should be scaled relative to system defaults for
+         * given @ref windowSize(). If a window is not created yet, returns
+         * zero vector, use @ref dpiScaling(const Configuration&) for
+         * calculating a value independently. See @ref Platform-Sdl2Application-dpi
+         * for more information.
+         * @see @ref framebufferSize()
+         */
+        Vector2 dpiScaling() const;
+
+        /**
+         * @brief DPI scaling for given configuration
+         *
+         * Calculates DPI scaling that would be used when creating a window
+         * with given @p configuration. Takes into account DPI scaling policy
+         * and custom scaling specified on the command-line. See
+         * @ref Platform-Sdl2Application-dpi for more information.
+         */
+        Vector2 dpiScaling(const Configuration& configuration);
+
+        /**
+         * @brief Set window title
+         * @m_since{2019,10}
+         *
+         * The @p title is expected to be encoded in UTF-8.
+         */
+        void setWindowTitle(Containers::StringView title);
+
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT))
+        /**
+         * @brief Set window icon
+         * @m_since{2020,06}
+         *
+         * The @p image is expected to be with origin at bottom left (which is
+         * the default for imported images) and in one of
+         * @ref PixelFormat::RGB8Unorm, @ref PixelFormat::RGB8Srgb,
+         * @ref PixelFormat::RGBA8Unorm or @ref PixelFormat::RGBA8Srgb formats.
+         * Unlike @ref GlfwApplication::setWindowIcon(), SDL doesn't provide a
+         * way to supply multiple images in different sizes.
+         * @note Available since SDL 2.0.5. Not available on
+         *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", use
+         *      @cb{.html} <link rel="icon"> @ce in your HTML markup instead.
+         *      Although it's not documented in SDL itself, the function might
+         *      have no effect on macOS / Wayland, similarly to how
+         *      @ref GlfwApplication::setWindowIcon() behaves on those
+         *      platforms.
+         * @see @ref platform-windows-icon "Excecutable icon on Windows",
+         *      @ref Trade::IcoImporter "IcoImporter"
+         */
+        void setWindowIcon(const ImageView2D& image);
+        #endif
+
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         * @see @ref Sdl2Application::setSwapInterval()
+         */
+        void swapBuffers();
+
+        /**
+         * @brief Redraw immediately
+         *
+         * Marks the window for redrawing, resulting in call to @ref drawEvent()
+         * in the next iteration. You can call it from @ref drawEvent() itself
+         * to redraw immediately without waiting for user input.
+         */
+        void redraw();
+
+    private:
+        /**
+         * @brief Viewport event
+         *
+         * Called when window size changes. The default implementation does
+         * nothing. If you want to respond to size changes, you should pass the
+         * new *framebuffer* size to @ref GL::DefaultFramebuffer::setViewport()
+         * (if using OpenGL) and possibly elsewhere (to
+         * @ref SceneGraph::Camera::setViewport(), other framebuffers...) and
+         * the new *window* size and DPI scaling to APIs that respond to user
+         * events or scale UI elements.
+         *
+         * Note that this function might not get called at all if the window
+         * size doesn't change. You should configure the initial state of your
+         * cameras, framebuffers etc. in application constructor rather than
+         * relying on this function to be called. Size of the window can be
+         * retrieved using @ref windowSize(), size of the backing framebuffer
+         * via @ref framebufferSize() and DPI scaling using @ref dpiScaling().
+         * See @ref Platform-Sdl2Application-dpi for detailed info about these
+         * values.
+         */
+        virtual void viewportEvent(ViewportEvent& event);
+
+        /**
+         * @brief Draw event
+         *
+         * Called when the screen is redrawn. You should clean the framebuffer
+         * using @ref GL::DefaultFramebuffer::clear() (if using OpenGL) and
+         * then add your own drawing functions. After drawing is finished, call
+         * @ref swapBuffers(). If you want to draw immediately again, call also
+         * @ref redraw().
+         */
+        virtual void drawEvent() = 0;
+
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
+
+        /** @{ @name Keyboard handling */
+
+        /**
+         * @brief Key press event
+         *
+         * Called when an key is pressed. Default implementation does nothing.
+         */
+        virtual void keyPressEvent(KeyEvent& event);
+
+        /**
+         * @brief Key release event
+         *
+         * Called when an key is released. Default implementation does nothing.
+         */
+        virtual void keyReleaseEvent(KeyEvent& event);
+
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
+
+        /** @{ @name Mouse handling */
+
+    public:
+        /**
+         * @brief Cursor type
+         * @m_since{2020,06}
+         *
+         * @see @ref setCursor()
+         */
+        enum class Cursor: UnsignedInt {
+            Arrow,          /**< Arrow */
+            TextInput,      /**< Text input */
+            Wait,           /**< Wait */
+            Crosshair,      /**< Crosshair */
+            WaitArrow,      /**< Small wait cursor */
+            ResizeNWSE,     /**< Double arrow pointing northwest and southeast */
+            ResizeNESW,     /**< Double arrow pointing northeast and southwest */
+            ResizeWE,       /**< Double arrow pointing west and east */
+            ResizeNS,       /**< Double arrow pointing north and south */
+            ResizeAll,      /**< Four pointed arrow pointing north, south, east, and west */
+            No,             /**< Slashed circle or crossbones */
+            Hand,           /**< Hand */
+            Hidden,         /**< Hidden */
+
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            /**
+             * Hidden and locked. When the mouse is locked, only
+             * @ref MouseMoveEvent::relativePosition() is changing, absolute
+             * position stays the same.
+             * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            HiddenLocked
+            #endif
+        };
+
+        /**
+         * @brief Set cursor type
+         * @m_since{2020,06}
+         *
+         * Expects that a window is already created. Default is
+         * @ref Cursor::Arrow.
+         * @ref TODOTODO uhh clean up the docs to say "that the window is", not "a"
+         */
+        void setCursor(Cursor cursor);
+
+        /**
+         * @brief Get current cursor type
+         * @m_since{2020,06}
+         */
+        Cursor cursor();
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Warp mouse cursor to given coordinates
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        void warpCursor(const Vector2i& position) {
+            SDL_WarpMouseInWindow(_window, position.x(), position.y());
+        }
+        #endif
+
+    private:
+        /**
+         * @brief Mouse press event
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
+         */
+        virtual void mousePressEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse move event
+         *
+         * Called when mouse is moved. Default implementation does nothing.
+         */
+        virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /**
+         * @brief Mouse scroll event
+         *
+         * Called when a scrolling device is used (mouse wheel or scrolling
+         * area on a touchpad). Default implementation does nothing.
+         */
+        virtual void mouseScrollEvent(MouseScrollEvent& event);
+
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
+
+        /** @{ @name Touch gesture handling */
+
+        /**
+         * @brief Multi gesture event
+         *
+         * Called when the user performs a gesture using multiple fingers.
+         * Default implementation does nothing.
+         * @experimental
+         */
+        virtual void multiGestureEvent(MultiGestureEvent& event);
+
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
+
+        /** @{ @name Text input handling */
+
+        /**
+         * @brief Text input event
+         *
+         * Called when text input is active and the text is being input.
+         * @see @ref Sdl2Application::isTextInputActive()
+         */
+        virtual void textInputEvent(TextInputEvent& event);
+
+        /**
+         * @brief Text editing event
+         *
+         * Called when text input is active and the text is being edited.
+         */
+        virtual void textEditingEvent(TextEditingEvent& event);
+
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
+
+    private:
+        friend Sdl2Application;
+
+        enum class WindowFlag: UnsignedByte;
+        typedef Containers::EnumSet<WindowFlag> WindowFlags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(WindowFlags)
+
+        /* Used by Sdl2Application(NoCreateT) */
+        explicit Sdl2ApplicationWindow(Sdl2Application& application, NoCreateT);
+
+        Vector2 dpiScalingInternal(Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling) const;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        bool tryCreateWindow(const Configuration& configuration);
+        void destroyWindow();
+        #endif
+
+        Sdl2Application& _application;
+
+        /* These are saved from configuration to be reused in dpiScaling() and
+           viewportEvent() later */
+        Implementation::Sdl2DpiScalingPolicy _configurationDpiScalingPolicy{};
+        Vector2 _configurationDpiScaling;
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        SDL_Window* _window{};
+        Vector2i _viewportSize;
+        #else
+        SDL_Surface* _surface{};
+        Vector2i _lastKnownCanvasSize;
+        #endif
+
+        WindowFlags _windowFlags;
+};
+
 /** @nosubgrouping
 @brief SDL2 application
 
@@ -338,8 +789,9 @@ the compositor in system-wide KWin settings.
 
 @subsection Platform-Sdl2Application-usage-ios iOS specifics
 
-Leaving a default (zero) window size in @ref Configuration will cause the app
-to autodetect it based on the actual device screen size. This also depends on
+Leaving a default (zero) window size in
+@relativeref{Sdl2ApplicationWindow,Configuration} will cause the app to
+autodetect it based on the actual device screen size. This also depends on
 @ref Platform-Sdl2Application-dpi "DPI awareness", see below for details.
 
 As noted in the @ref platforms-ios-bundle "iOS platform guide", a lot of
@@ -347,20 +799,22 @@ options needs to be set via a `*.plist` file. Some options can be configured
 from runtime when creating the SDL2 application window, see documentation of
 a particular value for details:
 
--   @ref Configuration::WindowFlag::Borderless hides the menu bar
--   @ref Configuration::WindowFlag::Resizable makes the application respond to
-    device orientation changes
+-   @relativeref{Sdl2ApplicationWindow,Configuration::WindowFlag::Borderless}
+    hides the menu bar
+-   @relativeref{Sdl2ApplicationWindow,Configuration::WindowFlag::Resizable}
+    makes the application respond to device orientation changes
 
 @subsection Platform-Sdl2Application-usage-emscripten Emscripten specifics
 
-Leaving a default (zero) window size in @ref Configuration will cause the app
-to use a window size that corresponds to *CSS pixel size* of the
-@cb{.html} <canvas> @ce element. The size is then multiplied by DPI scaling
+Leaving a default (zero) window size in @relativeref{Sdl2ApplicationWindow,Configuration}
+will cause the app to use a window size that corresponds to *CSS pixel size* of
+the @cb{.html} <canvas> @ce element. The size is then multiplied by DPI scaling
 value, see @ref Platform-Sdl2Application-dpi "DPI awareness" below for details.
 
-If you enable @ref Configuration::WindowFlag::Resizable, the canvas will be
-resized when size of the canvas changes and you get @ref viewportEvent(). If
-the flag is not enabled, no canvas resizing is performed.
+If you enable @relativeref{Sdl2ApplicationWindow,Configuration::WindowFlag::Resizable},
+the canvas will be resized when size of the canvas changes and you get
+@ref viewportEvent(). If the flag is not enabled, no canvas resizing is
+performed.
 
 @note While this implementation supports Esmcripten and is going to continue
     supporting it for the foreseeable future, @ref EmscriptenApplication is now
@@ -394,8 +848,8 @@ variable).
     However, the window backing framebuffer has a different size. This is only
     supported on macOS and iOS. See @ref platforms-macos-hidpi for details how
     to enable it. Equivalent to passing
-    @ref Configuration::DpiScalingPolicy::Framebuffer to
-    @ref Configuration::setSize() or `framebuffer` via command line /
+    @relativeref{Sdl2ApplicationWindow,Configuration::DpiScalingPolicy::Framebuffer}
+    to @ref Configuration::setSize() or `framebuffer` via command line /
     environment.
 -   Virtual DPI scaling. Scales the window based on DPI scaling setting in the
     system. For example if a 800x600 window is requested and DPI scaling is set
@@ -404,8 +858,8 @@ variable).
     Windows; on Windows the application is first checked for DPI awareness
     as described in @ref platforms-windows-hidpi and if the application is not
     DPI-aware, 1:1 scaling is used. Equivalent to passing
-    @ref Configuration::DpiScalingPolicy::Virtual to
-    @ref Configuration::setSize() or `virtual` on command line.
+    @relativeref{Sdl2ApplicationWindow,Configuration::DpiScalingPolicy::Virtual}
+    to @ref Configuration::setSize() or `virtual` on command line.
 -   Physical DPI scaling. Takes the requested window size as a physical size
     that a window would have on platform's default DPI and scales it to have
     the same physical size on given display physical DPI. So, for example on a
@@ -417,8 +871,9 @@ variable).
     This is supported on Linux and all mobile platforms (except iOS) and
     Emscripten. On Windows this is equivalent to virtual DPI scaling but
     without doing an explicit check for DPI awareness first. Equivalent to
-    passing @ref Configuration::DpiScalingPolicy::Physical to
-    @ref Configuration::setSize() or `physical` via command line / environment.
+    passing @relativeref{Sdl2ApplicationWindow,Configuration::DpiScalingPolicy::Physical}
+    to @ref Configuration::setSize() or `physical` via command line /
+    environment.
 
 Besides the above, it's possible to supply a custom DPI scaling value to
 @ref Configuration::setSize() or the `--magnum-dpi-scaling` command-line
@@ -432,24 +887,25 @@ affect sharpness of the contents.
 The default is depending on the platform:
 
 -   On macOS and iOS, the default and only supported option is
-    @ref Configuration::DpiScalingPolicy::Framebuffer. On this platform,
-    @ref windowSize() and @ref framebufferSize() will differ depending on
-    whether `NSHighResolutionCapable` is enabled in the `*.plist` file or not.
-    By default, @ref dpiScaling() is @cpp 1.0f @ce in both dimensions but it
-    can be overridden using custom DPI scaling.
--   On Windows, the default is @ref Configuration::DpiScalingPolicy::Framebuffer.
+    @relativeref{Sdl2ApplicationWindow,Configuration::DpiScalingPolicy::Framebuffer}.
+    On this platform, @ref windowSize() and @ref framebufferSize() will differ
+    depending on whether `NSHighResolutionCapable` is enabled in the `*.plist`
+    file or not. By default, @ref dpiScaling() is @cpp 1.0f @ce in both
+    dimensions but it can be overridden using custom DPI scaling.
+-   On Windows, the default is @relativeref{Sdl2ApplicationWindow,Configuration::DpiScalingPolicy::Framebuffer}.
     The @ref windowSize() and @ref framebufferSize() is always the same.
     Depending on whether the DPI awareness was enabled in the manifest file or
     set by the `SetProcessDpiAwareness()` API, @ref dpiScaling() is either
     @cpp 1.0f @ce in both dimensions, indicating a low-DPI screen or a
     non-DPI-aware app, or some other value for HiDPI screens. In both cases the
     value can be overridden using custom DPI scaling.
--   On Linux, the default is @ref Configuration::DpiScalingPolicy::Virtual,
+-   On Linux, the default is @relativeref{Sdl2ApplicationWindow,Configuration::DpiScalingPolicy::Virtual},
     taken from the `Xft.dpi` property. If the property is not available, it
-    falls back to @ref Configuration::DpiScalingPolicy::Physical, querying the
-    monitor DPI value. The @ref windowSize() and @ref framebufferSize() is
-    always the same, @ref dpiScaling() contains the queried DPI scaling value.
-    The value can be overridden using custom DPI scaling.
+    falls back to @relativeref{Sdl2ApplicationWindow,Configuration::DpiScalingPolicy::Physical},
+    querying the monitor DPI value. The @ref windowSize() and
+    @ref framebufferSize() is always the same, @ref dpiScaling() contains the
+    queried DPI scaling value. The value can be overridden using custom DPI
+    scaling.
 -   On @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", the default is physical DPI
     scaling, taken from [Window.getDevicePixelRatio()](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio). The
     @ref windowSize() and @ref framebufferSize() is always the same,
@@ -479,7 +935,7 @@ If your application is saving and restoring window size, it's advisable to take
     properly handle cases where the window is opened on a display with
     different DPI.
 */
-class Sdl2Application {
+class Sdl2Application: public Sdl2ApplicationWindow {
     public:
         /** @brief Application arguments */
         struct Arguments {
@@ -495,15 +951,6 @@ class Sdl2Application {
         class GLConfiguration;
         #endif
         class ExitEvent;
-        class ViewportEvent;
-        class InputEvent;
-        class KeyEvent;
-        class MouseEvent;
-        class MouseMoveEvent;
-        class MouseScrollEvent;
-        class MultiGestureEvent;
-        class TextInputEvent;
-        class TextEditingEvent;
 
         #ifdef MAGNUM_TARGET_GL
         /**
@@ -513,9 +960,9 @@ class Sdl2Application {
          * @param glConfiguration   OpenGL context configuration
          *
          * Creates application with default or user-specified configuration.
-         * See @ref Configuration for more information. The program exits if
-         * the context cannot be created, see @ref tryCreate() for an
-         * alternative.
+         * See @relativeref{Sdl2ApplicationWindow,Configuration} for more
+         * information. The program exits if the context cannot be created, see
+         * @ref tryCreate() for an alternative.
          *
          * @note This function is available only if Magnum is compiled with
          *      @ref MAGNUM_TARGET_GL enabled (done by default). See
@@ -527,9 +974,10 @@ class Sdl2Application {
         /**
          * @brief Construct without explicit GPU context configuration
          *
-         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
-         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
-         * without any GPU context attached, leaving that part on the user.
+         * If @relativeref{Sdl2ApplicationWindow,Configuration::WindowFlag::Contextless}
+         * is present or Magnum was not built with @ref MAGNUM_TARGET_GL, this
+         * creates a window without any GPU context attached, leaving that part
+         * on the user.
          *
          * If none of the flags is present and Magnum was built with
          * @ref MAGNUM_TARGET_GL, this is equivalent to calling
@@ -614,17 +1062,6 @@ class Sdl2Application {
          */
         void exit(int exitCode = 0);
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /**
-         * @brief Underlying window handle
-         *
-         * Use in case you need to call SDL functionality directly. Returns
-         * @cpp nullptr @ce in case the window was not created yet.
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         */
-        SDL_Window* window() { return _window; }
-        #endif
-
         #if defined(MAGNUM_TARGET_GL) && !defined(CORRADE_TARGET_EMSCRIPTEN)
         /**
          * @brief Underlying OpenGL context
@@ -671,9 +1108,10 @@ class Sdl2Application {
         /**
          * @brief Create a window with given configuration
          *
-         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
-         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
-         * without any GPU context attached, leaving that part on the user.
+         * If @relativeref{Sdl2ApplicationWindow,Configuration::WindowFlag::Contextless}
+         * is present or Magnum was not built with @ref MAGNUM_TARGET_GL, this
+         * creates a window without any GPU context attached, leaving that part
+         * on the user.
          *
          * If none of the flags is present and Magnum was built with
          * @ref MAGNUM_TARGET_GL, this is equivalent to calling
@@ -688,7 +1126,7 @@ class Sdl2Application {
          * @brief Create a window with default configuration and OpenGL context
          *
          * Equivalent to calling @ref create(const Configuration&) with
-         * default-constructed @ref Configuration.
+         * default-constructed @relativeref{Sdl2ApplicationWindow,Configuration}.
          */
         void create();
 
@@ -718,134 +1156,6 @@ class Sdl2Application {
         /** @{ @name Screen handling */
 
     public:
-        /**
-         * @brief Window size
-         *
-         * Window size to which all input event coordinates can be related.
-         * Note that, especially on HiDPI systems, it may be different from
-         * @ref framebufferSize(). Expects that a window is already created.
-         * See @ref Platform-Sdl2Application-dpi for more information.
-         * @see @ref dpiScaling()
-         */
-        Vector2i windowSize() const;
-
-        #if !defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
-        /**
-         * @brief Set window size
-         * @param size    The size, in screen coordinates
-         * @m_since{2020,06}
-         *
-         * To make the sizing work independently of the display DPI, @p size is
-         * internally multiplied with @ref dpiScaling() before getting applied.
-         * Expects that a window is already created.
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
-         */
-        void setWindowSize(const Vector2i& size);
-
-        /**
-         * @brief Set minimum window size
-         * @param size    The minimum size, in screen coordinates
-         * @m_since{2019,10}
-         *
-         * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
-         * to disable/remove a size limit. To make the sizing work
-         * independently of the display DPI, @p size is internally multiplied
-         * with @ref dpiScaling() before getting applied. Expects that a window
-         * is already created.
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         * @see @ref setMaxWindowSize(), @ref setWindowSize()
-         */
-        void setMinWindowSize(const Vector2i& size);
-
-        /**
-         * @brief Set maximal window size
-         * @param size    The maximum size, in screen coordinates
-         * @m_since{2019,10}
-         *
-         * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
-         * to disable/remove a size limit. To make the sizing work
-         * independently of the display DPI, @p size is internally multiplied
-         * with @ref dpiScaling() before getting applied. Expects that a window
-         * is already created.
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
-         */
-        void setMaxWindowSize(const Vector2i& size);
-        #endif
-
-        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
-        /**
-         * @brief Framebuffer size
-         *
-         * Size of the default framebuffer. Note that, especially on HiDPI
-         * systems, it may be different from @ref windowSize(). Expects that a
-         * window is already created. See @ref Platform-Sdl2Application-dpi for
-         * more information.
-         *
-         * @note This function is available only if Magnum is compiled with
-         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
-         *      @ref building-features for more information.
-         *
-         * @see @ref Sdl2Application::framebufferSize(), @ref dpiScaling()
-         */
-        Vector2i framebufferSize() const;
-        #endif
-
-        /**
-         * @brief DPI scaling
-         *
-         * How the content should be scaled relative to system defaults for
-         * given @ref windowSize(). If a window is not created yet, returns
-         * zero vector, use @ref dpiScaling(const Configuration&) for
-         * calculating a value independently. See @ref Platform-Sdl2Application-dpi
-         * for more information.
-         * @see @ref framebufferSize()
-         */
-        Vector2 dpiScaling() const;
-
-        /**
-         * @brief DPI scaling for given configuration
-         *
-         * Calculates DPI scaling that would be used when creating a window
-         * with given @p configuration. Takes into account DPI scaling policy
-         * and custom scaling specified on the command-line. See
-         * @ref Platform-Sdl2Application-dpi for more information.
-         */
-        Vector2 dpiScaling(const Configuration& configuration);
-
-        /**
-         * @brief Set window title
-         * @m_since{2019,10}
-         *
-         * The @p title is expected to be encoded in UTF-8.
-         */
-        void setWindowTitle(Containers::StringView title);
-
-        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT))
-        /**
-         * @brief Set window icon
-         * @m_since{2020,06}
-         *
-         * The @p image is expected to be with origin at bottom left (which is
-         * the default for imported images) and in one of
-         * @ref PixelFormat::RGB8Unorm, @ref PixelFormat::RGB8Srgb,
-         * @ref PixelFormat::RGBA8Unorm or @ref PixelFormat::RGBA8Srgb formats.
-         * Unlike @ref GlfwApplication::setWindowIcon(), SDL doesn't provide a
-         * way to supply multiple images in different sizes.
-         * @note Available since SDL 2.0.5. Not available on
-         *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", use
-         *      @cb{.html} <link rel="icon"> @ce in your HTML markup instead.
-         *      Although it's not documented in SDL itself, the function might
-         *      have no effect on macOS / Wayland, similarly to how
-         *      @ref GlfwApplication::setWindowIcon() behaves on those
-         *      platforms.
-         * @see @ref platform-windows-icon "Excecutable icon on Windows",
-         *      @ref Trade::IcoImporter "IcoImporter"
-         */
-        void setWindowIcon(const ImageView2D& image);
-        #endif
-
         #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set container CSS class
@@ -870,14 +1180,6 @@ class Sdl2Application {
          */
         void setContainerCssClass(Containers::StringView cssClass);
         #endif
-
-        /**
-         * @brief Swap buffers
-         *
-         * Paints currently rendered framebuffer on screen.
-         * @see @ref setSwapInterval()
-         */
-        void swapBuffers();
 
         /** @brief Swap interval */
         Int swapInterval() const;
@@ -911,71 +1213,6 @@ class Sdl2Application {
         }
         #endif
 
-        /**
-         * @brief Redraw immediately
-         *
-         * Marks the window for redrawing, resulting in call to @ref drawEvent()
-         * in the next iteration. You can call it from @ref drawEvent() itself
-         * to redraw immediately without waiting for user input.
-         */
-        void redraw();
-
-    private:
-        /**
-         * @brief Viewport event
-         *
-         * Called when window size changes. The default implementation does
-         * nothing. If you want to respond to size changes, you should pass the
-         * new *framebuffer* size to @ref GL::DefaultFramebuffer::setViewport()
-         * (if using OpenGL) and possibly elsewhere (to
-         * @ref SceneGraph::Camera::setViewport(), other framebuffers...) and
-         * the new *window* size and DPI scaling to APIs that respond to user
-         * events or scale UI elements.
-         *
-         * Note that this function might not get called at all if the window
-         * size doesn't change. You should configure the initial state of your
-         * cameras, framebuffers etc. in application constructor rather than
-         * relying on this function to be called. Size of the window can be
-         * retrieved using @ref windowSize(), size of the backing framebuffer
-         * via @ref framebufferSize() and DPI scaling using @ref dpiScaling().
-         * See @ref Platform-Sdl2Application-dpi for detailed info about these
-         * values.
-         */
-        virtual void viewportEvent(ViewportEvent& event);
-
-        /**
-         * @brief Draw event
-         *
-         * Called when the screen is redrawn. You should clean the framebuffer
-         * using @ref GL::DefaultFramebuffer::clear() (if using OpenGL) and
-         * then add your own drawing functions. After drawing is finished, call
-         * @ref swapBuffers(). If you want to draw immediately again, call also
-         * @ref redraw().
-         */
-        virtual void drawEvent() = 0;
-
-        /* Since 1.8.17, the original short-hand group closing doesn't work
-           anymore. FFS. */
-        /**
-         * @}
-         */
-
-        /** @{ @name Keyboard handling */
-
-        /**
-         * @brief Key press event
-         *
-         * Called when an key is pressed. Default implementation does nothing.
-         */
-        virtual void keyPressEvent(KeyEvent& event);
-
-        /**
-         * @brief Key release event
-         *
-         * Called when an key is released. Default implementation does nothing.
-         */
-        virtual void keyReleaseEvent(KeyEvent& event);
-
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
         /**
@@ -983,65 +1220,6 @@ class Sdl2Application {
          */
 
         /** @{ @name Mouse handling */
-
-    public:
-        /**
-         * @brief Cursor type
-         * @m_since{2020,06}
-         *
-         * @see @ref setCursor()
-         */
-        enum class Cursor: UnsignedInt {
-            Arrow,          /**< Arrow */
-            TextInput,      /**< Text input */
-            Wait,           /**< Wait */
-            Crosshair,      /**< Crosshair */
-            WaitArrow,      /**< Small wait cursor */
-            ResizeNWSE,     /**< Double arrow pointing northwest and southeast */
-            ResizeNESW,     /**< Double arrow pointing northeast and southwest */
-            ResizeWE,       /**< Double arrow pointing west and east */
-            ResizeNS,       /**< Double arrow pointing north and south */
-            ResizeAll,      /**< Four pointed arrow pointing north, south, east, and west */
-            No,             /**< Slashed circle or crossbones */
-            Hand,           /**< Hand */
-            Hidden,         /**< Hidden */
-
-            #ifndef CORRADE_TARGET_EMSCRIPTEN
-            /**
-             * Hidden and locked. When the mouse is locked, only
-             * @ref MouseMoveEvent::relativePosition() is changing, absolute
-             * position stays the same.
-             * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             */
-            HiddenLocked
-            #endif
-        };
-
-        /**
-         * @brief Set cursor type
-         * @m_since{2020,06}
-         *
-         * Expects that a window is already created. Default is
-         * @ref Cursor::Arrow.
-         */
-        void setCursor(Cursor cursor);
-
-        /**
-         * @brief Get current cursor type
-         * @m_since{2020,06}
-         */
-        Cursor cursor();
-
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /**
-         * @brief Warp mouse cursor to given coordinates
-         *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         */
-        void warpCursor(const Vector2i& position) {
-            SDL_WarpMouseInWindow(_window, position.x(), position.y());
-        }
-        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -1061,55 +1239,6 @@ class Sdl2Application {
         CORRADE_DEPRECATED("use setCursor() together with Cursor::HiddenLocked instead") void setMouseLocked(bool enabled);
         #endif
 
-    private:
-        /**
-         * @brief Mouse press event
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
-        virtual void mousePressEvent(MouseEvent& event);
-
-        /**
-         * @brief Mouse release event
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
-        virtual void mouseReleaseEvent(MouseEvent& event);
-
-        /**
-         * @brief Mouse move event
-         *
-         * Called when mouse is moved. Default implementation does nothing.
-         */
-        virtual void mouseMoveEvent(MouseMoveEvent& event);
-
-        /**
-         * @brief Mouse scroll event
-         *
-         * Called when a scrolling device is used (mouse wheel or scrolling
-         * area on a touchpad). Default implementation does nothing.
-         */
-        virtual void mouseScrollEvent(MouseScrollEvent& event);
-
-        /* Since 1.8.17, the original short-hand group closing doesn't work
-           anymore. FFS. */
-        /**
-         * @}
-         */
-
-        /** @{ @name Touch gesture handling */
-
-        /**
-         * @brief Multi gesture event
-         *
-         * Called when the user performs a gesture using multiple fingers.
-         * Default implementation does nothing.
-         * @experimental
-         */
-        virtual void multiGestureEvent(MultiGestureEvent& event);
-
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
         /**
@@ -1117,7 +1246,7 @@ class Sdl2Application {
          */
 
         /** @{ @name Text input handling */
-    public:
+
         /**
          * @brief Whether text input is active
          *
@@ -1158,22 +1287,6 @@ class Sdl2Application {
          */
         void setTextInputRect(const Range2Di& rect);
 
-    private:
-        /**
-         * @brief Text input event
-         *
-         * Called when text input is active and the text is being input.
-         * @see @ref isTextInputActive()
-         */
-        virtual void textInputEvent(TextInputEvent& event);
-
-        /**
-         * @brief Text editing event
-         *
-         * Called when text input is active and the text is being edited.
-         */
-        virtual void textEditingEvent(TextEditingEvent& event);
-
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
         /**
@@ -1182,6 +1295,7 @@ class Sdl2Application {
 
         /** @{ @name Special events */
 
+    private:
         /**
          * @brief Exit event
          *
@@ -1233,11 +1347,16 @@ class Sdl2Application {
          */
 
     private:
+        friend Sdl2ApplicationWindow;
+
         enum class Flag: UnsignedByte;
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
-        Vector2 dpiScalingInternal(Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling) const;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        void makeContextCurrent(Sdl2ApplicationWindow& window);
+        #endif
+        template<class ...Args> void callEventHandler(std::size_t windowId, void(Sdl2ApplicationWindow::*eventHandler)(Args...), Args&&...);
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Cursor* _cursors[12]{};
@@ -1245,28 +1364,32 @@ class Sdl2Application {
         Cursor _cursor;
         #endif
 
-        /* These are saved from command-line arguments, and from configuration
-           to be reused in dpiScaling() and viewportEvent() later */
+        /* These are saved from command-line arguments to be reused in
+           dpiScaling() and viewportEvent() later */
         bool _verboseLog{};
-        Implementation::Sdl2DpiScalingPolicy _commandLineDpiScalingPolicy{}, _configurationDpiScalingPolicy{};
-        Vector2 _commandLineDpiScaling, _configurationDpiScaling;
+        Implementation::Sdl2DpiScalingPolicy _commandLineDpiScalingPolicy{};
+        Vector2 _commandLineDpiScaling;
 
+        /* Configuration::Flags, propagated to all created windows. Can't use a
+           concrete type as Configuration is only a forward declaration at this
+           point. */
+        Uint32 _configurationFlags;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        SDL_Window* _window{};
         UnsignedInt _minimalLoopPeriod;
-        #else
-        SDL_Surface* _surface{};
-        Vector2i _lastKnownCanvasSize;
         #endif
 
         #ifdef MAGNUM_TARGET_GL
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GLContext _glContext{};
+        SDL_Window* _activeGlContextWindow{};
         #endif
         /* Has to be in an Optional because we delay-create it in a constructor
            with populated Arguments and it gets explicitly destroyed before the
            GL context */
         Containers::Optional<Platform::GLContext> _context;
+        #endif
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        Containers::Array<Sdl2ApplicationWindow*> _windows;
         #endif
 
         Flags _flags;
@@ -1284,7 +1407,7 @@ The created window is always with a double-buffered OpenGL context.
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 
-@see @ref Sdl2Application(), @ref create(), @ref tryCreate()
+@see @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&), @ref create(), @ref tryCreate()
 */
 class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
     public:
@@ -1584,12 +1707,16 @@ namespace Implementation {
 }
 
 /**
-@brief Configuration
+@brief Window configuration
 
-@see @ref Sdl2Application(), @ref GLConfiguration, @ref create(),
-    @ref tryCreate()
+Inherited by @ref Sdl2Application::Configuration which adds global options for
+all windows.
+@see @ref Sdl2ApplicationWindow(),
+    @ref Sdl2Application::Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+    @ref Sdl2Application::GLConfiguration, @ref Sdl2Application::create(),
+    @ref Sdl2Application::tryCreate()
 */
-class Sdl2Application::Configuration {
+class Sdl2ApplicationWindow::Configuration {
     public:
         /**
          * @brief Window flag
@@ -1720,38 +1847,34 @@ class Sdl2Application::Configuration {
             #endif
             #endif
 
+            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
-             * Do not create any GPU context. Use together with
-             * @ref Sdl2Application(const Arguments&, const Configuration&),
-             * @ref create(const Configuration&) or
-             * @ref tryCreate(const Configuration&) to prevent implicit
-             * creation of an OpenGL context. Can't be used with
-             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
-             * @ref create(const Configuration&, const GLConfiguration&) or
-             * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             * Do not create any GPU context.
+             * @m_deprecated_since_latest Use the application-global
+             *      @ref Sdl2Application::Configuration::Flag::Contextless
+             *      instead.
              */
-            Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
+            Contextless CORRADE_DEPRECATED_ENUM("use Sdl2Application::Configuration::Flag::Contextless instead") = 1u << 31,
 
             /**
-             * Request a window for use with OpenGL. Useful in combination with
-             * @ref WindowFlag::Contextless, otherwise enabled implicitly when
-             * creating an OpenGL context using
-             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
-             * @ref create(const Configuration&, const GLConfiguration&) or
-             * @ref tryCreate(const Configuration&, const GLConfiguration&).
-             * @m_since{2019,10}
+             * Request a window for use with OpenGL.
+             * @m_deprecated_since_latest Use the application-global
+             *      @ref Sdl2Application::Configuration::Flag::OpenGL
+             *      instead.
              */
-            OpenGL = SDL_WINDOW_OPENGL,
+            OpenGL CORRADE_DEPRECATED_ENUM("use Sdl2Application::Configuration::Flag::OpenGL instead") = SDL_WINDOW_OPENGL,
 
             #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT))
             /**
-             * Request a window for use with Vulkan. Useful in combination with
-             * @ref WindowFlag::Contextless.
+             * Request a window for use with Vulkan.
+             * @m_deprecated_since_latest Use the application-global
+             *      @ref Sdl2Application::Configuration::Flag::Vulkan
+             *      instead.
              * @note Available since SDL 2.0.6, not available on
              *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             * @m_since{2019,10}
              */
-            Vulkan = SDL_WINDOW_VULKAN
+            Vulkan CORRADE_DEPRECATED_ENUM("use Sdl2Application::Configuration::Flag::Vulkan instead") = SDL_WINDOW_VULKAN
+            #endif
             #endif
         };
 
@@ -1971,6 +2094,142 @@ class Sdl2Application::Configuration {
         Vector2 _dpiScaling;
 };
 
+CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::Configuration::WindowFlags)
+
+/**
+@brief Application configuration
+
+Inherits @ref Sdl2ApplicationWindow::Configuration.
+@see @ref Sdl2Application(), @ref create(), @ref tryCreate()
+*/
+class Sdl2Application::Configuration: public Sdl2ApplicationWindow::Configuration {
+    public:
+        /**
+         * @brief Application flag
+         * @m_since_latest
+         *
+         * @see @ref Flags, @ref setFlags()
+         */
+        enum class Flag: Uint32 {
+            /**
+             * Do not create any GPU context. Use together with
+             * @ref Sdl2Application(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to prevent implicit
+             * creation of an OpenGL context. Can't be used with
+             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&) or
+             * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             */
+            Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
+
+            /**
+             * Request a window for use with OpenGL. Useful in combination with
+             * @ref Flag::Contextless, otherwise enabled implicitly when
+             * creating an OpenGL context using
+             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&)
+             * or @ref tryCreate(const Configuration&, const GLConfiguration&).
+             * @m_since{2019,10}
+             */
+            OpenGL = SDL_WINDOW_OPENGL,
+
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT))
+            /**
+             * Request a window for use with Vulkan. Useful in combination with
+             * @ref Flag::Contextless.
+             * @note Available since SDL 2.0.6, not available on
+             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @m_since{2019,10}
+             */
+            Vulkan = SDL_WINDOW_VULKAN
+            #endif
+        };
+
+        /**
+         * @brief Application flags
+         * @m_since_latest
+         *
+         * @see @ref setFlags()
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        explicit Configuration() = default;
+
+        /**
+         * @brief Application flags
+         * @m_since_latest
+         */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set application flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Add application flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear application flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            _flags &= ~flags;
+            return *this;
+        }
+
+        /* Overloads to remove a WTF factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        Configuration& setTitle(Containers::StringView title) {
+            Sdl2ApplicationWindow::Configuration::setTitle(title);
+            return *this;
+        }
+        Configuration& setSize(const Vector2i& size, DpiScalingPolicy dpiScalingPolicy = DpiScalingPolicy::Default) {
+            Sdl2ApplicationWindow::Configuration::setSize(size, dpiScalingPolicy);
+            return *this;
+        }
+        Configuration& setSize(const Vector2i& size, const Vector2& dpiScaling) {
+            Sdl2ApplicationWindow::Configuration::setSize(size, dpiScaling);
+            return *this;
+        }
+        /* On deprecated builds these propagate the appropriate context flags
+           to setFlags() / addFlags() / clearFlags() */
+        Configuration& setWindowFlags(WindowFlags flags);
+        Configuration& addWindowFlags(WindowFlags flags);
+        Configuration& clearWindowFlags(WindowFlags flags);
+        #endif
+
+    private:
+        Flags _flags;
+};
+
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
+
 /**
 @brief Exit event
 
@@ -2024,7 +2283,7 @@ class Sdl2Application::ExitEvent {
 
 @see @ref viewportEvent()
 */
-class Sdl2Application::ViewportEvent {
+class Sdl2ApplicationWindow::ViewportEvent {
     public:
         /** @brief Copying is not allowed */
         ViewportEvent(const ViewportEvent&) = delete;
@@ -2125,7 +2384,7 @@ class Sdl2Application::ViewportEvent {
     @ref keyReleaseEvent(), @ref mousePressEvent(), @ref mouseReleaseEvent(),
     @ref mouseMoveEvent()
 */
-class Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::InputEvent {
     public:
         /**
          * @brief Modifier
@@ -2235,7 +2494,7 @@ class Sdl2Application::InputEvent {
 
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
-class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::KeyEvent: public InputEvent {
     public:
         /**
          * @brief Key
@@ -2556,7 +2815,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 @see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
     @ref mouseReleaseEvent()
 */
-class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::MouseEvent: public InputEvent {
     public:
         /**
          * @brief Mouse button
@@ -2623,7 +2882,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 
 @see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
-class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::MouseMoveEvent: public InputEvent {
     public:
         /**
          * @brief Mouse button
@@ -2684,7 +2943,7 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 
 @see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
 */
-class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::MouseScrollEvent: public InputEvent {
     public:
         /** @brief Scroll offset */
         Vector2 offset() const { return _offset; }
@@ -2719,7 +2978,7 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
 @experimental
 @see @ref multiGestureEvent()
 */
-class Sdl2Application::MultiGestureEvent {
+class Sdl2ApplicationWindow::MultiGestureEvent {
     public:
         /** @brief Copying is not allowed */
         MultiGestureEvent(const MultiGestureEvent&) = delete;
@@ -2796,7 +3055,7 @@ class Sdl2Application::MultiGestureEvent {
 
 @see @ref TextEditingEvent, @ref textInputEvent()
 */
-class Sdl2Application::TextInputEvent {
+class Sdl2ApplicationWindow::TextInputEvent {
     public:
         /** @brief Copying is not allowed */
         TextInputEvent(const TextInputEvent&) = delete;
@@ -2854,7 +3113,7 @@ class Sdl2Application::TextInputEvent {
 
 @see @ref textEditingEvent()
 */
-class Sdl2Application::TextEditingEvent {
+class Sdl2ApplicationWindow::TextEditingEvent {
     public:
         /** @brief Copying is not allowed */
         TextEditingEvent(const TextEditingEvent&) = delete;
@@ -2962,6 +3221,7 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef Sdl2Application Application;
+typedef Sdl2ApplicationWindow ApplicationWindow;
 typedef BasicScreen<Sdl2Application> Screen;
 typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_SDL2APPLICATION_MAIN(className)
@@ -2970,9 +3230,8 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #endif
 #endif
 
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
+CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::InputEvent::Modifiers)
+CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::MouseMoveEvent::Buttons)
 
 }}
 
