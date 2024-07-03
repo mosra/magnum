@@ -357,4 +357,25 @@ shaper->glyphOffsetsAdvancesInto(
 /* [AbstractShaper-shape-multiple] */
 }
 
+{
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("SomethingWhatever");
+Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
+/* [AbstractShaper-shape-clusters] */
+Containers::StringView text = DOXYGEN_ELLIPSIS({});
+
+shaper->shape(text);
+DOXYGEN_ELLIPSIS()
+
+Containers::Array<UnsignedInt> clusters{NoInit, shaper->glyphCount()};
+shaper->glyphClustersInto(clusters);
+
+Containers::StringView selection = text.slice(clusters[2], clusters[5]);
+/* [AbstractShaper-shape-clusters] */
+static_cast<void>(selection);
+}
+
 }

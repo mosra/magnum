@@ -1585,6 +1585,7 @@ void AbstractFontTest::createShaper() {
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
         void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
     };
 
     struct MyFont: AbstractFont {
@@ -1661,6 +1662,10 @@ void AbstractFontTest::layout() {
             Utility::copy({{50.0f, 0.0f},
                            {10.0f, 0.0f},
                            {20.0f, 0.0f}}, advances);
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            /* Nothing in the old AbstractLayouter uses this */
+            CORRADE_FAIL("This shouldn't be called.");
         }
     };
 
@@ -1812,6 +1817,7 @@ void AbstractFontTest::layoutGlyphOutOfRange() {
             for(UnsignedInt& i: ids) i = 0;
         }
         void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
     };
 
     struct MyFont: AbstractFont {

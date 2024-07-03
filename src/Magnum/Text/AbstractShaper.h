@@ -133,15 +133,38 @@ every time. Or for example have a few persistent @ref AbstractShaper instances
 for dynamic text that changes every frame, or have dedicated preconfigured
 per-font, per-script or per-language instances.
 
+@subsection Text-AbstractShaper-usage-clusters Mapping between input text and shaped glyphs
+
+For implementing text selection or editing, mapping from screen position to
+concrete glyphs can be done using the advances returned from
+@ref glyphOffsetsAdvancesInto(). From there however, in the general case, the
+text can consist of multi-byte UTF-8 characters, the shaper can perform
+ligature substitutions, glyph decomposition or reordering, and thus there's
+rarely a 1:1 mapping from the shaped glyphs back to the input text.
+
+The mapping from glyph IDs to bytes of the text passed to @ref shape() can be
+retrieved using @ref glyphClustersInto(). In the following example, a range
+between glyphs 2 and 5 is mapped to the input text bytes, for example to copy
+it as a selection to clipboard:
+
+@snippet Text.cpp AbstractShaper-shape-clusters
+
+In the other direction, picking a range of glyphs corresponding to a range of
+input bytes, involves finding cluster IDs with a lower and upper bound for
+given byte positions. See the documentation of @ref glyphClustersInto() for
+concrete examples of how retrieved cluster IDs may look like depending on what
+operations the shaper performs.
+
 @section Text-AbstractShaper-subclassing Subclassing
 
 The @ref AbstractFont plugin is meant to create a local @ref AbstractShaper
-subclass. It implements at least @ref doShape(), @ref doGlyphIdsInto() and
-@ref doGlyphOffsetsAdvancesInto(), and potentially also (a subset of)
-@ref doSetScript(), @ref doScript(), @ref doSetLanguage(),@ref doLanguage(),
-@ref doSetDirection() and @ref doDirection(). The public API does most sanity
-checks on its own, see documentation of particular `do*()` functions for more
-information about the guarantees.
+subclass. It implements at least @ref doShape(), @ref doGlyphIdsInto(),
+@ref doGlyphOffsetsAdvancesInto() and @ref doGlyphClustersInto(), and
+potentially also (a subset of) @ref doSetScript(), @ref doScript(),
+@ref doSetLanguage(),@ref doLanguage(), @ref doSetDirection() and
+@ref doDirection(). The public API does most sanity checks on its own, see
+documentation of particular `do*()` functions for more information about the
+guarantees.
 */
 class MAGNUM_TEXT_EXPORT AbstractShaper {
     public:
@@ -330,6 +353,11 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * May return @ref ShapeDirection::Unspecified if @ref shape() hasn't
          * been called yet or if the @ref AbstractFont doesn't implement any
          * script-specific behavior.
+         *
+         * The direction affects properties of advances coming from
+         * @ref glyphOffsetsAdvancesInto() and cluster IDs coming from
+         * @ref glyphClustersInto(), see particular @ref ShapeDirection values
+         * for more information.
          * @see @ref setDirection(), @ref script(), @ref language()
          */
         ShapeDirection direction() const;
@@ -366,6 +394,54 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * @see @ref direction()
          */
         void glyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const;
+
+        /**
+         * @brief Retrieve glyph cluster IDs
+         * @param[out] clusters     Where to put glyph clusters
+         *
+         * The @p clusters view is expected to have a size of
+         * @ref glyphCount(). The cluster IDs are used to map shaped glyphs
+         * back to the text passed to @ref shape(). By default, the cluster ID
+         * sequence is monotonically non-decreasing or non-increasing based on
+         * @ref direction(), with the IDs being byte positions in the original
+         * text corresponding to particular glyphs:
+         *
+         * -    For plain ASCII text and with the shaper not performing any
+         *      ligature substitutions, glyph decomposition or reordering, the
+         *      @ref glyphCount() will be equal to the shaped text byte count,
+         *      with clusters being a sequence of @cpp {0, 1, 2, 3, …} @ce, or
+         *      additionally shifted if the @p begin parameter passed to
+         *      @ref shape() was non-zero.
+         * -    For UTF-8 text and the shaper again not performing any ligature
+         *      substitutions, glyph decomposition or reordering, the sequence
+         *      will point to start bytes of multi-byte UTF-8 characters. For
+         *      example @cpp {0, 1, 3, 4, 7, …} @ce, assuming a two-byte UTF-8
+         *      character at byte @cpp 1 @ce and a three-byte character at byte
+         *      @cpp 4 @ce. Similar output will be if the shaper performs a
+         *      ligature substitution (such as `fi` at byte @cpp 1 @ce and
+         *      `ffl` at byte @cpp 4 @ce both turned into a ligature in an
+         *      otherwise ASCII input).
+         * -    If the shaper performs glyph decomposition, one character in
+         *      the input may end up being multiple glyphs. For example
+         *      @cpp {0, 1, 1, 3, 4, …} @ce, assuming a two-byte UTF-8
+         *      character `ě` at byte @cpp 1 @ce being decomposed into two
+         *      glyphs, `e` and `ˇ`.
+         * -    If the shaper performs glyph reordering, the cluster ID will
+         *      become the whole range of bytes in which the reordering
+         *      happened, to preserve monotonicity. For example
+         *      @cpp {0, 1, 1, 1, 1, 4, …} @ce, assuming glyphs corresponding
+         *      to bytes @cpp 1 @ce to @cpp 3 @ce were swapped during shaping.
+         *
+         * Certain shaper implementations may offer behavior where the
+         * monotonicity is not preserved or the mapping is not to the original
+         * input bytes. Such behavior is however never the default, always
+         * opt-in. See documentation of particular font plugins for more
+         * information.
+         * @see @ref Feature::StandardLigatures,
+         *      @ref Feature::GlyphCompositionDecomposition,
+         *      @ref HarfBuzzFont
+         */
+        void glyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>& clusters) const;
 
     private:
         /**
@@ -436,6 +512,14 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * @cpp 0 @ce.
          */
         virtual void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const = 0;
+
+        /**
+         * @brief Implemenation for @ref glyphClustersInto()
+         *
+         * The @p clusters are guaranteed to have a size of @ref glyphCount().
+         * Called only if @ref glyphCount() is not @cpp 0 @ce.
+         */
+        virtual void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>& clusters) const = 0;
 
         Containers::Reference<AbstractFont> _font;
         UnsignedInt _glyphCount;

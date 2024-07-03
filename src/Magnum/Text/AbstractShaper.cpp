@@ -134,4 +134,13 @@ void AbstractShaper::glyphOffsetsAdvancesInto(const Containers::StridedArrayView
         doGlyphOffsetsAdvancesInto(offsets, advances);
 }
 
+void AbstractShaper::glyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>& clusters) const {
+    CORRADE_ASSERT(clusters.size() == _glyphCount,
+        "Text::AbstractShaper::glyphClustersInto(): expected the clusters view to have a size of" << _glyphCount << "but got" << clusters.size(), );
+    /* Call into the implementation only if there's actually anything shaped,
+       otherwise it might not yet have everything properly set up */
+    if(_glyphCount)
+        doGlyphClustersInto(clusters);
+}
+
 }}

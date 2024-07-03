@@ -57,28 +57,36 @@ enum class ShapeDirection: UnsignedByte {
     /**
      * Left to right. When returned from @ref AbstractShaper::direction(),
      * the @p advances filled by @ref AbstractShaper::glyphOffsetsAdvancesInto()
-     * have their Y components @cpp 0.0f @ce.
+     * have their Y components @cpp 0.0f @ce, and clusters filled by
+     * @relativeref{AbstractShaper,glyphClustersInto()} are by default
+     * monotonically non-decreasing.
      */
     LeftToRight = 1,
 
     /**
      * Right to left. When returned from @ref AbstractShaper::direction(),
      * the @p advances filled by @ref AbstractShaper::glyphOffsetsAdvancesInto()
-     * have their Y components @cpp 0.0f @ce.
+     * have their Y components @cpp 0.0f @ce, and clusters filled by
+     * @relativeref{AbstractShaper,glyphClustersInto()} are by default
+     * monotonically non-increasing.
      */
     RightToLeft,
 
     /**
      * Top to bottom. When returned from @ref AbstractShaper::direction(),
      * the @p advances filled by @ref AbstractShaper::glyphOffsetsAdvancesInto()
-     * have their X components @cpp 0.0f @ce.
+     * have their X components @cpp 0.0f @ce, and clusters filled by
+     * @relativeref{AbstractShaper,glyphClustersInto()} are by default
+     * monotonically non-decreasing.
      */
     TopToBottom,
 
     /**
      * Bottom to top. When returned from @ref AbstractShaper::direction(),
      * the @p advances filled by @ref AbstractShaper::glyphOffsetsAdvancesInto()
-     * have their X components @cpp 0.0f @ce.
+     * have their X components @cpp 0.0f @ce, and clusters filled by
+     * @relativeref{AbstractShaper,glyphClustersInto()} are by default
+     * monotonically non-increasing.
      */
     BottomToTop
 };

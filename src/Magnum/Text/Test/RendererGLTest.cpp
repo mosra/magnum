@@ -80,6 +80,10 @@ struct TestShaper: AbstractShaper {
             advances[i] = {Float(i + 1), i % 2 ? -0.5f : +0.5f};
         }
     }
+    void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+        /* Nothing in the renderer uses this API */
+        CORRADE_FAIL("This shouldn't be called.");
+    }
 };
 
 struct TestFont: AbstractFont {
