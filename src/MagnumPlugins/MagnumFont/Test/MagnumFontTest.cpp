@@ -68,13 +68,13 @@ struct MagnumFontTest: TestSuite::Tester {
 const struct {
     const char* name;
     const char* string;
-    UnsignedInt eGlyphId;
+    UnsignedInt eGlyphId, eGlyphClusterExtraSize;
     UnsignedInt begin, end;
 } ShapeData[]{
-    {"", "Weave", 1, 0, ~UnsignedInt{}},
-    {"substring", "haWeavesfefe", 1, 2, 7},
-    {"UTF-8", "Wěave", 3, 0, ~UnsignedInt{}},
-    {"UTF-8 substring", "haWěavefefe", 3, 2, 8},
+    {"", "Weave", 1, 0, 0, ~UnsignedInt{}},
+    {"substring", "haWeavesfefe", 1, 0, 2, 7},
+    {"UTF-8", "Wěave", 3, 1, 0, ~UnsignedInt{}},
+    {"UTF-8 substring", "haWěavefefe", 3, 1, 2, 8},
 };
 
 MagnumFontTest::MagnumFontTest() {
@@ -152,8 +152,10 @@ void MagnumFontTest::shape() {
     UnsignedInt ids[5];
     Vector2 offsets[5];
     Vector2 advances[5];
+    UnsignedInt clusters[5];
     shaper->glyphIdsInto(ids);
     shaper->glyphOffsetsAdvancesInto(offsets, advances);
+    shaper->glyphClustersInto(clusters);
     CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
         2u,             /* 'W' */
         data.eGlyphId,  /* 'e' or 'ě' */
@@ -171,6 +173,13 @@ void MagnumFontTest::shape() {
         {8.0f, 0.0f},
         {8.0f, 0.0f},
         {12.f, 0.0f},
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(clusters), Containers::arrayView({
+        data.begin + 0u,
+        data.begin + 1u,
+        data.begin + 2u + data.eGlyphClusterExtraSize,
+        data.begin + 3u + data.eGlyphClusterExtraSize,
+        data.begin + 4u + data.eGlyphClusterExtraSize,
     }), TestSuite::Compare::Container);
 }
 
@@ -200,8 +209,10 @@ void MagnumFontTest::shaperReuse() {
         UnsignedInt ids[2];
         Vector2 offsets[2];
         Vector2 advances[2];
+        UnsignedInt clusters[2];
         shaper->glyphIdsInto(ids);
         shaper->glyphOffsetsAdvancesInto(offsets, advances);
+        shaper->glyphClustersInto(clusters);
         CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
             2u, /* 'W' */
             1u  /* 'e' */
@@ -213,6 +224,10 @@ void MagnumFontTest::shaperReuse() {
             {23.0f, 0.0f},
             {12.f, 0.0f}
         }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(clusters), Containers::arrayView({
+            0u,
+            1u
+        }), TestSuite::Compare::Container);
 
     /* Long text, same as in shape(), should enlarge the array for it */
     } {
@@ -220,8 +235,10 @@ void MagnumFontTest::shaperReuse() {
         UnsignedInt ids[5];
         Vector2 offsets[5];
         Vector2 advances[5];
+        UnsignedInt clusters[5];
         shaper->glyphIdsInto(ids);
         shaper->glyphOffsetsAdvancesInto(offsets, advances);
+        shaper->glyphClustersInto(clusters);
         CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
             2u, /* 'W' */
             3u, /* 'ě' */
@@ -239,6 +256,13 @@ void MagnumFontTest::shaperReuse() {
             {8.0f, 0.0f},
             {12.f, 0.0f}
         }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(clusters), Containers::arrayView({
+            0u,
+            1u,
+            3u,
+            4u,
+            5u
+        }), TestSuite::Compare::Container);
 
     /* Short text again, should not leave the extra glyphs there */
     } {
@@ -246,8 +270,10 @@ void MagnumFontTest::shaperReuse() {
         UnsignedInt ids[3];
         Vector2 offsets[3];
         Vector2 advances[3];
+        UnsignedInt clusters[3];
         shaper->glyphIdsInto(ids);
         shaper->glyphOffsetsAdvancesInto(offsets, advances);
+        shaper->glyphClustersInto(clusters);
         CORRADE_COMPARE_AS(Containers::arrayView(ids), Containers::arrayView({
             0u, /* 'a' (not found) */
             0u, /* 'v' (not found) */
@@ -260,6 +286,9 @@ void MagnumFontTest::shaperReuse() {
             {8.0f, 0.0f},
             {8.0f, 0.0f},
             {12.f, 0.0f}
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayView(clusters), Containers::arrayView({
+            0u, 1u, 2u
         }), TestSuite::Compare::Container);
     }
 }

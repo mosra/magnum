@@ -203,7 +203,9 @@ Containers::Pointer<AbstractShaper> MagnumFont::doCreateShaper() {
             for(std::size_t i = 0; i != text.size(); ) {
                 const Containers::Pair<char32_t, std::size_t> codepointNext = Utility::Unicode::nextChar(text, i);
                 const auto it = fontData.glyphId.find(codepointNext.first());
-                arrayAppend(_glyphs, it == fontData.glyphId.end() ? 0 : it->second);
+                arrayAppend(_glyphs, InPlaceInit,
+                    it == fontData.glyphId.end() ? 0 : it->second,
+                    begin + UnsignedInt(i));
                 i = codepointNext.second();
             }
 
@@ -211,19 +213,22 @@ Containers::Pointer<AbstractShaper> MagnumFont::doCreateShaper() {
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
-            Utility::copy(_glyphs, ids);
+            Utility::copy(stridedArrayView(_glyphs).slice(&Containers::Pair<UnsignedInt, UnsignedInt>::first), ids);
         }
         void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
             const Data& fontData = *static_cast<const MagnumFont&>(font())._opened;
             for(std::size_t i = 0; i != _glyphs.size(); ++i) {
                 /* There's no glyph offsets in addition to advances */
                 offsets[i] = {};
-                advances[i] = fontData.glyphs[_glyphs[i]].advance;
+                advances[i] = fontData.glyphs[_glyphs[i].first()].advance;
             }
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>& clusters) const override {
+            Utility::copy(stridedArrayView(_glyphs).slice(&Containers::Pair<UnsignedInt, UnsignedInt>::second), clusters);
         }
 
         Containers::StridedArrayView1D<const Vector2> _glyphAdvance;
-        Containers::Array<UnsignedInt> _glyphs;
+        Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> _glyphs;
     };
 
     return Containers::pointer<Shaper>(*this);
