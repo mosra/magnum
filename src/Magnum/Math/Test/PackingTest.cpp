@@ -215,6 +215,9 @@ void PackingTest::packSigned() {
     {
         #if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && defined(CORRADE_TARGET_32BIT) && defined(CORRADE_TARGET_X86))
         CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC and 32-bit x86 Android.");
+        #elif defined(CORRADE_TARGET_APPLE) && defined(CORRADE_TARGET_ARM)
+        /* Returns std::numeric_limits<Long>::min() */
+        CORRADE_EXPECT_FAIL("Negative signed long double (de)normalization is broken on ARM Mac.");
         #endif
         CORRADE_COMPARE(Math::pack<Long>(-1.0l), std::numeric_limits<Long>::min()+1);
     }
