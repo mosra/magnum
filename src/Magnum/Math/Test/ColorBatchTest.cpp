@@ -263,13 +263,17 @@ const struct {
         /* ./extract-interesting-blocks.py dice_bc5.dds bc5.png --offset 26
            (image taken from the bcdec repository test files) */
         /* [120, 124], 2.000 */
-        '\xd3', '\xdf', '\x58', '\xbf', '\xda', '\xb1', '\x7d', '\xdb', '\xd3', '\xdf', '\x58', '\xbf', '\xda', '\xb1', '\x7d', '\xdb',
+        '\xd3', '\xdf', '\x58', '\xbf', '\xda', '\xb1', '\x7d', '\xdb',
+        '\xd3', '\xdf', '\x58', '\xbf', '\xda', '\xb1', '\x7d', '\xdb',
         /* [81, 124], 2.000 */
-        '\xeb', '\xf6', '\x76', '\x60', '\x7f', '\xb6', '\x67', '\xfb', '\xeb', '\xf6', '\x76', '\x60', '\x7f', '\xb6', '\x67', '\xfb',
+        '\xeb', '\xf6', '\x76', '\x60', '\x7f', '\xb6', '\x67', '\xfb',
+        '\xeb', '\xf6', '\x76', '\x60', '\x7f', '\xb6', '\x67', '\xfb',
         /* [121, 123], 2.000 */
-        '\xd4', '\xe2', '\xc8', '\x1d', '\xdb', '\xb3', '\x6d', '\xdb', '\xd4', '\xe2', '\xc8', '\x1d', '\xdb', '\xb3', '\x6d', '\xdb',
+        '\xd4', '\xe2', '\xc8', '\x1d', '\xdb', '\xb3', '\x6d', '\xdb',
+        '\xd4', '\xe2', '\xc8', '\x1d', '\xdb', '\xb3', '\x6d', '\xdb',
         /* [81, 123], 2.000 */
-        '\xd7', '\xf3', '\x9d', '\x10', '\x4e', '\x2f', '\xe7', '\x77', '\xd7', '\xf3', '\x9d', '\x10', '\x4e', '\x2f', '\xe7', '\x77',
+        '\xd7', '\xf3', '\x9d', '\x10', '\x4e', '\x2f', '\xe7', '\x77',
+        '\xd7', '\xf3', '\x9d', '\x10', '\x4e', '\x2f', '\xe7', '\x77',
     }}, yFlipBc5InPlace, "bc5.png", {InPlaceInit, {
         '\xd7', '\xf3', '\x7e', '\xf7', '\x72', '\xe1', '\xd4', '\x09',
         '\xd7', '\xf3', '\x7e', '\xf7', '\x72', '\xe1', '\xd4', '\x09',
