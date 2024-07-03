@@ -41,7 +41,7 @@ print("    char blocks[]{")
 for y in range(compressed_image.size.y//block_size.y):
     for x in range(compressed_image.size.x//block_size.x):
         print("        {},".format(
-            ', '.join(["'\\x{:02x}'".format(ord(blocks[y, x, i])) for i in range(block_data_size)])
+            ', '.join(["'\\x{:02x}'".format(blocks[y, x, i]) for i in range(block_data_size)])
         ))
 print("    };")
 

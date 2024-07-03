@@ -102,7 +102,7 @@ print("    char blocks[]{")
 for x, y, range_ in most_interesting_blocks:
     print("        /* [{}, {}], {:1.3f} */\n        {},".format(
         x, y, range_,
-        ', '.join(["'\\x{:02x}'".format(ord(blocks[y, x, i])) for i in range(block_data_size)])
+        ', '.join(["'\\x{:02x}'".format(blocks[y, x, i]) for i in range(block_data_size)])
     ))
 print("    };")
 
@@ -115,7 +115,7 @@ for x, y, range_ in most_interesting_blocks:
     for by in range(block_size.y):
         for bx in range(block_size.x):
             for i in range(decoded_pixel_size):
-                data[offset] = ord(decoded_pixel_data[oy + by, ox + bx, i])
+                data[offset] = decoded_pixel_data[oy + by, ox + bx, i]
                 offset += 1
 assert offset == len(data)
 
