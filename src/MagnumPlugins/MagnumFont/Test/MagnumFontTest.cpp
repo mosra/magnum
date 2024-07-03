@@ -224,7 +224,7 @@ void MagnumFontTest::shaperReuse() {
             2u, /* 'W' */
             0u, /* 'a' (not found) */
             0u, /* 'v' (not found) */
-            1u  /* 'e' or 'ě' */
+            1u  /* 'e' */
         }), TestSuite::Compare::Container);
         CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector2>({
             {}, {}, {}, {}

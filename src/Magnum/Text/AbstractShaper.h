@@ -351,8 +351,8 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * @param[out] offsets      Where to put glyph offsets
          * @param[out] advances     Where to put glyph advances
          *
-         * The @p offsets and @p advances views are all expected to have a size
-         * of @ref glyphCount(). The @p offsets specify where to put the glyph
+         * The @p offsets and @p advances views are expected to have a size of
+         * @ref glyphCount(). The @p offsets specify where to put the glyph
          * relative to current cursor (which is then further offset for the
          * particular glyph rectangle returned from the glyph cache) and
          * @p advances specify in which direction to move the cursor for the

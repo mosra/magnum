@@ -227,6 +227,9 @@ enum class Feature: UnsignedInt {
      * `clig`, [Contextual Ligatures](https://learn.microsoft.com/typography/opentype/spec/features_ae#clig).
      * Ligation and alternate feature intended for all scripts.
      * @m_keywords{clig}
+     * @see @ref Feature::StandardLigatures,
+     *      @relativeref{Feature,DiscretionaryLigatures},
+     *      @relativeref{Feature,HistoricalLigatures}
      */
     ContextualLigatures = Utility::Endianness::fourCC('c', 'l', 'i', 'g'),
 
@@ -976,6 +979,9 @@ enum class Feature: UnsignedInt {
      * `dlig`, [Discretionary Ligatures](https://learn.microsoft.com/typography/opentype/spec/features_ae#dlig).
      * Ligation and alternate feature intended for all scripts.
      * @m_keywords{dlig}
+     * @see @ref Feature::StandardLigatures,
+     *      @relativeref{Feature,ContextualLigatures},
+     *      @relativeref{Feature,HistoricalLigatures}
      */
     DiscretionaryLigatures = Utility::Endianness::fourCC('d', 'l', 'i', 'g'),
 
@@ -1088,6 +1094,9 @@ enum class Feature: UnsignedInt {
      * `hlig`, [Historical Ligatures](https://learn.microsoft.com/typography/opentype/spec/features_fj#hlig).
      * Ligation and alternate feature intended for all scripts.
      * @m_keywords{hlig}
+     * @see @ref Feature::ContextualLigatures,
+     *      @relativeref{Feature,DiscretionaryLigatures},
+     *      @relativeref{Feature,StandardLigatures}
      */
     HistoricalLigatures = Utility::Endianness::fourCC('h', 'l', 'i', 'g'),
 
@@ -1186,6 +1195,9 @@ enum class Feature: UnsignedInt {
      * `liga`, [Standard Ligatures](https://learn.microsoft.com/typography/opentype/spec/features_ko#liga).
      * Ligation and alternate feature intended for all scripts.
      * @m_keywords{liga}
+     * @see @ref Feature::ContextualLigatures,
+     *      @relativeref{Feature,DiscretionaryLigatures},
+     *      @relativeref{Feature,HistoricalLigatures}
      */
     StandardLigatures = Utility::Endianness::fourCC('l', 'i', 'g', 'a'),
 

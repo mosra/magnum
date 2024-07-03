@@ -345,7 +345,7 @@ shaper->glyphOffsetsAdvancesInto(
     glyphs2.slice(&GlyphInfo::offset),
     glyphs2.slice(&GlyphInfo::advance));
 
-/* Finally shape "!" shaped with a regular font again */
+/* Finally shape "!" with a regular font again */
 shaper->shape("Hello, world!", 12, 13);
 Containers::StridedArrayView1D<GlyphInfo> glyphs3 =
     arrayAppend(glyphs, NoInit, shaper->glyphCount());
