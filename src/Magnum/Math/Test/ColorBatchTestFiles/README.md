@@ -12,11 +12,13 @@ blocks.
 
 Both are then passed through StbDxtImageConverter and subsequently decoded
 back to `checkerboard.png` and `checkerboard-odd.png` with
-`compress-format-blocks.py` to act as a ground truth, the output of the script
-and its full invocation is pasted to the `ColorBatchTest.cpp`.
+`format-block-data.py` to act as a ground truth. The full invocation is listed
+for each particular case in `ColorBatchTest.cpp`, the output of the script is
+then right below.
 
-The remaining images are generated with `extract-interesting-blocks.py`, the
-output of that script and its full invocation is again in `ColorBatchTest.cpp`.
+The remaining `bc*.png` images are generated with
+`extract-interesting-blocks.py`, the full invocation for each particular case
+and the generated output is again in `ColorBatchTest.cpp`.
 
 Unlike in other tests, the images are PNGs and not TGAs. The full test process
 requires `BcDecImageConverter` from the plugins repo anyway, so there's no
