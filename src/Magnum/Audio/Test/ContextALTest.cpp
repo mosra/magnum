@@ -129,17 +129,17 @@ void ContextALTest::constructConfiguration() {
             CORRADE_COMPARE(context.stereoSourceCount(), 4);
             CORRADE_COMPARE_AS(context.refreshRate(), 25,
                 TestSuite::Compare::GreaterOrEqual);
-        }
 
-        /* HRTF gets enabled only if the extension is supported */
-        if(context.isExtensionSupported<Extensions::ALC::SOFT::HRTF>()) {
-            CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Enabled);
-            CORRADE_VERIFY(!context.hrtfSpecifierString().empty());
-        } else if(context.isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
-            CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Enabled);
-            CORRADE_VERIFY(context.hrtfSpecifierString().empty());
-        } else {
-            CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Disabled);
+            /* HRTF gets enabled only if the extension is supported */
+            if(context.isExtensionSupported<Extensions::ALC::SOFT::HRTF>()) {
+                CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Enabled);
+                CORRADE_VERIFY(!context.hrtfSpecifierString().empty());
+            } else if(context.isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
+                CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Enabled);
+                CORRADE_VERIFY(context.hrtfSpecifierString().empty());
+            } else {
+                CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Disabled);
+            }
         }
     }
 
