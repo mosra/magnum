@@ -22,6 +22,7 @@ cmake .. ^
     -DCORRADE_WITH_PLUGINMANAGER=OFF ^
     -DCORRADE_WITH_TESTSUITE=OFF ^
     -DCORRADE_WITH_UTILITY=OFF ^
+    -DCORRADE_BUILD_DEPRECATED=OFF ^
     -G Ninja || exit /b
 cmake --build . --target install || exit /b
 cd .. || exit /b
@@ -35,6 +36,7 @@ cmake .. ^
     -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DCORRADE_WITH_INTERCONNECT=OFF ^
     -DCORRADE_BUILD_STATIC=ON ^
+    -DCORRADE_BUILD_DEPRECATED=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release --target install -- /m /v:m || exit /b
 cd .. || exit /b
@@ -67,6 +69,7 @@ cmake .. ^
     -DMAGNUM_TARGET_GLES2=%TARGET_GLES2% ^
     -DMAGNUM_BUILD_TESTS=ON ^
     -DMAGNUM_BUILD_STATIC=ON ^
+    -DMAGNUM_BUILD_DEPRECATED=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release -- /m /v:m || exit /b
 
