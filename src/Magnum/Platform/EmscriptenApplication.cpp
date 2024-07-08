@@ -511,7 +511,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        Sdl2Application does, but still not ideal. */
     if(resizable) {
         const char* target = EMSCRIPTEN_EVENT_TARGET_WINDOW;
-        auto cb = [](int, const EmscriptenUiEvent* event, void* userData) -> Int {
+        auto cb = [](int, const EmscriptenUiEvent* event, void* userData) -> EM_BOOL {
             static_cast<EmscriptenApplication*>(userData)->handleCanvasResize(event);
             return false; /** @todo what does ignoring a resize event mean? */
         };
@@ -519,21 +519,21 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     }
 
     emscripten_set_mousedown_callback(_canvasTarget.data(), this, false,
-        ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             MouseEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mousePressEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_mouseup_callback(_canvasTarget.data(), this, false,
-        ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             MouseEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mouseReleaseEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_mousemove_callback(_canvasTarget.data(), this, false,
-        ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
             /* Relies on the target being the canvas, which should be always
                true for mouse events */
@@ -549,7 +549,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         }));
 
     emscripten_set_wheel_callback(_canvasTarget.data(), this, false,
-        ([](int, const EmscriptenWheelEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenWheelEvent* event, void* userData) -> EM_BOOL {
             MouseScrollEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mouseScrollEvent(e);
             return e.isAccepted();
@@ -580,7 +580,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     /* keypress_callback does not fire for most of the keys and the modifiers
        don't seem to work, keydown on the other hand works fine for all */
     emscripten_set_keydown_callback(keyboardListeningElement, this, false,
-        ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> EM_BOOL {
             EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
             const Containers::StringView key = event->key;
             KeyEvent e{*event};
@@ -603,7 +603,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         }));
 
     emscripten_set_keyup_callback(keyboardListeningElement, this, false,
-        ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> EM_BOOL {
             KeyEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->keyReleaseEvent(e);
             return e.isAccepted();
