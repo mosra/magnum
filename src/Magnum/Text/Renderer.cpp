@@ -298,6 +298,53 @@ void renderGlyphQuadIndicesInto(UnsignedInt glyphOffset, const Containers::Strid
     renderGlyphQuadIndicesIntoInternal(glyphOffset, indices);
 }
 
+Containers::Pair<UnsignedInt, UnsignedInt> glyphRangeForBytes(const Containers::StridedArrayView1D<const UnsignedInt>& clusters, const UnsignedInt begin, const UnsignedInt end) {
+    if(clusters.isEmpty())
+        return {};
+
+    /* Make the begin always less than or equal to end */
+    const bool reverseBeginEnd = begin > end;
+    const UnsignedInt beginForward = reverseBeginEnd ? end : begin;
+    const UnsignedInt endForward = reverseBeginEnd ? begin : end;
+
+    /* Make the cluster array always in an ascending order as well */
+    const bool reverseClusters = clusters.front() > clusters.back();
+    const Containers::StridedArrayView1D<const UnsignedInt> clustersForward =
+        reverseClusters ? clusters.flipped<0>() : clusters;
+
+    /* The glyph begin is the last glyph that has the cluster ID not larger
+       than `begin`, or the end */
+    UnsignedInt glyphBegin = 0;
+    while(glyphBegin != clustersForward.size() && clustersForward[glyphBegin] < beginForward && (glyphBegin + 1 == clustersForward.size() || clustersForward[glyphBegin + 1] <= beginForward))
+        ++glyphBegin;
+
+    /* If `begin` was pointing in the middle of a cluster, for example of a
+       ligature, or (wrongly) inside a multi-byte UTF-8 char, go back to find
+       the cluster begin */
+    if(glyphBegin != clustersForward.size()) while(glyphBegin && clustersForward[glyphBegin - 1] == clustersForward[glyphBegin])
+        --glyphBegin;
+
+    /* The end is then the first glyph after glyph begin that has the cluster
+       ID larger or equal to `end`. Unless `begin` was the same as `end`, then
+       the returned glyph end is same as returned glyph begin. */
+    UnsignedInt glyphEnd = glyphBegin;
+    if(beginForward != endForward) while(glyphEnd != clustersForward.size() && clustersForward[glyphEnd] < endForward)
+        ++glyphEnd;
+
+    /* If the clusters were in reverse direction, reverse the actual glyph IDs
+       as well. And this way the begin is greater or equal to end, so they're
+       swapped too. */
+    const Containers::Pair<UnsignedInt, UnsignedInt> out = reverseClusters ?
+        Containers::pair(UnsignedInt(clustersForward.size()) - glyphEnd,
+                         UnsignedInt(clustersForward.size()) - glyphBegin) :
+        Containers::pair(glyphBegin, glyphEnd);
+
+    /* Then, if the begin and end was swapped, swap the output again as well */
+    return reverseBeginEnd ?
+        Containers::pair(out.second(), out.first()) :
+        out;
+}
+
 #ifdef MAGNUM_TARGET_GL
 namespace {
 

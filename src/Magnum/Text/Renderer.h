@@ -303,6 +303,39 @@ for more information.
 */
 MAGNUM_TEXT_EXPORT void renderGlyphQuadIndicesInto(UnsignedInt glyphOffset, const Containers::StridedArrayView1D<UnsignedByte>& indices);
 
+/**
+@brief Find a glyph range corresponding to given byte range in the input text
+@m_since_latest
+
+Assuming @p clusters is a view containing cluster IDs returned from
+@ref AbstractShaper::glyphClustersInto() and @p begin and @p end are byte
+positions in the text passed to @ref AbstractShaper::shape() for which the
+cluster IDs were retrieved, returns a range in the glyph array that contains
+given range. Assumes that @p clusters are either monotonically non-dereasing or
+non-increasing.
+
+If @p clusters are empty or @p end is less or equal to all @p clusters, returns
+@cpp {0, 0} @ce. If @p begin is greater than all @p clusters are, both return
+values are set to @p clusters size. In both cases the empty returned range
+means there are no glyphs corresponding to given byte. Otherwise, if the input
+range is non-empty, the returned range is always at least one glyph. The
+returned range always points to cluster boundaries, even if the input is inside
+a multi-byte character or ligature or inside a multi-glyph cluster.
+
+If @p begin is greater than @p end, the first value of the output is also
+greater than the second. Otherwise, the first value of the output is always
+less than or equal to the second.
+
+At the moment, the lookup is done with an @f$ \mathcal{O}(n) @f$ complexity,
+with @f$ n @f$ being size of the @p clusters view.
+
+Mapping in the other direction, from glyphs to input bytes, is simply
+@cpp clusters[i] @ce. See @ref AbstractShaper::glyphClustersInto() for more
+information about how the cluster IDs may look like depending on the input and
+shaper features used.
+*/
+MAGNUM_TEXT_EXPORT Containers::Pair<UnsignedInt, UnsignedInt> glyphRangeForBytes(const Containers::StridedArrayView1D<const UnsignedInt>& clusters, UnsignedInt begin, UnsignedInt end);
+
 #ifdef MAGNUM_TARGET_GL
 /**
 @brief Base for text renderers

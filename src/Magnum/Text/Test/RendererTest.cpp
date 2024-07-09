@@ -70,6 +70,8 @@ struct RendererTest: TestSuite::Tester {
     template<class T> void glyphQuadIndices();
     void glyphQuadIndicesTypeTooSmall();
 
+    void glyphRangeForBytes();
+
     void renderData();
 
     void multiline();
@@ -117,6 +119,30 @@ const struct {
     {"top, integral", Alignment::TopCenterGlyphBoundsIntegral, -19.5f},
     {"middle", Alignment::MiddleLeft, -14.5f},
     {"middle, integral", Alignment::MiddleLeftIntegral, -15.0f}
+};
+
+const struct {
+    const char* name;
+    bool ascending;
+    Containers::Pair<UnsignedInt, UnsignedInt>(*function)(const Containers::StridedArrayView1D<const UnsignedInt>&, UnsignedInt, UnsignedInt);
+} GlyphRangeForBytesData[]{
+    {"", true,
+        glyphRangeForBytes},
+    {"reverse direction", false,
+        glyphRangeForBytes},
+    {"swapped begin & end", true,
+        [](const Containers::StridedArrayView1D<const UnsignedInt>& clusters, UnsignedInt begin, UnsignedInt end) {
+            /* If begin > end, the output should be also swapped, so swapping
+               it back should result in the same thing as with non-swapped
+               input */
+            Containers::Pair<UnsignedInt, UnsignedInt> out = glyphRangeForBytes(clusters, end, begin);
+            return Containers::pair(out.second(), out.first());
+        }},
+    {"swapped begin & end, reverse direction", false,
+        [](const Containers::StridedArrayView1D<const UnsignedInt>& clusters, UnsignedInt begin, UnsignedInt end) {
+            Containers::Pair<UnsignedInt, UnsignedInt> out = glyphRangeForBytes(clusters, end, begin);
+            return Containers::pair(out.second(), out.first());
+        }},
 };
 
 const struct {
@@ -333,6 +359,9 @@ RendererTest::RendererTest() {
               &RendererTest::glyphQuadIndices<UnsignedShort>,
               &RendererTest::glyphQuadIndices<UnsignedByte>,
               &RendererTest::glyphQuadIndicesTypeTooSmall});
+
+    addInstancedTests({&RendererTest::glyphRangeForBytes},
+        Containers::arraySize(GlyphRangeForBytesData));
 
     addInstancedTests({&RendererTest::renderData},
         Containers::arraySize(RenderDataData));
@@ -967,6 +996,173 @@ void RendererTest::glyphQuadIndicesTypeTooSmall() {
         "Text::renderGlyphQuadIndicesInto(): max index value of 259 cannot fit into a 8-bit type\n"
         "Text::renderGlyphQuadIndicesInto(): max index value of 65539 cannot fit into a 16-bit type\n"
         "Text::renderGlyphQuadIndicesInto(): max index value of 4294967299 cannot fit into a 32-bit type\n");
+}
+
+void RendererTest::glyphRangeForBytes() {
+    auto&& data = GlyphRangeForBytesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Offset from the start, some characters decomposed/reordered, some
+       multi-byte, and then also multi-byte to decomposed */
+    UnsignedInt clusterData[]{
+        3,  /* 0 9 */
+        4,  /* 1 8 */
+        5,  /* 2 7 */
+        5,  /* 3 6 */
+        5,  /* 4 5 */
+        6,  /* 5 4 */
+        6,  /* 6 3 */
+        9,  /* 7 2 */
+        12, /* 8 1 */
+        13  /* 9 0 */
+    };
+    Containers::StridedArrayView1D<const UnsignedInt> clusters = clusterData;
+    if(!data.ascending) clusters = clusters.flipped<0>();
+
+    /* With empty clusters it means there are no glyphs, so returning 0 means
+       both before and after the glyph run */
+    CORRADE_COMPARE(data.function(nullptr, 0, 3), Containers::pair(0u, 0u));
+    CORRADE_COMPARE(data.function(nullptr, 10, 13), Containers::pair(0u, 0u));
+
+    /* Bytes before everything return 0, same for an empty range at the
+       start; if the other direction then it returns the size */
+    for(Containers::Pair<UnsignedInt, UnsignedInt> i: {
+        Containers::pair(1u, 1u),
+        Containers::pair(2u, 3u),
+        Containers::pair(3u, 3u)
+    }) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(data.function(clusters, i.first(), i.second()),
+            data.ascending ? Containers::pair(0u, 0u) :
+                             Containers::pair(10u, 10u));
+    }
+
+    /* Bytes after everything return the size (or 0 if reverse direction). Size
+       of the last cluster in bytes is unknown so there's no empty range at the
+       end */
+    for(Containers::Pair<UnsignedInt, UnsignedInt> i: {
+        Containers::pair(14u, 14u),
+        Containers::pair(14u, 16u)
+    }) {
+        CORRADE_COMPARE(data.function(clusters, i.first(), i.second()),
+            data.ascending ? Containers::pair(10u, 10u) :
+                             Containers::pair(0u, 0u));
+    }
+
+    /* Empty ranges inside, i.e. for a cursor. In reverse direction it means
+       the cursor is from *the other side* of the same glyph, so +1. In other
+       words, if you do backspace (which always goes backwards in the byte
+       stream, but to the left for LTR text and to the right for RTL text), it
+       deletes the same glyph regardless of direction */
+    CORRADE_COMPARE(data.function(clusters, 4, 4),
+        data.ascending ? Containers::pair(1u, 1u) :
+                         Containers::pair(9u, 9u));
+    /* This one maps from one byte to multiple glyphs */
+    CORRADE_COMPARE(data.function(clusters, 5, 5),
+        data.ascending ? Containers::pair(2u, 2u) :
+                         Containers::pair(8u, 8u));
+    /* This one maps from multiple bytes to a single glyph, should return the
+       same for any byte inside that sequence */
+    for(UnsignedInt i: {9, 10, 11}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(data.function(clusters, i, i),
+            data.ascending ? Containers::pair(7u, 7u) :
+                             Containers::pair(3u, 3u));
+    }
+    /* This one maps from multiple bytes to multiple glyphs, again should
+       return the same for any byte inside that sequence */
+    for(UnsignedInt i: {6, 7, 8}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(data.function(clusters, i, i),
+            data.ascending ? Containers::pair(5u, 5u) :
+                             Containers::pair(5u, 5u));
+    }
+
+    /* Single byte mapped to a single glyph, i.e. an Insert mode or a
+       selection. Again, in reverse direction it should cover the same glyph,
+       just from the other side. */
+    CORRADE_COMPARE(data.function(clusters, 3, 4),
+        data.ascending ? Containers::pair(0u, 1u) :
+                         Containers::pair(9u, 10u));
+    CORRADE_COMPARE(data.function(clusters, 4, 5),
+        data.ascending ? Containers::pair(1u, 2u) :
+                         Containers::pair(8u, 9u));
+    CORRADE_COMPARE(data.function(clusters, 12, 13),
+        data.ascending ? Containers::pair(8u, 9u) :
+                         Containers::pair(1u, 2u));
+
+    /* Multiple bytes mapped to a single glyph, as well as any subranges of
+       those */
+    for(Containers::Pair<UnsignedInt, UnsignedInt> i: {
+        Containers::pair(9u, 10u),
+        Containers::pair(9u, 11u),
+        Containers::pair(9u, 12u),
+        Containers::pair(10u, 11u),
+        Containers::pair(10u, 12u),
+        Containers::pair(11u, 12u)
+    }) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(data.function(clusters, i.first(), i.second()),
+            data.ascending ? Containers::pair(7u, 8u) :
+                             Containers::pair(2u, 3u));
+    }
+
+    /* Single byte mapped to multiple glyphs */
+    CORRADE_COMPARE(data.function(clusters, 5, 6),
+        data.ascending ? Containers::pair(2u, 5u) :
+                         Containers::pair(5u, 8u));
+
+    /* Multiple bytes mapped to multiple glyphs, as well as any subranges of
+       those */
+    for(Containers::Pair<UnsignedInt, UnsignedInt> i: {
+        Containers::pair(6u, 7u),
+        Containers::pair(6u, 8u),
+        Containers::pair(6u, 9u),
+        Containers::pair(7u, 8u),
+        Containers::pair(7u, 9u),
+        Containers::pair(8u, 9u)
+    }) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(data.function(clusters, i.first(), i.second()),
+            data.ascending ? Containers::pair(5u, 7u) :
+                             Containers::pair(3u, 5u));
+    }
+
+    /* Larger ranges */
+    CORRADE_COMPARE(data.function(clusters, 4, 9),
+        data.ascending ? Containers::pair(1u, 7u) :
+                         Containers::pair(3u, 9u));
+    CORRADE_COMPARE(data.function(clusters, 5, 12),
+        data.ascending ? Containers::pair(2u, 8u) :
+                         Containers::pair(2u, 8u));
+    CORRADE_COMPARE(data.function(clusters, 3, 14),
+        data.ascending ? Containers::pair(0u, 10u) :
+                         Containers::pair(0u, 10u));
+    CORRADE_COMPARE(data.function(clusters, 0, 20),
+        data.ascending ? Containers::pair(0u, 10u) :
+                         Containers::pair(0u, 10u));
+
+    /* Subsets of multi-byte ranges plus bytes after */
+    for(Containers::Pair<UnsignedInt, UnsignedInt> i: {
+        Containers::pair(7u, 12u),
+        Containers::pair(8u, 12u)
+    }) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(data.function(clusters, i.first(), i.second()),
+            data.ascending ? Containers::pair(5u, 8u) :
+                             Containers::pair(2u, 5u));
+    }
+
+    /* Subsets of multi-byte ranges plus bytes before */
+    for(Containers::Pair<UnsignedInt, UnsignedInt> i: {
+        Containers::pair(4u, 7u),
+        Containers::pair(4u, 8u)
+    }) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(data.function(clusters, i.first(), i.second()),
+            data.ascending ? Containers::pair(1u, 7u) :
+                             Containers::pair(3u, 9u));
+    }
 }
 
 void RendererTest::renderData() {
