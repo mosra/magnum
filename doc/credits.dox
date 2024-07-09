@@ -240,6 +240,8 @@ Are the below lists missing your name or something's wrong?
     Android buildsystem fixes and improvements
 -   **Vladislav** ([\@dranikpg](https://github.com/dranikpg)) --- Async @ref GL
     shader compilation
+-   **Will Usher** ([\@Twinklebear](https://github.com/Twinklebear)) ---
+    @ref Platform::EmscriptenApplication build fixes
 */
 
 }

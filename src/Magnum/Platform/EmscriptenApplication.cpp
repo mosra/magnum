@@ -5,6 +5,7 @@
                 2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2018, 2019, 2020 Jonathan Hale <squareys@googlemail.com>
     Copyright © 2020 Pablo Escobar <mail@rvrs.in>
+    Copyright © 2024 Will Usher <will@willusher.io>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -502,7 +503,9 @@ void EmscriptenApplication::handleCanvasResize(const EmscriptenUiEvent* event) {
 void EmscriptenApplication::setupCallbacks(bool resizable) {
     /* Since 1.38.17 all emscripten_set_*_callback() are macros. Play it safe
        and wrap all lambdas in () to avoid the preprocessor getting upset when
-       seeing commas */
+       seeing commas. Furthermore, in 13.1.62 the EM_BOOL type was changed from
+       int to bool, so to preserve compatibility with both the past and future
+       versions the lambdas have an explicit EM_BOOL return type annotation. */
 
     /* Set up the resize callback. Because browsers are only required to fire
        resize events on the window and not on particular DOM elements, we need

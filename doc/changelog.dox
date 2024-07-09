@@ -1062,7 +1062,9 @@ See also:
     more JS API functions optional, and circumvents the need for users to
     specify `-s EXPORTED_FUNCTIONS` on their side. See [mosra/magnum#619](https://github.com/mosra/magnum/issues/619).
 -   Fixed build of @ref Platform::EmscriptenApplication on Emscripten 3.1.49
-    and newer (see [mosra/magnum#631](https://github.com/mosra/magnum/issues/631))
+    and newer (see [mosra/magnum#631](https://github.com/mosra/magnum/issues/631)),
+    and on Emscripten 3.1.62 and newer (see
+    [mosra/magnum#641](https://github.com/mosra/magnum/pull/641))
 -   The Emscripten toolchain no longer uses a `*.bc` extension for static
     libraries, as that breaks builds with version 3.1.52+. See
     [mosra/magnum#633](https://github.com/mosra/magnum/issues/633) for more
