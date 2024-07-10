@@ -68,7 +68,8 @@ template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>&
 @brief Three-component vector
 @tparam T   Data type
 
-See @ref matrix-vector for brief introduction.
+See @ref matrix-vector for brief introduction. The vectors are columns, see
+@ref Matrix3x1 for a row vector.
 @see @ref Magnum::Vector3, @ref Magnum::Vector3h, @ref Magnum::Vector3d,
     @ref Magnum::Vector3ub, @ref Magnum::Vector3b, @ref Magnum::Vector3us,
     @ref Magnum::Vector3s, @ref Magnum::Vector3ui, @ref Magnum::Vector3i

@@ -66,7 +66,8 @@ template<class T> inline T cross(const Vector2<T>& a, const Vector2<T>& b) {
 @brief Two-component vector
 @tparam T   Data type
 
-See @ref matrix-vector for brief introduction.
+See @ref matrix-vector for brief introduction. The vectors are columns, see
+@ref Matrix2x1 for a row vector.
 @see @ref Magnum::Vector2, @ref Magnum::Vector3h, @ref Magnum::Vector2d,
     @ref Magnum::Vector2ub, @ref Magnum::Vector2b, @ref Magnum::Vector2us,
     @ref Magnum::Vector2s, @ref Magnum::Vector2ui, @ref Magnum::Vector2i

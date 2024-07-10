@@ -41,7 +41,8 @@ namespace Magnum { namespace Math {
 @brief Four-component vector
 @tparam T   Data type
 
-See @ref matrix-vector for brief introduction.
+See @ref matrix-vector for brief introduction. The vectors are columns, see
+@ref Matrix4x1 for a row vector.
 @see @ref Magnum::Vector4, @ref Magnum::Vector4h, @ref Magnum::Vector4d,
     @ref Magnum::Vector4ub, @ref Magnum::Vector4b, @ref Magnum::Vector4us,
     @ref Magnum::Vector4s, @ref Magnum::Vector4ui, @ref Magnum::Vector4i

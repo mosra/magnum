@@ -64,22 +64,25 @@ namespace Implementation {
 @tparam rows    Row count
 @tparam T       Underlying data type
 
-See @ref matrix-vector for brief introduction. See also @ref Matrix (square)
-and @ref Vector.
+See @ref matrix-vector for brief introduction. See also @ref Matrix (square),
+@ref Matrix3, @ref Matrix4 and @ref Vector.
 
 The data are stored in column-major order, to reflect that, all indices in
 math formulas are in reverse order (i.e. @f$ \boldsymbol A_{ji} @f$ instead
 of @f$ \boldsymbol A_{ij} @f$).
-@see @ref Matrix2x3, @ref Matrix3x2, @ref Matrix2x4, @ref Matrix4x2,
-    @ref Matrix3x4, @ref Matrix4x3, @ref Magnum::Matrix2x3,
-    @ref Magnum::Matrix2x3d, @ref Magnum::Matrix2x3h, @ref Magnum::Matrix2x3b,
-    @ref Magnum::Matrix2x3s, @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d,
-    @ref Magnum::Matrix3x2h, @ref Magnum::Matrix3x2b, @ref Magnum::Matrix3x2s,
-    @ref Magnum::Matrix2x4, @ref Magnum::Matrix2x4d, @ref Magnum::Matrix2x4h,
-    @ref Magnum::Matrix2x4b, @ref Magnum::Matrix2x4s, @ref Magnum::Matrix4x2,
-    @ref Magnum::Matrix4x2d, @ref Magnum::Matrix4x2h, @ref Magnum::Matrix4x2b,
-    @ref Magnum::Matrix4x2s, @ref Magnum::Matrix3x4, @ref Magnum::Matrix3x4d,
-    @ref Magnum::Matrix3x4h, @ref Magnum::Matrix3x4b, @ref Magnum::Matrix3x4s,
+@see @ref Matrix2x1, @ref Matrix2x3, @ref Matrix2x4, @ref Matrix3x1,
+    @ref Matrix3x2, @ref Matrix3x4, @ref Matrix4x1, @ref Matrix4x2,
+    @ref Matrix4x3, @ref Magnum::Matrix2x1, @ref Magnum::Matrix2x1d,
+    @ref Magnum::Matrix2x3, @ref Magnum::Matrix2x3d, @ref Magnum::Matrix2x3h,
+    @ref Magnum::Matrix2x3b, @ref Magnum::Matrix2x3s, @ref Magnum::Matrix2x4,
+    @ref Magnum::Matrix2x4d, @ref Magnum::Matrix2x4h, @ref Magnum::Matrix2x4b,
+    @ref Magnum::Matrix2x4s, @ref Magnum::Matrix3x1, @ref Magnum::Matrix3x1d,
+    @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d, @ref Magnum::Matrix3x2h,
+    @ref Magnum::Matrix3x2b, @ref Magnum::Matrix3x2s, @ref Magnum::Matrix3x4,
+    @ref Magnum::Matrix3x4d, @ref Magnum::Matrix3x4h, @ref Magnum::Matrix3x4b,
+    @ref Magnum::Matrix3x4s, @ref Magnum::Matrix4x1, @ref Magnum::Matrix4x1,
+    @ref Magnum::Matrix4x1d, @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d,
+    @ref Magnum::Matrix4x2h, @ref Magnum::Matrix4x2b, @ref Magnum::Matrix4x2s,
     @ref Magnum::Matrix4x3, @ref Magnum::Matrix4x3d, @ref Magnum::Matrix4x3h,
     @ref Magnum::Matrix4x3b, @ref Magnum::Matrix4x3s
 */
@@ -501,10 +504,16 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Multiply a vector
          *
-         * Internally the same as multiplying with one-column matrix, but
-         * returns vector. @f[
+         * Internally the same as multiplying with a one-column matrix, but
+         * returns a vector instead of a one-column matrix. @f[
          *      (\boldsymbol {Aa})_i = \sum_{k=0}^{m-1} \boldsymbol A_{ki} \boldsymbol a_k
          * @f]
+         *
+         * Vectors are treated as columns. An equivalent operation is
+         * multiplying a transposed matrix with an one-row matrix from the left
+         * side instead:
+         *
+         * @snippet Math.cpp RectangularMatrix-multiply-vector
          */
         Vector<rows, T> operator*(const Vector<cols, T>& other) const {
             return operator*(RectangularMatrix<1, cols, T>(other))[0];
@@ -606,6 +615,18 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 };
 
 /**
+@brief Matrix with 2 columns and 1 row
+@m_since_latest
+
+Convenience alternative to @cpp RectangularMatrix<2, 1, T> @ce. See
+@ref RectangularMatrix for more information. There's no 1-column 2-row matrix typedef, use @ref Vector2 instead.
+@see @ref Magnum::Matrix2x1, @ref Magnum::Matrix2x1d
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using Matrix2x1 = RectangularMatrix<2, 1, T>;
+#endif
+
+/**
 @brief Matrix with 2 columns and 3 rows
 
 Convenience alternative to @cpp RectangularMatrix<2, 3, T> @ce. See
@@ -615,18 +636,6 @@ Convenience alternative to @cpp RectangularMatrix<2, 3, T> @ce. See
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
-#endif
-
-/**
-@brief Matrix with 3 columns and 2 rows
-
-Convenience alternative to @cpp RectangularMatrix<3, 2, T> @ce. See
-@ref RectangularMatrix for more information.
-@see @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d, @ref Magnum::Matrix3x2h,
-    @ref Magnum::Matrix3x2b, @ref Magnum::Matrix3x2s
-*/
-#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
-template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 #endif
 
 /**
@@ -642,15 +651,27 @@ template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
 #endif
 
 /**
-@brief Matrix with 4 columns and 2 rows
+@brief Matrix with 3 columns and 1 row
+@m_since_latest
 
-Convenience alternative to @cpp RectangularMatrix<4, 2, T> @ce. See
-@ref RectangularMatrix for more information.
-@see @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d, @ref Magnum::Matrix4x2h,
-    @ref Magnum::Matrix4x2b, @ref Magnum::Matrix4x2s
+Convenience alternative to @cpp RectangularMatrix<3, 1, T> @ce. See
+@ref RectangularMatrix for more information. There's no 1-column 3-row matrix typedef, use @ref Vector3 instead.
+@see @ref Magnum::Matrix3x1, @ref Magnum::Matrix3x1d
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
-template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
+template<class T> using Matrix3x1 = RectangularMatrix<3, 1, T>;
+#endif
+
+/**
+@brief Matrix with 3 columns and 2 rows
+
+Convenience alternative to @cpp RectangularMatrix<3, 2, T> @ce. See
+@ref RectangularMatrix for more information.
+@see @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d, @ref Magnum::Matrix3x2h,
+    @ref Magnum::Matrix3x2b, @ref Magnum::Matrix3x2s
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 #endif
 
 /**
@@ -663,6 +684,30 @@ Convenience alternative to @cpp RectangularMatrix<3, 4, T> @ce. See
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
+#endif
+
+/**
+@brief Matrix with 4 columns and 1 row
+@m_since_latest
+
+Convenience alternative to @cpp RectangularMatrix<4, 1, T> @ce. See
+@ref RectangularMatrix for more information. There's no 1-column 4-row matrix typedef, use @ref Vector4 instead.
+@see @ref Magnum::Matrix4x1, @ref Magnum::Matrix4x1d
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using Matrix4x1 = RectangularMatrix<4, 1, T>;
+#endif
+
+/**
+@brief Matrix with 4 columns and 2 rows
+
+Convenience alternative to @cpp RectangularMatrix<4, 2, T> @ce. See
+@ref RectangularMatrix for more information.
+@see @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d, @ref Magnum::Matrix4x2h,
+    @ref Magnum::Matrix4x2b, @ref Magnum::Matrix4x2s
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
 #endif
 
 /**

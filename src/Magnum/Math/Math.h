@@ -67,11 +67,14 @@ template<class> class Matrix4;
 template<class> class Quaternion;
 
 template<std::size_t, std::size_t, class> class RectangularMatrix;
+template<class T> using Matrix2x1 = RectangularMatrix<2, 1, T>;
 template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
-template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
-template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
+template<class T> using Matrix3x1 = RectangularMatrix<3, 1, T>;
+template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
+template<class T> using Matrix4x1 = RectangularMatrix<4, 1, T>;
+template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
 template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
 
 template<template<class> class, class> class Unit;

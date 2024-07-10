@@ -1329,6 +1329,19 @@ static_cast<void>(a);
 }
 
 {
+/* [RectangularMatrix-multiply-vector] */
+Matrix3x4 m = DOXYGEN_ELLIPSIS({});
+Vector3 v = DOXYGEN_ELLIPSIS({});
+
+/* a1 and a2 contain the same data, just transposed */
+Vector4 a1 = m*v;
+Matrix4x1 a2 = Matrix3x1::fromVector(v)*m.transposed();
+/* [RectangularMatrix-multiply-vector] */
+static_cast<void>(a1);
+static_cast<void>(a2);
+}
+
+{
 /* [gather] */
 Vector4i original(-1, 2, 3, 4);
 

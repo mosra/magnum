@@ -82,6 +82,7 @@ struct RectangularMatrixTest: TestSuite::Tester {
     void multiplyDivide();
     void multiply();
     void multiplyVector();
+    void multiplyRowVector();
 
     void transposed();
     void flippedCols();
@@ -115,8 +116,10 @@ typedef Vector<3, Float> Vector3;
 typedef Vector<2, Float> Vector2;
 using Magnum::BitVector3;
 
-typedef RectangularMatrix<4, 3, Int> Matrix4x3i;
-typedef RectangularMatrix<3, 4, Int> Matrix3x4i;
+typedef Math::Matrix3x1<Int> Matrix3x1i;
+typedef Math::Matrix4x1<Int> Matrix4x1i;
+typedef Math::Matrix4x3<Int> Matrix4x3i;
+typedef Math::Matrix3x4<Int> Matrix3x4i;
 typedef Vector<4, Int> Vector4i;
 typedef Vector<3, Int> Vector3i;
 typedef Vector<2, Int> Vector2i;
@@ -146,6 +149,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::multiplyDivide,
               &RectangularMatrixTest::multiply,
               &RectangularMatrixTest::multiplyVector,
+              &RectangularMatrixTest::multiplyRowVector,
 
               &RectangularMatrixTest::transposed,
               &RectangularMatrixTest::flippedCols,
@@ -604,6 +608,19 @@ void RectangularMatrixTest::multiplyVector() {
     CORRADE_COMPARE(c*d, (Vector4i{7, 19, 31, 43}));
 
     /* There's no *= for vector and matrix multiplication either */
+}
+
+void RectangularMatrixTest::multiplyRowVector() {
+    /* Like multiplyVector() above, just transposed */
+
+    const Vector3i d{2, -2, 3};
+    const Matrix4x3i c{Vector3i{ 0,  1,  3},
+                       Vector3i{ 4,  5,  7},
+                       Vector3i{ 8,  9, 11},
+                       Vector3i{12, 13, 15}};
+    CORRADE_COMPARE(Matrix3x1i::fromVector(d)*c, (Matrix4x1i{
+       7, 19, 31, 43
+    }));
 }
 
 void RectangularMatrixTest::transposed() {
