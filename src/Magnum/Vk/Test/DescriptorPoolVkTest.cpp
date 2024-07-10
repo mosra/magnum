@@ -247,6 +247,24 @@ void DescriptorPoolVkTest::allocateVariableCount() {
     }
 }
 
+void DescriptorPoolVkTest::allocateVariableCountFreeDescriptorSet() {
+    if(!(_deviceVariableDescriptorCount.enabledFeatures() & DeviceFeature::DescriptorBindingVariableDescriptorCount))
+        CORRADE_SKIP("DeviceFeature::DescriptorBindingVariableDescriptorCount not supported, can't test.");
+
+    DescriptorSetLayout layout{_deviceVariableDescriptorCount, DescriptorSetLayoutCreateInfo{
+        {{0, DescriptorType::UniformBuffer, 4, ~ShaderStages{}, DescriptorSetLayoutBinding::Flag::VariableDescriptorCount}}
+    }};
+
+    DescriptorPool pool{_deviceVariableDescriptorCount, DescriptorPoolCreateInfo{1, {
+        {DescriptorType::UniformBuffer, 4}
+    }, DescriptorPoolCreateInfo::Flag::FreeDescriptorSet}};
+
+    DescriptorSet allocated = pool.allocate(layout, 4);
+    CORRADE_VERIFY(allocated.handle());
+    /* vkFreeDescriptorSets() gets called on destruction */
+    CORRADE_COMPARE(allocated.handleFlags(), HandleFlag::DestroyOnDestruction);
+}
+
 void DescriptorPoolVkTest::allocateVariableCountFail() {
     if(!(_deviceVariableDescriptorCount.enabledFeatures() & DeviceFeature::DescriptorBindingVariableDescriptorCount))
         CORRADE_SKIP("DeviceFeature::DescriptorBindingVariableDescriptorCount not supported, can't test.");
@@ -275,24 +293,6 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
         pool.allocate(layout, 80);
         CORRADE_COMPARE(out.str(), "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
     }
-}
-
-void DescriptorPoolVkTest::allocateVariableCountFreeDescriptorSet() {
-    if(!(_deviceVariableDescriptorCount.enabledFeatures() & DeviceFeature::DescriptorBindingVariableDescriptorCount))
-        CORRADE_SKIP("DeviceFeature::DescriptorBindingVariableDescriptorCount not supported, can't test.");
-
-    DescriptorSetLayout layout{_deviceVariableDescriptorCount, DescriptorSetLayoutCreateInfo{
-        {{0, DescriptorType::UniformBuffer, 4, ~ShaderStages{}, DescriptorSetLayoutBinding::Flag::VariableDescriptorCount}}
-    }};
-
-    DescriptorPool pool{_deviceVariableDescriptorCount, DescriptorPoolCreateInfo{1, {
-        {DescriptorType::UniformBuffer, 4}
-    }, DescriptorPoolCreateInfo::Flag::FreeDescriptorSet}};
-
-    DescriptorSet allocated = pool.allocate(layout, 4);
-    CORRADE_VERIFY(allocated.handle());
-    /* vkFreeDescriptorSets() gets called on destruction */
-    CORRADE_COMPARE(allocated.handleFlags(), HandleFlag::DestroyOnDestruction);
 }
 
 void DescriptorPoolVkTest::reset() {
