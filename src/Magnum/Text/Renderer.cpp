@@ -68,6 +68,7 @@ Range2D renderLineGlyphPositionsInto(const AbstractFont& font, const Float size,
     /* Combine the offsets and cursor advances and calculate the line rectangle
        along the way. Initially the cursor is at origin and rectangle is empty,
        with just the Y bounds from font metrics. */
+    /** @todo this needs an update for vertical text */
     Range2D rectangle{cursor + Vector2::yAxis(font.descent()*scale),
                       cursor + Vector2::yAxis(font.ascent()*scale)};
     for(UnsignedInt i = 0; i != glyphOffsets.size(); ++i) {
@@ -77,8 +78,9 @@ Range2D renderLineGlyphPositionsInto(const AbstractFont& font, const Float size,
         cursor += glyphAdvances[i]*scale;
 
         /* Extend the line rectangle with the cursor range */
-        /** @todo this assumes left-to-right direction, update when vertical
-            and LTR text is possible & testable */
+        /** @todo this assumes left-to-right / top-to-bottom ordering of
+            shaped glyphs (which HarfBuzz does for both directions however),
+            add some checks to verify that assumption */
         rectangle.max() = Math::max(rectangle.max(), cursor);
     }
 
