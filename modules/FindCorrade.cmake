@@ -551,6 +551,16 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             set_property(TARGET Corrade::${_component} APPEND PROPERTY
                 COMPATIBLE_INTERFACE_NUMBER_MAX CORRADE_CXX_STANDARD)
 
+            # -fno-strict-aliasing is set in UseCorrade.cmake for everyone who
+            # enables CORRADE_USE_PEDANTIC_FLAGS. Not all projects linking to
+            # Corrade enable it (or can't enable it), but this flag is
+            # essential to prevent insane bugs and random breakages, so force
+            # it for anyone linking to Corrade::Utility. Similar code is in
+            # Corrade/Utility/CMakeLists.txt.
+            if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang" AND NOT CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC") OR CORRADE_TARGET_EMSCRIPTEN)
+                set_property(TARGET Corrade::${_component} APPEND PROPERTY INTERFACE_COMPILE_OPTIONS -fno-strict-aliasing)
+            endif()
+
             # Path::libraryLocation() needs this
             if(CORRADE_TARGET_UNIX)
                 set_property(TARGET Corrade::${_component} APPEND PROPERTY
