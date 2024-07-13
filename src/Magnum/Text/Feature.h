@@ -161,6 +161,13 @@ enum class Feature: UnsignedInt {
     Akhand = Utility::Endianness::fourCC('a', 'k', 'h', 'n'),
 
     /**
+     * `apkn`, [Kerning for Alternate Proportional Widths](https://learn.microsoft.com/typography/opentype/spec/features_ae#apkn).
+     * Intended for East-Asian scripts.
+     * @m_keywords{apkn}
+     */
+    KerningForAlternateProportionalWidths = Utility::Endianness::fourCC('a', 'p', 'k', 'n'),
+
+    /**
      * `blwf`, [Below-base Forms](https://learn.microsoft.com/typography/opentype/spec/features_ae#blwf).
      * Intended for South-Asian scripts.
      * @m_keywords{blwf}
@@ -1035,7 +1042,7 @@ enum class Feature: UnsignedInt {
     TerminalForms3 = Utility::Endianness::fourCC('f', 'i', 'n', '3'),
 
     /**
-     * `flac`, [Flattened accent forms](https://learn.microsoft.com/typography/opentype/spec/features_fj#flac).
+     * `flac`, [Flattened Accent Forms](https://learn.microsoft.com/typography/opentype/spec/features_fj#flac).
      * Intended for digits and math.
      * @m_keywords{flac}
      */
@@ -1746,6 +1753,13 @@ enum class Feature: UnsignedInt {
      * @m_keywords{vatu}
      */
     VattuVariants = Utility::Endianness::fourCC('v', 'a', 't', 'u'),
+
+    /**
+     * `vapk`, [Kerning for Alternate Proportional Vertical Metrics](https://learn.microsoft.com/typography/opentype/spec/features_uz#vapk).
+     * Intended for East-Asian scripts.
+     * @m_keywords{vapk}
+     */
+    KerningForAlternateProportionalVerticalMetrics = Utility::Endianness::fourCC('v', 'a', 'p', 'k'),
 
     /**
      * `vchw`, [Vertical Contextual Half-width Spacing](https://learn.microsoft.com/typography/opentype/spec/features_uz#vchw).
