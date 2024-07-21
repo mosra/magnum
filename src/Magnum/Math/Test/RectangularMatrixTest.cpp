@@ -333,10 +333,18 @@ void RectangularMatrixTest::constructArrayRvalue() {
     CORRADE_COMPARE(a, (Matrix2x4{Vector4{3.0f, 5.0f, 8.0f, -3.0f},
                                   Vector4{4.5f, 4.0f, 7.0f,  2.0f}}));
 
+    /* Unfortunately on MSVC (even 2022) this leads to
+        error C2131: expression did not evaluate to a constant
+        note: failure was caused by out of range index 3; allowed range is 0 <= index < 2
+       and similarly in other tests. Not sure where that comes from, for Vector
+       this all works, constructArray() above works, and the GCC 4.8 workaround
+       with fixed size doesn't help here. */
+    #ifndef CORRADE_TARGET_MSVC
     constexpr Matrix2x4 ca{{{3.0f, 5.0f, 8.0f, -3.0f},
                             {4.5f, 4.0f, 7.0f,  2.0f}}};
     CORRADE_COMPARE(ca, (Matrix2x4{Vector4{3.0f, 5.0f, 8.0f, -3.0f},
                                    Vector4{4.5f, 4.0f, 7.0f,  2.0f}}));
+    #endif
 
     /* It should always be constructible only with exactly the matching number
        of elements. As that's checked with a static_assert(), it's impossible

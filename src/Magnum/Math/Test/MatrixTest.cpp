@@ -314,6 +314,13 @@ void MatrixTest::constructArrayRvalue() {
                                   Vector4{1.0f,  2.0f, 3.0f, -1.0f},
                                   Vector4{7.9f, -1.0f, 8.0f, -1.5f}}));
 
+    /* Unfortunately on MSVC (even 2022) this leads to
+        error C2131: expression did not evaluate to a constant
+        note: failure was caused by out of range index 3; allowed range is 0 <= index < 2
+       and similarly in other tests. Not sure where that comes from, for Vector
+       this all works, constructArray() above works, and the GCC 4.8 workaround
+       with fixed size doesn't help here. */
+    #ifndef CORRADE_TARGET_MSVC
     constexpr Matrix4x4 ca{{{3.0f,  5.0f, 8.0f, -3.0f},
                             {4.5f,  4.0f, 7.0f,  2.0f},
                             {1.0f,  2.0f, 3.0f, -1.0f},
@@ -322,6 +329,7 @@ void MatrixTest::constructArrayRvalue() {
                                    Vector4{4.5f,  4.0f, 7.0f,  2.0f},
                                    Vector4{1.0f,  2.0f, 3.0f, -1.0f},
                                    Vector4{7.9f, -1.0f, 8.0f, -1.5f}}));
+    #endif
 
     /* See RectangularMatrixTest::constructArrayRvalue() for details */
     #if 0
