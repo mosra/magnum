@@ -62,6 +62,8 @@ struct Vector4Test: TestSuite::Tester {
     void constructNoInit();
     void constructOneValue();
     void constructParts();
+    void constructArray();
+    void constructArrayRvalue();
     void constructConversion();
     void constructBit();
     void constructCopy();
@@ -93,6 +95,8 @@ Vector4Test::Vector4Test() {
               &Vector4Test::constructNoInit,
               &Vector4Test::constructOneValue,
               &Vector4Test::constructParts,
+              &Vector4Test::constructArray,
+              &Vector4Test::constructArrayRvalue,
               &Vector4Test::constructConversion,
               &Vector4Test::constructBit,
               &Vector4Test::constructCopy,
@@ -184,6 +188,49 @@ void Vector4Test::constructParts() {
     CORRADE_COMPARE(b, Vector4(1.0f, 2.0f, 3.0f, 4.0f));
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Vector4, Vector3, Float>::value);
+}
+
+void Vector4Test::constructArray() {
+    float data[]{1.3f, 2.7f, -15.0f, 7.0f};
+    Vector4 a{data};
+    CORRADE_COMPARE(a, (Vector4{1.3f, 2.7f, -15.0f, 7.0f}));
+
+    constexpr float cdata[]{1.3f, 2.7f, -15.0f, 7.0f};
+    constexpr Vector4 ca{cdata};
+    CORRADE_COMPARE(ca, (Vector4{1.3f, 2.7f, -15.0f, 7.0f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<float[4], Vector4>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector4, float[4]>::value);
+
+    /* See VectorTest::constructArray() for details */
+    #if 0
+    float data1[]{1.3f};
+    float data5[]{1.3f, 2.7f, -15.0f, 7.0f, 22.6f};
+    Vector4 b{data1};
+    Vector4 c{data5};
+    #endif
+}
+
+void Vector4Test::constructArrayRvalue() {
+    /* Silly but why not. Could theoretically help with some fancier types
+       that'd otherwise require explicit typing with the variadic
+       constructor. */
+    Vector4 a{{1.3f, 2.7f, -15.0f, 7.0f}};
+    CORRADE_COMPARE(a, (Vector4{1.3f, 2.7f, -15.0f, 7.0f}));
+
+    constexpr Vector4 ca{{1.3f, 2.7f, -15.0f, 7.0f}};
+    CORRADE_COMPARE(ca, (Vector4{1.3f, 2.7f, -15.0f, 7.0f}));
+
+    /* See VectorTest::constructArrayRvalue() for details */
+    #if 0
+    Vector4 c{{1.3f, 2.7f, -15.0f, 7.0f, 22.6f}};
+    #endif
+    #if 0 || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5)
+    CORRADE_WARN("Creating a Vector from a smaller array isn't an error on GCC 4.8.");
+    Vector4 b{{1.3f, 2.7f}};
+    #endif
 }
 
 void Vector4Test::constructConversion() {

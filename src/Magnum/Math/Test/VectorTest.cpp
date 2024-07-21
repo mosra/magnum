@@ -65,6 +65,8 @@ struct VectorTest: TestSuite::Tester {
     void constructNoInit();
     void constructOneValue();
     void constructOneComponent();
+    void constructArray();
+    void constructArrayRvalue();
     void constructConversion();
     void constructBit();
     void constructCopy();
@@ -145,6 +147,8 @@ VectorTest::VectorTest() {
               &VectorTest::constructNoInit,
               &VectorTest::constructOneValue,
               &VectorTest::constructOneComponent,
+              &VectorTest::constructArray,
+              &VectorTest::constructArrayRvalue,
               &VectorTest::constructConversion,
               &VectorTest::constructBit,
               &VectorTest::constructCopy,
@@ -284,6 +288,65 @@ void VectorTest::constructOneComponent() {
     CORRADE_COMPARE(vec, Vector1(1));
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Vector1, Float>::value);
+}
+
+void VectorTest::constructArray() {
+    float data[]{1.3f, 2.7f, -15.0f};
+    Vector3 a{data};
+    CORRADE_COMPARE(a, (Vector3{1.3f, 2.7f, -15.0f}));
+
+    constexpr float cdata[]{1.3f, 2.7f, -15.0f};
+    constexpr Vector3 ca{cdata};
+    CORRADE_COMPARE(ca, (Vector3{1.3f, 2.7f, -15.0f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<float[3], Vector3>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, float[3]>::value);
+
+    /* It should always be constructible only with exactly the matching number
+       of elements. As that's checked with a static_assert(), it's impossible
+       to verify with std::is_constructible unfortunately and the only way to
+       test that is manually, thus uncomment the code below to test the error
+       behavior.
+
+       Additionally, to avoid noise in the compiler output, the first should
+       only produce "excess elements in array initializer" and a static assert,
+       the second just a static assert, no other compiler error. */
+    #if 0
+    float data1[]{1.3f};
+    float data4[]{1.3f, 2.7f, -15.0f, 7.0f};
+    Vector3 b{data1};
+    Vector3 c{data4};
+    #endif
+}
+
+void VectorTest::constructArrayRvalue() {
+    /* Silly but why not. Could theoretically help with some fancier types
+       that'd otherwise require explicit typing with the variadic
+       constructor. */
+    Vector3 a{{1.3f, 2.7f, -15.0f}};
+    CORRADE_COMPARE(a, (Vector3{1.3f, 2.7f, -15.0f}));
+
+    constexpr Vector3 ca{{1.3f, 2.7f, -15.0f}};
+    CORRADE_COMPARE(ca, (Vector3{1.3f, 2.7f, -15.0f}));
+
+    /* It should always be constructible only with exactly the matching number
+       of elements. As that's checked with a static_assert(), it's impossible
+       to verify with std::is_constructible unfortunately and the only way to
+       test that is manually, thus uncomment the code below to test the error
+       behavior.
+
+       Additionally, to avoid noise in the compiler output, the first should
+       only produce "excess elements in array initializer" and a static assert,
+       the second just a static assert, no other compiler error. */
+    #if 0
+    Vector3 c{{1.3f, 2.7f, -15.0f, 7.0f}};
+    #endif
+    #if 0 || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5)
+    CORRADE_WARN("Creating a Vector from a smaller array isn't an error on GCC 4.8.");
+    Vector3 b{{1.3f, 2.7f}};
+    #endif
 }
 
 void VectorTest::constructConversion() {

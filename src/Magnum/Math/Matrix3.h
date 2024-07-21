@@ -301,6 +301,14 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /** @brief Construct with one value for all elements */
         constexpr explicit Matrix3(T value) noexcept: Matrix3x3<T>{value} {}
 
+        /** @copydoc Matrix::Matrix(const T(&)[cols_][rows_]) */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t cols_, std::size_t rows_> constexpr explicit Matrix3(const T(&data)[cols_][rows_]) noexcept: Matrix3x3<T>{data} {}
+        #else
+        /* GCC 4.8 workaround, see the RectangularMatrix base for details */
+        constexpr explicit Matrix3(const T(&data)[3][3]) noexcept: Matrix3x3<T>{data} {}
+        #endif
+
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
         template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other) noexcept: Matrix3x3<T>(other) {}
 

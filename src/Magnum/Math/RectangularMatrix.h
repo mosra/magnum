@@ -110,8 +110,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @return Reference to the data as if it was matrix, thus doesn't
          *      perform any copying.
          *
-         * @attention Use with caution, the function doesn't check whether the
-         *      array is long enough.
+         * Use with caution, the function doesn't check whether the array is
+         * long enough. If possible, prefer to use the
+         * @ref RectangularMatrix(const T(&)[cols_][rows_]) constructor.
          */
         static RectangularMatrix<cols, rows, T>& from(T* data) {
             return *reinterpret_cast<RectangularMatrix<cols, rows, T>*>(data);
@@ -175,6 +176,24 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
         /** @brief Construct with one value for all components */
         constexpr explicit RectangularMatrix(T value) noexcept: RectangularMatrix{typename Containers::Implementation::GenerateSequence<cols>::Type{}, value} {}
+
+        /**
+         * @brief Construct from a fixed-size array
+         * @m_since_latest
+         *
+         * Use @ref Vector::from(T*) "from(const T*)" to reinterpret an
+         * arbitrary pointer to a matrix.
+         */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t cols_, std::size_t rows_> constexpr explicit RectangularMatrix(const T(&data)[cols_][rows_]) noexcept: RectangularMatrix{typename Containers::Implementation::GenerateSequence<cols_>::Type{}, data} {
+            static_assert(cols_ == cols && rows_ == rows, "wrong number of initializers");
+        }
+        #else
+        /* GCC 4.8 isn't able to figure out the size on its own. Which means
+           there we use the type-provided size and lose the check for element
+           count, but at least it compiles. */
+        constexpr explicit RectangularMatrix(const T(&data)[cols][rows]) noexcept: RectangularMatrix{typename Containers::Implementation::GenerateSequence<cols>::Type{}, data} {}
+        #endif
 
         /**
          * @brief Construct from a matrix of a different type
@@ -587,6 +606,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
         /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and RectangularMatrix<cols, rows, T>(IdentityInitT, T) */
         template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Containers::Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
+
+        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const T(&data)[cols_][rows_]).
+           Can't use Vector<rows, T>{} here because MSVC 2015 chokes on it. */
+        template<std::size_t rows_, std::size_t ...sequence> constexpr explicit RectangularMatrix(Containers::Implementation::Sequence<sequence...>, const T(&data)[sizeof...(sequence)][rows_]) noexcept: _data{Vector<rows, T>(data[sequence])...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Containers::Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}

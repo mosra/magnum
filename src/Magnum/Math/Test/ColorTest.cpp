@@ -83,6 +83,8 @@ struct ColorTest: TestSuite::Tester {
     void constructNoInit();
     void constructOneValue();
     void constructParts();
+    void constructArray();
+    void constructArrayRvalue();
     void constructConversion();
     void constructBit();
     void constructPacking();
@@ -212,6 +214,8 @@ ColorTest::ColorTest() {
               &ColorTest::constructNoInit,
               &ColorTest::constructOneValue,
               &ColorTest::constructParts,
+              &ColorTest::constructArray,
+              &ColorTest::constructArrayRvalue,
               &ColorTest::constructConversion,
               &ColorTest::constructBit,
               &ColorTest::constructPacking,
@@ -409,6 +413,65 @@ void ColorTest::constructParts() {
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Color3, Vector2, Float>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<Color4, Color3, Float>::value);
+}
+
+void ColorTest::constructArray() {
+    float data3[]{1.3f, 2.7f, -15.0f};
+    float data4[]{1.3f, 2.7f, -15.0f, 7.0f};
+    Color3 a3{data3};
+    Color4 a4{data4};
+    CORRADE_COMPARE(a3, (Color3{1.3f, 2.7f, -15.0f}));
+    CORRADE_COMPARE(a4, (Color4{1.3f, 2.7f, -15.0f, 7.0f}));
+
+    constexpr float cdata3[]{1.3f, 2.7f, -15.0f};
+    constexpr float cdata4[]{1.3f, 2.7f, -15.0f, 7.0f};
+    constexpr Color3 ca3{cdata3};
+    constexpr Color4 ca4{cdata4};
+    CORRADE_COMPARE(ca3, (Color3{1.3f, 2.7f, -15.0f}));
+    CORRADE_COMPARE(ca4, (Color4{1.3f, 2.7f, -15.0f, 7.0f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<float[3], Color3>::value);
+    CORRADE_VERIFY(!std::is_convertible<float[4], Color4>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color3, float[3]>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color4, float[4]>::value);
+
+    /* See VectorTest::constructArray() for details */
+    #if 0
+    float data1[]{1.3f};
+    float data5[]{1.3f, 2.7f, -15.0f, 7.0f, 22.6f};
+    Color3 b3{data1};
+    Color4 b4{data1};
+    Color3 c3{data5};
+    Color4 c4{data5};
+    #endif
+}
+
+void ColorTest::constructArrayRvalue() {
+    /* Silly but why not. Could theoretically help with some fancier types
+       that'd otherwise require explicit typing with the variadic
+       constructor. */
+    Color3 a3{{1.3f, 2.7f, -15.0f}};
+    Color4 a4{{1.3f, 2.7f, -15.0f, 7.0f}};
+    CORRADE_COMPARE(a3, (Color3{1.3f, 2.7f, -15.0f}));
+    CORRADE_COMPARE(a4, (Color4{1.3f, 2.7f, -15.0f, 7.0f}));
+
+    constexpr Color3 ca3{{1.3f, 2.7f, -15.0f}};
+    constexpr Color4 ca4{{1.3f, 2.7f, -15.0f, 7.0f}};
+    CORRADE_COMPARE(ca3, (Color3{1.3f, 2.7f, -15.0f}));
+    CORRADE_COMPARE(ca4, (Color4{1.3f, 2.7f, -15.0f, 7.0f}));
+
+    /* See VectorTest::constructArrayRvalue() for details */
+    #if 0
+    Color3 c3{{1.3f, 2.7f, -15.0f, 7.0f}};
+    Color4 c4{{1.3f, 2.7f, -15.0f, 7.0f, 22.6f}};
+    #endif
+    #if 0 || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5)
+    CORRADE_WARN("Creating a Color from a smaller array isn't an error on GCC 4.8.");
+    Color3 b3{{1.3f, 2.7f}};
+    Color4 b4{{1.3f, 2.7f}};
+    #endif
 }
 
 void ColorTest::constructConversion() {

@@ -61,6 +61,8 @@ struct Vector3Test: TestSuite::Tester {
     void constructNoInit();
     void constructOneValue();
     void constructParts();
+    void constructArray();
+    void constructArrayRvalue();
     void constructConversion();
     void constructBit();
     void constructCopy();
@@ -89,6 +91,8 @@ Vector3Test::Vector3Test() {
               &Vector3Test::constructNoInit,
               &Vector3Test::constructOneValue,
               &Vector3Test::constructParts,
+              &Vector3Test::constructArray,
+              &Vector3Test::constructArrayRvalue,
               &Vector3Test::constructConversion,
               &Vector3Test::constructBit,
               &Vector3Test::constructCopy,
@@ -163,6 +167,49 @@ void Vector3Test::constructParts() {
     CORRADE_COMPARE(b, Vector3(1.0f, 2.0f, 3.0f));
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, Vector2, Float>::value);
+}
+
+void Vector3Test::constructArray() {
+    float data[]{1.3f, 2.7f, -15.0f};
+    Vector3 a{data};
+    CORRADE_COMPARE(a, (Vector3{1.3f, 2.7f, -15.0f}));
+
+    constexpr float cdata[]{1.3f, 2.7f, -15.0f};
+    constexpr Vector3 ca{cdata};
+    CORRADE_COMPARE(ca, (Vector3{1.3f, 2.7f, -15.0f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<float[3], Vector3>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector3, float[3]>::value);
+
+    /* See VectorTest::constructArray() for details */
+    #if 0
+    float data1[]{1.3f};
+    float data4[]{1.3f, 2.7f, -15.0f, 7.0f};
+    Vector3 b{data1};
+    Vector3 c{data4};
+    #endif
+}
+
+void Vector3Test::constructArrayRvalue() {
+    /* Silly but why not. Could theoretically help with some fancier types
+       that'd otherwise require explicit typing with the variadic
+       constructor. */
+    Vector3 a{{1.3f, 2.7f, -15.0f}};
+    CORRADE_COMPARE(a, (Vector3{1.3f, 2.7f, -15.0f}));
+
+    constexpr Vector3 ca{{1.3f, 2.7f, -15.0f}};
+    CORRADE_COMPARE(ca, (Vector3{1.3f, 2.7f, -15.0f}));
+
+    /* See VectorTest::constructArrayRvalue() for details */
+    #if 0
+    Vector3 c{{1.3f, 2.7f, -15.0f, 7.0f}};
+    #endif
+    #if 0 || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5)
+    CORRADE_WARN("Creating a Vector from a smaller array isn't an error on GCC 4.8.");
+    Vector3 b{{1.3f, 2.7f}};
+    #endif
 }
 
 void Vector3Test::constructConversion() {

@@ -60,6 +60,8 @@ struct Vector2Test: TestSuite::Tester {
     void constructDefault();
     void constructNoInit();
     void constructOneValue();
+    void constructArray();
+    void constructArrayRvalue();
     void constructConversion();
     void constructBit();
     void constructCopy();
@@ -87,6 +89,8 @@ Vector2Test::Vector2Test() {
               &Vector2Test::constructDefault,
               &Vector2Test::constructNoInit,
               &Vector2Test::constructOneValue,
+              &Vector2Test::constructArray,
+              &Vector2Test::constructArrayRvalue,
               &Vector2Test::constructConversion,
               &Vector2Test::constructBit,
               &Vector2Test::constructCopy,
@@ -154,6 +158,48 @@ void Vector2Test::constructOneValue() {
     CORRADE_VERIFY(!std::is_convertible<Float, Vector2>::value);
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, Float>::value);
+}
+
+void Vector2Test::constructArray() {
+    float data[]{1.3f, 2.7f};
+    Vector2 a{data};
+    CORRADE_COMPARE(a, (Vector2{1.3f, 2.7f}));
+
+    constexpr float cdata[]{1.3f, 2.7f};
+    constexpr Vector2 ca{cdata};
+    CORRADE_COMPARE(ca, (Vector2{1.3f, 2.7f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<float[2], Vector2>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Vector2, float[2]>::value);
+
+    /* See VectorTest::constructArray() for details */
+    #if 0
+    float data1[]{1.3f};
+    float data4[]{1.3f, 2.7f, -15.0f, 7.0f};
+    Vector2 b{data1};
+    Vector2 c{data4};
+    #endif
+}
+
+void Vector2Test::constructArrayRvalue() {
+    /* Silly but why not. Could theoretically help with some fancier types
+       that'd otherwise require explicit typing with the variadic
+       constructor. */
+    Vector2 a{{1.3f, 2.7f}};
+    CORRADE_COMPARE(a, (Vector2{1.3f, 2.7f}));
+
+    constexpr Vector2 ca{{1.3f, 2.7f}};
+    CORRADE_COMPARE(ca, (Vector2{1.3f, 2.7f}));
+
+    /* See VectorTest::constructArrayRvalue() for details. In case of a
+       two-component vector, doing Vector2{{1.3f}} isn't an error, as it picks
+       the one-value overload, and possibly only warns about "braces around
+       scalar initializer". */
+    #if 0
+    Vector2 c{{1.3f, 2.7f, -15.0f, 7.0f}};
+    #endif
 }
 
 void Vector2Test::constructConversion() {

@@ -108,6 +108,17 @@ template<class T> class Vector4: public Vector<4, T> {
          */
         constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w) noexcept: Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
+        /** @copydoc Magnum::Math::Vector::Vector(const T(&)[size_]) */
+        /* For some freaking reason doxygen 1.8.17 needs a fully qualified name
+           here but GUESS WHAT! Not in the other Vector2/3 classes! Dumpster
+           fire! FFS. */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t size_> constexpr explicit Vector4(const T(&data)[size_]) noexcept: Vector<4, T>{data} {}
+        #else
+        /* GCC 4.8 workaround, see the Vector base for details */
+        constexpr explicit Vector4(const T(&data)[4]) noexcept: Vector<4, T>{data} {}
+        #endif
+
         /** @copydoc Magnum::Math::Vector::Vector(const Vector<size, U>&) */
         /* For some freaking reason doxygen 1.8.17 needs a fully qualified name
            here but GUESS WHAT! Not in the other Vector2/3 classes! Dumpster

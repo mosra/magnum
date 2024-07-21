@@ -166,6 +166,14 @@ template<class T> class Vector3: public Vector<3, T> {
          */
         constexpr /*implicit*/ Vector3(const Vector2<T>& xy, T z) noexcept: Vector<3, T>(xy[0], xy[1], z) {}
 
+        /** @copydoc Vector::Vector(const T(&)[size_]) */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t size_> constexpr explicit Vector3(const T(&data)[size_]) noexcept: Vector<3, T>{data} {}
+        #else
+        /* GCC 4.8 workaround, see the Vector base for details */
+        constexpr explicit Vector3(const T(&data)[3]) noexcept: Vector<3, T>{data} {}
+        #endif
+
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
         template<class U> constexpr explicit Vector3(const Vector<3, U>& other) noexcept: Vector<3, T>(other) {}
 

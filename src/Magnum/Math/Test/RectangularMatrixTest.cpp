@@ -64,6 +64,8 @@ struct RectangularMatrixTest: TestSuite::Tester {
     void constructNoInit();
     void constructOneValue();
     void constructOneComponent();
+    void constructArray();
+    void constructArrayRvalue();
     void constructConversion();
     void constructFromDifferentSize();
     void constructFromData();
@@ -131,6 +133,8 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::constructNoInit,
               &RectangularMatrixTest::constructOneValue,
               &RectangularMatrixTest::constructOneComponent,
+              &RectangularMatrixTest::constructArray,
+              &RectangularMatrixTest::constructArrayRvalue,
               &RectangularMatrixTest::constructConversion,
               &RectangularMatrixTest::constructFromDifferentSize,
               &RectangularMatrixTest::constructFromData,
@@ -263,6 +267,100 @@ void RectangularMatrixTest::constructOneComponent() {
     CORRADE_COMPARE(c, Matrix1x1{Vector1{1.5f}});
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Matrix1x1, Vector1>::value);
+}
+
+void RectangularMatrixTest::constructArray() {
+    float data[2][4]{
+        {3.0f, 5.0f, 8.0f, -3.0f},
+        {4.5f, 4.0f, 7.0f,  2.0f},
+    };
+    Matrix2x4 a{data};
+    CORRADE_COMPARE(a, (Matrix2x4{Vector4{3.0f, 5.0f, 8.0f, -3.0f},
+                                  Vector4{4.5f, 4.0f, 7.0f,  2.0f}}));
+
+    constexpr float cdata[2][4]{
+        {3.0f, 5.0f, 8.0f, -3.0f},
+        {4.5f, 4.0f, 7.0f,  2.0f},
+    };
+    constexpr Matrix2x4 ca{cdata};
+    CORRADE_COMPARE(ca, (Matrix2x4{Vector4{3.0f, 5.0f, 8.0f, -3.0f},
+                                   Vector4{4.5f, 4.0f, 7.0f,  2.0f}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<float[2][4], Matrix2x4>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix2x4, float[2][4]>::value);
+
+    /* It should always be constructible only with exactly the matching number
+       of elements. As that's checked with a static_assert(), it's impossible
+       to verify with std::is_constructible unfortunately and the only way to
+       test that is manually, thus uncomment the code below to test the error
+       behavior.
+
+       Additionally, to avoid noise in the compiler output, the second and
+       fourth should only produce "excess elements in array initializer" and a
+       static assert, the first and third just a static assert, no other
+       compiler error. */
+    #if 0
+    float data23[2][3]{
+        {3.0f, 5.0f, 8.0f},
+        {4.5f, 4.0f, 7.0f}
+    };
+    float data25[2][5]{
+        {3.0f, 5.0f, 8.0f, -3.0f, 17.0f},
+        {4.5f, 4.0f, 7.0f,  2.0f, 23.2f}
+    };
+    float data14[1][4]{
+        {3.0f, 5.0f, 8.0f, -3.0f},
+    };
+    float data34[3][4]{
+        {3.0f, 5.0f, 8.0f, -3.0f},
+        {4.5f, 4.0f, 7.0f,  2.0f},
+        {3.0f, 7.0f, 0.0f,  1.0f}
+    };
+    Matrix2x4 b{data23};
+    Matrix2x4 c{data25};
+    Matrix2x4 d{data14};
+    Matrix2x4 e{data34};
+    #endif
+}
+
+void RectangularMatrixTest::constructArrayRvalue() {
+    /* This, the extra {} to supply an array, avoids the need to have to
+       explicitly type out Vector for every column */
+    Matrix2x4 a{{{3.0f, 5.0f, 8.0f, -3.0f},
+                 {4.5f, 4.0f, 7.0f,  2.0f}}};
+    CORRADE_COMPARE(a, (Matrix2x4{Vector4{3.0f, 5.0f, 8.0f, -3.0f},
+                                  Vector4{4.5f, 4.0f, 7.0f,  2.0f}}));
+
+    constexpr Matrix2x4 ca{{{3.0f, 5.0f, 8.0f, -3.0f},
+                            {4.5f, 4.0f, 7.0f,  2.0f}}};
+    CORRADE_COMPARE(ca, (Matrix2x4{Vector4{3.0f, 5.0f, 8.0f, -3.0f},
+                                   Vector4{4.5f, 4.0f, 7.0f,  2.0f}}));
+
+    /* It should always be constructible only with exactly the matching number
+       of elements. As that's checked with a static_assert(), it's impossible
+       to verify with std::is_constructible unfortunately and the only way to
+       test that is manually, thus uncomment the code below to test the error
+       behavior.
+
+       Additionally, to avoid noise in the compiler output, the first and
+       second should only produce "excess elements in array initializer" and a
+       static assert, the third and fourth a static assert, no other compiler
+       error. */
+    #if 0
+    Matrix2x4 c{{{3.0f, 5.0f, 8.0f, -3.0f, 17.0f},
+                 {4.5f, 4.0f, 7.0f,  2.0f, 23.2f}}};
+    Matrix2x4 e{{{3.0f, 5.0f, 8.0f, -3.0f},
+                 {4.5f, 4.0f, 7.0f,  2.0f},
+                 {3.0f, 7.0f, 0.0f,  1.0f}}};
+    #endif
+    #if 0 || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5)
+    CORRADE_WARN("Creating a RectangularMatrix from a smaller array isn't an error on GCC 4.8.");
+    Matrix2x4 b{{{3.0f, 5.0f, 8.0f},
+                 {4.5f, 4.0f, 7.0f}}};
+    Matrix2x4 d{{{3.0f, 5.0f, 8.0f, -3.0f}}};
+    #endif
 }
 
 void RectangularMatrixTest::constructConversion() {

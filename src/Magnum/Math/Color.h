@@ -561,6 +561,14 @@ template<class T> class Color3: public Vector3<T> {
          */
         constexpr /*implicit*/ Color3(const Vector<2, T>& rg, T b) noexcept: Vector3<T>{rg, b} {}
 
+        /** @copydoc Vector::Vector(const T(&)[size_]) */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t size_> constexpr explicit Color3(const T(&data)[size_]) noexcept: Vector3<T>{data} {}
+        #else
+        /* GCC 4.8 workaround, see the Vector base for details */
+        constexpr explicit Color3(const T(&data)[3]) noexcept: Vector3<T>{data} {}
+        #endif
+
         /**
          * @copydoc Vector::Vector(const Vector<size, U>&)
          *
@@ -1048,6 +1056,14 @@ class Color4: public Vector4<T> {
         /* Not marked as explicit, because conversion from Color3 to Color4
            is fairly common, nearly always with A set to 1 */
         constexpr /*implicit*/ Color4(const Vector3<T>& rgb, T a = Implementation::fullChannel<T>()) noexcept: Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+
+        /** @copydoc Vector::Vector(const T(&)[size_]) */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t size_> constexpr explicit Color4(const T(&data)[size_]) noexcept: Vector4<T>{data} {}
+        #else
+        /* GCC 4.8 workaround, see the Vector base for details */
+        constexpr explicit Color4(const T(&data)[4]) noexcept: Vector4<T>{data} {}
+        #endif
 
         /**
          * @copydoc Vector::Vector(const Vector<size, U>&)

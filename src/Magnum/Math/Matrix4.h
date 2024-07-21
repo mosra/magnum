@@ -567,6 +567,14 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /** @brief Construct with one value for all elements */
         constexpr explicit Matrix4(T value) noexcept: Matrix4x4<T>{value} {}
 
+        /** @copydoc Matrix::Matrix(const T(&)[cols_][rows_]) */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t cols_, std::size_t rows_> constexpr explicit Matrix4(const T(&data)[cols_][rows_]) noexcept: Matrix4x4<T>{data} {}
+        #else
+        /* GCC 4.8 workaround, see the RectangularMatrix base for details */
+        constexpr explicit Matrix4(const T(&data)[4][4]) noexcept: Matrix4x4<T>{data} {}
+        #endif
+
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
         template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other) noexcept: Matrix4x4<T>(other) {}
 

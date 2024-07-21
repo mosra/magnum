@@ -68,6 +68,8 @@ struct Matrix4Test: TestSuite::Tester {
     void constructZero();
     void constructNoInit();
     void constructOneValue();
+    void constructArray();
+    void constructArrayRvalue();
     void constructConversion();
     void constructFromDifferentSize();
     void constructCopy();
@@ -144,6 +146,8 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::constructZero,
               &Matrix4Test::constructNoInit,
               &Matrix4Test::constructOneValue,
+              &Matrix4Test::constructArray,
+              &Matrix4Test::constructArrayRvalue,
               &Matrix4Test::constructConversion,
               &Matrix4Test::constructFromDifferentSize,
               &Matrix4Test::constructCopy,
@@ -290,6 +294,110 @@ void Matrix4Test::constructOneValue() {
     CORRADE_VERIFY(!std::is_convertible<Float, Matrix4>::value);
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4, Float>::value);
+}
+
+void Matrix4Test::constructArray() {
+    float data[4][4]{
+        {3.0f,  5.0f, 8.0f, -3.0f},
+        {4.5f,  4.0f, 7.0f,  2.0f},
+        {1.0f,  2.0f, 3.0f, -1.0f},
+        {7.9f, -1.0f, 8.0f, -1.5f}
+    };
+    Matrix4 a{data};
+    CORRADE_COMPARE(a, (Matrix4{{3.0f,  5.0f, 8.0f, -3.0f},
+                                {4.5f,  4.0f, 7.0f,  2.0f},
+                                {1.0f,  2.0f, 3.0f, -1.0f},
+                                {7.9f, -1.0f, 8.0f, -1.5f}}));
+
+    constexpr float cdata[4][4]{
+        {3.0f,  5.0f, 8.0f, -3.0f},
+        {4.5f,  4.0f, 7.0f,  2.0f},
+        {1.0f,  2.0f, 3.0f, -1.0f},
+        {7.9f, -1.0f, 8.0f, -1.5f}
+    };
+    constexpr Matrix4 ca{cdata};
+    CORRADE_COMPARE(ca, (Matrix4{{3.0f,  5.0f, 8.0f, -3.0f},
+                                 {4.5f,  4.0f, 7.0f,  2.0f},
+                                 {1.0f,  2.0f, 3.0f, -1.0f},
+                                 {7.9f, -1.0f, 8.0f, -1.5f}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<float[4][4], Matrix4>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4, float[4][4]>::value);
+
+    /* See RectangularMatrixTest::constructArray() for details */
+    #if 0
+    float data43[4][3]{
+        {3.0f,  5.0f, 8.0f},
+        {4.5f,  4.0f, 7.0f},
+        {1.0f,  2.0f, 3.0f},
+        {7.9f, -1.0f, 8.0f}
+    };
+    float data45[4][5]{
+        {3.0f,  5.0f, 8.0f, -3.0f, 0.3f},
+        {4.5f,  4.0f, 7.0f,  2.0f, 0.3f},
+        {1.0f,  2.0f, 3.0f, -1.0f, 0.3f},
+        {7.9f, -1.0f, 8.0f, -1.5f, 0.3f}
+    };
+    float data14[1][4]{
+        {3.0f, 5.0f, 8.0f, -3.0f},
+    };
+    float data54[5][4]{
+        {3.0f, 5.0f, 8.0f, -3.0f},
+        {4.5f, 4.0f, 7.0f,  2.0f},
+        {4.5f, 4.0f, 7.0f,  2.0f},
+        {4.5f, 4.0f, 7.0f,  2.0f},
+        {3.0f, 7.0f, 0.0f,  1.0f}
+    };
+    Matrix4 b{data43};
+    Matrix4 c{data45};
+    Matrix4 d{data14};
+    Matrix4 e{data54};
+    #endif
+}
+
+void Matrix4Test::constructArrayRvalue() {
+    /* In this case the constructor already has concrete types, so the array
+       constructor doesn't really add anything to it */
+    Matrix4 a{{{3.0f,  5.0f, 8.0f, -3.0f},
+               {4.5f,  4.0f, 7.0f,  2.0f},
+               {1.0f,  2.0f, 3.0f, -1.0f},
+               {7.9f, -1.0f, 8.0f, -1.5f}}};
+    CORRADE_COMPARE(a, (Matrix4{{3.0f,  5.0f, 8.0f, -3.0f},
+                                {4.5f,  4.0f, 7.0f,  2.0f},
+                                {1.0f,  2.0f, 3.0f, -1.0f},
+                                {7.9f, -1.0f, 8.0f, -1.5f}}));
+
+    constexpr Matrix4 ca{{{3.0f,  5.0f, 8.0f, -3.0f},
+                          {4.5f,  4.0f, 7.0f,  2.0f},
+                          {1.0f,  2.0f, 3.0f, -1.0f},
+                          {7.9f, -1.0f, 8.0f, -1.5f}}};
+    CORRADE_COMPARE(ca, (Matrix4{{3.0f,  5.0f, 8.0f, -3.0f},
+                                 {4.5f,  4.0f, 7.0f,  2.0f},
+                                 {1.0f,  2.0f, 3.0f, -1.0f},
+                                 {7.9f, -1.0f, 8.0f, -1.5f}}));
+
+    /* See RectangularMatrixTest::constructArrayRvalue() for details */
+    #if 0
+    Matrix4 c{{{3.0f,  5.0f, 8.0f, -3.0f, 0.3f},
+               {4.5f,  4.0f, 7.0f,  2.0f, 0.3f},
+               {1.0f,  2.0f, 3.0f, -1.0f, 0.3f},
+               {7.9f, -1.0f, 8.0f, -1.5f, 0.3f}}};
+    Matrix4 e{{{3.0f, 5.0f, 8.0f, -3.0f},
+               {4.5f, 4.0f, 7.0f,  2.0f},
+               {4.5f, 4.0f, 7.0f,  2.0f},
+               {4.5f, 4.0f, 7.0f,  2.0f},
+               {3.0f, 7.0f, 0.0f,  1.0f}}};
+    #endif
+    #if 0 || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5)
+    CORRADE_WARN("Creating a Matrix from a smaller array isn't an error on GCC 4.8.");
+    Matrix4 b{{{3.0f,  5.0f, 8.0f},
+               {4.5f,  4.0f, 7.0f},
+               {1.0f,  2.0f, 3.0f},
+               {7.9f, -1.0f, 8.0f}}};
+    Matrix4 d{{{3.0f, 5.0f, 8.0f, -3.0f}}};
+    #endif
 }
 
 void Matrix4Test::constructConversion() {

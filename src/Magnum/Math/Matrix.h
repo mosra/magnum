@@ -89,6 +89,14 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /** @brief Construct with one value for all elements */
         constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{value} {}
 
+        /** @copydoc RectangularMatrix::RectangularMatrix(const T(&)[cols_][rows_]) */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t cols_, std::size_t rows_> constexpr explicit Matrix(const T(&data)[cols_][rows_]) noexcept: RectangularMatrix<size, size, T>{data} {}
+        #else
+        /* GCC 4.8 workaround, see the RectangularMatrix base for details */
+        constexpr explicit Matrix(const T(&data)[size][size]) noexcept: RectangularMatrix<size, size, T>{data} {}
+        #endif
+
         /**
          * @brief Construct from a matrix of a different type
          *

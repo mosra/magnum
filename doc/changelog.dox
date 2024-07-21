@@ -272,6 +272,9 @@ See also:
     flip of various block-compressed formats
 -   New @ref Math::Nanoseconds and @ref Math::Seconds classes for strongly
     typed representation of time values
+-   @ref Math::Vector, @ref Math::RectangularMatrix and all their subclasses
+    can be now constructed from fixed-size arrays without having to use the
+    potentially dangerous and non-constexpr @ref Math::Vector::from() API
 
 @subsubsection changelog-latest-new-materialtools MaterialTools library
 

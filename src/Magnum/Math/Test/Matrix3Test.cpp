@@ -65,6 +65,8 @@ struct Matrix3Test: TestSuite::Tester {
     void constructZero();
     void constructNoInit();
     void constructOneValue();
+    void constructArray();
+    void constructArrayRvalue();
     void constructConversion();
     void constructFromDifferentSize();
     void constructCopy();
@@ -121,6 +123,8 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::constructZero,
               &Matrix3Test::constructNoInit,
               &Matrix3Test::constructOneValue,
+              &Matrix3Test::constructArray,
+              &Matrix3Test::constructArrayRvalue,
               &Matrix3Test::constructConversion,
               &Matrix3Test::constructFromDifferentSize,
               &Matrix3Test::constructCopy,
@@ -242,6 +246,96 @@ void Matrix3Test::constructOneValue() {
     CORRADE_VERIFY(!std::is_convertible<Float, Matrix3>::value);
 
     CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3, Float>::value);
+}
+
+void Matrix3Test::constructArray() {
+    float data[3][3]{
+        {3.0f,  5.0f, 8.0f},
+        {4.5f,  4.0f, 7.0f},
+        {1.0f,  2.0f, 3.0f}
+    };
+    Matrix3 a{data};
+    CORRADE_COMPARE(a, (Matrix3{{3.0f,  5.0f, 8.0f},
+                                {4.5f,  4.0f, 7.0f},
+                                {1.0f,  2.0f, 3.0f}}));
+
+    constexpr float cdata[3][3]{
+        {3.0f,  5.0f, 8.0f},
+        {4.5f,  4.0f, 7.0f},
+        {1.0f,  2.0f, 3.0f}
+    };
+    constexpr Matrix3 ca{cdata};
+    CORRADE_COMPARE(ca, (Matrix3{{3.0f,  5.0f, 8.0f},
+                                 {4.5f,  4.0f, 7.0f},
+                                 {1.0f,  2.0f, 3.0f}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<float[3][3], Matrix3>::value);
+
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3, float[3][3]>::value);
+
+    /* See RectangularMatrixTest::constructArray() for details */
+    #if 0
+    float data32[3][2]{
+        {3.0f,  5.0f},
+        {4.5f,  4.0f},
+        {1.0f,  2.0f}
+    };
+    float data34[3][4]{
+        {3.0f,  5.0f, 8.0f, -3.0f},
+        {4.5f,  4.0f, 7.0f,  2.0f},
+        {1.0f,  2.0f, 3.0f, -1.0f}
+    };
+    float data13[1][3]{
+        {3.0f, 5.0f, 8.0f},
+    };
+    float data43[4][3]{
+        {3.0f, 5.0f, 8.0f},
+        {4.5f, 4.0f, 7.0f},
+        {4.5f, 4.0f, 7.0f},
+        {4.5f, 4.0f, 7.0f}
+    };
+    Matrix3 b{data32};
+    Matrix3 c{data34};
+    Matrix3 d{data13};
+    Matrix3 e{data43};
+    #endif
+}
+
+void Matrix3Test::constructArrayRvalue() {
+    /* In this case the constructor already has concrete types, so the array
+       constructor doesn't really add anything to it */
+    Matrix3 a{{{3.0f,  5.0f, 8.0f},
+               {4.5f,  4.0f, 7.0f},
+               {1.0f,  2.0f, 3.0f}}};
+    CORRADE_COMPARE(a, (Matrix3{{3.0f,  5.0f, 8.0f},
+                                {4.5f,  4.0f, 7.0f},
+                                {1.0f,  2.0f, 3.0f}}));
+
+    constexpr Matrix3 ca{{{3.0f,  5.0f, 8.0f},
+                          {4.5f,  4.0f, 7.0f},
+                          {1.0f,  2.0f, 3.0f}}};
+    CORRADE_COMPARE(ca, (Matrix3{{3.0f,  5.0f, 8.0f},
+                                 {4.5f,  4.0f, 7.0f},
+                                 {1.0f,  2.0f, 3.0f}}));
+
+    /* See RectangularMatrixTest::constructArrayRvalue() for details */
+    #if 0
+    Matrix3 c{{{3.0f,  5.0f, 8.0f, -3.0f},
+               {4.5f,  4.0f, 7.0f,  2.0f},
+               {1.0f,  2.0f, 3.0f, -1.0f}}};
+    Matrix3 e{{{3.0f, 5.0f, 8.0f},
+               {4.5f, 4.0f, 7.0f},
+               {4.5f, 4.0f, 7.0f},
+               {4.5f, 4.0f, 7.0f}}};
+    #endif
+    #if 0 || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5)
+    CORRADE_WARN("Creating a Matrix from a smaller array isn't an error on GCC 4.8.");
+    Matrix3 b{{{3.0f,  5.0f},
+               {4.5f,  4.0f},
+               {1.0f,  2.0f}}};
+    Matrix3 d{{{3.0f, 5.0f, 8.0f}}};
+    #endif
 }
 
 void Matrix3Test::constructConversion() {

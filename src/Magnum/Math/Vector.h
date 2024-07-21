@@ -170,8 +170,9 @@ template<std::size_t size, class T> class Vector {
          * @return Reference to the data as if it was Vector, thus doesn't
          *      perform any copying.
          *
-         * @attention Use with caution, the function doesn't check whether the
-         *      array is long enough.
+         * Use with caution, the function doesn't check whether the array is
+         * long enough. If possible, prefer to use the
+         * @ref Vector(const T(&)[size_]) constructor.
          */
         static Vector<size, T>& from(T* data) {
             return *reinterpret_cast<Vector<size, T>*>(data);
@@ -216,6 +217,24 @@ template<std::size_t size, class T> class Vector {
         template<class ...U> constexpr /*implicit*/ Vector(T first, U... next) noexcept;
         #else
         template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next) noexcept: _data{first, next...} {}
+        #endif
+
+        /**
+         * @brief Construct a vector from a fixed-size array
+         * @m_since_latest
+         *
+         * Use @ref Vector::from(T*) "from(const T*)" to reinterpret an
+         * arbitrary pointer to a vector.
+         */
+        #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+        template<std::size_t size_> constexpr explicit Vector(const T(&data)[size_]) noexcept: Vector{typename Containers::Implementation::GenerateSequence<size_>::Type{}, data} {
+            static_assert(size_ == size, "wrong number of initializers");
+        }
+        #else
+        /* GCC 4.8 isn't able to figure out the size on its own. Which means
+           there we use the type-provided size and lose the check for element
+           count, but at least it compiles. */
+        constexpr explicit Vector(const T(&data)[size]) noexcept: Vector{typename Containers::Implementation::GenerateSequence<size>::Type{}, data} {}
         #endif
 
         /** @brief Construct a vector with one value for all components */
@@ -1262,6 +1281,9 @@ template<std::size_t size, class T> class Vector {
         template<std::size_t size_, class T_> friend BitVector<size_> notEqual(const Vector<size_, T_>&, const Vector<size_, T_>&);
 
         template<std::size_t size_, class U> friend U dot(const Vector<size_, U>&, const Vector<size_, U>&);
+
+        /* Implementation for Vector<size, T>::Vector(const T(&data)[size_]) */
+        template<std::size_t ...sequence> constexpr explicit Vector(Containers::Implementation::Sequence<sequence...>, const T(&data)[sizeof...(sequence)]) noexcept: _data{data[sequence]...} {}
 
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit Vector(Containers::Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
