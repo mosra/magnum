@@ -44,6 +44,18 @@
 namespace Magnum { namespace Math {
 
 namespace Implementation {
+    /* Compared to traits in Range.h it handles also arbitrary other dimension
+       count */
+    template<UnsignedInt dimensions, class T> struct BezierTraits {
+        typedef T Type;
+    };
+    template<class T> struct BezierTraits<2, T> {
+        typedef Vector2<T> Type;
+    };
+    template<class T> struct BezierTraits<3, T> {
+        typedef Vector3<T> Type;
+    };
+
     template<UnsignedInt, UnsignedInt, class, class> struct BezierConverter;
 }
 
@@ -69,6 +81,15 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
 
     public:
         typedef T Type;             /**< @brief Underlying data type */
+
+        /**
+         * @brief Underlying vector type
+         * @m_since_latest
+         *
+         * @cpp T @ce in 1D, @ref Math::Vector2 "Vector2<T>" in 2D,
+         * @ref Math::Vector3 "Vector3<T>" in 3D.
+         */
+        typedef typename Implementation::BezierTraits<dimensions, T>::Type VectorType;
 
         enum: UnsignedInt {
             Order = order,          /**< Order of Bézier curve */
@@ -96,11 +117,10 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * underlying types. See @ref CubicHermite::fromBezier() for the
          * inverse operation.
          */
-        template<class VectorType> static
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        typename std::enable_if<std::is_base_of<Vector<dimensions, T>, VectorType>::value && order == 3, Bezier<order, dimensions, T>>::type
+        template<UnsignedInt order_ = order> static typename std::enable_if<order_ == 3, Bezier<order, dimensions, T>>::type
         #else
-        Bezier<order, dimensions, T>
+        static Bezier<order, dimensions, T>
         #endif
         fromCubicHermite(const CubicHermite<VectorType>& a, const CubicHermite<VectorType>& b) {
             return {a.point(), a.outTangent()/T(3) - a.point(), b.point() - b.inTangent()/T(3), b.point()};
@@ -124,7 +144,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         explicit Bezier(Magnum::NoInitT) noexcept: Bezier<order, dimensions, T>{typename Containers::Implementation::GenerateSequence<order + 1>::Type{}, Magnum::NoInit} {}
 
         /** @brief Construct a Bézier curve with given array of control points */
-        template<typename... U> constexpr /*implicit*/ Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {
+        template<typename... U> constexpr /*implicit*/ Bezier(const VectorType& first, U... next) noexcept: _data{first, next...} {
             static_assert(sizeof...(U) + 1 == order + 1, "Wrong number of arguments");
         }
 
@@ -155,11 +175,11 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector<dimensions, T>* data();
-        constexpr const Vector<dimensions, T>* data() const; /**< @overload */
+        VectorType* data();
+        constexpr const VectorType* data() const; /**< @overload */
         #else
-        auto data() -> Vector<dimensions, T>(&)[order + 1] { return _data; }
-        constexpr auto data() const -> const Vector<dimensions, T>(&)[order + 1] { return _data; }
+        auto data() -> VectorType(&)[order + 1] { return _data; }
+        constexpr auto data() const -> const VectorType(&)[order + 1] { return _data; }
         #endif
 
         /** @brief Equality comparison */
@@ -179,9 +199,9 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          *
          * @p i should not be larger than @ref Order.
          */
-        Vector<dimensions, T>& operator[](std::size_t i) { return _data[i]; }
+        VectorType& operator[](std::size_t i) { return _data[i]; }
         /* returns const& so [][] operations are also constexpr */
-        constexpr const Vector<dimensions, T>& operator[](std::size_t i) const { return _data[i]; } /**< @overload */
+        constexpr const VectorType& operator[](std::size_t i) const { return _data[i]; } /**< @overload */
 
         /**
          * @brief Interpolate the curve at given position
@@ -190,7 +210,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
          * @see @ref subdivide()
          */
-        Vector<dimensions, T> value(T t) const {
+        VectorType value(T t) const {
             Bezier<order, dimensions, T> iPoints[order + 1];
             calculateIntermediatePoints(iPoints, t);
             return iPoints[0][order];
@@ -216,11 +236,11 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
 
     private:
         /* Implementation for Bezier<order, dimensions, T>::Bezier(const Bezier<order, dimensions, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Containers::Implementation::Sequence<sequence...>, const Bezier<order, dimensions, U>& other) noexcept: _data{Vector<dimensions, T>(other._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Containers::Implementation::Sequence<sequence...>, const Bezier<order, dimensions, U>& other) noexcept: _data{VectorType(other._data[sequence])...} {}
 
         /* Implementation for Bezier<order, dimensions, T>::Bezier(ZeroInitT) and Bezier<order, dimensions, T>::Bezier(NoInitT) */
         /* MSVC 2015 can't handle {} here */
-        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Containers::Implementation::Sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Containers::Implementation::Sequence<sequence...>, U): _data{VectorType{U{(static_cast<void>(sequence), typename U::Init{})}}...} {}
 
         /* Calculates and returns all intermediate points generated when using De Casteljau's algorithm */
         void calculateIntermediatePoints(Bezier<order, dimensions, T>(&iPoints)[order + 1], T t) const {
@@ -234,7 +254,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
             }
         }
 
-        Vector<dimensions, T> _data[order + 1];
+        VectorType _data[order + 1];
 };
 
 /**
