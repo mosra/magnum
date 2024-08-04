@@ -261,12 +261,23 @@ class GlfwApplication {
          *      should exit, @cpp true @ce otherwise
          * @m_since{2020,06}
          *
+         * Calls @ref mainLoopDrawEventIteration(), @ref glfwPollEvents() and/or
+         * @ref glfwWaitEvents() managing the delays between them.
          * Called internally from @ref exec(). If you want to have better
          * control over how the main loop behaves, you can call this function
+         * (or the sub mainLoopDrawEventIteration with the glfw events functions such as glfwPollEvents / glfwWaitEvents)
          * yourself from your own `main()` function instead of it being called
          * automatically from @ref exec() / @ref MAGNUM_GLFWAPPLICATION_MAIN().
          */
         bool mainLoopIteration();
+
+        /**
+         * @brief Calls @ref drawEvent() if @ref Flag::Redraw is set and unset it.
+         * @return @cpp true @ce if @ref drawEvent() was called, @cpp false @ce otherwise
+         * 
+         * Called internally from @ref mainLoopIteration().
+         */
+        bool mainLoopDrawEventIteration();
 
         /**
          * @brief Exit application
@@ -530,6 +541,21 @@ class GlfwApplication {
          */
         void setSwapInterval(Int interval);
 
+        /**
+         * @brief Set minimal loop period
+         *
+         * This setting reduces the main loop frequency in case VSync is
+         * not/cannot be enabled or no drawing is done. Default is @cpp 0 @ce
+         * (i.e. looping at maximum frequency). If the application is drawing
+         * on the screen and VSync is enabled, this setting is ignored.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
+         *      the browser is managing the frequency instead.
+         * @see @ref setSwapInterval()
+         */
+        void setMinimalLoopPeriod(UnsignedInt milliseconds) {
+            _minimalLoopPeriod = milliseconds;
+        }
+
         /** @copydoc Sdl2Application::redraw() */
         void redraw();
 
@@ -740,6 +766,23 @@ class GlfwApplication {
          * @}
          */
 
+    protected:
+        /**
+         * @brief Tick event
+         *
+         * If implemented, this function is called periodically after
+         * processing all input events and before draw event even though there
+         * might be no input events and redraw is not requested. Useful e.g.
+         * for asynchronous task polling. Use @ref setMinimalLoopPeriod()/
+         * @ref setSwapInterval() to control main loop frequency.
+         *
+         * If this implementation gets called from its @cpp override @ce, it
+         * will effectively stop the tick event from being fired and the app
+         * returns back to waiting for input events. This can be used to
+         * disable the tick event when not needed.
+         */
+        virtual void tickEvent();
+
     private:
         enum class Flag: UnsignedByte;
         typedef Containers::EnumSet<Flag> Flags;
@@ -767,6 +810,7 @@ class GlfwApplication {
         Vector2 _commandLineDpiScaling, _configurationDpiScaling;
 
         GLFWwindow* _window{nullptr};
+        UnsignedInt _minimalLoopPeriod;
         Flags _flags;
         #ifdef MAGNUM_TARGET_GL
         /* Has to be in an Optional because we delay-create it in a constructor
