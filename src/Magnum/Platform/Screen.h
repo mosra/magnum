@@ -175,7 +175,7 @@ template<class Application> class BasicScreen:
          * @brief Key event
          *
          * Defined only if the application has a
-         * @ref Sdl2Application::KeyEvent "KeyEvent".
+         * @relativeref{Sdl2ApplicationWindow,KeyEvent}.
          */
         typedef typename BasicScreenedApplication<Application>::KeyEvent KeyEvent;
         #endif
@@ -192,7 +192,7 @@ template<class Application> class BasicScreen:
          * @m_since{2019,10}
          *
          * Defined only if the application has a
-         * @ref Sdl2Application::MouseScrollEvent "MouseScrollEvent".
+         * @relativeref{Sdl2ApplicationWindow,MouseScrollEvent}.
          */
         typedef typename BasicScreenedApplication<Application>::MouseScrollEvent MouseScrollEvent;
 
@@ -201,7 +201,7 @@ template<class Application> class BasicScreen:
          * @m_since{2019,10}
          *
          * Defined only if the application has a
-         * @ref Sdl2Application::TextInputEvent "TextInputEvent".
+         * @relativeref{Sdl2ApplicationWindow,TextInputEvent}.
          */
         typedef typename BasicScreenedApplication<Application>::TextInputEvent TextInputEvent;
 
@@ -210,7 +210,7 @@ template<class Application> class BasicScreen:
          * @m_since{2019,10}
          *
          * Defined only if the application has a
-         * @ref Sdl2Application::TextEditingEvent "TextEditingEvent".
+         * @relativeref{Sdl2ApplicationWindow,TextEditingEvent}.
          */
         typedef typename BasicScreenedApplication<Application>::TextEditingEvent TextEditingEvent;
         #endif
@@ -379,7 +379,7 @@ template<class Application> class BasicScreen:
          * Called when @ref PropagatedEvent::Input is enabled and an key is
          * pressed. See @ref Sdl2Application::keyPressEvent() "*Application::keyPressEvent()"
          * for more information. Defined only if the application has a
-         * @ref Sdl2Application::KeyEvent "KeyEvent".
+         * @relativeref{Sdl2ApplicationWindow,KeyEvent}.
          */
         virtual void keyPressEvent(KeyEvent& event);
 
@@ -389,7 +389,7 @@ template<class Application> class BasicScreen:
          * Called when @ref PropagatedEvent::Input is enabled and an key is
          * released. See @ref Sdl2Application::keyReleaseEvent() "*Application::keyReleaseEvent()"
          * for more information. Defined only if the application has a
-         * @ref Sdl2Application::KeyEvent "KeyEvent".
+         * @relativeref{Sdl2ApplicationWindow,KeyEvent}.
          */
         virtual void keyReleaseEvent(KeyEvent& event);
         #endif
@@ -437,7 +437,7 @@ template<class Application> class BasicScreen:
          * Called when @ref PropagatedEvent::Input is enabled and mouse wheel
          * is rotated. See @ref Sdl2Application::mouseScrollEvent() "*Application::mouseScrollEvent()"
          * for more information. Defined only if the application has a
-         * @ref Sdl2Application::MouseScrollEvent "MouseScrollEvent".
+         * @relativeref{Sdl2ApplicationWindow,MouseScrollEvent}.
          */
         virtual void mouseScrollEvent(MouseScrollEvent& event);
         #endif
@@ -457,7 +457,7 @@ template<class Application> class BasicScreen:
          *
          * Called when @ref PropagatedEvent::Input is enabled and text is being
          * input. Defined only if the application has a
-         * @ref Sdl2Application::TextInputEvent "TextInputEvent".
+         * @relativeref{Sdl2ApplicationWindow,TextInputEvent}.
          */
         virtual void textInputEvent(TextInputEvent& event);
 
@@ -467,7 +467,7 @@ template<class Application> class BasicScreen:
          *
          * Called when @ref PropagatedEvent::Input and the text is being
          * edited. Defined only if the application has a
-         * @ref Sdl2Application::TextEditingEvent "TextEditingEvent".
+         * @relativeref{Sdl2ApplicationWindow,TextEditingEvent}.
          */
         virtual void textEditingEvent(TextEditingEvent& event);
         #endif
