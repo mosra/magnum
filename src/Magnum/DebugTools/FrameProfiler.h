@@ -521,7 +521,7 @@ in the @ref DebugTools-FrameProfiler-usage "FrameProfiler usage documentation":
 
 @snippet DebugTools-gl.cpp FrameProfilerGL-usage
 
-If none if @ref Value::GpuDuration, @ref Value::VertexFetchRatio and
+If none of @ref Value::GpuDuration, @ref Value::VertexFetchRatio and
 @ref Value::PrimitiveClipRatio is not enabled, the class can operate without an
 active OpenGL context.
 
