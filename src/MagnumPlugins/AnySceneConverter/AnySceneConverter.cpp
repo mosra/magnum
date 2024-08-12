@@ -31,7 +31,6 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
 #include <Corrade/Utility/Macros.h> /* CORRADE_UNUSED */
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h> /* lowercase() */

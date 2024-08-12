@@ -58,10 +58,9 @@ template<class T> void printPluginInfo(const Debug::Flags useColor, const T& plu
 
         Debug d{useColor};
         d << Debug::boldColor(Debug::Color::Default) << "Plugin name:" << Debug::boldColor(Debug::Color::Yellow) << metadata->name() << Debug::resetColor;
-        const std::vector<std::string> aliases = metadata->provides();
-        if(!aliases.empty()) {
+        if(const Containers::StringIterable aliases = metadata->provides()) {
             d << Debug::newline << Debug::boldColor(Debug::Color::Default) << "Aliases:" << Debug::resetColor;
-            for(const std::string& alias: aliases) {
+            for(const Containers::StringView alias: aliases) {
                 d << Debug::newline << " ";
                 if(alias == plugin.plugin())
                     d << Debug::color(Debug::Color::Yellow);
