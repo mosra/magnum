@@ -65,7 +65,7 @@ const struct {
     {"importer", {InPlaceInit, {
             "--info-importer", "-i", "someOption=yes"
         }},
-        "AnySceneImporter", nullptr, nullptr,
+        nullptr, nullptr, nullptr,
         "info-importer.txt"},
     {"converter", {InPlaceInit, {
             "-C", "AnySceneConverter", "--info-converter", "-c", "someOption=yes"
@@ -1145,6 +1145,7 @@ const struct {
         "ObjImporter", nullptr, nullptr, nullptr,
         "Utility::parseNumberSequence(): unrecognized character L in LOLNEIN\n"},
     {"can't load converter plugin", {InPlaceInit, {
+            "-I", "ObjImporter",
             "-C", "NonexistentSceneConverter",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")
@@ -1208,6 +1209,7 @@ const struct {
         "ObjImporter", nullptr, "StanfordSceneConverter", nullptr,
         "StanfordSceneConverter doesn't support importer conversion, only ConvertMeshToData\n"},
     {"can't load mesh converter plugin", {InPlaceInit, {
+            "-I", "ObjImporter",
             "-M", "NonexistentSceneConverter",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")
@@ -1393,12 +1395,10 @@ const struct {
                added directly */
             "-I", "GltfImporter", "--remove-duplicate-materials",
             "-C", "GltfSceneConverter",
-            /* The input file makes no sense for PrimitiveImporter, it just has
-               to be something that exists */
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/two-scenes.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
         }},
-        "PrimitiveImporter", nullptr, "GltfSceneConverter",
+        "GltfImporter", nullptr, "GltfSceneConverter",
         nullptr,
         /** @todo find some better case for this, this will pass once
             GltfSceneConverter has multi-scene support */
@@ -1462,6 +1462,9 @@ void SceneConverterTest::info() {
         CORRADE_SKIP(data.requiresConverter << "plugin can't be loaded.");
     if(data.requiresImageConverter && !(imageConverterManager.load(data.requiresImageConverter) & PluginManager::LoadState::Loaded))
         CORRADE_SKIP(data.requiresImageConverter << "plugin can't be loaded.");
+    /* AnySceneImporter is required implicitly for simplicity */
+    if(!(importerManager.load("AnySceneImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnySceneImporter plugin can't be loaded.");
 
     CORRADE_VERIFY(true); /* capture correct function name */
 
