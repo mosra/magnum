@@ -108,7 +108,7 @@ Released 2018-05-01, tagged as
 
 -   Ability to create @ref Platform::Sdl2Application and
     @ref Platform::GlfwApplication classes without implicitly created OpenGL
-    context by passing @ref Platform::Sdl2Application::Configuration::WindowFlag::Contextless "Configuration::WindowFlag::Contextless"
+    context by passing @cpp Configuration::WindowFlag::Contextless @ce
     to them. These two can be now also built completely without the GL library.
 -   Added @ref Platform::AndroidApplication::windowSize()
 -   Added @ref Platform::AndroidApplication::nativeActivity() to access
@@ -157,10 +157,9 @@ Released 2018-05-01, tagged as
 
 @subsubsection changelog-2018-04-changes-platform Platform libraries
 
--   Separated @ref Platform::Sdl2Application::Configuration "Platform::*Application::Configuration"
-    into @ref Platform::Sdl2Application::Configuration "Configuration" and
-    @ref Platform::Sdl2Application::GLConfiguration "GLConfiguration" to allow
-    creation of non-GL application instances in the future
+-   Separated @cpp Platform::*Application::Configuration @ce
+    into @cpp Configuration @ce and @cpp GLConfiguration @ce to allow creation
+    of non-GL application instances in the future
 
 @subsubsection changelog-2018-04-changes-plugins Plugins
 
@@ -753,10 +752,10 @@ a high-level overview.
     possible
 -   Ported @ref magnum-gl-info "magnum-info" to Emscripten
 -   First-class support for scroll events in
-    @ref Platform::Sdl2Application::MouseScrollEvent (see
-    [mosra/magnum#157](https://github.com/mosra/magnum/pull/157))
--   Added @ref Platform::Sdl2Application::MouseEvent::clickCount()
--   Added @ref Platform::Sdl2Application::multiGestureEvent()
+    @cpp Platform::Sdl2Application::MouseScrollEvent @ce
+    (see [mosra/magnum#157](https://github.com/mosra/magnum/pull/157))
+-   Added @cpp Platform::Sdl2Application::MouseEvent::clickCount() @ce
+-   Added @cpp Platform::Sdl2Application::multiGestureEvent() @ce
 -   Exposing key repeat in
     @ref Platform::Sdl2Application::KeyEvent::isRepeated() "Platform::*Application::KeyEvent::isRepeated()"
     (see [mosra/magnum#161](https://github.com/mosra/magnum/issues/161),
@@ -773,8 +772,8 @@ a high-level overview.
     version is not what the application wants (as opposed to just aborting the
     application) (see [mosra/magnum#105](https://github.com/mosra/magnum/issues/105))
 -   Added @cpp Platform::Sdl2Application::Configuration::setSRGBCapable() @ce
--   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::Borderless
-    and `Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi`
+-   Added @cpp Platform::Sdl2Application::Configuration::WindowFlag::Borderless @ce
+    and @cpp Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi @ce
     for iOS and macOS
 -   Added @ref Platform::WindowlessGlxApplication::Configuration::setFlags() "Platform::Windowless*Application::Configuration::setFlags()" with
     @ref Platform::WindowlessGlxApplication::Configuration::Flag::Debug "Flag::Debug"
@@ -786,7 +785,7 @@ a high-level overview.
     with @ref Platform::GlfwApplication
 -   Added modifier keys to
     @ref Platform::Sdl2Application::KeyEvent::Key "Platform::*Application::KeyEvent::Key"
--   Added @ref Platform::Sdl2Application::InputEvent::Modifier::Super to be
+-   Added @cpp Platform::Sdl2Application::InputEvent::Modifier::Super @ce to be
     consistent with @ref Platform::GlfwApplication (see
     [mosra/magnum#159](https://github.com/mosra/magnum/pull/159))
 -   Added @ref Platform::Sdl2Application::KeyEvent::keyName() "Platform::*Application::KeyEvent::keyName()"
@@ -1102,10 +1101,10 @@ a high-level overview.
     `Platform::GlfwApplication::MouseEvent::Button::WheelDown` mouse events are
     deprecated, use @ref Platform::Sdl2Application::mouseScrollEvent() /
     @ref Platform::GlfwApplication::mouseScrollEvent() and
-    @ref Platform::Sdl2Application::MouseScrollEvent /
+    @cpp Platform::Sdl2Application::MouseScrollEvent @ce /
     @ref Platform::GlfwApplication::MouseScrollEvent instead
--   @ref Platform::Sdl2Application::Sdl2Application() "Platform::*Application::*Application()"
-    and @ref Platform::WindowlessGlxApplication::WindowlessGlxApplication() "Platform::Windowless*Application::Windowless*Application()"
+-   @cpp Platform::*Application::*Application() @ce and
+    @ref Platform::WindowlessGlxApplication::WindowlessGlxApplication() "Platform::Windowless*Application::Windowless*Application()"
     constructors taking @cpp nullptr @ce are deprecated, use constructors
     taking @ref NoCreateT instead to create an application without creating
     OpenGL context
@@ -1844,7 +1843,7 @@ for a high-level overview.
     purely integral coordinates, useful e.g. for UI or 2D platformers.
 -   Detailed collision queries and new `InvertedSphere` shape in Shapes library
 -   Texture support in @cpp Shaders::Flat @ce
--   Mouse button queries in @ref Platform::Sdl2Application::MouseMoveEvent "Platform::*Application::MouseMoveEvent"
+-   Mouse button queries in @cpp Platform::*Application::MouseMoveEvent @ce
 
 @subsection changelog-2013-10-changes Changes
 

@@ -136,8 +136,8 @@ target_link_libraries(myapplication
 @section platform-configuration Specifying configuration
 
 By default the application is created with some reasonable defaults (e.g.
-window size 800x600 pixels). If you want something else, you can pass
-@ref Platform::Sdl2Application::Configuration "Configuration" instance to
+window size 800x600 pixels). If you want something else, you can pass a
+@relativeref{Platform::Sdl2ApplicationWindow,Configuration} instance to the
 application constructor. Using method chaining it can be done conveniently like
 this:
 
@@ -148,7 +148,7 @@ this:
 Sometimes you may want to set up the application based on a configuration file
 or system introspection, which can't really be done inside the base class
 initializer. You can specify @ref NoCreate in the constructor instead and pass
-the @relativeref{Platform::Sdl2Application,Configuration} later to a
+the @relativeref{Platform::Sdl2ApplicationWindow,Configuration} later to a
 @relativeref{Platform::Sdl2Application,create()} function:
 
 @snippet Platform.cpp createcontext
