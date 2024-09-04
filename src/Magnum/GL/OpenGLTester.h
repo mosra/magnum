@@ -138,6 +138,24 @@ If @gl_extension{ARB,timer_query} desktop extension (part of OpenGL 3.3),
 available, GPU time benchmarks will get automatically skipped, producing a
 @cb{.ansi} [1;39mSKIP @ce message on the output.
 
+Note that GPUs are subject to the same frequency scaling as CPUs, and depending
+on the vendor and driver the variance may be so high that the measurements are
+useless. This is particlarly the case with Intel integrated GPUs, which heavily
+downclock for power saving, and do so independently on the CPU power mode. On
+Linux it's possible to tune the behavior by setting the min and max frequency
+to the same value, for example:
+
+@m_class{m-console-wrap}
+
+@code{.sh}
+cat /sys/class/drm/card1/gt/gt0/rps_max_freq_mhz > /sys/class/drm/card1/gt/gt0/rps_min_freq_mhz
+@endcode
+
+On systems that have multiple GPUs, pick `cardN` based on whether it has a
+`gt/` subdirectory, NVidia GPUs for example don't have it. Discrete GPUs have
+additional tunables, see the [official Intel docs](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/configuring-gpu-device.html)
+for more information.
+
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
