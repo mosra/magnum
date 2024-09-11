@@ -131,6 +131,7 @@ multiple of 2.
 
 namespace TextureTools {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 class DistanceFieldConverter: public Platform::WindowlessApplication {
     public:
         explicit DistanceFieldConverter(const Arguments& arguments);
@@ -250,6 +251,7 @@ int DistanceFieldConverter::exec() {
 
     return 0;
 }
+#endif
 
 }}
 

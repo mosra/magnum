@@ -304,10 +304,12 @@ class OpenGLTester: public TestSuite::Tester {
         void gpuTimeBenchmarkBegin();
         std::uint64_t gpuTimeBenchmarkEnd();
 
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         struct WindowlessApplication: Platform::WindowlessApplication {
             explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
             int exec() override final { return 0; }
         } _windowlessApplication;
+        #endif
 
         TimeQuery _gpuTimeQuery{NoCreate};
 };

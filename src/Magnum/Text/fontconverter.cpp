@@ -125,6 +125,7 @@ The resulting font files can be then used as specified in the documentation of
 
 namespace Text {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 class FontConverter: public Platform::WindowlessApplication {
     public:
         explicit FontConverter(const Arguments& arguments);
@@ -228,6 +229,7 @@ int FontConverter::exec() {
 
     return 0;
 }
+#endif
 
 }
 

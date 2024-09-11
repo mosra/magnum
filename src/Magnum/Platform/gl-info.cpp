@@ -200,6 +200,7 @@ Vendor extension support:
     for more information.
 */
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 class MagnumInfo: public Platform::WindowlessApplication {
     public:
         explicit MagnumInfo(const Arguments& arguments);
@@ -873,6 +874,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #undef _l
     #undef _h
 }
+#endif
 
 }
 
