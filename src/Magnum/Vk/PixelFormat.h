@@ -1479,9 +1479,10 @@ MAGNUM_VK_EXPORT PixelFormat pixelFormat(Magnum::CompressedPixelFormat format);
 @brief Convert Vulkan pixel format to a generic pixel format
 @m_since_latest
 
-Returns @ref Containers::NullOpt if given format is compressed or if it doesn't
-match any generic pixel format. Otherwise the returned value will result in the
-same @p format when passed back to @ref pixelFormat(Magnum::PixelFormat).
+Returns @relativeref{Corrade,Containers::NullOpt} if given format is compressed
+or if it doesn't match any generic pixel format. Otherwise the returned value
+will result in the same @p format when passed back to
+@ref pixelFormat(Magnum::PixelFormat).
 
 Unlike mapping *from* a generic pixel format, the inverse operation is done
 with an @f$ \mathcal{O}(n) @f$ complexity.
@@ -1493,10 +1494,10 @@ MAGNUM_VK_EXPORT Containers::Optional<Magnum::PixelFormat> genericPixelFormat(Pi
 @brief Convert Vulkan compressed pixel format to a generic compressed pixel format
 @m_since_latest
 
-Returns @ref Containers::NullOpt if given format is not compressed or if it
-doesn't match any generic compressed pixel format. Otherwise the returned value
-will result in the same @p format when passed back to
-@ref pixelFormat(Magnum::CompressedPixelFormat).
+Returns @relativeref{Corrade,Containers::NullOpt} if given format is not
+compressed or if it doesn't match any generic compressed pixel format.
+Otherwise the returned value will result in the same @p format when passed back
+to @ref pixelFormat(Magnum::CompressedPixelFormat).
 
 An exception is PVRTC formats --- the RGB and RGBA variants map to the same
 Vulkan format, e.g. @ref Magnum::CompressedPixelFormat::PvrtcRGB2bppSrgb and

@@ -760,9 +760,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *
          * Available only if @ref ImageConverterFeature::Convert1D is
          * supported. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt. The implementation is allowed
-         * to return both a compressed an an uncompressed image, see
-         * documentation of a particular converter for more information.
+         * and returns @relativeref{Corrade,Containers::NullOpt}. The
+         * implementation is allowed to return both a compressed and an
+         * uncompressed image, see documentation of a particular converter for
+         * more information.
          * @see @ref features(), @ref convert(const CompressedImageView1D&),
          *      @ref convert(const ImageData1D&), @ref convertToData(),
          *      @ref convertToFile(), @ref ImageData::isCompressed()
@@ -775,9 +776,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *
          * Available only if @ref ImageConverterFeature::Convert2D is
          * supported. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt. The implementation is allowed
-         * to return both a compressed an an uncompressed image, see
-         * documentation of a particular converter for more information.
+         * and returns @relativeref{Corrade,Containers::NullOpt}. The
+         * implementation is allowed to return both a compressed and an
+         * uncompressed image, see documentation of a particular converter for
+         * more information.
          * @see @ref features(), @ref convert(const CompressedImageView2D&),
          *      @ref convert(const ImageData2D&), @ref convertToData(),
          *      @ref convertToFile(), @ref ImageData::isCompressed()
@@ -806,9 +808,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *
          * Available only if @ref ImageConverterFeature::Convert3D is
          * supported. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt. The implementation is allowed
-         * to return both a compressed an an uncompressed image, see
-         * documentation of a particular converter for more information.
+         * and returns @relativeref{Corrade,Containers::NullOpt}. The
+         * implementation is allowed to return both a compressed and an
+         * uncompressed image, see documentation of a particular converter for
+         * more information.
          * @see @ref features(), @ref convert(const CompressedImageView3D&),
          *      @ref convert(const ImageData3D&), @ref convertToData(),
          *      @ref convertToFile(), @ref ImageData::isCompressed()
@@ -821,9 +824,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *
          * Available only if @ref ImageConverterFeature::ConvertCompressed1D is
          * supported. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt. The implementation is allowed
-         * to return both a compressed an an uncompressed image, see
-         * documentation of a particular converter for more information.
+         * and returns @relativeref{Corrade,Containers::NullOpt}. The
+         * implementation is allowed to return both a compressed and an
+         * uncompressed image, see documentation of a particular converter for
+         * more information.
          * @see @ref features(), @ref convert(const ImageView1D&),
          *      @ref convert(const ImageData1D&), @ref convertToData(),
          *      @ref convertToFile(), @ref ImageData::isCompressed()
@@ -836,9 +840,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *
          * Available only if @ref ImageConverterFeature::ConvertCompressed2D is
          * supported. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt. The implementation is allowed
-         * to return both a compressed an an uncompressed image, see
-         * documentation of a particular converter for more information.
+         * and returns @relativeref{Corrade,Containers::NullOpt}. The
+         * implementation is allowed to return both a compressed and an
+         * uncompressed image, see documentation of a particular converter for
+         * more information.
          * @see @ref features(), @ref convert(const ImageView2D&),
          *      @ref convert(const ImageData2D&), @ref convertToData(),
          *      @ref convertToFile(), @ref ImageData::isCompressed()
@@ -851,9 +856,10 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *
          * Available only if @ref ImageConverterFeature::ConvertCompressed3D is
          * supported. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt. The implementation is allowed
-         * to return both a compressed an an uncompressed image, see
-         * documentation of a particular converter for more information.
+         * and returns @relativeref{Corrade,Containers::NullOpt}. The
+         * implementation is allowed to return both a compressed and an
+         * uncompressed image, see documentation of a particular converter for
+         * more information.
          * @see @ref features(), @ref convert(const ImageView3D&),
          *      @ref convert(const ImageData3D&), @ref convertToData(),
          *      @ref convertToFile(), @ref ImageData::isCompressed()
@@ -915,7 +921,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * Available only if @ref ImageConverterFeature::Convert1DToData is
          * supported. The image view is expected to not be @cpp nullptr @ce and
          * to have a non-zero size. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
+         * @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(const CompressedImageView1D&),
          *      @ref convertToData(const ImageData1D&), @ref convert(),
          *      @ref convertToFile()
@@ -935,7 +942,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * supported. The image view is expected to not be @cpp nullptr @ce and
          * to have a non-zero size in all dimensions. On failure prints a
          * message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(const CompressedImageView2D&),
          *      @ref convertToData(const ImageData2D&), @ref convert(),
          *      @ref convertToFile()
@@ -964,7 +971,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * supported. The image view is expected to not be @cpp nullptr @ce and
          * to have a non-zero size in all dimensions. On failure prints a
          * message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(const CompressedImageView3D&),
          *      @ref convertToData(const ImageData3D&), @ref convert(),
          *      @ref convertToFile()
@@ -983,7 +990,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * Available only if @ref ImageConverterFeature::ConvertCompressed1DToData
          * is supported. The image view is expected to not be @cpp nullptr @ce
          * and to have a non-zero size. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
+         * @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(const ImageView1D&),
          *      @ref convertToData(const ImageData1D&), @ref convert(),
          *      @ref convertToFile()
@@ -1003,7 +1011,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * is supported. The image view is expected to not be @cpp nullptr @ce
          * and to have a non-zero size in all dimensions. On failure prints a
          * message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(const ImageView2D&),
          *      @ref convertToData(const ImageData2D&), @ref convert(),
          *      @ref convertToFile()
@@ -1032,7 +1040,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * is supported. The image view is expected to not be @cpp nullptr @ce
          * and to have a non-zero size in all dimensions. On failure prints a
          * message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(const ImageView3D&),
          *      @ref convertToData(const ImageData3D&), @ref convert(),
          *      @ref convertToFile()
@@ -1116,7 +1124,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * that certain converters may impose additional size and order
          * restrictions on the images, see documentation of a particular plugin
          * for more information. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
+         * @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView1D>),
          *      @ref convert(), @ref convertToFile()
          */
@@ -1149,7 +1158,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * flags. Note that certain converters may impose additional size and
          * order restrictions on the images, see documentation of a particular
          * plugin for more information. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
+         * @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView2D>),
          *      @ref convert(), @ref convertToFile()
          */
@@ -1182,7 +1192,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * flags. Note that certain converters may impose additional size and
          * order restrictions on the images, see documentation of a particular
          * plugin for more information. On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
+         * @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const CompressedImageView3D>),
          *      @ref convert(), @ref convertToFile()
          */
@@ -1215,7 +1226,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * layout flags. Note that certain converters may impose additional
          * size and order restrictions on the images, see documentation of a
          * particular plugin for more information. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt.
+         * to @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView1D>),
          *      @ref convert(), @ref convertToFile()
          */
@@ -1249,7 +1261,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * impose additional size and order restrictions on the images, see
          * documentation of a particular plugin for more information. On
          * failure prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView2D>),
          *      @ref convert(), @ref convertToFile()
          */
@@ -1282,7 +1294,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * impose additional size and order restrictions on the images, see
          * documentation of a particular plugin for more information. On
          * failure prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertToData(Containers::ArrayView<const ImageView3D>),
          *      @ref convert(), @ref convertToFile()
          */

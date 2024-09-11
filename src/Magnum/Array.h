@@ -147,8 +147,8 @@ CORRADE_IGNORE_DEPRECATED_PUSH
 /**
 @brief One-dimensional array
 @tparam T           Data type
-@m_deprecated_since_latest Use @ref Math::Vector or @ref Containers::Array1
-    instead.
+@m_deprecated_since_latest Use @ref Math::Vector or
+    @relativeref{Corrade,Containers::Array1} instead.
 */
 template<class T> class CORRADE_DEPRECATED("use Math::Vector or Containers::Array1 instead") Array1D: public Array<1, T> {
     public:
@@ -171,8 +171,8 @@ template<class T> class CORRADE_DEPRECATED("use Math::Vector or Containers::Arra
 /**
 @brief Two-dimensional array
 @tparam T           Data type
-@m_deprecated_since_latest Use @ref Math::Vector2 or @ref Containers::Array2
-    instead.
+@m_deprecated_since_latest Use @ref Math::Vector2 or
+    @relativeref{Corrade,Containers::Array2} instead.
 */
 template<class T> class CORRADE_DEPRECATED("use Math::Vector2 or Containers::Array2 instead")  Array2D: public Array<2, T> {
     public:
@@ -206,8 +206,8 @@ template<class T> class CORRADE_DEPRECATED("use Math::Vector2 or Containers::Arr
 /**
 @brief Three-dimensional array
 @tparam T           Data type
-@m_deprecated_since_latest Use @ref Math::Vector3 or @ref Containers::Array3
-    instead.
+@m_deprecated_since_latest Use @ref Math::Vector3 or
+    @relativeref{Corrade,Containers::Array3} instead.
 */
 template<class T> class CORRADE_DEPRECATED("use Math::Vector3 or Containers::Array3 instead") Array3D: public Array<3, T> {
     public:

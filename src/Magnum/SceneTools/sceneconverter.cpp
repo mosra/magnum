@@ -219,8 +219,9 @@ Arguments:
 -   `--map` --- memory-map the input for zero-copy import (works only for
     standalone files)
 -   `--only-mesh-attributes N1,N2-N3…` --- include only mesh attributes of
-    given IDs in the output. See @ref Utility::String::parseNumberSequence()
-    for syntax description.
+    given IDs in the output. See
+    @relativeref{Corrade,Utility::String::parseNumberSequence()} for syntax
+    description.
 -   `--remove-duplicate-vertices` --- remove duplicate vertices using
     @ref MeshTools::removeDuplicates(const Trade::MeshData&) in all meshes
     after import

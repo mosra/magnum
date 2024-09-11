@@ -224,11 +224,12 @@ for a font-specific glyph ID @cpp 0 @ce.
 
 A glyph cache can be queried for ID of a particular font with @ref findFont(),
 passing the @ref AbstractFont pointer to it. If no font with such pointer was
-added, the function returns @ref Containers::NullOpt. Then, for a particular
-font ID a font-specific glyph ID can be queried with @ref glyphId(). If no such
-glyph was added yet, the function returns @cpp 0 @ce, i.e. the invalid glyph.
-The @ref glyph() function then directly returns data for given glyph, or the
-invalid glyph data in case the glyph wasn't found.
+added, the function returns @relativeref{Corrade,Containers::NullOpt}. Then,
+for a particular font ID a font-specific glyph ID can be queried with
+@ref glyphId(). If no such glyph was added yet, the function returns
+@cpp 0 @ce, i.e. the invalid glyph. The @ref glyph() function then directly
+returns data for given glyph, or the invalid glyph data in case the glyph
+wasn't found.
 
 @snippet Text.cpp AbstractGlyphCache-querying
 
@@ -540,9 +541,9 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @m_since_latest
          *
          * Returns a font ID if a pointer matching @p font was used in an
-         * earlier @ref addFont() call, @ref Containers::NullOpt otherwise. The
-         * lookup is done with an @f$ \mathcal{O}(n) @f$ complexity with
-         * @f$ n @f$ being @ref fontCount().
+         * earlier @ref addFont() call, @relativeref{Corrade,Containers::NullOpt}
+         * otherwise. The lookup is done with an @f$ \mathcal{O}(n) @f$
+         * complexity with @f$ n @f$ being @ref fontCount().
          */
         Containers::Optional<UnsignedInt> findFont(const AbstractFont& font) const;
 

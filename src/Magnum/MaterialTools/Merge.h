@@ -44,9 +44,10 @@ namespace Magnum { namespace MaterialTools {
 enum MergeConflicts: UnsignedInt {
     /**
      * Print a message to @relativeref{Magnum,Error} and return
-     * @ref Containers::NullOpt in case both materials contain an attribute of
-     * the same name in the same layer index. Neither its type nor its value is
-     * checked, so this fails also in case the values are the same.
+     * @relativeref{Corrade,Containers::NullOpt} in case both materials contain
+     * an attribute of the same name in the same layer index. Neither its type
+     * nor its value is checked, so this fails also in case the values are the
+     * same.
      */
     Fail,
 
@@ -54,8 +55,8 @@ enum MergeConflicts: UnsignedInt {
      * Keep the value from the first material in case both materials contain an
      * attribute of the same name in the same layer index and both attributes
      * have the same type. Print a message to @relativeref{Magnum,Error} and
-     * return @ref Containers::NullOpt if they have a different type, for
-     * example in case of custom attributes.
+     * return @relativeref{Corrade,Containers::NullOpt} if they have a
+     * different type, for example in case of custom attributes.
      *
      * If you want to keep the value from the second material instead, call
      * @ref merge() with this option and the materials swapped.

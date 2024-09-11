@@ -1257,8 +1257,9 @@ See also:
     [mosra/corrade#139](https://github.com/mosra/corrade/issues/139).
 -   @ref GL::DebugOutput::setCallback() taking a @ref std::string in the
     callback function pointer is deprecated in favor of a version taking a
-    @ref Containers::StringView. See also [mosra/magnum#499](https://github.com/mosra/magnum/pull/499)
-    and [mosra/magnum#596](https://github.com/mosra/magnum/pull/596).
+    @relativeref{Corrade,Containers::StringView}. See also
+    [mosra/magnum#499](https://github.com/mosra/magnum/pull/499) and
+    [mosra/magnum#596](https://github.com/mosra/magnum/pull/596).
 -   @cpp GL::MeshView::setIndexRange() @ce is deprecated in favor of
     @ref GL::MeshView::setIndexOffset() that has a much less confusing name
 -   @cpp GL::Mesh::indexTypeSize() @ce is deprecated in favor of a standalone
@@ -1524,8 +1525,8 @@ See also:
     scheme used elsewhere
 -   The signature of @ref Trade::AbstractSceneConverter::convertToFile() was
     changed to have input first and output second, for consistency with other
-    interfaces, together with a switch to @ref Containers::StringView. The
-    original signature is marked as deprecated.
+    interfaces, together with a switch to @relativeref{Corrade,Containers::StringView}.
+    The original signature is marked as deprecated.
 -   The @cpp Trade::AnimationTrackTargetType @ce enum and
     @cpp Trade::AnimationData::trackTargetType() @ce is deprecated in favor of
     a shorter and less confusing @ref Trade::AnimationTrackTarget and
@@ -1665,9 +1666,9 @@ See also:
     -   All @ref Math APIs that took or returned @ref std::pair now use
         @relativeref{Corrade,Containers::Pair} instead
     -   @ref Text::AbstractFont public APIs now take
-        @ref Containers::StringView instead of @ref std::string and return
-        @relativeref{Corrade,Containers::Pair} instead of @ref std::pair.
-        Additionally, the internal implementation relies on
+        @relativeref{Corrade,Containers::StringView} instead of @ref std::string
+        and return @relativeref{Corrade,Containers::Pair} instead of
+        @ref std::pair. Additionally, the internal implementation relies on
         @ref Corrade::Containers::ArrayView "Containers::ArrayView<const char32_t>"
         instead of @ref std::u32string and
         @relativeref{Corrade,Containers::Triple} instead of @ref std::tuple,

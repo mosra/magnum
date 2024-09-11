@@ -1613,7 +1613,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * If @p name isn't present or @p id is not smaller than
          * @ref attributeCount(MeshAttribute, Int) const, returns
-         * @ref Containers::NullOpt. The lookup is done in an
+         * @relativeref{Corrade,Containers::NullOpt}. The lookup is done in an
          * @f$ \mathcal{O}(n) @f$ complexity with @f$ n @f$ being the attribute
          * count.
          * @see @ref hasAttribute(), @ref attributeId()

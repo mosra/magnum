@@ -405,7 +405,7 @@ class MAGNUM_GL_EXPORT DebugOutput {
         /**
          * @brief Set debug message callback
          * @m_deprecated_since_latest Use a @ref Callback taking a
-         *      @ref Containers::StringView instead.
+         *      @relativeref{Corrade,Containers::StringView} instead.
          */
         CORRADE_DEPRECATED("use a callback taking a Containers::StringView instead") static void setCallback(void(*callback)(Source, Type, UnsignedInt, Severity, const std::string&, const void*), const void* userParam = nullptr);
         #ifndef DOXYGEN_GENERATING_OUTPUT

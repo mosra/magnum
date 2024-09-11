@@ -859,7 +859,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Available only if @ref ConverterFeature::ConvertData is supported.
          * On failure prints a message to @relativeref{Magnum,Error} and
-         * returns @ref Containers::NullOpt.
+         * returns @relativeref{Corrade,Containers::NullOpt}.
          * @see @ref features(), @ref convertFileToFile(),
          *      @ref convertDataToFile(), @ref convertDataToData()
          */
@@ -875,7 +875,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Available only if @ref ConverterFeature::LinkData is supported. On
          * failure prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt. Can't be called if
+         * @relativeref{Corrade,Containers::NullOpt}. Can't be called if
          * @ref ConverterFlag::PreprocessOnly is set --- in that case
          * @ref convertDataToData() has to be used instead.
          * @see @ref features() @ref linkDataToFile(), @ref linkFilesToFile()
@@ -935,7 +935,7 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Available only if @ref ConverterFeature::LinkData is supported. On
          * failure prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt. Can't be called if
+         * @relativeref{Corrade,Containers::NullOpt}. Can't be called if
          * @ref ConverterFlag::PreprocessOnly is set --- in that case
          * @ref convertFileToData() has to be used instead.
          * @see @ref features(), @ref linkFilesToFile(), @ref linkDataToFile(),

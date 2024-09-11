@@ -911,7 +911,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * If a (batch) conversion is currently in progress, calls @ref abort()
          * first. On failure prints a message to @relativeref{Magnum,Error} and
-         * returns @ref Containers::NullOpt.
+         * returns @relativeref{Corrade,Containers::NullOpt}.
          *
          * Expects that @ref SceneConverterFeature::ConvertMesh is supported.
          * If @ref SceneConverterFeature::AddMeshes is supported instead, you
@@ -943,7 +943,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * If (batch) conversion is currently in progress, calls @ref abort()
          * first. On failure prints a message to @relativeref{Magnum,Error} and
-         * returns @ref Containers::NullOpt.
+         * returns @relativeref{Corrade,Containers::NullOpt}.
          *
          * Expects that @ref SceneConverterFeature::ConvertMeshToData is
          * supported. If not and both
@@ -1092,7 +1092,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Expects that @ref beginData() was called before. On failure prints a
          * message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          *
          * If @ref SceneConverterFeature::ConvertMultipleToData is not
          * supported and @ref SceneConverterFeature::ConvertMeshToData is
@@ -1100,7 +1100,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref add(const MeshData&, Containers::StringView) call, which
          * delegated to @ref convertToData(const MeshData&). If no mesh was
          * added, prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          */
         Containers::Optional<Containers::Array<char>> endData();
 
@@ -1165,8 +1165,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * is implicitly equal to @ref sceneCount() before calling this
          * function and can be subsequently used in functions like
          * @ref setDefaultScene(). On failure prints a message to
-         * @relativeref{Magnum,Error} and returns @ref Containers::NullOpt ---
-         * the count of added animations doesn't change in that case.
+         * @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * animations doesn't change in that case.
          *
          * If the converter doesn't support scene naming, @p name is ignored.
          *
@@ -1249,8 +1250,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref SceneConverterFeature::AddAnimations is supported. The returned
          * ID is implicitly equal to @ref animationCount() before calling this
          * function. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt --- the count of added
-         * animations doesn't change in that case.
+         * and returns @relativeref{Corrade,Containers::NullOpt} --- the count
+         * of added animations doesn't change in that case.
          *
          * If the converter doesn't support animation naming, @p name is
          * ignored.
@@ -1305,8 +1306,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * light from a @ref SceneData passed to
          * @ref add(const SceneData&, Containers::StringView). On failure
          * prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt --- the count of added lights doesn't
-         * change in that case.
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * lights doesn't change in that case.
          *
          * If the converter doesn't support light naming, @p name is ignored.
          * @see @ref isConverting(), @ref features()
@@ -1343,8 +1344,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * camera from a @ref SceneData passed to
          * @ref add(const SceneData&, Containers::StringView). On failure
          * prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt --- the count of added cameras doesn't
-         * change in that case.
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * cameras doesn't change in that case.
          *
          * If the converter doesn't support camera naming, @p name is ignored.
          * @see @ref isConverting(), @ref features()
@@ -1378,8 +1379,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref SceneConverterFeature::AddSkins2D is supported. The returned ID
          * is implicitly equal to @ref skin2DCount() before calling this
          * function. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt --- the count of added skins
-         * doesn't change in that case.
+         * and returns @relativeref{Corrade,Containers::NullOpt} --- the count
+         * of added skins doesn't change in that case.
          *
          * If the converter doesn't support skin naming, @p name is ignored.
          * @see @ref isConverting(), @ref features()
@@ -1413,8 +1414,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref SceneConverterFeature::AddSkins3D is supported. The returned ID
          * is implicitly equal to @ref skin3DCount() before calling this
          * function. On failure prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt --- the count of added skins
-         * doesn't change in that case.
+         * and returns @relativeref{Corrade,Containers::NullOpt} --- the count
+         * of added skins doesn't change in that case.
          *
          * If the converter doesn't support skin naming, @p name is ignored.
          * @see @ref isConverting(), @ref features()
@@ -1459,8 +1460,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * example reference a mesh from a @ref SceneData passed to
          * @ref add(const SceneData&, Containers::StringView). On failure
          * prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt --- the count of added meshes doesn't
-         * change in that case.
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * meshes doesn't change in that case.
          *
          * If the converter doesn't support mesh naming, @p name is ignored.
          *
@@ -1495,8 +1496,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * a mesh from a @ref SceneData passed to
          * @ref add(const SceneData&, Containers::StringView); all levels
          * together are treated as a single mesh. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt
-         * --- the count of added meshes doesn't change in that case.
+         * to @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * meshes doesn't change in that case.
          *
          * If the converter doesn't support mesh naming, @p name is ignored.
          * @see @ref isConverting(), @ref features(),
@@ -1554,8 +1556,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * material from a @ref SceneData passed to
          * @ref add(const SceneData&, Containers::StringView). On failure
          * prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt --- the count of added materials doesn't
-         * change in that case.
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * materials doesn't change in that case.
          *
          * If the converter doesn't support material naming, @p name is
          * ignored.
@@ -1600,8 +1602,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * texture from a @ref MaterialData passed to
          * @ref add(const MaterialData&, Containers::StringView). On failure
          * prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt --- the count of added textures doesn't
-         * change in that case.
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * textures doesn't change in that case.
          *
          * If the converter doesn't support texture naming, @p name is ignored.
          *
@@ -1649,8 +1651,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * reference an image from a @ref TextureData passed to
          * @ref add(const TextureData&, Containers::StringView). On failure
          * prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt --- the count of added images doesn't
-         * change in that case.
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * images doesn't change in that case.
          *
          * If the converter doesn't support image naming, @p name is ignored.
          * @see @ref isConverting(), @ref features(),
@@ -1703,8 +1705,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * reference an image from a @ref TextureData passed to
          * @ref add(const TextureData&, Containers::StringView); all levels
          * together are treated as a single image. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt
-         * --- the count of added images doesn't change in that case.
+         * to @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * images doesn't change in that case.
          *
          * If the converter doesn't support image naming, @p name is ignored.
          * @see @ref isConverting(), @ref features(),
@@ -1781,8 +1784,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * reference an image from a @ref TextureData passed to
          * @ref add(const TextureData&, Containers::StringView). On failure
          * prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt --- the count of added images doesn't
-         * change in that case.
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * images doesn't change in that case.
          *
          * If the converter doesn't support image naming, @p name is ignored.
          * @see @ref isConverting(), @ref features(),
@@ -1835,8 +1838,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * reference an image from a @ref TextureData passed to
          * @ref add(const TextureData&, Containers::StringView); all levels
          * together are treated as a single image. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt
-         * --- the count of added images doesn't change in that case.
+         * to @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * images doesn't change in that case.
          *
          * If the converter doesn't support image naming, @p name is ignored.
          * @see @ref isConverting(), @ref features()
@@ -1912,8 +1916,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * reference an image from a @ref TextureData passed to
          * @ref add(const TextureData&, Containers::StringView). On failure
          * prints a message to @relativeref{Magnum,Error} and returns
-         * @ref Containers::NullOpt --- the count of added images doesn't
-         * change in that case.
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * images doesn't change in that case.
          *
          * If the converter doesn't support image naming, @p name is ignored.
          * @see @ref isConverting(), @ref features(),
@@ -1966,8 +1970,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * reference an image from a @ref TextureData passed to
          * @ref add(const TextureData&, Containers::StringView); all levels
          * together are treated as a single image. On failure prints a message
-         * to @relativeref{Magnum,Error} and returns @ref Containers::NullOpt
-         * --- the count of added images doesn't change in that case.
+         * to @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt} --- the count of added
+         * images doesn't change in that case.
          *
          * If the converter doesn't support image naming, @p name is ignored.
          * @see @ref isConverting(), @ref features()
@@ -2096,8 +2101,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * and @ref SceneConverterFeature::AddMeshes is supported, default
          * implementation calls @ref beginData(),
          * @ref add(const MeshData&, Containers::StringView) and returns the
-         * output of @ref endData(), or @ref Containers::NullOpt if any of
-         * those failed.
+         * output of @ref endData(), or @relativeref{Corrade,Containers::NullOpt}
+         * if any of those failed.
          */
         virtual bool doConvertToFile(const MeshData& mesh, Containers::StringView filename);
 
@@ -2176,8 +2181,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref SceneConverterFeature::AddMeshes is supported, default
          * implementation calls @ref beginData(),
          * @ref add(const MeshData&, Containers::StringView) and returns the
-         * output of @ref endData(), or @ref Containers::NullOpt if any of
-         * those failed.
+         * output of @ref endData(), or @relativeref{Corrade,Containers::NullOpt}
+         * if any of those failed.
          */
         virtual Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData& mesh);
 
@@ -2328,11 +2333,11 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * fails, returns @cpp false @ce and the subsequent @ref doEnd(),
          * @ref doEndData() or @ref doEndFile() call prints a message to
          * @relativeref{Magnum,Error} and returns a @cpp nullptr @ce,
-         * @ref Containers::NullOpt or @cpp false @ce. Since the delegation
-         * operates just on a single mesh at a time, if this function is called
-         * more than once after a @ref begin(), @ref beginData() or
-         * @ref beginFile(), prints a message to @relativeref{Magnum,Error} and
-         * returns @cpp false @ce.
+         * @relativeref{Corrade,Containers::NullOpt} or @cpp false @ce. Since
+         * the delegation operates just on a single mesh at a time, if this
+         * function is called more than once after a @ref begin(),
+         * @ref beginData() or @ref beginFile(), prints a message to
+         * @relativeref{Magnum,Error} and returns @cpp false @ce.
          */
         virtual bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView name);
 

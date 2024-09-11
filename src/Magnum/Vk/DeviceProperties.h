@@ -579,8 +579,8 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * @brief Try to pick a queue family satisfying given flags
          *
          * Compared to @ref pickQueueFamily() the function returns
-         * @ref Containers::NullOpt if a desired family isn't found instead of
-         * exiting.
+         * @relativeref{Corrade,Containers::NullOpt} if a desired family isn't
+         * found instead of exiting.
          */
         Containers::Optional<UnsignedInt> tryPickQueueFamily(QueueFlags flags);
 
@@ -701,8 +701,8 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * @brief Try to pick a memory type satisfying given flags
          *
          * Compared to @ref pickMemory() the function returns
-         * @ref Containers::NullOpt if a desired memory type isn't found
-         * instead of exiting.
+         * @relativeref{Corrade,Containers::NullOpt} if a desired memory type
+         * isn't found instead of exiting.
          */
         Containers::Optional<UnsignedInt> tryPickMemory(MemoryFlags requiredFlags, MemoryFlags preferredFlags = {}, UnsignedInt memories = ~UnsignedInt{});
 
@@ -810,8 +810,9 @@ MAGNUM_VK_EXPORT DeviceProperties pickDevice(Instance& instance);
 @brief Try to pick a physical device
 @m_since_latest
 
-Compared to @ref pickDevice() the function returns @ref Containers::NullOpt if
-a device isn't found instead of exiting.
+Compared to @ref pickDevice() the function returns
+@relativeref{Corrade,Containers::NullOpt} if a device isn't found instead of
+exiting.
 */
 MAGNUM_VK_EXPORT Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance);
 

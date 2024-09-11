@@ -89,8 +89,8 @@ template<class T> auto isInf(const Containers::StridedArrayView1D<const T>& rang
 @overload
 @m_since{2020,06}
 
-Converts @p range to @ref Containers::StridedArrayView1D and calls the above
-overload. Works with any type that's convertible to
+Converts @p range to @relativeref{Corrade,Containers::StridedArrayView1D} and
+calls the above overload. Works with any type that's convertible to
 @relativeref{Corrade,Containers::StridedArrayView}.
 */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline auto isInf(Iterable&& range) -> decltype(isInf(std::declval<T>())) {
@@ -141,8 +141,8 @@ template<class T> inline auto isNan(const Containers::StridedArrayView1D<const T
 @overload
 @m_since{2020,06}
 
-Converts @p range to @ref Containers::StridedArrayView1D and calls the above
-overload. Works with any type that's convertible to
+Converts @p range to @relativeref{Corrade,Containers::StridedArrayView1D} and
+calls the above overload. Works with any type that's convertible to
 @relativeref{Corrade,Containers::StridedArrayView}.
 */
 /* See isInf() for why arrayView() and not stridedArrayView() */
@@ -221,8 +221,8 @@ template<class T> inline T min(const Containers::StridedArrayView1D<const T>& ra
 @overload
 @m_since{2020,06}
 
-Converts @p range to @ref Containers::StridedArrayView1D and calls the above
-overload. Works with any type that's convertible to
+Converts @p range to @relativeref{Corrade,Containers::StridedArrayView1D} and
+calls the above overload. Works with any type that's convertible to
 @relativeref{Corrade,Containers::StridedArrayView}.
 */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline T min(Iterable&& range) {
@@ -266,8 +266,8 @@ template<class T> inline T max(const Containers::StridedArrayView1D<const T>& ra
 @overload
 @m_since{2020,06}
 
-Converts @p range to @ref Containers::StridedArrayView1D and calls the above
-overload. Works with any type that's convertible to
+Converts @p range to @relativeref{Corrade,Containers::StridedArrayView1D} and
+calls the above overload. Works with any type that's convertible to
 @relativeref{Corrade,Containers::StridedArrayView}.
 */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline T max(Iterable&& range) {
@@ -327,8 +327,8 @@ template<class T> inline Containers::Pair<T, T> minmax(const Containers::Strided
 @overload
 @m_since{2020,06}
 
-Converts @p range to @ref Containers::StridedArrayView1D and calls the above
-overload. Works with any type that's convertible to
+Converts @p range to @relativeref{Corrade,Containers::StridedArrayView1D} and
+calls the above overload. Works with any type that's convertible to
 @relativeref{Corrade,Containers::StridedArrayView}.
 */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline Containers::Pair<T, T> minmax(Iterable&& range) {

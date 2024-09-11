@@ -156,9 +156,10 @@ class MAGNUM_VK_EXPORT DescriptorPool {
          *
          * Compared to @ref allocate(VkDescriptorSetLayout), if the allocation
          * fails with @ref Result::ErrorOutOfPoolMemory or
-         * @ref Result::ErrorFragmentedPool, @ref Containers::NullOpt is
-         * returned instead of aborting to allow the application to recover and
-         * choose a different strategy.
+         * @ref Result::ErrorFragmentedPool,
+         * @relativeref{Corrade,Containers::NullOpt} is returned instead of
+         * aborting to allow the application to recover and choose a different
+         * strategy.
          *
          * If Vulkan 1.1 is not supported by the device and the
          * @vk_extension{KHR,maintenance1} extension isn't enabled on the
@@ -193,9 +194,10 @@ class MAGNUM_VK_EXPORT DescriptorPool {
          *
          * Compared to @ref allocate(VkDescriptorSetLayout, UnsignedInt), if
          * the allocation fails with @ref Result::ErrorOutOfPoolMemory or
-         * @ref Result::ErrorFragmentedPool, @ref Containers::NullOpt is
-         * returned instead of aborting to allow the application to recover and
-         * choose a different strategy.
+         * @ref Result::ErrorFragmentedPool,
+         * @relativeref{Corrade,Containers::NullOpt} is returned instead of
+         * aborting to allow the application to recover and choose a different
+         * strategy.
          *
          * If Vulkan 1.1 is not supported by the device and the
          * @vk_extension{KHR,maintenance1} extension isn't enabled on the

@@ -719,10 +719,10 @@ CORRADE_DEPRECATED("use pixelFormatSize() instead") inline UnsignedInt pixelSize
 @brief Convert OpenGL pixel format and type combination to a generic pixel format
 @m_since_latest
 
-Returns @ref Containers::NullOpt if given combination doesn't match any generic
-pixel format. Otherwise the returned value will result in the same @p format
-and @p type when passed back to @ref pixelFormat(Magnum::PixelFormat) and
-@ref pixelType(Magnum::PixelFormat, UnsignedInt).
+Returns @relativeref{Corrade,Containers::NullOpt} if given combination doesn't
+match any generic pixel format. Otherwise the returned value will result in the
+same @p format and @p type when passed back to @ref pixelFormat(Magnum::PixelFormat)
+and @ref pixelType(Magnum::PixelFormat, UnsignedInt).
 
 An exception is sRGB formats --- those map to the same OpenGL format + type
 combination, e.g. @ref Magnum::PixelFormat::RGBA8Unorm and
@@ -2160,9 +2160,9 @@ MAGNUM_GL_EXPORT CompressedPixelFormat compressedPixelFormat(Magnum::CompressedP
 @brief Convert OpenGL compressed pixel format to a generic compressed pixel format
 @m_since_latest
 
-Returns @ref Containers::NullOpt if given format doesn't match any generic
-pixel format. Otherwise the returned value will result in the same @p format
-when passed back to @ref compressedPixelFormat(Magnum::CompressedPixelFormat).
+Returns @relativeref{Corrade,Containers::NullOpt} if given format doesn't match
+any generic pixel format. Otherwise the returned value will result in the same
+@p format when passed back to @ref compressedPixelFormat(Magnum::CompressedPixelFormat).
 
 An exception is ASTC float and normalized formats --- those map to the same
 OpenGL format, e.g. @ref Magnum::CompressedPixelFormat::Astc4x4RGBAUnorm and

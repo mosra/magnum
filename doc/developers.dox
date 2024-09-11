@@ -269,7 +269,7 @@ following cases apply:
     user code changes as well), for example when renaming a "open file" method
 -   Bump only the minor version if signature of some methods change,
     potentially requiring changes in user code, for example when porting from
-    @ref std::string to @ref Containers::StringView
+    @ref std::string to @relativeref{Corrade,Containers::StringView}
 -   Bump only the patch version if the change doesn't affect existing user code
     but breaks ABI, for example when adding a new virtual function --- this is
     mainly to prevent crashes when loading of plugins built against an older

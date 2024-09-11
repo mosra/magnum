@@ -66,7 +66,7 @@ on given matrix where @p rows >= `cols`: @f[
 
 Returns first @p cols column vectors of @f$ \boldsymbol{U} @f$, diagonal of
 @f$ \boldsymbol{\Sigma} @f$ and non-transposed @f$ \boldsymbol{V} @f$. If the
-solution doesn't converge, returns @ref Containers::NullOpt.
+solution doesn't converge, returns @relativeref{Corrade,Containers::NullOpt}.
 
 Full @f$ \boldsymbol{U} @f$, @f$ \boldsymbol{\Sigma} @f$ matrices and original
 @f$ \boldsymbol{M} @f$ matrix can be reconstructed from the values as

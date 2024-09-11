@@ -893,10 +893,10 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, Script value);
 @brief Create a @ref Script value from a four-character code
 @m_since_latest
 
-Delegates to @ref Utility::Endianness::fourCC(). Doesn't perform any validity
-check on the input, i.e. it's possible to create a code that isn't listed in
-[ISO 15924](https://en.wikipedia.org/wiki/ISO_15924) or even a code with
-non-ASCII characters.
+Delegates to @relativeref{Corrade,Utility::Endianness::fourCC()}. Doesn't
+perform any validity check on the input, i.e. it's possible to create a code
+that isn't listed in [ISO 15924](https://en.wikipedia.org/wiki/ISO_15924) or
+even a code with non-ASCII characters.
 @see @ref script(Containers::StringView)
 */
 constexpr Script script(char a, char b, char c, char d) {

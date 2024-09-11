@@ -364,7 +364,7 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      *
      * This matches fuzzy comparison precision in
      * @relativeref{Corrade,TestSuite} and is always one digit less than how
-     * @ref Debug or @ref Utility::format() prints given type.
+     * @ref Debug or @relativeref{Corrade,Utility::format()} prints given type.
      */
     constexpr static T epsilon();
 

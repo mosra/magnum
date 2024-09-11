@@ -872,10 +872,10 @@ with @ref SceneFieldFlag::ImplicitMapping, which is a superset of
 @subsection Trade-SceneFieldData-usage-bits Bit fields
 
 Bit fields have dedicated constructors taking a
-@ref Containers::StridedBitArrayView1D or
-@ref Containers::StridedBitArrayView2D, and because the type is always
-@ref SceneFieldType::Bit, it's omitted. For offset-only bit fields there's a
-@ref SceneFieldData(SceneField, std::size_t, SceneMappingType, std::size_t, std::ptrdiff_t, std::size_t, std::size_t, std::ptrdiff_t, UnsignedShort, SceneFieldFlags)
+@relativeref{Corrade,Containers::StridedBitArrayView1D} or
+@relativeref{Corrade,Containers::StridedBitArrayView2D}, and because the type
+is always @ref SceneFieldType::Bit, it's omitted. For offset-only bit fields
+there's a @ref SceneFieldData(SceneField, std::size_t, SceneMappingType, std::size_t, std::ptrdiff_t, std::size_t, std::size_t, std::ptrdiff_t, UnsignedShort, SceneFieldFlags)
 constructor that omits @ref SceneFieldType as well, but contains an additional
 bit offset parameter.
 
@@ -1861,12 +1861,12 @@ references:
     @ref std::strlen() call on every access.
 
 String fields can also have @ref SceneFieldFlag::NullTerminatedString set, in
-which case the returned @ref Containers::StringView instances will have
-@relativeref{Corrade,Containers::StringViewFlag::NullTerminated} set, which may
-be useful for example to avoid an allocation when passing filenames to OS APIs
-in @ref Utility::Path::read(). The null terminators of course have to be stored
-in the data itself, see a particular @ref SceneFieldType for information about
-how it affects the field encoding.
+which case the returned @relativeref{Corrade,Containers::StringView} instances
+will have @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} set,
+which may be useful for example to avoid an allocation when passing filenames
+to OS APIs in @relativeref{Corrade,Utility::Path::read()}. The null terminators
+of course have to be stored in the data itself, see a particular
+@ref SceneFieldType for information about how it affects the field encoding.
 
 The following example shows populating a @ref SceneData with a "tag" string
 field, stored as null-terminated 8-bit string array ranges. In other words ---
@@ -2206,9 +2206,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Find an absolute ID of a named field
          * @m_since_latest
          *
-         * If @p name doesn't exist, returns @ref Containers::NullOpt. The
-         * lookup is done in an @f$ \mathcal{O}(n) @f$ complexity with
-         * @f$ n @f$ being the field count.
+         * If @p name doesn't exist, returns
+         * @relativeref{Corrade,Containers::NullOpt}. The lookup is done in an
+         * @f$ \mathcal{O}(n) @f$ complexity with @f$ n @f$ being the field
+         * count.
          * @see @ref hasField(), @ref fieldId()
          */
         Containers::Optional<UnsignedInt> findFieldId(SceneField name) const;
@@ -2235,9 +2236,9 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * If @p object isn't present in @p fieldId starting at @p offset,
-         * returns @ref Containers::NullOpt. The @p fieldId is expected to be
-         * smaller than @ref fieldCount(), @p object smaller than
-         * @ref mappingBound() and @p offset not larger than
+         * returns @relativeref{Corrade,Containers::NullOpt}. The @p fieldId is
+         * expected to be smaller than @ref fieldCount(), @p object smaller
+         * than @ref mappingBound() and @p offset not larger than
          * @ref fieldSize(UnsignedInt) const.
          *
          * If the field has @ref SceneFieldFlag::ImplicitMapping, the lookup is
@@ -2259,9 +2260,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * If @p object isn't present in @p fieldName starting at @p offset,
-         * returns @ref Containers::NullOpt. The @p fieldName is expected to
-         * exist, @p object is expected to be smaller than @ref mappingBound()
-         * and @p offset not be larger than @ref fieldSize(SceneField) const.
+         * returns @relativeref{Corrade,Containers::NullOpt}. The @p fieldName
+         * is expected to exist, @p object is expected to be smaller than
+         * @ref mappingBound() and @p offset not be larger than
+         * @ref fieldSize(SceneField) const.
          *
          * If the field has @ref SceneFieldFlag::ImplicitMapping, the lookup is
          * done in an @f$ \mathcal{O}(m) @f$ complexity with @f$ m @f$ being
@@ -3428,8 +3430,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * directly.
          *
          * If the @ref SceneField::Parent field is not present or if there's no
-         * parent for @p object, returns @ref Containers::NullOpt. If @p object
-         * is top-level, returns @cpp -1 @ce.
+         * parent for @p object, returns @relativeref{Corrade,Containers::NullOpt}.
+         * If @p object is top-level, returns @cpp -1 @ce.
          *
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref childrenFor()
@@ -3476,7 +3478,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneField::Translation, @relativeref{SceneField,Rotation} or
          * @relativeref{SceneField,Scaling} is present, the fields represent a
          * 3D transformation or there's no transformation for @p object,
-         * returns @ref Containers::NullOpt.
+         * returns @relativeref{Corrade,Containers::NullOpt}.
          *
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref translationRotationScaling2DFor()
@@ -3505,7 +3507,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * (@cpp 1.0f @ce in both dimensions). If neither of those fields is
          * present, if any of the fields represents a 3D transformation or if
          * there's no transformation for @p object, returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          *
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref transformation2DFor()
@@ -3531,7 +3533,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref SceneField::Translation, @relativeref{SceneField,Rotation} or
          * @relativeref{SceneField,Scaling} is present, the fields represent a
          * 2D transformation or there's no transformation for @p object,
-         * returns @ref Containers::NullOpt.
+         * returns @relativeref{Corrade,Containers::NullOpt}.
          *
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref translationRotationScaling3DFor()
@@ -3560,7 +3562,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * (@cpp 1.0f @ce in all dimensions). If neither of those fields is
          * present, if any of the fields represents a 2D transformation or if
          * there's no transformation for @p object, returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          *
          * The @p object is expected to be less than @ref mappingBound().
          * @see @ref transformation3DFor()
@@ -3658,7 +3660,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * If the @ref SceneField::ImporterState field is not present or if
          * there's no importer state for @p object, returns
-         * @ref Containers::NullOpt.
+         * @relativeref{Corrade,Containers::NullOpt}.
          *
          * The @p object is expected to be less than @ref mappingBound().
          */

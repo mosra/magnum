@@ -1839,9 +1839,9 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, Feature value);
 @brief Create a @ref Feature value from a four-character code
 @m_since_latest
 
-Delegates to @ref Utility::Endianness::fourCC(). Doesn't perform any validity
-check on the input, i.e. it's possible to create a code that isn't listed in
-the [OpenType feature registry](https://learn.microsoft.com/typography/opentype/spec/featurelist)
+Delegates to @relativeref{Corrade,Utility::Endianness::fourCC()}. Doesn't
+perform any validity check on the input, i.e. it's possible to create a code
+that isn't listed in the [OpenType feature registry](https://learn.microsoft.com/typography/opentype/spec/featurelist)
 or even a code with non-ASCII characters.
 @see @ref feature(Containers::StringView)
 */

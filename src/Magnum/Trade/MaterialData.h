@@ -1502,12 +1502,12 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * *pointer to a pointer*, not the pointer value itself.
          *
          * In case @p type is @ref MaterialAttributeType::String, @p value is
-         * expected to point to a @ref Containers::StringView. The combined
-         * length of @p name and @p value strings is expected to fit into 60
-         * bytes. In case @p type is @ref MaterialAttributeType::Buffer,
-         * @p value is expected to point to a
-         * @relativeref{Corrade,Containers::ArrayView}. The combined length of
-         * @p name and @p value views is expected to fit into 61 bytes.
+         * expected to point to a @relativeref{Corrade,Containers::StringView}.
+         * The combined length of @p name and @p value strings is expected to
+         * fit into 60 bytes. In case @p type is
+         * @ref MaterialAttributeType::Buffer, @p value is expected to point to
+         * a @relativeref{Corrade,Containers::ArrayView}. The combined length
+         * of @p name and @p value views is expected to fit into 61 bytes.
          */
         /*implicit*/ MaterialAttributeData(Containers::StringView name, MaterialAttributeType type, const void* value) noexcept;
 
@@ -1555,9 +1555,9 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          *
          * In case of a @ref MaterialAttributeType::String, returns a
          * null-terminated @cpp const char* @ce (not a pointer to
-         * @ref Containers::StringView). This doesn't preserve the actual
-         * string size in case the string data contain @cpp '\0' @ce bytes,
-         * thus prefer to use typed access in that case.
+         * @relativeref{Corrade,Containers::StringView}). This doesn't preserve
+         * the actual string size in case the string data contain @cpp '\0' @ce
+         * bytes, thus prefer to use typed access in that case.
          *
          * In case of a @ref MaterialAttributeType::Buffer, returns a
          * pointer to the data with no size information. Prefer to use typed
@@ -1811,8 +1811,8 @@ values. You're expected to check for attribute presence first with
 To make things easier, each of the attributes defined in @ref MaterialAttribute
 has a strictly defined type, so you can safely assume the type when requesting
 those. In addition there's @ref findAttribute() and @ref attributeOr() that
-return a @ref Containers::NullOpt or a default value in case given attribute is
-not found.
+return a @relativeref{Corrade,Containers::NullOpt} or a default value in case
+given attribute is not found.
 
 @snippet Trade.cpp MaterialData-usage
 
@@ -2274,9 +2274,10 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         /**
          * @brief Find ID of a named layer
          *
-         * The @p layer doesn't exist, returns @ref Containers::NullOpt. The
-         * lookup is done in an @f$ \mathcal{O}(n) @f$ complexity with
-         * @f$ n @f$ being the layer count.
+         * The @p layer doesn't exist, returns
+         * @relativeref{Corrade,Containers::NullOpt}. The lookup is done in an
+         * @f$ \mathcal{O}(n) @f$ complexity with @f$ n @f$ being the layer
+         * count.
          * @see @ref hasLayer()
          */
         Containers::Optional<UnsignedInt> findLayerId(Containers::StringView layer) const;
@@ -2526,10 +2527,11 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         /**
          * @brief Find ID of a named attribute in given material layer
          *
-         * If @p name doesn't exist, returns @ref Containers::NullOpt. The
-         * @p layer is expected to be smaller than @ref layerCount() const. The
-         * lookup is done in an @f$ \mathcal{O}(\log n) @f$ complexity with
-         * @f$ n @f$ being attribute count in given @p layer.
+         * If @p name doesn't exist, returns
+         * @relativeref{Corrade,Containers::NullOpt}. The @p layer is expected
+         * to be smaller than @ref layerCount() const. The lookup is done in an
+         * @f$ \mathcal{O}(\log n) @f$ complexity with @f$ n @f$ being
+         * attribute count in given @p layer.
          * @see @ref hasAttribute(), @ref attributeId()
          */
         Containers::Optional<UnsignedInt> findAttributeId(UnsignedInt layer, Containers::StringView name) const;
@@ -2538,10 +2540,11 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         /**
          * @brief Find ID of a named attribute in a named material layer
          *
-         * If @p name doesn't exist, returns @ref Containers::NullOpt. The
-         * @p layer is expected to exist. The lookup is done in an
-         * @f$ \mathcal{O}(m + \log n) @f$ complexity with @f$ m @f$ being
-         * layer count and @f$ n @f$ being attribute count in given @p layer.
+         * If @p name doesn't exist, returns
+         * @relativeref{Corrade,Containers::NullOpt}. The @p layer is expected
+         * to exist. The lookup is done in an @f$ \mathcal{O}(m + \log n) @f$
+         * complexity with @f$ m @f$ being layer count and @f$ n @f$ being
+         * attribute count in given @p layer.
          * @see @ref hasLayer(), @ref hasAttribute(), @ref attributeId(),
          *      @ref findLayerId()
          */
@@ -2725,9 +2728,9 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *      *pointer to a pointer*, not the pointer value itself.
          * -    In case of a @ref MaterialAttributeType::String returns a
          *      null-terminated @cpp const char* @ce (not a pointer to
-         *      @ref Containers::StringView). This doesn't preserve the actual
-         *      string size in case the string data contain zero bytes, thus
-         *      prefer to use typed access in that case.
+         *      @relativeref{Corrade,Containers::StringView}). This doesn't
+         *      preserve the actual string size in case the string data contain
+         *      zero bytes, thus prefer to use typed access in that case.
          * -    In case of a @ref MaterialAttributeType::Buffer returns a
          *      pointer to the data with no size information, Prefer to use
          *      typed access in that case.
@@ -2755,9 +2758,9 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *      *pointer to a pointer*, not the pointer value itself.
          * -    In case of a @ref MaterialAttributeType::String returns a
          *      null-terminated @cpp const char* @ce (not a pointer to
-         *      @ref Containers::StringView). This doesn't preserve the actual
-         *      string size in case the string data contain zero bytes, thus
-         *      prefer to use typed access in that case.
+         *      @relativeref{Corrade,Containers::StringView}). This doesn't
+         *      preserve the actual string size in case the string data contain
+         *      zero bytes, thus prefer to use typed access in that case.
          * -    In case of a @ref MaterialAttributeType::Buffer returns a
          *      pointer to the data with no size information, Prefer to use
          *      typed access in that case.
@@ -2789,9 +2792,9 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *      *pointer to a pointer*, not the pointer value itself.
          * -    In case of a @ref MaterialAttributeType::String returns a
          *      null-terminated @cpp const char* @ce (not a pointer to
-         *      @ref Containers::StringView). This doesn't preserve the actual
-         *      string size in case the string data contain zero bytes, thus
-         *      prefer to use typed access in that case.
+         *      @relativeref{Corrade,Containers::StringView}). This doesn't
+         *      preserve the actual string size in case the string data contain
+         *      zero bytes, thus prefer to use typed access in that case.
          * -    In case of a @ref MaterialAttributeType::Buffer returns a
          *      pointer to the data with no size information, Prefer to use
          *      typed access in that case.
@@ -2823,9 +2826,9 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *      *pointer to a pointer*, not the pointer value itself.
          * -    In case of a @ref MaterialAttributeType::String returns a
          *      null-terminated @cpp const char* @ce (not a pointer to
-         *      @ref Containers::StringView). This doesn't preserve the actual
-         *      string size in case the string data contain zero bytes, thus
-         *      prefer to use typed access in that case.
+         *      @relativeref{Corrade,Containers::StringView}). This doesn't
+         *      preserve the actual string size in case the string data contain
+         *      zero bytes, thus prefer to use typed access in that case.
          * -    In case of a @ref MaterialAttributeType::Buffer returns a
          *      pointer to the data with no size information, Prefer to use
          *      typed access in that case.
