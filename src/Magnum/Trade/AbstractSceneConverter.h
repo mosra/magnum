@@ -1138,7 +1138,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref add(const MeshData&, Containers::StringView) call, which
          * delegated to @ref convertToFile(const MeshData&, Containers::StringView).
          * If no mesh was added, prints a message to @relativeref{Magnum,Error}
-         * and returns @ref Containers::NullOpt.
+         * and returns @cpp false @ce.
          */
         bool endFile();
 
