@@ -154,8 +154,8 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          *
          * @note The function makes copies of string views that are not global
          *      or null-terminated, use the
-         *      @link Containers::Literals::operator""_s() @endlink literal to
-         *      prevent that where possible.
+         *      @link Corrade::Containers::Literals::StringLiterals::operator""_s() Containers::Literals::operator""_s() @endlink
+         *      literal to prevent that where possible.
          */
         InstanceCreateInfo& setApplicationInfo(Containers::StringView name, Version version);
 
@@ -180,8 +180,8 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          *
          * @note The function makes copies of string views that are not global
          *      or null-terminated, use the
-         *      @link Containers::Literals::operator""_s() @endlink literal to
-         *      prevent that where possible.
+         *      @link Corrade::Containers::Literals::StringLiterals::operator""_s() Containers::Literals::operator""_s() @endlink
+         *      literal to prevent that where possible.
          */
         InstanceCreateInfo& addEnabledLayers(const Containers::StringIterable& layers);
 
@@ -208,8 +208,8 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          *
          * @note The function makes copies of string views that are not global
          *      or null-terminated, use the
-         *      @link Containers::Literals::operator""_s() @endlink literal to
-         *      prevent that where possible.
+         *      @link Corrade::Containers::Literals::StringLiterals::operator""_s() Containers::Literals::operator""_s() @endlink
+         *      literal to prevent that where possible.
          */
         InstanceCreateInfo& addEnabledExtensions(const Containers::StringIterable& extensions);
         /** @overload */

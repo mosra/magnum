@@ -187,7 +187,7 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *
          * @note The function makes copies of string views that are not global
          *      or null-terminated, use the
-         *      @link Containers::Literals::operator""_s() @endlink
+         *      @link Corrade::Containers::Literals::StringLiterals::operator""_s() Containers::Literals::operator""_s() @endlink
          *      literal to prevent that where possible.
          */
         DeviceCreateInfo& addEnabledExtensions(const Containers::StringIterable& extensions) &;

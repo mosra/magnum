@@ -82,7 +82,7 @@ required either, but may be beneficial for the driver:
 @m_class{m-note m-success}
 
 @par
-    The above code uses the @link Containers::Literals::operator""_s() @endlink
+    The above code uses the @link Corrade::Containers::Literals::StringLiterals::operator""_s() Containers::Literals::operator""_s() @endlink
     literal, which lets the library know that given string is global and
     null-terminated. Such strings then don't need to be copied internally to
     keep them in scope until they're consumed by Vulkan APIs. The same is
