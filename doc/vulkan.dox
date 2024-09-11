@@ -25,7 +25,7 @@
 
 namespace Magnum {
 
-/** @page vulkan Vuulkan
+/** @page vulkan Vulkan
 @brief State of Vulkan support, version and extension requirements.
 @m_since_latest
 
