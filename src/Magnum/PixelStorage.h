@@ -152,8 +152,8 @@ Descibes how to interpret data which are read from or stored into
 @ref CompressedImage, @ref CompressedImageView, @ref Trade::ImageData or for
 example @ref GL::CompressedBufferImage.
 
-Includes all parameters from @ref PixelStorage, except for @ref alignment(),
-which is ignored for compressed images.
+Includes all parameters from @ref PixelStorage, except for
+@relativeref{PixelStorage,alignment()}, which is ignored for compressed images.
 */
 class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
     public:
