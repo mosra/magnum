@@ -104,7 +104,7 @@ MAGNUM_TEXTURETOOLS_EXPORT Debug& operator<<(Debug& output, AtlasLandfillFlag va
 @brief Landfill texture atlas packer behavior flags
 @m_since_latest
 
-@see @ref Flags, @ref AtlasLandfill::setFlags(), @ref AtlasLandfill::addFlags(),
+@see @ref AtlasLandfill::setFlags(), @ref AtlasLandfill::addFlags(),
     @ref AtlasLandfill::clearFlags()
 */
 typedef Containers::EnumSet<AtlasLandfillFlag> AtlasLandfillFlags;

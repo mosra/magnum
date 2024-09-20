@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Trade::SceneData, @ref Magnum::Trade::SceneFieldData, enum @ref Magnum::Trade::SceneMappingType, @ref Magnum::Trade::SceneField, @ref Magnum::Trade::SceneFieldType, @ref Magnum::Trade::SceneFieldFlag, enum set @ref Magnum::Trade::SceneFieldFlags, function @ref Magnum::sceneMappingTypeSize(), @ref Magnum::sceneMappingTypeAlignment(), @ref Magnum::sceneFieldTypeSize(), @ref Magnum::sceneFieldTypeAlignment(), @ref Magnum::Trade::isSceneFieldCustom(), @ref Magnum::sceneFieldCustom()
+ * @brief Class @ref Magnum::Trade::SceneData, @ref Magnum::Trade::SceneFieldData, enum @ref Magnum::Trade::SceneMappingType, @ref Magnum::Trade::SceneField, @ref Magnum::Trade::SceneFieldType, @ref Magnum::Trade::SceneFieldFlag, enum set @ref Magnum::Trade::SceneFieldFlags, function @ref Magnum::Trade::sceneMappingTypeSize(), @ref Magnum::Trade::sceneMappingTypeAlignment(), @ref Magnum::Trade::sceneFieldTypeSize(), @ref Magnum::Trade::sceneFieldTypeAlignment(), @ref Magnum::Trade::isSceneFieldCustom(), @ref Magnum::Trade::sceneFieldCustom()
  */
 
 #include <Corrade/Containers/Array.h>

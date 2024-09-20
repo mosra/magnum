@@ -178,7 +178,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      \end{pmatrix}
          * @f]
          * @see @ref rotation() const, @ref Quaternion::rotation(),
-         *      @ref DualQuaternion::rotation(), @ref Matrix3::rotation(Rad),
+         *      @ref DualQuaternion::rotation(), @ref Matrix3::rotation(Rad<T>),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
          *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
          */
@@ -196,9 +196,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *          0 &          0 &           0 & 1
          *      \end{pmatrix}
          * @f]
-         * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationY(),
+         * @see @ref rotation(Rad<T>, const Vector3<T>&), @ref rotationY(),
          *      @ref rotationZ(), @ref rotation() const,
-         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
+         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad<T>)
          */
         static Matrix4<T> rotationX(Rad<T> angle);
 
@@ -214,9 +214,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *                    0 & 0 &          0 & 1
          *      \end{pmatrix}
          * @f]
-         * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
+         * @see @ref rotation(Rad<T>, const Vector3<T>&), @ref rotationX(),
          *      @ref rotationZ(), @ref rotation() const,
-         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
+         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad<T>)
          */
         static Matrix4<T> rotationY(Rad<T> angle);
 
@@ -232,9 +232,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *                   0 &           0 & 0 & 1
          *      \end{pmatrix}
          * @f]
-         * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
+         * @see @ref rotation(Rad<T>, const Vector3<T>&), @ref rotationX(),
          *      @ref rotationY(), @ref rotation() const,
-         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
+         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad<T>)
          */
         static Matrix4<T> rotationZ(Rad<T> angle);
 

@@ -45,7 +45,7 @@ namespace Magnum { namespace Math { namespace Distance {
 Same as @cpp (b - a).dot() @ce. More efficient than @ref pointPoint(const Vector2<T>&, const Vector2<T>&)
 for comparing distance with other values, because it doesn't calculate the
 square root.
-@see @ref Vector::dot()
+@see @ref Vector::dot() const
 */
 template<class T> T pointPointSquared(const Vector2<T>& a, const Vector2<T>& b) {
     return (b - a).dot();

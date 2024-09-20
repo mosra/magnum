@@ -73,9 +73,9 @@ Released 2018-05-01, tagged as
     APIs, separated from the core Magnum library (see
     [mosra/magnum#233](https://github.com/mosra/magnum/pull/233))
 -   New @ref GL::hasPixelFormat(), @ref GL::pixelFormat(), @ref GL::pixelType(),
-    @ref GL::hasCompressedPixelFormat(), @ref compressedPixelFormat() utilities
-    for converting generic @ref PixelFormat / @ref CompressedPixelFormat to
-    GL-specific @ref GL::PixelFormat, @ref GL::PixelType and
+    @ref GL::hasCompressedPixelFormat(), @ref GL::compressedPixelFormat()
+    utilities for converting generic @ref PixelFormat / @ref CompressedPixelFormat
+    to GL-specific @ref GL::PixelFormat, @ref GL::PixelType and
     @ref GL::CompressedPixelFormat values. The @ref GL::BufferImage and
     @ref GL::CompressedBufferImage classes now have overloads accepting both
     types.
@@ -416,9 +416,9 @@ Released 2018-05-01, tagged as
     in 2015.05, use methods on linked list returned by
     @ref Platform::BasicScreenedApplication::screens() "Platform::ScreenedApplication::screens()"
     instead
--   Removed @ref Framebuffer::read() "*Framebuffer::read()" functions taking two
-    vectors that was deprecated in 2015.05, use overload taking @ref Range2Di
-    instead
+-   Removed @ref GL::Framebuffer::read() "*Framebuffer::read()" functions
+    taking two vectors that was deprecated in 2015.05, use overload taking
+    @ref Range2Di instead
 -   Removed the @cpp Mesh::maxVertexAttributes() @ce function that was
     deprecated in 2015.05, use @ref GL::AbstractShaderProgram::maxVertexAttributes()
     instead
@@ -681,7 +681,7 @@ a high-level overview.
 
 -   New @ref Math::Bezier class for handling N-dimensional M-order Bézier
     curves (see [mosra/magnum#165](https://github.com/mosra/magnum/pull/165))
--   New @ref Math::Frustum class and @ref Math::Geometry::Intersection::pointFrustum(),
+-   New @ref Math::Frustum class and `Math::Geometry::Intersection::pointFrustum()`,
     `Math::Geometry::Intersection::boxFrustum()` functions (see
     [mosra/magnum#185](https://github.com/mosra/magnum/pull/185)
 -   New @ref Math::Half class, @link Math::Literals::HalfLiterals::operator""_h @endlink
@@ -1132,7 +1132,7 @@ a high-level overview.
     are now a namespace (might break `using` declarations, but otherwise it's
     fully source-compatible)
 -   Removed `Context::majorVersion()` and `Context::minorVersion()` functions,
-    use @ref Context::version() instead
+    use @ref GL::Context::version() instead
 -   Removed deprecated `Magnum/DebugMarker.h` header, use
     `Magnum/DebugOutput.h` and @ref GL::DebugMessage "DebugMessage" class
     instead
@@ -1882,7 +1882,7 @@ for a high-level overview.
     into @cpp Math::swizzle() @ce
 -   @cpp Buffer::setData() @ce and @cpp Buffer::setSubData() @ce overloads
     taking pair of data pointer and size are deprecated, use
-    @cpp Containers::ArrayReference @ce-based @cpp Buffer::setData() @ce and
+    @cpp Containers::ArrayReference @ce -based @cpp Buffer::setData() @ce and
     @cpp Buffer::setSubData() @ce
 -   `ImageFormat.h` header, @cpp ImageFormat @ce and @cpp ImageType @ce enums
     are deprecated, use `ColorFormat.h` header, `ColorFormat` and `ColorType`

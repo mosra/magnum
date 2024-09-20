@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::ExtensionProperties, @ref Magnum::Vk::InstanceExtensionProperties, function @ref enumerateInstanceExtensionProperties()
+ * @brief Class @ref Magnum::Vk::ExtensionProperties, @ref Magnum::Vk::InstanceExtensionProperties, function @ref Magnum::Vk::enumerateInstanceExtensionProperties()
  * @m_since_latest
  */
 

@@ -42,7 +42,7 @@ namespace Magnum { namespace MeshTools {
 @return Bounding range
 @m_since_latest
 
-Same as @ref Math::minmax(const Corrade::Containers::StridedArrayView1D<const T>&).
+Same as @ref Math::minmax(const Containers::StridedArrayView1D<const T>&).
 @see @ref Math::Intersection::rayRange(),
     @ref Math::Intersection::rangeFrustum(),
     @ref Math::Intersection::rangeCone()

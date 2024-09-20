@@ -147,7 +147,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @f]
          * @see @ref rotation() const, @ref Complex::rotation(),
          *      @ref DualComplex::rotation(),
-         *      @ref Matrix4::rotation(Rad, const Vector3<T>&)
+         *      @ref Matrix4::rotation(Rad<T>, const Vector3<T>&)
          */
         static Matrix3<T> rotation(Rad<T> angle);
 

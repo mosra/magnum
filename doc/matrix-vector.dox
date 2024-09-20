@@ -119,17 +119,17 @@ representation, or convert from CIE XYZ / xyY. And the other way as well:
 @snippet Math.cpp matrix-vector-construct-color-colorspace
 
 Finally, the namespace @ref Math::Literals provides convenient
-@link Literals::operator""_rgb() operator""_rgb() @endlink /
-@link Literals::operator""_rgbf() operator""_rgbf() @endlink and
-@link Literals::operator""_rgba() operator""_rgba() @endlink /
-@link Literals::operator""_rgbaf() operator""_rgbaf() @endlink literals for
-entering colors in hex representation. These literals assume linear RGB input
-and don't do any gamma correction. For sRGB input, there is
-@link Literals::operator""_srgb() operator""_srgb() @endlink /
-@link Literals::operator""_srgba() operator""_srgba() @endlink and
-@link Literals::operator""_srgbf() operator""_srgbf() @endlink /
-@link Literals::operator""_srgbaf() operator""_srgbaf() @endlink, see their
-documentation for more information.
+@link Math::Literals::ColorLiterals::operator""_rgb() operator""_rgb() @endlink
+/ @link Math::Literals::ColorLiterals::operator""_rgbf() operator""_rgbf() @endlink
+and @link Math::Literals::ColorLiterals::operator""_rgba() operator""_rgba() @endlink
+/ @link Math::Literals::ColorLiterals::operator""_rgbaf() operator""_rgbaf() @endlink
+literals for entering colors in hex representation. These literals assume
+linear RGB input and don't do any gamma correction. For sRGB input, there is
+@link Math::Literals::ColorLiterals::operator""_srgb() operator""_srgb() @endlink
+/ @link Math::Literals::ColorLiterals::operator""_srgba() operator""_srgba() @endlink
+and @link Math::Literals::ColorLiterals::operator""_srgbf() operator""_srgbf() @endlink
+/ @link Math::Literals::ColorLiterals::operator""_srgbaf() operator""_srgbaf() @endlink,
+see their documentation for more information.
 
 @snippet Math.cpp matrix-vector-construct-color-literal
 
@@ -223,7 +223,7 @@ a vector you can use @ref Math::Vector::sum() "sum()" and
 
 Component-wise minimum and maximum of two vectors can be done using
 @ref Math::min(), @ref Math::max() or @ref Math::minmax(), similarly with
-@ref Vector::min() "min()", @ref Vector::max() "max()" and
+@ref Math::Vector::min() "min()", @ref Math::Vector::max() "max()" and
 @ref Vector2::minmax() "minmax()" for components in one vector.
 
 @snippet Math.cpp matrix-vector-operations-minmax
@@ -288,8 +288,8 @@ you're used to from linear algebra or other graphics toolkits:
     @snippet Math.cpp matrix-vector-column-major-access
 </li><li>
     Various algorithms which commonly operate on matrix rows (such as
-    @ref Algorithms::gaussJordanInPlace() "Gauss-Jordan elimination") have
-    faster alternatives which operate on columns. It's then up to the user
+    @ref Math::Algorithms::gaussJordanInPlace() "Gauss-Jordan elimination")
+    have faster alternatives which operate on columns. It's then up to the user
     to operate with transposed matrices or use the slower non-transposed
     alternative of the algorithm.
 </li></ul>

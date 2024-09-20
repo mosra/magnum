@@ -63,7 +63,7 @@ point @f$ \boldsymbol{p} @f$ intersects with a circle of a center
     \end{array}
 @f]
 
-@see @ref Distance::pointPointSquared(), @ref Vector::dot(), @ref pow(T)
+@see @ref Distance::pointPointSquared(), @ref Vector::dot() const, @ref pow(T)
 */
 template<class T> inline bool pointCircle(const Vector2<T>& point, const Vector2<T>& circleCenter, T circleRadius) {
     return (circleCenter - point).dot() <= circleRadius*circleRadius;
@@ -87,7 +87,7 @@ point @f$ \boldsymbol{p} @f$ intersects with a sphere of a center
     \end{array}
 @f]
 
-@see @ref Distance::pointPointSquared(), @ref Vector::dot(), @ref pow(T),
+@see @ref Distance::pointPointSquared(), @ref Vector::dot() const, @ref pow(T),
     @see @ref MeshTools::boundingSphereBouncingBubble()
 */
 template<class T> inline bool pointSphere(const Vector3<T>& point, const Vector3<T>& sphereCenter, T sphereRadius) {

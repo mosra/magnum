@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MaterialTools::filterAttributes(), @ref Magnum::MaterialTools::filterLayers(), @ref filterAttributesLayers()
+ * @brief Function @ref Magnum::MaterialTools::filterAttributes(), @ref Magnum::MaterialTools::filterLayers(), @ref Magnum::MaterialTools::filterAttributesLayers()
  * @m_since_latest
  */
 
