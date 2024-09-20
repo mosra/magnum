@@ -6,7 +6,7 @@ class Magnum < Formula
   sha256 "98dfe802e56614e4e6bf750d9b693de46a5ed0c6eb479b0268f1a20bf34268bf"
   head "https://github.com/mosra/magnum.git"
 
-  depends_on "cmake"
+  depends_on "cmake" => :build
   depends_on "corrade"
   depends_on "sdl2"
   depends_on "glfw"
