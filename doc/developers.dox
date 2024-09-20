@@ -276,7 +276,7 @@ following cases apply:
     interface. A rather exhaustive list of ABI-affecting changes is in the KDE
     Community Wiki: https://community.kde.org/Policies/Binary_Compatibility_Issues_With_C%2B%2B
 
-@subsection developers-plugin-interface-updating-importers Checklist for updating the @ref Trade::AbstractImporter plugin interface
+@subsection developers-plugin-interface-updating-importers Checklist for updating the `Trade::AbstractImporter` plugin interface
 
 -   Newly added `do*()` APIs need to be also handled in all proxies:
     -   @relativeref{Trade,AnyImageImporter}
@@ -299,7 +299,7 @@ following cases apply:
     need a corresponding change in @ref Trade::AbstractImageConverter and
     @ref Trade::AbstractSceneConverter
 
-@subsection developers-plugin-interface-updating-image-converters Checklist for updating the @ref Trade::AbstractImageConverter plugin interface
+@subsection developers-plugin-interface-updating-image-converters Checklist for updating the `Trade::AbstractImageConverter` plugin interface
 
 -   Newly added `do*()` APIs need to be also handled in all proxies:
     -   @relativeref{Trade,AnyImageConverter}
@@ -314,7 +314,7 @@ following cases apply:
 -   It's highly likely that APIs added to / changed in the image converter will
     also need a corresponding change in @ref Trade::AbstractSceneConverter
 
-@subsection developers-plugin-interface-updating-scene-converters Checklist for updating the @ref Trade::AbstractSceneConverter plugin interface
+@subsection developers-plugin-interface-updating-scene-converters Checklist for updating the `Trade::AbstractSceneConverter` plugin interface
 
 -   Newly added `do*()` APIs need to be also handled in all proxies:
     -   @relativeref{Trade,AnySceneConverter}
