@@ -222,7 +222,7 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja
 
 @section platforms-macos-troubleshooting Troubleshooting
 
-@subsection platforms-macos-troubleshooting-build-mysteriously-fails Build mysteriously fails due to some <cmath> errors
+@subsection platforms-macos-troubleshooting-build-mysteriously-fails Build mysteriously fails due to some &lt;cmath&gt; errors
 
 Happening usually after a system or Xcode upgrade, builds can start failing
 with errors like below. The exact reasons are unclear, can vary and happen only
