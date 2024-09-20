@@ -80,7 +80,7 @@ ALIASES                = \
     "cpp=@code{.cpp}" \
     "glsl=@code{.glsl}" \
     "cmake=@code{.cmake}" \
-    "ce=@endcode" \
+    "ce=@endcode<b></b>" \
     "m_div{1}=@xmlonly<mcss:div xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:class=\"\1\">@endxmlonly" \
     "m_enddiv=@xmlonly</mcss:div>@endxmlonly" \
     "m_span{1}=@xmlonly<mcss:span xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:class=\"\1\">@endxmlonly" \
