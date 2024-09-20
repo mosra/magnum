@@ -324,8 +324,8 @@ template<UnsignedInt location, class T> class Attribute {
          *      @ref Magnum::Vector4i "Vector4i").
          * @param dataOptions   Data options. Default is no options.
          *
-         * Vector stride is set to the size of the vector type (e.g. 9 for a
-         * @ref Magnum::Matrix3 "Matrix3").
+         * Vector stride is set to the size of the vector type (e.g.
+         * @cpp 12 @ce for a @ref Magnum::Matrix3 "Matrix3").
          */
         constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): Attribute{components, Implementation::Attribute<T>::size(GLint(components), dataType), dataType, dataOptions} {}
 
