@@ -263,9 +263,7 @@ vector of corresponding channel count and then the per-pixel delta is
 calculated as simple sum of per-channel deltas (where @f$ \boldsymbol{a} @f$ is
 the actual pixel value, @f$ \boldsymbol{e} @f$ expected pixel value and @f$ c @f$
 is channel count), with max and mean delta being taken over the whole picture. @f[
-
     \Delta_{\boldsymbol{p}} = \sum\limits_{i=1}^c \dfrac{a_i - e_i}{c}
-
 @f]
 
 The two parameters passed to the @ref CompareImage(Float, Float) constructor
