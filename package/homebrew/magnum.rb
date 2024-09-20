@@ -19,7 +19,14 @@ class Magnum < Formula
     system "mkdir build"
     cd "build" do
       system "cmake",
-        *std_cmake_args,
+        # Without this, the build of magnum-gl-info fails on CMake 3.30.3
+        # because of unresolved references to CGL. The same problem affected
+        # Bullet (https://github.com/bulletphysics/bullet3/issues/4659) and the
+        # fix in https://github.com/Homebrew/homebrew-core/pull/189186 is to
+        # add this, which ultimately results in `-DCMAKE_FIND_FRAMEWORK=FIRST`
+        # being passed to CMake. No idea what's going on, the regular CI build
+        # outside of Homebrew (although with CMake 3.26) doesn't need that.
+        *std_cmake_args(find_framework: "FIRST"),
         # Without this, ARM builds will try to look for dependencies in
         # /usr/local/lib and /usr/lib (which are the default locations) instead
         # of /opt/homebrew/lib which is dedicated for ARM binaries. Please
