@@ -120,8 +120,8 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontConverterFeatures value);
 
 Provides functionality for converting an arbitrary font to different format.
 See @ref plugins for more information and the list of
-@m_class{m-doc} [derived classes](#derived-classes) for available font
-converter plugins.
+@m_class{m-doc} <a href="#derived-classes">derived classes</a> for available
+font converter plugins.
 
 @m_class{m-note m-success}
 

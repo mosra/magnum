@@ -118,8 +118,8 @@ all error handling:
 @snippet Text-gl.cpp AbstractFont-usage
 
 See @ref plugins for more information about general plugin usage and the list
-of @m_class{m-doc} [derived classes](#derived-classes) for available font
-plugins. See @ref GlyphCache for more information about glyph caches and
+of @m_class{m-doc} <a href="#derived-classes">derived classes</a> for available
+font plugins. See @ref GlyphCache for more information about glyph caches and
 @ref Renderer for information about actual text rendering.
 
 @subsection Text-AbstractFont-usage-font-size Font size

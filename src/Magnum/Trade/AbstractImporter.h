@@ -242,8 +242,8 @@ In the following example an image is loaded from the filesystem using the
 
 See @ref plugins for more information about general plugin usage,
 @ref file-formats to compare implementations of common file formats and the
-list of @m_class{m-doc} [derived classes](#derived-classes) for all available
-importer plugins.
+list of @m_class{m-doc} <a href="#derived-classes">derived classes</a> for all
+available importer plugins.
 
 @m_class{m-note m-success}
 

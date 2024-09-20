@@ -36,7 +36,7 @@ namespace Magnum { namespace Math {
 /**
 @{ @name Packing and unpacking functions
 
-Similarly to @m_class{m-doc} [scalar/vector functions](#scalarvector-functions)
+Similarly to @m_class{m-doc} <a href="#scalarvector-functions">scalar/vector functions</a>
 these work on both scalars and vectors, including @ref Magnum::Math::Deg "Deg"
 and @ref Magnum::Math::Rad "Rad".
 */

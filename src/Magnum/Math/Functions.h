@@ -647,9 +647,9 @@ template<std::size_t size, class T> inline Vector<size, T> fma(const Vector<size
 /**
 @{ @name Exponential and power functions
 
-Unlike @m_class{m-doc} [scalar/vector functions](#scalarvector-functions) these
-don't work on @ref Magnum::Math::Deg "Deg" / @ref Magnum::Math::Rad "Rad" as
-the resulting unit can't be easily expressed.
+Unlike @m_class{m-doc} <a href="#scalarvector-functions">scalar/vector functions</a>
+these don't work on @ref Magnum::Math::Deg "Deg" / @ref Magnum::Math::Rad "Rad"
+as the resulting unit can't be easily expressed.
 */
 
 /**

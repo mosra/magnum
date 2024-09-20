@@ -637,8 +637,8 @@ it might be good to check against the reported @ref features() first.
 
 See @ref plugins for more information about general plugin usage,
 @ref file-formats to compare implementations of common file formats and the
-list of @m_class{m-doc} [derived classes](#derived-classes) for all available
-scene converter plugins.
+list of @m_class{m-doc} <a href="#derived-classes">derived classes</a> for all
+available scene converter plugins.
 
 @subsection Trade-AbstractSceneConverter-usage-mesh-data Converting a single mesh data
 

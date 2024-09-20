@@ -526,8 +526,8 @@ against the reported @ref features() first.
 
 See @ref plugins for more information about general plugin usage,
 @ref file-formats to compare implementations of common file formats and the
-list of @m_class{m-doc} [derived classes](#derived-classes) for all available
-image converter plugins.
+list of @m_class{m-doc} <a href="#derived-classes">derived classes</a> for all
+available image converter plugins.
 
 @m_class{m-note m-success}
 
