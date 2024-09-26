@@ -8,6 +8,7 @@
     Copyright © 2020 Nghia Truong <nghiatruong.vn@gmail.com>
     Copyright © 2020 Pablo Escobar <mail@rvrs.in>
     Copyright © 2020 janos <janos.meny@googlemail.com>
+    Copyright © 2024 John Turner <7strbass@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),

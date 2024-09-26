@@ -165,6 +165,8 @@ Are the below lists missing your name or something's wrong?
 -   **Joel Clay** ([\@jclay](https://github.com/jclay)) --- Vcpkg packages
 -   **John Laxson** ([\@jlaxson](https://github.com/jlaxson)) --- Homebrew
     package improvements
+-   **John Turner** ([\@jturner65](https://github.com/jturner65)) ---
+    documentation improvements
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) ---
     @ref Audio and @ref Trade library enhancements,
     @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication
