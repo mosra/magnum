@@ -610,7 +610,7 @@ A constant interpolation counterpart to @ref lerp(): @f[
 Equivalent to calling @cpp Math::lerp(a, b, t >= U(1)) @ce.
 */
 template<class T, class U> constexpr T select(const T& a, const T& b, U t) {
-    static_assert(IsUnitless<U>::value, "expecting an unitless type for the interpolation phase");
+    static_assert(IsUnitless<U>::value, "expecting a unitless type for the interpolation phase");
     return lerp(a, b, t >= U(1));
 }
 
@@ -622,7 +622,7 @@ doing the computation manually. Works only on types that satisfy
 @ref IsUnitless.
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type fma(T a, T b, T c) {
-    static_assert(IsUnitless<T>::value, "expecting an unitless type");
+    static_assert(IsUnitless<T>::value, "expecting a unitless type");
     /* On Emscripten it works with -O2 but not with -O1 (function not defined).
        I guess that's only because -O2 optimizes it out, so disabling it there. */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -634,7 +634,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type fm
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> fma(const Vector<size, T>& a, const Vector<size, T>& b, const Vector<size, T>& c) {
-    static_assert(IsUnitless<T>::value, "expecting an unitless type");
+    static_assert(IsUnitless<T>::value, "expecting a unitless type");
     return a*b + c;
 }
 
@@ -692,7 +692,7 @@ satisfy @ref IsUnitless.
 @see @ref pow(T, T)
 */
 template<UnsignedInt exponent, class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type pow(T base) {
-    static_assert(IsUnitless<T>::value, "expected an unitless type");
+    static_assert(IsUnitless<T>::value, "expected a unitless type");
     return Implementation::Pow<exponent>::pow(base);
 }
 
@@ -712,7 +712,7 @@ Returns power of @p base to the @p exponent. Works only on types that satisfy
 @see @ref pow(T), @ref exp()
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type pow(T base, T exponent) {
-    static_assert(IsUnitless<T>::value, "expected an unitless type");
+    static_assert(IsUnitless<T>::value, "expected a unitless type");
     return std::pow(base, exponent);
 }
 
@@ -731,7 +731,7 @@ Works only on types that satisfy @ref IsUnitless.
 @see @ref sqrtInverted(), @ref Vector::length(), @ref sqrt(const Dual<T>&)
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sqrt(T a) {
-    static_assert(IsUnitless<T>::value, "expecting an unitless type");
+    static_assert(IsUnitless<T>::value, "expecting a unitless type");
     return std::sqrt(a);
 }
 
@@ -751,7 +751,7 @@ Works only on types that satisfy @ref IsUnitless.
 @m_keyword{inversesqrt(),GLSL inversesqrt(),}
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sqrtInverted(T a) {
-    static_assert(IsUnitless<T>::value, "expecting an unitless type");
+    static_assert(IsUnitless<T>::value, "expecting a unitless type");
     return T(1)/std::sqrt(a);
 }
 
