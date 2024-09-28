@@ -357,14 +357,15 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * integer types and
      *
      * -    @cpp 1.0e-5f @ce for @cpp float @ce,
-     * -    @cpp 1.0e-15 @ce for @cpp double @ce,
+     * -    @cpp 1.0e-14 @ce for @cpp double @ce,
      * -    @cpp 1.0e-17l @ce for @cpp long double @ce on platforms where it is
      *      80-bit, and @cpp 1.0e-14l @ce on platforms
      *      @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE "where it is 64-bit".
      *
      * This matches fuzzy comparison precision in
      * @relativeref{Corrade,TestSuite} and is always one digit less than how
-     * @ref Debug or @relativeref{Corrade,Utility::format()} prints given type.
+     * @ref Debug, @relativeref{Corrade,Utility::format()} or
+     * @relativeref{Corrade,Utility::JsonWriter} prints given type.
      */
     constexpr static T epsilon();
 
