@@ -62,8 +62,10 @@ struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
 
     void setImage();
 
-    void setDistanceFieldImage();
-    void setDistanceFieldImageOutOfRange();
+    void setProcessedImage();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setDistanceFieldImageUnsupportedGLFormat();
+    #endif
 
     PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 };
@@ -99,6 +101,16 @@ const struct {
         {}},
 };
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+const struct {
+    const char* name;
+    bool deprecated;
+    bool glPixelFormat;
+} SetProcessedImageData[]{
+    {"", false, false},
+};
+#endif
+
 DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
     addTests({&DistanceFieldGlyphCacheGLTest::construct,
               &DistanceFieldGlyphCacheGLTest::constructSizeRatioNotMultipleOfTwo,
@@ -109,8 +121,14 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
     addInstancedTests({&DistanceFieldGlyphCacheGLTest::setImage},
         Containers::arraySize(SetImageData));
 
-    addTests({&DistanceFieldGlyphCacheGLTest::setDistanceFieldImage,
-              &DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfRange});
+    #ifndef MAGNUM_BUILD_DEPRECATED
+    addTests({&DistanceFieldGlyphCacheGLTest::setProcessedImage});
+    #else
+    addInstancedTests({&DistanceFieldGlyphCacheGLTest::setProcessedImage},
+        Containers::arraySize(SetProcessedImageData));
+
+    addTests({&DistanceFieldGlyphCacheGLTest::setDistanceFieldImageUnsupportedGLFormat});
+    #endif
 
     /* Load the plugin directly from the build tree. Otherwise it's either
        static and already loaded or not present in the build tree */
@@ -127,7 +145,7 @@ void DistanceFieldGlyphCacheGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
-    CORRADE_COMPARE(cache.distanceFieldTextureSize(), (Vector2i{128, 256}));
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 1}));
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));
     #endif
@@ -149,12 +167,13 @@ void DistanceFieldGlyphCacheGLTest::constructSizeRatioNotMultipleOfTwo() {
     /* Almost correct except that it's not an integer multiply */
     DistanceFieldGlyphCache{Vector2i{23*14}, {22, 23}, 4};
     DistanceFieldGlyphCache{Vector2i{23*14}, {23, 22}, 4};
-    CORRADE_COMPARE(out.str(),
-        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
-        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
-        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
-        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {22, 23}\n"
-        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got {322, 322} and {23, 22}\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
+        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
+        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
+        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {22, 23}\n"
+        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {23, 22}\n",
+        TestSuite::Compare::String);
 }
 
 void DistanceFieldGlyphCacheGLTest::constructCopy() {
@@ -213,22 +232,7 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
     /** @todo ugh have slicing on images directly already */
     MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
     #else
-    /* Pick a format that matches the internal texture format. This is rather
-       shitty, TBH. */
-    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    const GL::PixelFormat format = GL::PixelFormat::Red;
-    #else
-    GL::PixelFormat format;
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
-        format = GL::PixelFormat::Red;
-    } else
-    #endif
-    {
-        format = GL::PixelFormat::RGB;
-    }
-    #endif
-    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, data.size}, {format, GL::PixelType::UnsignedByte});
+    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, data.size}, cache.processedFormat());
     #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -244,38 +248,51 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
 }
 
-void DistanceFieldGlyphCacheGLTest::setDistanceFieldImage() {
+void DistanceFieldGlyphCacheGLTest::setProcessedImage() {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    auto&& data = SetProcessedImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    #endif
+
     DistanceFieldGlyphCache cache({64, 32}, {16, 8}, 16);
 
-    /* Pick a format that matches the internal texture format. This is rather
-       shitty, TBH. */
-    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    const GL::PixelFormat format = GL::PixelFormat::Red;
-    #else
-    GL::PixelFormat format;
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
-        format = GL::PixelFormat::Red;
-    } else
-    #endif
-    {
-        /* Ugh, don't want to bother implementing this */
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Ugh, don't want to bother implementing this */
+    if(cache.processedFormat() == PixelFormat::RGB8Unorm)
         CORRADE_SKIP("A three-component input is expected on ES2, skipping due to developer laziness.");
-    }
     #endif
 
     /* Clear the texture first, as it'd have random garbage otherwise */
     UnsignedByte zeros[16*8]{};
-    cache.setDistanceFieldImage({}, ImageView2D{format, GL::PixelType::UnsignedByte, {16, 8}, zeros});
+    cache.setProcessedImage({}, ImageView2D{PixelFormat::R8Unorm, {16, 8}, zeros});
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    UnsignedByte data[]{
+    UnsignedByte imageData[]{
         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
         0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
         0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
     };
-    cache.setDistanceFieldImage({8, 4}, ImageView2D{format, GL::PixelType::UnsignedByte, {8, 4}, data});
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    if(data.deprecated) {
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        if(data.glPixelFormat)
+            cache.setDistanceFieldImage({8, 4}, ImageView2D{
+                #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+                GL::PixelFormat::Red,
+                #else
+                GL::PixelFormat::Luminance,
+                #endif
+                GL::PixelType::UnsignedByte, {8, 4}, imageData});
+        else
+            cache.setDistanceFieldImage({8, 4}, ImageView2D{PixelFormat::R8Unorm, {8, 4}, imageData});
+        CORRADE_IGNORE_DEPRECATED_POP
+    } else
+    #endif
+    {
+        cache.setProcessedImage({8, 4}, ImageView2D{PixelFormat::R8Unorm, {8, 4}, imageData});
+    }
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* On GLES processedImage() isn't implemented as it'd mean creating a
@@ -286,8 +303,7 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImage() {
     /** @todo ugh have slicing on images directly already */
     MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
     #else
-    Image2D actualGL = DebugTools::textureSubImage(cache.texture(), 0, {{}, {16, 8}}, {format, GL::PixelType::UnsignedByte});
-    ImageView2D actual{*GL::genericPixelFormat(format, GL::PixelType::UnsignedByte), actualGL.size(), actualGL.data()};
+    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, {16, 8}}, cache.processedFormat());
     #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -306,30 +322,27 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImage() {
         DebugTools::CompareImage);
 }
 
-void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfRange() {
+#ifdef MAGNUM_BUILD_DEPRECATED
+void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageUnsupportedGLFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DistanceFieldGlyphCache cache{{200, 400}, {100, 200}, 4};
-
-    /* This is fine. Not testing on ES2 as there it would need the complicated
-       format logic from above. */
-    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    cache.setDistanceFieldImage({80, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
-    #endif
+    DistanceFieldGlyphCache cache{{4, 4}, {1, 1}, 4};
 
     std::ostringstream out;
     Error redirectError{&out};
-    cache.setDistanceFieldImage({81, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
-    cache.setDistanceFieldImage({80, 176}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
-    cache.setDistanceFieldImage({-1, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
-    cache.setDistanceFieldImage({80, -1}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* Format that is convertible back to the generic format but isn't
+       supported */
+    cache.setDistanceFieldImage({}, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::Float, {1, 1}, "hellohellohello"});
+    /* Format that doesn't have a generic equivalent gets passed as-is */
+    cache.setDistanceFieldImage({}, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedShort5551, {1, 1}, "hello!!"});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE_AS(out.str(),
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({81, 175}, {101, 200}) out of range for texture size Vector(100, 200)\n"
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({80, 176}, {100, 201}) out of range for texture size Vector(100, 200)\n"
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({-1, 175}, {19, 200}) out of range for texture size Vector(100, 200)\n"
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({80, -1}, {100, 24}) out of range for texture size Vector(100, 200)\n",
+        "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::R8Unorm but got PixelFormat::RGBA32F\n"
+        "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::R8Unorm but got PixelFormat::ImplementationSpecific(0x1908)\n",
         TestSuite::Compare::String);
 }
+#endif
 
 }}}}
 

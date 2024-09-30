@@ -40,23 +40,23 @@ GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& s
 
 /* The unconditional Optional unwrap in here two may assert in rare cases.
    Let's hope it doesn't in practice. */
-GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): AbstractGlyphCache{*GL::genericPixelFormat(internalFormat), originalSize, padding} {
+GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{*GL::genericPixelFormat(internalFormat), size, *GL::genericPixelFormat(internalFormat), processedSize, padding} {
     /* Initialize the texture */
     _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setStorage(1, internalFormat, size);
+        .setStorage(1, internalFormat, processedSize);
 }
 
 GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): GlyphCache{size, size, padding} {}
 
-GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): GlyphCache{
+GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCache{
     #ifndef MAGNUM_TARGET_GLES2
     GL::TextureFormat::R8,
     #else
     GL::TextureFormat::Luminance,
     #endif
-    originalSize, size, padding}
+    size, processedSize, padding}
 {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);

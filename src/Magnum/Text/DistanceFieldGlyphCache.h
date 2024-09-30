@@ -82,23 +82,23 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
     public:
         /**
          * @brief Constructor
-         * @param sourceSize        Size of the source image
-         * @param size              Resulting distance field texture size
+         * @param size              Size of the source image
+         * @param processedSize     Resulting distance field texture size
          * @param radius            Distance field computation radius
          *
          * See @ref TextureTools::DistanceField for more information about the
          * parameters. Size restrictions from it apply here as well, in
-         * particular the ratio of @p sourceSize and @p size is expected to be
-         * a multiple of 2.
+         * particular the ratio of @p size and @p processedSize is expected to
+         * be a multiple of 2.
          *
-         * Sets the internal texture format to single-channel. On OpenGL ES
-         * 3.0+ and WebGL 2 uses @ref GL::TextureFormat::R8. On desktop OpenGL
-         * requires @gl_extension{ARB,texture_rg} (part of OpenGL 3.0), on ES2
-         * uses @gl_extension{EXT,texture_rg} if available or
-         * @ref GL::TextureFormat::RGB as fallback, on WebGL 1 uses
-         * @ref GL::TextureFormat::RGB always.
+         * Sets the @ref processedFormat() to @ref PixelFormat::R8Unorm, if
+         * available. On OpenGL ES 3.0+ and WebGL 2 uses  always. On desktop
+         * OpenGL requires @gl_extension{ARB,texture_rg} (part of OpenGL 3.0),
+         * on ES2 uses  @gl_extension{EXT,texture_rg} if available and uses
+         * @ref PixelFormat::RGB8Unorm as fallback if not, on WebGL 1 uses
+         * @ref PixelFormat::RGB8Unorm always.
          */
-        explicit DistanceFieldGlyphCache(const Vector2i& sourceSize, const Vector2i& size, UnsignedInt radius);
+        explicit DistanceFieldGlyphCache(const Vector2i& size, const Vector2i& processedSize, UnsignedInt radius);
 
         /**
          * @brief Construct without creating the internal state and the OpenGL texture object
@@ -116,14 +116,18 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          */
         explicit DistanceFieldGlyphCache(NoCreateT) noexcept;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Distance field texture size
          *
          * Compared to @ref textureSize(), which is the size of the source
          * image, this function returns size of the resulting distance field
          * texture.
+         * @m_deprecated_since_latest Use @ref processedSize() instead.
          */
-        Vector2i distanceFieldTextureSize() const { return _size; }
+        CORRADE_DEPRECATED("use processedSize() instead") Vector2i distanceFieldTextureSize() const {
+            return processedSize().xy();
+        }
 
         /**
          * @brief Set a distance field cache image
@@ -132,18 +136,20 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * field image to given offset in the distance field texture. The
          * @p offset and @ref ImageView::size() are expected to be in bounds
          * for @ref distanceFieldTextureSize().
+         * @m_deprecated_since_latest Use @ref setProcessedImage() instead.
          */
-        void setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image);
+        CORRADE_DEPRECATED("use setProcessedImage() instead") void setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image);
+        #endif
 
     private:
         MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
         MAGNUM_TEXT_LOCAL void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
+        MAGNUM_TEXT_LOCAL void doSetProcessedImage(const Vector2i& offset, const ImageView2D& image) override;
 
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_TEXT_LOCAL Image3D doProcessedImage() override;
         #endif
 
-        Vector2i _size;
         TextureTools::DistanceField _distanceField;
 };
 

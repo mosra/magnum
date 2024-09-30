@@ -39,17 +39,17 @@
 
 namespace Magnum { namespace Text {
 
-DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& sourceSize, const Vector2i& size, const UnsignedInt radius):
+DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& size, const Vector2i& processedSize, const UnsignedInt radius):
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    GlyphCache(GL::TextureFormat::R8, sourceSize, size, Vector2i(radius)),
+    GlyphCache(GL::TextureFormat::R8, size, processedSize, Vector2i(radius)),
     #elif !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
     GlyphCache(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>() ?
-        GL::TextureFormat::R8 : GL::TextureFormat::RGB8, sourceSize, size, Vector2i(radius)),
+        GL::TextureFormat::R8 : GL::TextureFormat::RGB8, size, processedSize, Vector2i(radius)),
     #else
-    GlyphCache(GL::TextureFormat::RGB, sourceSize, size, Vector2i(radius)),
+    GlyphCache(GL::TextureFormat::RGB, size, processedSize, Vector2i(radius)),
     #endif
-    _size{size}, _distanceField{radius}
+    _distanceField{radius}
 {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
@@ -58,9 +58,9 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& sourceSize, con
     /* Replicating the assertion from TextureTools::DistanceField so it gets
        checked during construction already instead of only later during the
        setImage() call */
-    CORRADE_ASSERT(sourceSize % size == Vector2i{0} &&
-                   (sourceSize/size) % 2 == Vector2i{0},
-        "Text::DistanceFieldGlyphCache: expected source and destination size ratio to be a multiple of 2, got" << Debug::packed << sourceSize << "and" << Debug::packed << size, );
+    CORRADE_ASSERT(size % processedSize == Vector2i{0} &&
+                   (size/processedSize) % 2 == Vector2i{0},
+        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got" << Debug::packed << size << "and" << Debug::packed << processedSize, );
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
@@ -87,8 +87,8 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
 
     /* The constructor already checked that the ratio is an integer multiple,
        so this division should lead to no information loss */
-    CORRADE_INTERNAL_ASSERT(size().xy() % _size == Vector2i{0});
-    const Vector2i ratio = size().xy()/_size;
+    CORRADE_INTERNAL_ASSERT(size().xy() % processedSize().xy() == Vector2i{0});
+    const Vector2i ratio = size().xy()/processedSize().xy();
 
     /* Upload the input texture and create a distance field from it. On ES2
        without EXT_unpack_subimage and on WebGL 1 there's no possibility to
@@ -146,30 +146,26 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
     #endif
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
-    CORRADE_ASSERT((offset >= Vector2i{} && offset + image.size() <= _size).all(),
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage():" << Range2Di::fromSize(offset, image.size()) << "out of range for texture size" << _size, );
+    /* The original function accepted GL pixel formats as well, try to
+       translate them back to the generic format. If that fails, pass the image
+       as-is let the base implementation deal with that instead.
 
-    #ifndef CORRADE_NO_ASSERT
-    const GL::PixelFormat format = GL::pixelFormat(image.format());
-    #endif
-    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_ASSERT(format == GL::PixelFormat::Red,
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << GL::PixelFormat::Red << "but got" << format, );
-    #else
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
-        CORRADE_ASSERT(format == GL::PixelFormat::Red,
-            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << GL::PixelFormat::Red << "but got" << format, );
-    else
-    #endif
-    {
-        /* Luminance is not renderable in most cases */
-        CORRADE_ASSERT(format == GL::PixelFormat::RGB,
-            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << GL::PixelFormat::RGB << "but got" << format, );
+       Replacing the whole view instead of just the format so we don't need to
+       do any special-casing for when the format stays implementation-specific
+       and requires a pixel size to be specified externally. */
+    ImageView2D imageToUse = image;
+    if(isPixelFormatImplementationSpecific(image.format())) {
+        if(const Containers::Optional<PixelFormat> candidateFormat = GL::genericPixelFormat(pixelFormatUnwrap<GL::PixelFormat>(image.format()), GL::PixelType(image.formatExtra())))
+            imageToUse = ImageView2D{image.storage(), *candidateFormat, image.size(), image.data()};
     }
-    #endif
 
+    setProcessedImage(offset, imageToUse);
+}
+#endif
+
+void DistanceFieldGlyphCache::doSetProcessedImage(const Vector2i& offset, const ImageView2D& image) {
     texture().setSubImage(0, offset, image);
 }
 

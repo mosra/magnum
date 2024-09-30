@@ -55,6 +55,10 @@ enum class GlyphCacheFeature: UnsignedByte {
     /**
      * The glyph cache processes the input image, potentially to a different
      * size or format.
+     * @see @ref AbstractGlyphCache::processedFormat(),
+     *      @relativeref{AbstractGlyphCache,processedSize()},
+     *      @relativeref{AbstractGlyphCache,setProcessedImage()},
+     *      @ref GlyphCacheFeature::ProcessedImageDownload
      * @m_since_latest
      */
     ImageProcessing = 1 << 0,
@@ -271,14 +275,15 @@ padding even further.
 
 A subclass needs to implement the @ref doFeatures() and @ref doSetImage()
 functions. If the subclass does additional processing of the glyph cache image,
-it should advertise that with @ref GlyphCacheFeature::ImageProcessing. If it's
-desirable to populate the processed image directly and/or download it, it
-should provide an appropriate setter and/or advertise
-@ref GlyphCacheFeature::ProcessedImageDownload as well and implement
+it should advertise that with @ref GlyphCacheFeature::ImageProcessing and
+implement @ref doSetProcessedImage() as well. If it's desirable and possible to
+download the processed image as well, it should  advertise
+@ref GlyphCacheFeature::ProcessedImageDownload and implement
 @ref doProcessedImage().
 
 The public @ref flushImage() function already does checking for rectangle
-bounds so it's not needed to do it again inside @ref doSetImage().
+bounds so it's not needed to do it again inside @ref doSetImage(), similarly
+the bounds checking is done for @ref doSetProcessedImage().
 */
 class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
     public:
@@ -291,7 +296,11 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          *      the default.
          * @m_since_latest
          *
-         * The @p size is expected to be non-zero.
+         * The @p size is expected to be non-zero. If the implementation
+         * advertises @ref GlyphCacheFeature::ImageProcessing, the
+         * @ref processedFormat() and @ref processedSize() is the same as
+         * @p format and @p size, use @ref AbstractGlyphCache(PixelFormat, const Vector3i&, PixelFormat, const Vector2i&, const Vector2i&)
+         * to specify different values.
          * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -321,6 +330,55 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
         /* To not need to include Vector */
         explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, const Vector2i& padding);
         explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size);
+        #endif
+
+        /**
+         * @brief Construct a 2D array glyph cache with a specific processed format and size
+         * @param format            Source image format
+         * @param size              Source image size in pixels
+         * @param processedFormat   Processed image format
+         * @param processedSize     Processed image size in pixels
+         * @param padding    Padding around every glyph in pixelss. See
+         *      @ref Text-AbstractGlyphCache-padding for more information about
+         *      the default.
+         * @m_since_latest
+         *
+         * The @p size and @p processedSize is expected to be non-zero, depth
+         * of processed size is implicitly the same as in @p size. If the
+         * implementation doesn't advertise @ref GlyphCacheFeature::ImageProcessing,
+         * the @p processedFormat and @p processedSize are unused.
+         * @see @ref AbstractGlyphCache(PixelFormat, const Vector3i&, const Vector2i&),
+         *      @ref AbstractGlyphCache(PixelFormat, const Vector2i&, PixelFormat, const Vector2i&, const Vector2i&)
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
+        #else
+        /* To not need to include Vector */
+        explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding);
+        explicit AbstractGlyphCache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize);
+        #endif
+
+        /**
+         * @brief Construct a 2D glyph cache with a specific processed format and size
+         * @param format            Source image format
+         * @param size              Source image size in pixels
+         * @param processedFormat   Processed image format
+         * @param processedSize     Processed image size in pixels
+         * @param padding    Padding around every glyph in pixels. See
+         *      @ref Text-AbstractGlyphCache-padding for more information about
+         *      the default.
+         * @m_since_latest
+         *
+         * Equivalent to calling
+         * @ref AbstractGlyphCache(PixelFormat, const Vector3i&, PixelFormat, const Vector2i&, const Vector2i&)
+         * with @p size depth set to @cpp 1 @ce.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
+        #else
+        /* To not need to include Vector */
+        explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding);
+        explicit AbstractGlyphCache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize);
         #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -386,22 +444,52 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
         GlyphCacheFeatures features() const { return doFeatures(); }
 
         /**
-         * @brief Glyph cache texture format
+         * @brief Glyph cache format
          * @m_since_latest
          *
          * Corresponds to the format of the image view returned from
-         * @ref image().
+         * @ref image(). Note that if the implementation advertises
+         * @ref GlyphCacheFeature::ImageProcessing, the format actually used
+         * for rendering exposed in @ref processedFormat() may be different
+         * from the input format.
+         * @see @ref features(), @ref size()
          */
         PixelFormat format() const;
 
         /**
-         * @brief Glyph cache texture size
+         * @brief Processed glyph cache format
+         * @m_since_latest
+         *
+         * Corresponds to the format of the image view returned from
+         * @ref processedImage(), if @ref GlyphCacheFeature::ImageProcessing is
+         * supported.
+         * @see @ref features(), @ref format(), @ref processedSize()
+         */
+        PixelFormat processedFormat() const;
+
+        /**
+         * @brief Glyph cache size
          * @m_since_latest
          *
          * Corresponds to the size of the image view returned from
-         * @ref image().
+         * @ref image(). Note that if the implementation advertises
+         * @ref GlyphCacheFeature::ImageProcessing, the size actually used for
+         * rendering exposed in @ref processedSize() may be different from
+         * the input size.
+         * @see @ref features(), @ref format()
          */
         Vector3i size() const;
+
+        /**
+         * @brief Processed glyph cache size
+         * @m_since_latest
+         *
+         * Corresponds to the size of the image view returned from
+         * @ref processedImage(), if @ref GlyphCacheFeature::ImageProcessing is
+         * supported. The depth is always the same as in @ref size().
+         * @see @ref features(), @ref processedFormat()
+         */
+        Vector3i processedSize() const;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -701,9 +789,34 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @ref GlyphCacheFeature::ProcessedImageDownload is supported. For a
          * glyph cache without @ref GlyphCacheFeature::ImageProcessing you can
          * get the image directly through @ref image().
-         * @see @ref features()
+         * @see @ref features(), @ref processedFormat(), @ref processedSize()
          */
         Image3D processedImage();
+
+        /**
+         * @brief Set processed cache image
+         * @m_since_latest
+         *
+         * Expects that the implementation supports
+         * @ref GlyphCacheFeature::ImageProcessing. The @ref ImageView::format()
+         * is expected to match @ref processedFormat(), the @p offset and
+         * @ref ImageView::size() are expected to be in bounds for
+         * @ref processedSize().
+         * @see @ref features(), @ref processedImage()
+         */
+        void setProcessedImage(const Vector3i& offset, const ImageView3D& image);
+
+        /**
+         * @brief Set 2D processed cache image
+         * @m_since_latest
+         *
+         * Equivalent to calling
+         * @ref setProcessedImage(const Vector3i&, const ImageView3D&) with
+         * @p offset depth @cpp 0 @ce and @p image depth @cpp 1 @ce. Can be
+         * called only if @ref size() depth (and thus also @ref processedSize()
+         * depth) is @cpp 1 @ce.
+         */
+        void setProcessedImage(const Vector2i& offset, const ImageView2D& image);
 
         /**
          * @brief Query a cache-global glyph ID from a font-local glyph ID
@@ -881,6 +994,32 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @m_since_latest
          */
         virtual Image3D doProcessedImage();
+
+        /**
+         * @brief Implementation for @ref setProcessedImage()
+         * @m_since_latest
+         *
+         * The @p offset and @ref ImageView::size() are guaranteed to be in
+         * bounds for @ref processedSize(). For a glyph cache with @ref size()
+         * depth (and thus also @ref processedSize() depth) being @cpp 1 @ce
+         * default implementation delegates to
+         * @ref doSetProcessedImage(const Vector2i&, const ImageView2D&).
+         * Implement either this or the other overload.
+         */
+        virtual void doSetProcessedImage(const Vector3i& offset, const ImageView3D& image);
+
+        /**
+         * @brief Implementation for @ref setProcessedImage()
+         * @m_since_latest
+         *
+         * Delegated to from the default implementation of
+         * @ref doSetProcessedImage(const Vector3i&, const ImageView3D&) if
+         * @ref size() depth (and thus also @ref processedSize() depth) is
+         * @cpp 1 @ce. The @p offset and @ref ImageView::size() are guaranteed
+         * to be in bounds for @ref processedSize(). Implement either this or
+         * the other overload.
+         */
+        virtual void doSetProcessedImage(const Vector2i& offset, const ImageView2D& image);
 
         struct State;
         Containers::Pointer<State> _state;

@@ -70,7 +70,7 @@ Debug& operator<<(Debug& debug, const GlyphCacheFeatures value) {
 }
 
 struct AbstractGlyphCache::State {
-    explicit State(PixelFormat format, const Vector3i& size, const Vector2i& padding): image{format, size, Containers::Array<char>{ValueInit, 4*((pixelFormatSize(format)*size.x() + 3)/4)*size.y()*size.z()}}, atlas{size}, padding{padding} {
+    explicit State(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): image{format, size, Containers::Array<char>{ValueInit, 4*((pixelFormatSize(format)*size.x() + 3)/4)*size.y()*size.z()}}, atlas{size}, processedFormat{processedFormat}, processedSize{processedSize}, padding{padding} {
         /* Flags are currently cleared as well, will be enabled back in a later
            step once the behavior is specified (with negative ranges) and
            Math::join() is fixed to handle those correctly. */
@@ -82,7 +82,11 @@ struct AbstractGlyphCache::State {
     Image3D image;
     TextureTools::AtlasLandfill atlas;
 
+    PixelFormat processedFormat;
+    Vector2i processedSize;
     Vector2i padding;
+
+    /* 0/4 bytes free */
 
     /* First element is glyph position relative to a point on the baseline,
        second layer in the texture atlas, third a region in the atlas
@@ -117,13 +121,15 @@ struct AbstractGlyphCache::State {
     Containers::Array<UnsignedShort> fontGlyphMapping;
 };
 
-AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const Vector2i& padding) {
+AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding) {
     CORRADE_ASSERT(size.product(),
         "Text::AbstractGlyphCache: expected non-zero size, got" << Debug::packed << size, );
+    CORRADE_ASSERT(processedSize.product(),
+        "Text::AbstractGlyphCache: expected non-zero processed size, got" << Debug::packed << processedSize, );
 
     /* Creating the state only after the assert as the AtlasLandfill would
        assert on zero size as well */
-    _state.emplace(format, size, padding);
+    _state.emplace(format, size, processedFormat, processedSize, padding);
 
     /* Default invalid glyph -- empty / zero-area */
     arrayAppend(_state->glyphs, InPlaceInit);
@@ -131,6 +137,14 @@ AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i&
     /* There are no fonts yet */
     arrayAppend(_state->fonts, InPlaceInit, 0u, nullptr);
 }
+
+AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize): AbstractGlyphCache{format, size, processedFormat, processedSize, Vector2i{1}} {}
+
+AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector2i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{format, Vector3i{size, 1}, processedFormat, processedSize, padding} {}
+
+AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector2i& size, const PixelFormat processedFormat, const Vector2i& processedSize): AbstractGlyphCache{format, size, processedFormat, processedSize, Vector2i{1}} {}
+
+AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const Vector2i& padding): AbstractGlyphCache{format, size, format, size.xy(), padding} {}
 
 AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size): AbstractGlyphCache{format, size, Vector2i{1}} {}
 
@@ -156,8 +170,16 @@ PixelFormat AbstractGlyphCache::format() const {
     return _state->image.format();
 }
 
+PixelFormat AbstractGlyphCache::processedFormat() const {
+    return _state->processedFormat;
+}
+
 Vector3i AbstractGlyphCache::size() const {
     return _state->image.size();
+}
+
+Vector3i AbstractGlyphCache::processedSize() const {
+    return {_state->processedSize, _state->image.size().z()};
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -452,6 +474,37 @@ Image3D AbstractGlyphCache::processedImage() {
 
 Image3D AbstractGlyphCache::doProcessedImage() {
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractGlyphCache::processedImage(): feature advertised but not implemented", Image3D{PixelFormat::R8Unorm});
+}
+
+void AbstractGlyphCache::setProcessedImage(const Vector3i& offset, const ImageView3D& image) {
+    #ifndef CORRADE_NO_ASSERT
+    State& state = *_state;
+    #endif
+    CORRADE_ASSERT(features() >= GlyphCacheFeature::ImageProcessing,
+        "Text::AbstractGlyphCache::setProcessedImage(): feature not supported", );
+    CORRADE_ASSERT((offset >= Vector3i{} && offset + image.size() <= processedSize()).all(),
+        "Text::AbstractGlyphCache::setProcessedImage():" << Debug::packed << Range3Di::fromSize(offset, image.size()) << "out of range for size" << Debug::packed << processedSize(), );
+    CORRADE_ASSERT(image.format() == state.processedFormat,
+        "Text::AbstractGlyphCache::setProcessedImage(): expected" << state.processedFormat << "but got" << image.format(), );
+    doSetProcessedImage(offset, image);
+}
+
+void AbstractGlyphCache::setProcessedImage(const Vector2i& offset, const ImageView2D& image) {
+    CORRADE_ASSERT(_state->image.size().z() == 1,
+        "Text::AbstractGlyphCache::setProcessedImage(): use the 3D overload for an array glyph cache", );
+    setProcessedImage({offset, 0}, image);
+}
+
+void AbstractGlyphCache::doSetProcessedImage(const Vector3i& offset, const ImageView3D& image) {
+    if(_state->image.size().z() == 1)
+        /** @todo ugh have slicing on images directly already */
+        return doSetProcessedImage(offset.xy(), ImageView2D{image.storage(), image.format(), image.size().xy(), image.data()});
+
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractGlyphCache::setProcessedImage(): feature advertised but not implemented", );
+}
+
+void AbstractGlyphCache::doSetProcessedImage(const Vector2i&, const ImageView2D&) {
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractGlyphCache::setProcessedImage(): feature advertised but not implemented", );
 }
 
 UnsignedInt AbstractGlyphCache::glyphId(const UnsignedInt fontId, const UnsignedInt fontGlyphId) const {

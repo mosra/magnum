@@ -66,22 +66,23 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
         /**
          * @brief Constructor
          * @param internalFormat    Internal texture format
-         * @param originalSize      Unscaled glyph cache texture size in pixels
-         * @param size              Actual glyph cache texture size in pixels
+         * @param size              Source glyph cache texture size in pixels
+         * @param processedSize     Processed glyph cache texture size in
+         *      pixels
          * @param padding           Padding around every glyph in pixels
          *
-         * All glyphs parameters are saved relative to @p originalSize,
-         * although the actual glyph cache texture has @p size. Glyph
+         * All glyphs parameters are saved relative to @p size,
+         * although the actual glyph cache texture has @p processedSize. Glyph
          * @p padding can be used to account for e.g. glyph shadows.
          */
-        explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding);
+        explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding);
 
         /**
          * @brief Constructor
          *
-         * Same as calling the above with @p originalSize and @p size being set
-         * to the same value. See @ref Text-AbstractGlyphCache-padding for more
-         * information about the default @p padding.
+         * Same as calling the above with @p size and @p processedSize being
+         * set to the same value. See @ref Text-AbstractGlyphCache-padding for
+         * more information about the default @p padding.
          */
         explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = Vector2i{1});
 
@@ -98,14 +99,14 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
          * @ref GlyphCache(GL::TextureFormat, const Vector2i&, const Vector2i&)
          * for an alternative.
          */
-        explicit GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding);
+        explicit GlyphCache(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding);
 
         /**
          * @brief Constructor
          *
-         * Same as calling the above with @p originalSize and @p size being set
-         * to the same value. See @ref Text-AbstractGlyphCache-padding for more
-         * information about the default @p padding.
+         * Same as calling the above with @p size and @p processedSize being
+         * set to the same value. See @ref Text-AbstractGlyphCache-padding for
+         * more information about the default @p padding.
          */
         explicit GlyphCache(const Vector2i& size, const Vector2i& padding = Vector2i{1});
 

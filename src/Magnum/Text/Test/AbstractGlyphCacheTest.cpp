@@ -60,6 +60,10 @@ struct AbstractGlyphCacheTest: TestSuite::Tester {
     void constructNoPadding();
     void construct2D();
     void construct2DNoPadding();
+    void constructProcessed();
+    void constructProcessedNoPadding();
+    void constructProcessed2D();
+    void constructProcessed2DNoPadding();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void constructDeprecated();
     void constructDeprecatedNoPadding();
@@ -130,6 +134,15 @@ struct AbstractGlyphCacheTest: TestSuite::Tester {
     void processedImageNotSupported();
     void processedImageNotImplemented();
 
+    void setProcessedImage();
+    void setProcessedImage2D();
+    void setProcessedImage2DPassthrough2D();
+    void setProcessedImageNotImplemented();
+    void setProcessedImagePassthrough2DNotImplemented();
+    void setProcessedImageOutOfRange();
+    void setProcessedImageInvalidFormat();
+    void setProcessedImage2DNot2D();
+
     void access();
     void accessBatch();
     void accessInvalid();
@@ -143,9 +156,11 @@ struct AbstractGlyphCacheTest: TestSuite::Tester {
 const struct {
     const char* name;
     Vector2i padding;
+    bool differentProcessedFormatSize;
 } FlushImageData[]{
-    {"", {}},
-    {"with padding", {2, 3}},
+    {"", {}, false},
+    {"with padding", {2, 3}, false},
+    {"with different processed format and size", {}, false}
 };
 
 const struct {
@@ -154,6 +169,14 @@ const struct {
 } ProcessedImageNotSupportedData[]{
     {"no processing", {}},
     {"no processed image download", GlyphCacheFeature::ImageProcessing},
+};
+
+const struct {
+    const char* name;
+    Vector2i padding;
+} SetProcessedImageOutOfRangeData[]{
+    {"", {}},
+    {"with padding", {2, 3}},
 };
 
 AbstractGlyphCacheTest::AbstractGlyphCacheTest() {
@@ -165,6 +188,10 @@ AbstractGlyphCacheTest::AbstractGlyphCacheTest() {
               &AbstractGlyphCacheTest::constructNoPadding,
               &AbstractGlyphCacheTest::construct2D,
               &AbstractGlyphCacheTest::construct2DNoPadding,
+              &AbstractGlyphCacheTest::constructProcessed,
+              &AbstractGlyphCacheTest::constructProcessedNoPadding,
+              &AbstractGlyphCacheTest::constructProcessed2D,
+              &AbstractGlyphCacheTest::constructProcessed2DNoPadding,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractGlyphCacheTest::constructDeprecated,
               &AbstractGlyphCacheTest::constructDeprecatedNoPadding,
@@ -246,6 +273,18 @@ AbstractGlyphCacheTest::AbstractGlyphCacheTest() {
 
     addTests({&AbstractGlyphCacheTest::processedImageNotImplemented,
 
+              &AbstractGlyphCacheTest::setProcessedImage,
+              &AbstractGlyphCacheTest::setProcessedImage2D,
+              &AbstractGlyphCacheTest::setProcessedImage2DPassthrough2D,
+              &AbstractGlyphCacheTest::setProcessedImageNotImplemented,
+              &AbstractGlyphCacheTest::setProcessedImagePassthrough2DNotImplemented});
+
+    addInstancedTests({&AbstractGlyphCacheTest::setProcessedImageOutOfRange},
+        Containers::arraySize(SetProcessedImageOutOfRangeData));
+
+    addTests({&AbstractGlyphCacheTest::setProcessedImageInvalidFormat,
+              &AbstractGlyphCacheTest::setProcessedImage2DNot2D,
+
               &AbstractGlyphCacheTest::access,
               &AbstractGlyphCacheTest::accessBatch,
               &AbstractGlyphCacheTest::accessInvalid,
@@ -285,10 +324,21 @@ struct DummyGlyphCache: AbstractGlyphCache {
     void doSetImage(const Vector2i&, const ImageView2D&) override {}
 };
 
+struct DummyProcessingGlyphCache: AbstractGlyphCache {
+    using AbstractGlyphCache::AbstractGlyphCache;
+
+    GlyphCacheFeatures doFeatures() const override {
+        return GlyphCacheFeature::ImageProcessing;
+    }
+    void doSetImage(const Vector2i&, const ImageView2D&) override {}
+};
+
 void AbstractGlyphCacheTest::construct() {
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, {2, 5}};
     CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 3}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R32F);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{1024, 512, 3}));
     CORRADE_COMPARE(cache.padding(), (Vector2i{2, 5}));
     CORRADE_COMPARE(cache.fontCount(), 0);
     CORRADE_COMPARE(cache.glyphCount(), 1);
@@ -325,6 +375,8 @@ void AbstractGlyphCacheTest::constructNoPadding() {
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}};
     CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 3}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R32F);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{1024, 512, 3}));
     /* 1 by default to avoid artifacts */
     CORRADE_COMPARE(cache.padding(), Vector2i{1});
     CORRADE_COMPARE(cache.fontCount(), 0);
@@ -357,6 +409,8 @@ void AbstractGlyphCacheTest::construct2D() {
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}, {2, 5}};
     CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R32F);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{1024, 512, 1}));
     CORRADE_COMPARE(cache.padding(), (Vector2i{2, 5}));
     CORRADE_COMPARE(cache.fontCount(), 0);
     /* Invalid glyph is always present */
@@ -373,6 +427,82 @@ void AbstractGlyphCacheTest::construct2DNoPadding() {
     DummyGlyphCache cache{PixelFormat::R32F, {1024, 512}};
     CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R32F);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{1024, 512, 1}));
+    /* 1 by default to avoid artifacts */
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
+    CORRADE_COMPARE(cache.fontCount(), 0);
+    /* Invalid glyph is always present */
+    CORRADE_COMPARE(cache.glyphCount(), 1);
+    CORRADE_COMPARE(cache.atlas().size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(cache.atlas().filledSize(), (Vector3i{1024, 0, 1}));
+    CORRADE_COMPARE(cache.atlas().flags(), TextureTools::AtlasLandfillFlag::WidestFirst);
+    CORRADE_COMPARE(cache.atlas().padding(), Vector2i{1});
+
+    /* The rest shouldn't be any different */
+}
+
+void AbstractGlyphCacheTest::constructProcessed() {
+    DummyProcessingGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, PixelFormat::R16F, {256, 128}, {2, 5}};
+    CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 3}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R16F);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{256, 128, 3}));
+    CORRADE_COMPARE(cache.padding(), (Vector2i{2, 5}));
+    CORRADE_COMPARE(cache.fontCount(), 0);
+    /* Invalid glyph is always present */
+    CORRADE_COMPARE(cache.glyphCount(), 1);
+    CORRADE_COMPARE(cache.atlas().size(), (Vector3i{1024, 512, 3}));
+    CORRADE_COMPARE(cache.atlas().filledSize(), (Vector3i{1024, 512, 0}));
+    CORRADE_COMPARE(cache.atlas().flags(), TextureTools::AtlasLandfillFlag::WidestFirst);
+    CORRADE_COMPARE(cache.atlas().padding(), (Vector2i{2, 5}));
+
+    /* The rest shouldn't be any different */
+}
+
+void AbstractGlyphCacheTest::constructProcessedNoPadding() {
+    DummyProcessingGlyphCache cache{PixelFormat::R32F, {1024, 512, 3}, PixelFormat::R16F, {256, 128}};
+    CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 3}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R16F);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{256, 128, 3}));
+    /* 1 by default to avoid artifacts */
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
+    CORRADE_COMPARE(cache.fontCount(), 0);
+    /* Invalid glyph is always present */
+    CORRADE_COMPARE(cache.glyphCount(), 1);
+    CORRADE_COMPARE(cache.atlas().size(), (Vector3i{1024, 512, 3}));
+    CORRADE_COMPARE(cache.atlas().filledSize(), (Vector3i{1024, 512, 0}));
+    CORRADE_COMPARE(cache.atlas().flags(), TextureTools::AtlasLandfillFlag::WidestFirst);
+    CORRADE_COMPARE(cache.atlas().padding(), Vector2i{1});
+
+    /* The rest shouldn't be any different */
+}
+
+void AbstractGlyphCacheTest::constructProcessed2D() {
+    DummyProcessingGlyphCache cache{PixelFormat::R32F, {1024, 512}, PixelFormat::R16F, {256, 128}, {2, 5}};
+    CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R16F);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{256, 128, 1}));
+    CORRADE_COMPARE(cache.padding(), (Vector2i{2, 5}));
+    CORRADE_COMPARE(cache.fontCount(), 0);
+    /* Invalid glyph is always present */
+    CORRADE_COMPARE(cache.glyphCount(), 1);
+    CORRADE_COMPARE(cache.atlas().size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(cache.atlas().filledSize(), (Vector3i{1024, 0, 1}));
+    CORRADE_COMPARE(cache.atlas().flags(), TextureTools::AtlasLandfillFlag::WidestFirst);
+    CORRADE_COMPARE(cache.atlas().padding(), (Vector2i{2, 5}));
+
+    /* The rest shouldn't be any different */
+}
+
+void AbstractGlyphCacheTest::constructProcessed2DNoPadding() {
+    DummyProcessingGlyphCache cache{PixelFormat::R32F, {1024, 512}, PixelFormat::R16F, {256, 128}};
+    CORRADE_COMPARE(cache.format(), PixelFormat::R32F);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R16F);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{256, 128, 1}));
     /* 1 by default to avoid artifacts */
     CORRADE_COMPARE(cache.padding(), Vector2i{1});
     CORRADE_COMPARE(cache.fontCount(), 0);
@@ -460,11 +590,17 @@ void AbstractGlyphCacheTest::constructZeroSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DummyGlyphCache{PixelFormat::R8Unorm, {2, 0}};
-    DummyGlyphCache{PixelFormat::R8Unorm, {0, 2}};
+    DummyGlyphCache{PixelFormat::R8Unorm, {2, 0, 1}};
+    DummyGlyphCache{PixelFormat::R8Unorm, {0, 2, 1}};
+    DummyGlyphCache{PixelFormat::R8Unorm, {2, 2, 0}};
+    DummyGlyphCache{PixelFormat::R8Unorm, {2, 2}, PixelFormat::R8Unorm, {2, 0}};
+    DummyGlyphCache{PixelFormat::R8Unorm, {2, 2}, PixelFormat::R8Unorm, {0, 2}};
     CORRADE_COMPARE(out.str(),
         "Text::AbstractGlyphCache: expected non-zero size, got {2, 0, 1}\n"
-        "Text::AbstractGlyphCache: expected non-zero size, got {0, 2, 1}\n");
+        "Text::AbstractGlyphCache: expected non-zero size, got {0, 2, 1}\n"
+        "Text::AbstractGlyphCache: expected non-zero size, got {2, 2, 0}\n"
+        "Text::AbstractGlyphCache: expected non-zero processed size, got {2, 0}\n"
+        "Text::AbstractGlyphCache: expected non-zero processed size, got {0, 2}\n");
 }
 
 void AbstractGlyphCacheTest::constructNoCreate() {
@@ -1033,7 +1169,7 @@ void AbstractGlyphCacheTest::flushImage() {
     auto&& data = FlushImageData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    struct: AbstractGlyphCache {
+    struct Cache: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
@@ -1089,7 +1225,12 @@ void AbstractGlyphCacheTest::flushImage() {
         }
 
         bool called = false;
-    } cache{PixelFormat::R8Snorm, {45, 35, 5}, data.padding};
+    } cache{NoCreate};
+
+    if(data.differentProcessedFormatSize)
+        cache = Cache{PixelFormat::R8Snorm, {45, 35, 5}, PixelFormat::RG32F, {12, 34}};
+    else
+        cache = Cache{PixelFormat::R8Snorm, {45, 35, 5}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1117,7 +1258,7 @@ void AbstractGlyphCacheTest::flushImageWholeArea() {
        checking. The padding doesn't affect the call in this case -- the actual
        range is always the whole image. */
 
-    struct: AbstractGlyphCache {
+    struct Cache: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
@@ -1143,7 +1284,12 @@ void AbstractGlyphCacheTest::flushImageWholeArea() {
         }
 
         bool called = false;
-    } cache{PixelFormat::R8Snorm, {3, 2, 2}, data.padding};
+    } cache{NoCreate};
+
+    if(data.differentProcessedFormatSize)
+        cache = Cache{PixelFormat::R8Snorm, {3, 2, 5}, PixelFormat::RG32F, {1, 1}};
+    else
+        cache = Cache{PixelFormat::R8Snorm, {3, 2, 2}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1169,7 +1315,7 @@ void AbstractGlyphCacheTest::flushImageLayer() {
 
     /* Single slice subset of flushImage() */
 
-    struct: AbstractGlyphCache {
+    struct Cache: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
@@ -1205,7 +1351,12 @@ void AbstractGlyphCacheTest::flushImageLayer() {
         }
 
         bool called = false;
-    } cache{PixelFormat::R8Snorm, {45, 35, 5}, data.padding};
+    } cache{NoCreate};
+
+    if(data.differentProcessedFormatSize)
+        cache = Cache{PixelFormat::R8Snorm, {45, 35, 5}, PixelFormat::RG32F, {12, 34}};
+    else
+        cache = Cache{PixelFormat::R8Snorm, {45, 35, 5}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1228,7 +1379,7 @@ void AbstractGlyphCacheTest::flushImage2D() {
 
     /* Like flushImageLayer() but reduced to two dimensions */
 
-    struct: AbstractGlyphCache {
+    struct Cache: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
@@ -1264,7 +1415,12 @@ void AbstractGlyphCacheTest::flushImage2D() {
         }
 
         bool called = false;
-    } cache{PixelFormat::R8Snorm, {45, 35}, data.padding};
+    } cache{NoCreate};
+
+    if(data.differentProcessedFormatSize)
+        cache = Cache{PixelFormat::R8Snorm, {45, 35}, PixelFormat::RG32F, {12, 34}};
+    else
+        cache = Cache{PixelFormat::R8Snorm, {45, 35}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1287,7 +1443,7 @@ void AbstractGlyphCacheTest::flushImage2DPassthrough2D() {
 
     /* Like flushImage2D() but with 2D doSetImage() */
 
-    struct: AbstractGlyphCache {
+    struct Cache: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
@@ -1323,7 +1479,12 @@ void AbstractGlyphCacheTest::flushImage2DPassthrough2D() {
         }
 
         bool called = false;
-    } cache{PixelFormat::R8Snorm, {45, 35}, data.padding};
+    } cache{NoCreate};
+
+    if(data.differentProcessedFormatSize)
+        cache = Cache{PixelFormat::R8Snorm, {45, 35}, PixelFormat::RG32F, {12, 34}};
+    else
+        cache = Cache{PixelFormat::R8Snorm, {45, 35}, data.padding};
 
     /* Capture correct function name */
     CORRADE_VERIFY(true);
@@ -1384,8 +1545,14 @@ void AbstractGlyphCacheTest::flushImageOutOfRange() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    /* The padding should not have any effect on the check */
-    DummyGlyphCache cache{PixelFormat::R32F, {1024, 512, 8}, data.padding};
+    DummyGlyphCache cache{NoCreate};
+
+    /* Neither the padding nor the processed size should not have any effect on
+       the check */
+    if(data.differentProcessedFormatSize)
+        cache = DummyGlyphCache{PixelFormat::R32F, {1024, 512, 8}, PixelFormat::R8Snorm, {1536, 768}};
+    else
+        cache = DummyGlyphCache{PixelFormat::R32F, {1024, 512, 8}, data.padding};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1612,6 +1779,253 @@ void AbstractGlyphCacheTest::processedImageNotImplemented() {
     Error redirectError{&out};
     cache.processedImage();
     CORRADE_COMPARE(out.str(), "Text::AbstractGlyphCache::processedImage(): feature advertised but not implemented\n");
+}
+
+void AbstractGlyphCacheTest::setProcessedImage() {
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+        void doSetProcessedImage(const Vector3i& offset, const ImageView3D& image) override {
+            called = true;
+
+            CORRADE_COMPARE(offset, (Vector3i{15, 30, 3}));
+            CORRADE_COMPARE(image.size(), (Vector3i{3, 2, 2}));
+
+            char pixels0[]{
+                'a', 'b', 'c', 0,
+                'd', 'e', 'f', 0,
+            };
+            char pixels1[]{
+                '0', '1', '2', 0,
+                '3', '4', '5', 0,
+            };
+            CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
+                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels0}),
+                DebugTools::CompareImage);
+            CORRADE_COMPARE_AS(image.pixels<Byte>()[1],
+                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels1}),
+                DebugTools::CompareImage);
+        }
+
+        bool called = false;
+    } cache{PixelFormat::RGB16Unorm, {4, 3, 5}, PixelFormat::R8Snorm, {45, 35}};
+
+    /* Capture correct function name */
+    CORRADE_VERIFY(true);
+
+    char pixels[]{
+        'a', 'b', 'c', 0,
+        'd', 'e', 'f', 0,
+        '0', '1', '2', 0,
+        '3', '4', '5', 0,
+    };
+    cache.setProcessedImage({15, 30, 3}, ImageView3D{PixelFormat::R8Snorm, {3, 2, 2}, pixels});
+    CORRADE_VERIFY(cache.called);
+}
+
+void AbstractGlyphCacheTest::setProcessedImage2D() {
+    /* Like setProcessedImage() but reduced to two dimensions */
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+        void doSetProcessedImage(const Vector3i& offset, const ImageView3D& image) override {
+            called = true;
+
+            CORRADE_COMPARE(offset, (Vector3i{15, 30, 0}));
+            CORRADE_COMPARE(image.size(), (Vector3i{3, 2, 1}));
+
+            char pixels0[]{
+                'a', 'b', 'c', 0,
+                'd', 'e', 'f', 0,
+            };
+            CORRADE_COMPARE_AS(image.pixels<Byte>()[0],
+                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels0}),
+                DebugTools::CompareImage);
+        }
+
+        bool called = false;
+    } cache{PixelFormat::RGB16Unorm, {4, 3}, PixelFormat::R8Snorm, {45, 35}};
+
+    /* Capture correct function name */
+    CORRADE_VERIFY(true);
+
+    char pixels[]{
+        'a', 'b', 'c', 0,
+        'd', 'e', 'f', 0,
+    };
+    cache.setProcessedImage({15, 30}, ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels});
+    CORRADE_VERIFY(cache.called);
+}
+
+void AbstractGlyphCacheTest::setProcessedImage2DPassthrough2D() {
+    /* Like setProcessedImage2D() but with 2D doSetProcessedImage() */
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+        void doSetProcessedImage(const Vector2i& offset, const ImageView2D& image) override {
+            called = true;
+
+            CORRADE_COMPARE(offset, (Vector2i{15, 30}));
+            CORRADE_COMPARE(image.size(), (Vector2i{3, 2}));
+
+            char pixels0[]{
+                'a', 'b', 'c', 0,
+                'd', 'e', 'f', 0,
+            };
+            CORRADE_COMPARE_AS(image.pixels<Byte>(),
+                (ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels0}),
+                DebugTools::CompareImage);
+        }
+
+        bool called = false;
+    } cache{PixelFormat::RGB16Unorm, {4, 3}, PixelFormat::R8Snorm, {45, 35}};
+
+    /* Capture correct function name */
+    CORRADE_VERIFY(true);
+
+    char pixels[]{
+        'a', 'b', 'c', 0,
+        'd', 'e', 'f', 0,
+    };
+    cache.setProcessedImage({15, 30}, ImageView2D{PixelFormat::R8Snorm, {3, 2}, pixels});
+    CORRADE_VERIFY(cache.called);
+}
+
+void AbstractGlyphCacheTest::setProcessedImageNotImplemented() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+
+        /* The 2D variant shouldn't be called on an array cache */
+        void doSetProcessedImage(const Vector2i&, const ImageView2D&) override {
+            CORRADE_FAIL("This should not be called");
+        }
+    } cache{PixelFormat::R32F, {1024, 512, 8}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    cache.setProcessedImage({}, ImageView3D{PixelFormat::R32F, {}});
+    CORRADE_COMPARE(out.str(), "Text::AbstractGlyphCache::setProcessedImage(): feature advertised but not implemented\n");
+}
+
+void AbstractGlyphCacheTest::setProcessedImagePassthrough2DNotImplemented() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+
+        /* The 2D variant shouldn't be called on an array cache */
+        void doSetProcessedImage(const Vector2i&, const ImageView2D&) override {
+            CORRADE_FAIL("This should not be called");
+        }
+    } cache{PixelFormat::R32F, {1024, 512, 8}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    cache.setProcessedImage({}, ImageView3D{PixelFormat::R32F, {}});
+    CORRADE_COMPARE(out.str(), "Text::AbstractGlyphCache::setProcessedImage(): feature advertised but not implemented\n");
+}
+
+void AbstractGlyphCacheTest::setProcessedImageOutOfRange() {
+    auto&& data = SetProcessedImageOutOfRangeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* Like flushImage(), but for setProcessedImage() */
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+    /* The source size and padding should not have any effect on the check */
+    } cache{PixelFormat::RGBA32F, {1536, 768, 8}, PixelFormat::R8Snorm, {1024, 512}, data.padding};
+
+    /* Large enough data to fit in all cases below, 4-byte aligned rows */
+    Containers::Array<char> image{NoInit, 1012*5*2};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Negative min X, Y, layer */
+    cache.setProcessedImage({-1, 30, 4},
+        ImageView3D{PixelFormat::R8Snorm, {46, 5, 2}, image});
+    cache.setProcessedImage({15, -1, 4},
+        ImageView3D{PixelFormat::R8Snorm, {30, 36, 2}, image});
+    cache.setProcessedImage({15, 30, -1},
+        ImageView3D{PixelFormat::R8Snorm, {30, 5, 7}, image});
+    /* Too large max X, Y, layer */
+    cache.setProcessedImage({15, 30, 4},
+        ImageView3D{PixelFormat::R8Snorm, {1010, 5, 2}});
+    cache.setProcessedImage({15, 30, 4},
+        ImageView3D{PixelFormat::R8Snorm, {30, 483, 2}});
+    cache.setProcessedImage({15, 30, 4},
+        ImageView3D{PixelFormat::R8Snorm, {30, 5, 5}});
+    CORRADE_COMPARE_AS(out.str(),
+        "Text::AbstractGlyphCache::setProcessedImage(): {{-1, 30, 4}, {45, 35, 6}} out of range for size {1024, 512, 8}\n"
+        "Text::AbstractGlyphCache::setProcessedImage(): {{15, -1, 4}, {45, 35, 6}} out of range for size {1024, 512, 8}\n"
+        "Text::AbstractGlyphCache::setProcessedImage(): {{15, 30, -1}, {45, 35, 6}} out of range for size {1024, 512, 8}\n"
+
+        "Text::AbstractGlyphCache::setProcessedImage(): {{15, 30, 4}, {1025, 35, 6}} out of range for size {1024, 512, 8}\n"
+        "Text::AbstractGlyphCache::setProcessedImage(): {{15, 30, 4}, {45, 513, 6}} out of range for size {1024, 512, 8}\n"
+        "Text::AbstractGlyphCache::setProcessedImage(): {{15, 30, 4}, {45, 35, 9}} out of range for size {1024, 512, 8}\n",
+        TestSuite::Compare::String);
+}
+
+void AbstractGlyphCacheTest::setProcessedImageInvalidFormat() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+    /* The source format should not have any effect on the check */
+    } cache{PixelFormat::RGBA32F, {1024, 512, 8}, PixelFormat::R8Snorm, {3, 2}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    cache.setProcessedImage({}, ImageView3D{PixelFormat::R8Unorm, {3, 2, 1}, "abcdefgh"});
+    CORRADE_COMPARE(out.str(), "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::R8Snorm but got PixelFormat::R8Unorm\n");
+}
+
+void AbstractGlyphCacheTest::setProcessedImage2DNot2D() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+    } cache{PixelFormat::R8Unorm, {3, 2, 8}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    cache.setProcessedImage({}, ImageView2D{PixelFormat::R8Unorm, {3, 2}, "abcdefgh"});
+    CORRADE_COMPARE(out.str(), "Text::AbstractGlyphCache::setProcessedImage(): use the 3D overload for an array glyph cache\n");
 }
 
 void AbstractGlyphCacheTest::access() {
