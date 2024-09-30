@@ -30,6 +30,7 @@
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h> /**< @todo remove once Debug is stream-free */
+#include <Corrade/Utility/FormatStl.h> /**< @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -231,8 +232,18 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
     Image3D actual3 = cache.processedImage();
     /** @todo ugh have slicing on images directly already */
     MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
-    #else
+    #elif !defined(MAGNUM_TARGET_GLES2)
     Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, data.size}, cache.processedFormat());
+    #else
+    /* On ES2, R8Unorm maps to Luminance, but here it's actually Red if
+       EXT_texture_rg is supported */
+    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, data.size},
+        #ifndef MAGNUM_TARGET_WEBGL
+        cache.processedFormat() == PixelFormat::R8Unorm ?
+            Image2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte} :
+        #endif
+            Image2D{cache.processedFormat()}
+    );
     #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -302,8 +313,20 @@ void DistanceFieldGlyphCacheGLTest::setProcessedImage() {
     Image3D actual3 = cache.processedImage();
     /** @todo ugh have slicing on images directly already */
     MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
-    #else
+    #elif !defined(MAGNUM_TARGET_GLES2)
     Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, {16, 8}}, cache.processedFormat());
+    #else
+    /* On ES2, R8Unorm maps to Luminance, but here it's actually Red if
+       EXT_texture_rg is supported. We however need the generic format again
+       below for comparison, so reinterpret it back. */
+    Image2D actualGLFormat = DebugTools::textureSubImage(cache.texture(), 0, {{}, {16, 8}},
+        #ifndef MAGNUM_TARGET_WEBGL
+        cache.processedFormat() == PixelFormat::R8Unorm ?
+            Image2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte} :
+        #endif
+            Image2D{cache.processedFormat()}
+    );
+    ImageView2D actual{actualGLFormat.storage(), PixelFormat::R8Unorm, actualGLFormat.size(), actualGLFormat.data()};
     #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -337,9 +360,10 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageUnsupportedGLFormat() {
     /* Format that doesn't have a generic equivalent gets passed as-is */
     cache.setDistanceFieldImage({}, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedShort5551, {1, 1}, "hello!!"});
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE_AS(out.str(),
-        "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::R8Unorm but got PixelFormat::RGBA32F\n"
-        "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::R8Unorm but got PixelFormat::ImplementationSpecific(0x1908)\n",
+    CORRADE_COMPARE_AS(out.str(), Utility::formatString(
+        "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::{0} but got PixelFormat::RGBA32F\n"
+        "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::{0} but got PixelFormat::ImplementationSpecific(0x1908)\n",
+        cache.processedFormat() == PixelFormat::RGBA8Unorm ? "RGBA8Unorm" : "R8Unorm"),
         TestSuite::Compare::String);
 }
 #endif

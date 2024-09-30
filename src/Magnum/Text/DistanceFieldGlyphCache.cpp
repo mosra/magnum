@@ -168,7 +168,22 @@ void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, cons
 #endif
 
 void DistanceFieldGlyphCache::doSetProcessedImage(const Vector2i& offset, const ImageView2D& image) {
-    texture().setSubImage(0, offset, image);
+    ImageView2D imageToUse = image;
+
+    /* On ES2, R8Unorm maps to Luminance, but here it's actually Red if
+       EXT_texture_rg is supported. Reinterpret the image format in that
+       case. If the format is something else (such as RGBA8Unorm), no
+       reinterpret is done. WebGL doesn't have the EXT_texture_rg extension so
+       there it isn't done either. */
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(processedFormat() == PixelFormat::R8Unorm) {
+        /* This is checked inside setProcessedImage() already */
+        CORRADE_INTERNAL_ASSERT(image.format() == PixelFormat::R8Unorm);
+        imageToUse = ImageView2D{image.storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, image.size(), image.data()};
+    }
+    #endif
+
+    texture().setSubImage(0, offset, imageToUse);
 }
 
 #ifndef MAGNUM_TARGET_GLES
