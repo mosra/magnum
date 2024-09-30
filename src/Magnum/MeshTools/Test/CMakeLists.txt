@@ -80,7 +80,7 @@ if(MAGNUM_BUILD_GL_TESTS)
 
     corrade_add_test(MeshToolsFullScreenTriangleGLTest
         FullScreenTriangleGLTest.cpp ${FullScreenTriangleGLTest_RESOURCES}
-        LIBRARIES MagnumMeshTools MagnumGL MagnumOpenGLTester)
+        LIBRARIES MagnumDebugTools MagnumMeshTools MagnumGL MagnumOpenGLTester)
 
     if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
         set(MESHTOOLS_TEST_DIR ".")

@@ -30,7 +30,9 @@
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
@@ -135,12 +137,25 @@ void main() {
     using namespace Math::Literals;
 
     Image2D image = framebuffer.read({{}, Vector2i{4}}, PixelFormat::RGBA8Unorm);
-    CORRADE_COMPARE_AS(Containers::arrayCast<Color4ub>(image.data()), Containers::arrayView<Color4ub>({
+    Color4ub expected[]{
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba,
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba,
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba,
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba
-    }), TestSuite::Compare::Container);
+    };
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE_AS(image,
+        (ImageView2D{PixelFormat::RGBA8Unorm, {4, 4}, expected}),
+        DebugTools::CompareImage);
+    #else
+    /* The RGBA4 format on ES2 causes rounding errors. On NV it's stable
+       off-by-one, 0x7f, on Mesa it's more (either 0x77 or 0x88 instead of
+       0x80. Since this platform isn't really important nowadays, I don't
+       really care. */
+    CORRADE_COMPARE_WITH(image,
+        (ImageView2D{PixelFormat::RGBA8Unorm, {4, 4}, expected}),
+        (DebugTools::CompareImage{4.5f, 4.25f}));
+    #endif
 }
 
 }}}}
