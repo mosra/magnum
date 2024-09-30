@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "DistanceFieldGlyphCache.h"
+#include "DistanceFieldGlyphCacheGL.h"
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -39,8 +39,8 @@
 
 namespace Magnum { namespace Text {
 
-DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& size, const Vector2i& processedSize, const UnsignedInt radius):
-    GlyphCache{PixelFormat::R8Unorm, size,
+DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(const Vector2i& size, const Vector2i& processedSize, const UnsignedInt radius):
+    GlyphCacheGL{PixelFormat::R8Unorm, size,
         #if !defined(MAGNUM_TARGET_GLES) || !defined(MAGNUM_TARGET_GLES2)
         PixelFormat::R8Unorm,
         #else
@@ -62,20 +62,20 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& size, const Vec
        setImage() call */
     CORRADE_ASSERT(size % processedSize == Vector2i{0} &&
                    (size/processedSize) % 2 == Vector2i{0},
-        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got" << Debug::packed << size << "and" << Debug::packed << processedSize, );
+        "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got" << Debug::packed << size << "and" << Debug::packed << processedSize, );
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* On ES2 print a warning to make it known that EXT_texture_rg wasn't
        available. On WebGL 1 this is the case always, so a warning would be
        just a noise. */
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
-        Warning() << "Text::DistanceFieldGlyphCache:" << GL::Extensions::EXT::texture_rg::string() << "not supported, using a full RGBA format for the distance field texture";
+        Warning() << "Text::DistanceFieldGlyphCacheGL:" << GL::Extensions::EXT::texture_rg::string() << "not supported, using a full RGBA format for the distance field texture";
     #endif
 }
 
-DistanceFieldGlyphCache::DistanceFieldGlyphCache(NoCreateT) noexcept: GlyphCache{NoCreate}, _distanceField{NoCreate} {}
+DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(NoCreateT) noexcept: GlyphCacheGL{NoCreate}, _distanceField{NoCreate} {}
 
-GlyphCacheFeatures DistanceFieldGlyphCache::doFeatures() const {
+GlyphCacheFeatures DistanceFieldGlyphCacheGL::doFeatures() const {
     return GlyphCacheFeature::ImageProcessing
         #ifndef MAGNUM_TARGET_GLES
         |GlyphCacheFeature::ProcessedImageDownload
@@ -83,7 +83,7 @@ GlyphCacheFeatures DistanceFieldGlyphCache::doFeatures() const {
         ;
 }
 
-void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {
+void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     GL::Texture2D input;
     input.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
@@ -151,7 +151,7 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
+void DistanceFieldGlyphCacheGL::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
     /* The original function accepted GL pixel formats as well, try to
        translate them back to the generic format. If that fails, pass the image
        as-is let the base implementation deal with that instead.
@@ -169,7 +169,7 @@ void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, cons
 }
 #endif
 
-void DistanceFieldGlyphCache::doSetProcessedImage(const Vector2i& offset, const ImageView2D& image) {
+void DistanceFieldGlyphCacheGL::doSetProcessedImage(const Vector2i& offset, const ImageView2D& image) {
     ImageView2D imageToUse = image;
 
     /* On ES2, R8Unorm maps to Luminance, but here it's actually Red if
@@ -189,7 +189,7 @@ void DistanceFieldGlyphCache::doSetProcessedImage(const Vector2i& offset, const 
 }
 
 #ifndef MAGNUM_TARGET_GLES
-Image3D DistanceFieldGlyphCache::doProcessedImage() {
+Image3D DistanceFieldGlyphCacheGL::doProcessedImage() {
     Image2D out = _texture.image(0, PixelFormat::R8Unorm);
     return Image3D{out.format(), {out.size(), 1}, out.release()};
 }

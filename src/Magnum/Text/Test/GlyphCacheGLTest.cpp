@@ -43,7 +43,7 @@
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/GlyphCacheGL.h"
 
 namespace Magnum { namespace Text { namespace Test { namespace {
 
@@ -88,7 +88,7 @@ GlyphCacheGLTest::GlyphCacheGLTest() {
 }
 
 void GlyphCacheGLTest::construct() {
-    GlyphCache cache{PixelFormat::R8Unorm, {1024, 2048}, {3, 2}};
+    GlyphCacheGL cache{PixelFormat::R8Unorm, {1024, 2048}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
@@ -100,7 +100,7 @@ void GlyphCacheGLTest::construct() {
 }
 
 void GlyphCacheGLTest::constructNoPadding() {
-    GlyphCache cache{PixelFormat::RGBA8Unorm, {1024, 2048}};
+    GlyphCacheGL cache{PixelFormat::RGBA8Unorm, {1024, 2048}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.format(), PixelFormat::RGBA8Unorm);
@@ -112,8 +112,8 @@ void GlyphCacheGLTest::constructNoPadding() {
 }
 
 void GlyphCacheGLTest::constructProcessed() {
-    struct : GlyphCache {
-        using GlyphCache::GlyphCache;
+    struct: GlyphCacheGL {
+        using GlyphCacheGL::GlyphCacheGL;
 
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
@@ -135,8 +135,8 @@ void GlyphCacheGLTest::constructProcessed() {
 }
 
 void GlyphCacheGLTest::constructProcessedNoPadding() {
-    struct : GlyphCache {
-        using GlyphCache::GlyphCache;
+    struct: GlyphCacheGL {
+        using GlyphCacheGL::GlyphCacheGL;
 
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
@@ -160,7 +160,7 @@ void GlyphCacheGLTest::constructProcessedNoPadding() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 void GlyphCacheGLTest::constructDeprecated() {
     CORRADE_IGNORE_DEPRECATED_PUSH
-    GlyphCache cache{{1024, 2048}};
+    GlyphCacheGL cache{{1024, 2048}};
     CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -172,7 +172,7 @@ void GlyphCacheGLTest::constructDeprecated() {
 
 void GlyphCacheGLTest::constructDeprecatedProcessed() {
     CORRADE_IGNORE_DEPRECATED_PUSH
-    GlyphCache cache{{1024, 2048}, {128, 256}, {}};
+    GlyphCacheGL cache{{1024, 2048}, {128, 256}, {}};
     CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -184,7 +184,7 @@ void GlyphCacheGLTest::constructDeprecatedProcessed() {
 
 void GlyphCacheGLTest::constructDeprecatedTextureFormat() {
     CORRADE_IGNORE_DEPRECATED_PUSH
-    GlyphCache cache{
+    GlyphCacheGL cache{
         #ifndef MAGNUM_TARGET_GLES2
         GL::TextureFormat::RGBA8,
         #else
@@ -202,7 +202,7 @@ void GlyphCacheGLTest::constructDeprecatedTextureFormat() {
 
 void GlyphCacheGLTest::constructDeprecatedTextureFormatProcessed() {
     CORRADE_IGNORE_DEPRECATED_PUSH
-    GlyphCache cache{
+    GlyphCacheGL cache{
         #ifndef MAGNUM_TARGET_GLES2
         GL::TextureFormat::RGBA8,
         #else
@@ -220,24 +220,24 @@ void GlyphCacheGLTest::constructDeprecatedTextureFormatProcessed() {
 #endif
 
 void GlyphCacheGLTest::constructCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<GlyphCache>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<GlyphCache>{});
+    CORRADE_VERIFY(!std::is_copy_constructible<GlyphCacheGL>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<GlyphCacheGL>{});
 }
 
 void GlyphCacheGLTest::constructMove() {
-    GlyphCache a{PixelFormat::R8Unorm, {1024, 512}};
+    GlyphCacheGL a{PixelFormat::R8Unorm, {1024, 512}};
 
-    GlyphCache b = Utility::move(a);
+    GlyphCacheGL b = Utility::move(a);
     CORRADE_COMPARE(b.format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 1}));
 
-    GlyphCache c{PixelFormat::RGBA8Unorm, {2, 3}};
+    GlyphCacheGL c{PixelFormat::RGBA8Unorm, {2, 3}};
     c = Utility::move(b);
     CORRADE_COMPARE(c.format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 1}));
 
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<GlyphCache>::value);
-    CORRADE_VERIFY(std::is_nothrow_move_assignable<GlyphCache>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<GlyphCacheGL>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<GlyphCacheGL>::value);
 }
 
 const UnsignedByte InputData[]{
@@ -259,7 +259,7 @@ const UnsignedByte ExpectedData[]{
 };
 
 void GlyphCacheGLTest::setImage() {
-    GlyphCache cache{PixelFormat::R8Unorm, {16, 8}};
+    GlyphCacheGL cache{PixelFormat::R8Unorm, {16, 8}};
 
     /* Fill the texture with non-zero data to verify the padding gets uploaded
        as well. On ES2 with EXT_texture_rg the internal format isn't Luminance
@@ -334,7 +334,7 @@ void GlyphCacheGLTest::setImageFourChannel() {
        upload works, as there's a special case for when the EXT_unpack_subimage
        extension isn't present. */
 
-    GlyphCache cache{PixelFormat::RGBA8Unorm, {4, 8}};
+    GlyphCacheGL cache{PixelFormat::RGBA8Unorm, {4, 8}};
 
     /* Zero the texture to avoid comparing against garbage */
     cache.texture().setSubImage(0, {}, Image2D{PixelFormat::RGBA8Unorm, {4, 8}, Containers::Array<char>{ValueInit, 4*4*8}});

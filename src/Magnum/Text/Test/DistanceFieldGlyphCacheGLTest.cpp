@@ -44,7 +44,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/PixelFormat.h"
-#include "Magnum/Text/DistanceFieldGlyphCache.h"
+#include "Magnum/Text/DistanceFieldGlyphCacheGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
@@ -142,7 +142,7 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
 }
 
 void DistanceFieldGlyphCacheGLTest::construct() {
-    DistanceFieldGlyphCache cache{{1024, 2048}, {128, 256}, 16};
+    DistanceFieldGlyphCacheGL cache{{1024, 2048}, {128, 256}, 16};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* The input format is always single-channel */
@@ -175,44 +175,44 @@ void DistanceFieldGlyphCacheGLTest::constructSizeRatioNotMultipleOfTwo() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* This should be fine */
-    DistanceFieldGlyphCache{Vector2i{23*14}, Vector2i{23}, 4};
+    DistanceFieldGlyphCacheGL{Vector2i{23*14}, Vector2i{23}, 4};
 
     /* It's the same assert as in TextureTools::DistanceFieldGL */
     std::ostringstream out;
     Error redirectError{&out};
-    DistanceFieldGlyphCache{Vector2i{23*14}, Vector2i{23*2}, 4};
+    DistanceFieldGlyphCacheGL{Vector2i{23*14}, Vector2i{23*2}, 4};
     /* Verify also just one axis wrong */
-    DistanceFieldGlyphCache{Vector2i{23*14}, {23*2, 23}, 4};
-    DistanceFieldGlyphCache{Vector2i{23*14}, {23, 23*2}, 4};
+    DistanceFieldGlyphCacheGL{Vector2i{23*14}, {23*2, 23}, 4};
+    DistanceFieldGlyphCacheGL{Vector2i{23*14}, {23, 23*2}, 4};
     /* Almost correct except that it's not an integer multiply */
-    DistanceFieldGlyphCache{Vector2i{23*14}, {22, 23}, 4};
-    DistanceFieldGlyphCache{Vector2i{23*14}, {23, 22}, 4};
+    DistanceFieldGlyphCacheGL{Vector2i{23*14}, {22, 23}, 4};
+    DistanceFieldGlyphCacheGL{Vector2i{23*14}, {23, 22}, 4};
     CORRADE_COMPARE_AS(out.str(),
-        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
-        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
-        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
-        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {22, 23}\n"
-        "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {23, 22}\n",
+        "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
+        "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
+        "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
+        "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {22, 23}\n"
+        "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {23, 22}\n",
         TestSuite::Compare::String);
 }
 
 void DistanceFieldGlyphCacheGLTest::constructCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldGlyphCache>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldGlyphCache>{});
+    CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldGlyphCacheGL>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldGlyphCacheGL>{});
 }
 
 void DistanceFieldGlyphCacheGLTest::constructMove() {
-    DistanceFieldGlyphCache a{{1024, 512}, {128, 64}, 3};
+    DistanceFieldGlyphCacheGL a{{1024, 512}, {128, 64}, 3};
 
-    DistanceFieldGlyphCache b = Utility::move(a);
+    DistanceFieldGlyphCacheGL b = Utility::move(a);
     CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 1}));
 
-    DistanceFieldGlyphCache c{{2, 4}, {1, 2}, 1};
+    DistanceFieldGlyphCacheGL c{{2, 4}, {1, 2}, 1};
     c = Utility::move(b);
     CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 1}));
 
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<DistanceFieldGlyphCache>::value);
-    CORRADE_VERIFY(std::is_nothrow_move_assignable<DistanceFieldGlyphCache>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<DistanceFieldGlyphCacheGL>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<DistanceFieldGlyphCacheGL>::value);
 }
 
 void DistanceFieldGlyphCacheGLTest::setImage() {
@@ -230,7 +230,7 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
     CORRADE_COMPARE(inputImage->format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(inputImage->size(), (Vector2i{256, 256}));
 
-    DistanceFieldGlyphCache cache{data.sourceSize, data.size, 32};
+    DistanceFieldGlyphCacheGL cache{data.sourceSize, data.size, 32};
     Containers::StridedArrayView3D<const char> src = inputImage->pixels();
     /* Test also uploading under an offset. The cache might be three-component
        in some cases, slice the destination view to just the first component */
@@ -284,7 +284,7 @@ void DistanceFieldGlyphCacheGLTest::setProcessedImage() {
     setTestCaseDescription(data.name);
     #endif
 
-    DistanceFieldGlyphCache cache({64, 32}, {16, 8}, 16);
+    DistanceFieldGlyphCacheGL cache({64, 32}, {16, 8}, 16);
 
     #ifdef MAGNUM_TARGET_GLES2
     /* Ugh, don't want to bother implementing this */
@@ -368,7 +368,7 @@ void DistanceFieldGlyphCacheGLTest::setProcessedImage() {
 void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageUnsupportedGLFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DistanceFieldGlyphCache cache{{4, 4}, {1, 1}, 4};
+    DistanceFieldGlyphCacheGL cache{{4, 4}, {1, 1}, 4};
 
     std::ostringstream out;
     Error redirectError{&out};

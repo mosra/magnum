@@ -149,7 +149,7 @@ Released 2018-05-01, tagged as
 
 @subsubsection changelog-2018-04-changes-text Text library
 
--   The @ref Text::GlyphCache now unconditionally uses
+-   The @cpp Text::GlyphCache @ce now unconditionally uses
     @ref GL::TextureFormat::Luminance on ES2 and WebGL 1, instead of trying
     @ref GL::TextureFormat::Red there first. That's done for consistency with
     @ref GL::pixelFormat(), which unconditionally returns

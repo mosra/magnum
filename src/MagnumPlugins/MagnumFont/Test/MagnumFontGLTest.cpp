@@ -40,7 +40,7 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
-#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/GlyphCacheGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
 #include "configure.h"
@@ -137,9 +137,9 @@ void MagnumFontGLTest::createGlyphCache() {
        we cannot really verify that the size matches, but at least
        something. */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image = static_cast<GlyphCache&>(*cache).texture().image(0, {PixelFormat::R8Unorm});
+    Image2D image = static_cast<GlyphCacheGL&>(*cache).texture().image(0, {PixelFormat::R8Unorm});
     #else
-    Image2D image = DebugTools::textureSubImage(static_cast<GlyphCache&>(*cache).texture(), 0, {{}, {128, 64}}, {PixelFormat::R8Unorm});
+    Image2D image = DebugTools::textureSubImage(static_cast<GlyphCacheGL&>(*cache).texture(), 0, {{}, {128, 64}}, {PixelFormat::R8Unorm});
     #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(image,
@@ -211,9 +211,9 @@ void MagnumFontGLTest::createGlyphCacheProcessedImage() {
        we cannot really verify that the size matches, but at least
        something. */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image = static_cast<GlyphCache&>(*cache).texture().image(0, {PixelFormat::R8Unorm});
+    Image2D image = static_cast<GlyphCacheGL&>(*cache).texture().image(0, {PixelFormat::R8Unorm});
     #else
-    Image2D image = DebugTools::textureSubImage(static_cast<GlyphCache&>(*cache).texture(), 0, {{}, {8, 4}}, {PixelFormat::R8Unorm});
+    Image2D image = DebugTools::textureSubImage(static_cast<GlyphCacheGL&>(*cache).texture(), 0, {{}, {8, 4}}, {PixelFormat::R8Unorm});
     #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(image,

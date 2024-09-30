@@ -33,7 +33,7 @@
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
-#include "Magnum/Text/DistanceFieldGlyphCache.h"
+#include "Magnum/Text/DistanceFieldGlyphCacheGL.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 
 #ifdef MAGNUM_TARGET_EGL
@@ -199,11 +199,11 @@ int FontConverter::exec() {
     }
 
     /* Create distance field glyph cache if radius is specified */
-    Containers::Pointer<GlyphCache> cache;
+    Containers::Pointer<GlyphCacheGL> cache;
     if(!args.value<Vector2i>("output-size").isZero()) {
         Debug() << "Populating distance field glyph cache...";
 
-        cache.emplace<DistanceFieldGlyphCache>(
+        cache.emplace<DistanceFieldGlyphCacheGL>(
             args.value<Vector2i>("atlas-size"),
             args.value<Vector2i>("output-size"),
             args.value<UnsignedInt>("radius"));
@@ -212,7 +212,7 @@ int FontConverter::exec() {
     } else {
         Debug() << "Zero-size distance field output specified, populating normal glyph cache...";
 
-        cache.emplace<GlyphCache>(PixelFormat::R8Unorm, args.value<Vector2i>("atlas-size"));
+        cache.emplace<GlyphCacheGL>(PixelFormat::R8Unorm, args.value<Vector2i>("atlas-size"));
     }
 
     /* Fill the cache */

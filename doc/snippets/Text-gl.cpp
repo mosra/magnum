@@ -31,7 +31,7 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Shaders/VectorGL.h"
 #include "Magnum/Text/AbstractFont.h"
-#include "Magnum/Text/DistanceFieldGlyphCache.h"
+#include "Magnum/Text/DistanceFieldGlyphCacheGL.h"
 #include "Magnum/Text/Renderer.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
@@ -58,7 +58,7 @@ Containers::Pointer<Text::AbstractFont> font =
 if(!font->openFile("font.ttf", 12.0f))
     Fatal{} << "Can't open font.ttf with StbTrueTypeFont";
 
-Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{128}};
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
@@ -67,7 +67,7 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 
 {
 /* [AbstractGlyphCache-filling-construct] */
-Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{512}};
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, Vector2i{512}};
 /* [AbstractGlyphCache-filling-construct] */
 }
 
@@ -76,15 +76,15 @@ Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{512}};
    the font pointer. I don't care, I just want you to check compilation errors,
    not more! */
 PluginManager::Manager<Text::AbstractFont> manager;
-/* [DistanceFieldGlyphCache-usage] */
+/* [DistanceFieldGlyphCacheGL-usage] */
 Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
 font->openFile("font.ttf", 96.0f);
 
-Text::DistanceFieldGlyphCache cache{Vector2i{1024}, Vector2i{128}, 12};
+Text::DistanceFieldGlyphCacheGL cache{Vector2i{1024}, Vector2i{128}, 12};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
-/* [DistanceFieldGlyphCache-usage] */
+/* [DistanceFieldGlyphCacheGL-usage] */
 }
 
 {
@@ -92,15 +92,15 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
    the font pointer. I don't care, I just want you to check compilation errors,
    not more! */
 PluginManager::Manager<Text::AbstractFont> manager;
-/* [GlyphCache-usage] */
+/* [GlyphCacheGL-usage] */
 Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
 font->openFile("font.ttf", 12.0f);
 
-Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{128}};
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
-/* [GlyphCache-usage] */
+/* [GlyphCacheGL-usage] */
 }
 
 {
@@ -116,7 +116,7 @@ Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndI
 font->openFile("font.ttf", 12.0f);
 
 /* Populate a glyph cache */
-Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{128}};
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");

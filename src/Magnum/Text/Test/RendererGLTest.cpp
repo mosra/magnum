@@ -36,7 +36,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractShaper.h"
-#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/GlyphCacheGL.h"
 #include "Magnum/Text/Renderer.h"
 
 namespace Magnum { namespace Text { namespace Test { namespace {
@@ -113,9 +113,9 @@ struct TestFont: AbstractFont {
     bool _opened = false;
 };
 
-GlyphCache testGlyphCache(AbstractFont& font) {
+GlyphCacheGL testGlyphCache(AbstractFont& font) {
     /* Default padding is 1 to avoid artifacts, set that to 0 to simplify */
-    GlyphCache cache{PixelFormat::R8Unorm, {20, 20}, {}};
+    GlyphCacheGL cache{PixelFormat::R8Unorm, {20, 20}, {}};
 
     /* Add one more font to verify the right one gets picked */
     cache.addFont(96);
@@ -134,7 +134,7 @@ void RendererGLTest::renderMesh() {
 
     TestFont font;
     font.openFile({}, 0.5f);
-    GlyphCache cache = testGlyphCache(font);
+    GlyphCacheGL cache = testGlyphCache(font);
 
     /* Capture the correct function name */
     CORRADE_VERIFY(true);
@@ -188,7 +188,7 @@ void RendererGLTest::renderMeshIndexType() {
     #ifndef MAGNUM_TARGET_GLES
     TestFont font;
     font.openFile({}, 0.5f);
-    GlyphCache cache = testGlyphCache(font);
+    GlyphCacheGL cache = testGlyphCache(font);
 
     /* Capture the correct function name */
     CORRADE_VERIFY(true);
@@ -246,7 +246,7 @@ void RendererGLTest::mutableText() {
 
     TestFont font;
     font.openFile({}, 0.5f);
-    GlyphCache cache = testGlyphCache(font);
+    GlyphCacheGL cache = testGlyphCache(font);
     Renderer2D renderer(font, cache, 0.25f, Alignment::MiddleCenter);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);

@@ -25,172 +25,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
- * @brief Class @ref Magnum::Text::GlyphCache
+ * @brief Typedef @ref Magnum::Text::GlyphCache
+ * @m_deprecated_since_latest Use @ref Magnum/Text/GlyphCacheGL.h
+ *      and the @relativeref{Magnum::Text,GlyphCacheGL} class
+ *      instead.
  */
+#endif
 
 #include "Magnum/configure.h"
 
-#ifdef MAGNUM_TARGET_GL
-#include "Magnum/GL/Texture.h"
-#include "Magnum/Text/AbstractGlyphCache.h"
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+
+#include "Magnum/Text/GlyphCacheGL.h"
+
+CORRADE_DEPRECATED_FILE("use Magnum/Text/GlyphCacheGL.h and the GlyphCacheGL class instead")
 
 namespace Magnum { namespace Text {
 
-/**
-@brief Glyph cache
-
-Contains font glyphs rendered into a texture atlas.
-
-@section Text-GlyphCache-usage Usage
-
-Create the @ref GlyphCache object with sufficient size and then call
-@ref AbstractFont::createGlyphCache() to fill it with glyphs.
-
-@snippet Text-gl.cpp GlyphCache-usage
-
-See the @ref Renderer class for information about text rendering. The
-@ref AbstractGlyphCache base class has more information about general glyph
-cache usage.
-
-@section Text-GlyphCache-internal-format Internal texture format
-
-The @ref GL::TextureFormat used by @ref texture() is implicitly coming from
-@ref GL::textureFormat(Magnum::PixelFormat) applied to @ref format(), or if
-@ref GlyphCacheFeature::ImageProcessing is supported, to @ref processedFormat()
-instead.
-
-If @ref PixelFormat::R8Unorm is used for @ref format() or if
-@ref GlyphCacheFeature::ImageProcessing is supported and
-@ref PixelFormat::R8Unorm is used for @ref processedFormat(), on desktop OpenGL
-the class expects that @gl_extension{ARB,texture_rg} (OpenGL 3.0) is supported
-and uses @ref GL::TextureFormat::R8. On OpenGL ES 2.0, if
-@gl_extension{EXT,texture_rg} is supported, @ref GL::TextureFormat::Red /
-@ref GL::TextureFormat::R8 is used instead of @ref GL::TextureFormat::Luminance
-for @ref PixelFormat::R8Unorm. On WebGL 1 @ref GL::TextureFormat::Luminance is
-used for @ref PixelFormat::R8Unorm always.
-
-While this is abstracted away to not affect common use through @ref image(),
-@ref processedImage() or @ref setProcessedImage(), code interacting directly
-with @ref texture() may need to special-case this. In particular, if image
-processing needs to render to the texture, it may need to choose a different
-format as luminance usually cannot be rendered to.
-
-@todo Default glyph 0 with rect 0 0 0 0 will result in negative dimensions when
-    nonzero padding is removed
-
-@note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
-*/
-class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
-    public:
-        /**
-         * @brief Constructor
-         * @param format            Source image format
-         * @param size              Source image size size in pixels
-         * @param padding           Padding around every glyph in pixels
-         * @m_since_latest
-         *
-         * The @p size is expected to be non-zero. If the implementation
-         * advertises @ref GlyphCacheFeature::ImageProcessing, the
-         * @ref processedFormat() and @ref processedSize() is the same as
-         * @p format and @p size, use @ref AbstractGlyphCache(PixelFormat, const Vector3i&, PixelFormat, const Vector2i&, const Vector2i&)
-         * to specify different values.
-         */
-        explicit GlyphCache(PixelFormat format, const Vector2i& size, const Vector2i& padding = Vector2i{1});
-
-        /**
-         * @brief Construct with a specific processed format and size
-         * @param format            Source image format
-         * @param size              Source image size size in pixels
-         * @param processedFormat   Processed image format
-         * @param processedSize     Processed glyph cache texture size in
-         *      pixels
-         * @param padding           Padding around every glyph in pixels. See
-         *      @ref Text-AbstractGlyphCache-padding for more information about
-         *      the default.
-         * @m_since_latest
-         *
-         * The @p size and @p processedSize is expected to be non-zero. All
-         * glyphs are saved in @p format relative to @p size and with
-         * @p padding, although the actual glyph cache texture is in
-         * @p processedFormat and has @p processedSize.
-         * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
-         */
-        explicit GlyphCache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Constructor
-         * @m_deprecated_since_latest Use @ref GlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use GlyphCache(PixelFormat, const Vector2i&, const Vector2i&, const Vector2i&) instead") explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = Vector2i{1});
-
-        /**
-         * @brief Construct with a specific processed size
-         * @m_deprecated_since_latest Use @ref GlyphCache(PixelFormat, const Vector2i&, PixelFormat, const Vector2i&, const Vector2i&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use GlyphCache(PixelFormat, const Vector2i&, const Vector2i&, const Vector2i&) instead") explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding);
-
-        /**
-         * @brief Construct with an implicit format
-         *
-         * Calls @ref GlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
-         * with @p format set to @ref PixelFormat::R8Unorm.
-         * @m_deprecated_since_latest Use @ref GlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
-         *      and explicitly pass the format instead.
-         */
-        CORRADE_DEPRECATED("use GlyphCache(PixelFormat, const Vector2i&, const Vector2i&, const Vector2i&) instead") explicit GlyphCache(const Vector2i& size, const Vector2i& padding = Vector2i{1});
-
-        /**
-         * @brief Construct with an implicit format and a specific processed size
-         *
-         * Calls @ref GlyphCache(PixelFormat, const Vector2i&, PixelFormat, const Vector2i&, const Vector2i&)
-         * with @p format and @p processedFormat set to
-         * @ref PixelFormat::R8Unorm.
-         * @m_deprecated_since_latest Use @ref GlyphCache(PixelFormat, const Vector2i&, PixelFormat, const Vector2i&, const Vector2i&)
-         *      and explicitly pass the format instead.
-         */
-        CORRADE_DEPRECATED("use GlyphCache(PixelFormat, const Vector2i&, const Vector2i&, const Vector2i&) instead") explicit GlyphCache(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding);
-        #endif
-
-        /**
-         * @brief Construct without creating the internal state and the OpenGL texture object
-         * @m_since_latest
-         *
-         * The constructed instance is equivalent to moved-from state, i.e. no
-         * APIs can be safely called on the object. Useful in cases where you
-         * will overwrite the instance later anyway. Move another object over
-         * it to make it useful.
-         *
-         * This function can be safely used for constructing (and later
-         * destructing) objects even without any OpenGL context being active.
-         * However note that this is a low-level and a potentially dangerous
-         * API, see the documentation of @ref NoCreate for alternatives.
-         */
-        explicit GlyphCache(NoCreateT) noexcept;
-
-        /** @brief Cache texture */
-        GL::Texture2D& texture() { return _texture; }
-
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    private:
-    #else
-    protected:
-    #endif
-        GL::Texture2D _texture;
-
-    private:
-        MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
-        MAGNUM_TEXT_LOCAL void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
-};
+/** @brief @copybrief GlyphCacheGL
+ * @m_deprecated_since_latest Use @ref GlyphCacheGL instead.
+ */
+typedef CORRADE_DEPRECATED("use GlyphCacheGL instead") GlyphCacheGL GlyphCache;
 
 }}
 #else
-#error this header is available only in the OpenGL build
+#error use Magnum/Text/GlyphCacheGL.h and the GlyphCacheGL class instead
 #endif
 
 #endif

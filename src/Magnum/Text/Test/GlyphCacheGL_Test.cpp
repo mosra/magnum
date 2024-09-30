@@ -25,30 +25,30 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Text/DistanceFieldGlyphCache.h"
+#include "Magnum/Text/GlyphCacheGL.h"
 
 namespace Magnum { namespace Text { namespace Test { namespace {
 
-struct DistanceFieldGlyphCacheTest: TestSuite::Tester {
-    explicit DistanceFieldGlyphCacheTest();
+struct GlyphCacheGL_Test: TestSuite::Tester {
+    explicit GlyphCacheGL_Test();
 
     void constructNoCreate();
 };
 
-DistanceFieldGlyphCacheTest::DistanceFieldGlyphCacheTest() {
-    addTests({&DistanceFieldGlyphCacheTest::constructNoCreate});
+GlyphCacheGL_Test::GlyphCacheGL_Test() {
+    addTests({&GlyphCacheGL_Test::constructNoCreate});
 }
 
-void DistanceFieldGlyphCacheTest::constructNoCreate() {
-    DistanceFieldGlyphCache cache{NoCreate};
+void GlyphCacheGL_Test::constructNoCreate() {
+    GlyphCacheGL cache{NoCreate};
 
     /* Shouldn't crash or try to acces GL */
     CORRADE_VERIFY(true);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DistanceFieldGlyphCache>::value);
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, GlyphCacheGL>::value);
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Text::Test::DistanceFieldGlyphCacheTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::GlyphCacheGL_Test)

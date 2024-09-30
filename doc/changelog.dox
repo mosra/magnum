@@ -848,8 +848,8 @@ See also:
     @ref Text::alignmentForDirection() utility that resolves those to concrete
     `*Left` and `*Right` values based @ref Text::LayoutDirection and
     @ref Text::ShapeDirection
--   Added a @ref Text::GlyphCache::GlyphCache(NoCreateT) and
-    @ref Text::DistanceFieldGlyphCache::DistanceFieldGlyphCache(NoCreateT)
+-   Added a @ref Text::GlyphCacheGL::GlyphCacheGL(NoCreateT) and
+    @ref Text::DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(NoCreateT)
     constructor allowing to construct the object without a GL context present
 -   New @ref Text::AbstractFont::fillGlyphCache() overload taking a list of
     glyph IDs instead of a UTF-8 string to allow filling the glyph cache with
@@ -1410,11 +1410,11 @@ See also:
         data to slices of @ref Text::AbstractGlyphCache::image() instead and
         call @relativeref{Text::AbstractGlyphCache,flushImage()} instead. The
         old API can only be called on 2D glyph caches now.
-    -   @cpp Text::DistanceFieldGlyphCache::distanceFieldTextureSize() @ce and
-        @cpp setDistanceFieldImage() @ce is deprecated in favor of
+    -   @cpp Text::DistanceFieldGlyphCacheGL::distanceFieldTextureSize() @ce
+        and @cpp setDistanceFieldImage() @ce is deprecated in favor of
         @ref Text::AbstractGlyphCache::processedSize() and
         @relativeref{Text::AbstractGlyphCache,setProcessedImage()}
-    -   @ref Text::GlyphCache constructors taking either a
+    -   @ref Text::GlyphCacheGL constructors taking either a
         @ref GL::TextureFormat or no texture / pixel format at all are
         deprecated in favor of constructors taking an explicit
         @ref PixelFormat. The internal texture format is now considered an
@@ -1423,7 +1423,9 @@ See also:
     @ref TextureTools::AtlasLandfill, which has a vastly better packing
     efficiency, supports incremental packing and doesn't force the caller to
     use a @ref std::vector
--   The @cpp TextureTools::DistanceField @ce class is deprecated in favor of
+-   The @cpp Text::GlyphCache @ce, @cpp Text::DistanceFieldGlyphCache @ce and
+    @cpp TextureTools::DistanceField @ce classes are deprecated in favor of
+    @ref Text::GlyphCacheGL, @ref Text::DistanceFieldGlyphCacheGL and
     @ref TextureTools::DistanceFieldGL along with correspondingly renamed
     headers, to make room for implementations with other backends such as
     Vulkan
@@ -2968,8 +2970,8 @@ Released 2019-10-24, tagged as
 -   A new @ref Text::AbstractGlyphCache base now makes @ref Text::AbstractFont
     and @ref Text::AbstractFontConverter independent on the graphics API used,
     meaning the @ref Text library now has just an optional dependency on
-    @ref GL. The @ref Text::Renderer, @ref Text::GlyphCache and
-    @ref Text::DistanceFieldGlyphCache classes are now built only if
+    @ref GL. The @ref Text::Renderer, @cpp Text::GlyphCache @ce and
+    @cpp Text::DistanceFieldGlyphCache @ce classes are now built only if
     `TARGET_GL` is enabled (done by default).
 -   New @ref Text::AbstractFont::setFileCallback() to allow opening multi-file
     fonts with an API similar to @ref Trade::AbstractImporter
@@ -3622,8 +3624,8 @@ Released 2019-02-04, tagged as
     information. See also [mosra/magnum#307](https://github.com/mosra/magnum/pull/307).
 -   The `Magnum::AndroidApplication` target was missing a few dependency
     libraries when Magnum was used as a CMake subproject
--   Fixed an ambiguous overload error in @ref Text::GlyphCache when compiling
-    this library under C++17 (see
+-   Fixed an ambiguous overload error in @cpp Text::GlyphCache @ce when
+    compiling this library under C++17 (see
     [mosra/magnum#297](https://github.com/mosra/magnum/pull/297))
 -   Imroved initial Emscripten setup on Windows to be more frictionless (see
     [mosra/toolchains#4](https://github.com/mosra/toolchains/pull/4))
@@ -3643,8 +3645,8 @@ Released 2019-02-04, tagged as
     `RESOURCE_MANAGER` (see [mosra/magnum#290](https://github.com/mosra/magnum/issues/290))
 -   Properly escaping log output on Emscripten @ref Platform::WindowlessEglApplication
 -   The @ref GL::Context::States enum set was missing value combining operators
--   Fixed @ref Text::DistanceFieldGlyphCache internal formats on ES2 devices
-    that support @gl_extension{EXT,texture_storage} (see
+-   Fixed @cpp Text::DistanceFieldGlyphCache @ce internal formats on ES2
+    devices that support @gl_extension{EXT,texture_storage} (see
     [mosra/magnum#289](https://github.com/mosra/magnum/pull/289))
 -   @ref PixelStorage::imageHeight() and Z value of @ref PixelStorage::skip()
     was not properly handled on ES3 / WebGL 2 builds.

@@ -84,8 +84,8 @@ corrade_add_test(TextRendererTest RendererTest.cpp LIBRARIES MagnumTextTestLib)
 corrade_add_test(TextScriptTest ScriptTest.cpp LIBRARIES MagnumTextTestLib)
 
 if(MAGNUM_TARGET_GL)
-    corrade_add_test(TextGlyphCacheTest GlyphCacheTest.cpp LIBRARIES MagnumText)
-    corrade_add_test(TextDistanceFieldGlyphCacheTest DistanceFieldGlyphCacheTest.cpp LIBRARIES MagnumText)
+    corrade_add_test(TextGlyphCacheGL_Test GlyphCacheGL_Test.cpp LIBRARIES MagnumText)
+    corrade_add_test(TextDistanceFieldGlyphCacheGL_Test DistanceFieldGlyphCacheGL_Test.cpp LIBRARIES MagnumText)
 
     if(MAGNUM_BUILD_GL_TESTS)
         corrade_add_test(TextDistanceFieldGlyphCacheGLTest DistanceFieldGlyphCacheGLTest.cpp

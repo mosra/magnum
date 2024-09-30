@@ -63,12 +63,17 @@ set(MagnumText_PRIVATE_HEADERS
 
 if(MAGNUM_TARGET_GL)
     list(APPEND MagnumText_SRCS
-        GlyphCache.cpp)
+        GlyphCacheGL.cpp)
     list(APPEND MagnumText_GracefulAssert_SRCS
-        DistanceFieldGlyphCache.cpp)
+        DistanceFieldGlyphCacheGL.cpp)
     list(APPEND MagnumText_HEADERS
-        DistanceFieldGlyphCache.h
-        GlyphCache.h)
+        DistanceFieldGlyphCacheGL.h
+        GlyphCacheGL.h)
+    if(MAGNUM_BUILD_DEPRECATED)
+        list(APPEND MagnumText_HEADERS
+            DistanceFieldGlyphCache.h
+            GlyphCache.h)
+    endif()
 else()
     # So MagnumTextObjects has at least something
     list(APPEND MagnumText_SRCS ${PROJECT_SOURCE_DIR}/src/dummy.cpp)

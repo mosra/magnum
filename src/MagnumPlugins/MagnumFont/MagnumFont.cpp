@@ -42,7 +42,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/AbstractShaper.h"
-#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/GlyphCacheGL.h"
 #include "Magnum/Trade/ImageData.h"
 #include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
@@ -160,7 +160,7 @@ Vector2 MagnumFont::doGlyphAdvance(const UnsignedInt glyph) {
 
 Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
     /* Set cache image */
-    Containers::Pointer<GlyphCache> cache{InPlaceInit,
+    Containers::Pointer<GlyphCacheGL> cache{InPlaceInit,
         PixelFormat::R8Unorm,
         _opened->conf.value<Vector2i>("originalImageSize"),
         PixelFormat::R8Unorm,

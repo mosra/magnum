@@ -30,7 +30,10 @@
  */
 
 #include "Magnum/Types.h"
-#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum { namespace Text {
 
@@ -53,8 +56,12 @@ enum class Script: UnsignedInt;
 class FeatureRange;
 
 #ifdef MAGNUM_TARGET_GL
-class DistanceFieldGlyphCache;
-class GlyphCache;
+class DistanceFieldGlyphCacheGL;
+class GlyphCacheGL;
+#ifdef MAGNUM_BUILD_DEPRECATED
+typedef CORRADE_DEPRECATED("use DistanceFieldGlyphCacheGL instead") DistanceFieldGlyphCacheGL DistanceFieldGlyphCache;
+typedef CORRADE_DEPRECATED("use GlyphCacheGL instead") GlyphCacheGL GlyphCache;
+#endif
 class AbstractRenderer;
 template<UnsignedInt> class Renderer;
 typedef Renderer<2> Renderer2D;

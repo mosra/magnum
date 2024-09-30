@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "GlyphCache.h"
+#include "GlyphCacheGL.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Optional.h>
@@ -45,7 +45,7 @@
 
 namespace Magnum { namespace Text {
 
-GlyphCache::GlyphCache(const PixelFormat format, const Vector2i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{format, size, processedFormat, processedSize, padding} {
+GlyphCacheGL::GlyphCacheGL(const PixelFormat format, const Vector2i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{format, size, processedFormat, processedSize, padding} {
     #ifndef MAGNUM_TARGET_GLES
     if(processedFormat == PixelFormat::R8Unorm)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
@@ -87,26 +87,26 @@ GlyphCache::GlyphCache(const PixelFormat format, const Vector2i& size, const Pix
     #endif
 }
 
-GlyphCache::GlyphCache(const PixelFormat format, const Vector2i& size, const Vector2i& padding): GlyphCache{format, size, format, size, padding} {}
+GlyphCacheGL::GlyphCacheGL(const PixelFormat format, const Vector2i& size, const Vector2i& padding): GlyphCacheGL{format, size, format, size, padding} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* The unconditional Optional unwrap in these two may assert in rare cases.
    Let's hope it doesn't in practice. */
 
-GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): GlyphCache{*GL::genericPixelFormat(internalFormat), size, padding} {}
+GlyphCacheGL::GlyphCacheGL(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): GlyphCacheGL{*GL::genericPixelFormat(internalFormat), size, padding} {}
 
-GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCache{*GL::genericPixelFormat(internalFormat), size, *GL::genericPixelFormat(internalFormat), processedSize, padding} {}
+GlyphCacheGL::GlyphCacheGL(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCacheGL{*GL::genericPixelFormat(internalFormat), size, *GL::genericPixelFormat(internalFormat), processedSize, padding} {}
 
-GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): GlyphCache{PixelFormat::R8Unorm, size, padding} {}
+GlyphCacheGL::GlyphCacheGL(const Vector2i& size, const Vector2i& padding): GlyphCacheGL{PixelFormat::R8Unorm, size, padding} {}
 
-GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCache{PixelFormat::R8Unorm, size, PixelFormat::R8Unorm, processedSize, padding} {}
+GlyphCacheGL::GlyphCacheGL(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCacheGL{PixelFormat::R8Unorm, size, PixelFormat::R8Unorm, processedSize, padding} {}
 #endif
 
-GlyphCache::GlyphCache(NoCreateT) noexcept: AbstractGlyphCache{NoCreate}, _texture{NoCreate} {}
+GlyphCacheGL::GlyphCacheGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate}, _texture{NoCreate} {}
 
-GlyphCacheFeatures GlyphCache::doFeatures() const { return {}; }
+GlyphCacheFeatures GlyphCacheGL::doFeatures() const { return {}; }
 
-void GlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {
+void GlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     /* On ES2 without EXT_unpack_subimage and on WebGL 1 there's no possibility
        to upload just a slice of the input, upload the whole image instead by
        ignoring the PixelStorage properties of the input */
