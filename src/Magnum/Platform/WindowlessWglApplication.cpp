@@ -75,7 +75,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
 
     /* Create the window */
     _window = CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
-        WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, 0, 0, wc.hInstance, 0);
+        WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, nullptr, nullptr, wc.hInstance, nullptr);
 
     /* Get device context from the newly created window and save the previous
        one. In case the previous one is null, wglMakeCurrent(null, ...) would
