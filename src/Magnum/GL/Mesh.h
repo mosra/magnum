@@ -953,7 +953,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             /* So it doesn't clash with the DynamicAttribute overload */
             , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
             #endif
-        > inline Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
+        > Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), divisor, attributes...);
             return *this;
         }
@@ -997,7 +997,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             /* So it doesn't clash with the DynamicAttribute overload */
             , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
             #endif
-        > inline Mesh& addVertexBuffer(Buffer&& buffer, GLintptr offset, const T&... attributes) {
+        > Mesh& addVertexBuffer(Buffer&& buffer, GLintptr offset, const T&... attributes) {
             addVertexBuffer<T...>(buffer, offset, attributes...);
             acquireVertexBuffer(Utility::move(buffer));
             return *this;
@@ -1016,7 +1016,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             /* So it doesn't clash with the DynamicAttribute overload */
             , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
             #endif
-        > inline Mesh& addVertexBufferInstanced(Buffer&& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
+        > Mesh& addVertexBufferInstanced(Buffer&& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
             addVertexBufferInstanced<T...>(buffer, divisor, offset, attributes...);
             acquireVertexBuffer(Utility::move(buffer));
             return *this;
