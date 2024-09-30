@@ -72,7 +72,7 @@ environment:
   - TARGET: desktop
     COMPILER: msvc
     # Same reasoning as in Corrade for /EHsc
-    COMPILER_EXTRA: -DCMAKE_CXX_FLAGS="/permissive- /EHsc" -DMSVC_COMPATIBILITY=OFF
+    COMPILER_EXTRA: -DCMAKE_CXX_FLAGS="/permissive- /EHsc" -DCORRADE_MSVC_COMPATIBILITY=OFF
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-conforming-msvc2019
@@ -84,7 +84,7 @@ environment:
     # conformant preprocessor also, but just on one of the two permissive
     # builds to avoid a false impression that the differences are depending on
     # /permissive- alone.
-    COMPILER_EXTRA: -DCMAKE_CXX_FLAGS="/permissive- /EHsc /Zc:preprocessor" -DMSVC_COMPATIBILITY=OFF
+    COMPILER_EXTRA: -DCMAKE_CXX_FLAGS="/permissive- /EHsc /Zc:preprocessor" -DCORRADE_MSVC_COMPATIBILITY=OFF
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
     APPVEYOR_JOB_NAME: windows-conforming-msvc2022
