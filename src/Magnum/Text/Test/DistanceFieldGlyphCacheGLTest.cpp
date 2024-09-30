@@ -258,8 +258,8 @@ void DistanceFieldGlyphCacheGLTest::setProcessedImage() {
 
     #ifdef MAGNUM_TARGET_GLES2
     /* Ugh, don't want to bother implementing this */
-    if(cache.processedFormat() == PixelFormat::RGB8Unorm)
-        CORRADE_SKIP("A three-component input is expected on ES2, skipping due to developer laziness.");
+    if(cache.processedFormat() == PixelFormat::RGBA8Unorm)
+        CORRADE_SKIP("A four-component input is expected on ES2, skipping due to developer laziness.");
     #endif
 
     /* Clear the texture first, as it'd have random garbage otherwise */

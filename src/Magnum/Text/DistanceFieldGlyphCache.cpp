@@ -43,11 +43,13 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& size, const Vec
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     GlyphCache(GL::TextureFormat::R8, size, processedSize, Vector2i(radius)),
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    /* Luminance is not renderable in most cases */
+    /* Luminance is not renderable in most cases. RGB is *theoretically*
+       space-efficient but practically the driver uses RGBA internally anyway,
+       so just use RGBA. */
     GlyphCache(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>() ?
-        GL::TextureFormat::R8 : GL::TextureFormat::RGB8, size, processedSize, Vector2i(radius)),
+        GL::TextureFormat::R8 : GL::TextureFormat::RGBA8, size, processedSize, Vector2i(radius)),
     #else
-    GlyphCache(GL::TextureFormat::RGB, size, processedSize, Vector2i(radius)),
+    GlyphCache(GL::TextureFormat::RGBA, size, processedSize, Vector2i(radius)),
     #endif
     _distanceField{radius}
 {
@@ -65,7 +67,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& size, const Vec
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
-        Warning() << "Text::DistanceFieldGlyphCache:" << GL::Extensions::EXT::texture_rg::string() << "not supported, using inefficient RGB format for glyph cache texture";
+        Warning() << "Text::DistanceFieldGlyphCache:" << GL::Extensions::EXT::texture_rg::string() << "not supported, using a full RGBA format for the distance field texture";
     #endif
 }
 
