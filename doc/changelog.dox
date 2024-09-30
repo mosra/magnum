@@ -1410,6 +1410,10 @@ See also:
         data to slices of @ref Text::AbstractGlyphCache::image() instead and
         call @relativeref{Text::AbstractGlyphCache,flushImage()} instead. The
         old API can only be called on 2D glyph caches now.
+    -   @cpp Text::DistanceFieldGlyphCache::distanceFieldTextureSize() @ce and
+        @cpp setDistanceFieldImage() @ce is deprecated in favor of
+        @ref Text::AbstractGlyphCache::processedSize() and
+        @relativeref{Text,AbstractGlyphCache,setProcessedImage()}
 -   The @cpp TextureTools::atlas() @ce utility is deprecated in favor of
     @ref TextureTools::AtlasLandfill, which has a vastly better packing
     efficiency, supports incremental packing and doesn't force the caller to
