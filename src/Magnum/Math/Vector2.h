@@ -171,7 +171,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @see @ref r()
          */
         T& x() { return Vector<2, T>::_data[0]; }
-        constexpr T x() const { return Vector<2, T>::_data[0]; } /**< @overload */
+        constexpr const T& x() const { return Vector<2, T>::_data[0]; } /**< @overload */
 
         /**
          * @brief Y component
@@ -179,7 +179,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @see @ref g()
          */
         T& y() { return Vector<2, T>::_data[1]; }
-        constexpr T y() const { return Vector<2, T>::_data[1]; } /**< @overload */
+        constexpr const T& y() const { return Vector<2, T>::_data[1]; } /**< @overload */
 
         /**
          * @brief R component
@@ -192,7 +192,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @overload
          * @m_since_latest
          */
-        constexpr T r() const { return Vector<2, T>::_data[0]; }
+        constexpr const T& r() const { return Vector<2, T>::_data[0]; }
 
         /**
          * @brief Y component
@@ -205,7 +205,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @overload
          * @m_since_latest
          */
-        constexpr T g() const { return Vector<2, T>::_data[1]; }
+        constexpr const T& g() const { return Vector<2, T>::_data[1]; }
 
         /**
          * @brief Perpendicular vector

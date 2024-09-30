@@ -199,7 +199,8 @@ template<class T> class Vector3: public Vector<3, T> {
          * @see @ref r()
          */
         T& x() { return Vector<3, T>::_data[0]; }
-        constexpr T x() const { return Vector<3, T>::_data[0]; } /**< @overload */
+        /** @overload */
+        constexpr const T& x() const { return Vector<3, T>::_data[0]; }
 
         /**
          * @brief Y component
@@ -207,7 +208,8 @@ template<class T> class Vector3: public Vector<3, T> {
          * @see @ref g()
          */
         T& y() { return Vector<3, T>::_data[1]; }
-        constexpr T y() const { return Vector<3, T>::_data[1]; } /**< @overload */
+        /** @overload */
+        constexpr const T& y() const { return Vector<3, T>::_data[1]; }
 
         /**
          * @brief Z component
@@ -215,7 +217,8 @@ template<class T> class Vector3: public Vector<3, T> {
          * @see @ref b()
          */
         T& z() { return Vector<3, T>::_data[2]; }
-        constexpr T z() const { return Vector<3, T>::_data[2]; } /**< @overload */
+        /** @overload */
+        constexpr const T& z() const { return Vector<3, T>::_data[2]; }
 
         /**
          * @brief R component
@@ -223,7 +226,8 @@ template<class T> class Vector3: public Vector<3, T> {
          * Equivalent to @ref x().
          */
         T& r() { return Vector<3, T>::_data[0]; }
-        constexpr T r() const { return Vector<3, T>::_data[0]; } /**< @overload */
+        /** @overload */
+        constexpr const T& r() const { return Vector<3, T>::_data[0]; }
 
         /**
          * @brief G component
@@ -231,7 +235,8 @@ template<class T> class Vector3: public Vector<3, T> {
          * Equivalent to @ref y().
          */
         T& g() { return Vector<3, T>::_data[1]; }
-        constexpr T g() const { return Vector<3, T>::_data[1]; } /**< @overload */
+        /** @overload */
+        constexpr const T& g() const { return Vector<3, T>::_data[1]; }
 
         /**
          * @brief B component
@@ -239,7 +244,8 @@ template<class T> class Vector3: public Vector<3, T> {
          * Equivalent to @ref z().
          */
         T& b() { return Vector<3, T>::_data[2]; }
-        constexpr T b() const { return Vector<3, T>::_data[2]; } /**< @overload */
+        /** @overload */
+        constexpr const T& b() const { return Vector<3, T>::_data[2]; }
 
         /**
          * @brief XY part of the vector
