@@ -306,15 +306,24 @@ template<UnsignedInt location, class T> class Attribute {
 
         /**
          * @brief Constructor
-         * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. @ref DataType::Int for
-         *      @ref Magnum::Vector4i "Vector4i").
+         * @param dataOptions   Data options. Default is no options.
+         *
+         * Data type is the same as type used in shader (e.g.
+         * @ref DataType::Int for @ref Magnum::Vector4i "Vector4i"). Component
+         * count is set to the same value as in type used in shader (e.g.
+         * @ref Components::Three for @ref Magnum::Vector3 "Vector3").
+         */
+        constexpr Attribute(DataOptions dataOptions = DataOptions()): Attribute{Implementation::Attribute<T>::DefaultComponents, Implementation::Attribute<T>::DefaultComponentCount*Implementation::Attribute<T>::DefaultDataTypeSize, Implementation::Attribute<T>::DefaultDataType, dataOptions} {}
+
+        /**
+         * @brief Constructor
+         * @param dataType      Type of passed data
          * @param dataOptions   Data options. Default is no options.
          *
          * Component count is set to the same value as in type used in shader
          * (e.g. @ref Components::Three for @ref Magnum::Vector3 "Vector3").
          */
-        constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): Attribute{Implementation::Attribute<T>::DefaultComponents, dataType, dataOptions} {}
+        /*implicit*/ Attribute(DataType dataType, DataOptions dataOptions = DataOptions()): Attribute{Implementation::Attribute<T>::DefaultComponents, dataType, dataOptions} {}
 
         /**
          * @brief Constructor
@@ -327,7 +336,7 @@ template<UnsignedInt location, class T> class Attribute {
          * Vector stride is set to the size of the vector type (e.g.
          * @cpp 12 @ce for a @ref Magnum::Matrix3 "Matrix3").
          */
-        constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): Attribute{components, Implementation::Attribute<T>::size(GLint(components), dataType), dataType, dataOptions} {}
+        /*implicit*/ Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): Attribute{components, Implementation::Attribute<T>::size(GLint(components), dataType), dataType, dataOptions} {}
 
         /**
          * @brief Construct with a custom vector stride
@@ -769,18 +778,22 @@ template<std::size_t cols> struct SizedVectorAttribute {
 template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1 };
     constexpr static Components DefaultComponents = Components::One;
+    enum: UnsignedInt { DefaultComponentCount = 1 };
 };
 template<> struct SizedAttribute<1, 2>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1, Two = 2 };
     constexpr static Components DefaultComponents = Components::Two;
+    enum: UnsignedInt { DefaultComponentCount = 2 };
 };
 template<> struct SizedAttribute<1, 3>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1, Two = 2, Three = 3 };
     constexpr static Components DefaultComponents = Components::Three;
+    enum: UnsignedInt { DefaultComponentCount = 3 };
 };
 template<> struct SizedAttribute<1, 4>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1, Two = 2, Three = 3, Four = 4 };
     constexpr static Components DefaultComponents = Components::Four;
+    enum: UnsignedInt { DefaultComponentCount = 4 };
 };
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, SizedAttribute<1, 1>::Components value);
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, SizedAttribute<1, 2>::Components value);
@@ -792,14 +805,17 @@ template<std::size_t rows> struct SizedMatrixAttribute;
 template<> struct SizedMatrixAttribute<2> {
     enum class Components: GLint { Two   = 2 };
     constexpr static Components DefaultComponents = Components::Two;
+    enum: UnsignedInt { DefaultComponentCount = 2 };
 };
 template<> struct SizedMatrixAttribute<3> {
     enum class Components: GLint { Three = 3 };
     constexpr static Components DefaultComponents = Components::Three;
+    enum: UnsignedInt { DefaultComponentCount = 3 };
 };
 template<> struct SizedMatrixAttribute<4> {
     enum class Components: GLint { Four  = 4 };
     constexpr static Components DefaultComponents = Components::Four;
+    enum: UnsignedInt { DefaultComponentCount = 4 };
 };
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, SizedMatrixAttribute<2>::Components value);
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, SizedMatrixAttribute<3>::Components value);
@@ -848,6 +864,7 @@ struct FloatAttribute {
         #endif
     };
     constexpr static DataType DefaultDataType = DataType::Float;
+    enum: UnsignedInt { DefaultDataTypeSize = 4 };
 
     enum class DataOption: UnsignedByte {
         Normalized = 1 << 0
@@ -875,6 +892,7 @@ struct IntAttribute {
         Int = GL_INT
     };
     constexpr static DataType DefaultDataType = DataType::Int;
+    enum: UnsignedInt { DefaultDataTypeSize = 4 };
 
     enum class DataOption: UnsignedByte {};
     typedef Containers::EnumSet<DataOption> DataOptions;
@@ -892,6 +910,7 @@ struct UnsignedIntAttribute {
 
     typedef IntAttribute::DataType DataType;
     constexpr static DataType DefaultDataType = DataType::UnsignedInt;
+    enum: UnsignedInt { DefaultDataTypeSize = 4 };
 
     typedef IntAttribute::DataOption DataOption;
     typedef IntAttribute::DataOptions DataOptions;
@@ -911,6 +930,7 @@ struct DoubleAttribute {
         Double = GL_DOUBLE
     };
     constexpr static DataType DefaultDataType = DataType::Double;
+    enum: UnsignedInt { DefaultDataTypeSize = 8 };
 
     typedef IntAttribute::DataOption DataOption;
     typedef IntAttribute::DataOptions DataOptions;
@@ -952,6 +972,7 @@ template<> struct Attribute<Math::Vector<3, Float>>: SizedAttribute<1, 3> {
         #endif
     };
     constexpr static DataType DefaultDataType = DataType::Float;
+    enum: UnsignedInt { DefaultDataTypeSize = 4 };
 
     typedef FloatAttribute::DataOption DataOption;
     typedef FloatAttribute::DataOptions DataOptions;
@@ -976,6 +997,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
         #endif
     };
     constexpr static Components DefaultComponents = Components::Four;
+    enum: UnsignedInt { DefaultComponentCount = 4 };
 
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
@@ -1006,6 +1028,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
         #endif
     };
     constexpr static DataType DefaultDataType = DataType::Float;
+    enum: UnsignedInt { DefaultDataTypeSize = 4 };
 
     typedef FloatAttribute::DataOption DataOption;
     typedef FloatAttribute::DataOptions DataOptions;
