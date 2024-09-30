@@ -1612,6 +1612,9 @@ See also:
         @cpp Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*) @ce
         and @cpp Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*) @ce
         constructors or directly the new @ref Trade::MaterialData class
+-   Removed APIs deprecated in 2019.01, in particular:
+    -   @cpp TextureTools::distanceField() @ce, use the
+        @ref TextureTools::DistanceFieldGL class instead.
 -   Removed APIs deprecated in 2019.10, in particular:
     -   @cpp Math::Color3::Hsv @ce and @cpp Math::Color4::Hsv @ce
         @ref std::tuple typedefs and @ref Math::Color3::fromHsv() /

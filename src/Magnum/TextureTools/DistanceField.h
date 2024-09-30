@@ -187,22 +187,6 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceField {
         Containers::Pointer<State> _state;
 };
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief Create a signed distance field
-@m_deprecated_since{2019,01} Deprecated due to inefficiency of its
-    statelessness when doing batch processing. Use the @ref DistanceField class
-    instead.
-*/
-inline CORRADE_DEPRECATED("use the DistanceField class instead") void distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, Int radius, const Vector2i& imageSize
-    #ifndef MAGNUM_TARGET_GLES
-    = Vector2i{}
-    #endif
-) {
-    DistanceField{UnsignedInt(radius)}(input, output, rectangle, imageSize);
-}
-#endif
-
 }}
 #else
 #error this header is available only in the OpenGL build
