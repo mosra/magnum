@@ -50,7 +50,7 @@
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
-#include "Magnum/TextureTools/DistanceField.h"
+#include "Magnum/TextureTools/DistanceFieldGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
@@ -135,27 +135,27 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
 }
 
 void DistanceFieldGLTest::construct() {
-    DistanceField distanceField{32};
+    DistanceFieldGL distanceField{32};
     CORRADE_COMPARE(distanceField.radius(), 32);
 }
 
 void DistanceFieldGLTest::constructCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<DistanceField>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<DistanceField>{});
+    CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldGL>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldGL>{});
 }
 
 void DistanceFieldGLTest::constructMove() {
-    DistanceField a{16};
+    DistanceFieldGL a{16};
 
-    DistanceField b = Utility::move(a);
+    DistanceFieldGL b = Utility::move(a);
     CORRADE_COMPARE(b.radius(), 16);
 
-    DistanceField c{8};
+    DistanceFieldGL c{8};
     c = Utility::move(b);
     CORRADE_COMPARE(c.radius(), 16);
 
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<DistanceField>::value);
-    CORRADE_VERIFY(std::is_nothrow_move_assignable<DistanceField>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<DistanceFieldGL>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<DistanceFieldGL>::value);
 }
 
 void DistanceFieldGLTest::runTexture() {
@@ -236,7 +236,7 @@ void DistanceFieldGLTest::runTexture() {
     output.setSubImage(0, {}, ImageView2D{outputPixelFormat, outputPixelType, data.size,
     Containers::Array<char>{DirectInit, std::size_t(data.size.product()*GL::pixelFormatSize(outputPixelFormat, outputPixelType)), '\x66'}});
 
-    DistanceField distanceField{32};
+    DistanceFieldGL distanceField{32};
     CORRADE_COMPARE(distanceField.radius(), 32);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -389,7 +389,7 @@ void DistanceFieldGLTest::runFramebuffer() {
     GL::Renderer::setClearColor(0x1f1f1f_rgbf);
     #endif
 
-    DistanceField distanceField{32};
+    DistanceFieldGL distanceField{32};
     CORRADE_COMPARE(distanceField.radius(), 32);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -478,7 +478,7 @@ void DistanceFieldGLTest::formatNotDrawable() {
     output.setImage(0, GL::TextureFormat::RGB9E5, ImageView2D{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{4}});
     #endif
 
-    DistanceField distanceField{4};
+    DistanceFieldGL distanceField{4};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -488,9 +488,9 @@ void DistanceFieldGLTest::formatNotDrawable() {
         #endif
         );
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: output texture format not framebuffer-drawable: GL::Framebuffer::Status::Unsupported\n");
+    CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::Unsupported\n");
     #else
-    CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
     #endif
 }
 
@@ -513,7 +513,7 @@ void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
     GL::Texture2D outputInvalid;
     outputInvalid.setStorage(1, GL::textureFormat(PixelFormat::RGBA8Unorm), {23*2, 23*2});
 
-    DistanceField distanceField{4};
+    DistanceFieldGL distanceField{4};
 
     /* This should be fine */
     distanceField(input, output, {{}, Vector2i{23}}
@@ -552,11 +552,11 @@ void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
         #endif
         );
     CORRADE_COMPARE(out.str(),
-        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
-        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
-        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
-        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {22, 23}\n"
-        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got {322, 322} and {23, 22}\n");
+        "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
+        "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
+        "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
+        "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {22, 23}\n"
+        "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {23, 22}\n");
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -620,7 +620,7 @@ void DistanceFieldGLTest::benchmark() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    DistanceField distanceField{32};
+    DistanceFieldGL distanceField{32};
 
     CORRADE_BENCHMARK(50) {
         distanceField(input, framebuffer, {{}, Vector2i{64}}

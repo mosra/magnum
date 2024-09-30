@@ -426,7 +426,7 @@ See also:
 -   New @ref TextureTools::atlasTextureCoordinateTransformation() helper for
     creating an appropriate texture coordinate transformation matrix for
     textures placed into an atlas
--   Added a @ref TextureTools::DistanceField::operator()() overload taking a
+-   Added a @ref TextureTools::DistanceFieldGL::operator()() overload taking a
     @ref GL::Framebuffer instead of a @ref GL::Texture as an output for an
     easier ability to download the resulting image on OpenGL ES platforms;
     the @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
@@ -862,7 +862,7 @@ See also:
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
--   Added a @ref TextureTools::DistanceField::DistanceField(NoCreateT)
+-   Added a @ref TextureTools::DistanceFieldGL::DistanceFieldGL(NoCreateT)
     constructor allowing to construct the object without a GL context present
 
 @subsubsection changelog-latest-changes-trade Trade library
@@ -1183,7 +1183,7 @@ See also:
     propagate errors when delegating to
     @ref Text::AbstractFontConverter::exportFontToSingleData() /
     @ref Text::AbstractFontConverter::exportGlyphCacheToSingleData()
--   @ref TextureTools::DistanceField no longer generates an output that's
+-   @ref TextureTools::DistanceFieldGL no longer generates an output that's
     slightly shifted, which also makes the output invariant to flips and
     transpositions
 -   @ref Trade::MeshData::attributeData(UnsignedInt) const was not correctly
@@ -1423,6 +1423,10 @@ See also:
     @ref TextureTools::AtlasLandfill, which has a vastly better packing
     efficiency, supports incremental packing and doesn't force the caller to
     use a @ref std::vector
+-   The @cpp TextureTools::DistanceField @ce class is deprecated in favor of
+    @ref TextureTools::DistanceFieldGL along with correspondingly renamed
+    headers, to make room for implementations with other backends such as
+    Vulkan
 -   @cpp Trade::AbstractMaterialData @ce as well as its containing header
     `Magnum/Trade/AbstractMaterialData.h` is now a deprecated alias to the new
     and more flexible @ref Trade::MaterialData.
@@ -1806,8 +1810,8 @@ See also:
     translation like in the original case. Additionally, the `*Integer`
     variants now only round the axis where division by 2 happened for the
     middle / center alignment, with the other axis kept unchanged.
--   @ref TextureTools::DistanceField now asserts that the output texture has a
-    framebuffer-drawable format. Before it only printed an error message and
+-   @ref TextureTools::DistanceFieldGL now asserts that the output texture has
+    a framebuffer-drawable format. Before it only printed an error message and
     silently did nothing, causing a hard-to-track error.
 -   The @ref Trade::AnimationTrackTarget enum was extended from 8 to 16 bits to
     provide more room for custom targets, consistently with
@@ -3114,7 +3118,7 @@ Released 2019-10-24, tagged as
 
 @subsubsection changelog-2019-10-changes-texturetools TextureTools library
 
--   @ref TextureTools::DistanceField was updated to work on ES3 SwiftShader
+-   @cpp TextureTools::DistanceField @ce was updated to work on ES3 SwiftShader
     contexts (which have broken @glsl gl_VertexID @ce)
 
 @subsubsection changelog-2019-10-changes-platform Platform libraries
@@ -3594,8 +3598,8 @@ Released 2019-02-04, tagged as
 @subsubsection changelog-2019-01-changes-texturetools TextureTools library
 
 -   Further performance and output quality improvements for
-    @ref TextureTools::DistanceField, making the ES2/WebGL 1 consistent with
-    desktop and speeding up the processing to take only 60% of the time
+    @cpp TextureTools::DistanceField @ce, making the ES2/WebGL 1 consistent
+    with desktop and speeding up the processing to take only 60% of the time
     compared to before. It's now also possible to reuse the internal state for
     batch processing.
 
@@ -3664,7 +3668,7 @@ Released 2019-02-04, tagged as
     @ref Corrade/Containers/PointerStl.h header explicitly.
 -   @cpp TextureTools::distanceField() @ce is deprecated due to inefficiency of
     its statelessness when doing batch processing. Use the
-    @ref TextureTools::DistanceField class instead.
+    @cpp TextureTools::DistanceField @ce class instead.
 -   @cpp Platform::GlfwApplication::KeyEvent::Key::Smicolon @ce has a typo and
     so is deprecated in favor of
     @ref Platform::GlfwApplication::KeyEvent::Key::Semicolon

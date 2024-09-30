@@ -33,7 +33,7 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/Text/GlyphCache.h"
-#include "Magnum/TextureTools/DistanceField.h"
+#include "Magnum/TextureTools/DistanceFieldGL.h"
 
 namespace Magnum { namespace Text {
 
@@ -93,7 +93,7 @@ shouldn't affect common use through @ref image(), but code interacting with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 
-@see @ref TextureTools::DistanceField
+@see @ref TextureTools::DistanceFieldGL
 */
 class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
     public:
@@ -167,7 +167,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
         MAGNUM_TEXT_LOCAL Image3D doProcessedImage() override;
         #endif
 
-        TextureTools::DistanceField _distanceField;
+        TextureTools::DistanceFieldGL _distanceField;
 };
 
 }}

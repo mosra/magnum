@@ -61,7 +61,7 @@ namespace Implementation {
 @m_since_latest
 
 Renders vector graphics in a form of signed distance field. See
-@ref TextureTools::DistanceField for more information and @ref VectorGL for a
+@ref TextureTools::DistanceFieldGL for more information and @ref VectorGL for a
 simpler variant of this shader. Note that the final rendered outlook will
 greatly depend on radius of input distance field and value passed to
 @ref setSmoothness(). You need to provide @ref Position and

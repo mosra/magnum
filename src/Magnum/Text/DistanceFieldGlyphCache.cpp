@@ -35,7 +35,7 @@
 #endif
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/TextureTools/DistanceField.h"
+#include "Magnum/TextureTools/DistanceFieldGL.h"
 
 namespace Magnum { namespace Text {
 
@@ -57,7 +57,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& size, const Vec
         processedSize, Vector2i(radius)},
     _distanceField{radius}
 {
-    /* Replicating the assertion from TextureTools::DistanceField so it gets
+    /* Replicating the assertion from TextureTools::DistanceFieldGL so it gets
        checked during construction already instead of only later during the
        setImage() call */
     CORRADE_ASSERT(size % processedSize == Vector2i{0} &&
@@ -125,7 +125,7 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
         const Vector2i paddedMin = image.storage().skip().xy();
         const Vector2i paddedMax = image.size() + image.storage().skip().xy();
 
-        /* TextureTools::DistanceField expects the input size and output
+        /* TextureTools::DistanceFieldGL expects the input size and output
            rectangle size ratio to be a multiple of 2 in order for the shader
            to perform pixel addressing correctly. That might not always be the
            case with the rectangle passed to flushImage(), so round the

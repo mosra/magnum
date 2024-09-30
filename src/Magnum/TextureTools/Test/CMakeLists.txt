@@ -88,7 +88,7 @@ else()
 endif()
 
 if(MAGNUM_TARGET_GL)
-    corrade_add_test(TextureToolsDistanceFieldTest DistanceFieldTest.cpp LIBRARIES MagnumTextureTools)
+    corrade_add_test(TextureToolsDistanceFieldGL_Test DistanceFieldGL_Test.cpp LIBRARIES MagnumTextureTools)
 
     if(MAGNUM_BUILD_GL_TESTS)
         # Otherwise CMake complains that Corrade::PluginManager is not found, wtf

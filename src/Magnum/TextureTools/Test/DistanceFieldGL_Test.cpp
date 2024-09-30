@@ -25,30 +25,30 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/TextureTools/DistanceField.h"
+#include "Magnum/TextureTools/DistanceFieldGL.h"
 
 namespace Magnum { namespace TextureTools { namespace Test { namespace {
 
-struct DistanceFieldTest: TestSuite::Tester {
-    explicit DistanceFieldTest();
+struct DistanceFieldGL_Test: TestSuite::Tester {
+    explicit DistanceFieldGL_Test();
 
     void constructNoCreate();
 };
 
-DistanceFieldTest::DistanceFieldTest() {
-    addTests({&DistanceFieldTest::constructNoCreate});
+DistanceFieldGL_Test::DistanceFieldGL_Test() {
+    addTests({&DistanceFieldGL_Test::constructNoCreate});
 }
 
-void DistanceFieldTest::constructNoCreate() {
-    DistanceField distanceField{NoCreate};
+void DistanceFieldGL_Test::constructNoCreate() {
+    DistanceFieldGL distanceField{NoCreate};
 
     /* Shouldn't crash or try to acces GL */
     CORRADE_VERIFY(true);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DistanceField>::value);
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DistanceFieldGL>::value);
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::TextureTools::Test::DistanceFieldTest)
+CORRADE_TEST_MAIN(Magnum::TextureTools::Test::DistanceFieldGL_Test)

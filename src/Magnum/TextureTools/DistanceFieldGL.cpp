@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "DistanceField.h"
+#include "DistanceFieldGL.h"
 
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/String.h>
@@ -140,7 +140,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
 
 }
 
-struct DistanceField::State {
+struct DistanceFieldGL::State {
     explicit State(UnsignedInt radius): shader{radius}, radius{radius} {}
 
     DistanceFieldShader shader;
@@ -148,7 +148,7 @@ struct DistanceField::State {
     GL::Mesh mesh;
 };
 
-DistanceField::DistanceField(const UnsignedInt radius): _state{new State{radius}} {
+DistanceFieldGL::DistanceFieldGL(const UnsignedInt radius): _state{new State{radius}} {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::framebuffer_object);
     #endif
@@ -171,17 +171,17 @@ DistanceField::DistanceField(const UnsignedInt radius): _state{new State{radius}
     }
 }
 
-DistanceField::DistanceField(NoCreateT) noexcept {}
+DistanceFieldGL::DistanceFieldGL(NoCreateT) noexcept {}
 
-DistanceField::DistanceField(DistanceField&&) noexcept = default;
+DistanceFieldGL::DistanceFieldGL(DistanceFieldGL&&) noexcept = default;
 
-DistanceField::~DistanceField() = default;
+DistanceFieldGL::~DistanceFieldGL() = default;
 
-DistanceField& DistanceField::operator=(DistanceField&&) noexcept = default;
+DistanceFieldGL& DistanceFieldGL::operator=(DistanceFieldGL&&) noexcept = default;
 
-UnsignedInt DistanceField::radius() const { return _state->radius; }
+UnsignedInt DistanceFieldGL::radius() const { return _state->radius; }
 
-void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i&
+void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i&
     #ifdef MAGNUM_TARGET_GLES
     imageSize
     #endif
@@ -193,14 +193,14 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
     #endif
 
     CORRADE_ASSERT(output.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete,
-        "TextureTools::DistanceField: output texture format not framebuffer-drawable:" << output.checkStatus(GL::FramebufferTarget::Draw), );
+        "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable:" << output.checkStatus(GL::FramebufferTarget::Draw), );
 
     /* The shader assumes that the ratio between the output and input is a
        multiple of 2, causing output pixel *centers* to be aligned with input
        pixel *edges* */
     CORRADE_ASSERT(imageSize % rectangle.size() == Vector2i{0} &&
                    (imageSize/rectangle.size()) % 2 == Vector2i{0},
-        "TextureTools::DistanceField: expected input and output size ratio to be a multiple of 2, got" << Debug::packed << imageSize << "and" << Debug::packed << rectangle.size(), );
+        "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got" << Debug::packed << imageSize << "and" << Debug::packed << rectangle.size(), );
 
     /* Save existing viewport to restore it back after */
     const Range2Di previousViewport = output.viewport();
@@ -218,7 +218,7 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, co
     output.setViewport(previousViewport);
 }
 
-void DistanceField::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i&
+void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i&
     #ifdef MAGNUM_TARGET_GLES
     imageSize
     #endif

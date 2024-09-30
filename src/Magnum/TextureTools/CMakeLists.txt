@@ -60,10 +60,14 @@ if(MAGNUM_TARGET_GL)
     endif()
 
     list(APPEND MagnumTextureTools_GracefulAssert_SRCS
-        DistanceField.cpp
+        DistanceFieldGL.cpp
         ${MagnumTextureTools_RESOURCES})
 
-    list(APPEND MagnumTextureTools_HEADERS DistanceField.h)
+    list(APPEND MagnumTextureTools_HEADERS DistanceFieldGL.h)
+
+    if(MAGNUM_BUILD_DEPRECATED)
+        list(APPEND MagnumTextureTools_HEADERS DistanceField.h)
+    endif()
 endif()
 
 # TextureTools library

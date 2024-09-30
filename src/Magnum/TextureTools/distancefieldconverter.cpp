@@ -39,7 +39,7 @@
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
-#include "Magnum/TextureTools/DistanceField.h"
+#include "Magnum/TextureTools/DistanceFieldGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -239,7 +239,7 @@ int DistanceFieldConverter::exec() {
 
     /* Do it */
     Debug() << "Converting image of size" << image->size() << "to distance field...";
-    TextureTools::DistanceField{args.value<UnsignedInt>("radius")}(input, output, rectangle, image->size());
+    TextureTools::DistanceFieldGL{args.value<UnsignedInt>("radius")}(input, output, rectangle, image->size());
 
     /* Save image */
     Image2D result{PixelFormat::R8Unorm};

@@ -177,7 +177,7 @@ void DistanceFieldGlyphCacheGLTest::constructSizeRatioNotMultipleOfTwo() {
     /* This should be fine */
     DistanceFieldGlyphCache{Vector2i{23*14}, Vector2i{23}, 4};
 
-    /* It's the same assert as in TextureTools::DistanceField */
+    /* It's the same assert as in TextureTools::DistanceFieldGL */
     std::ostringstream out;
     Error redirectError{&out};
     DistanceFieldGlyphCache{Vector2i{23*14}, Vector2i{23*2}, 4};
