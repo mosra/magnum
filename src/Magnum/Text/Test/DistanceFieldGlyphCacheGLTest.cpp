@@ -145,7 +145,26 @@ void DistanceFieldGlyphCacheGLTest::construct() {
     DistanceFieldGlyphCache cache{{1024, 2048}, {128, 256}, 16};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* The input format is always single-channel */
+    CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    /* The processed format is RGBA if it'd have to be Luminance */
+    #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+    #endif
+    {
+        CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    else
+    #endif
+    #endif
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    {
+        CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R8Unorm);
+    }
+    #endif
     CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 1}));
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));

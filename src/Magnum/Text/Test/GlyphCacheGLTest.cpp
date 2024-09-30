@@ -34,6 +34,11 @@
 #ifdef MAGNUM_TARGET_GLES
 #include "Magnum/DebugTools/TextureImage.h"
 #endif
+#if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/PixelFormat.h"
+#endif
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
@@ -46,28 +51,117 @@ struct GlyphCacheGLTest: GL::OpenGLTester {
     explicit GlyphCacheGLTest();
 
     void construct();
-    void constructCustomFormat();
+    void constructNoPadding();
+    void constructProcessed();
+    void constructProcessedNoPadding();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructDeprecated();
+    void constructDeprecatedProcessed();
+    void constructDeprecatedTextureFormat();
+    void constructDeprecatedTextureFormatProcessed();
+    #endif
 
     void constructCopy();
     void constructMove();
 
     void setImage();
-    void setImageCustomFormat();
+    void setImageFourChannel();
 };
 
 GlyphCacheGLTest::GlyphCacheGLTest() {
     addTests({&GlyphCacheGLTest::construct,
-              &GlyphCacheGLTest::constructCustomFormat,
+              &GlyphCacheGLTest::constructNoPadding,
+              &GlyphCacheGLTest::constructProcessed,
+              &GlyphCacheGLTest::constructProcessedNoPadding,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &GlyphCacheGLTest::constructDeprecated,
+              &GlyphCacheGLTest::constructDeprecatedProcessed,
+              &GlyphCacheGLTest::constructDeprecatedTextureFormat,
+              &GlyphCacheGLTest::constructDeprecatedTextureFormatProcessed,
+              #endif
 
               &GlyphCacheGLTest::constructCopy,
               &GlyphCacheGLTest::constructMove,
 
               &GlyphCacheGLTest::setImage,
-              &GlyphCacheGLTest::setImageCustomFormat});
+              &GlyphCacheGLTest::setImageFourChannel});
 }
 
 void GlyphCacheGLTest::construct() {
+    GlyphCache cache{PixelFormat::R8Unorm, {1024, 2048}, {3, 2}};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{1024, 2048}));
+    #endif
+}
+
+void GlyphCacheGLTest::constructNoPadding() {
+    GlyphCache cache{PixelFormat::RGBA8Unorm, {1024, 2048}};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.format(), PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{1024, 2048}));
+    #endif
+}
+
+void GlyphCacheGLTest::constructProcessed() {
+    struct : GlyphCache {
+        using GlyphCache::GlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+        /* The symbol is private, we don't actually need it here, so just
+           override with an empty implementation */
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{PixelFormat::R8Unorm, {1024, 2048}, PixelFormat::RGBA8Unorm, {128, 256}, {3, 2}};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 1}));
+    CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));
+    #endif
+}
+
+void GlyphCacheGLTest::constructProcessedNoPadding() {
+    struct : GlyphCache {
+        using GlyphCache::GlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+        /* The symbol is private, we don't actually need it here, so just
+           override with an empty implementation */
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{PixelFormat::R8Unorm, {1024, 2048}, PixelFormat::RGBA8Unorm, {128, 256}};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 1}));
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void GlyphCacheGLTest::constructDeprecated() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     GlyphCache cache{{1024, 2048}};
+    CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
@@ -76,7 +170,20 @@ void GlyphCacheGLTest::construct() {
     #endif
 }
 
-void GlyphCacheGLTest::constructCustomFormat() {
+void GlyphCacheGLTest::constructDeprecatedProcessed() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    GlyphCache cache{{1024, 2048}, {128, 256}, {}};
+    CORRADE_IGNORE_DEPRECATED_POP
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));
+    #endif
+}
+
+void GlyphCacheGLTest::constructDeprecatedTextureFormat() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     GlyphCache cache{
         #ifndef MAGNUM_TARGET_GLES2
         GL::TextureFormat::RGBA8,
@@ -84,6 +191,7 @@ void GlyphCacheGLTest::constructCustomFormat() {
         GL::TextureFormat::RGBA,
         #endif
         {256, 512}};
+    CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
@@ -92,19 +200,40 @@ void GlyphCacheGLTest::constructCustomFormat() {
     #endif
 }
 
+void GlyphCacheGLTest::constructDeprecatedTextureFormatProcessed() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    GlyphCache cache{
+        #ifndef MAGNUM_TARGET_GLES2
+        GL::TextureFormat::RGBA8,
+        #else
+        GL::TextureFormat::RGBA,
+        #endif
+        {256, 512}, {32, 64}, {}};
+    CORRADE_IGNORE_DEPRECATED_POP
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{32, 64}));
+    #endif
+}
+#endif
+
 void GlyphCacheGLTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<GlyphCache>{});
     CORRADE_VERIFY(!std::is_copy_assignable<GlyphCache>{});
 }
 
 void GlyphCacheGLTest::constructMove() {
-    GlyphCache a{{1024, 512}};
+    GlyphCache a{PixelFormat::R8Unorm, {1024, 512}};
 
     GlyphCache b = Utility::move(a);
+    CORRADE_COMPARE(b.format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 1}));
 
-    GlyphCache c{{2, 3}};
+    GlyphCache c{PixelFormat::RGBA8Unorm, {2, 3}};
     c = Utility::move(b);
+    CORRADE_COMPARE(c.format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 1}));
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<GlyphCache>::value);
@@ -130,11 +259,19 @@ const UnsignedByte ExpectedData[]{
 };
 
 void GlyphCacheGLTest::setImage() {
-    GlyphCache cache{{16, 8}};
+    GlyphCache cache{PixelFormat::R8Unorm, {16, 8}};
 
     /* Fill the texture with non-zero data to verify the padding gets uploaded
-       as well */
-    cache.texture().setSubImage(0, {}, Image2D{PixelFormat::R8Unorm, {16, 8}, Containers::Array<char>{DirectInit, 16*8, '\xcd'}});
+       as well. On ES2 with EXT_texture_rg the internal format isn't Luminance
+       but Red. */
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+        cache.texture().setSubImage(0, {}, Image2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte, {16, 8}, Containers::Array<char>{DirectInit, 16*8, '\xcd'}});
+    else
+    #endif
+    {
+        cache.texture().setSubImage(0, {}, Image2D{PixelFormat::R8Unorm, {16, 8}, Containers::Array<char>{DirectInit, 16*8, '\xcd'}});
+    }
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Utility::copy(
@@ -191,19 +328,13 @@ void GlyphCacheGLTest::setImage() {
     #endif
 }
 
-void GlyphCacheGLTest::setImageCustomFormat() {
+void GlyphCacheGLTest::setImageFourChannel() {
     /* Same as setImage(), but with a four-channel format (so quarter of
        width). Needed to be able to read the texture on ES2 to verify the
        upload works, as there's a special case for when the EXT_unpack_subimage
        extension isn't present. */
 
-    GlyphCache cache{
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        GL::TextureFormat::RGBA8,
-        #else
-        GL::TextureFormat::RGBA,
-        #endif
-        {4, 8}};
+    GlyphCache cache{PixelFormat::RGBA8Unorm, {4, 8}};
 
     /* Zero the texture to avoid comparing against garbage */
     cache.texture().setSubImage(0, {}, Image2D{PixelFormat::RGBA8Unorm, {4, 8}, Containers::Array<char>{ValueInit, 4*4*8}});

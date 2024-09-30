@@ -30,6 +30,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo drop once Debug is stream-free */
 
+#include "Magnum/PixelFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
@@ -114,7 +115,7 @@ struct TestFont: AbstractFont {
 
 GlyphCache testGlyphCache(AbstractFont& font) {
     /* Default padding is 1 to avoid artifacts, set that to 0 to simplify */
-    GlyphCache cache{{20, 20}, {}};
+    GlyphCache cache{PixelFormat::R8Unorm, {20, 20}, {}};
 
     /* Add one more font to verify the right one gets picked */
     cache.addFont(96);

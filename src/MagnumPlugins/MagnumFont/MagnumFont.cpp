@@ -39,6 +39,7 @@
 #include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/AbstractShaper.h"
 #include "Magnum/Text/GlyphCache.h"
@@ -160,7 +161,9 @@ Vector2 MagnumFont::doGlyphAdvance(const UnsignedInt glyph) {
 Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
     /* Set cache image */
     Containers::Pointer<GlyphCache> cache{InPlaceInit,
+        PixelFormat::R8Unorm,
         _opened->conf.value<Vector2i>("originalImageSize"),
+        PixelFormat::R8Unorm,
         _opened->image->size(),
         _opened->conf.value<Vector2i>("padding")};
     /* Copy the opened image data directly to the GL texture because (unlike

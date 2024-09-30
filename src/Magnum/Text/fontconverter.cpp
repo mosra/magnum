@@ -29,6 +29,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
@@ -211,7 +212,7 @@ int FontConverter::exec() {
     } else {
         Debug() << "Zero-size distance field output specified, populating normal glyph cache...";
 
-        cache.emplace<GlyphCache>(args.value<Vector2i>("atlas-size"));
+        cache.emplace<GlyphCache>(PixelFormat::R8Unorm, args.value<Vector2i>("atlas-size"));
     }
 
     /* Fill the cache */

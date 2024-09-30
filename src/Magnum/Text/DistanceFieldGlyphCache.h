@@ -41,8 +41,8 @@ namespace Magnum { namespace Text {
 @brief Glyph cache with distance field rendering
 
 Unlike the base @ref GlyphCache, this class converts each binary image to a
-distance field. It's not possible to use non-binary colors with this cache as
-the internal texture format is single-channel.
+distance field. It's not possible to only use this cache for monochrome glyphs
+as the internal texture format is single-channel.
 
 @section Text-DistanceFieldGlyphCache-usage Usage
 
@@ -71,6 +71,23 @@ channels.
 See the @ref Renderer class for information about text rendering. The
 @ref AbstractGlyphCache base class has more information about general glyph
 cache usage.
+
+@section Text-DistanceFieldGlyphCache-internal-format Internal texture format
+
+The @ref format() is always @ref PixelFormat::R8Unorm.
+
+On desktop OpenGL, OpenGL ES 3.0+, WebGL 2, and OpenGL ES 2.0 if
+@gl_extension{EXT,texture_rg} is supported, the @ref processedFormat() is
+always @ref PixelFormat::R8Unorm, which maps to @ref GL::TextureFormat::R8 for
+the @ref texture(), matching
+@ref Text-GlyphCache-internal-format "the behavior listed in GlyphCache docs".
+
+On OpenGL ES 2.0 without @gl_extension{EXT,texture_rg} and on WebGL 1,
+@ref PixelFormat::R8Unorm maps to @ref GL::TextureFormat::Luminance, which
+isn't renderable and thus cannot be used for calculating the distance field.
+Instead, @ref PixelFormat::RGBA8Unorm is used for @ref processedFormat(). This
+shouldn't affect common use through @ref image(), but code interacting with
+@ref processedImage() or @ref setProcessedImage() may need to be aware of this.
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features

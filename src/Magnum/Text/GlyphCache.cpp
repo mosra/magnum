@@ -25,43 +25,82 @@
 
 #include "GlyphCache.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/Optional.h>
+#endif
+
+#include "Magnum/ImageView.h"
+#include "Magnum/GL/TextureFormat.h"
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/PixelFormat.h"
+#endif
+#if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
-#include "Magnum/GL/TextureFormat.h"
-
-#ifdef MAGNUM_TARGET_GLES2
-#include "Magnum/ImageView.h"
+#endif
+#if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/GL/PixelFormat.h"
 #endif
 
 namespace Magnum { namespace Text {
 
-GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): GlyphCache{internalFormat, size, size, padding} {}
+GlyphCache::GlyphCache(const PixelFormat format, const Vector2i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{format, size, processedFormat, processedSize, padding} {
+    #ifndef MAGNUM_TARGET_GLES
+    if(processedFormat == PixelFormat::R8Unorm)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
+    #endif
 
-/* The unconditional Optional unwrap in here two may assert in rare cases.
-   Let's hope it doesn't in practice. */
-GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{*GL::genericPixelFormat(internalFormat), size, *GL::genericPixelFormat(internalFormat), processedSize, padding} {
     /* Initialize the texture */
     _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setStorage(1, internalFormat, processedSize);
-}
+        .setMagnificationFilter(GL::SamplerFilter::Linear);
 
-GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): GlyphCache{size, size, padding} {}
+    /* ES2 special-casing. WebGL 1 has neither EXT_texture_rg nor
+       EXT_texture_storage so it can use the common code path without
+       issues. */
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Prefer to use Red instead of Luminance if available, as Luminance isn't
+       renderable */
+    GL::TextureFormat textureFormat = GL::textureFormat(processedFormat);
+    GL::PixelFormat pixelFormat = GL::pixelFormat(processedFormat);
+    if(textureFormat == GL::TextureFormat::Luminance && GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        textureFormat = GL::TextureFormat::Red;
+        pixelFormat = GL::PixelFormat::Red;
+    }
 
-GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCache{
-    #ifndef MAGNUM_TARGET_GLES2
-    GL::TextureFormat::R8,
+    /* And use setImage() instead of setStorage() if the format is unsized, as
+       EXT_texture_storage doesn't allow those */
+    if(textureFormat == GL::TextureFormat::Red ||
+       textureFormat == GL::TextureFormat::Luminance ||
+       textureFormat == GL::TextureFormat::RG ||
+       textureFormat == GL::TextureFormat::LuminanceAlpha ||
+       textureFormat == GL::TextureFormat::RGB ||
+       textureFormat == GL::TextureFormat::SRGB ||
+       textureFormat == GL::TextureFormat::RGBA ||
+       textureFormat == GL::TextureFormat::SRGBAlpha)
+        _texture.setImage(0, textureFormat, ImageView2D{pixelFormat, GL::PixelType::UnsignedByte, processedSize});
+    else
+        _texture.setStorage(1, textureFormat, processedSize);
     #else
-    GL::TextureFormat::Luminance,
-    #endif
-    size, processedSize, padding}
-{
-    #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
+    _texture.setStorage(1, GL::textureFormat(processedFormat), processedSize);
     #endif
 }
+
+GlyphCache::GlyphCache(const PixelFormat format, const Vector2i& size, const Vector2i& padding): GlyphCache{format, size, format, size, padding} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* The unconditional Optional unwrap in these two may assert in rare cases.
+   Let's hope it doesn't in practice. */
+
+GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): GlyphCache{*GL::genericPixelFormat(internalFormat), size, padding} {}
+
+GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCache{*GL::genericPixelFormat(internalFormat), size, *GL::genericPixelFormat(internalFormat), processedSize, padding} {}
+
+GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): GlyphCache{PixelFormat::R8Unorm, size, padding} {}
+
+GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCache{PixelFormat::R8Unorm, size, PixelFormat::R8Unorm, processedSize, padding} {}
+#endif
 
 GlyphCache::GlyphCache(NoCreateT) noexcept: AbstractGlyphCache{NoCreate}, _texture{NoCreate} {}
 
@@ -76,7 +115,18 @@ void GlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::unpack_subimage>())
     #endif
     {
-        _texture.setSubImage(0, {}, ImageView2D{image.format(), size().xy(), image.data()});
+        /* On ES2 if EXT_texture_rg is present, the single-channel texture
+           format is Red instead of Luminance. Have to duplicate the logic here
+           in addition to below because it's easier than extracting
+           formatExtra() and everything else from the view afterwards. */
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(image.format() == PixelFormat::R8Unorm && GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+            _texture.setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte, size().xy(), image.data()});
+        } else
+        #endif
+        {
+            _texture.setSubImage(0, {}, ImageView2D{image.format(), size().xy(), image.data()});
+        }
         #ifdef MAGNUM_TARGET_WEBGL
         static_cast<void>(offset);
         #endif
@@ -87,7 +137,16 @@ void GlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     #endif
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     {
-        _texture.setSubImage(0, offset, image);
+        /* On ES2 if EXT_texture_rg is present, the single-channel texture
+           format is Red instead of Luminance */
+        #ifdef MAGNUM_TARGET_GLES2
+        if(image.format() == PixelFormat::R8Unorm && GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+            _texture.setSubImage(0, offset, ImageView2D{image.storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, image.size(), image.data()});
+        } else
+        #endif
+        {
+            _texture.setSubImage(0, offset, image);
+        }
     }
     #endif
 }

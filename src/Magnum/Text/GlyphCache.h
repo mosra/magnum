@@ -53,7 +53,29 @@ See the @ref Renderer class for information about text rendering. The
 @ref AbstractGlyphCache base class has more information about general glyph
 cache usage.
 
-@todo Some way for Font to negotiate or check internal texture format
+@section Text-GlyphCache-internal-format Internal texture format
+
+The @ref GL::TextureFormat used by @ref texture() is implicitly coming from
+@ref GL::textureFormat(Magnum::PixelFormat) applied to @ref format(), or if
+@ref GlyphCacheFeature::ImageProcessing is supported, to @ref processedFormat()
+instead.
+
+If @ref PixelFormat::R8Unorm is used for @ref format() or if
+@ref GlyphCacheFeature::ImageProcessing is supported and
+@ref PixelFormat::R8Unorm is used for @ref processedFormat(), on desktop OpenGL
+the class expects that @gl_extension{ARB,texture_rg} (OpenGL 3.0) is supported
+and uses @ref GL::TextureFormat::R8. On OpenGL ES 2.0, if
+@gl_extension{EXT,texture_rg} is supported, @ref GL::TextureFormat::Red /
+@ref GL::TextureFormat::R8 is used instead of @ref GL::TextureFormat::Luminance
+for @ref PixelFormat::R8Unorm. On WebGL 1 @ref GL::TextureFormat::Luminance is
+used for @ref PixelFormat::R8Unorm always.
+
+While this is abstracted away to not affect common use through @ref image(),
+@ref processedImage() or @ref setProcessedImage(), code interacting directly
+with @ref texture() may need to special-case this. In particular, if image
+processing needs to render to the texture, it may need to choose a different
+format as luminance usually cannot be rendered to.
+
 @todo Default glyph 0 with rect 0 0 0 0 will result in negative dimensions when
     nonzero padding is removed
 
@@ -65,50 +87,75 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
     public:
         /**
          * @brief Constructor
-         * @param internalFormat    Internal texture format
-         * @param size              Source glyph cache texture size in pixels
+         * @param format            Source image format
+         * @param size              Source image size size in pixels
+         * @param padding           Padding around every glyph in pixels
+         * @m_since_latest
+         *
+         * The @p size is expected to be non-zero. If the implementation
+         * advertises @ref GlyphCacheFeature::ImageProcessing, the
+         * @ref processedFormat() and @ref processedSize() is the same as
+         * @p format and @p size, use @ref AbstractGlyphCache(PixelFormat, const Vector3i&, PixelFormat, const Vector2i&, const Vector2i&)
+         * to specify different values.
+         */
+        explicit GlyphCache(PixelFormat format, const Vector2i& size, const Vector2i& padding = Vector2i{1});
+
+        /**
+         * @brief Construct with a specific processed format and size
+         * @param format            Source image format
+         * @param size              Source image size size in pixels
+         * @param processedFormat   Processed image format
          * @param processedSize     Processed glyph cache texture size in
          *      pixels
-         * @param padding           Padding around every glyph in pixels
+         * @param padding           Padding around every glyph in pixels. See
+         *      @ref Text-AbstractGlyphCache-padding for more information about
+         *      the default.
+         * @m_since_latest
          *
-         * All glyphs parameters are saved relative to @p size,
-         * although the actual glyph cache texture has @p processedSize. Glyph
-         * @p padding can be used to account for e.g. glyph shadows.
+         * The @p size and @p processedSize is expected to be non-zero. All
+         * glyphs are saved in @p format relative to @p size and with
+         * @p padding, although the actual glyph cache texture is in
+         * @p processedFormat and has @p processedSize.
+         * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
          */
-        explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding);
+        explicit GlyphCache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Constructor
-         *
-         * Same as calling the above with @p size and @p processedSize being
-         * set to the same value. See @ref Text-AbstractGlyphCache-padding for
-         * more information about the default @p padding.
+         * @m_deprecated_since_latest Use @ref GlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
+         *      instead.
          */
-        explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = Vector2i{1});
+        CORRADE_DEPRECATED("use GlyphCache(PixelFormat, const Vector2i&, const Vector2i&, const Vector2i&) instead") explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = Vector2i{1});
 
         /**
-         * @brief Constructor
-         *
-         * Sets the internal texture format to single-channel. On OpenGL ES
-         * 3.0+ and WebGL 2 uses @ref GL::TextureFormat::R8. On desktop OpenGL
-         * requires @gl_extension{ARB,texture_rg} (also part of OpenGL 3.0). On
-         * ES2 and WebGL 1 unconditionally uses @ref GL::TextureFormat::Luminance.
-         * This is done for consistency with @ref GL::pixelFormat(), which
-         * unconditionally returns @ref GL::PixelFormat::Luminance for
-         * @ref PixelFormat::R8Unorm. See
-         * @ref GlyphCache(GL::TextureFormat, const Vector2i&, const Vector2i&)
-         * for an alternative.
+         * @brief Construct with a specific processed size
+         * @m_deprecated_since_latest Use @ref GlyphCache(PixelFormat, const Vector2i&, PixelFormat, const Vector2i&, const Vector2i&)
+         *      instead.
          */
-        explicit GlyphCache(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding);
+        CORRADE_DEPRECATED("use GlyphCache(PixelFormat, const Vector2i&, const Vector2i&, const Vector2i&) instead") explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding);
 
         /**
-         * @brief Constructor
+         * @brief Construct with an implicit format
          *
-         * Same as calling the above with @p size and @p processedSize being
-         * set to the same value. See @ref Text-AbstractGlyphCache-padding for
-         * more information about the default @p padding.
+         * Calls @ref GlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
+         * with @p format set to @ref PixelFormat::R8Unorm.
+         * @m_deprecated_since_latest Use @ref GlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
+         *      and explicitly pass the format instead.
          */
-        explicit GlyphCache(const Vector2i& size, const Vector2i& padding = Vector2i{1});
+        CORRADE_DEPRECATED("use GlyphCache(PixelFormat, const Vector2i&, const Vector2i&, const Vector2i&) instead") explicit GlyphCache(const Vector2i& size, const Vector2i& padding = Vector2i{1});
+
+        /**
+         * @brief Construct with an implicit format and a specific processed size
+         *
+         * Calls @ref GlyphCache(PixelFormat, const Vector2i&, PixelFormat, const Vector2i&, const Vector2i&)
+         * with @p format and @p processedFormat set to
+         * @ref PixelFormat::R8Unorm.
+         * @m_deprecated_since_latest Use @ref GlyphCache(PixelFormat, const Vector2i&, PixelFormat, const Vector2i&, const Vector2i&)
+         *      and explicitly pass the format instead.
+         */
+        CORRADE_DEPRECATED("use GlyphCache(PixelFormat, const Vector2i&, const Vector2i&, const Vector2i&) instead") explicit GlyphCache(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding);
+        #endif
 
         /**
          * @brief Construct without creating the internal state and the OpenGL texture object

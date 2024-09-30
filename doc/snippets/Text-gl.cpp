@@ -58,7 +58,7 @@ Containers::Pointer<Text::AbstractFont> font =
 if(!font->openFile("font.ttf", 12.0f))
     Fatal{} << "Can't open font.ttf with StbTrueTypeFont";
 
-Text::GlyphCache cache{Vector2i{128}};
+Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
@@ -67,7 +67,7 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 
 {
 /* [AbstractGlyphCache-filling-construct] */
-Text::GlyphCache cache{Vector2i{512}};
+Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{512}};
 /* [AbstractGlyphCache-filling-construct] */
 }
 
@@ -96,7 +96,7 @@ PluginManager::Manager<Text::AbstractFont> manager;
 Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
 font->openFile("font.ttf", 12.0f);
 
-Text::GlyphCache cache{Vector2i{128}};
+Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
@@ -116,7 +116,7 @@ Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndI
 font->openFile("font.ttf", 12.0f);
 
 /* Populate a glyph cache */
-Text::GlyphCache cache{Vector2i{128}};
+Text::GlyphCache cache{PixelFormat::R8Unorm, Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");

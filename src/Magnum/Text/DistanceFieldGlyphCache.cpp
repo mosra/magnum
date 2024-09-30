@@ -40,23 +40,23 @@
 namespace Magnum { namespace Text {
 
 DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& size, const Vector2i& processedSize, const UnsignedInt radius):
-    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    GlyphCache(GL::TextureFormat::R8, size, processedSize, Vector2i(radius)),
-    #elif !defined(MAGNUM_TARGET_WEBGL)
-    /* Luminance is not renderable in most cases. RGB is *theoretically*
-       space-efficient but practically the driver uses RGBA internally anyway,
-       so just use RGBA. */
-    GlyphCache(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>() ?
-        GL::TextureFormat::R8 : GL::TextureFormat::RGBA8, size, processedSize, Vector2i(radius)),
-    #else
-    GlyphCache(GL::TextureFormat::RGBA, size, processedSize, Vector2i(radius)),
-    #endif
+    GlyphCache{PixelFormat::R8Unorm, size,
+        #if !defined(MAGNUM_TARGET_GLES) || !defined(MAGNUM_TARGET_GLES2)
+        PixelFormat::R8Unorm,
+        #else
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Without EXT_texture_rg, PixelFormat::R8Unorm maps to Luminance which
+           is not renderable in most cases. RGB is *theoretically* space-
+           efficient but practically the driver uses RGBA internally anyway, so
+           just use RGBA. */
+        GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>() ?
+            PixelFormat::R8Unorm :
+        #endif
+            PixelFormat::RGBA8Unorm,
+        #endif
+        processedSize, Vector2i(radius)},
     _distanceField{radius}
 {
-    #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
-    #endif
-
     /* Replicating the assertion from TextureTools::DistanceField so it gets
        checked during construction already instead of only later during the
        setImage() call */
@@ -65,7 +65,9 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& size, const Vec
         "Text::DistanceFieldGlyphCache: expected source and processed size ratio to be a multiple of 2, got" << Debug::packed << size << "and" << Debug::packed << processedSize, );
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /* Luminance is not renderable in most cases */
+    /* On ES2 print a warning to make it known that EXT_texture_rg wasn't
+       available. On WebGL 1 this is the case always, so a warning would be
+       just a noise. */
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
         Warning() << "Text::DistanceFieldGlyphCache:" << GL::Extensions::EXT::texture_rg::string() << "not supported, using a full RGBA format for the distance field texture";
     #endif

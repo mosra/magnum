@@ -1414,6 +1414,11 @@ See also:
         @cpp setDistanceFieldImage() @ce is deprecated in favor of
         @ref Text::AbstractGlyphCache::processedSize() and
         @relativeref{Text::AbstractGlyphCache,setProcessedImage()}
+    -   @ref Text::GlyphCache constructors taking either a
+        @ref GL::TextureFormat or no texture / pixel format at all are
+        deprecated in favor of constructors taking an explicit
+        @ref PixelFormat. The internal texture format is now considered an
+        implementation detail.
 -   The @cpp TextureTools::atlas() @ce utility is deprecated in favor of
     @ref TextureTools::AtlasLandfill, which has a vastly better packing
     efficiency, supports incremental packing and doesn't force the caller to
