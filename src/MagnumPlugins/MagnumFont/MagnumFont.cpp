@@ -159,22 +159,26 @@ Vector2 MagnumFont::doGlyphAdvance(const UnsignedInt glyph) {
 }
 
 Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
-    /* Set cache image */
-    Containers::Pointer<GlyphCacheGL> cache{InPlaceInit,
+    /* Set cache image. Have to create a custom subclass in order to have
+       control over both the source and processed format (where
+       DistanceFieldGlyphCache may set the processed format to RGBA if there's
+       no renderable single-channel format). */
+    /** @todo figure out a nicer way, and ideally how to do this with
+        fillGlyphCache() instead */
+    struct Cache: GlyphCacheGL {
+        using GlyphCacheGL::GlyphCacheGL;
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+    };
+    Containers::Pointer<Cache> cache{InPlaceInit,
         PixelFormat::R8Unorm,
         _opened->conf.value<Vector2i>("originalImageSize"),
         PixelFormat::R8Unorm,
         _opened->image->size(),
         _opened->conf.value<Vector2i>("padding")};
-    /* Copy the opened image data directly to the GL texture because (unlike
-       image()) it matches the actual image size if it differs from
-       originalImageSize. A potential other way would be to create a
-       DistanceFieldGlyphCache instead, and call setDistanceFieldImage() on it,
-       but the font file itself doesn't contain any info about whether it
-       actually is a distance field, so that would be not really any better. */
-    /** @todo clean this up once there's a way to upload the processed image
-        directly from the base class */
-    cache->texture().setSubImage(0, {}, *_opened->image);
+    cache->setProcessedImage({}, *_opened->image);
 
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
 
