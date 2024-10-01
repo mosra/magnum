@@ -118,9 +118,13 @@ void GlyphCacheGLTest::constructProcessed() {
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
         }
-        /* The symbol is private, we don't actually need it here, so just
+        /* The symbols are private, we don't actually need them here, so just
            override with an empty implementation */
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
+        void doSetProcessedImage(const Vector2i&, const ImageView2D&) override {}
+        Image3D doProcessedImage() override {
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
     } cache{PixelFormat::R8Unorm, {1024, 2048}, PixelFormat::RGBA8Unorm, {128, 256}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -141,9 +145,13 @@ void GlyphCacheGLTest::constructProcessedNoPadding() {
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
         }
-        /* The symbol is private, we don't actually need it here, so just
+        /* The symbols are private, we don't actually need them here, so just
            override with an empty implementation */
         void doSetImage(const Vector2i&, const ImageView2D&) override {}
+        void doSetProcessedImage(const Vector2i&, const ImageView2D&) override {}
+        Image3D doProcessedImage() override {
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
     } cache{PixelFormat::R8Unorm, {1024, 2048}, PixelFormat::RGBA8Unorm, {128, 256}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 

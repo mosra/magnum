@@ -163,11 +163,6 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheGL: public GlyphCacheGL {
     private:
         MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
         MAGNUM_TEXT_LOCAL void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
-        MAGNUM_TEXT_LOCAL void doSetProcessedImage(const Vector2i& offset, const ImageView2D& image) override;
-
-        #ifndef MAGNUM_TARGET_GLES
-        MAGNUM_TEXT_LOCAL Image3D doProcessedImage() override;
-        #endif
 
         TextureTools::DistanceFieldGL _distanceField;
 };
