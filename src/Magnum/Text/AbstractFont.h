@@ -797,18 +797,26 @@ class MAGNUM_TEXT_EXPORT
 AbstractLayouter {
     public:
         /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC <=7 warns due to the argument */
         AbstractLayouter(const AbstractLayouter&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Moving is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC <=7 warns due to the argument */
         AbstractLayouter(AbstractLayouter&&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         virtual ~AbstractLayouter();
 
         /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC <=7 warns due to the argument */
         AbstractLayouter& operator=(const AbstractLayouter&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Moving is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC <=7 warns due to the argument */
         AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Count of glyphs in the laid out text */
         UnsignedInt glyphCount() const { return _glyphs.size(); }
