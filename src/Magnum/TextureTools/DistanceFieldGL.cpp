@@ -218,6 +218,12 @@ void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Framebuffer& output, 
     output.setViewport(previousViewport);
 }
 
+#ifndef MAGNUM_TARGET_GLES
+void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle) {
+    return operator()(input, output, rectangle, {});
+}
+#endif
+
 void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i&
     #ifdef MAGNUM_TARGET_GLES
     imageSize
@@ -232,5 +238,11 @@ void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2D& output, co
         #endif
         );
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle) {
+    return operator()(input, output, rectangle, {});
+}
+#endif
 
 }}

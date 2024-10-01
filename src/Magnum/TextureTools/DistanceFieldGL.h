@@ -36,9 +36,6 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
-#ifndef MAGNUM_TARGET_GLES
-#include "Magnum/Math/Vector2.h"
-#endif
 #include "Magnum/TextureTools/visibility.h"
 
 namespace Magnum { namespace TextureTools {
@@ -158,11 +155,19 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceFieldGL {
          * as that's what the generator shader relies on for correct pixel
          * addressing.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         void operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i& imageSize
             #ifndef MAGNUM_TARGET_GLES
             = {}
             #endif
         );
+        #else
+        /* To avoid having to include Vector2 */
+        void operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i& imageSize);
+        #ifndef MAGNUM_TARGET_GLES
+        void operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle);
+        #endif
+        #endif
 
         /**
          * @brief Calculate the distance field to a texture
@@ -176,11 +181,19 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceFieldGL {
          * Creates a framebuffer with @p output attached and calls
          * @ref operator()(GL::Texture2D&, GL::Framebuffer&, const Range2Di&, const Vector2i&).
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         void operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i& imageSize
             #ifndef MAGNUM_TARGET_GLES
             = {}
             #endif
         );
+        #else
+        /* To avoid having to include Vector2 */
+        void operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i& imageSize);
+        #ifndef MAGNUM_TARGET_GLES
+        void operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle);
+        #endif
+        #endif
 
     private:
         struct State;
