@@ -116,7 +116,7 @@ if(MAGNUM_TARGET_GL)
 
         corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp
             LIBRARIES
-                MagnumText
+                MagnumTextTestLib
                 MagnumOpenGLTester
                 MagnumDebugTools)
         corrade_add_test(TextRendererGLTest RendererGLTest.cpp

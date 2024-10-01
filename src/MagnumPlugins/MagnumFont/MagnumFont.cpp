@@ -166,7 +166,7 @@ Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
     /** @todo figure out a nicer way, and ideally how to do this with
         fillGlyphCache() instead */
     struct Cache: GlyphCacheGL {
-        using GlyphCacheGL::GlyphCacheGL;
+        explicit Cache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): GlyphCacheGL{format, size, processedFormat, processedSize, padding} {}
 
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;

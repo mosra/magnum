@@ -62,10 +62,9 @@ set(MagnumText_PRIVATE_HEADERS
     Implementation/printFourCC.h)
 
 if(MAGNUM_TARGET_GL)
-    list(APPEND MagnumText_SRCS
-        GlyphCacheGL.cpp)
     list(APPEND MagnumText_GracefulAssert_SRCS
-        DistanceFieldGlyphCacheGL.cpp)
+        DistanceFieldGlyphCacheGL.cpp
+        GlyphCacheGL.cpp)
     list(APPEND MagnumText_HEADERS
         DistanceFieldGlyphCacheGL.h
         GlyphCacheGL.h)

@@ -108,6 +108,9 @@ GlyphCacheGL::GlyphCacheGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate}, _t
 GlyphCacheFeatures GlyphCacheGL::doFeatures() const { return {}; }
 
 void GlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) {
+    CORRADE_ASSERT(format() == processedFormat() && size() == processedSize(),
+        "Text::GlyphCacheGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size", );
+
     /* On ES2 without EXT_unpack_subimage and on WebGL 1 there's no possibility
        to upload just a slice of the input, upload the whole image instead by
        ignoring the PixelStorage properties of the input */

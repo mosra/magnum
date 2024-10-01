@@ -23,8 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/StringStl.h> /**< @todo remove once Debug is stream-free */
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Image.h"
@@ -66,6 +69,8 @@ struct GlyphCacheGLTest: GL::OpenGLTester {
 
     void setImage();
     void setImageFourChannel();
+
+    void flushImageSubclassProcessedFormatSize();
 };
 
 GlyphCacheGLTest::GlyphCacheGLTest() {
@@ -84,7 +89,9 @@ GlyphCacheGLTest::GlyphCacheGLTest() {
               &GlyphCacheGLTest::constructMove,
 
               &GlyphCacheGLTest::setImage,
-              &GlyphCacheGLTest::setImageFourChannel});
+              &GlyphCacheGLTest::setImageFourChannel,
+
+              &GlyphCacheGLTest::flushImageSubclassProcessedFormatSize});
 }
 
 void GlyphCacheGLTest::construct() {
@@ -112,18 +119,11 @@ void GlyphCacheGLTest::constructNoPadding() {
 }
 
 void GlyphCacheGLTest::constructProcessed() {
-    struct: GlyphCacheGL {
-        using GlyphCacheGL::GlyphCacheGL;
+    struct Cache: GlyphCacheGL {
+        explicit Cache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): GlyphCacheGL{format, size, processedFormat, processedSize, padding} {}
 
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
-        }
-        /* The symbols are private, we don't actually need them here, so just
-           override with an empty implementation */
-        void doSetImage(const Vector2i&, const ImageView2D&) override {}
-        void doSetProcessedImage(const Vector2i&, const ImageView2D&) override {}
-        Image3D doProcessedImage() override {
-            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
     } cache{PixelFormat::R8Unorm, {1024, 2048}, PixelFormat::RGBA8Unorm, {128, 256}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -139,18 +139,11 @@ void GlyphCacheGLTest::constructProcessed() {
 }
 
 void GlyphCacheGLTest::constructProcessedNoPadding() {
-    struct: GlyphCacheGL {
-        using GlyphCacheGL::GlyphCacheGL;
+    struct Cache: GlyphCacheGL {
+        explicit Cache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheGL{format, size, processedFormat, processedSize} {}
 
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
-        }
-        /* The symbols are private, we don't actually need them here, so just
-           override with an empty implementation */
-        void doSetImage(const Vector2i&, const ImageView2D&) override {}
-        void doSetProcessedImage(const Vector2i&, const ImageView2D&) override {}
-        Image3D doProcessedImage() override {
-            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
     } cache{PixelFormat::R8Unorm, {1024, 2048}, PixelFormat::RGBA8Unorm, {128, 256}};
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -374,6 +367,29 @@ void GlyphCacheGLTest::setImageFourChannel() {
     CORRADE_COMPARE_AS(image,
         expected,
         DebugTools::CompareImage);
+}
+
+void GlyphCacheGLTest::flushImageSubclassProcessedFormatSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct Cache: GlyphCacheGL {
+        explicit Cache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheGL{format, size, processedFormat, processedSize} {}
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+    };
+    Cache differentFormat{PixelFormat::R8Unorm, {32, 32}, PixelFormat::RGBA8Unorm, {32, 32}};
+    Cache differentSize{PixelFormat::R8Unorm, {32, 32}, PixelFormat::R8Unorm, {16, 32}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    differentFormat.flushImage({{}, {32, 32}});
+    differentSize.flushImage({{}, {32, 32}});
+    CORRADE_COMPARE_AS(out.str(),
+        "Text::GlyphCacheGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size\n"
+        "Text::GlyphCacheGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size\n",
+        TestSuite::Compare::String);
 }
 
 }}}}

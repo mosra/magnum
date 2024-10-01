@@ -102,26 +102,6 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
          */
         explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, const Vector2i& padding = Vector2i{1});
 
-        /**
-         * @brief Construct with a specific processed format and size
-         * @param format            Source image format
-         * @param size              Source image size size in pixels
-         * @param processedFormat   Processed image format
-         * @param processedSize     Processed glyph cache texture size in
-         *      pixels
-         * @param padding           Padding around every glyph in pixels. See
-         *      @ref Text-AbstractGlyphCache-padding for more information about
-         *      the default.
-         * @m_since_latest
-         *
-         * The @p size and @p processedSize is expected to be non-zero. All
-         * glyphs are saved in @p format relative to @p size and with
-         * @p padding, although the actual glyph cache texture is in
-         * @p processedFormat and has @p processedSize.
-         * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
-         */
-        explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
-
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Constructor
@@ -177,6 +157,32 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
 
         /** @brief Cache texture */
         GL::Texture2D& texture() { return _texture; }
+
+    protected:
+        /**
+         * @brief Construct with a specific processed format and size
+         * @param format            Source image format
+         * @param size              Source image size size in pixels
+         * @param processedFormat   Processed image format
+         * @param processedSize     Processed glyph cache texture size in
+         *      pixels
+         * @param padding           Padding around every glyph in pixels. See
+         *      @ref Text-AbstractGlyphCache-padding for more information about
+         *      the default.
+         * @m_since_latest
+         *
+         * The @p size and @p processedSize is expected to be non-zero. All
+         * glyphs are saved in @p format relative to @p size and with
+         * @p padding, although the actual glyph cache texture is in
+         * @p processedFormat and has @p processedSize.
+         *
+         * Meant to be only used by subclasses that advertise
+         * @ref GlyphCacheFeature::ImageProcessing and reimplement
+         * @ref doSetImage() to take the differences between @p format, @p size
+         * and @p processedFormat, @p processedSize into account.
+         * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
+         */
+        explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
