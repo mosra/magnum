@@ -205,6 +205,9 @@ void GlyphCacheGLTest::setImageCustomFormat() {
         #endif
         {4, 8}};
 
+    /* Zero the texture to avoid comparing against garbage */
+    cache.texture().setSubImage(0, {}, Image2D{PixelFormat::RGBA8Unorm, {4, 8}, Containers::Array<char>{ValueInit, 4*4*8}});
+
     Utility::copy(
         Containers::StridedArrayView2D<const Color4ub>{Containers::arrayCast<const Color4ub>(Containers::arrayView(InputData)), {4, 2}},
         cache.image().pixels<Color4ub>()[0].sliceSize({4, 2}, {4, 2}));
