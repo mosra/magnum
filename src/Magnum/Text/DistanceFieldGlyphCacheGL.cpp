@@ -25,16 +25,19 @@
 
 #include "DistanceFieldGlyphCacheGL.h"
 
+#include <Corrade/Containers/Optional.h>
+
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
+#if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
+#endif
 #ifndef CORRADE_NO_ASSERT
 #include "Magnum/GL/PixelFormat.h"
 #endif
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/TextureTools/DistanceFieldGL.h"
 
 namespace Magnum { namespace Text {
 
