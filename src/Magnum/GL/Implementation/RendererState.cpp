@@ -31,6 +31,16 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 
+/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
+   3.1.4 moved them to a version header and version 3.1.23 dropped the
+   backwards compatibility. To work consistently on all versions, including the
+   header only if the version macros aren't present.
+   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
+   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
+#if defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(__EMSCRIPTEN_major__)
+#include <emscripten/version.h>
+#endif
+
 namespace Magnum { namespace GL { namespace Implementation {
 
 using namespace Containers::Literals;
@@ -206,7 +216,8 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
     #endif
     #endif
 
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
     if(context.isExtensionSupported<Extensions::NV::polygon_mode>()) {
         extensions[Extensions::NV::polygon_mode::Index] =
                    Extensions::NV::polygon_mode::string();
@@ -215,7 +226,15 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
         extensions[Extensions::ANGLE::polygon_mode::Index] =
                    Extensions::ANGLE::polygon_mode::string();
         polygonModeImplementation = glPolygonModeANGLE;
-    } else {
+    } else
+    #elif __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30166
+    if(context.isExtensionSupported<Extensions::WEBGL::polygon_mode>()) {
+        extensions[Extensions::WEBGL::polygon_mode::Index] =
+                   Extensions::WEBGL::polygon_mode::string();
+        polygonModeImplementation = glPolygonModeWEBGL;
+    } else
+    #endif
+    {
         polygonModeImplementation = nullptr;
     }
     #endif

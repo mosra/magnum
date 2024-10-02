@@ -129,8 +129,9 @@ See also:
     extensions on GLES 3.1+, exposed as @ref GL::Texture::view() and similar
     APIs on other texture types
 -   Implemented the GL 4.5 @gl_extension{ARB,clip_control} extension and
-    matching @gl_extension{EXT,clip_control} extension on GLES, exposed as
-    @ref GL::Renderer::setClipControl(). See also [mosra/magnum#543](https://github.com/mosra/magnum/issues/543).
+    matching @gl_extension{EXT,clip_control} and
+    @webgl_extension{WEBGL,clip_control} extension on GLES and WebGL, exposed
+    as @ref GL::Renderer::setClipControl(). See also [mosra/magnum#543](https://github.com/mosra/magnum/issues/543).
 -   Implemented @gl_extension{EXT,texture_norm16} and
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all
@@ -156,18 +157,19 @@ See also:
     WebGL extensions, making @ref GL::SamplerWrapping::MirrorClampToEdge
     available on all platforms
 -   Implemented the @m_class{m-doc-external} [ANGLE_provoking_vertex](https://chromium.googlesource.com/angle/angle/+/main/extensions/ANGLE_provoking_vertex.txt)
-    and @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt)
-    ES extensions. Recognized also on WebGL as
-    @webgl_extension{WEBGL,provoking_vertex} and
-    @webgl_extension{WEBGL,polygon_mode} but with no implementation as
+    ES extension. Recognized also on WebGL as
+    @webgl_extension{WEBGL,provoking_vertex} but with no implementation as
     Emscripten doesn't have the required entrypoints yet.
+-   Implemented the @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt)
+    and @webgl_extension{WEBGL,polygon_mode} ES and WebGL extension.
 -   Implemented the @m_class{m-doc-external} [ANGLE_stencil_texturing](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_stencil_texturing.txt)
     ES and @webgl_extension{WEBGL,stencil_texturing} WebGL extensions
 -   Implemented the @gl_extension{EXT,blend_func_extended} ES and
     @webgl_extension{WEBGL,blend_func_extended} WebGL extensions
 -   Implemented the @gl_extension{INTEL,blackhole_render} desktop and ES
     extension
--   Recognizing @webgl_extension{EXT,float_blend} and
+-   Recognizing @webgl_extension{EXT,float_blend},
+    @webgl_extension{EXT,polygon_offset_clamp} and
     @webgl_extension{WEBGL,debug_shaders} WebGL extensions, no implementation
     done yet
 -   Implemented @ref GL-AbstractShaderProgram-async "Async shader compilation and linking"

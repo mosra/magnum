@@ -732,6 +732,16 @@ void Context::setupDriverWorkarounds() {
     #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20000
     _setRequiredVersion(WEBGL::multi_draw, None);
     #endif
+    /* EXT_clip_control, EXT_polygon_offset_clamp and WEBGL_polygon_mode
+       entrypoints are only available since Emscripten 3.1.66:
+       https://github.com/emscripten-core/emscripten/pull/20841
+       However, the extension is advertised even on older versions and we have
+       no way to link to those entrypoints there. */
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 30166
+    _setRequiredVersion(EXT::clip_control, None);
+    _setRequiredVersion(EXT::polygon_offset_clamp, None);
+    _setRequiredVersion(WEBGL::polygon_mode, None);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     /* WEBGL_multi_draw_instanced_base_vertex_base_instance only since
        Emscripten 2.0.5: https://github.com/emscripten-core/emscripten/pull/12282 */

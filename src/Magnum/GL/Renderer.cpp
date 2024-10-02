@@ -33,6 +33,16 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/RendererState.h"
 
+/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
+   3.1.4 moved them to a version header and version 3.1.23 dropped the
+   backwards compatibility. To work consistently on all versions, including the
+   header only if the version macros aren't present.
+   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
+   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
+#if defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(__EMSCRIPTEN_major__)
+#include <emscripten/version.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 Range1D Renderer::lineWidthRange() {
@@ -137,7 +147,6 @@ void Renderer::setProvokingVertex(const ProvokingVertex mode) {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_WEBGL
 void Renderer::setPolygonMode(const PolygonMode mode) {
     #ifndef MAGNUM_TARGET_GLES
     glPolygonMode
@@ -146,7 +155,6 @@ void Renderer::setPolygonMode(const PolygonMode mode) {
     #endif
         (GL_FRONT_AND_BACK, GLenum(mode));
 }
-#endif
 
 void Renderer::setPolygonOffset(const Float factor, const Float units) {
     glPolygonOffset(factor, units);
@@ -331,15 +339,17 @@ void Renderer::depthRangefImplementationDefault(const Float near, const Float fa
 }
 #endif
 
-#ifndef MAGNUM_TARGET_WEBGL
 void Renderer::setClipControl(const ClipOrigin origin, const ClipDepth depth) {
     #ifndef MAGNUM_TARGET_GLES
     glClipControl(GLenum(origin), GLenum(depth));
-    #else
+    #elif !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30166
     glClipControlEXT(GLenum(origin), GLenum(depth));
+    #else
+    static_cast<void>(origin);
+    static_cast<void>(depth);
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
     #endif
 }
-#endif
 
 void Renderer::setColorMask(const GLboolean allowRed, const GLboolean allowGreen, const GLboolean allowBlue, const GLboolean allowAlpha) {
     glColorMask(allowRed, allowGreen, allowBlue, allowAlpha);

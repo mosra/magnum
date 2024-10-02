@@ -417,7 +417,6 @@ class MAGNUM_GL_EXPORT Renderer {
              */
             PolygonOffsetFill = GL_POLYGON_OFFSET_FILL,
 
-            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Offset lines. Note that this affects only filled polygons
              * rendered with @ref setPolygonMode() set to
@@ -426,15 +425,20 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @ref setPolygonOffset()
              * @requires_es_extension Extension @gl_extension{NV,polygon_offset}
              *      or @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt)
-             * @requires_gles Only @ref Feature::PolygonOffsetFill is available
-             *      in WebGL.
+             * @requires_webgl_extension Extension @webgl_extension{WEBGL,polygon_mode}.
+             *      Note that this extension is only implemented since
+             *      Emscripten 3.1.66 and thus it's not even advertised on
+             *      older versions.
              */
             #ifndef MAGNUM_TARGET_GLES
             PolygonOffsetLine = GL_POLYGON_OFFSET_LINE,
-            #else
+            #elif !defined(MAGNUM_TARGET_WEBGL)
             PolygonOffsetLine = GL_POLYGON_OFFSET_LINE_NV,
+            #else
+            PolygonOffsetLine = GL_POLYGON_OFFSET_LINE_WEBGL,
             #endif
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Offset points. Note that this affects only filled polygons
              * rendered with @ref setPolygonMode() set to
@@ -442,8 +446,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetLine,
              *      @ref setPolygonOffset()
              * @requires_es_extension Extension @gl_extension{NV,polygon_offset}
-             * @requires_gles Only @ref Feature::PolygonOffsetFill is available
-             *      in WebGL.
+             * @requires_gles Only @ref Feature::PolygonOffsetFill and
+             *      @ref Feature::PolygonOffsetPoint is available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
             PolygonOffsetPoint = GL_POLYGON_OFFSET_POINT,
@@ -856,7 +860,6 @@ class MAGNUM_GL_EXPORT Renderer {
         static void setProvokingVertex(ProvokingVertex mode);
         #endif
 
-        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Polygon mode
          *
@@ -866,7 +869,10 @@ class MAGNUM_GL_EXPORT Renderer {
          *      @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt).
          *      Otherwise behaves always like @ref PolygonMode::Fill. See
          *      @ref Mesh::setPrimitive() for a possible workaround.
-         * @requires_gles WebGL behaves always like @ref PolygonMode::Fill. See
+         * @requires_webgl_extension Extension @webgl_extension{WEBGL,polygon_mode}.
+         *      Note that this extension is only implemented since Emscripten
+         *      3.1.66 and thus it's not even advertised on older versions.
+         *      Otherwise behaves always like @ref PolygonMode::Fill. See
          *      @ref Mesh::setPrimitive() for a possible workaround.
          */
         enum class PolygonMode: GLenum {
@@ -875,8 +881,10 @@ class MAGNUM_GL_EXPORT Renderer {
              */
             #ifndef MAGNUM_TARGET_GLES
             Fill = GL_FILL,
-            #else
+            #elif !defined(MAGNUM_TARGET_WEBGL)
             Fill = GL_FILL_NV,
+            #else
+            Fill = GL_FILL_WEBGL,
             #endif
 
             /**
@@ -884,20 +892,25 @@ class MAGNUM_GL_EXPORT Renderer {
              */
             #ifndef MAGNUM_TARGET_GLES
             Line = GL_LINE,
-            #else
+            #elif !defined(MAGNUM_TARGET_WEBGL)
             Line = GL_LINE_NV,
+            #else
+            Line = GL_LINE_WEBGL,
             #endif
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Starts of boundary edges are drawn as points. See also
              * @ref setPointSize().
              * @requires_es_extension Extension @gl_extension{NV,polygon_mode},
              *      not available with @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt)
+             * @requires_gles Not available in @webgl_extension{WEBGL,polygon_mode}
              */
             #ifndef MAGNUM_TARGET_GLES
             Point = GL_POINT
             #else
             Point = GL_POINT_NV
+            #endif
             #endif
         };
 
@@ -910,11 +923,13 @@ class MAGNUM_GL_EXPORT Renderer {
          *      @m_class{m-doc-external} [ANGLE_polygon_mode](https://chromium.googlesource.com/angle/angle/+/HEAD/extensions/ANGLE_polygon_mode.txt).
          *      Otherwise behaves always like the default. See
          *      @ref Mesh::setPrimitive() for possible workaround.
-         * @requires_gles WebGL behaves always like the default. See
+         * @requires_webgl_extension Extension @webgl_extension{WEBGL,polygon_mode}.
+         *      Note that this extension is only implemented since Emscripten
+         *      3.1.66 and thus it's not even advertised on older versions.
+         *      Otherwise behaves always like the default. See
          *      @ref Mesh::setPrimitive() for possible workaround.
          */
         static void setPolygonMode(PolygonMode mode);
-        #endif
 
         /**
          * @brief Set polygon offset
@@ -1234,7 +1249,6 @@ class MAGNUM_GL_EXPORT Renderer {
 
         /** @{ @name Depth testing and clip control */
 
-        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Clip origin
          * @m_since_latest
@@ -1243,7 +1257,9 @@ class MAGNUM_GL_EXPORT Renderer {
          * @m_enum_values_as_keywords
          * @requires_gl45 Extension @gl_extension{ARB,clip_control}
          * @requires_es_extension Extension @gl_extension{EXT,clip_control}
-         * @requires_gles Clip control is not available in WebGL.
+         * @requires_webgl_extension Extension @webgl_extension{EXT,clip_control}.
+         *      Note that this extension is only implemented since Emscripten
+         *      3.1.66 and thus it's not even advertised on older versions.
          */
         enum class ClipOrigin: GLenum {
             /** Lower left */
@@ -1269,7 +1285,9 @@ class MAGNUM_GL_EXPORT Renderer {
          * @m_enum_values_as_keywords
          * @requires_gl45 Extension @gl_extension{ARB,clip_control}
          * @requires_es_extension Extension @gl_extension{EXT,clip_control}
-         * @requires_gles Clip control is not available in WebGL.
+         * @requires_webgl_extension Extension @webgl_extension{EXT,clip_control}.
+         *      Note that this extension is only implemented since Emscripten
+         *      3.1.66 and thus it's not even advertised on older versions.
          */
         enum class ClipDepth: GLenum {
             /** -1 to 1 */
@@ -1286,7 +1304,6 @@ class MAGNUM_GL_EXPORT Renderer {
             ZeroToOne = GL_ZERO_TO_ONE_EXT,
             #endif
         };
-        #endif
 
         /**
          * @brief Depth function
@@ -1335,7 +1352,6 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setDepthRange(Float near, Float far);
 
-        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Set clipping behavior
          * @m_since_latest
@@ -1345,10 +1361,11 @@ class MAGNUM_GL_EXPORT Renderer {
          * @see @fn_gl_keyword{ClipControl}
          * @requires_gl45 Extension @gl_extension{ARB,clip_control}
          * @requires_es_extension Extension @gl_extension{EXT,clip_control}
-         * @requires_gles Clip control is not available in WebGL.
+         * @requires_webgl_extension Extension @webgl_extension{EXT,clip_control}.
+         *      Note that this extension is only implemented since Emscripten
+         *      3.1.66 and thus it's not even advertised on older versions.
          */
         static void setClipControl(ClipOrigin origin, ClipDepth depth);
-        #endif
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
