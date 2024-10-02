@@ -650,7 +650,13 @@ void Context::setupDriverWorkarounds() {
            as it neither has any dependencies nor has code that may benefit
            from settings-based preprocessing done for minification */
         #pragma GCC diagnostic push
+        /* The damn thing moved the warning to another group in some version.
+           Not sure if it happened in Clang 10 already, but -Wc++20-extensions
+           is new in Clang 10, so just ignore both. */
         #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+        #if __clang_major__ >= 10
+        #pragma GCC diagnostic ignored "-Wc++20-extensions"
+        #endif
         const Int firefoxVersion = EM_ASM_INT({
             var match = navigator.userAgent.match(/Firefox\\\\/(\\\\d+)/);
             if(match) return match[1]|0; /* coerce to an int (remember asm.js?) */
