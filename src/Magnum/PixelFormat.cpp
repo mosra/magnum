@@ -761,12 +761,6 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
 namespace {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
-constexpr const char* CompressedPixelFormatNames[] {
-    #define _c(format, width, height, depth, size) #format,
-    #include "Magnum/Implementation/compressedPixelFormatMapping.hpp"
-    #undef _c
-};
-
 constexpr UnsignedShort CompressedBlockData[] {
     /* Assuming w/h/d/s is never larger than 16 (and never zero), each number
        has 1 subtracted and packed into four bits, 16 bits in total. The size
@@ -812,6 +806,18 @@ UnsignedInt compressedPixelFormatBlockDataSize(const CompressedPixelFormat forma
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
         "compressedPixelFormatBlockDataSize(): invalid format" << format, {});
     return (CompressedBlockData[UnsignedInt(format) - 1] & 0xf) + 1;
+}
+
+namespace {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+constexpr const char* CompressedPixelFormatNames[] {
+    #define _c(format, width, height, depth, size) #format,
+    #include "Magnum/Implementation/compressedPixelFormatMapping.hpp"
+    #undef _c
+};
+#endif
+
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
