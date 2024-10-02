@@ -520,6 +520,19 @@ typedef khronos_uint64_t GLuint64;
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT 0x8C4E
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT 0x8C4F
 
+/* GL_EXT_polygon_offset_clamp */
+
+#define GL_POLYGON_OFFSET_CLAMP_EXT 0x8E1B
+
+/* GL_EXT_clip_control */
+
+#define GL_LOWER_LEFT_EXT 0x8CA1
+#define GL_UPPER_LEFT_EXT 0x8CA2
+#define GL_NEGATIVE_ONE_TO_ONE_EXT 0x935E
+#define GL_ZERO_TO_ONE_EXT 0x935F
+#define GL_CLIP_ORIGIN_EXT 0x935C
+#define GL_CLIP_DEPTH_MODE_EXT 0x935D
+
 /* GL_EXT_depth_clamp */
 
 #define GL_DEPTH_CLAMP_EXT 0x864F
@@ -598,6 +611,13 @@ typedef khronos_uint64_t GLuint64;
 
 #define GL_MAX_SHADER_COMPILER_THREADS_KHR 0x91B0
 #define GL_COMPLETION_STATUS_KHR 0x91B1
+
+/* GL_WEBGL_polygon_mode */
+
+#define GL_POLYGON_MODE_WEBGL 0x0B40
+#define GL_LINE_WEBGL 0x1B01
+#define GL_FILL_WEBGL 0x1B02
+#define GL_POLYGON_OFFSET_LINE_WEBGL 0x2A02
 
 /* Function prototypes */
 
@@ -766,6 +786,10 @@ GLAPI void glVertexAttrib4fv(GLuint, const GLfloat *);
 GLAPI void glVertexAttribPointer(GLuint, GLint, GLenum, GLboolean, GLsizei, const void *);
 GLAPI void glViewport(GLint, GLint, GLsizei, GLsizei);
 
+/* GL_EXT_clip_control */
+
+GLAPI void glClipControlEXT(GLenum, GLenum);
+
 /* GL_EXT_disjoint_timer_query */
 
 GLAPI void glBeginQueryEXT(GLenum, GLuint);
@@ -785,12 +809,20 @@ GLAPI void glQueryCounterEXT(GLuint, GLenum);
 
 GLAPI void glDrawBuffersEXT(GLsizei, const GLenum *);
 
+/* GL_EXT_polygon_offset_clamp */
+
+GLAPI void glPolygonOffsetClampEXT(GLfloat, GLfloat, GLfloat);
+
 /* GL_OES_vertex_array_object */
 
 GLAPI void glBindVertexArrayOES(GLuint);
 GLAPI void glDeleteVertexArraysOES(GLsizei, const GLuint *);
 GLAPI void glGenVertexArraysOES(GLsizei, GLuint *);
 GLAPI GLboolean glIsVertexArrayOES(GLuint);
+
+/* GL_WEBGL_polygon_mode */
+
+GLAPI void glPolygonModeWEBGL(GLenum, GLenum);
 
 #ifdef __cplusplus
 }

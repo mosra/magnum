@@ -575,8 +575,8 @@ Extension                                   | Status
 @webgl_extension{EXT,texture_compression_rgtc} | done
 @webgl_extension{EXT,texture_compression_bptc} | done
 @webgl_extension{EXT,texture_norm16}        | done
-@webgl_extension{EXT,polygon_offset_clamp}  | missing support in Emscripten
-@webgl_extension{EXT,clip_control}          | missing support in Emscripten
+@webgl_extension{EXT,polygon_offset_clamp}  | |
+@webgl_extension{EXT,clip_control}          | |
 @webgl_extension{EXT,depth_clamp}           | done
 @webgl_extension{EXT,texture_mirror_clamp_to_edge} | done
 @webgl_extension{KHR,parallel_shader_compile} | done
@@ -598,7 +598,7 @@ Extension                                   | Status
 @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | done
 @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | done
 @webgl_extension{WEBGL,provoking_vertex}    | missing support in Emscripten
-@webgl_extension{WEBGL,polygon_mode}        | missing support in Emscripten
+@webgl_extension{WEBGL,polygon_mode}        | |
 @webgl_extension{WEBGL,blend_func_extended} | done
 @webgl_extension{WEBGL,stencil_texturing}   | done
 

@@ -823,6 +823,19 @@ typedef struct __GLsync *GLsync;
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT 0x8C4E
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT 0x8C4F
 
+/* GL_EXT_polygon_offset_clamp */
+
+#define GL_POLYGON_OFFSET_CLAMP_EXT 0x8E1B
+
+/* GL_EXT_clip_control */
+
+#define GL_LOWER_LEFT_EXT 0x8CA1
+#define GL_UPPER_LEFT_EXT 0x8CA2
+#define GL_NEGATIVE_ONE_TO_ONE_EXT 0x935E
+#define GL_ZERO_TO_ONE_EXT 0x935F
+#define GL_CLIP_ORIGIN_EXT 0x935C
+#define GL_CLIP_DEPTH_MODE_EXT 0x935D
+
 /* GL_EXT_depth_clamp */
 
 #define GL_DEPTH_CLAMP_EXT 0x864F
@@ -906,6 +919,13 @@ typedef struct __GLsync *GLsync;
 
 #define GL_DEPTH_STENCIL_TEXTURE_MODE_ANGLE 0x90EA
 #define GL_STENCIL_INDEX_ANGLE 0x1901
+
+/* GL_WEBGL_polygon_mode */
+
+#define GL_POLYGON_MODE_WEBGL 0x0B40
+#define GL_LINE_WEBGL 0x1B01
+#define GL_FILL_WEBGL 0x1B02
+#define GL_POLYGON_OFFSET_LINE_WEBGL 0x2A02
 
 /* Function prototypes */
 
@@ -1175,6 +1195,10 @@ GLAPI void glVertexAttribI4uiv(GLuint, const GLuint *);
 GLAPI void glVertexAttribIPointer(GLuint, GLint, GLenum, GLsizei, const void *);
 GLAPI void glWaitSync(GLsync, GLbitfield, GLuint64);
 
+/* GL_EXT_clip_control */
+
+GLAPI void glClipControlEXT(GLenum, GLenum);
+
 /* GL_EXT_disjoint_timer_query */
 
 GLAPI void glBeginQueryEXT(GLenum, GLuint);
@@ -1201,6 +1225,10 @@ GLAPI void glDisableiEXT(GLenum, GLuint);
 GLAPI void glEnableiEXT(GLenum, GLuint);
 GLAPI GLboolean glIsEnablediEXT(GLenum, GLuint);
 
+/* GL_EXT_polygon_offset_clamp */
+
+GLAPI void glPolygonOffsetClampEXT(GLfloat, GLfloat, GLfloat);
+
 /* GL_MAGNUM_what_webgl_has_but_es_not */
 
 GLAPI void glGetBufferSubData(GLenum, GLintptr, GLsizeiptr, void *);
@@ -1209,6 +1237,10 @@ GLAPI void glGetBufferSubData(GLenum, GLintptr, GLsizeiptr, void *);
 
 GLAPI void glFramebufferTextureMultiviewOVR(GLenum, GLenum, GLuint, GLint, GLint, GLsizei);
 GLAPI void glNamedFramebufferTextureMultiviewOVR(GLuint, GLenum, GLuint, GLint, GLint, GLsizei);
+
+/* GL_WEBGL_polygon_mode */
+
+GLAPI void glPolygonModeWEBGL(GLenum, GLenum);
 
 #ifdef __cplusplus
 }

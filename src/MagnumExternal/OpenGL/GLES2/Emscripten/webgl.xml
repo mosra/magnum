@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <registry>
     <comment>
-        This contains signatures of functions that are in WebGL 2 but not in ES
+        This contains signatures of functions that are in WebGL 1 but not in ES
         and (of course) gl.xml doesn't bother adding any WebGL-specific special
         case.
     </comment>
 
     <!-- SECTION: GL command definitions. -->
     <commands namespace="GL">
-        <!-- glGetBufferSubData is defined in gl.xml already, so nothing to do
-             here. It only needs to be required from some extension that's then
-             listed in extensions.txt. -->
-
         <!-- Copied from gl_angle_ext.xml with the suffix changed -->
         <command>
             <proto>void <name>glPolygonModeWEBGL</name></proto>
@@ -31,14 +27,6 @@
                 <enum name="GL_FILL_WEBGL"/>
                 <enum name="GL_POLYGON_OFFSET_LINE_WEBGL"/>
                 <command name="glPolygonModeWEBGL"/>
-            </require>
-        </extension>
-
-        <!-- MAGNUM extension interface definitions, which are just to bring
-             desktop-only entrypoints over to WebGL -->
-        <extension name="GL_MAGNUM_what_webgl_has_but_es_not" supported="gles2">
-            <require>
-                <command name="glGetBufferSubData"/>
             </require>
         </extension>
     </extensions>
