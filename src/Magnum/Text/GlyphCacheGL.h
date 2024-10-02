@@ -178,8 +178,9 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
          *
          * Meant to be only used by subclasses that advertise
          * @ref GlyphCacheFeature::ImageProcessing and reimplement
-         * @ref doSetImage() to take the differences between @p format, @p size
-         * and @p processedFormat, @p processedSize into account.
+         * @ref AbstractGlyphCache::doSetImage() to take the differences
+         * between @p format, @p size and @p processedFormat, @p processedSize
+         * into account.
          * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
          */
         explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});

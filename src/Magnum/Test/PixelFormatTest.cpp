@@ -426,6 +426,9 @@ void PixelFormatTest::isNormalizedIntegralFloatingPointDepthStencilImplementatio
 }
 
 void PixelFormatTest::isSrgb() {
+    /* Verification that it's never both Srgb and FloatingPoint is done in
+       mapping() above */
+
     CORRADE_VERIFY(isPixelFormatSrgb(PixelFormat::RG8Srgb));
     CORRADE_VERIFY(!isPixelFormatSrgb(PixelFormat::RG8Snorm));
     CORRADE_VERIFY(!isPixelFormatSrgb(PixelFormat::RGB16F));

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::pixelFormatChannelFormat(), @ref Magnum::pixelFormatChannelCount(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatIntegral(), @ref Magnum::isPixelFormatFloatingPoint(), @ref Magnum::isPixelFormatSrgb(), @ref Magnum::isPixelFormatDepthOrStencil(), @ref Magnum::pixelFormat(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
+ * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::pixelFormatChannelFormat(), @ref Magnum::pixelFormatChannelCount(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatIntegral(), @ref Magnum::isPixelFormatFloatingPoint(), @ref Magnum::isPixelFormatSrgb(), @ref Magnum::isPixelFormatDepthOrStencil(), @ref Magnum::pixelFormat(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -886,9 +886,9 @@ MAGNUM_EXPORT bool isPixelFormatFloatingPoint(PixelFormat format);
 @m_since_latest
 
 Returns @cpp true @ce for `*Srgb` formats, @cpp false @ce otherwise. If this
-function returns true, @ref isPixelFormatNormalized() also returns true.
-Expects that the pixel format is *not* implementation-specific and not a
-depth/stencil format.
+function returns @cpp true @ce, @ref isPixelFormatNormalized() also returns
+@cpp true @ce. Expects that the pixel format is *not* implementation-specific
+and not a depth/stencil format.
 @see @ref isPixelFormatImplementationSpecific(),
     @ref pixelFormat(PixelFormat, UnsignedInt, bool)
 */
