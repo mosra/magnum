@@ -170,6 +170,7 @@
 #undef glTexStorage3DMultisampleOES
 #undef glTextureViewOES
 #undef glFramebufferTextureMultiviewOVR
+#undef glNamedFramebufferTextureMultiviewOVR
 
 #define GLES_SILENCE_DEPRECATION /* YES I KNOW, APPLE! FFS */
 #include <OpenGLES/ES3/glext.h>
@@ -463,5 +464,6 @@ void flextGLInit(Magnum::GL::Context&) {
     /* GL_OVR_multiview */
     #if GL_OVR_multiview
     flextGL.FramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei)>(glFramebufferTextureMultiviewOVR);
+    flextGL.NamedFramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint, GLint, GLint, GLsizei)>(glNamedFramebufferTextureMultiviewOVR);
     #endif
 }

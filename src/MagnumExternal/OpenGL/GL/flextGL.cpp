@@ -236,6 +236,7 @@ FlextGL flextGL{
 
     /* GL_OVR_multiview */
     nullptr,
+    nullptr,
 
     /* GL_VERSION_1_0 */
     glBlendFunc,

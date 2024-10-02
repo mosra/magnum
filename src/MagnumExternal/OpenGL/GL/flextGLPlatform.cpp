@@ -200,6 +200,7 @@ void flextGLInit(Magnum::GL::Context& context) {
 
     /* GL_OVR_multiview */
     flextGL.FramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei)>(loader.load("glFramebufferTextureMultiviewOVR"));
+    flextGL.NamedFramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint, GLint, GLint, GLsizei)>(loader.load("glNamedFramebufferTextureMultiviewOVR"));
 
     /* GL_VERSION_1_2 */
     flextGL.CopyTexSubImage3D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei)>(loader.load("glCopyTexSubImage3D"));

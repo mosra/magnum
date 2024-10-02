@@ -567,4 +567,5 @@ void flextGLInit(Magnum::GL::Context&) {
 
     /* GL_OVR_multiview */
     flextGL.FramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei)>(loader.load("glFramebufferTextureMultiviewOVR"));
+    flextGL.NamedFramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint, GLint, GLint, GLsizei)>(loader.load("glNamedFramebufferTextureMultiviewOVR"));
 }

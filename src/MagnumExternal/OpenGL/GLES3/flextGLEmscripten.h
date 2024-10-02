@@ -1208,6 +1208,7 @@ GLAPI void glGetBufferSubData(GLenum, GLintptr, GLsizeiptr, void *);
 /* GL_OVR_multiview */
 
 GLAPI void glFramebufferTextureMultiviewOVR(GLenum, GLenum, GLuint, GLint, GLint, GLsizei);
+GLAPI void glNamedFramebufferTextureMultiviewOVR(GLuint, GLenum, GLuint, GLint, GLint, GLsizei);
 
 #ifdef __cplusplus
 }

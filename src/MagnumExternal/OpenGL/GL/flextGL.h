@@ -1910,6 +1910,7 @@ struct FlextGL {
     /* GL_OVR_multiview */
 
     void(APIENTRY *FramebufferTextureMultiviewOVR)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei);
+    void(APIENTRY *NamedFramebufferTextureMultiviewOVR)(GLuint, GLenum, GLuint, GLint, GLint, GLsizei);
 
     /* GL_VERSION_1_0 */
 
@@ -2723,6 +2724,7 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 /* GL_OVR_multiview */
 
 #define glFramebufferTextureMultiviewOVR flextGL.FramebufferTextureMultiviewOVR
+#define glNamedFramebufferTextureMultiviewOVR flextGL.NamedFramebufferTextureMultiviewOVR
 
 /* GL_VERSION_1_0 */
 
