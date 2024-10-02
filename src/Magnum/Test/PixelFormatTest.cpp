@@ -71,6 +71,14 @@ struct PixelFormatTest: TestSuite::Tester {
     void compressedBlockSizeInvalid();
     void compressedBlockSizeImplementationSpecific();
 
+    void compressedIsNormalizedFloatingPoint();
+    void compressedIsNormalizedFloatingPointInvalid();
+    void compressedIsNormalizedFloatingPointImplementationSpecific();
+
+    void compressedIsSrgb();
+    void compressedIsSrgbInvalid();
+    void compressedIsSrgbImplementationSpecific();
+
     void isImplementationSpecific();
     void wrap();
     void wrapInvalid();
@@ -152,6 +160,14 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::compressedBlockSize,
               &PixelFormatTest::compressedBlockSizeInvalid,
               &PixelFormatTest::compressedBlockSizeImplementationSpecific,
+
+              &PixelFormatTest::compressedIsNormalizedFloatingPoint,
+              &PixelFormatTest::compressedIsNormalizedFloatingPointInvalid,
+              &PixelFormatTest::compressedIsNormalizedFloatingPointImplementationSpecific,
+
+              &PixelFormatTest::compressedIsSrgb,
+              &PixelFormatTest::compressedIsSrgbInvalid,
+              &PixelFormatTest::compressedIsSrgbImplementationSpecific,
 
               &PixelFormatTest::isImplementationSpecific,
               &PixelFormatTest::wrap,
@@ -256,6 +272,8 @@ void PixelFormatTest::compressedMapping() {
                     CORRADE_COMPARE_AS(height, 16, TestSuite::Compare::LessOrEqual); \
                     CORRADE_COMPARE_AS(depth, 16, TestSuite::Compare::LessOrEqual); \
                     CORRADE_COMPARE_AS(size/8, 16, TestSuite::Compare::LessOrEqual); \
+                    CORRADE_COMPARE(Int(isCompressedPixelFormatNormalized(CompressedPixelFormat::format)) + Int(isCompressedPixelFormatFloatingPoint(CompressedPixelFormat::format)), 1); \
+                    CORRADE_VERIFY(!isCompressedPixelFormatSrgb(CompressedPixelFormat::format) || isCompressedPixelFormatNormalized(CompressedPixelFormat::format)); \
                     ++nextHandled; \
                     continue;
             #include "Magnum/Implementation/compressedPixelFormatMapping.hpp"
@@ -599,6 +617,87 @@ void PixelFormatTest::compressedBlockSizeImplementationSpecific() {
     CORRADE_COMPARE(out.str(),
         "compressedPixelFormatBlockSize(): can't determine size of an implementation-specific format 0xdead\n"
         "compressedPixelFormatBlockDataSize(): can't determine size of an implementation-specific format 0xdead\n");
+}
+
+void PixelFormatTest::compressedIsNormalizedFloatingPoint() {
+    /* Verification that exactly one of the two returns true is done in
+       compressedMapping() above */
+
+    CORRADE_VERIFY(isCompressedPixelFormatNormalized(CompressedPixelFormat::Bc2RGBAUnorm));
+    CORRADE_VERIFY(isCompressedPixelFormatNormalized(CompressedPixelFormat::Etc2RGB8Srgb));
+    CORRADE_VERIFY(isCompressedPixelFormatNormalized(CompressedPixelFormat::Bc5RGSnorm));
+    CORRADE_VERIFY(isCompressedPixelFormatNormalized(CompressedPixelFormat::Astc10x5RGBAUnorm));
+    CORRADE_VERIFY(isCompressedPixelFormatNormalized(CompressedPixelFormat::PvrtcRGB2bppUnorm));
+    CORRADE_VERIFY(isCompressedPixelFormatFloatingPoint(CompressedPixelFormat::Bc6hRGBUfloat));
+    CORRADE_VERIFY(isCompressedPixelFormatFloatingPoint(CompressedPixelFormat::Astc5x5RGBAF));
+
+    /* Floating-point aren't marked as normalized */
+    CORRADE_VERIFY(!isCompressedPixelFormatNormalized(CompressedPixelFormat::Bc6hRGBSfloat));
+    CORRADE_VERIFY(!isCompressedPixelFormatNormalized(CompressedPixelFormat::Astc6x6x6RGBAF));
+
+    /* Normalized aren't marked as floating-point even though they're treated
+       like float values in calculations */
+    CORRADE_VERIFY(!isCompressedPixelFormatFloatingPoint(CompressedPixelFormat::EacRG11Unorm));
+}
+
+void PixelFormatTest::compressedIsNormalizedFloatingPointInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    isCompressedPixelFormatNormalized(CompressedPixelFormat{});
+    isCompressedPixelFormatNormalized(CompressedPixelFormat(0xdead));
+    isCompressedPixelFormatFloatingPoint(CompressedPixelFormat{});
+    isCompressedPixelFormatFloatingPoint(CompressedPixelFormat(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "isCompressedPixelFormatNormalized(): invalid format CompressedPixelFormat(0x0)\n"
+        "isCompressedPixelFormatNormalized(): invalid format CompressedPixelFormat(0xdead)\n"
+        "isCompressedPixelFormatFloatingPoint(): invalid format CompressedPixelFormat(0x0)\n"
+        "isCompressedPixelFormatFloatingPoint(): invalid format CompressedPixelFormat(0xdead)\n");
+}
+
+void PixelFormatTest::compressedIsNormalizedFloatingPointImplementationSpecific() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    isCompressedPixelFormatNormalized(compressedPixelFormatWrap(0xdead));
+    isCompressedPixelFormatFloatingPoint(compressedPixelFormatWrap(0xdead));
+    CORRADE_COMPARE_AS(out.str(),
+        "isCompressedPixelFormatNormalized(): can't determine type of an implementation-specific format 0xdead\n"
+        "isCompressedPixelFormatFloatingPoint(): can't determine type of an implementation-specific format 0xdead\n",
+        TestSuite::Compare::String);
+}
+
+void PixelFormatTest::compressedIsSrgb() {
+    /* Verification that it's never both Srgb and FloatingPoint is done in
+       compressedMapping() above */
+
+    CORRADE_VERIFY(isCompressedPixelFormatSrgb(CompressedPixelFormat::Bc7RGBASrgb));
+    CORRADE_VERIFY(!isCompressedPixelFormatSrgb(CompressedPixelFormat::Bc5RGSnorm));
+    CORRADE_VERIFY(!isCompressedPixelFormatSrgb(CompressedPixelFormat::Astc8x5RGBAF));
+}
+
+void PixelFormatTest::compressedIsSrgbInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    isCompressedPixelFormatSrgb(CompressedPixelFormat{});
+    isCompressedPixelFormatSrgb(CompressedPixelFormat(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "isCompressedPixelFormatSrgb(): invalid format CompressedPixelFormat(0x0)\n"
+        "isCompressedPixelFormatSrgb(): invalid format CompressedPixelFormat(0xdead)\n");
+}
+
+void PixelFormatTest::compressedIsSrgbImplementationSpecific() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    isCompressedPixelFormatSrgb(compressedPixelFormatWrap(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "isCompressedPixelFormatSrgb(): can't determine colorspace of an implementation-specific format 0xdead\n");
 }
 
 void PixelFormatTest::isImplementationSpecific() {

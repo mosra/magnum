@@ -808,6 +808,387 @@ UnsignedInt compressedPixelFormatBlockDataSize(const CompressedPixelFormat forma
     return (CompressedBlockData[UnsignedInt(format) - 1] & 0xf) + 1;
 }
 
+bool isCompressedPixelFormatNormalized(const CompressedPixelFormat format) {
+    CORRADE_ASSERT(!isCompressedPixelFormatImplementationSpecific(format),
+        "isCompressedPixelFormatNormalized(): can't determine type of an implementation-specific format" << Debug::hex << compressedPixelFormatUnwrap(format), {});
+
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(format) {
+        case CompressedPixelFormat::Bc1RGBUnorm:
+        case CompressedPixelFormat::Bc1RGBSrgb:
+        case CompressedPixelFormat::Bc1RGBAUnorm:
+        case CompressedPixelFormat::Bc1RGBASrgb:
+        case CompressedPixelFormat::Bc2RGBAUnorm:
+        case CompressedPixelFormat::Bc2RGBASrgb:
+        case CompressedPixelFormat::Bc3RGBAUnorm:
+        case CompressedPixelFormat::Bc3RGBASrgb:
+        case CompressedPixelFormat::Bc4RUnorm:
+        case CompressedPixelFormat::Bc4RSnorm:
+        case CompressedPixelFormat::Bc5RGUnorm:
+        case CompressedPixelFormat::Bc5RGSnorm:
+        case CompressedPixelFormat::Bc7RGBAUnorm:
+        case CompressedPixelFormat::Bc7RGBASrgb:
+        case CompressedPixelFormat::EacR11Unorm:
+        case CompressedPixelFormat::EacR11Snorm:
+        case CompressedPixelFormat::EacRG11Unorm:
+        case CompressedPixelFormat::EacRG11Snorm:
+        case CompressedPixelFormat::Etc2RGB8Unorm:
+        case CompressedPixelFormat::Etc2RGB8Srgb:
+        case CompressedPixelFormat::Etc2RGB8A1Unorm:
+        case CompressedPixelFormat::Etc2RGB8A1Srgb:
+        case CompressedPixelFormat::Etc2RGBA8Unorm:
+        case CompressedPixelFormat::Etc2RGBA8Srgb:
+        case CompressedPixelFormat::Astc4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6RGBASrgb:
+        case CompressedPixelFormat::Astc8x5RGBAUnorm:
+        case CompressedPixelFormat::Astc8x5RGBASrgb:
+        case CompressedPixelFormat::Astc8x6RGBAUnorm:
+        case CompressedPixelFormat::Astc8x6RGBASrgb:
+        case CompressedPixelFormat::Astc8x8RGBAUnorm:
+        case CompressedPixelFormat::Astc8x8RGBASrgb:
+        case CompressedPixelFormat::Astc10x5RGBAUnorm:
+        case CompressedPixelFormat::Astc10x5RGBASrgb:
+        case CompressedPixelFormat::Astc10x6RGBAUnorm:
+        case CompressedPixelFormat::Astc10x6RGBASrgb:
+        case CompressedPixelFormat::Astc10x8RGBAUnorm:
+        case CompressedPixelFormat::Astc10x8RGBASrgb:
+        case CompressedPixelFormat::Astc10x10RGBAUnorm:
+        case CompressedPixelFormat::Astc10x10RGBASrgb:
+        case CompressedPixelFormat::Astc12x10RGBAUnorm:
+        case CompressedPixelFormat::Astc12x10RGBASrgb:
+        case CompressedPixelFormat::Astc12x12RGBAUnorm:
+        case CompressedPixelFormat::Astc12x12RGBASrgb:
+        case CompressedPixelFormat::Astc3x3x3RGBAUnorm:
+        case CompressedPixelFormat::Astc3x3x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x3x3RGBAUnorm:
+        case CompressedPixelFormat::Astc4x3x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x4x3RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6x6RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6x6RGBASrgb:
+        case CompressedPixelFormat::PvrtcRGB2bppUnorm:
+        case CompressedPixelFormat::PvrtcRGB2bppSrgb:
+        case CompressedPixelFormat::PvrtcRGBA2bppUnorm:
+        case CompressedPixelFormat::PvrtcRGBA2bppSrgb:
+        case CompressedPixelFormat::PvrtcRGB4bppUnorm:
+        case CompressedPixelFormat::PvrtcRGB4bppSrgb:
+        case CompressedPixelFormat::PvrtcRGBA4bppUnorm:
+        case CompressedPixelFormat::PvrtcRGBA4bppSrgb:
+            return true;
+        case CompressedPixelFormat::Bc6hRGBUfloat:
+        case CompressedPixelFormat::Bc6hRGBSfloat:
+        case CompressedPixelFormat::Astc4x4RGBAF:
+        case CompressedPixelFormat::Astc5x4RGBAF:
+        case CompressedPixelFormat::Astc5x5RGBAF:
+        case CompressedPixelFormat::Astc6x5RGBAF:
+        case CompressedPixelFormat::Astc6x6RGBAF:
+        case CompressedPixelFormat::Astc8x5RGBAF:
+        case CompressedPixelFormat::Astc8x6RGBAF:
+        case CompressedPixelFormat::Astc8x8RGBAF:
+        case CompressedPixelFormat::Astc10x5RGBAF:
+        case CompressedPixelFormat::Astc10x6RGBAF:
+        case CompressedPixelFormat::Astc10x8RGBAF:
+        case CompressedPixelFormat::Astc10x10RGBAF:
+        case CompressedPixelFormat::Astc12x10RGBAF:
+        case CompressedPixelFormat::Astc12x12RGBAF:
+        case CompressedPixelFormat::Astc3x3x3RGBAF:
+        case CompressedPixelFormat::Astc4x3x3RGBAF:
+        case CompressedPixelFormat::Astc4x4x3RGBAF:
+        case CompressedPixelFormat::Astc4x4x4RGBAF:
+        case CompressedPixelFormat::Astc5x4x4RGBAF:
+        case CompressedPixelFormat::Astc5x5x4RGBAF:
+        case CompressedPixelFormat::Astc5x5x5RGBAF:
+        case CompressedPixelFormat::Astc6x5x5RGBAF:
+        case CompressedPixelFormat::Astc6x6x5RGBAF:
+        case CompressedPixelFormat::Astc6x6x6RGBAF:
+            return false;
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("isCompressedPixelFormatNormalized(): invalid format" << format, {});
+}
+
+bool isCompressedPixelFormatFloatingPoint(const CompressedPixelFormat format) {
+    CORRADE_ASSERT(!isCompressedPixelFormatImplementationSpecific(format),
+        "isCompressedPixelFormatFloatingPoint(): can't determine type of an implementation-specific format" << Debug::hex << compressedPixelFormatUnwrap(format), {});
+
+    /* Yes, this is currently the exact inverse of
+       isCompressedPixelFormatNormalized(), so one function could call the
+       other and negate the result. But keeping it this way in case there's
+       some future integer CompressedPixelFormat, which would be false in both
+       and which would need a new isCompressedPixelFormatIntegral(). */
+
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(format) {
+        case CompressedPixelFormat::Bc6hRGBUfloat:
+        case CompressedPixelFormat::Bc6hRGBSfloat:
+        case CompressedPixelFormat::Astc4x4RGBAF:
+        case CompressedPixelFormat::Astc5x4RGBAF:
+        case CompressedPixelFormat::Astc5x5RGBAF:
+        case CompressedPixelFormat::Astc6x5RGBAF:
+        case CompressedPixelFormat::Astc6x6RGBAF:
+        case CompressedPixelFormat::Astc8x5RGBAF:
+        case CompressedPixelFormat::Astc8x6RGBAF:
+        case CompressedPixelFormat::Astc8x8RGBAF:
+        case CompressedPixelFormat::Astc10x5RGBAF:
+        case CompressedPixelFormat::Astc10x6RGBAF:
+        case CompressedPixelFormat::Astc10x8RGBAF:
+        case CompressedPixelFormat::Astc10x10RGBAF:
+        case CompressedPixelFormat::Astc12x10RGBAF:
+        case CompressedPixelFormat::Astc12x12RGBAF:
+        case CompressedPixelFormat::Astc3x3x3RGBAF:
+        case CompressedPixelFormat::Astc4x3x3RGBAF:
+        case CompressedPixelFormat::Astc4x4x3RGBAF:
+        case CompressedPixelFormat::Astc4x4x4RGBAF:
+        case CompressedPixelFormat::Astc5x4x4RGBAF:
+        case CompressedPixelFormat::Astc5x5x4RGBAF:
+        case CompressedPixelFormat::Astc5x5x5RGBAF:
+        case CompressedPixelFormat::Astc6x5x5RGBAF:
+        case CompressedPixelFormat::Astc6x6x5RGBAF:
+        case CompressedPixelFormat::Astc6x6x6RGBAF:
+            return true;
+        case CompressedPixelFormat::Bc1RGBUnorm:
+        case CompressedPixelFormat::Bc1RGBSrgb:
+        case CompressedPixelFormat::Bc1RGBAUnorm:
+        case CompressedPixelFormat::Bc1RGBASrgb:
+        case CompressedPixelFormat::Bc2RGBAUnorm:
+        case CompressedPixelFormat::Bc2RGBASrgb:
+        case CompressedPixelFormat::Bc3RGBAUnorm:
+        case CompressedPixelFormat::Bc3RGBASrgb:
+        case CompressedPixelFormat::Bc4RUnorm:
+        case CompressedPixelFormat::Bc4RSnorm:
+        case CompressedPixelFormat::Bc5RGUnorm:
+        case CompressedPixelFormat::Bc5RGSnorm:
+        case CompressedPixelFormat::Bc7RGBAUnorm:
+        case CompressedPixelFormat::Bc7RGBASrgb:
+        case CompressedPixelFormat::EacR11Unorm:
+        case CompressedPixelFormat::EacR11Snorm:
+        case CompressedPixelFormat::EacRG11Unorm:
+        case CompressedPixelFormat::EacRG11Snorm:
+        case CompressedPixelFormat::Etc2RGB8Unorm:
+        case CompressedPixelFormat::Etc2RGB8Srgb:
+        case CompressedPixelFormat::Etc2RGB8A1Unorm:
+        case CompressedPixelFormat::Etc2RGB8A1Srgb:
+        case CompressedPixelFormat::Etc2RGBA8Unorm:
+        case CompressedPixelFormat::Etc2RGBA8Srgb:
+        case CompressedPixelFormat::Astc4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6RGBASrgb:
+        case CompressedPixelFormat::Astc8x5RGBAUnorm:
+        case CompressedPixelFormat::Astc8x5RGBASrgb:
+        case CompressedPixelFormat::Astc8x6RGBAUnorm:
+        case CompressedPixelFormat::Astc8x6RGBASrgb:
+        case CompressedPixelFormat::Astc8x8RGBAUnorm:
+        case CompressedPixelFormat::Astc8x8RGBASrgb:
+        case CompressedPixelFormat::Astc10x5RGBAUnorm:
+        case CompressedPixelFormat::Astc10x5RGBASrgb:
+        case CompressedPixelFormat::Astc10x6RGBAUnorm:
+        case CompressedPixelFormat::Astc10x6RGBASrgb:
+        case CompressedPixelFormat::Astc10x8RGBAUnorm:
+        case CompressedPixelFormat::Astc10x8RGBASrgb:
+        case CompressedPixelFormat::Astc10x10RGBAUnorm:
+        case CompressedPixelFormat::Astc10x10RGBASrgb:
+        case CompressedPixelFormat::Astc12x10RGBAUnorm:
+        case CompressedPixelFormat::Astc12x10RGBASrgb:
+        case CompressedPixelFormat::Astc12x12RGBAUnorm:
+        case CompressedPixelFormat::Astc12x12RGBASrgb:
+        case CompressedPixelFormat::Astc3x3x3RGBAUnorm:
+        case CompressedPixelFormat::Astc3x3x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x3x3RGBAUnorm:
+        case CompressedPixelFormat::Astc4x3x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x4x3RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6x6RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6x6RGBASrgb:
+        case CompressedPixelFormat::PvrtcRGB2bppUnorm:
+        case CompressedPixelFormat::PvrtcRGB2bppSrgb:
+        case CompressedPixelFormat::PvrtcRGBA2bppUnorm:
+        case CompressedPixelFormat::PvrtcRGBA2bppSrgb:
+        case CompressedPixelFormat::PvrtcRGB4bppUnorm:
+        case CompressedPixelFormat::PvrtcRGB4bppSrgb:
+        case CompressedPixelFormat::PvrtcRGBA4bppUnorm:
+        case CompressedPixelFormat::PvrtcRGBA4bppSrgb:
+            return false;
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("isCompressedPixelFormatFloatingPoint(): invalid format" << format, {});
+}
+
+bool isCompressedPixelFormatSrgb(const CompressedPixelFormat format) {
+    CORRADE_ASSERT(!isCompressedPixelFormatImplementationSpecific(format),
+        "isCompressedPixelFormatSrgb(): can't determine colorspace of an implementation-specific format" << Debug::hex << compressedPixelFormatUnwrap(format), {});
+
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(format) {
+        case CompressedPixelFormat::Bc1RGBSrgb:
+        case CompressedPixelFormat::Bc1RGBASrgb:
+        case CompressedPixelFormat::Bc2RGBASrgb:
+        case CompressedPixelFormat::Bc3RGBASrgb:
+        case CompressedPixelFormat::Bc7RGBASrgb:
+        case CompressedPixelFormat::Etc2RGB8Srgb:
+        case CompressedPixelFormat::Etc2RGB8A1Srgb:
+        case CompressedPixelFormat::Etc2RGBA8Srgb:
+        case CompressedPixelFormat::Astc4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6RGBASrgb:
+        case CompressedPixelFormat::Astc8x5RGBASrgb:
+        case CompressedPixelFormat::Astc8x6RGBASrgb:
+        case CompressedPixelFormat::Astc8x8RGBASrgb:
+        case CompressedPixelFormat::Astc10x5RGBASrgb:
+        case CompressedPixelFormat::Astc10x6RGBASrgb:
+        case CompressedPixelFormat::Astc10x8RGBASrgb:
+        case CompressedPixelFormat::Astc10x10RGBASrgb:
+        case CompressedPixelFormat::Astc12x10RGBASrgb:
+        case CompressedPixelFormat::Astc12x12RGBASrgb:
+        case CompressedPixelFormat::Astc3x3x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x3x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x4x3RGBASrgb:
+        case CompressedPixelFormat::Astc4x4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x4x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5x4RGBASrgb:
+        case CompressedPixelFormat::Astc5x5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x5x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6x5RGBASrgb:
+        case CompressedPixelFormat::Astc6x6x6RGBASrgb:
+        case CompressedPixelFormat::PvrtcRGB2bppSrgb:
+        case CompressedPixelFormat::PvrtcRGBA2bppSrgb:
+        case CompressedPixelFormat::PvrtcRGB4bppSrgb:
+        case CompressedPixelFormat::PvrtcRGBA4bppSrgb:
+            return true;
+        case CompressedPixelFormat::Bc1RGBUnorm:
+        case CompressedPixelFormat::Bc1RGBAUnorm:
+        case CompressedPixelFormat::Bc2RGBAUnorm:
+        case CompressedPixelFormat::Bc3RGBAUnorm:
+        case CompressedPixelFormat::Bc4RUnorm:
+        case CompressedPixelFormat::Bc4RSnorm:
+        case CompressedPixelFormat::Bc5RGUnorm:
+        case CompressedPixelFormat::Bc5RGSnorm:
+        case CompressedPixelFormat::Bc6hRGBUfloat:
+        case CompressedPixelFormat::Bc6hRGBSfloat:
+        case CompressedPixelFormat::Bc7RGBAUnorm:
+        case CompressedPixelFormat::EacR11Unorm:
+        case CompressedPixelFormat::EacR11Snorm:
+        case CompressedPixelFormat::EacRG11Unorm:
+        case CompressedPixelFormat::EacRG11Snorm:
+        case CompressedPixelFormat::Etc2RGB8Unorm:
+        case CompressedPixelFormat::Etc2RGB8A1Unorm:
+        case CompressedPixelFormat::Etc2RGBA8Unorm:
+        case CompressedPixelFormat::Astc4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4RGBAF:
+        case CompressedPixelFormat::Astc5x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x4RGBAF:
+        case CompressedPixelFormat::Astc5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5RGBAF:
+        case CompressedPixelFormat::Astc6x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x5RGBAF:
+        case CompressedPixelFormat::Astc6x6RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6RGBAF:
+        case CompressedPixelFormat::Astc8x5RGBAUnorm:
+        case CompressedPixelFormat::Astc8x5RGBAF:
+        case CompressedPixelFormat::Astc8x6RGBAUnorm:
+        case CompressedPixelFormat::Astc8x6RGBAF:
+        case CompressedPixelFormat::Astc8x8RGBAUnorm:
+        case CompressedPixelFormat::Astc8x8RGBAF:
+        case CompressedPixelFormat::Astc10x5RGBAUnorm:
+        case CompressedPixelFormat::Astc10x5RGBAF:
+        case CompressedPixelFormat::Astc10x6RGBAUnorm:
+        case CompressedPixelFormat::Astc10x6RGBAF:
+        case CompressedPixelFormat::Astc10x8RGBAUnorm:
+        case CompressedPixelFormat::Astc10x8RGBAF:
+        case CompressedPixelFormat::Astc10x10RGBAUnorm:
+        case CompressedPixelFormat::Astc10x10RGBAF:
+        case CompressedPixelFormat::Astc12x10RGBAUnorm:
+        case CompressedPixelFormat::Astc12x10RGBAF:
+        case CompressedPixelFormat::Astc12x12RGBAUnorm:
+        case CompressedPixelFormat::Astc12x12RGBAF:
+        case CompressedPixelFormat::Astc3x3x3RGBAUnorm:
+        case CompressedPixelFormat::Astc3x3x3RGBAF:
+        case CompressedPixelFormat::Astc4x3x3RGBAUnorm:
+        case CompressedPixelFormat::Astc4x3x3RGBAF:
+        case CompressedPixelFormat::Astc4x4x3RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4x3RGBAF:
+        case CompressedPixelFormat::Astc4x4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc4x4x4RGBAF:
+        case CompressedPixelFormat::Astc5x4x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x4x4RGBAF:
+        case CompressedPixelFormat::Astc5x5x4RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5x4RGBAF:
+        case CompressedPixelFormat::Astc5x5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc5x5x5RGBAF:
+        case CompressedPixelFormat::Astc6x5x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x5x5RGBAF:
+        case CompressedPixelFormat::Astc6x6x5RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6x5RGBAF:
+        case CompressedPixelFormat::Astc6x6x6RGBAUnorm:
+        case CompressedPixelFormat::Astc6x6x6RGBAF:
+        case CompressedPixelFormat::PvrtcRGB2bppUnorm:
+        case CompressedPixelFormat::PvrtcRGBA2bppUnorm:
+        case CompressedPixelFormat::PvrtcRGB4bppUnorm:
+        case CompressedPixelFormat::PvrtcRGBA4bppUnorm:
+            return false;
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("isCompressedPixelFormatSrgb(): invalid format" << format, {});
+}
+
 namespace {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

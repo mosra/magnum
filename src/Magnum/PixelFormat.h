@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::pixelFormatChannelFormat(), @ref Magnum::pixelFormatChannelCount(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatIntegral(), @ref Magnum::isPixelFormatFloatingPoint(), @ref Magnum::isPixelFormatSrgb(), @ref Magnum::isPixelFormatDepthOrStencil(), @ref Magnum::pixelFormat(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
+ * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::pixelFormatChannelFormat(), @ref Magnum::pixelFormatChannelCount(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatIntegral(), @ref Magnum::isPixelFormatFloatingPoint(), @ref Magnum::isPixelFormatSrgb(), @ref Magnum::isPixelFormatDepthOrStencil(), @ref Magnum::pixelFormat(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatNormalized(), @ref Magnum::isCompressedPixelFormatFloatingPoint(), @ref Magnum::isCompressedPixelFormatSrgb(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -840,7 +840,7 @@ For any pixel format, exactly one of @ref isPixelFormatNormalized(),
 @see @ref isPixelFormatImplementationSpecific(),
     @ref isPixelFormatDepthOrStencil(), @ref isPixelFormatSrgb(),
     @ref pixelFormat(PixelFormat, UnsignedInt, bool),
-    @ref isVertexFormatNormalized()
+    @ref isCompressedPixelFormatNormalized(), @ref isVertexFormatNormalized()
 */
 MAGNUM_EXPORT bool isPixelFormatNormalized(PixelFormat format);
 
@@ -877,7 +877,8 @@ For any pixel format, exactly one of @ref isPixelFormatNormalized(),
 @cpp true @ce.
 @see @ref isPixelFormatImplementationSpecific(),
     @ref isPixelFormatDepthOrStencil(), @ref isPixelFormatSrgb(),
-    @ref pixelFormat(PixelFormat, UnsignedInt, bool)
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool),
+    @ref isCompressedPixelFormatFloatingPoint()
 */
 MAGNUM_EXPORT bool isPixelFormatFloatingPoint(PixelFormat format);
 
@@ -890,7 +891,8 @@ function returns @cpp true @ce, @ref isPixelFormatNormalized() also returns
 @cpp true @ce. Expects that the pixel format is *not* implementation-specific
 and not a depth/stencil format.
 @see @ref isPixelFormatImplementationSpecific(),
-    @ref pixelFormat(PixelFormat, UnsignedInt, bool)
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool),
+    @ref isCompressedPixelFormatSrgb()
 */
 MAGNUM_EXPORT bool isPixelFormatSrgb(PixelFormat format);
 
@@ -1013,9 +1015,14 @@ For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.micr
 and import is provided by the @ref Trade::DdsImporter "DdsImporter" plugin; for
 Metal, corresponds to @m_class{m-doc-external} [MTLPixelFormat](https://developer.apple.com/documentation/metal/mtlpixelformat?language=objc).
 See documentation of each value for more information about the mapping.
-@see @ref compressedPixelFormatBlockSize(),
-    @ref compressedPixelFormatBlockDataSize(), @ref PixelFormat,
-    @ref CompressedImage, @ref CompressedImageView
+
+See also @ref compressedPixelFormatBlockSize(),
+@ref compressedPixelFormatBlockDataSize(),
+@ref isCompressedPixelFormatNormalized(),
+@ref isCompressedPixelFormatFloatingPoint() and
+@ref isCompressedPixelFormatSrgb() for querying various aspect of a format.
+@see @ref PixelFormat, @ref CompressedImage, @ref CompressedImageView,
+    @ref VertexFormat
 */
 enum class CompressedPixelFormat: UnsignedInt {
     /* Zero reserved for an invalid format (but not being a named value) */
@@ -2570,6 +2577,56 @@ CORRADE_DEPRECATED("use compressedPixelFormatBlockDataSize() instead") inline Un
     return compressedPixelFormatBlockDataSize(format);
 }
 #endif
+
+/**
+@brief Whether given compressed pixel format is normalized
+@m_since_latest
+
+Returns @cpp true @ce for `*Unorm`, `*Snorm` and `*Srgb` formats,
+@cpp false @ce otherwise. In particular, floating-point formats are *not*
+treated as normalized, even though for example they might commonly have values
+only in the @f$ [0.0, 1.0] @f$ range (or in the @f$ [-1.0, 1.0] @f$ signed
+range). Expects that the pixel format is *not* implementation-specific.
+
+For any compressed pixel format, exactly one of
+@ref isCompressedPixelFormatNormalized() and
+@ref isCompressedPixelFormatFloatingPoint() returns @cpp true @ce.
+@see @ref isCompressedPixelFormatImplementationSpecific(),
+    @ref isCompressedPixelFormatSrgb(), @ref isPixelFormatNormalized(),
+    @ref isVertexFormatNormalized()
+*/
+MAGNUM_EXPORT bool isCompressedPixelFormatNormalized(CompressedPixelFormat format);
+
+/**
+@brief Whether given compressed pixel format is floating-point
+@m_since_latest
+
+Returns @cpp true @ce for `*F` formats, @cpp false @ce otherwise. In
+particular, normalized integer formats are *not* treated as floating-point,
+even though they get expanded to the @f$ [0.0, 1.0] @f$ or @f$ [-1.0, 1.0] @f$
+floating-point range in shaders. Expects that the pixel format is *not*
+implementation-specific.
+
+For any compressed pixel format, exactly one of
+@ref isCompressedPixelFormatNormalized() and
+@ref isCompressedPixelFormatFloatingPoint() returns @cpp true @ce.
+@see @ref isCompressedPixelFormatImplementationSpecific(),
+    @ref isCompressedPixelFormatSrgb(), @ref isPixelFormatFloatingPoint()
+*/
+MAGNUM_EXPORT bool isCompressedPixelFormatFloatingPoint(CompressedPixelFormat format);
+
+/**
+@brief Whether given compressed pixel format is sRGB
+@m_since_latest
+
+Returns @cpp true @ce for `*Srgb` formats, @cpp false @ce otherwise. If this
+function returns @cpp true @ce, @ref isCompressedPixelFormatNormalized() also
+returns @cpp true @ce. Expects that the pixel format is *not*
+implementation-specific.
+@see @ref isCompressedPixelFormatImplementationSpecific(),
+    @ref isPixelFormatSrgb()
+*/
+MAGNUM_EXPORT bool isCompressedPixelFormatSrgb(CompressedPixelFormat format);
 
 /** @debugoperatorenum{CompressedPixelFormat} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);
