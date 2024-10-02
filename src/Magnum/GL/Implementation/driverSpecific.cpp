@@ -762,6 +762,52 @@ void Context::setupDriverWorkarounds() {
     #endif
     #endif
 
+    /* WEBGL_compressed_texture_astc has an extremely silly way of reporting
+       whether the LDR or HDR profile is supported. All other platforms simply
+       expose a _hdr / _ldr variants of the extension, here I have to call some
+       fucking getter. Restore sanity and provide this info in fake
+       Magnum-specific MAGNUM_compressed_texture_astc_ldr / _hdr extensions
+       instead.
+
+       What's the most funny about this is that the extension at
+        https://registry.khronos.org/webgl/extensions/WEBGL_compressed_texture_astc/
+       explicitly says that
+        The intent of the getSupportedProfiles function is to allow easy
+        reconstruction of the underlying OpenGL or OpenGL ES extension strings
+        for environments like Emscripten, by prepending the string GL_KHR_texture_compression_astc_ to the returned profile names.
+       Which ... is a noble _intent_, but it only misses one small thing, to
+       have someone actually TELL THE EMSCRIPTEN DEVS TO IMPLEMENT SUCH A
+       THING!!! Which of course never happened. Since 2015. Goddamit.
+
+       And even then, still, why couldn't you just do it like ALL OTHER
+       PLATFORMS? WHY SUCH A STUPID SPECIAL CASE?! */
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(isExtensionSupported<Extensions::WEBGL::compressed_texture_astc>()) {
+        /* Unlike other EM_ASM() macros, this one isn't put into a JS library
+           as it neither has any dependencies nor has code that may benefit
+           from settings-based preprocessing done for minification */
+        #pragma GCC diagnostic push
+        /* Fun. It's either -Wdollar-in-identifier-extension if an argument is
+           used, or -Wgnu-zero-variadic-macro-arguments if not, OR
+           -Wc++20-extensions if it's a different Clang version. TRASH FIRE. */
+        #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+        const UnsignedInt which = EM_ASM_INT({
+            /* If this feels like peeking into some undocumented Emscripten
+               internals that are likely going to change randomly at some point
+               in the future, it's because it's indeed peeking into some
+               undocumented Emscripten internals that are likely going to
+               change randomly at some point in the future. HAVE FUN. */
+            var supported = GL.contexts[$0].GLctx.getExtension('WEBGL_compressed_texture_astc').getSupportedProfiles();
+            return
+                (supported.indexOf('ldr') >= 0 ? 1 : 0)|
+                (supported.indexOf('hdr') >= 0 ? 2 : 0);
+        }, emscripten_webgl_get_current_context());
+        #pragma GCC diagnostic pop
+        _extensionStatus.set(Extensions::MAGNUM::compressed_texture_astc_ldr::Index, which & 0x01);
+        _extensionStatus.set(Extensions::MAGNUM::compressed_texture_astc_hdr::Index, which & 0x02);
+    }
+    #endif
+
     #undef _setRequiredVersion
 
     #ifndef MAGNUM_TARGET_GLES

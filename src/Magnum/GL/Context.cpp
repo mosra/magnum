@@ -300,6 +300,8 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::texture_norm16{},
     #endif
     Extensions::KHR::parallel_shader_compile{},
+    Extensions::MAGNUM::compressed_texture_astc_hdr{},
+    Extensions::MAGNUM::compressed_texture_astc_ldr{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::NV::shader_noperspective_interpolation{},
     Extensions::OES::draw_buffers_indexed{},

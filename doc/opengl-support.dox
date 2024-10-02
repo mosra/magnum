@@ -580,6 +580,7 @@ Extension                                   | Status
 @webgl_extension{EXT,depth_clamp}           | done
 @webgl_extension{EXT,texture_mirror_clamp_to_edge} | done
 @webgl_extension{KHR,parallel_shader_compile} | done
+`MAGNUM_compressed_texture_astc_ldr`, \n `MAGNUM_compressed_texture_astc_hdr` \n @m_span{m-text m-dim} Pseudo-extension denoting support for \n @webgl_extension{WEBGL,compressed_texture_astc} LDR and HDR profile @m_endspan | done
 @webgl_extension{NV,shader_noperspective_interpolation} | done (shading language only)
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OES,draw_buffers_indexed} \n (originally named `EXT_draw_buffers_indexed`) | done

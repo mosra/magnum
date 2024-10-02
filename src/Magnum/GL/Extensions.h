@@ -365,6 +365,7 @@ namespace ANGLE {
     /* WEBGL_compressed_texture_etc1 (24) not exposed as the ES
        OES_compressed_ETC1_RGB8_texture extension isn't exposed either */
     _extension(49,WEBGL,compressed_texture_etc,     GLES200,    None) // #29
+    /* Also MAGNUM_compressed_texture_astc{_ldr,_hdr} below */
     _extension(50,WEBGL,compressed_texture_astc,    GLES200,    None) // #30
     _extension(51,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
     _extension(52,WEBGL,multi_draw,                 GLES200,    None) // #40
@@ -390,6 +391,8 @@ namespace ANGLE {
     #ifndef MAGNUM_TARGET_GLES2
     _extension(61,MAGNUM,shader_vertex_id,          GLES300, GLES300)
     #endif
+    _extension(62,MAGNUM,compressed_texture_astc_ldr,GLES200,   None)
+    _extension(63,MAGNUM,compressed_texture_astc_hdr,GLES200,   None)
 }
 #else
 namespace ANDROID {
