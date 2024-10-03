@@ -923,50 +923,54 @@ constexpr Vector3 QuadPositions[] {
                         -> ABC ACD (trivial case)
         A    B
     */
-    {0.0f, 0.0f, 0.0f}, {},     // 0
-    {1.0f, 0.0f, 0.0f},         // 2
-    {1.0f, 1.0f, 0.0f},         // 3
-    {0.0f, 1.0f, 0.0f},         // 4
+    {0.0f, 0.0f, 0.0f}, {},     // A 0
+    {1.0f, 0.0f, 0.0f},         // B 2
+    {1.0f, 1.0f, 0.0f},         // C 3
+    {0.0f, 1.0f, 0.0f},         // D 4
 
     /*
              D
         A         C     -> DAB DBC (shorter diagonal)
              B
     */
-    { 0.0f, 0.0f, 1.0f},        // 5
-    { 5.0f, 0.0f, 0.0f},        // 6
-    {10.0f, 0.0f, 1.0f}, {},    // 7
-    { 5.0f, 0.0f, 2.0f},        // 9
+    { 0.0f, 0.0f, 1.0f},        // A 5
+    { 5.0f, 0.0f, 0.0f},        // B 6
+    {10.0f, 0.0f, 1.0f}, {},    // C 7
+    { 5.0f, 0.0f, 2.0f},        // D 9
 
     /*
                 D
         A     C         -> ABC ACD (concave)
                 B
     */
-    {0.0f, 0.5f, 0.0f},         // 10
-    {5.0f, 0.0f, 0.0f}, {}, {}, // 11
-    {4.0f, 0.5f, 0.0f},         // 14
-    {5.0f, 1.0f, 0.0f},         // 15
+    {0.0f, 0.5f, 0.0f},         // A 10
+    {5.0f, 0.0f, 0.0f}, {}, {}, // B 11
+    {4.0f, 0.5f, 0.0f},         // C 14
+    {5.0f, 1.0f, 0.0f},         // D 15
 
     /*
                 C
         D     B         -> DAB DBC (concave, non-planar)
                 A
     */
-    {5.0f, 0.0f, 0.5f},         // 16
-    {4.0f, 0.5f, 1.0f},         // 17
-    {5.0f, 1.0f, 0.5f},         // 18
-    {0.0f, 0.5f, 1.0f},         // 19
+    {5.0f, 0.0f, 0.5f},         // A 16
+    /* This used to be 1.0 in Z, which resulted in the dabDbcOppositeDirection
+       dot product being very close to zero due to the cross products being
+       perpendicular, which caused the test to fail depending on a target
+       architecture. */
+    {4.0f, 0.5f, 0.9f},         // B 17
+    {5.0f, 1.0f, 0.5f},         // C 18
+    {0.0f, 0.5f, 1.0f},         // D 19
 
     /*
                 C
         D     B         -> ABC ACD (concave, non-planar, ambiguous -> picking
                 A                   shorter diagonal)
     */
-    {5.0f, 0.0f, 0.5f},         // 20
-    {4.0f, 0.5f, 2.0f},         // 21
-    {5.0f, 1.0f, 0.5f},         // 22
-    {0.0f, 0.5f, 1.0f},         // 23
+    {5.0f, 0.0f, 0.5f},         // A 20
+    {4.0f, 0.5f, 2.0f},         // B 21
+    {5.0f, 1.0f, 0.5f},         // C 22
+    {0.0f, 0.5f, 1.0f},         // D 23
 };
 
 constexpr UnsignedInt QuadIndices[] {
