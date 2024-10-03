@@ -152,10 +152,11 @@ const struct {
 
 const struct {
     MeshPrimitive primitive;
+    MeshPrimitive expectedPrimitive;
     Containers::Array<UnsignedInt> expectedIndices;
     Containers::Array<UnsignedInt> expectedIndexedIndices;
 } MeshDataData[] {
-    {MeshPrimitive::LineStrip, {InPlaceInit, {
+    {MeshPrimitive::LineStrip, MeshPrimitive::Lines, {InPlaceInit, {
             0, 1,
             1, 2,
             2, 3,
@@ -166,7 +167,7 @@ const struct {
             72, 93,
             93, 44
         }}},
-    {MeshPrimitive::LineLoop, {InPlaceInit, {
+    {MeshPrimitive::LineLoop, MeshPrimitive::Lines, {InPlaceInit, {
             0, 1,
             1, 2,
             2, 3,
@@ -179,7 +180,7 @@ const struct {
             93, 44,
             44, 60
         }}},
-    {MeshPrimitive::TriangleStrip, {InPlaceInit, {
+    {MeshPrimitive::TriangleStrip, MeshPrimitive::Triangles, {InPlaceInit, {
             0, 1, 2,
             2, 1, 3, /* Reversed */
             2, 3, 4
@@ -188,7 +189,7 @@ const struct {
             72, 21, 93, /* Reversed */
             72, 93, 44
         }}},
-    {MeshPrimitive::TriangleFan, {InPlaceInit, {
+    {MeshPrimitive::TriangleFan, MeshPrimitive::Triangles, {InPlaceInit, {
             0, 1, 2,
             0, 2, 3,
             0, 3, 4
@@ -1110,6 +1111,7 @@ void GenerateIndicesTest::generateIndicesMeshData() {
     }};
 
     Trade::MeshData out = generateIndices(mesh);
+    CORRADE_COMPARE(out.primitive(), data.expectedPrimitive);
     CORRADE_VERIFY(out.isIndexed());
     CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
     CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), data.expectedIndices,
@@ -1172,6 +1174,7 @@ template<class T> void GenerateIndicesTest::generateIndicesMeshDataIndexed() {
         }};
 
     Trade::MeshData out = generateIndices(mesh);
+    CORRADE_COMPARE(out.primitive(), data.expectedPrimitive);
     CORRADE_VERIFY(out.isIndexed());
     CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
     CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), data.expectedIndexedIndices,
@@ -1227,6 +1230,7 @@ void GenerateIndicesTest::generateIndicesMeshDataEmpty() {
     }};
 
     Trade::MeshData out = generateIndices(mesh);
+    CORRADE_COMPARE(out.primitive(), data.expectedPrimitive);
     CORRADE_VERIFY(out.isIndexed());
     CORRADE_COMPARE(out.indexCount(), 0);
     CORRADE_COMPARE(out.attributeCount(), 3);
@@ -1261,6 +1265,7 @@ void GenerateIndicesTest::generateIndicesMeshDataMove() {
                 Containers::stridedArrayView(vertices,
                     &vertices[0].textureCoordinates, 5, sizeof(Vertex))}
         }});
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(out.isIndexed());
     CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
     CORRADE_COMPARE_AS(out.indices<UnsignedInt>(),
@@ -1286,6 +1291,7 @@ void GenerateIndicesTest::generateIndicesMeshDataMove() {
 
 void GenerateIndicesTest::generateIndicesMeshDataNoAttributes() {
     Trade::MeshData out = generateIndices(Trade::MeshData{MeshPrimitive::TriangleStrip, 4});
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(out.isIndexed());
     CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
     CORRADE_COMPARE_AS(out.indices<UnsignedInt>(),
