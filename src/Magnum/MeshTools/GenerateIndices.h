@@ -508,15 +508,21 @@ MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedAr
 @brief Convert a mesh to plain indexed lines or triangles
 @m_since{2020,06}
 
-Expects that @p mesh is one of @ref MeshPrimitive::LineStrip,
+If @p mesh is one of @ref MeshPrimitive::LineStrip,
 @ref MeshPrimitive::LineLoop, @ref MeshPrimitive::TriangleStrip or
-@ref MeshPrimitive::TriangleFan primitives and has either @cpp 0 @ce vertices
-or at least @cpp 2 @ce vertices for a line-based primitive and @cpp 3 @ce
-vertices for a triangle-based primitive. If it's indexed, the index type is
-expected to be non-implementation-specific. Calls one of
+@ref MeshPrimitive::TriangleFan primitives, calls one of
 @ref generateLineStripIndices(), @ref generateLineLoopIndices(),
 @ref generateTriangleStripIndices() or @ref generateTriangleFanIndices()
-functions or their indexed overloads to generate the index buffer.
+functions or their indexed overloads to generate the index buffer. In that case
+expects that the mesh has either @cpp 0 @ce vertices or at least @cpp 2 @ce
+vertices for a line-based primitive and @cpp 3 @ce vertices for a
+triangle-based primitive. If @p mesh is a different
+@relativeref{Magnum,MeshPrimitive}, it's passed through unchanged if already
+indexed, and with indices generated using @ref generateTrivialIndices()
+otherwise.
+
+If @p mesh is already indexed, the index type is expected to be
+non-implementation-specific.
 
 The resulting mesh always has @ref MeshIndexType::UnsignedInt, call
 @ref compressIndices(const Trade::MeshData&, MeshIndexType) on the result to
@@ -533,8 +539,9 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(const Trade::MeshData& m
 
 Compared to @ref generateIndices(const Trade::MeshData&) this function can
 transfer ownership of @p mesh vertex buffer (in case it is owned) to the
-returned instance instead of making a copy of it. Attribute data is copied
-always.
+returned instance instead of making a copy of it, and index buffer as well if
+it's owned, doesn't need expanding and is already with
+@ref MeshIndexType::UnsignedInt. Attribute data is copied always.
 @see @ref Trade::MeshData::vertexDataFlags()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(Trade::MeshData&& mesh);

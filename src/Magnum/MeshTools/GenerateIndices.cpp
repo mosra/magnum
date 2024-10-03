@@ -602,8 +602,9 @@ Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
     } else if(mesh.primitive() == MeshPrimitive::TriangleStrip ||
               mesh.primitive() == MeshPrimitive::TriangleFan) {
         minVertexCount = 3;
-    } else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateIndices(): invalid primitive" << mesh.primitive(),
-        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    } else {
+        minVertexCount = 1;
+    }
     CORRADE_ASSERT(vertexCount == 0 || vertexCount >= minVertexCount,
         "MeshTools::generateIndices(): expected either zero or at least" << minVertexCount << "vertices for" << mesh.primitive() << Debug::nospace << ", got" << vertexCount,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
@@ -658,7 +659,22 @@ Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
             generateTriangleFanIndicesInto(mesh.indices(), Containers::arrayCast<UnsignedInt>(indexData));
         else
             generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
-    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    } else {
+        primitive = mesh.primitive();
+        /* If the mesh is indexed, transfer the index data as-is if possible
+           and it's the right type already */
+        if(mesh.isIndexed()) {
+            if(mesh.indexDataFlags() >= Trade::DataFlag::Owned && mesh.indexType() == MeshIndexType::UnsignedInt) {
+                indexData = mesh.releaseIndexData();
+            } else {
+                indexData = Containers::Array<char>{NoInit, mesh.indexCount()*sizeof(UnsignedInt)};
+                mesh.indicesInto(Containers::arrayCast<UnsignedInt>(indexData));
+            }
+        } else {
+            indexData = Containers::Array<char>{NoInit, vertexCount*sizeof(UnsignedInt)};
+            generateTrivialIndicesInto(Containers::arrayCast<UnsignedInt>(indexData));
+        }
+    }
 
     Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};
     return Trade::MeshData{primitive, Utility::move(indexData), indices,

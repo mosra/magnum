@@ -29,6 +29,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
@@ -86,7 +87,10 @@ struct GenerateIndicesTest: TestSuite::Tester {
     void generateIndicesMeshDataEmpty();
     void generateIndicesMeshDataMove();
     void generateIndicesMeshDataNoAttributes();
-    void generateIndicesMeshDataInvalidPrimitive();
+    void generateIndicesMeshDataTrivial();
+    template<class T> void generateIndicesMeshDataTrivialIndexed();
+    void generateIndicesMeshDataTrivialIndexedMove();
+    void generateIndicesMeshDataTrivialIndexedMoveDifferentIndexType();
     void generateIndicesMeshDataInvalidVertexCount();
     void generateIndicesMeshDataImplementationSpecificIndexType();
 };
@@ -283,7 +287,12 @@ GenerateIndicesTest::GenerateIndicesTest() {
 
     addTests({&GenerateIndicesTest::generateIndicesMeshDataMove,
               &GenerateIndicesTest::generateIndicesMeshDataNoAttributes,
-              &GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive});
+              &GenerateIndicesTest::generateIndicesMeshDataTrivial,
+              &GenerateIndicesTest::generateIndicesMeshDataTrivialIndexed<UnsignedInt>,
+              &GenerateIndicesTest::generateIndicesMeshDataTrivialIndexed<UnsignedShort>,
+              &GenerateIndicesTest::generateIndicesMeshDataTrivialIndexed<UnsignedByte>,
+              &GenerateIndicesTest::generateIndicesMeshDataTrivialIndexedMove,
+              &GenerateIndicesTest::generateIndicesMeshDataTrivialIndexedMoveDifferentIndexType});
 
     addInstancedTests({&GenerateIndicesTest::generateIndicesMeshDataInvalidVertexCount},
         Containers::arraySize(MeshDataInvalidVertexCountData));
@@ -1303,16 +1312,142 @@ void GenerateIndicesTest::generateIndicesMeshDataNoAttributes() {
     CORRADE_COMPARE(out.attributeCount(), 0);
 }
 
-void GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+void GenerateIndicesTest::generateIndicesMeshDataTrivial() {
+    const Vector2 positions[]{
+        {1.5f, 0.3f},
+        {2.5f, 1.3f},
+        {3.5f, 2.3f},
+        {4.5f, 3.3f},
+        {5.5f, 4.3f},
+    };
 
-    Trade::MeshData mesh{MeshPrimitive::Triangles, 2};
+    /* Should work with just any primitive, not just Lines etc */
+    Trade::MeshData mesh{MeshPrimitive::Meshlets, {}, positions, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::arrayView(positions)},
+    }};
 
-    std::ostringstream out;
-    Error redirectError{&out};
-    generateIndices(mesh);
-    CORRADE_COMPARE(out.str(),
-        "MeshTools::generateIndices(): invalid primitive MeshPrimitive::Triangles\n");
+    Trade::MeshData out = generateIndices(mesh);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Meshlets);
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
+        0, 1, 2, 3, 4
+    }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(out.attributeCount(), 1);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.5f, 0.3f}, {2.5f, 1.3f}, {3.5f, 2.3f}, {4.5f, 3.3f}, {5.5f, 4.3f}
+        }), TestSuite::Compare::Container);
+}
+
+template<class T> void GenerateIndicesTest::generateIndicesMeshDataTrivialIndexed() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const Vector2 positions[]{
+        {1.5f, 0.3f},
+        {2.5f, 1.3f},
+        {3.5f, 2.3f},
+        {4.5f, 3.3f},
+        {5.5f, 4.3f},
+    };
+
+    const T indices[]{60, 21, 72, 93};
+
+    /* Should work with just any primitive, not just Lines etc */
+    Trade::MeshData mesh{MeshPrimitive::Meshlets,
+        {}, indices, Trade::MeshIndexData{indices},
+        {}, positions, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::arrayView(positions)},
+        }};
+
+    Trade::MeshData out = generateIndices(mesh);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Meshlets);
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
+        60, 21, 72, 93
+    }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(out.attributeCount(), 1);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.5f, 0.3f}, {2.5f, 1.3f}, {3.5f, 2.3f}, {4.5f, 3.3f}, {5.5f, 4.3f}
+        }), TestSuite::Compare::Container);
+}
+
+void GenerateIndicesTest::generateIndicesMeshDataTrivialIndexedMove() {
+    const Vector2 positions[]{
+        {1.5f, 0.3f},
+        {2.5f, 1.3f},
+        {3.5f, 2.3f},
+        {4.5f, 3.3f},
+        {5.5f, 4.3f},
+    };
+
+    Containers::Array<char> indexData{4*sizeof(UnsignedInt)};
+    Containers::ArrayView<UnsignedInt> indices = Containers::arrayCast<UnsignedInt>(indexData);
+    Utility::copy({60, 21, 72, 93}, indices);
+
+    Trade::MeshData out = generateIndices(Trade::MeshData{meshPrimitiveWrap(0xcaca),
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        {}, positions, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::arrayView(positions)},
+        }});
+    CORRADE_COMPARE(out.primitive(), meshPrimitiveWrap(0xcaca));
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
+        60, 21, 72, 93
+    }), TestSuite::Compare::Container);
+
+    /* The index data should be moved, not copied */
+    CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
+
+    CORRADE_COMPARE(out.attributeCount(), 1);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.5f, 0.3f}, {2.5f, 1.3f}, {3.5f, 2.3f}, {4.5f, 3.3f}, {5.5f, 4.3f}
+        }), TestSuite::Compare::Container);
+}
+
+void GenerateIndicesTest::generateIndicesMeshDataTrivialIndexedMoveDifferentIndexType() {
+    const Vector2 positions[]{
+        {1.5f, 0.3f},
+        {2.5f, 1.3f},
+        {3.5f, 2.3f},
+        {4.5f, 3.3f},
+        {5.5f, 4.3f},
+    };
+
+    Containers::Array<char> indexData{4*sizeof(UnsignedShort)};
+    Containers::ArrayView<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({60, 21, 72, 93}, indices);
+
+    Trade::MeshData out = generateIndices(Trade::MeshData{MeshPrimitive::Points,
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        {}, positions, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::arrayView(positions)},
+        }});
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Points);
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
+        60, 21, 72, 93
+    }), TestSuite::Compare::Container);
+
+    /* In this case it has to be copied because the type is different */
+    CORRADE_VERIFY(out.indexData().data() != static_cast<void*>(indices.data()));
+
+    CORRADE_COMPARE(out.attributeCount(), 1);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.5f, 0.3f}, {2.5f, 1.3f}, {3.5f, 2.3f}, {4.5f, 3.3f}, {5.5f, 4.3f}
+        }), TestSuite::Compare::Container);
 }
 
 void GenerateIndicesTest::generateIndicesMeshDataInvalidVertexCount() {
