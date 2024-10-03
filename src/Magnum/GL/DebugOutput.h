@@ -437,13 +437,9 @@ class MAGNUM_GL_EXPORT DebugOutput {
 
     private:
         static void setEnabledInternal(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
-        static MAGNUM_GL_LOCAL void controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
-        #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL void controlImplementationKhrDesktopES32(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void controlImplementationKhrES(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
-        #endif
+        /* This one is combined with direct pointers to the GL functions, so
+           needs a __stdcall on Windows to compile properly on 32 bits */
+        static MAGNUM_GL_LOCAL void APIENTRY controlImplementationNoOp(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
 
         static MAGNUM_GL_LOCAL void callbackImplementationNoOp(Callback callback);
         #ifndef MAGNUM_TARGET_GLES2
@@ -616,16 +612,12 @@ class MAGNUM_GL_EXPORT DebugMessage {
         DebugMessage() = delete;
 
     private:
-        static MAGNUM_GL_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::StringView);
-        #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL void insertImplementationKhrDesktopES32(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::StringView string);
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void insertImplementationKhrES(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::StringView string);
-        #endif
-        static MAGNUM_GL_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::StringView string);
+        /* These are combined with direct pointers to the GL functions, so need
+           a __stdcall on Windows to compile properly on 32 bits */
+        static MAGNUM_GL_LOCAL void APIENTRY insertImplementationNoOp(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message);
+        static MAGNUM_GL_LOCAL void APIENTRY insertImplementationExt(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message);
         #ifndef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::StringView string);
+        static MAGNUM_GL_LOCAL void APIENTRY insertImplementationGremedy(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message);
         #endif
 };
 
@@ -799,23 +791,11 @@ class MAGNUM_GL_EXPORT DebugGroup {
         void pop();
 
     private:
-        static MAGNUM_GL_LOCAL void pushImplementationNoOp(Source source, UnsignedInt id, Containers::StringView message);
-        #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL void pushImplementationKhrDesktopES32(Source source, UnsignedInt id, Containers::StringView message);
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void pushImplementationKhrES(Source source, UnsignedInt id, Containers::StringView message);
-        #endif
-        static MAGNUM_GL_LOCAL void pushImplementationExt(Source source, UnsignedInt id, Containers::StringView message);
-
-        static MAGNUM_GL_LOCAL void popImplementationNoOp();
-        #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL void popImplementationKhrDesktopES32();
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void popImplementationKhrES();
-        #endif
-        static MAGNUM_GL_LOCAL void popImplementationExt();
+        /* These are combined with direct pointers to the GL functions, so need
+           a __stdcall on Windows to compile properly on 32 bits */
+        static MAGNUM_GL_LOCAL void APIENTRY pushImplementationNoOp(GLenum source, GLuint id, GLsizei length, const GLchar* message);
+        static MAGNUM_GL_LOCAL void APIENTRY pushImplementationExt(GLenum source, GLuint id, GLsizei length, const GLchar* message);
+        static MAGNUM_GL_LOCAL void APIENTRY popImplementationNoOp();
 
         bool _active;
 };

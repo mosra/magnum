@@ -39,12 +39,14 @@ struct DebugState {
 
     Containers::String(*getLabelImplementation)(GLenum, GLuint);
     void(*labelImplementation)(GLenum, GLuint, Containers::StringView);
-
-    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, Containers::StringView);
-    void(*controlImplementation)(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
     void(*callbackImplementation)(DebugOutput::Callback);
-    void(*pushGroupImplementation)(DebugGroup::Source, UnsignedInt, Containers::StringView);
-    void(*popGroupImplementation)();
+
+    /* These are direct pointers to the GL functions, so need a __stdcall on
+       Windows to compile properly on 32 bits */
+    void(APIENTRY *messageInsertImplementation)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*);
+    void(APIENTRY *controlImplementation)(GLenum, GLenum, GLenum, GLsizei, const GLuint*, GLboolean);
+    void(APIENTRY *pushGroupImplementation)(GLenum, GLuint, GLsizei, const GLchar*);
+    void(APIENTRY *popGroupImplementation)(void);
 
     GLint maxLabelLength, maxLoggedMessages, maxMessageLength, maxStackDepth;
     struct MessageCallback {

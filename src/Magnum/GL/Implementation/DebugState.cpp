@@ -51,11 +51,11 @@ DebugState::DebugState(Context& context, Containers::StaticArrayView<Implementat
 
         getLabelImplementation = &AbstractObject::getLabelImplementationKhrDesktopES32;
         labelImplementation = &AbstractObject::labelImplementationKhrDesktopES32;
-        controlImplementation = &DebugOutput::controlImplementationKhrDesktopES32;
         callbackImplementation = &DebugOutput::callbackImplementationKhrDesktopES32;
-        messageInsertImplementation = &DebugMessage::insertImplementationKhrDesktopES32;
-        pushGroupImplementation = &DebugGroup::pushImplementationKhrDesktopES32;
-        popGroupImplementation = &DebugGroup::popImplementationKhrDesktopES32;
+        controlImplementation = glDebugMessageControl;
+        messageInsertImplementation = glDebugMessageInsert;
+        pushGroupImplementation = glPushDebugGroup;
+        popGroupImplementation = glPopDebugGroup;
 
     } else
     #endif
@@ -66,11 +66,11 @@ DebugState::DebugState(Context& context, Containers::StaticArrayView<Implementat
 
         getLabelImplementation = &AbstractObject::getLabelImplementationKhrES;
         labelImplementation = &AbstractObject::labelImplementationKhrES;
-        controlImplementation = &DebugOutput::controlImplementationKhrES;
         callbackImplementation = &DebugOutput::callbackImplementationKhrES;
-        messageInsertImplementation = &DebugMessage::insertImplementationKhrES;
-        pushGroupImplementation = &DebugGroup::pushImplementationKhrES;
-        popGroupImplementation = &DebugGroup::popImplementationKhrES;
+        controlImplementation = glDebugMessageControlKHR;
+        messageInsertImplementation = glDebugMessageInsertKHR;
+        pushGroupImplementation = glPushDebugGroupKHR;
+        popGroupImplementation = glPopDebugGroupKHR;
 
     } else
     #endif
@@ -91,7 +91,7 @@ DebugState::DebugState(Context& context, Containers::StaticArrayView<Implementat
                        Extensions::EXT::debug_marker::string();
 
             pushGroupImplementation = &DebugGroup::pushImplementationExt;
-            popGroupImplementation = &DebugGroup::popImplementationExt;
+            popGroupImplementation = glPopGroupMarkerEXT;
             messageInsertImplementation = &DebugMessage::insertImplementationExt;
         #ifndef MAGNUM_TARGET_GLES
         } else if(context.isExtensionSupported<Extensions::GREMEDY::string_marker>()) {
