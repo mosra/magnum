@@ -598,8 +598,8 @@ Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
     #endif
 
-    /* Transfer vertex / attribute data as-is, as those don't need any changes.
-       Release if possible. */
+    /* Transfer vertex data as-is, as those don't need any changes. Release if
+       possible. */
     const Containers::ArrayView<const char> originalVertexData = mesh.vertexData();
     Containers::Array<char> vertexData;
     if(mesh.vertexDataFlags() & Trade::DataFlag::Owned)

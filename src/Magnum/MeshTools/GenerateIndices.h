@@ -101,8 +101,8 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineStripIndices(
 @brief Create index buffer for a line strip primitive into an existing array
 @m_since{2020,06}
 
-A variant of @ref generateLineStripIndicesInto() that fills existing memory
-instead of allocating a new array. The @p vertexCount is expected to be either
+A variant of @ref generateLineStripIndices() that fills existing memory instead
+of allocating a new array. The @p vertexCount is expected to be either
 @cpp 0 @ce or at least @cpp 2 @ce, the @p output array is expected to have a
 size of @cpp 2*(vertexCount - 1) @ce. Primitive restart is not supported. If
 the mesh is already indexed, use @ref generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&)
@@ -193,8 +193,8 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(c
 @brief Create index buffer for a line loop primitive into an existing array
 @m_since{2020,06}
 
-A variant of @ref generateLineLoopIndicesInto() that fills existing memory
-instead of allocating a new array. The @p vertexCount is expected to be either
+A variant of @ref generateLineLoopIndices() that fills existing memory instead
+of allocating a new array. The @p vertexCount is expected to be either
 @cpp 0 @ce or at least @cpp 2 @ce, the @p output array is expected to have a
 size of @cpp 2*vertexCount @ce. Primitive restart is not supported.If
 the mesh is already indexed, use @ref generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&)
@@ -286,7 +286,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndi
 @brief Create index buffer for a triangle strip primitive into an existing array
 @m_since{2020,06}
 
-A variant of @ref generateTriangleStripIndicesInto() that fills existing memory
+A variant of @ref generateTriangleStripIndices() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be either
 @cpp 0 @ce or at least @cpp 3 @ce, the @p output array is expected to have a
 size of @cpp 3*(vertexCount - 2) @ce. Primitive restart is not supported. If
@@ -379,7 +379,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleFanIndice
 @brief Create index buffer for a triangle fan primitive into an existing array
 @m_since{2020,06}
 
-A variant of @ref generateTriangleFanIndicesInto() that fills existing memory
+A variant of @ref generateTriangleFanIndices() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be either
 @cpp 0 @ce or at least @cpp 3 @ce, the @p output array is expected to have a
 size of @cpp 3*(vertexCount - 2) @ce. Primitive restart is not supported. If
