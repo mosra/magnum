@@ -1133,13 +1133,17 @@ inverse.
     info in all files, replacing existing `Copyright © ...` with
     `Copyright © ..., 20XZ` in the root directory of every project, so nothing
     gets left out
+    -   If the line gets over 79 characters, wrap the name on the new line
+        where the first letter is aligned under the `©`
 3.  Examples use partially MIT (mainly in docs) and partially UNLICENSE,
     replace `... —` with `..., 20XZ —` there as well
 4.  Copy all `Find*.cmake` modules to dependent projects to update the
     copyright year in these as well
 5.  Update other occurrences by hand:
-    -   `package/debian/copyright`
+    -   `COPYING`
     -   `doc/conf.py`
+    -   `doc/mainpage.dox`
+    -   `package/debian/copyright`
     -   All flextGL `*.template` files in `src/external/OpenGL` and
         `src/external/Vulkan` because wheezy template needs the `@` escaped to
         `@@`
