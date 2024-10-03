@@ -84,6 +84,17 @@ UnsignedInt primitiveCount(const MeshPrimitive primitive, const UnsignedInt elem
     CORRADE_ASSERT_UNREACHABLE("MeshTools::primitiveCount(): invalid primitive" << primitive, {});
 }
 
+void generateTrivialIndicesInto(const Containers::StridedArrayView1D<UnsignedInt>& output) {
+    for(std::size_t i = 0; i != output.size(); ++i)
+        output[i] = i;
+}
+
+Containers::Array<UnsignedInt> generateTrivialIndices(const UnsignedInt vertexCount) {
+    Containers::Array<UnsignedInt> output{NoInit, vertexCount};
+    generateTrivialIndicesInto(output);
+    return output;
+}
+
 void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output) {
     CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 2,
         "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two vertices, got" << vertexCount, );

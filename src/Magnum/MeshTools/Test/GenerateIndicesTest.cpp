@@ -45,6 +45,8 @@ struct GenerateIndicesTest: TestSuite::Tester {
     void primitiveCountInvalidVertexCount();
     void primitiveCountInvalidPrimitive();
 
+    void generateTrivialIndices();
+
     void generateLineStripIndices();
     template<class T> void generateLineStripIndicesIndexed();
     template<class T> void generateLineStripIndicesIndexed2D();
@@ -212,6 +214,8 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::primitiveCountInvalidVertexCount,
               &GenerateIndicesTest::primitiveCountInvalidPrimitive,
 
+              &GenerateIndicesTest::generateTrivialIndices,
+
               &GenerateIndicesTest::generateLineStripIndices,
               &GenerateIndicesTest::generateLineStripIndicesIndexed<UnsignedInt>,
               &GenerateIndicesTest::generateLineStripIndicesIndexed<UnsignedShort>,
@@ -338,6 +342,19 @@ void GenerateIndicesTest::primitiveCountInvalidPrimitive() {
     MeshTools::primitiveCount(MeshPrimitive(0xdead), 2);
     CORRADE_COMPARE(out.str(),
         "MeshTools::primitiveCount(): invalid primitive MeshPrimitive(0xdead)\n");
+}
+
+void GenerateIndicesTest::generateTrivialIndices() {
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateTrivialIndices(0),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Common case */
+    CORRADE_COMPARE_AS(MeshTools::generateTrivialIndices(7),
+        Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 3, 4, 5, 6
+        }), TestSuite::Compare::Container);
 }
 
 void GenerateIndicesTest::generateLineStripIndices() {

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::primitiveCount(), @ref Magnum::MeshTools::generateLineStripIndices(), @ref Magnum::MeshTools::generateLineStripIndicesInto(), @ref Magnum::MeshTools::generateLineLoopIndices(), @ref Magnum::MeshTools::generateLineLoopIndicesInto(), @ref Magnum::MeshTools::generateTriangleStripIndices(), @ref Magnum::MeshTools::generateTriangleStripIndicesInto(), @ref Magnum::MeshTools::generateTriangleFanIndices(), @ref Magnum::MeshTools::generateTriangleFanIndicesInto(), @ref Magnum::MeshTools::generateIndices()
+ * @brief Function @ref Magnum::MeshTools::primitiveCount(), @ref Magnum::MeshTools::generateTrivialIndices(), @ref Magnum::MeshTools::generateTrivialIndicesInto(), @ref Magnum::MeshTools::generateLineStripIndices(), @ref Magnum::MeshTools::generateLineStripIndicesInto(), @ref Magnum::MeshTools::generateLineLoopIndices(), @ref Magnum::MeshTools::generateLineLoopIndicesInto(), @ref Magnum::MeshTools::generateTriangleStripIndices(), @ref Magnum::MeshTools::generateTriangleStripIndicesInto(), @ref Magnum::MeshTools::generateTriangleFanIndices(), @ref Magnum::MeshTools::generateTriangleFanIndicesInto(), @ref Magnum::MeshTools::generateIndices()
  * @m_since{2020,06}
  */
 
@@ -50,6 +50,27 @@ is either zero or at least @cpp 2 @ce for a line-based primitive and at least
 MAGNUM_MESHTOOLS_EXPORT UnsignedInt primitiveCount(MeshPrimitive primitive, UnsignedInt elementCount);
 
 /**
+@brief Create a trivial index buffer
+@m_since_latest
+
+Generates a @cpp 0, 1, 2, 3, 4, 5, ... @ce sequence, i.e. what @ref std::iota()
+would produce. Can be used to turn a non-indexed mesh into indexed.
+@see @ref generateTrivialIndicesInto(), @ref generateLineStripIndices(),
+    @ref generateLineLoopIndices(), @ref generateTriangleStripIndices(),
+    @ref generateTriangleFanIndices(), @ref generateIndices()
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTrivialIndices(UnsignedInt vertexCount);
+
+/**
+@brief Create a trivial index buffer into an existing array
+@m_since_latest
+
+A variant of @ref generateTrivialIndices() that fills existing memory
+instead of allocating a new array.
+*/
+MAGNUM_MESHTOOLS_EXPORT void generateTrivialIndicesInto(const Containers::StridedArrayView1D<UnsignedInt>& output);
+
+/**
 @brief Create index buffer for a line strip primitive
 @m_since{2020,06}
 
@@ -61,7 +82,7 @@ Primitive restart is not supported. If the mesh is already indexed, use
 and overloads instead.
 @see @ref generateLineStripIndicesInto(), @ref generateLineLoopIndices(),
     @ref generateTriangleStripIndices(), @ref generateTriangleFanIndices(),
-    @ref generateIndices()
+    @ref generateTrivialIndices(), @ref generateIndices()
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineStripIndices(UnsignedInt vertexCount);
 
@@ -153,7 +174,7 @@ Primitive restart is not supported. If the mesh is already indexed, use
 and overloads instead.
 @see @ref generateLineLoopIndicesInto(), @ref generateLineStripIndices(),
     @ref generateTriangleStripIndices(), @ref generateTriangleFanIndices(),
-    @ref generateIndices()
+    @ref generateTrivialIndices(), @ref generateIndices()
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(UnsignedInt vertexCount);
 
@@ -246,7 +267,7 @@ mesh is already indexed, use @ref generateTriangleStripIndices(const Containers:
 and overloads instead.
 @see @ref generateTriangleStripIndicesInto(), @ref generateLineStripIndices(),
     @ref generateLineLoopIndices(), @ref generateTriangleFanIndices(),
-    @ref generateIndices()
+    @ref generateTrivialIndices(), @ref generateIndices()
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndices(UnsignedInt vertexCount);
 
@@ -339,7 +360,7 @@ mesh is already indexed, use @ref generateTriangleFanIndices(const Containers::S
 and overloads instead.
 @see @ref generateTriangleFanIndicesInto(), @ref generateLineStripIndices(),
     @ref generateLineLoopIndices(), @ref generateTriangleStripIndices(),
-    @ref generateIndices()
+    @ref generateTrivialIndices(), @ref generateIndices()
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleFanIndices(UnsignedInt vertexCount);
 
