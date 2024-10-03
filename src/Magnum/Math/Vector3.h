@@ -54,7 +54,8 @@ gives the direction of its normal, and
 is its area. Length of a cross product is also related to a distance of a point
 and a line, see @ref Distance::linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
 for more information.
-@see @ref cross(const Vector2<T>&, const Vector2<T>&), @ref planeEquation()
+@see @ref cross(const Vector2<T>&, const Vector2<T>&), @ref planeEquation(),
+    @ref dot(const Vector<size, T>&, const Vector<size, T>&)
 */
 template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
     return {

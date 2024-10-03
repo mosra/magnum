@@ -111,7 +111,10 @@ the same general direction, `1` when two *normalized* vectors are parallel,
 * *normalized* vectors are antiparallel. @f[
     \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
 @f]
-@see @ref Vector::dot() const, @ref Vector::operator-(), @ref Vector2::perpendicular()
+@see @ref Vector::dot() const, @ref Vector::operator-(),
+    @ref Vector2::perpendicular(),
+    @ref cross(const Vector3<T>&, const Vector3<T>&),
+    @ref cross(const Vector2<T>&, const Vector2<T>&)
 */
 template<std::size_t size, class T> inline T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
     T out{};
