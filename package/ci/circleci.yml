@@ -361,11 +361,11 @@ jobs:
     steps:
     - install-base-linux:
         extra: cmake libsdl2-dev libglfw3-dev libvulkan-dev wget unzip
-    # In this case it gets stuck even with 24 jobs. Only on GCC, usually when
+    # In this case it gets stuck even with 20 jobs. Only on GCC, usually when
     # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs:
-        count: 20
+        count: 16
     - install-gcc-4_8
     - install-swiftshader-vulkan:
         build: ubuntu-18.04
