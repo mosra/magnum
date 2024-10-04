@@ -29,6 +29,11 @@
 cmake_minimum_required(VERSION 3.5)
 
 option(HUNTER_ENABLED "Get dependencies (Corrade, GLFW, SDL2, ...) via Hunter" OFF)
+# This option is meant to be passed on the very first invocation. If not done
+# then, it doesn't really make sense to enable it at a later time. (Plus the
+# Hunter support is long unmaintained here, so it doesn't make sense to show it
+# at all.)
+mark_as_advanced(HUNTER_ENABLED)
 if(HUNTER_ENABLED)
     include(${CMAKE_CURRENT_LIST_DIR}/package/hunter/HunterInit.cmake)
 endif()
@@ -812,6 +817,12 @@ if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY AND NOT DEFINED CMAKE_LIBRARY_OUTP
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>/bin CACHE PATH "" FORCE)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>/lib CACHE PATH "" FORCE)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>/lib CACHE PATH "" FORCE)
+    # There should be no need for the "90% use case" user to adjust these, so
+    # don't show them in the default view
+    mark_as_advanced(
+        CMAKE_RUNTIME_OUTPUT_DIRECTORY
+        CMAKE_LIBRARY_OUTPUT_DIRECTORY
+        CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 endif()
 
 add_subdirectory(modules)
