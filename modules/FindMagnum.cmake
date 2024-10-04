@@ -563,6 +563,15 @@ if(Magnum_FIND_COMPONENTS)
     list(REMOVE_DUPLICATES Magnum_FIND_COMPONENTS)
 endif()
 
+# Special cases of include paths. Libraries not listed here have a path suffix
+# and include name derived from the library name in the loop below.
+set(_MAGNUM_MATERIALTOOLS_INCLUDE_PATH_NAMES PhongToPbrMetallicRoughness.h)
+set(_MAGNUM_MESHTOOLS_INCLUDE_PATH_NAMES CompressIndices.h)
+set(_MAGNUM_OPENGLTESTER_INCLUDE_PATH_SUFFIX Magnum/GL)
+set(_MAGNUM_VULKANTESTER_INCLUDE_PATH_SUFFIX Magnum/Vk)
+set(_MAGNUM_PRIMITIVES_INCLUDE_PATH_NAMES Cube.h)
+set(_MAGNUM_SCENETOOLS_INCLUDE_PATH_NAMES Hierarchy.h)
+
 # Find all components. Maintain a list of components that'll need to have
 # their optional dependencies checked.
 set(_MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD )
@@ -579,9 +588,20 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS)
             add_library(Magnum::${_component} UNKNOWN IMPORTED)
 
-            # Set library defaults, find the library
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/${_component})
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}.h)
+            # Include path names to find, unless specified above already.
+            # Application and context libraries are a special case as well.
+            if(_component MATCHES ".+Application")
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
+            elseif(_component MATCHES ".+Context")
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES GLContext.h)
+            endif()
+            if(NOT _MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX)
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/${_component})
+            endif()
+            if(NOT _MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}.h)
+            endif()
 
             # Try to find both debug and release version
             find_library(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG Magnum${_component}-d)
@@ -600,7 +620,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # Audio importer class is Audio::*Importer, thus we need to
                 # convert *AudioImporter.h to *Importer.h
                 string(REPLACE "AudioImporter" "Importer" _MAGNUM_${_COMPONENT}_HEADER_NAME "${_component}")
-                set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${_MAGNUM_${_COMPONENT}_HEADER_NAME}.h)
+                if(NOT _MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
+                    set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${_MAGNUM_${_COMPONENT}_HEADER_NAME}.h)
+                endif()
 
             # ShaderConverter plugin specific name suffixes
             elseif(_component MATCHES ".+ShaderConverter$")
@@ -627,8 +649,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX fontconverters)
             endif()
 
-            # Don't override the exception for *AudioImporter plugins
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX MagnumPlugins/${_component})
+            # Include path names to find, unless specified above
+            if(NOT _MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX)
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX MagnumPlugins/${_component})
+            endif()
             if(NOT _MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
                 set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}.h)
             endif()
@@ -676,6 +700,23 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             continue()
         endif()
 
+        # Find library/plugin includes
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
+            find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
+                NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
+                HINTS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
+            mark_as_advanced(_MAGNUM_${_COMPONENT}_INCLUDE_DIR)
+        endif()
+
+        # Decide if the library was found. If not, skip the rest, which
+        # populates the target properties and finds additional dependencies.
+        if(((_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)) OR (_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS AND MAGNUM_${_COMPONENT}_EXECUTABLE))
+            set(Magnum_${_component}_FOUND TRUE)
+        else()
+            set(Magnum_${_component}_FOUND FALSE)
+            continue()
+        endif()
+
         # Library location for libraries/plugins
         if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             if(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
@@ -695,8 +736,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Applications
         if(_component MATCHES ".+Application")
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
-
             # Android application dependencies
             if(_component STREQUAL AndroidApplication)
                 find_package(EGL)
@@ -859,9 +898,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Context libraries
         elseif(_component MATCHES ".+Context")
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES GLContext.h)
-
             # GLX context dependencies
             if(_component STREQUAL GlxContext)
                 # With GLVND (since CMake 3.10) we need to explicitly link to
@@ -928,40 +964,17 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES OpenGLES3::OpenGLES3)
             endif()
 
-        # MaterialTools library
-        elseif(_component STREQUAL MaterialTools)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES PhongToPbrMetallicRoughness.h)
-
-        # MeshTools library
-        elseif(_component STREQUAL MeshTools)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
-
-        # OpenGLTester library
-        elseif(_component STREQUAL OpenGLTester)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/GL)
-
-        # VulkanTester library
-        elseif(_component STREQUAL VulkanTester)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Vk)
-
-        # Primitives library
-        elseif(_component STREQUAL Primitives)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
-
+        # No special setup for MaterialTools library
+        # No special setup for MeshTools library
+        # No special setup for OpenGLTester library
+        # No special setup for VulkanTester library
+        # No special setup for Primitives library
         # No special setup for SceneGraph library
-
-        # SceneTools library
-        elseif(_component STREQUAL SceneTools)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Hierarchy.h)
-
+        # No special setup for SceneTools library
         # No special setup for ShaderTools library
         # No special setup for Shaders library
         # No special setup for Text library
-
-        # TextureTools library
-        elseif(_component STREQUAL TextureTools)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
-
+        # No special setup for TextureTools library
         # No special setup for Trade library
 
         # Vk library
@@ -981,14 +994,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # No special setup for TgaImageConverter plugin
         # No special setup for TgaImporter plugin
         # No special setup for WavAudioImporter plugin
-
-        # Find library/plugin includes
-        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
-            find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
-                NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
-                HINTS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
-            mark_as_advanced(_MAGNUM_${_COMPONENT}_INCLUDE_DIR)
-        endif()
 
         # Automatic import of static plugins. Skip in case the include dir was
         # not found -- that'll fail later with a proper message. Skip it also
@@ -1030,13 +1035,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             if(_MAGNUM_${_component}_OPTIONAL_DEPENDENCIES_TO_ADD)
                 list(APPEND _MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD ${_component})
             endif()
-        endif()
-
-        # Decide if the library was found
-        if(((_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)) OR (_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS AND MAGNUM_${_COMPONENT}_EXECUTABLE))
-            set(Magnum_${_component}_FOUND TRUE)
-        else()
-            set(Magnum_${_component}_FOUND FALSE)
         endif()
     endif()
 
