@@ -1192,7 +1192,7 @@ a high-level overview.
     [mosra/magnum#113](https://github.com/mosra/magnum/issues/113))
 -   Explicit list of extensions that are available in WebGL builds
 -   New page explaining @ref opengl-wrapping "OpenGL wrapper layer"
--   Documented extra CMake modules in @ref cmake-modules
+-   Documented extra CMake modules
 -   The @ref building documentation now prefers package installation instead of
     manual build
 -   Clarified behavior of @ref Math::Matrix4::lookAt() (see

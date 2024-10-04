@@ -96,12 +96,6 @@ node my-application.js
 
 @section platforms-html5-apps Building and deploying graphical apps
 
-In case you don't have an OpenGL ES build set up yet, you need to copy
-`FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the
-[modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
-Magnum source to the `modules/` dir in your project so it is able to find the
-WebGL libraries.
-
 Magnum provides Emscripten application wrappers in @ref Platform::Sdl2Application
 and @ref Platform::EmscriptenApplication. See their documentation for more
 information about general usage. You can also use the Emscripten APIs directly
@@ -208,12 +202,6 @@ webserver again by pressing @m_class{m-label m-warning} **Ctrl**
 @m_class{m-label m-default} **C**.
 
 @section platforms-html5-windowless-apps Building and deploying windowless apps
-
-In case you don't have an EGL + OpenGL ES build set up yet, you need to copy
-`FindEGL.cmake` and `FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the
-[modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
-Magnum source to the `modules/` dir in your project so it is able to find the
-EGL and WebGL libraries.
 
 Windowless Magnum apps (i.e. apps that use the OpenGL context without a window)
 can be run in the browser as well using the @ref Platform::WindowlessEglApplication

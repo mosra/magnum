@@ -37,9 +37,10 @@ If your project suddenly stops building after a Magnum upgrade, check these
 things:
 
 -   If building fails on the CMake step, be sure that you have up-to-date
-    `FindCorrade.cmake`, `FindMagnum.cmake` and other CMake modules in your
-    project (`FindSDL2.cmake`, ...). They are contained in `modules/` directory
-    of Magnum repositories and also get installed into `share/cmake/Magnum`.
+    `FindCorrade.cmake` and `FindMagnum.cmake` CMake modules in your project.
+    They are contained in the [modules/](https://github.com/mosra/magnum/tree/master/modules)
+    directory of Magnum repositories and also get installed into
+    `share/cmake/Corrade` and `share/cmake/Magnum`.
 -   In very rare cases the CMake build directory may not survive an upgrade. If
     you get some particularly cursed errors, try recreating it from scratch.
 -   The library is constantly evolving, meaning that APIs may get deprecated

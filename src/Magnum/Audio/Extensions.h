@@ -49,9 +49,8 @@ compile-time decisions rather than @ref Extension instances. See
 
 This library depends on the [OpenAL](https://www.openal.org/) library and is
 built if `MAGNUM_WITH_AUDIO` is enabled when building Magnum. To use this
-library with CMake, put [FindOpenAL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenAL.cmake)
-into your `modules/` directory, request the `Audio` component of the `Magnum`
-package and link to the `Magnum::Audio` target:
+library with CMake, request the `Audio` component of the `Magnum` package and
+link to the `Magnum::Audio` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Audio)

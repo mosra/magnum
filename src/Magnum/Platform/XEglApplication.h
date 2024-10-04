@@ -58,9 +58,8 @@ more information.
 
 This application library depends on **X11** and **EGL** libraries and is built
 if `MAGNUM_WITH_XEGLAPPLICATION` is enabled when building Magnum. To use this
-library from CMake, put [FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
-into your `modules/` directory, request the `XEglApplication` component of the
-`Magnum` package and link to the `Magnum::XEglApplication` target:
+library from CMake, request the `XEglApplication` component of the `Magnum`
+package and link to the `Magnum::XEglApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED XEglApplication)

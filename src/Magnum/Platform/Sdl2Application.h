@@ -211,10 +211,9 @@ final package along with a PowerShell script for easy local installation.
 
 This application library depends on the [SDL2](http://www.libsdl.org) library
 (Emscripten has it built in) and is built if `MAGNUM_WITH_SDL2APPLICATION` is
-enabled when building Magnum. To use this library with CMake, put
-[FindSDL2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindSDL2.cmake)
-into your `modules/` directory, request the `Sdl2Application` component of
-the `Magnum` package and link to the `Magnum::Sdl2Application` target:
+enabled when building Magnum. To use this library with CMake, request the
+`Sdl2Application` component of the `Magnum` package and link to the
+`Magnum::Sdl2Application` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Sdl2Application)

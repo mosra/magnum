@@ -1096,6 +1096,10 @@ See also:
     to copy resources and assets to the APK. See @ref platforms-android-apps-cmake "the corresponding Android platform documentation"
     and [mosra/toolchains#10](https://github.com/mosra/toolchains/pull/10) for
     more information
+-   Magnum now automatically installs and uses Find modules for its
+    dependencies in a way that doesn't clash with modules of the same name
+    potentially installed by other software, meaning the user doesn't need to
+    copy and carry them along anymore (see [mosra/magnum#436](https://github.com/mosra/magnum/issues/436))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

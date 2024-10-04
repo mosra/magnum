@@ -497,10 +497,8 @@ together with a troubleshooting guide is available in @ref platforms-html5.
 @section Platform-WindowlessEglApplication-usage General usage
 
 This application library is built if `MAGNUM_WITH_WINDOWLESSEGLAPPLICATION` is
-enabled when building Magnum. To use this library from CMake, put
-[FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
-into your `modules/` directory, request the `WindowlessEglApplication`
-component of the `Magnum` package and link to the
+enabled when building Magnum. To use this library from CMake, request the
+`WindowlessEglApplication` component of the `Magnum` package and link to the
 `Magnum::WindowlessEglApplication` target:
 
 @code{.cmake}

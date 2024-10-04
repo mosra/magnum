@@ -109,12 +109,6 @@ information about OpenGL testing.
 
 @section platforms-android-apps Building and installing graphics apps
 
-In case you don't have an OpenGL ES build set up yet, you need to copy
-`FindEGL.cmake` and `FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the
-[modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
-Magnum source to the `modules/` dir in your project so it is able to find EGL
-and OpenGL ES libraries.
-
 Magnum provides Android application wrapper in @ref Platform::AndroidApplication.
 See its documentation for more information about general usage. You can also
 use the Android Native Activity directly or any other way.

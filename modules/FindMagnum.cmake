@@ -323,6 +323,30 @@ if(MAGNUM_BUILD_DEPRECATED)
     endif()
 endif()
 
+# CMake module dir for dependencies. It might not be present at all if no
+# feature that needs them is enabled, in which case it'll be left at NOTFOUND.
+# But in that case it should also not be subsequently needed for any
+# find_package(). If this is called from a superproject, the
+# _MAGNUM_DEPENDENCY_MODULE_DIR is already set by modules/CMakeLists.txt.
+find_path(_MAGNUM_DEPENDENCY_MODULE_DIR
+    NAMES
+        FindEGL.cmake FindGLFW.cmake FindOpenAL.cmake FindOpenGLES2.cmake
+        FindOpenGLES3.cmake FindSDL2.cmake FindVulkan.cmake
+    PATH_SUFFIXES share/cmake/Magnum/dependencies)
+mark_as_advanced(_MAGNUM_DEPENDENCY_MODULE_DIR)
+
+# If the module dir is found and is not present in CMAKE_MODULE_PATH already
+# (such as when someone explicitly added it, or if it's the Magnum's modules/
+# dir in case of a superproject), add it as the first before all other. Set a
+# flag to remove it again at the end, so the modules don't clash with Find
+# modules of the same name from other projects.
+if(_MAGNUM_DEPENDENCY_MODULE_DIR AND NOT _MAGNUM_DEPENDENCY_MODULE_DIR IN_LIST CMAKE_MODULE_PATH)
+    set(CMAKE_MODULE_PATH ${_MAGNUM_DEPENDENCY_MODULE_DIR} ${CMAKE_MODULE_PATH})
+    set(_MAGNUM_REMOVE_DEPENDENCY_MODULE_DIR_FROM_CMAKE_PATH ON)
+else()
+    unset(_MAGNUM_REMOVE_DEPENDENCY_MODULE_DIR_FROM_CMAKE_PATH)
+endif()
+
 # Base Magnum library
 if(NOT TARGET Magnum::Magnum)
     add_library(Magnum::Magnum UNKNOWN IMPORTED)
@@ -710,6 +734,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Decide if the library was found. If not, skip the rest, which
         # populates the target properties and finds additional dependencies.
+        # This means that the rest can also rely on that e.g. FindEGL.cmake is
+        # present in _MAGNUM_DEPENDENCY_MODULE_DIR -- given that the library
+        # needing EGL was found, it likely also installed FindEGL for itself.
         if(((_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)) OR (_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS AND MAGNUM_${_COMPONENT}_EXECUTABLE))
             set(Magnum_${_component}_FOUND TRUE)
         else()
@@ -1110,6 +1137,13 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.16)
 
     string(REPLACE ";" " " _MAGNUM_REASON_FAILURE_MESSAGE "${_MAGNUM_REASON_FAILURE_MESSAGE}")
     set(_MAGNUM_REASON_FAILURE_MESSAGE REASON_FAILURE_MESSAGE "${_MAGNUM_REASON_FAILURE_MESSAGE}")
+endif()
+
+# Remove Magnum's dependency module dir from CMAKE_MODULE_PATH again. Do it
+# before the FPHSA call which may exit early in case of a failure.
+if(_MAGNUM_REMOVE_DEPENDENCY_MODULE_DIR_FROM_CMAKE_PATH)
+    list(REMOVE_ITEM CMAKE_MODULE_PATH ${_MAGNUM_DEPENDENCY_MODULE_DIR})
+    unset(_MAGNUM_REMOVE_DEPENDENCY_MODULE_DIR_FROM_CMAKE_PATH)
 endif()
 
 # Complete the check with also all components

@@ -101,9 +101,7 @@ See @ref cmake for more information.
 
 This application library depends on the [GLFW](http://glfw.org) library and is
 built if `MAGNUM_WITH_GLFWAPPLICATION` is enabled when building Magnum. To use
-this library with CMake, put
-[FindGLFW.cmake](https://github.com/mosra/magnum/blob/master/modules/FindGLFW.cmake)
-into your `modules/` directory, request the `GlfwApplication` component of the
+this library with CMake, request the `GlfwApplication` component of the
 `Magnum` package and link to the `Magnum::GlfwApplication` target:
 
 @code{.cmake}

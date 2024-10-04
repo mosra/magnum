@@ -288,9 +288,8 @@ Audio import, playback and integration with @ref SceneGraph.
 
 This library depends on the [OpenAL](https://www.openal.org/) library and is
 built if `MAGNUM_WITH_AUDIO` is enabled when building Magnum. To use this
-library with CMake, put [FindOpenAL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenAL.cmake)
-into your `modules/` directory, request the `Audio` component of the `Magnum`
-package and link to the `Magnum::Audio` target:
+library with CMake, request the `Audio` component of the `Magnum` package and
+link to the `Magnum::Audio` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Audio)
@@ -367,12 +366,6 @@ find_package(Magnum REQUIRED GL)
 # ...
 target_link_libraries(your-app PRIVATE Magnum::GL)
 @endcode
-
-In case you're building for EGL or OpenGL ES platforms, you also need to put
-[FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake),
-[FindOpenGLES2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES2.cmake)
-or [FindOpenGLES3.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES3.cmake)
-into your `modules/` directory.
 
 See @ref building, @ref cmake and @ref opengl for more information.
 
@@ -896,9 +889,8 @@ C++14 wrappers and helpers for Vulkan development.
 
 This library is depends on [Vulkan](https://www.khronos.org/vulkan/) and is
 built if `MAGNUM_WITH_VK` is enabled when building Magnum. To use this library
-with CMake, put [FindVulkan.cmake](https://github.com/mosra/magnum/blob/master/modules/FindVulkan.cmake)
-into your `modules/` directory, request the `Vk` component of the `Magnum`
-package and link to the `Magnum::Vk` target:
+with CMake, request the `Vk` component of the `Magnum` package and link to the
+`Magnum::Vk` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Vk)

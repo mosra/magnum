@@ -149,12 +149,11 @@ systems, and outside of the standard prefix if using MinGW on Windows).
 
 @section getting-started-review 2. Review project structure
 
-The base project consists of just six files in two subfolders (plus the three
+The base project consists of just five files in two subfolders (plus the three
 extra directories with dependencies you might have added):
 
     modules/FindCorrade.cmake
     modules/FindMagnum.cmake
-    modules/FindSDL2.cmake
     src/MyApplication.cpp
     src/CMakeLists.txt
     CMakeLists.txt
@@ -163,14 +162,14 @@ In root there is the project-wide `CMakeLists.txt`, which you have seen above.
 It just sets up project name, specifies module directory and delegates
 everything important to `CMakeLists.txt` in the `src/` subdirectory.
 
-The `modules/` directory contains CMake modules for finding the needed
-dependencies. These are needed mainly with externally installed dependencies
+The `modules/` directory contains CMake modules for finding the Magnum
+dependencies. These are mainly useful with externally installed dependencies
 (@ref getting-started-setup-install "Option B" above), less so for the CMake
-subproject setup. Unlike modules for finding e.g. OpenGL, which are a part of
-the standard CMake installation, these aren't and thus have to be distributed
-with the project. These files are verbatim copied from the
-[modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
-the Magnum repository.
+subproject setup. You don't *strictly* need them as they're part of the Magnum
+installation, but if they're present, they provide a much better failure
+diagnostic in case Magnum cannot be found at all. These files are verbatim
+copied from the [modules/](https://github.com/mosra/magnum/tree/master/modules)
+directory in the Magnum repository.
 
 The `src/` directory contains the actual project. To keep things simple, the
 project consists of just a single `MyApplication.cpp` file with the most
