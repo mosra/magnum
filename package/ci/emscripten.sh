@@ -3,24 +3,9 @@ set -ev
 
 git submodule update --init
 
-# Corrade
+# Crosscompile Corrade
 git clone --depth 1 https://github.com/mosra/corrade.git
 cd corrade
-
-# Build native corrade-rc
-mkdir build && cd build
-cmake .. \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
-    -DCORRADE_WITH_INTERCONNECT=OFF \
-    -DCORRADE_WITH_PLUGINMANAGER=OFF \
-    -DCORRADE_WITH_TESTSUITE=OFF \
-    -DCORRADE_WITH_UTILITY=OFF \
-    -G Ninja
-ninja install
-cd ..
-
-# Crosscompile Corrade
 mkdir build-emscripten && cd build-emscripten
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE="../../toolchains/generic/Emscripten-wasm.cmake" \
@@ -28,7 +13,6 @@ cmake .. \
     -DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -O1" \
     -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCORRADE_WITH_INTERCONNECT=OFF \
     -G Ninja
 ninja install
@@ -45,7 +29,6 @@ cmake .. \
     -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_WITH_AUDIO=ON \
     -DMAGNUM_WITH_VK=OFF \
     -DMAGNUM_WITH_EMSCRIPTENAPPLICATION=ON \
