@@ -9,6 +9,7 @@
     Copyright © 2016, 2018 Jonathan Hale <squareys@googlemail.com>
     Copyright © 2019 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
     Copyright © 2019, 2020 Marco Melorio <m.melorio@icloud.com>
+    Copyright © 2022 Andreas Leroux <andreas.leroux@epitech.eu>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),

@@ -327,6 +327,10 @@ See also:
     and @relativeref{Platform::EmscriptenApplication::GLConfiguration,Flag::PowerPreferenceHighPerformance}
     flags allowing to pick either a low power, high performance or default
     behavior (see [mosra/magnum#500](https://github.com/mosra/magnum/issues/500)).
+-   Added @ref Platform::GlfwApplication::setMinimalLoopPeriod() and
+    @relativeref{Platform::GlfwApplication,tickEvent()} to match the interface
+    of @ref Platform::Sdl2Application (see [mosra/magnum#577](https://github.com/mosra/magnum/issues/577)
+    and [mosra/magnum#580](https://github.com/mosra/magnum/pull/580))
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
