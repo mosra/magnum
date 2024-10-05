@@ -172,7 +172,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     /* For testing resize events */
     explicit EmscriptenApplicationTest(const Arguments& arguments);
 
-    virtual void drawEvent() override {
+    void drawEvent() override {
         Debug() << "draw event";
         #ifdef CUSTOM_CLEAR_COLOR
         GL::Renderer::setClearColor(CUSTOM_CLEAR_COLOR);
@@ -181,9 +181,8 @@ struct EmscriptenApplicationTest: Platform::Application {
 
         swapBuffers();
 
-        if(_redraw) {
+        if(_redraw)
             redraw();
-        }
     }
 
     #ifdef MAGNUM_TARGET_GL
