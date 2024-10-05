@@ -897,18 +897,35 @@ class Sdl2Application {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Set minimal loop period
+         * @m_since_latest
          *
-         * This setting reduces the main loop frequency in case VSync is
-         * not/cannot be enabled or no drawing is done. Default is @cpp 0 @ce
-         * (i.e. looping at maximum frequency). If the application is drawing
-         * on the screen and VSync is enabled, this setting is ignored.
+         * This setting reduces the main loop frequency in case
+         * @ref setSwapInterval() wasn't called at all, was called with
+         * @cpp 0 @ce, the call failed, or no drawing is done and just
+         * @ref tickEvent() is being executed. The @p time is expected to be
+         * non-negative, default is @cpp 0_nsec @ce (i.e., looping at maximum
+         * frequency). If the application is drawing on the screen and VSync
+         * was enabled by calling @ref setSwapInterval(), this setting is
+         * ignored.
+         *
+         * Note that SDL timer resolution is just milliseconds, so anything
+         * below @cpp 1.0_msec @ce will behave the same as @cpp 0_nsec @ce. As
+         * the VSync default is driver-dependent, @ref setSwapInterval() has to
+         * be explicitly called to make the interaction between the two work
+         * correctly.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
          *      the browser is managing the frequency instead.
-         * @see @ref setSwapInterval()
          */
-        void setMinimalLoopPeriod(UnsignedInt milliseconds) {
-            _minimalLoopPeriod = milliseconds;
-        }
+        void setMinimalLoopPeriod(Nanoseconds time);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setMinimalLoopPeriod(Nanoseconds)
+         * @m_deprecated_since_latest Use @ref setMinimalLoopPeriod(Nanoseconds),
+         *      which prevents unit mismatch errors, instead.
+         */
+        CORRADE_DEPRECATED("use setMinimalLoopPeriod(Nanoseconds) instead") void setMinimalLoopPeriod(UnsignedInt milliseconds);
+        #endif
         #endif
 
         /**
@@ -1204,7 +1221,7 @@ class Sdl2Application {
          * If implemented, this function is called periodically after
          * processing all input events and before draw event even though there
          * might be no input events and redraw is not requested. Useful e.g.
-         * for asynchronous task polling. Use @ref setMinimalLoopPeriod()/
+         * for asynchronous task polling. Use @ref setMinimalLoopPeriod() /
          * @ref setSwapInterval() to control main loop frequency.
          *
          * If this implementation gets called from its @cpp override @ce, it
@@ -1253,7 +1270,8 @@ class Sdl2Application {
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window{};
-        UnsignedInt _minimalLoopPeriod;
+        /* Not using Nanoseconds as that would require including Time.h */
+        UnsignedInt _minimalLoopPeriodMilliseconds{};
         #else
         SDL_Surface* _surface{};
         Vector2i _lastKnownCanvasSize;

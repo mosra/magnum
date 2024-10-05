@@ -1364,6 +1364,9 @@ See also:
     performance and a default, use @relativeref{Platform::EmscriptenApplication::GLConfiguration,Flag::PowerPreferenceLowPower}
     or @relativeref{Platform::EmscriptenApplication::GLConfiguration,Flag::PowerPreferenceHighPerformance}
     instead
+-   @cpp Platform::Sdl2Application::setMinimalLoopPeriod(UnsignedInt) @ce
+    taking an untyped millisecond value is deprecated in favor of
+    @relativeref{Platform::Sdl2Application,setMinimalLoopPeriod(Nanoseconds)}
 -   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
     @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
     @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,

@@ -327,7 +327,7 @@ struct Sdl2ApplicationTest: Platform::Application {
        when redrawing constantly. */
     #if 0
     void tickEvent() override {
-        setMinimalLoopPeriod(250);
+        setMinimalLoopPeriod(250.0_msec);
         Debug{} << "tick event:" << Seconds{SDL_GetTicks()*1.0_msec};
     }
     #endif

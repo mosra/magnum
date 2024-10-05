@@ -52,6 +52,9 @@
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Range.h"
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+#include "Magnum/Math/Time.h"
+#endif
 #include "Magnum/Platform/ScreenedApplication.hpp"
 #include "Magnum/Platform/Implementation/DpiScaling.h"
 
@@ -78,6 +81,7 @@ extern "C" {
 namespace Magnum { namespace Platform {
 
 using namespace Containers::Literals;
+using namespace Math::Literals;
 
 namespace {
 
@@ -126,9 +130,6 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration
 #endif
 
 Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    _minimalLoopPeriod{0},
-    #endif
     _flags{Flag::Redraw}
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
@@ -826,6 +827,20 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
     return true;
 }
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::setMinimalLoopPeriod(const Nanoseconds time) {
+    CORRADE_ASSERT(time >= 0_nsec,
+        "Platform::Sdl2Application::setMinimalLoopPeriod(): expected non-negative time, got" << time, );
+    _minimalLoopPeriodMilliseconds = Long(time)/1000000;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void Sdl2Application::setMinimalLoopPeriod(const UnsignedInt milliseconds) {
+    _minimalLoopPeriodMilliseconds = milliseconds;
+}
+#endif
+#endif
+
 void Sdl2Application::redraw() { _flags |= Flag::Redraw; }
 
 Sdl2Application::~Sdl2Application() {
@@ -890,7 +905,7 @@ bool Sdl2Application::mainLoopIteration() {
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
+    const Nanoseconds timeBefore = _minimalLoopPeriodMilliseconds ? SDL_GetTicks()*1.0_msec : Nanoseconds{};
     #endif
 
     #ifdef CORRADE_TARGET_EMSCRIPTEN
@@ -1032,10 +1047,10 @@ bool Sdl2Application::mainLoopIteration() {
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /* If VSync is not enabled, delay to prevent CPU hogging (if set) */
-        if(!(_flags & Flag::VSyncEnabled) && _minimalLoopPeriod) {
-            const UnsignedInt loopTime = SDL_GetTicks() - timeBefore;
-            if(loopTime < _minimalLoopPeriod)
-                SDL_Delay(_minimalLoopPeriod - loopTime);
+        if(!(_flags & Flag::VSyncEnabled) && _minimalLoopPeriodMilliseconds) {
+            const Nanoseconds loopTime = SDL_GetTicks()*1.0_msec - timeBefore;
+            if(loopTime < _minimalLoopPeriodMilliseconds*1.0_msec)
+                SDL_Delay(_minimalLoopPeriodMilliseconds - loopTime/1.0_msec);
         }
         #endif
 
@@ -1044,10 +1059,10 @@ bool Sdl2Application::mainLoopIteration() {
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* If not drawing anything, delay to prevent CPU hogging (if set) */
-    if(_minimalLoopPeriod) {
-        const UnsignedInt loopTime = SDL_GetTicks() - timeBefore;
-        if(loopTime < _minimalLoopPeriod)
-            SDL_Delay(_minimalLoopPeriod - loopTime);
+    if(_minimalLoopPeriodMilliseconds) {
+        const Nanoseconds loopTime = SDL_GetTicks()*1.0_msec - timeBefore;
+        if(loopTime < _minimalLoopPeriodMilliseconds*1.0_msec)
+            SDL_Delay(_minimalLoopPeriodMilliseconds - loopTime/1.0_msec);
     }
 
     /* Then, if the tick event doesn't need to be called periodically, wait
