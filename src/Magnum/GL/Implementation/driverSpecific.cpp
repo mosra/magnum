@@ -653,9 +653,11 @@ void Context::setupDriverWorkarounds() {
         #pragma GCC diagnostic push
         /* The damn thing moved the warning to another group in some version.
            Not sure if it happened in Clang 10 already, but -Wc++20-extensions
-           is new in Clang 10, so just ignore both. */
+           is new in Clang 10, so just ignore both. HOWEVER, Emscripten often
+           uses a prerelease Clang, so if it reports version 10, it's likely
+           version 9. So check for versions _above_ 10 instead. */
         #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-        #if __clang_major__ >= 10
+        #if __clang_major__ > 10
         #pragma GCC diagnostic ignored "-Wc++20-extensions"
         #endif
         const Int firefoxVersion = EM_ASM_INT({
