@@ -103,6 +103,9 @@ Debug& operator<<(Debug& debug, const Alignment value) {
 }
 
 Alignment alignmentForDirection(const Alignment alignment, const LayoutDirection layoutDirection, const ShapeDirection shapeDirection) {
+    #ifdef CORRADE_NO_ASSERT
+    static_cast<void>(layoutDirection);
+    #endif
     CORRADE_ASSERT(layoutDirection == LayoutDirection::HorizontalTopToBottom,
         "Text::alignmentForDirection(): only" << LayoutDirection::HorizontalTopToBottom << "is supported right now, got" << layoutDirection, {});
     CORRADE_ASSERT(shapeDirection != ShapeDirection::TopToBottom &&
