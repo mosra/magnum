@@ -199,6 +199,9 @@ struct Sdl2ApplicationTest: Platform::Application {
         #endif
 
         swapBuffers();
+
+        if(_redraw)
+            redraw();
     }
 
     /* For testing event coordinates */
@@ -228,7 +231,19 @@ struct Sdl2ApplicationTest: Platform::Application {
         if(event.key() == KeyEvent::Key::F1) {
             Debug{} << "starting text input";
             startTextInput();
-        } else if(event.key() == KeyEvent::Key::Esc) {
+        } else if(event.key() == KeyEvent::Key::F2) {
+            _redraw = !_redraw;
+            Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
+            if(_redraw) redraw();
+        }
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        else if(event.key() == KeyEvent::Key::V) {
+            _vsync = !_vsync;
+            Debug{} << "vsync" << (_vsync? "on" : "off");
+            setSwapInterval(_vsync ? 1 : 0);
+        }
+        #endif
+        else if(event.key() == KeyEvent::Key::Esc) {
             Debug{} << "stopping text input";
             stopTextInput();
         } else if(event.key() == KeyEvent::Key::T) {
@@ -304,10 +319,14 @@ struct Sdl2ApplicationTest: Platform::Application {
         if(event.type == SDL_WINDOWEVENT) d << event.window.event;
     }
 
-    #ifdef CORRADE_TARGET_EMSCRIPTEN
     private:
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
         bool _fullscreen = false;
-    #endif
+        #endif
+        bool _redraw = false;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        bool _vsync = false;
+        #endif
 };
 
 Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {

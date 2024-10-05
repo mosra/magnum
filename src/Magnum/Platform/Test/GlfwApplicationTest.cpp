@@ -180,6 +180,9 @@ struct GlfwApplicationTest: Platform::Application {
     void drawEvent() override {
         Debug{} << "draw event";
         swapBuffers();
+
+        if(_redraw)
+            redraw();
     }
 
     void keyPressEvent(KeyEvent& event) override {
@@ -192,6 +195,14 @@ struct GlfwApplicationTest: Platform::Application {
         if(event.key() == KeyEvent::Key::F1) {
             Debug{} << "starting text input";
             startTextInput();
+        } else if(event.key() == KeyEvent::Key::F2) {
+            _redraw = !_redraw;
+            Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
+            if(_redraw) redraw();
+        } else if(event.key() == KeyEvent::Key::V) {
+            _vsync = !_vsync;
+            Debug{} << "vsync" << (_vsync? "on" : "off");
+            setSwapInterval(_vsync ? 1 : 0);
         } else if(event.key() == KeyEvent::Key::Esc) {
             Debug{} << "stopping text input";
             stopTextInput();
@@ -235,6 +246,10 @@ struct GlfwApplicationTest: Platform::Application {
     void textInputEvent(TextInputEvent& event) override {
         Debug{} << "text input event:" << event.text();
     }
+
+    private:
+        bool _redraw = false;
+        bool _vsync = false;
 };
 
 GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
