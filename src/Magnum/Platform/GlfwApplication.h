@@ -529,6 +529,25 @@ class GlfwApplication {
          */
         void setSwapInterval(Int interval);
 
+        /**
+         * @brief Set minimal loop period
+         * @m_since_latest
+         *
+         * This setting reduces the main loop frequency in case
+         * @ref setSwapInterval() wasn't called at all, was called with
+         * @cpp 0 @ce, or no drawing is done and just @ref tickEvent() is being
+         * executed. The @p time is expected to be non-negative, default is
+         * @cpp 0_nsec @ce (i.e., looping at maximum frequency). If the
+         * application is drawing on the screen and VSync was enabled by
+         * calling @ref setSwapInterval(), this setting is ignored.
+         *
+         * Note that as the VSync default is driver-dependent,
+         * @ref setSwapInterval() has to be explicitly called to make the
+         * interaction between the two work correctly.
+         * @see @ref setSwapInterval()
+         */
+        void setMinimalLoopPeriod(Nanoseconds time);
+
         /** @copydoc Sdl2Application::redraw() */
         void redraw();
 
@@ -739,6 +758,24 @@ class GlfwApplication {
          * @}
          */
 
+    protected:
+        /**
+         * @brief Tick event
+         * @m_since_latest
+         *
+         * If implemented, this function is called periodically after
+         * processing all input events and before draw event even though there
+         * might be no input events and redraw is not requested. Useful e.g.
+         * for asynchronous task polling. Use @ref setMinimalLoopPeriod() /
+         * @ref setSwapInterval() to control main loop frequency.
+         *
+         * If this implementation gets called from its @cpp override @ce, it
+         * will effectively stop the tick event from being fired and the app
+         * returns back to waiting for input events. This can be used to
+         * disable the tick event when not needed.
+         */
+        virtual void tickEvent();
+
     private:
         enum class Flag: UnsignedByte;
         typedef Containers::EnumSet<Flag> Flags;
@@ -766,6 +803,8 @@ class GlfwApplication {
         Vector2 _commandLineDpiScaling, _configurationDpiScaling;
 
         GLFWwindow* _window{nullptr};
+        /* Not using Nanoseconds as that would require including Time.h */
+        UnsignedInt _minimalLoopPeriodNanoseconds;
         Flags _flags;
         #ifdef MAGNUM_TARGET_GL
         /* Has to be in an Optional because we delay-create it in a constructor

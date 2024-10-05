@@ -30,6 +30,7 @@
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/ImageView.h"
+#include "Magnum/Math/Time.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Platform/GlfwApplication.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -159,6 +160,7 @@ Debug& operator<<(Debug& debug, const Application::KeyEvent::Key value) {
 }
 
 using namespace Containers::Literals;
+using namespace Math::Literals;
 
 struct GlfwApplicationTest: Platform::Application {
     explicit GlfwApplicationTest(const Arguments& arguments);
@@ -246,6 +248,16 @@ struct GlfwApplicationTest: Platform::Application {
     void textInputEvent(TextInputEvent& event) override {
         Debug{} << "text input event:" << event.text();
     }
+
+    /* Uncomment to test the tick event. It should run at given minimal loop
+       period even if not redrawing, it should not run at a different period
+       when redrawing constantly. */
+    #if 0
+    void tickEvent() override {
+        setMinimalLoopPeriod(250.0_msec);
+        Debug{} << "tick event:" << Seconds{glfwGetTime()*1.0_sec};
+    }
+    #endif
 
     private:
         bool _redraw = false;

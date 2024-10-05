@@ -33,10 +33,12 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Unicode.h>
+#include <Corrade/Utility/System.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
+#include "Magnum/Math/Time.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 #include "Magnum/Platform/Implementation/DpiScaling.h"
 
@@ -47,6 +49,7 @@
 namespace Magnum { namespace Platform {
 
 using namespace Containers::Literals;
+using namespace Math::Literals;
 
 #ifdef GLFW_TRUE
 /* The docs say that it's the same, verify that just in case */
@@ -56,9 +59,11 @@ static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane
 enum class GlfwApplication::Flag: UnsignedByte {
     Redraw = 1 << 0,
     TextInputActive = 1 << 1,
-    Exit = 1 << 2,
+    VSyncEnabled = 1 << 2,
+    NoTickEvent = 1 << 3,
+    Exit = 1 << 4,
     #ifdef CORRADE_TARGET_APPLE
-    HiDpiWarningPrinted = 1 << 3
+    HiDpiWarningPrinted = 1 << 5
     #endif
 };
 
@@ -737,6 +742,19 @@ Vector2 GlfwApplication::dpiScaling() const {
 
 void GlfwApplication::setSwapInterval(const Int interval) {
     glfwSwapInterval(interval);
+
+    /* Remember whether VSync is enabled for mainLoopIteration() to use
+       minimal loop period or not. Unlike SDL2 where it's possible to check
+       whether the VSync was actually set, here it's purely hope-based.
+       Sorry. */
+    if(interval) _flags |= Flag::VSyncEnabled;
+    else _flags &= ~Flag::VSyncEnabled;
+}
+
+void GlfwApplication::setMinimalLoopPeriod(const Nanoseconds time) {
+    CORRADE_ASSERT(time >= 0_nsec,
+        "Platform::Sdl2Application::setMinimalLoopPeriod(): expected non-negative time, got" << time, );
+    _minimalLoopPeriodNanoseconds = Long(time);
 }
 
 void GlfwApplication::redraw() { _flags |= Flag::Redraw; }
@@ -776,16 +794,39 @@ bool GlfwApplication::mainLoopIteration() {
     */
     if(glfwGetWindowUserPointer(_window) != this) setupCallbacks();
 
-    /* If redrawing, poll for events immediately after drawEvent() (which could
-       be setting the Redraw flag again, thus doing constant redraw). If not,
-       avoid spinning the CPU by waiting for the next input event. */
+    const Nanoseconds timeBefore = _minimalLoopPeriodNanoseconds ? glfwGetTime()*1.0_sec : Nanoseconds{};
+
+    glfwPollEvents();
+
+    /* Tick event */
+    if(!(_flags & Flag::NoTickEvent)) tickEvent();
+
+    /* Draw event */
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;
         drawEvent();
-        glfwPollEvents();
-    } else glfwWaitEvents();
 
-    return !glfwWindowShouldClose(_window);
+        /* If VSync is not enabled, delay to prevent CPU hogging (if set) */
+        if(!(_flags & Flag::VSyncEnabled) && _minimalLoopPeriodNanoseconds) {
+            const Nanoseconds loopTime = glfwGetTime()*1.0_sec - timeBefore;
+            if(loopTime < _minimalLoopPeriodNanoseconds*1_nsec)
+                Utility::System::sleep((_minimalLoopPeriodNanoseconds*1_nsec - loopTime)/1.0_msec);
+        }
+
+        return !(_flags & Flag::Exit || glfwWindowShouldClose(_window));
+    }
+
+    /* If not drawing anything, delay to prevent CPU hogging (if set) */
+    if(_minimalLoopPeriodNanoseconds) {
+        const Nanoseconds loopTime = glfwGetTime()*1.0_sec - timeBefore;
+        if(loopTime < _minimalLoopPeriodNanoseconds*1_nsec)
+            Utility::System::sleep((_minimalLoopPeriodNanoseconds*1_nsec - loopTime)/1.0_msec);
+    }
+
+    /* Then, if the tick event doesn't need to be called periodically, wait
+       indefinitely for next input event */
+    if(_flags & Flag::NoTickEvent) glfwWaitEvents();
+    return !(_flags & Flag::Exit || glfwWindowShouldClose(_window));
 }
 
 void GlfwApplication::exit(int exitCode) {
@@ -884,6 +925,12 @@ auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
 
 void GlfwApplication::exitEvent(ExitEvent& event) {
     event.setAccepted();
+}
+
+void GlfwApplication::tickEvent() {
+    /* If this got called, the tick event is not implemented by user and thus
+       we don't need to call it ever again */
+    _flags |= Flag::NoTickEvent;
 }
 
 void GlfwApplication::viewportEvent(ViewportEvent&) {}
