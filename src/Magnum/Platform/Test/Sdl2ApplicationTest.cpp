@@ -31,6 +31,7 @@
 
 #include "Magnum/ImageView.h"
 #include "Magnum/Math/ConfigurationValue.h"
+#include "Magnum/Math/Time.h"
 #include "Magnum/Platform/Sdl2Application.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -46,6 +47,7 @@
 #ifdef CORRADE_TARGET_CLANG_CL
 #pragma clang diagnostic pop
 #endif
+#include <SDL_timer.h>
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/DefaultFramebuffer.h"
@@ -174,6 +176,7 @@ Debug& operator<<(Debug& debug, const Application::KeyEvent::Key value) {
 }
 
 using namespace Containers::Literals;
+using namespace Math::Literals;
 
 struct Sdl2ApplicationTest: Platform::Application {
     explicit Sdl2ApplicationTest(const Arguments& arguments);
@@ -318,6 +321,16 @@ struct Sdl2ApplicationTest: Platform::Application {
         d << "any event:" << event.type;
         if(event.type == SDL_WINDOWEVENT) d << event.window.event;
     }
+
+    /* Uncomment to test the tick event. It should run at given minimal loop
+       period even if not redrawing, it should not run at a different period
+       when redrawing constantly. */
+    #if 0
+    void tickEvent() override {
+        setMinimalLoopPeriod(250);
+        Debug{} << "tick event:" << Seconds{SDL_GetTicks()*1.0_msec};
+    }
+    #endif
 
     private:
         #ifdef CORRADE_TARGET_EMSCRIPTEN
