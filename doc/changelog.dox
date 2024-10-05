@@ -1100,6 +1100,9 @@ See also:
     dependencies in a way that doesn't clash with modules of the same name
     potentially installed by other software, meaning the user doesn't need to
     copy and carry them along anymore (see [mosra/magnum#436](https://github.com/mosra/magnum/issues/436))
+-   The `FindSDL2.cmake` module now delegates to SDL's own CMake config file,
+    if available, especially to ensure all dependencies are correctly linked on
+    static builds (see [mosra/magnum#553](https://github.com/mosra/magnum/issues/553))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
