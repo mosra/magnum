@@ -506,8 +506,15 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_VERIFY(linked);
     {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia,
+            "NVidia drivers don't take glBindFragDataLocationEXT() into account on ES.");
+        #endif
+        CORRADE_VERIFY(linked);
+        if(!linked)
+            return;
+    } {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
@@ -578,8 +585,15 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_VERIFY(linked);
     {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia,
+            "NVidia drivers don't take glBindFragDataLocationEXT() into account on ES.");
+        #endif
+        CORRADE_VERIFY(linked);
+        if(!linked)
+            return;
+    } {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
@@ -808,11 +822,14 @@ void main() {
 
     Containers::Pair<bool, Containers::String> result = program.validate();
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_VERIFY(!result.first());
-    /* The message shouldn't be empty */
-    CORRADE_COMPARE_AS(result.second(),
-        "",
-        TestSuite::Compare::NotEqual);
+    {
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia, "NVidia doesn't treat conflicting sampler locations as a failure.");
+        CORRADE_VERIFY(!result.first());
+        /* The message shouldn't be empty */
+        CORRADE_COMPARE_AS(result.second(),
+            "",
+            TestSuite::Compare::NotEqual);
+    }
     /* No stray \0 or \n should be anywhere */
     CORRADE_COMPARE_AS(result.second(), "\0"_s, TestSuite::Compare::StringNotContains);
     CORRADE_COMPARE_AS(result.second(), "\n"_s, TestSuite::Compare::StringNotContains);
