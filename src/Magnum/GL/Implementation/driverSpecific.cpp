@@ -377,7 +377,8 @@ constexpr Containers::StringView KnownWorkarounds[]{
 "intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment"_s,
 
 /* DSA glClearNamedFramebuffer*() on Intel Windows drivers doesn't do anything.
-   Using the non-DSA code path as a workaournd. */
+   Using the non-DSA code path as a workaournd. See also
+   "mesa-broken-dsa-framebuffer-clear" below. */
 "intel-windows-broken-dsa-framebuffer-clear"_s,
 
 /* Using DSA glCreateQueries() on Intel Windows drivers breaks
@@ -409,6 +410,17 @@ constexpr Containers::StringView KnownWorkarounds[]{
    Generic error again (driver version 27). Because this is impossible to
    prevent, the extension is completely disabled on all Intel Windows drivers. */
 "intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped"_s,
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+/* Mesa 24 (or, 24.2 at least) crashes on exit deep inside X11 if the DSA
+   glClearNamedFramebuffer() APIs are used. Not sure what's up, couldn't find
+   any relevant changelog entry and unfortunately the previous version I had
+   was only 23.3.5, so it could be anything in between. My hunch is that it's
+   due to some new code that deals with framebuffer compression and which was
+   only correctly cleaned up in the non-DSA code path. Or something. See also
+   "intel-windows-broken-dsa-framebuffer-clear" above. */
+"mesa-broken-dsa-framebuffer-clear"_s,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

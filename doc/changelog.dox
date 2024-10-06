@@ -233,6 +233,10 @@ See also:
     rendering or even crash. See @ref opengl-workarounds and
     [mosra/magnum#618](https://github.com/mosra/magnum/issues/618) for more
     information.
+-   A new @cpp "mesa-broken-dsa-framebuffer-clear" @ce workaround for a crash
+    on exit happening with Mesa 24 when the DSA variants of
+    @ref GL::Framebuffer::clearColor() and related APIs are used.  See
+    @ref opengl-workarounds for more information.
 
 @subsubsection changelog-latest-new-math Math library
 
