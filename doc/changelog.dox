@@ -1107,6 +1107,9 @@ See also:
 -   The `FindSDL2.cmake` module now delegates to SDL's own CMake config file,
     if available, especially to ensure all dependencies are correctly linked on
     static builds (see [mosra/magnum#553](https://github.com/mosra/magnum/issues/553))
+-   Created a RPM package with a helper script for building (see
+    [mosra/magnum#537](https://github.com/mosra/magnum/pull/537) and
+    [mosra/magnum#650](https://github.com/mosra/magnum/pull/650))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

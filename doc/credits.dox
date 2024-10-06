@@ -82,6 +82,7 @@ Big thanks to everyone involved!
 Are the below lists missing your name or something's wrong?
 [Let us know!](https://magnum.graphics/contact/)
 
+-   **[\@1b00](https://github.com/1b00)** --- RPM package
 -   **Aaron Gokaslan** ([\@Skylion007](https://github.com/Skylion007)) ---
     Emscripten LTO support, various minor code modernization, typo fixes
 -   **[\@abgita](https://github.com/abgita)** --- minor typo fixes
@@ -154,6 +155,7 @@ Are the below lists missing your name or something's wrong?
 -   **Hugo Amnov** ([\@hugoam](https://github.com/hugoam)) --- Additions,
     usability improvements and performance optimization in the @ref GL library,
     buildsystem improvements and STL usage cleanup
+-   **Igal Alkon** ([\@alkavan](https://github.com/alkavan)) --- RPM packages
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
 -   **Ivan Sanz Carasa** ([\@isc30](https://github.com/isc30)) --- buildsystem
