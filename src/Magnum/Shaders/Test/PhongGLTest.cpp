@@ -5398,12 +5398,16 @@ void PhongGLTest::renderMulti() {
                     .setSkip({image->size().x()/4, image->size().y()/2, 0}),
                 image->format(), image->size()/2, image->data()};
 
+            Vector3i size{image->size().x(), image->size().y()/2, 3};
+
             diffuseArray = GL::Texture2DArray{};
             diffuseArray.setMinificationFilter(GL::SamplerFilter::Linear)
                 .setMagnificationFilter(GL::SamplerFilter::Linear)
                 .setWrapping(GL::SamplerWrapping::ClampToEdge)
                 /* Each slice has half the height */
-                .setStorage(1, TextureFormatRGB, {image->size().x(), image->size().y()/2, 3})
+                .setStorage(1, TextureFormatRGB, size)
+                /* Clear to all zeros for reproducible output */
+                .setSubImage(0, {}, Image3D{PixelFormat::RGB8Unorm, size, Containers::Array<char>{ValueInit, std::size_t(size.product()*3)}})
                 .setSubImage(0, {0, 0, 0}, first)
                 /* Put the second image on the right half to test that the
                    per-instance offset is used together with the layer */
