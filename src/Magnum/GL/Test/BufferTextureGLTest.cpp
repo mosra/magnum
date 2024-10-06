@@ -295,7 +295,10 @@ void BufferTextureGLTest::setBufferEmptyFirst() {
         CORRADE_SKIP("OpenGL ES 3.1 not supported, skipping image size testing.");
     #endif
 
-    CORRADE_COMPARE(texture.size(), 4);
+    {
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia, "NVidia doesn't refresh texture size if the buffer is updated after being assigned to the texture.");
+        CORRADE_COMPARE(texture.size(), 4);
+    }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
