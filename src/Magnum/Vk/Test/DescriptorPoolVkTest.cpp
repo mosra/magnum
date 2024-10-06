@@ -174,10 +174,12 @@ void DescriptorPoolVkTest::allocate() {
 
 void DescriptorPoolVkTest::allocateFail() {
     DescriptorSetLayout layout{device(), DescriptorSetLayoutCreateInfo{
-        {{0, DescriptorType::UniformBuffer, 2}},
+        {{0, DescriptorType::UniformBuffer, 64}},
     }};
 
-    DescriptorPool pool{device(), DescriptorPoolCreateInfo{1, {
+    /* Make the pool contain two layouts so in case of the XFAILs below they
+       both either fit or both don't fit */
+    DescriptorPool pool{device(), DescriptorPoolCreateInfo{2, {
         {DescriptorType::UniformBuffer, 1}
     }}};
 
@@ -188,6 +190,8 @@ void DescriptorPoolVkTest::allocateFail() {
         {
             CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
                 "Mesa llvmpipe never fails an allocation.");
+            CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("NVIDIA"),
+                "NVidia never fails an allocation.");
             CORRADE_VERIFY(!pool.tryAllocate(layout));
         }
         CORRADE_COMPARE(out.str(), "");
@@ -200,6 +204,8 @@ void DescriptorPoolVkTest::allocateFail() {
         pool.allocate(layout);
         CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
             "Mesa llvmpipe never fails an allocation.");
+        CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("NVIDIA"),
+            "NVidia never fails an allocation.");
         CORRADE_COMPARE(out.str(), "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
     }
 }
@@ -286,6 +292,8 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
         {
             CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
                 "Mesa llvmpipe never fails an allocation.");
+            CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("NVIDIA"),
+                "NVidia never fails an allocation.");
             CORRADE_VERIFY(!pool.tryAllocate(layout, 80));
         }
         CORRADE_COMPARE(out.str(), "");
@@ -299,6 +307,8 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
         {
             CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
                 "Mesa llvmpipe never fails an allocation.");
+            CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("NVIDIA"),
+                "NVidia never fails an allocation.");
             CORRADE_COMPARE(out.str(), "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
         }
     }
