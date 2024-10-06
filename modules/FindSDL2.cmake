@@ -106,8 +106,8 @@ if(TARGET SDL2::SDL2 OR TARGET SDL2::SDL2-static OR TARGET SDL2 OR TARGET SDL2-s
 
     if(CORRADE_TARGET_WINDOWS AND _SDL2_DYNAMIC)
         # .dll is in LOCATION, .lib is in IMPLIB. Yay, useful!
-        get_target_property(SDL2_DLL_DEBUG SDL2 IMPORTED_LOCATION_DEBUG)
-        get_target_property(SDL2_DLL_RELEASE SDL2 IMPORTED_LOCATION_RELEASE)
+        get_target_property(SDL2_DLL_DEBUG ${_SDL2_TARGET} IMPORTED_LOCATION_DEBUG)
+        get_target_property(SDL2_DLL_RELEASE ${_SDL2_TARGET} IMPORTED_LOCATION_RELEASE)
     endif()
 
     return()
