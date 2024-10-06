@@ -72,6 +72,7 @@ control and @ref building-cross for cross-compiling to other platforms.
 -   @ref building-packages-msys
 -   @ref building-packages-deb
 -   @ref building-packages-gentoo
+-   @ref building-packages-rpm
 -   @ref building-packages-brew
 
 The engine itself is kept as small as possible with only minimal dependencies.
@@ -302,6 +303,31 @@ There are also Gentoo packages for @ref building-plugins-packages-gentoo "Magnum
 @ref building-integration-packages-gentoo "Magnum Integration",
 @ref building-extras-packages-gentoo "Magnum Extras" and
 @ref building-examples-packages-gentoo "Magnum Examples".
+
+@subsection building-packages-rpm Packages for Fedora, openSUSE and other RPM-based Linux distributions
+
+Spec files for RPM-based distributions are in the `package/rpm/` directory. In
+addition you will need to install the following dependencies in order to build
+the packages (assuming Fedora Linux):
+
+@code{.sh}
+sudo dnf install fedora-packager rpmdevtools
+@endcode
+
+After that, run the `build.sh` script. Internally it queries the Git version,
+makes a tarball, may ask you to install appropriate dependencies if not present
+already, and then builds the package.
+
+@code{.sh}
+./package/rpm/build.sh
+@endcode
+
+At the end, if everything succeeds, you'll have the newly built packages
+located in `~/rpmbuild/RPMS`. The script will print their names at the end.
+
+If you want to pass additional flags to CMake or
+@ref building-features "enable / disable additional features", edit the
+`*.spec` file.
 
 @subsection building-packages-brew Homebrew formulas for macOS
 
