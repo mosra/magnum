@@ -968,8 +968,9 @@ template<class T> void CompileGLTest::threeDimensions() {
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/phong.tga"),
-            /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.013f}));
+            /* SwiftShader has some minor off-by-one precision differences,
+               NVidia as well */
+            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.029f}));
     }
 
     /* Check generated flat / smooth normals with the phong shader. If smooth
@@ -988,8 +989,9 @@ template<class T> void CompileGLTest::threeDimensions() {
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/phong-flat.tga"),
-            /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.012f}));
+            /* SwiftShader has some minor off-by-one precision differences,
+               NVidia as well */
+            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.020f}));
     } else if(data.flags & Flag::GeneratedSmoothNormals) {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _phong
@@ -1003,8 +1005,9 @@ template<class T> void CompileGLTest::threeDimensions() {
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/phong-smooth.tga"),
-            /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0088f}));
+            /* SwiftShader has some minor off-by-one precision differences,
+               NVidia as well */
+            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.037f}));
     }
 
     /* Check with the colored shader, if we have colors */
@@ -1237,8 +1240,9 @@ void CompileGLTest::packedAttributes() {
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/phong.tga"),
-        /* SwiftShader has some minor off-by-one precision differences */
-        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.013f}));
+        /* SwiftShader has some minor off-by-one precision differences.
+           NVidia as well, more on ES2 */
+        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.029f}));
 
     /* Check colors */
     _framebuffer.clear(GL::FramebufferClear::Color);

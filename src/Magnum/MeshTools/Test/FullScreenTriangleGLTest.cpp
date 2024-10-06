@@ -145,9 +145,10 @@ void main() {
         0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba, 0xff80ff80_rgba
     };
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE_AS(image,
+    CORRADE_COMPARE_WITH(image,
         (ImageView2D{PixelFormat::RGBA8Unorm, {4, 4}, expected}),
-        DebugTools::CompareImage);
+        /* Off-by-one difference in all pixels on NV */
+        (DebugTools::CompareImage{0.5f, 0.5f}));
     #else
     /* The RGBA4 format on ES2 causes rounding errors. On NV it's stable
        off-by-one, 0x7f, on Mesa it's more (either 0x77 or 0x88 instead of

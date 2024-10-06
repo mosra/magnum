@@ -1071,15 +1071,15 @@ constexpr struct {
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
         2, 2, 1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        4.67f, 0.02f},
+        /* Minor differences on ARM Mali, on NVidia */
+        7.0f, 0.02f},
     {"bind with offset, texture array",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         2, 2, 1, 1, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.141f},
+        50.34f, 0.146f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, texture array, shader storage",
         "multidraw-textured.tga", {},
@@ -1087,7 +1087,7 @@ constexpr struct {
         0, 2, 0, 0, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.131f},
+        50.34f, 0.146f},
     #endif
     {"draw offset, colored",
         "multidraw.tga", {},
@@ -1123,15 +1123,15 @@ constexpr struct {
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
         4, 4, 2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        4.67f, 0.02f},
+        /* Minor differences on ARM Mali, on NVidia */
+        7.0f, 0.02f},
     {"draw offset, texture array",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
         4, 4, 2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.141f},
+        50.34f, 0.146f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, texture array, shader storage",
         "multidraw-textured.tga", {},
@@ -1139,7 +1139,7 @@ constexpr struct {
         0, 2, 0, 0, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.141f},
+        50.34f, 0.146f},
     #endif
     {"multidraw, colored",
         "multidraw.tga", {},
@@ -2511,8 +2511,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
-       and Apple A8 has bigger rounding differences. */
-    const Float maxThreshold = 8.34f, meanThreshold = 0.100f;
+       and Apple A8 has bigger rounding differences. NVidia as well, more on
+       ES2. */
+    const Float maxThreshold = 12.67f, meanThreshold = 0.121f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
@@ -2733,8 +2734,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
-       and Apple A8 has bigger rounding differences. */
-    const Float maxThreshold = 7.67f, meanThreshold = 0.100f;
+       and Apple A8 has bigger rounding differences. NVidia as well, more on
+       ES2. */
+    const Float maxThreshold = 12.67f, meanThreshold = 0.125f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
@@ -3901,8 +3903,8 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
 
     /* Color output should have no difference -- same as in colored() */
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
-       and Apple A8 has bigger rounding differences. */
-    const Float maxThreshold = 8.34f, meanThreshold = 0.100f;
+       and Apple A8 has bigger rounding differences. NVidia as well. */
+    const Float maxThreshold = 12.67f, meanThreshold = 0.113f;
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
@@ -4051,17 +4053,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    const Float maxThreshold = 3.0f, meanThreshold = 0.02f;
-    #else
-    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 3.0f, meanThreshold = 0.02f;
-    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<const Color3ub>(image.pixels<Color4ub>()),
         Utility::Path::join({_testDir, "PhongTestFiles", data.file}),
-        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+        /* Minor differences on ES2 and on NVidia */
+        (DebugTools::CompareImageToFile{_manager, 3.0f, 0.27f}));
 }
 
 void PhongGLTest::renderLightsSetOneByOne() {
@@ -4246,8 +4243,8 @@ void PhongGLTest::renderLightCulling() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
-       and Apple A8 has bigger rounding differences. */
-    const Float maxThreshold = 8.34f, meanThreshold = 0.100f;
+       and Apple A8 has bigger rounding differences. NVidia as well. */
+    const Float maxThreshold = 12.67f, meanThreshold = 0.113f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.34f, meanThreshold = 3.33f;

@@ -1055,8 +1055,8 @@ const struct {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", "instanced-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.00625f},
+        /* Minor differences on ARM Mali, NVidia */
+        0.667f, 0.012f},
     #endif
     {"wireframe w/o GS", "instanced-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
@@ -1095,12 +1095,14 @@ const struct {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", "instanced-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.0054f},
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe + TBN", "instanced-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.0050f},
     #endif
     {"wireframe w/o GS", "instanced-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
@@ -1176,7 +1178,8 @@ constexpr struct {
     {"bind with offset, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         0, 0, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.056f},
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe2D.tga",
@@ -1214,7 +1217,8 @@ constexpr struct {
     {"draw offset, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         0, 0, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.056f},
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe2D.tga",
@@ -1266,17 +1270,19 @@ constexpr struct {
     {"bind with offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
         1, 1, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.0055f},
     {"bind with offset, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
         1, 1, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.0054f},
     #endif
     {"bind with offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        6.0f, 0.042f},
+        /* Minor differences on ARM Mali, NVidia */
+        11.34f, 0.068f},
     {"bind with offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
         1, 1, true, 16,
@@ -1305,17 +1311,19 @@ constexpr struct {
     {"draw offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.0055f},
     {"draw offset, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.0054f},
     #endif
     {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        6.0f, 0.042f},
+        /* Minor differences on ARM Mali, NVidia */
+        11.34f, 0.068f},
     {"draw offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
         2, 3, false, 1,
@@ -1344,17 +1352,19 @@ constexpr struct {
     {"multidraw, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.003f},
     {"multidraw, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia */
+        0.667f, 0.003f},
     #endif
     {"multidraw, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        6.0f, 0.04f},
+        /* Minor differences on ARM Mali, NVidia */
+        11.34f, 0.066f},
     {"multidraw, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::VertexId,
         2, 3, false, 1,
@@ -3863,7 +3873,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid2D.tga"),
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.017f}));
+        /* Minor differences on NVidia */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.022f}));
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
@@ -3941,7 +3952,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid3D.tga"),
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.012f}));
+        /* Minor differences on NVidia */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.018f}));
 }
 
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
@@ -6381,8 +6393,9 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-instanced.tga"),
-        /* SwiftShader has minor differences in the output, ARM Mali too */
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.018f}));
+        /* SwiftShader has minor differences in the output, ARM Mali too,
+           NVidia as well */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.022f}));
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstancedSkinningWireframe3D() {
@@ -6542,8 +6555,9 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-instanced.tga"),
-        /* SwiftShader has minor differences in the output, ARM Mali too */
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.018f}));
+        /* SwiftShader has minor differences in the output, ARM Mali too,
+           NVidia as well */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.022f}));
 }
 #endif
 

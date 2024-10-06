@@ -186,33 +186,33 @@ constexpr struct {
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D.tga", "multidraw3D.tga",
         {}, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.01f},
+        /* Minor differences on ARM Mali, NVidia */
+        0.667f, 0.01f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VertexColorGL2D::Flag::ShaderStorageBuffers, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.01f},
+        /* Minor differences on ARM Mali, NVidia */
+        0.667f, 0.01f},
     #endif
     {"draw offset", "multidraw2D.tga", "multidraw3D.tga",
         {}, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.01f},
+        /* Minor differences on ARM Mali, NVidia */
+        0.667f, 0.01f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VertexColorGL2D::Flag::ShaderStorageBuffers, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.01f},
+        /* Minor differences on ARM Mali, NVidia */
+        0.667f, 0.01f},
     #endif
     {"multidraw", "multidraw2D.tga", "multidraw3D.tga",
         VertexColorGL2D::Flag::MultiDraw, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.01f},
+        /* Minor differences on ARM Mali, NVidia */
+        0.667f, 0.01f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VertexColorGL2D::Flag::ShaderStorageBuffers|VertexColorGL2D::Flag::MultiDraw, 0, false, 1,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.01f}
+        /* Minor differences on ARM Mali, NVidia */
+        0.667f, 0.01f},
     #endif
 };
 #endif
