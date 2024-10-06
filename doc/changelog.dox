@@ -1200,6 +1200,11 @@ See also:
 -   @ref Shaders::PhongGL wasn't normalizing normals coming from normal textures,
     which may have caused slight artifacts due to limited precision of 8-bit
     pixel formats
+-   The default @ref Shaders::PhongGL light range value embedded in the shader
+    was interpreted as NaN instead of an infinity on NVidia, causing completely
+    black output unless @ref Shaders::PhongGL::setLightRange() was explicitly
+    called to overwrite it with a runtime-specified value (see
+    [mosra/magnum#446](https://github.com/mosra/magnum/issues/446))
 -   @ref Text::AbstractFontConverter::exportFontToData() and
     @ref Text::AbstractFontConverter::exportGlyphCacheToData() didn't correctly
     propagate errors when delegating to
