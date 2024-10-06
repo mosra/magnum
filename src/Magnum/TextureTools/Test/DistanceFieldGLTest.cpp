@@ -507,7 +507,11 @@ void DistanceFieldGLTest::formatNotDrawable() {
         );
     MAGNUM_VERIFY_NO_GL_ERROR();
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::Unsupported\n");
+    /* NV drivers print the same error on both desktop and ES */
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::NVidia)
+        CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    else
+        CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::Unsupported\n");
     #else
     CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
     #endif
