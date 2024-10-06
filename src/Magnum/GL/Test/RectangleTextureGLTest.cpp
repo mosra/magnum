@@ -374,74 +374,77 @@ void RectangleTextureGLTest::view() {
 }
 
 void RectangleTextureGLTest::image() {
-    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+    auto&& data = PixelStorageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8, ImageView2D{
-        PixelStorageData[testCaseInstanceId()].storage,
+        data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
-        PixelStorageData[testCaseInstanceId()].dataSparse});
+        data.dataSparse});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Image2D image = texture.image({PixelStorageData[testCaseInstanceId()].storage,
+    Image2D image = texture.image({data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.flags(), ImageFlag2D{});
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
-        PixelStorageData[testCaseInstanceId()].data,
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(data.offset),
+        data.data,
         TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::imageBuffer() {
-    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+    auto&& data = PixelStorageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8, BufferImage2D{
-        PixelStorageData[testCaseInstanceId()].storage,
+        data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
-        PixelStorageData[testCaseInstanceId()].dataSparse,
+        data.dataSparse,
         BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    BufferImage2D image = texture.image({PixelStorageData[testCaseInstanceId()].storage,
+    BufferImage2D image = texture.image({data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
-        PixelStorageData[testCaseInstanceId()].data,
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(data.offset),
+        data.data,
         TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::imageQueryView() {
-    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+    auto&& data = PixelStorageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8, ImageView2D{
-        PixelStorageData[testCaseInstanceId()].storage,
+        data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
-        PixelStorageData[testCaseInstanceId()].dataSparse});
+        data.dataSparse});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> data{PixelStorageData[testCaseInstanceId()].offset + 2*2*4};
-    MutableImageView2D image{PixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data, ImageFlag2D::Array};
+    Containers::Array<char> imageData{data.offset + 2*2*4};
+    MutableImageView2D image{data.storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.image(image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -449,8 +452,8 @@ void RectangleTextureGLTest::imageQueryView() {
     /* Doesn't matter what flags are set, they stay untouched */
     CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
-        PixelStorageData[testCaseInstanceId()].data,
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(data.offset),
+        data.data,
         TestSuite::Compare::Container);
 }
 
@@ -463,7 +466,8 @@ constexpr UnsignedByte SubDataComplete[]{
 };
 
 void RectangleTextureGLTest::subImage() {
-    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+    auto&& data = PixelStorageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
@@ -472,9 +476,9 @@ void RectangleTextureGLTest::subImage() {
     texture.setImage(TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(Vector2i(1), ImageView2D{
-        PixelStorageData[testCaseInstanceId()].storage,
+        data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
-        PixelStorageData[testCaseInstanceId()].dataSparse});
+        data.dataSparse});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -488,7 +492,8 @@ void RectangleTextureGLTest::subImage() {
 }
 
 void RectangleTextureGLTest::subImageBuffer() {
-    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+    auto&& data = PixelStorageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
@@ -497,9 +502,9 @@ void RectangleTextureGLTest::subImageBuffer() {
     texture.setImage(TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(Vector2i(1), BufferImage2D{
-        PixelStorageData[testCaseInstanceId()].storage,
+        data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
-        PixelStorageData[testCaseInstanceId()].dataSparse,
+        data.dataSparse,
         BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -516,7 +521,8 @@ void RectangleTextureGLTest::subImageBuffer() {
 }
 
 void RectangleTextureGLTest::subImageQuery() {
-    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+    auto&& data = PixelStorageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
@@ -530,20 +536,21 @@ void RectangleTextureGLTest::subImageQuery() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
-        {PixelStorageData[testCaseInstanceId()].storage,
+        {data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.flags(), ImageFlag2D{});
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
-        PixelStorageData[testCaseInstanceId()].data,
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(data.offset),
+        data.data,
         TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::subImageQueryView() {
-    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+    auto&& data = PixelStorageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
@@ -556,8 +563,8 @@ void RectangleTextureGLTest::subImageQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> data{PixelStorageData[testCaseInstanceId()].offset + 2*2*4};
-    MutableImageView2D image{PixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, data, ImageFlag2D::Array};
+    Containers::Array<char> imageData{data.offset + 2*2*4};
+    MutableImageView2D image{data.storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -565,13 +572,14 @@ void RectangleTextureGLTest::subImageQueryView() {
     /* Doesn't matter what flags are set, they stay untouched */
     CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
-        PixelStorageData[testCaseInstanceId()].data,
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(data.offset),
+        data.data,
         TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::subImageQueryBuffer() {
-    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+    auto&& data = PixelStorageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
@@ -585,15 +593,15 @@ void RectangleTextureGLTest::subImageQueryBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     BufferImage2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
-        {PixelStorageData[testCaseInstanceId()].storage,
+        {data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorageData[testCaseInstanceId()].offset),
-        PixelStorageData[testCaseInstanceId()].data,
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(data.offset),
+        data.data,
         TestSuite::Compare::Container);
 }
 
