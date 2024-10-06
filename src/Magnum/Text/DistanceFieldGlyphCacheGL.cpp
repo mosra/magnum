@@ -89,8 +89,10 @@ GlyphCacheFeatures DistanceFieldGlyphCacheGL::doFeatures() const {
 void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     GL::Texture2D input;
     input.setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear);
+        /* Use nearest filter to avoid minor rounding errors on ES2 compared to
+           texelFetch() on ES3+ */
+        .setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest);
 
     /* The constructor already checked that the ratio is an integer multiple,
        so this division should lead to no information loss */

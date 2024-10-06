@@ -155,6 +155,11 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceFieldGL {
          * OpenGL ES) and @p rectangle size is expected to be a multiple of 2,
          * as that's what the generator shader relies on for correct pixel
          * addressing.
+         *
+         * @attention For consistent results on implementations that don't
+         *      support @glsl texelFetch() @ce and have rely on regular texture
+         *      filtering it's recommended to use @ref GL::SamplerFilter::Nearest
+         *      on the @p input.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i& imageSize
