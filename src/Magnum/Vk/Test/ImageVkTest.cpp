@@ -376,8 +376,21 @@ void ImageVkTest::cmdClearColorImageFloat() {
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
-    CORRADE_EXPECT_FAIL_IF(a.dedicatedMemory().size() != 4*4*4 && !device().properties().name().hasPrefix("SwiftShader"),
+    /* Check if the image is actually tightly packed for the comparison */
+    /** @todo make this a builtin, returning a StridedArrayView for pixels */
+    VkSubresourceLayout layout;
+    {
+        VkImageSubresource subresource{};
+        subresource.arrayLayer = 0;
+        subresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        subresource.mipLevel = 0;
+        device()->GetImageSubresourceLayout(device(), a, &subresource, &layout);
+    }
+    CORRADE_EXPECT_FAIL_IF(layout.rowPitch != 4*4,
         "The image doesn't have a tightly-packed memory, the following check won't work.");
+
+    /* The image memory may be tightly packed but still actually larger than
+       what was requested. Compare just the prefix. */
     CORRADE_COMPARE_AS(Containers::arrayCast<const Color4ub>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView({
         0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba,
         0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba,
@@ -416,8 +429,21 @@ void ImageVkTest::cmdClearColorImageSignedIntegral() {
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
-    CORRADE_EXPECT_FAIL_IF(a.dedicatedMemory().size() != 4*4*4 && !device().properties().name().hasPrefix("SwiftShader"),
+    /* Check if the image is actually tightly packed for the comparison */
+    /** @todo make this a builtin, returning a StridedArrayView for pixels */
+    VkSubresourceLayout layout;
+    {
+        VkImageSubresource subresource{};
+        subresource.arrayLayer = 0;
+        subresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        subresource.mipLevel = 0;
+        device()->GetImageSubresourceLayout(device(), a, &subresource, &layout);
+    }
+    CORRADE_EXPECT_FAIL_IF(layout.rowPitch != 4*4,
         "The image doesn't have a tightly-packed memory, the following check won't work.");
+
+    /* The image memory may be tightly packed but still actually larger than
+       what was requested. Compare just the prefix. */
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector4b>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView<Vector4b>({
         {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1},
         {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1},
@@ -456,8 +482,21 @@ void ImageVkTest::cmdClearColorImageUnsignedIntegral() {
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
-    CORRADE_EXPECT_FAIL_IF(a.dedicatedMemory().size() != 4*4*4 && !device().properties().name().hasPrefix("SwiftShader"),
+    /* Check if the image is actually tightly packed for the comparison */
+    /** @todo make this a builtin, returning a StridedArrayView for pixels */
+    VkSubresourceLayout layout;
+    {
+        VkImageSubresource subresource{};
+        subresource.arrayLayer = 0;
+        subresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        subresource.mipLevel = 0;
+        device()->GetImageSubresourceLayout(device(), a, &subresource, &layout);
+    }
+    CORRADE_EXPECT_FAIL_IF(layout.rowPitch != 4*4,
         "The image doesn't have a tightly-packed memory, the following check won't work.");
+
+    /* The image memory may be tightly packed but still actually larger than
+       what was requested. Compare just the prefix. */
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector4ub>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView<Vector4ub>({
         {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1},
         {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1},
