@@ -142,11 +142,12 @@ install:
 - IF "%TARGET%" == "desktop" set BUILD_APPLICATIONS=YES
 - IF "%TARGET%" == "desktop-gles" set BUILD_APPLICATIONS=NO
 
-# SDL2
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" 7z x SDL2-devel-2.0.9-VC.zip && ren SDL2-2.0.9 SDL
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.9-mingw.tar.gz & 7z x SDL2-devel-2.0.9-mingw.tar & ren SDL2-2.0.9 SDL
+# SDL2. 2.24 is the oldest version that has CMake configs bundled in order to
+# verify that FindSDL2 does the correct thing.
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" appveyor DownloadFile https://github.com/libsdl-org/SDL/releases/download/release-2.24.0/SDL2-devel-2.24.0-VC.zip
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" 7z x SDL2-devel-2.24.0-VC.zip && ren SDL2-2.24.0 SDL
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" appveyor DownloadFile https://github.com/libsdl-org/SDL/releases/download/release-2.24.0/SDL2-devel-2.24.0-mingw.zip
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.24.0-mingw.zip && ren SDL2-2.24.0 SDL
 
 # GLFW
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%PLATFORM%" == "" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN32.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN32.zip
@@ -177,7 +178,5 @@ build_script:
 
 cache:
 - ninja-win.zip -> package/ci/appveyor-cache-reset.txt
-- SDL2-devel-2.0.9-VC.zip -> package/ci/appveyor-cache-reset.txt
-- SDL2-devel-2.0.9-mingw.zip -> package/ci/appveyor-cache-reset.txt
 - openal-soft-1.19.1-bin.zip -> package/ci/appveyor-cache-reset.txt
 - glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt
