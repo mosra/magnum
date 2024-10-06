@@ -228,11 +228,13 @@ void BufferVkTest::cmdCopyBuffer() {
 
     /* Source buffer */
     Buffer a{device(), BufferCreateInfo{BufferUsage::TransferSource, 7}, MemoryFlag::HostVisible};
-    Utility::copy("__ABCD_"_s, a.dedicatedMemory().map());
+    /* It might be allocated larger, copy to just a prefix */
+    Utility::copy("__ABCD_"_s, a.dedicatedMemory().map().prefix(7));
 
     /* Destination buffer, clear it to have predictable output */
     Buffer b{device(), BufferCreateInfo{BufferUsage::TransferDestination, 10}, MemoryFlag::HostVisible};
-    Utility::copy(".........."_s, b.dedicatedMemory().map());
+    /* It might be allocated larger, copy to just a prefix */
+    Utility::copy(".........."_s, b.dedicatedMemory().map().prefix(10));
 
     cmd.begin()
        .copyBuffer({a, b, {{2, 5, 4}}})
@@ -242,7 +244,8 @@ void BufferVkTest::cmdCopyBuffer() {
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
-    CORRADE_COMPARE(arrayView(b.dedicatedMemory().mapRead()),
+    /* It might be allocated larger, compare just a prefix */
+    CORRADE_COMPARE(arrayView(b.dedicatedMemory().mapRead()).prefix(10),
         ".....ABCD."_s);
 }
 

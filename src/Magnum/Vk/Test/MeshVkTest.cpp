@@ -329,9 +329,9 @@ void MeshVkTest::cmdDrawIndexed() {
         Containers::Array<char, MemoryMapDeleter> data = buffer.dedicatedMemory().map();
         /** @todo ffs fucking casts!!! */
         Utility::copy(Containers::stridedArrayView(QuadData).slice(&Quad::position),
-            Containers::arrayCast<Vector3>(data.slice(32, 32 + 12*4)));
+            Containers::arrayCast<Vector3>(data.sliceSize(32, 12*4)));
         Utility::copy(Containers::arrayCast<const char>(QuadIndexData),
-            Containers::stridedArrayView(data).exceptPrefix(32 + 12*4));
+            Containers::stridedArrayView(data).sliceSize(32 + 12*4, 12));
         mesh.addVertexBuffer(0, buffer, 32)
             .setIndexBuffer(Utility::move(buffer), 32 + 12*4, MeshIndexType::UnsignedShort)
             .setCount(6);
