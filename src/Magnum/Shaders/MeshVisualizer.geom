@@ -377,6 +377,12 @@ void main() {
     /* If wireframe is enabled, add distance to opposite side to each vertex.
        Otherwise make all distances the same to avoid any lines being drawn.
        Propagate also mapped vertex ID, since that changes per-vertex also. */
+    #if defined(VERTEX_ID) && defined(__GLSL_CG_DATA_TYPES)
+    /* Without this, NVidia says "warning C7050: "interpolatedMappedVertexId"
+       might be used before being initialized". Interestingly enough, it
+       doesn't say that for interpolatedTextureCoordinates. */
+    interpolatedMappedVertexId = 0.0;
+    #endif
     for(int i = 0; i != 3; ++i) {
         dist = vec3(0.0, 0.0, 0.0);
         #ifdef WIREFRAME_RENDERING
