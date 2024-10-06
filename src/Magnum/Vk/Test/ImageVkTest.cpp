@@ -848,7 +848,7 @@ void ImageVkTest::cmdCopyBufferImage1D() {
     Image b{device(), ImageCreateInfo1D{
         ImageUsage::TransferDestination|ImageUsage::TransferSource,
         PixelFormat::RGBA8UI, 6, 1
-    }, MemoryFlag::HostVisible};
+    }, MemoryFlags{}};
 
     /* Destination buffer, clear as well */
     Buffer c{device(), BufferCreateInfo{
@@ -909,7 +909,7 @@ void ImageVkTest::cmdCopyBufferImage2D() {
     Image b{device(), ImageCreateInfo2D{
         ImageUsage::TransferDestination|ImageUsage::TransferSource,
         PixelFormat::RGBA8UI, {6, 5}, 1
-    }, MemoryFlag::HostVisible};
+    }, MemoryFlags{}};
 
     /* Destination buffer */
     Buffer c{device(), BufferCreateInfo{
@@ -983,7 +983,7 @@ void ImageVkTest::cmdCopyBufferImage3D() {
     Image b{device(), ImageCreateInfo3D{
         ImageUsage::TransferDestination|ImageUsage::TransferSource,
         PixelFormat::RGBA8UI, {5, 4, 3}, 1
-    }, MemoryFlag::HostVisible};
+    }, MemoryFlags{}};
 
     /* Destination buffer */
     Buffer c{device(), BufferCreateInfo{
@@ -1052,7 +1052,7 @@ void ImageVkTest::cmdCopyBufferImage1DArray() {
     Image b{device(), ImageCreateInfo1DArray{
         ImageUsage::TransferDestination|ImageUsage::TransferSource,
         PixelFormat::RGBA8UI, {4, 3}, 1
-    }, MemoryFlag::HostVisible};
+    }, MemoryFlags{}};
 
     /* Destination buffer */
     Buffer c{device(), BufferCreateInfo{BufferUsage::TransferDestination, 6*5*4}, MemoryFlag::HostVisible};
@@ -1113,7 +1113,7 @@ void ImageVkTest::cmdCopyBufferImage2DArray() {
     Image b{device(), ImageCreateInfo2DArray{
         ImageUsage::TransferDestination|ImageUsage::TransferSource,
         PixelFormat::RGBA8UI, {4, 4, 3}, 1
-    }, MemoryFlag::HostVisible};
+    }, MemoryFlags{}};
 
     /* Destination buffer */
     Buffer c{device(), BufferCreateInfo{BufferUsage::TransferDestination, 4*5*2*4}, MemoryFlag::HostVisible};
@@ -1192,7 +1192,7 @@ void ImageVkTest::cmdCopyBufferImageCubeMap() {
     Image b{device(), ImageCreateInfoCubeMap{
         ImageUsage::TransferDestination|ImageUsage::TransferSource,
         PixelFormat::RGBA8UI, {4, 4}, 1
-    }, MemoryFlag::HostVisible};
+    }, MemoryFlags{}};
 
     /* Destination buffer */
     Buffer c{device(), BufferCreateInfo{
@@ -1291,7 +1291,7 @@ void ImageVkTest::cmdCopyBufferImageCubeMapArray() {
     Image b{device(), ImageCreateInfoCubeMapArray{
         ImageUsage::TransferDestination|ImageUsage::TransferSource,
         PixelFormat::RGBA8UI, {4, 4, 8}, 1
-    }, MemoryFlag::HostVisible};
+    }, MemoryFlags{}};
 
     /* Destination buffer */
     Buffer c{device(), BufferCreateInfo{BufferUsage::TransferDestination, 3*4*7*4}, MemoryFlag::HostVisible};
