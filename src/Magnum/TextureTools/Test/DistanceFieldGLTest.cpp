@@ -467,11 +467,28 @@ void DistanceFieldGLTest::formatNotDrawable() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
     #endif
 
+    /* Not using GL::textureFormat(PixelFormat::R8Unorm) as that could pass
+       an unsized format to glTexStorage() on ES2, causing a GL error */
+    #ifndef MAGNUM_TARGET_GLES2
+    const GL::TextureFormat inputFormat = GL::TextureFormat::R8;
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    GL::TextureFormat inputFormat;
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        CORRADE_INFO("Using" << GL::Extensions::EXT::texture_rg::string());
+        inputFormat = GL::TextureFormat::R8;
+    } else {
+        inputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
+    }
+    #else
+    const GL::TextureFormat inputFormat = GL::TextureFormat::Luminance;
+    #endif
+
     GL::Texture2D input;
     input.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
         .setMagnificationFilter(GL::SamplerFilter::Nearest)
-        .setStorage(1, GL::textureFormat(PixelFormat::R8Unorm), {64, 64});
+        .setStorage(1, inputFormat, {64, 64});
 
+    /* Similarly in this case */
     GL::Texture2D output;
     #ifdef MAGNUM_TARGET_GLES2
     output.setImage(0, GL::TextureFormat::Luminance, ImageView2D{GL::PixelFormat::Luminance, GL::PixelType::UnsignedByte, Vector2i{4}});
@@ -488,6 +505,7 @@ void DistanceFieldGLTest::formatNotDrawable() {
         , Vector2i{64}
         #endif
         );
+    MAGNUM_VERIFY_NO_GL_ERROR();
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::Unsupported\n");
     #else
@@ -498,21 +516,32 @@ void DistanceFieldGLTest::formatNotDrawable() {
 void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_shared_exponent>())
-        CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
+    /* Not using GL::textureFormat(PixelFormat::R8Unorm) as that could pass
+       an unsized format to glTexStorage() on ES2, causing a GL error */
+    #ifndef MAGNUM_TARGET_GLES2
+    const GL::TextureFormat inputFormat = GL::TextureFormat::R8;
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    GL::TextureFormat inputFormat;
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        CORRADE_INFO("Using" << GL::Extensions::EXT::texture_rg::string());
+        inputFormat = GL::TextureFormat::R8;
+    } else {
+        inputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
+    }
+    #else
+    const GL::TextureFormat inputFormat = GL::TextureFormat::Luminance;
     #endif
 
     GL::Texture2D input;
-    input.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
-        .setMagnificationFilter(GL::SamplerFilter::Nearest)
-        .setStorage(1, GL::textureFormat(PixelFormat::R8Unorm), {23*14, 23*14});
+    input.setStorage(1, inputFormat, {23*14, 23*14});
 
+    /* Similarly in this case */
     GL::Texture2D output;
+    #ifdef MAGNUM_TARGET_GLES2
+    output.setImage(0, GL::TextureFormat::RGBA, Image2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, {23, 23}, Containers::Array<char>{NoInit, 23*23*4}});
+    #else
     output.setStorage(1, GL::textureFormat(PixelFormat::RGBA8Unorm), {23, 23});
-
-    GL::Texture2D outputInvalid;
-    outputInvalid.setStorage(1, GL::textureFormat(PixelFormat::RGBA8Unorm), {23*2, 23*2});
+    #endif
 
     DistanceFieldGL distanceField{4};
 
@@ -552,6 +581,7 @@ void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
         , Vector2i{23*14}
         #endif
         );
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(out.str(),
         "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
         "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
