@@ -224,7 +224,12 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             "#define LIGHT_RANGE_INITIALIZER {}\n",
             ("vec4(0.0, 0.0, 1.0, 0.0), "_s*configuration.lightCount()).exceptSuffix(2),
             ("vec3(1.0), "_s*configuration.lightCount()).exceptSuffix(2),
-            ("1.0/0.0, "_s*configuration.lightCount()).exceptSuffix(2));
+            /* While 1.0/0.0 works on certain drivers such as Mesa and produces
+               +inf, on NVidia it produces a NaN. Working around it by making
+               the divisor non-zero. The PhongGLTest::renderLights() then
+               verifies that both the default and explicitly passed
+               Constants::pi() give the same result. */
+            ("1.0/0.000000000000000000000001, "_s*configuration.lightCount()).exceptSuffix(2));
     #endif
 
     GL::Shader vert{version, GL::Shader::Type::Vertex};

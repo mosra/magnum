@@ -724,7 +724,7 @@ const struct {
     Vector4 position;
     Color3 specularColor, lightSpecularColor;
     Float intensity;
-    Float range;
+    Containers::Optional<Float> range; /* Constants::inf() if not set */
     Containers::Array<Containers::Pair<Vector2i, Color3ub>> picks;
 } RenderLightsData[] {
     {"directional", "light-directional.tga",
@@ -746,7 +746,13 @@ const struct {
         {10.0f, -15.0f, 5.0f, 0.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, Constants::inf(), {}},
     /* Range should have no effect either, especially zero range should not
-       cause any NaNs */
+       cause any NaNs. Default or explicit infinity shouldn't either. */
+    {"directional, range left at (infinity) default", "light-directional.tga",
+        {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, {}, {}},
+    {"directional, range=inf", "light-directional.tga",
+        {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, Constants::inf(), {}},
     {"directional, range=0.1", "light-directional.tga",
         {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, 1.0f, {}},
@@ -818,6 +824,13 @@ const struct {
     {"point, intensity=10, range=1.0", "light-point-intensity10-range1.0.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         10.0f, 1.0f, {}},
+    /* These two should produce the same result */
+    {"point, range left at (infinity) default", "light-point.tga",
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, {}, {}},
+    {"point, range=inf", "light-point.tga",
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, Constants::inf(), {}},
     /* Range ends right at the surface, so no contribution */
     {"point, range=0.75", "light-none.tga",
         {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
@@ -3987,12 +4000,17 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
             .setLightPositions({data.position})
             .setLightColors({0xff8080_rgbf*data.intensity})
             .setLightSpecularColors({data.lightSpecularColor})
-            .setLightRanges({data.range})
             .setShininess(60.0f)
             .setTransformationMatrix(transformation)
             .setNormalMatrix(transformation.normalMatrix())
-            .setProjectionMatrix(Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f))
-            .draw(plane);
+            .setProjectionMatrix(Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f));
+        /* Also testing a case where it's left at the default infinity value
+           embedded in the shader code or passed directly during construction
+           --- it should not cause any difference compared to passing
+           Constants::inf(). */
+        if(data.range)
+            shader.setLightRanges({*data.range});
+        shader.draw(plane);
     }
     #ifndef MAGNUM_TARGET_GLES2
     else if(flag == PhongGL::Flag::UniformBuffers
@@ -4012,12 +4030,15 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
         GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
             PhongDrawUniform{}.setNormalMatrix(transformation.normalMatrix())
         }};
+        PhongLightUniform lightUniformData;
+        lightUniformData
+            .setPosition({data.position})
+            .setColor(0xff8080_rgbf*data.intensity)
+            .setSpecularColor(data.lightSpecularColor);
+        if(data.range)
+            lightUniformData.setRange(*data.range);
         GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
-            PhongLightUniform{}
-                .setPosition({data.position})
-                .setColor(0xff8080_rgbf*data.intensity)
-                .setSpecularColor(data.lightSpecularColor)
-                .setRange(data.range),
+            lightUniformData
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             PhongMaterialUniform{}
