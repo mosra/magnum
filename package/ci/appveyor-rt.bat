@@ -27,9 +27,11 @@ cmake .. ^
 cmake --build . --target install || exit /b
 cd .. || exit /b
 
-rem Crosscompile Corrade
+rem Crosscompi le Corrade. /MP is apparently for more parallel builds than one
+rem would get with /m or cmake --build . --parallel. FFS.
 mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
+    -DCMAKE_CXX_FLAGS=/MP ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
@@ -38,14 +40,16 @@ cmake .. ^
     -DCORRADE_BUILD_STATIC=ON ^
     -DCORRADE_BUILD_DEPRECATED=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
-cmake --build . --config Release --target install -- /m /v:m || exit /b
+cmake --build . --config Release --target install -- /v:m || exit /b
 cd .. || exit /b
 
 cd .. || exit /b
 
-rem Crosscompile
+rem Crosscompile. /MP is apparently for more parallel builds than one would get
+rem with /m or cmake --build . --parallel. FFS.
 mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
+    -DCMAKE_CXX_FLAGS=/MP ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
@@ -71,7 +75,7 @@ cmake .. ^
     -DMAGNUM_BUILD_STATIC=ON ^
     -DMAGNUM_BUILD_DEPRECATED=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
-cmake --build . --config Release -- /m /v:m || exit /b
+cmake --build . --config Release -- /v:m || exit /b
 
 rem Test install, after running the tests as for them it shouldn't be needed
 cmake --build . --config Release --target install || exit /b
