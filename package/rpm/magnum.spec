@@ -6,7 +6,7 @@ Summary: C++11/C++14 graphics middleware for games and data visualization
 License: MIT
 Source: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-Requires: corrade, openal-soft, mesa-libGL, mesa-libEGL, SDL2, glfw, vulkan-loader, glslang
+Requires: corrade, openal-soft, mesa-libGL, mesa-libEGL, SDL2, glfw, vulkan-loader
 BuildRequires: cmake, git, gcc-c++, openal-soft-devel, mesa-libGL-devel, mesa-libEGL-devel, SDL2-devel, glfw-devel, vulkan-loader-devel
 # Fedora 35 also seems to need the mesa-vulkan-devel package
 
