@@ -33,7 +33,7 @@ rem possible to just -DCMAKE_CXX_FLAGS=/MP because that will unset all the
 rem default flag the damn thing needs, and one has to do this magic instead.
 rem https://discourse.cmake.org/t/strictly-appending-to-cmake-lang-flags/6478/9
 mkdir build-rt && cd build-rt || exit /b
-set CXXFLAGS=/MP4 && cmake .. -UCMAKE_CXX_FLAGS ^
+set CXXFLAGS=/MP6 && cmake .. -UCMAKE_CXX_FLAGS ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
@@ -42,14 +42,14 @@ set CXXFLAGS=/MP4 && cmake .. -UCMAKE_CXX_FLAGS ^
     -DCORRADE_BUILD_STATIC=ON ^
     -DCORRADE_BUILD_DEPRECATED=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
-cmake --build . --config Release --target install -- /m:4 /v:m || exit /b
+cmake --build . --config Release --target install -- /m:6 /p:CL_MPcount=6 /v:m || exit /b
 cd .. || exit /b
 
 cd .. || exit /b
 
 rem Crosscompile. See above for the /MP mess.
 mkdir build-rt && cd build-rt || exit /b
-set CXXFLAGS=/MP4 && cmake .. -UCMAKE_CXX_FLAGS ^
+set CXXFLAGS=/MP6 && cmake .. -UCMAKE_CXX_FLAGS ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
@@ -75,7 +75,7 @@ set CXXFLAGS=/MP4 && cmake .. -UCMAKE_CXX_FLAGS ^
     -DMAGNUM_BUILD_STATIC=ON ^
     -DMAGNUM_BUILD_DEPRECATED=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
-cmake --build . --config Release -- /m:4 /v:m || exit /b
+cmake --build . --config Release -- /m:6 /p:CL_MPcount=6 /v:m || exit /b
 
 rem Test install, after running the tests as for them it shouldn't be needed
 cmake --build . --config Release --target install || exit /b
