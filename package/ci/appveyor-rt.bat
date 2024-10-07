@@ -22,7 +22,6 @@ cmake .. ^
     -DCORRADE_WITH_PLUGINMANAGER=OFF ^
     -DCORRADE_WITH_TESTSUITE=OFF ^
     -DCORRADE_WITH_UTILITY=OFF ^
-    -DCORRADE_BUILD_DEPRECATED=OFF ^
     -G Ninja || exit /b
 cmake --build . --target install || exit /b
 cd .. || exit /b
@@ -36,14 +35,14 @@ cmake .. ^
     -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DCORRADE_WITH_INTERCONNECT=OFF ^
     -DCORRADE_BUILD_STATIC=ON ^
-    -DCORRADE_BUILD_DEPRECATED=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release --target install -- /m /v:m || exit /b
 cd .. || exit /b
 
 cd .. || exit /b
 
-rem Crosscompile
+rem Crosscompile. No tests because they takes ages to build, each executable is
+rem a msix file, and they can't be reasonably run either. F this platform.
 mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
@@ -67,11 +66,9 @@ cmake .. ^
     -DMAGNUM_WITH_TGAIMPORTER=ON ^
     -DMAGNUM_WITH_WAVAUDIOIMPORTER=OFF ^
     -DMAGNUM_TARGET_GLES2=%TARGET_GLES2% ^
-    -DMAGNUM_BUILD_TESTS=ON ^
     -DMAGNUM_BUILD_STATIC=ON ^
-    -DMAGNUM_BUILD_DEPRECATED=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release -- /m /v:m || exit /b
 
-rem Test install, after running the tests as for them it shouldn't be needed
+rem Test install
 cmake --build . --config Release --target install || exit /b
