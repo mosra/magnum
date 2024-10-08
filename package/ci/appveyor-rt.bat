@@ -1,5 +1,10 @@
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" call "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvarsall.bat" x64 || exit /b
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" set GENERATOR=Visual Studio 15 2017
+rem This is what should make the *native* corrade-rc getting found. Corrade
+rem should not cross-compile it on this platform, because then it'd get found
+rem instead of the native version with no way to distinguish the two, and all
+rem hell breaks loose. Thus also not passing CORRADE_RC_EXECUTABLE anywhere
+rem below to ensure this doesn't regress.
 set PATH=%APPVEYOR_BUILD_FOLDER%\deps-native\bin;%PATH%
 
 rem Build SDL
@@ -32,7 +37,6 @@ cmake .. ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DCORRADE_WITH_INTERCONNECT=OFF ^
     -DCORRADE_BUILD_STATIC=ON ^
     -G "%GENERATOR%" -A x64 || exit /b
@@ -41,7 +45,7 @@ cd .. || exit /b
 
 cd .. || exit /b
 
-rem Crosscompile. No tests because they takes ages to build, each executable is
+rem Crosscompile. No tests because they take ages to build, each executable is
 rem a msix file, and they can't be reasonably run either. F this platform.
 mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
@@ -50,7 +54,6 @@ cmake .. ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DSDL2_LIBRARY_RELEASE=%APPVEYOR_BUILD_FOLDER%/SDL/VisualC-WinRT/UWP_VS2015/X64/Release/SDL-UWP/SDL2.lib ^
     -DSDL2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/SDL/include ^
-    -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DMAGNUM_WITH_AUDIO=OFF ^
     -DMAGNUM_WITH_SDL2APPLICATION=ON ^
     -DMAGNUM_WITH_ANYAUDIOIMPORTER=OFF ^
