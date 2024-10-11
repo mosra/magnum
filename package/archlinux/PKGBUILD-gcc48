@@ -15,7 +15,7 @@ _rootdir=$startdir/../../
 
 build() {
     # Disable flags unknown to GCC 4.8
-    newcxxflags=$(echo $CXXFLAGS | sed s/-fstack-protector-strong.//g | sed s/.-fno-plt//g | sed s/.-fstack-clash-protection//g | sed s/.-fcf-protection//g)
+    newcxxflags=$(echo $CXXFLAGS | sed s/-fstack-protector-strong.//g | sed s/.-fno-plt//g | sed s/.-fstack-clash-protection//g | sed s/.-fcf-protection//g | sed "s#.-ffile-prefix-map=${srcdir}=/usr/src/debug/${pkgname}##g")
     export CXXFLAGS="$newcxxflags"
 
     if [ ! -d "$_rootdir/build-gcc48" ] ; then
@@ -29,10 +29,11 @@ build() {
 
     cd "$_rootdir/build-gcc48"
 
+    # TODO re-enable AudioImporter plugins once they're not depending on OpenAL
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DMAGNUM_WITH_AUDIO=ON \
+        -DMAGNUM_WITH_AUDIO=OFF \
         -DMAGNUM_WITH_VK=ON \
         -DMAGNUM_WITH_GLFWAPPLICATION=ON \
         -DMAGNUM_WITH_GLXAPPLICATION=ON \
@@ -42,7 +43,7 @@ build() {
         -DMAGNUM_WITH_EGLCONTEXT=ON \
         -DMAGNUM_WITH_GLXCONTEXT=ON \
         -DMAGNUM_WITH_OPENGLTESTER=ON \
-        -DMAGNUM_WITH_ANYAUDIOIMPORTER=ON \
+        -DMAGNUM_WITH_ANYAUDIOIMPORTER=OFF \
         -DMAGNUM_WITH_ANYIMAGECONVERTER=ON \
         -DMAGNUM_WITH_ANYIMAGEIMPORTER=ON \
         -DMAGNUM_WITH_ANYSCENECONVERTER=ON \
@@ -53,14 +54,14 @@ build() {
         -DMAGNUM_WITH_OBJIMPORTER=ON \
         -DMAGNUM_WITH_TGAIMAGECONVERTER=ON \
         -DMAGNUM_WITH_TGAIMPORTER=ON \
-        -DMAGNUM_WITH_WAVAUDIOIMPORTER=ON \
+        -DMAGNUM_WITH_WAVAUDIOIMPORTER=OFF \
         -DMAGNUM_WITH_DISTANCEFIELDCONVERTER=ON \
         -DMAGNUM_WITH_FONTCONVERTER=ON \
         -DMAGNUM_WITH_IMAGECONVERTER=ON \
         -DMAGNUM_WITH_SCENECONVERTER=ON \
         -DMAGNUM_WITH_SHADERCONVERTER=ON \
         -DMAGNUM_WITH_GL_INFO=ON \
-        -DMAGNUM_WITH_AL_INFO=ON \
+        -DMAGNUM_WITH_AL_INFO=OFF \
         -DMAGNUM_WITH_VK_INFO=ON \
         -DMAGNUM_BUILD_TESTS=ON \
         -DMAGNUM_BUILD_GL_TESTS=ON \
