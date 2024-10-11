@@ -293,7 +293,7 @@ SDL by default prevents the computer from powering off the or screen going to
 sleep. While possibly useful for game-like use cases, it's generally
 undesirable for regular applications. @ref Sdl2Application turns this behavior
 off. You can restore SDL's default behavior by disabling the
-[corresponding SDL hint](https://wiki.libsdl.org/CategoryHints) through an
+[corresponding SDL hint](https://wiki.libsdl.org/SDL2/CategoryHints) through an
 environment variable or through @cpp SDL_SetHint() @ce from your application.
 
 @code{.sh}
@@ -311,14 +311,14 @@ not terminate it either and you'd have to forcibly kill it instead. When using
 SDL >= 2.0.4, @ref Sdl2Application turns this behavior off, making
 @ref exitEvent() behave consistently with other application implementations
 such as @ref GlfwApplication. You can turn this behavior back on by enabling
-the [corresponding SDL hint](https://wiki.libsdl.org/SDL_HINT_NO_SIGNAL_HANDLERS)
+the [corresponding SDL hint](https://wiki.libsdl.org/SDL2/SDL_HINT_NO_SIGNAL_HANDLERS)
 through an environment variable:
 
 @code{.sh}
 SDL_NO_SIGNAL_HANDLERS=1 ./your-app
 @endcode
 
-See also the [SDL Wiki](https://wiki.libsdl.org/SDL_EventType#SDL_QUIT) for
+See also the [SDL Wiki](https://wiki.libsdl.org/SDL2/SDL_EventType#SDL_QUIT) for
 details.
 
 @subsection Platform-Sdl2Application-platform-specific-linux Linux specifics
@@ -327,7 +327,7 @@ SDL by default attempts to disable compositing, which may cause ugly flickering
 for non-fullscreen apps (KWin, among others, is known to respect this setting).
 When using SDL >= 2.0.8, @ref Sdl2Application turns this behavior off, keeping
 the compositor running to avoid the flicker. You can turn this behavior back on
-by enabling the [corresponding SDL hint](https://wiki.libsdl.org/CategoryHints)
+by enabling the [corresponding SDL hint](https://wiki.libsdl.org/SDL2/CategoryHints)
 through an environment variable or through @cpp SDL_SetHint() @ce from your
 application.
 
