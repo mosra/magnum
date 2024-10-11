@@ -107,7 +107,7 @@ check() {
     lcov --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null
     lcov --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
     lcov --remove coverage.info "*/build-coverage/src/*" --output-file coverage.info > /dev/null
-    genhtml --output-directory ./coverage coverage.info
+    genhtml --no-function-coverage --missed --output-directory ./coverage coverage.info
 }
 
 package() {
