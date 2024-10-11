@@ -210,10 +210,14 @@ struct Sdl2ApplicationTest: Platform::Application {
     /* For testing event coordinates */
     void mousePressEvent(MouseEvent& event) override {
         Debug{} << "mouse press event:" << event.position() << Int(event.button());
+        _gestureDistance = {};
+        _gestureRotation = {};
     }
 
     void mouseReleaseEvent(MouseEvent& event) override {
         Debug{} << "mouse release event:" << event.position() << Int(event.button());
+        _gestureDistance = {};
+        _gestureRotation = {};
     }
 
     void mouseMoveEvent(MouseMoveEvent& event) override {
@@ -222,6 +226,12 @@ struct Sdl2ApplicationTest: Platform::Application {
 
     void mouseScrollEvent(MouseScrollEvent& event) override {
         Debug{} << "mouse scroll event:" << event.offset() << event.position();
+    }
+
+    void multiGestureEvent(MultiGestureEvent& event) override {
+        Debug{} << "multi gesture:" << event.center() << "rotation:" << Deg{_gestureRotation} << Debug::nospace << ", relative" << Deg{event.relativeRotation()} << Debug::nospace << ", distance" << _gestureDistance << Debug::nospace << ", relative" << event.relativeDistance() << Debug::nospace << ", fingers" << event.fingerCount();
+        _gestureDistance += event.relativeDistance();
+        _gestureRotation += Rad(event.relativeRotation());
     }
 
     void keyPressEvent(KeyEvent& event) override {
@@ -340,6 +350,8 @@ struct Sdl2ApplicationTest: Platform::Application {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         bool _vsync = false;
         #endif
+        Float _gestureDistance{};
+        Rad _gestureRotation{};
 };
 
 Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
