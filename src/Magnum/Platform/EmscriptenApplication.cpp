@@ -540,7 +540,8 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
             /* Relies on the target being the canvas, which should be always
-               true for mouse events */
+               true for mouse events. The targetX and targetY variables used
+               to be a `long` before 3.1.47, which is why the cast. */
             Vector2i position{Int(event->targetX), Int(event->targetY)};
             MouseMoveEvent e{*event,
                 /* Avoid bogus offset at first -- report 0 when the event is
@@ -775,7 +776,8 @@ EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::but
 
 Vector2i EmscriptenApplication::MouseEvent::position() const {
     /* Relies on the target being the canvas, which should be always true for
-       mouse events */
+       mouse events. The targetX and targetY variables used to be a `long`
+       before 3.1.47, which is why the cast. */
     return {Int(_event.targetX), Int(_event.targetY)};
 }
 
@@ -794,7 +796,8 @@ EmscriptenApplication::MouseMoveEvent::Buttons EmscriptenApplication::MouseMoveE
 
 Vector2i EmscriptenApplication::MouseMoveEvent::position() const {
     /* Relies on the target being the canvas, which should be always true for
-       mouse events */
+       mouse events. The targetX and targetY variables used to be a `long`
+       before 3.1.47, which is why the cast. */
     return {Int(_event.targetX), Int(_event.targetY)};
 }
 
@@ -822,7 +825,8 @@ Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
 
 Vector2i EmscriptenApplication::MouseScrollEvent::position() const {
     /* Relies on the target being the canvas, which should be always true for
-       mouse events */
+       mouse events. The targetX and targetY variables used to be a `long`
+       before 3.1.47, which is why the cast. */
     return {Int(_event.mouse.targetX), Int(_event.mouse.targetY)};
 }
 
