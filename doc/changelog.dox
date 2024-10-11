@@ -792,7 +792,8 @@ See also:
 -   @ref Platform::Sdl2Application now overrides SDL's default behavior that
     prevents computer from entering a power-saving mode while the application
     is running, as that's generally undesirable for regular GUI applications.
-    See @ref Platform-Sdl2Application-usage-power for more information.
+    See @ref Platform-Sdl2Application-platform-specific-power for more
+    information.
 -   @ref Platform::GlfwApplication now overrides GLFW's default behavior that
     changes current working directory to `Resources/` in the app bundle on
     Apple platforms.
@@ -3170,7 +3171,7 @@ Released 2019-10-24, tagged as
     to use a system GL driver or a dedicated GLES driver based on whether
     @cpp MAGNUM_TARGET_DESKTOP_GLES @ce is defined. This allows for a smoother
     experience for example when using ANGLE on Windows. See
-    @ref Platform-Sdl2Application-usage-gles for more information.
+    @ref Platform-Sdl2Application-platform-specific-gles for more information.
 -   Replaced uses of `Pointer_stringify()` in @ref Platform::Sdl2Application
     which was removed in Emscripten 1.38.27
 -   @ref Platform::Sdl2Application and all Emscripten markup was updated to
@@ -4056,7 +4057,7 @@ Released 2018-10-23, tagged as
 -   @ref Platform::Sdl2Application::Configuration::WindowFlags values that make
     no sense on Emscripten are not available there anymore
 -   When using SDL 2.0.8 and newer, @ref Platform::Sdl2Application no longer
-    attempts to disable compositing on Linux. See @ref Platform-Sdl2Application-usage-linux
+    attempts to disable compositing on Linux. See @ref Platform-Sdl2Application-platform-specific-linux
     for more information. See also [mosra/magnum#184](https://github.com/mosra/magnum/issues/184).
 -   New @cpp "swiftshader-no-empty-egl-context-flags" @ce and
     @cpp "swiftshader-egl-context-needs-pbuffer" @ce workarounds to make

@@ -285,7 +285,9 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
 
-@subsection Platform-Sdl2Application-usage-power Power management
+@section Platform-Sdl2Application-platform-specific Platform-specific behavior
+
+@subsection Platform-Sdl2Application-platform-specific-power Power management
 
 SDL by default prevents the computer from powering off the or screen going to
 sleep. While possibly useful for game-like use cases, it's generally
@@ -298,7 +300,7 @@ environment variable or through @cpp SDL_SetHint() @ce from your application.
 SDL_VIDEO_ALLOW_SCREENSAVER=0 ./your-app
 @endcode
 
-@subsection Platform-Sdl2Application-usage-posix POSIX specifics
+@subsection Platform-Sdl2Application-platform-specific-posix POSIX specifics
 
 On POSIX systems, SDL by default intercepts the `SIGTERM` signal and generates
 an exit event for it, instead of doing the usual application exit. This would
@@ -319,7 +321,7 @@ SDL_NO_SIGNAL_HANDLERS=1 ./your-app
 See also the [SDL Wiki](https://wiki.libsdl.org/SDL_EventType#SDL_QUIT) for
 details.
 
-@subsection Platform-Sdl2Application-usage-linux Linux specifics
+@subsection Platform-Sdl2Application-platform-specific-linux Linux specifics
 
 SDL by default attempts to disable compositing, which may cause ugly flickering
 for non-fullscreen apps (KWin, among others, is known to respect this setting).
@@ -336,7 +338,7 @@ SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR=1 ./your-app
 If you're running an older version of SDL, you can disallow apps from bypassing
 the compositor in system-wide KWin settings.
 
-@subsection Platform-Sdl2Application-usage-ios iOS specifics
+@subsection Platform-Sdl2Application-platform-specific-ios iOS specifics
 
 Leaving a default (zero) window size in @ref Configuration will cause the app
 to autodetect it based on the actual device screen size. This also depends on
@@ -351,7 +353,7 @@ a particular value for details:
 -   @ref Configuration::WindowFlag::Resizable makes the application respond to
     device orientation changes
 
-@subsection Platform-Sdl2Application-usage-emscripten Emscripten specifics
+@subsection Platform-Sdl2Application-platform-specific-emscripten Emscripten specifics
 
 Leaving a default (zero) window size in @ref Configuration will cause the app
 to use a window size that corresponds to *CSS pixel size* of the
@@ -367,7 +369,7 @@ the flag is not enabled, no canvas resizing is performed.
     the preferred application implementation for the web. It offers a broader
     range of features, more efficient idle behavior and smaller code size.
 
-@subsection Platform-Sdl2Application-usage-gles OpenGL ES specifics
+@subsection Platform-Sdl2Application-platform-specific-gles OpenGL ES specifics
 
 For OpenGL ES, SDL2 defaults to a "desktop GLES" context of the system driver.
 Because Magnum has the opposite default behavior, if @ref MAGNUM_TARGET_GLES is
@@ -1209,7 +1211,7 @@ class Sdl2Application {
          * which tells the application that it's safe to exit.
          *
          * SDL has special behavior on POSIX systems regarding `SIGINT` and
-         * `SIGTERM` handling, see @ref Platform-Sdl2Application-usage-posix
+         * `SIGTERM` handling, see @ref Platform-Sdl2Application-platform-specific-posix
          * for more information.
          */
         virtual void exitEvent(ExitEvent& event);
