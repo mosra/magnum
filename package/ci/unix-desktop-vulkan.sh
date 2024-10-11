@@ -32,7 +32,8 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Debug \
     -DMAGNUM_WITH_AUDIO=OFF \
-    `# Needed by VkMeshVkTest, together with TgaImporter and AnyImageImporter` \
+    `# Needed by VkImageVkTest, and by VkMeshVkTest, together with` \
+    `# TgaImporter and AnyImageImporter` \
     -DMAGNUM_WITH_DEBUGTOOLS=ON \
     -DMAGNUM_WITH_GL=OFF \
     -DMAGNUM_WITH_MATERIALTOOLS=OFF \
