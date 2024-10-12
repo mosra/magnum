@@ -26,14 +26,20 @@
 
 #include <Corrade/Utility/Arguments.h>
 
+#ifdef BUILD_GLXAPPLICATION
 #include "Magnum/Platform/GlxApplication.h"
+#elif defined(BUILD_XEGLAPPLICATION)
+#include "Magnum/Platform/XEglApplication.h"
+#else
+#error
+#endif
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 using namespace Containers::Literals;
 
-struct GlxApplicationTest: Platform::Application {
-    explicit GlxApplicationTest(const Arguments& arguments);
+struct AbstractXApplicationTest: Platform::Application {
+    explicit AbstractXApplicationTest(const Arguments& arguments);
 
     void drawEvent() override {
         Debug{} << "draw event";
@@ -41,7 +47,7 @@ struct GlxApplicationTest: Platform::Application {
     }
 };
 
-GlxApplicationTest::GlxApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+AbstractXApplicationTest::AbstractXApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     Utility::Arguments args;
     args.addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
@@ -63,4 +69,4 @@ GlxApplicationTest::GlxApplicationTest(const Arguments& arguments): Platform::Ap
 
 }}}}
 
-MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::GlxApplicationTest)
+MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::AbstractXApplicationTest)

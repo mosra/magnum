@@ -120,7 +120,8 @@ if(MAGNUM_WITH_GLFWAPPLICATION)
 endif()
 
 if(MAGNUM_WITH_GLXAPPLICATION)
-    add_executable(PlatformGlxApplicationTest GlxApplicationTest.cpp)
+    add_executable(PlatformGlxApplicationTest AbstractXApplicationTest.cpp)
+    target_compile_definitions(PlatformGlxApplicationTest PRIVATE BUILD_GLXAPPLICATION)
     target_link_libraries(PlatformGlxApplicationTest PRIVATE MagnumGlxApplication)
 endif()
 
@@ -161,7 +162,8 @@ if(MAGNUM_WITH_SDL2APPLICATION)
 endif()
 
 if(MAGNUM_WITH_XEGLAPPLICATION)
-    add_executable(PlatformXEglApplicationTest XEglApplicationTest.cpp)
+    add_executable(PlatformXEglApplicationTest AbstractXApplicationTest.cpp)
+    target_compile_definitions(PlatformXEglApplicationTest PRIVATE BUILD_XEGLAPPLICATION)
     target_link_libraries(PlatformXEglApplicationTest PRIVATE MagnumXEglApplication)
 endif()
 
