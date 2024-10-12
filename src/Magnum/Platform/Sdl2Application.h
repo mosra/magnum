@@ -500,12 +500,29 @@ class Sdl2Application {
         class ViewportEvent;
         class InputEvent;
         class KeyEvent;
+        class PointerEvent;
+        class PointerMoveEvent;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         class MouseEvent;
         class MouseMoveEvent;
+        #endif
         class MouseScrollEvent;
         class MultiGestureEvent;
         class TextInputEvent;
         class TextEditingEvent;
+
+        /* The damn thing cannot handle forward enum declarations */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class Pointer: UnsignedByte;
+        #endif
+
+        /**
+         * @brief Set of pointer types
+         * @m_since_latest
+         *
+         * @see @ref PointerMoveEvent::pointers()
+         */
+        typedef Containers::EnumSet<Pointer> Pointers;
 
         #ifdef MAGNUM_TARGET_GL
         /**
@@ -1001,7 +1018,7 @@ class Sdl2Application {
          * @}
          */
 
-        /** @{ @name Mouse handling */
+        /** @{ @name Pointer handling */
 
     public:
         /**
@@ -1082,27 +1099,89 @@ class Sdl2Application {
 
     private:
         /**
-         * @brief Mouse press event
+         * @brief Pointer press event
+         * @m_since_latest
          *
-         * Called when mouse button is pressed. Default implementation does
+         * Called when a mouse is pressed. Note that if at least one mouse
+         * button is already pressed and another button gets pressed in
+         * addition, @ref pointerMoveEvent() with the new combination is
+         * called, not this function.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mousePressEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
          * nothing.
          */
-        virtual void mousePressEvent(MouseEvent& event);
+        virtual void pointerPressEvent(PointerEvent& event);
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse press event
+         * @m_deprecated_since_latest Use @ref pointerPressEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use pointerPressEvent() instead") void mousePressEvent(MouseEvent& event);
+        #endif
+
+        /**
+         * @brief Pointer release event
+         * @m_since_latest
+         *
+         * Called when a mouse is released. Note that if multiple mouse buttons
+         * are pressed and one of these is released, @ref pointerMoveEvent()
+         * with the new combination is called, not this function.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseReleaseEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
+         */
+        virtual void pointerReleaseEvent(PointerEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Mouse release event
+         * @m_deprecated_since_latest Use @ref pointerReleaseEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
          *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
+         * Default implementation does nothing.
          */
-        virtual void mouseReleaseEvent(MouseEvent& event);
+        virtual CORRADE_DEPRECATED("use pointerReleaseEvent() instead") void mouseReleaseEvent(MouseEvent& event);
+        #endif
 
         /**
-         * @brief Mouse move event
+         * @brief Pointer move event
+         * @m_since_latest
          *
-         * Called when mouse is moved. Default implementation does nothing.
+         * Called when any of the currently pressed pointers is moved or
+         * changes its properties. Gets called also if the set of pressed mouse
+         * buttons changes.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseMoveEvent(), or if
+         * @ref PointerMoveEvent::pointer() is not
+         * @relativeref{Corrade,Containers::NullOpt}, to either
+         * @ref mousePressEvent() or @ref mouseReleaseEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
          */
-        virtual void mouseMoveEvent(MouseMoveEvent& event);
+        virtual void pointerMoveEvent(PointerMoveEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse move event
+         * @m_deprecated_since_latest Use @ref pointerMoveEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use pointerMoveEvent() instead") void mouseMoveEvent(MouseMoveEvent& event);
+        #endif
 
         /**
          * @brief Mouse scroll event
@@ -1111,14 +1190,6 @@ class Sdl2Application {
          * area on a touchpad). Default implementation does nothing.
          */
         virtual void mouseScrollEvent(MouseScrollEvent& event);
-
-        /* Since 1.8.17, the original short-hand group closing doesn't work
-           anymore. FFS. */
-        /**
-         * @}
-         */
-
-        /** @{ @name Touch gesture handling */
 
         /**
          * @brief Multi gesture event
@@ -1293,6 +1364,47 @@ class Sdl2Application {
 
         int _exitCode = 0;
 };
+
+/**
+@brief Pointer type
+@m_since_latest
+
+@see @ref Pointers, @ref PointerEvent::pointer(),
+    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers()
+*/
+enum class Sdl2Application::Pointer: UnsignedByte {
+    /**
+     * Left mouse button. Corresponds to `SDL_BUTTON_LEFT` /
+     * `SDL_BUTTON_LMASK`.
+     */
+    MouseLeft = 1 << 0,
+
+    /**
+     * Middle mouse button. Corresponds to `SDL_BUTTON_MIDDLE` /
+     * `SDL_BUTTON_MMASK`.
+     */
+    MouseMiddle = 1 << 1,
+
+    /**
+     * Right mouse button. Corresponds to `SDL_BUTTON_RIGHT` /
+     * `SDL_BUTTON_RMASK`.
+     */
+    MouseRight = 1 << 2,
+
+    /**
+     * Fourth mouse button, such as wheel left. Corresponds to `SDL_BUTTON_X1`
+     * / `SDL_BUTTON_X1MASK`.
+     */
+    MouseButton4 = 1 << 3,
+
+    /**
+     * Fifth mouse button, such as wheel right. Corresponds to `SDL_BUTTON_X2`
+     * / `SDL_BUTTON_X2MASK`.
+     */
+    MouseButton5 = 1 << 4,
+};
+
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Pointers)
 
 #ifdef MAGNUM_TARGET_GL
 /**
@@ -2141,9 +2253,10 @@ class Sdl2Application::ViewportEvent {
 /**
 @brief Base for input events
 
-@see @ref KeyEvent, @ref MouseEvent, @ref MouseMoveEvent, @ref keyPressEvent(),
-    @ref keyReleaseEvent(), @ref mousePressEvent(), @ref mouseReleaseEvent(),
-    @ref mouseMoveEvent()
+@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent,
+    @ref MouseScrollEvent, @ref keyPressEvent(), @ref keyReleaseEvent(),
+    @ref pointerPressEvent(), @ref pointerReleaseEvent(),
+    @ref pointerMoveEvent(), @ref mouseScrollEvent()
 */
 class Sdl2Application::InputEvent {
     public:
@@ -2151,7 +2264,9 @@ class Sdl2Application::InputEvent {
          * @brief Modifier
          *
          * @see @ref Modifiers, @ref KeyEvent::modifiers(),
-         *      @ref MouseEvent::modifiers(), @ref MouseMoveEvent::modifiers()
+         *      @ref PointerEvent::modifiers(),
+         *      @ref PointerMoveEvent::modifiers(),
+         *      @ref MouseScrollEvent::modifiers()
          */
         enum class Modifier: Uint16 {
             /**
@@ -2208,8 +2323,9 @@ class Sdl2Application::InputEvent {
         /**
          * @brief Set of modifiers
          *
-         * @see @ref KeyEvent::modifiers(), @ref MouseEvent::modifiers(),
-         *      @ref MouseMoveEvent::modifiers()
+         * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
+         *      @ref PointerMoveEvent::modifiers(),
+         *      @ref MouseScrollEvent::modifiers()
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -2242,9 +2358,9 @@ class Sdl2Application::InputEvent {
          * @brief Underlying SDL event
          *
          * Of type `SDL_KEYDOWN` / `SDL_KEYUP` for @ref KeyEvent,
-         * `SDL_MOUSEBUTTONUP` / `SDL_MOUSEBUTTONDOWN` for @ref MouseEvent,
-         * `SDL_MOUSEWHEEL` for @ref MouseScrollEvent and `SDL_MOUSEMOTION` for
-         * @ref MouseMoveEvent.
+         * `SDL_MOUSEBUTTONDOWN` / `SDL_MOUSEBUTTONUP` for @ref PointerEvent,
+         * `SDL_MOUSEMOTION` for @ref PointerMoveEvent and `SDL_MOUSEWHEEL` for
+         * @ref MouseScrollEvent.
          * @see @ref Sdl2Application::anyEvent()
          */
         const SDL_Event& event() const { return _event; }
@@ -2586,12 +2702,84 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 };
 
 /**
+@brief Pointer event
+@m_since_latest
+
+@see @ref PointerMoveEvent, @ref pointerPressEvent(),
+    @ref pointerReleaseEvent()
+*/
+class Sdl2Application::PointerEvent: public InputEvent {
+    public:
+        /** @brief Copying is not allowed */
+        PointerEvent(const PointerEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerEvent(PointerEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        PointerEvent& operator=(const PointerEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerEvent& operator=(PointerEvent&&) = delete;
+
+        /** @brief Pointer type that was pressed or released */
+        Pointer pointer() const { return _pointer; }
+
+        /**
+         * @brief Position
+         *
+         * For mouse input the position is always reported in whole pixels.
+         */
+        Vector2 position() const { return _position; }
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Click count
+         *
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        Int clickCount() const { return _clickCount; }
+        #endif
+
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
+    private:
+        friend Sdl2Application;
+
+        explicit PointerEvent(const SDL_Event& event, Pointer pointer, const Vector2& position
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            , Int clickCount
+            #endif
+        ): InputEvent{event}, _pointer(pointer), _position{position}
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            , _clickCount{clickCount}
+            #endif
+        {}
+
+        const Pointer _pointer;
+        Containers::Optional<Modifiers> _modifiers;
+        const Vector2 _position;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        const Int _clickCount;
+        #endif
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
 @brief Mouse event
+@m_deprecated_since_latest Use @ref PointerEvent, @ref pointerPressEvent() and
+    @ref pointerReleaseEvent() instead, which is a better abstraction for
+    covering both mouse and touch / pen input.
 
 @see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
     @ref mouseReleaseEvent()
 */
-class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
+class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerReleaseEvent() instead") Sdl2Application::MouseEvent: public InputEvent {
     public:
         /**
          * @brief Mouse button
@@ -2652,13 +2840,90 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         #endif
         Containers::Optional<Modifiers> _modifiers;
 };
+#endif
 
 /**
+@brief Pointer move event
+@m_since_latest
+
+@see @ref PointerEvent, @ref pointerMoveEvent()
+*/
+class Sdl2Application::PointerMoveEvent: public InputEvent {
+    public:
+        /** @brief Copying is not allowed */
+        PointerMoveEvent(const PointerMoveEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerMoveEvent(PointerMoveEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        PointerMoveEvent& operator=(const PointerMoveEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerMoveEvent& operator=(PointerMoveEvent&&) = delete;
+
+        /**
+         * @brief Pointer type that was added or removed from the set of pressed pointers
+         *
+         * Is non-empty only in case a mouse button was pressed in addition to
+         * an already pressed button, or if one mouse button from multiple
+         * pressed buttons was released. If non-empty and @ref pointers() don't
+         * contain given @ref Pointer value, the button was released, if they
+         * contain given value, the button was pressed.
+         */
+        Containers::Optional<Pointer> pointer() const { return _pointer; }
+
+        /**
+         * @brief Pointer types pressed in this event
+         *
+         * Returns an empty set if no pointers are pressed, which happens for
+         * example when a mouse is just moved around.
+         * @see @ref pointer()
+         */
+        Pointers pointers() const { return _pointers; }
+
+        /**
+         * @brief Position
+         *
+         * For mouse input the position is always reported in whole pixels.
+         */
+        Vector2 position() const { return _position; }
+
+        /**
+         * @brief Position relative to the previous touch event
+         *
+         * For mouse input the position is always reported in whole pixels.
+         */
+        Vector2 relativePosition() const { return _relativePosition; }
+
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
+    private:
+        friend Sdl2Application;
+
+        explicit PointerMoveEvent(const SDL_Event& event, Containers::Optional<Pointer> pointer, Pointers pointers, const Vector2& position, const Vector2& relativePosition): InputEvent{event}, _pointer{pointer}, _pointers{pointers}, _position{position}, _relativePosition{relativePosition} {}
+
+        const Containers::Optional<Pointer> _pointer;
+        const Pointers _pointers;
+        const Vector2 _position, _relativePosition;
+        Containers::Optional<Modifiers> _modifiers;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
 @brief Mouse move event
+@m_deprecated_since_latest Use @ref PointerMoveEvent and
+    @ref pointerMoveEvent() instead, which is a better abstraction for covering
+    both mouse and touch / pen input.
 
 @see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
-class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
+class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") Sdl2Application::MouseMoveEvent: public InputEvent {
     public:
         /**
          * @brief Mouse button
@@ -2714,10 +2979,15 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Containers::Optional<Modifiers> _modifiers;
 };
 
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 /**
 @brief Mouse scroll event
 
-@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref mouseScrollEvent()
 */
 class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
     public:
@@ -3007,7 +3277,6 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
 
 }}
 

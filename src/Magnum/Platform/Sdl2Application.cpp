@@ -893,6 +893,42 @@ void Sdl2Application::exit(const int exitCode) {
     _exitCode = exitCode;
 }
 
+namespace {
+
+Sdl2Application::Pointer buttonToPointer(const Uint8 button) {
+    switch(button) {
+        case SDL_BUTTON_LEFT:
+            return Sdl2Application::Pointer::MouseLeft;
+        case SDL_BUTTON_MIDDLE:
+            return Sdl2Application::Pointer::MouseMiddle;
+        case SDL_BUTTON_RIGHT:
+            return Sdl2Application::Pointer::MouseRight;
+        case SDL_BUTTON_X1:
+            return Sdl2Application::Pointer::MouseButton4;
+        case SDL_BUTTON_X2:
+            return Sdl2Application::Pointer::MouseButton5;
+    }
+
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+}
+
+Sdl2Application::Pointers buttonsToPointers(const Uint32 buttons) {
+    Sdl2Application::Pointers pointers;
+    if(buttons & SDL_BUTTON_LMASK)
+        pointers |= Sdl2Application::Pointer::MouseLeft;
+    if(buttons & SDL_BUTTON_MMASK)
+        pointers |= Sdl2Application::Pointer::MouseMiddle;
+    if(buttons & SDL_BUTTON_RMASK)
+        pointers |= Sdl2Application::Pointer::MouseRight;
+    if(buttons & SDL_BUTTON_X1MASK)
+        pointers |= Sdl2Application::Pointer::MouseButton4;
+    if(buttons & SDL_BUTTON_X2MASK)
+        pointers |= Sdl2Application::Pointer::MouseButton5;
+    return pointers;
+}
+
+}
+
 bool Sdl2Application::mainLoopIteration() {
     /* If exit was requested directly in the constructor, exit immediately
        without calling anything else */
@@ -982,12 +1018,27 @@ bool Sdl2Application::mainLoopIteration() {
 
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP: {
-                MouseEvent e{event, static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y}
-                    #ifndef CORRADE_TARGET_EMSCRIPTEN
-                    , event.button.clicks
-                    #endif
+                const Pointer pointer = buttonToPointer(event.button.button);
+                const Vector2 position{Float(event.button.x), Float(event.button.y)};
+
+                /* If an additional mouse button was pressed or some buttons
+                   are still left pressed after a release, call a move event
+                   instead */
+                const Uint32 buttons = SDL_GetMouseState(nullptr, nullptr);
+                if((event.type == SDL_MOUSEBUTTONDOWN && (buttons & ~SDL_BUTTON(event.button.button))) ||
+                   (event.type == SDL_MOUSEBUTTONUP && buttons)) {
+                    Pointers pointers = buttonsToPointers(buttons);
+                    PointerMoveEvent e{event, pointer, pointers, position, {}};
+                    pointerMoveEvent(e);
+                } else {
+                    PointerEvent e{event, pointer, position
+                        #ifndef CORRADE_TARGET_EMSCRIPTEN
+                        , event.button.clicks
+                        #endif
                     };
-                event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
+                    event.type == SDL_MOUSEBUTTONDOWN ?
+                        pointerPressEvent(e) : pointerReleaseEvent(e);
+                }
             } break;
 
             case SDL_MOUSEWHEEL: {
@@ -996,10 +1047,11 @@ bool Sdl2Application::mainLoopIteration() {
             } break;
 
             case SDL_MOUSEMOTION: {
-                MouseMoveEvent e{event, {event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state)};
-                mouseMoveEvent(e);
-                break;
-            }
+                PointerMoveEvent e{event, {}, buttonsToPointers(event.motion.state),
+                    {Float(event.motion.x), Float(event.motion.y)},
+                    {Float(event.motion.xrel), Float(event.motion.yrel)}};
+                pointerMoveEvent(e);
+            } break;
 
             case SDL_MULTIGESTURE: {
                 MultiGestureEvent e{event, {event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers};
@@ -1224,9 +1276,131 @@ void Sdl2Application::anyEvent(SDL_Event&) {
 void Sdl2Application::viewportEvent(ViewportEvent&) {}
 void Sdl2Application::keyPressEvent(KeyEvent&) {}
 void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace {
+
+CORRADE_IGNORE_DEPRECATED_PUSH
+Sdl2Application::MouseEvent::Button pointerToButton(const Sdl2Application::Pointer pointer) {
+    switch(pointer) {
+        case Sdl2Application::Pointer::MouseLeft:
+            return Sdl2Application::MouseEvent::Button::Left;
+        case Sdl2Application::Pointer::MouseMiddle:
+            return Sdl2Application::MouseEvent::Button::Middle;
+        case Sdl2Application::Pointer::MouseRight:
+            return Sdl2Application::MouseEvent::Button::Right;
+        case Sdl2Application::Pointer::MouseButton4:
+            return Sdl2Application::MouseEvent::Button::X1;
+        case Sdl2Application::Pointer::MouseButton5:
+            return Sdl2Application::MouseEvent::Button::X2;
+    }
+
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+}
+CORRADE_IGNORE_DEPRECATED_POP
+
+}
+#endif
+
+void Sdl2Application::pointerPressEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent mouseEvent{event.event(), pointerToButton(event.pointer()), Vector2i{Math::round(event.position())}
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        , event.clickCount()
+        #endif
+    };
+    mousePressEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void Sdl2Application::mousePressEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void Sdl2Application::pointerReleaseEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent mouseEvent{event.event(), pointerToButton(event.pointer()), Vector2i{Math::round(event.position())}
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        , event.clickCount()
+        #endif
+    };
+    mouseReleaseEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void Sdl2Application::pointerMoveEvent(PointerMoveEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    const Vector2i roundedPosition{Math::round(event.position())};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* If the event is due to some button being additionally pressed or one
+       button from a larger set being released, delegate to a press/release
+       event instead */
+    if(event.pointer()) {
+        /* SDL2 reports either a move or a press/release, so there shouldn't be
+           any move in this case */
+        CORRADE_INTERNAL_ASSERT(event.relativePosition() == Vector2{});
+        MouseEvent mouseEvent{event.event(), pointerToButton(*event.pointer()),
+            roundedPosition
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            , 1
+            #endif
+        };
+        event.pointers() >= *event.pointer() ?
+            mousePressEvent(mouseEvent) : mouseReleaseEvent(mouseEvent);
+    } else {
+        MouseMoveEvent::Buttons buttons;
+        if(event.pointers() & Pointer::MouseLeft)
+            buttons |= MouseMoveEvent::Button::Left;
+        if(event.pointers() & Pointer::MouseMiddle)
+            buttons |= MouseMoveEvent::Button::Middle;
+        if(event.pointers() & Pointer::MouseRight)
+            buttons |= MouseMoveEvent::Button::Right;
+        if(event.pointers() & Pointer::MouseButton4)
+            buttons |= MouseMoveEvent::Button::X1;
+        if(event.pointers() & Pointer::MouseButton5)
+            buttons |= MouseMoveEvent::Button::X2;
+
+        /* Can't do just Math::round(event.relativePosition()) because if the
+           previous position was 4.6 and the new 5.3, they both round to 5 but
+           the relativePosition is 0.6 and rounds to 1. Conversely, if it'd be
+           5.3 and 5.6, the positions round to 5 and 6 but relative position
+           stays 0. */
+        const Vector2i previousRoundedPosition{Math::round(event.position() - event.relativePosition())};
+        /* Call the event only if the integer values actually changed */
+        if(roundedPosition != previousRoundedPosition) {
+            MouseMoveEvent mouseEvent{event.event(), roundedPosition, roundedPosition - previousRoundedPosition, buttons};
+            mouseMoveEvent(mouseEvent);
+        }
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 void Sdl2Application::mouseScrollEvent(MouseScrollEvent&) {}
 void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
@@ -1269,15 +1443,35 @@ Containers::StringView Sdl2Application::KeyEvent::keyName() const {
     return keyName(_key);
 }
 
+Sdl2Application::InputEvent::Modifiers Sdl2Application::PointerEvent::modifiers() {
+    if(!_modifiers)
+        _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+    return *_modifiers;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
     if(_modifiers) return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
+Sdl2Application::InputEvent::Modifiers Sdl2Application::PointerMoveEvent::modifiers() {
+    if(!_modifiers)
+        _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+    return *_modifiers;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
     if(_modifiers) return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 Vector2i Sdl2Application::MouseScrollEvent::position() {
     if(_position) return *_position;
