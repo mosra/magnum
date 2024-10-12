@@ -24,9 +24,52 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/EnumSet.hpp>
+
 #include "Magnum/Platform/AndroidApplication.h"
 
-namespace Magnum { namespace Platform { namespace Test { namespace {
+namespace Magnum { namespace Platform {
+
+/* Cannot be in an anonymous namespace as enumSetDebugOutput() below wouldn't
+   be able to pick it up */
+static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value) {
+    debug << "Button" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::MouseMoveEvent::Button::value: return debug << "::" #value;
+        _c(Left)
+        _c(Middle)
+        _c(Right)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+namespace Test { namespace {
+
+Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
+    debug << "Button" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::MouseEvent::Button::value: return debug << "::" #value;
+        _c(None)
+        _c(Left)
+        _c(Middle)
+        _c(Right)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Buttons value) {
+    return Containers::enumSetDebugOutput(debug, value, "Buttons{}", {
+        Application::MouseMoveEvent::Button::Left,
+        Application::MouseMoveEvent::Button::Middle,
+        Application::MouseMoveEvent::Button::Right,
+    });
+}
 
 struct AndroidApplicationTest: Platform::Application {
     explicit AndroidApplicationTest(const Arguments& arguments): Platform::Application{arguments} {
@@ -37,12 +80,19 @@ struct AndroidApplicationTest: Platform::Application {
 
     /* For testing HiDPI resize events */
     void viewportEvent(ViewportEvent& event) override {
-        Debug{} << "viewport event" << event.windowSize() << event.framebufferSize() << event.dpiScaling();
+        Debug{} << "viewport:" << event.windowSize() << event.framebufferSize() << event.dpiScaling();
     }
 
-    /* For testing event coordinates */
     void mousePressEvent(MouseEvent& event) override {
-        Debug{} << event.position();
+        Debug{} << "mouse press:" << event.button() << Debug::packed << event.position();
+    }
+
+    void mouseReleaseEvent(MouseEvent& event) override {
+        Debug{} << "mouse release:" << event.button() << Debug::packed << event.position();
+    }
+
+    void mouseMoveEvent(MouseMoveEvent& event) override {
+        Debug{} << "mouse move:" << event.buttons() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
     }
 };
 

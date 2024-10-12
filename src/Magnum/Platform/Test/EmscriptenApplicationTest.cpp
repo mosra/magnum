@@ -25,6 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Arguments.h>
 
 #include "Magnum/Platform/EmscriptenApplication.h"
@@ -44,7 +45,72 @@
 #include <emscripten/version.h>
 #endif
 
-namespace Magnum { namespace Platform { namespace Test { namespace {
+namespace Magnum { namespace Platform {
+
+/* These cannot be in an anonymous namespace as enumSetDebugOutput() below
+   wouldn't be able to pick them up */
+
+static Debug& operator<<(Debug& debug, Application::InputEvent::Modifier value) {
+    debug << "Modifier" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::InputEvent::Modifier::value: return debug << "::" #value;
+        _c(Shift)
+        _c(Ctrl)
+        _c(Alt)
+        _c(Super)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value) {
+    debug << "Button" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::MouseMoveEvent::Button::value: return debug << "::" #value;
+        _c(Left)
+        _c(Middle)
+        _c(Right)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+namespace Test { namespace {
+
+Debug& operator<<(Debug& debug, Application::InputEvent::Modifiers value) {
+    return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
+        Application::InputEvent::Modifier::Shift,
+        Application::InputEvent::Modifier::Ctrl,
+        Application::InputEvent::Modifier::Alt,
+        Application::InputEvent::Modifier::Super
+    });
+}
+
+Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
+    debug << "Button" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::MouseEvent::Button::value: return debug << "::" #value;
+        _c(Left)
+        _c(Middle)
+        _c(Right)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Buttons value) {
+    return Containers::enumSetDebugOutput(debug, value, "Buttons{}", {
+        Application::MouseMoveEvent::Button::Left,
+        Application::MouseMoveEvent::Button::Middle,
+        Application::MouseMoveEvent::Button::Right,
+    });
+}
 
 Debug& operator<<(Debug& debug, const Application::KeyEvent::Key value) {
     debug << "Key" << Debug::nospace;
@@ -188,38 +254,29 @@ struct EmscriptenApplicationTest: Platform::Application {
     #ifdef MAGNUM_TARGET_GL
     /* For testing HiDPI resize events */
     void viewportEvent(ViewportEvent& event) override {
-        Debug{} << "viewport event" << event.windowSize() << event.framebufferSize() << event.dpiScaling() << event.devicePixelRatio();
+        Debug{} << "viewport:" << event.windowSize() << event.framebufferSize() << event.dpiScaling() << event.devicePixelRatio();
     }
     #endif
 
-    /* For testing event coordinates */
     void mousePressEvent(MouseEvent& event) override {
-        Debug{} << "mouse press event:" << event.position() << Int(event.button());
+        Debug{} << "mouse press:" << event.button() << event.modifiers() << Debug::packed << event.position();
     }
 
     void mouseReleaseEvent(MouseEvent& event) override {
-        Debug{} << "mouse release event:" << event.position() << Int(event.button());
+        Debug{} << "mouse release:" << event.button() << event.modifiers() << Debug::packed << event.position();
     }
 
     void mouseMoveEvent(MouseMoveEvent& event) override {
-        Debug{} << "mouse move event:" << event.position() << event.relativePosition() << Int(event.buttons());
+        Debug{} << "mouse move:" << event.buttons() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
     }
 
     void mouseScrollEvent(MouseScrollEvent& event) override {
-        Debug{} << "mouse scroll event:" << event.offset() << event.position();
+        Debug{} << "mouse scroll:" << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
     }
 
     /* For testing keyboard capture */
     void keyPressEvent(KeyEvent& event) override {
-        {
-            Debug d;
-            d << "key press event:" << event.key() << event.keyName();
-
-            if(event.modifiers() & KeyEvent::Modifier::Shift) d << "Shift";
-            if(event.modifiers() & KeyEvent::Modifier::Ctrl) d << "Ctrl";
-            if(event.modifiers() & KeyEvent::Modifier::Alt) d << "Alt";
-            if(event.modifiers() & KeyEvent::Modifier::Super) d << "Super";
-        }
+        Debug{} << "key press:" << event.key() << event.keyName() << event.modifiers();
 
         if(event.key() == KeyEvent::Key::F1) {
             Debug{} << "starting text input";
@@ -246,21 +303,13 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
 
     void keyReleaseEvent(KeyEvent& event) override {
-        {
-            Debug d;
-            d << "key release event:" << event.key() << event.keyName();
-
-            if(event.modifiers() & KeyEvent::Modifier::Shift) d << "Shift";
-            if(event.modifiers() & KeyEvent::Modifier::Ctrl) d << "Ctrl";
-            if(event.modifiers() & KeyEvent::Modifier::Alt) d << "Alt";
-            if(event.modifiers() & KeyEvent::Modifier::Super) d << "Super";
-        }
+        Debug{} << "key release:" << event.key() << event.keyName() << event.modifiers();
 
         event.setAccepted();
     }
 
     void textInputEvent(TextInputEvent& event) override {
-        Debug{} << "text input event:" << event.text();
+        Debug{} << "text input:" << event.text();
 
         event.setAccepted();
     }
