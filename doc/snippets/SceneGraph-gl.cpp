@@ -51,7 +51,7 @@ struct MyApplication: Platform::Application {
     explicit MyApplication(const Arguments& arguments);
 
     void drawEvent() override;
-    void mousePressEvent(MouseEvent& event) override;
+    void pointerPressEvent(PointerEvent& event) override;
 
     SceneGraph::AnimableGroup3D animables;
     Timeline timeline;
@@ -75,9 +75,9 @@ void MyApplication::drawEvent() {
 }
 /* [Animable-usage-timeline] */
 
-void MyApplication::mousePressEvent(MouseEvent& event) {
+void MyApplication::pointerPressEvent(PointerEvent& event) {
 /* [Camera-projectionSize] */
-Vector2 position = (Vector2{event.position()}/Vector2{GL::defaultFramebuffer.viewport().size()}
+Vector2 position = (event.position()/Vector2{framebufferSize()}
     - Vector2{0.5f})*Vector2::yScale(-1.0f)*camera.projectionSize();
 /* [Camera-projectionSize] */
 
