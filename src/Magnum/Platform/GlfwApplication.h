@@ -805,7 +805,7 @@ class GlfwApplication {
 
         GLFWwindow* _window{nullptr};
         /* Not using Nanoseconds as that would require including Time.h */
-        UnsignedInt _minimalLoopPeriodNanoseconds;
+        UnsignedInt _minimalLoopPeriodNanoseconds{};
         Flags _flags;
         #ifdef MAGNUM_TARGET_GL
         /* Has to be in an Optional because we delay-create it in a constructor
