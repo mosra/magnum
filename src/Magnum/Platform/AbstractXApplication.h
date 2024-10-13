@@ -673,8 +673,6 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Buttons)
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
-    friend AbstractXApplication;
-
     public:
         /**
          * @brief Key
@@ -1018,6 +1016,8 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
         Vector2i position() const { return _position; }
 
     private:
+        friend AbstractXApplication;
+
         explicit KeyEvent(Key key, unsigned int modifiers, const Vector2i& position): InputEvent(modifiers), _key(key), _position(position) {}
 
         const Key _key;
@@ -1030,8 +1030,6 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
-    friend AbstractXApplication;
-
     public:
         /**
          * @brief Mouse button
@@ -1053,6 +1051,8 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
         Vector2i position() const { return _position; }
 
     private:
+        friend AbstractXApplication;
+
         explicit MouseEvent(Button button, unsigned int modifiers, const Vector2i& position): InputEvent(modifiers), _button(button), _position(position) {}
 
         const Button _button;
@@ -1065,13 +1065,13 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
-    friend AbstractXApplication;
-
     public:
         /** @brief Position */
         Vector2i position() const { return _position; }
 
     private:
+        friend AbstractXApplication;
+
         explicit MouseMoveEvent(unsigned int modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
 
         const Vector2i _position;
