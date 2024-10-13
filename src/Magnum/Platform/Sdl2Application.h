@@ -2190,8 +2190,19 @@ class Sdl2Application::InputEvent {
              */
             AltGr = KMOD_MODE,
 
-            CapsLock = KMOD_CAPS,       /**< Caps lock */
-            NumLock = KMOD_NUM          /**< Num lock */
+            /**
+             * Caps lock
+             *
+             * @see @ref KeyEvent::Key::CapsLock
+             */
+            CapsLock = KMOD_CAPS,
+
+            /**
+             * Num lock
+             *
+             * @see @ref KeyEvent::Key::NumLock
+             */
+            NumLock = KMOD_NUM
         };
 
         /**
@@ -2463,6 +2474,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 
             /**
              * Caps lock
+             *
+             * @see @ref InputEvent::Modifier::CapsLock
              * @m_since_latest
              */
             CapsLock = SDLK_CAPSLOCK,
@@ -2475,6 +2488,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 
             /**
              * Num lock
+             *
+             * @see @ref InputEvent::Modifier::NumLock
              * @m_since_latest
              */
             NumLock = SDLK_NUMLOCKCLEAR,
