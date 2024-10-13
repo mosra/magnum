@@ -890,40 +890,6 @@ GlfwApplication::Cursor GlfwApplication::cursor() {
     return _cursor;
 }
 
-auto GlfwApplication::MouseMoveEvent::buttons() -> Buttons {
-    if(!_buttons) {
-        _buttons = Buttons{};
-        for(const Int button: {GLFW_MOUSE_BUTTON_LEFT,
-                               GLFW_MOUSE_BUTTON_MIDDLE,
-                               GLFW_MOUSE_BUTTON_RIGHT}) {
-            if(glfwGetMouseButton(_window, button) == GLFW_PRESS)
-                *_buttons |= Button(1 << button);
-        }
-    }
-
-    return *_buttons;
-}
-
-auto GlfwApplication::MouseMoveEvent::modifiers() -> Modifiers {
-    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
-    return *_modifiers;
-}
-
-Vector2i GlfwApplication::MouseScrollEvent::position() {
-    if(!_position) {
-        Vector2d position;
-        glfwGetCursorPos(_window, &position.x(), &position.y());
-        _position = Vector2i{position};
-    }
-
-    return *_position;
-}
-
-auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
-    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
-    return *_modifiers;
-}
-
 void GlfwApplication::exitEvent(ExitEvent& event) {
     event.setAccepted();
 }
@@ -985,6 +951,40 @@ Containers::StringView GlfwApplication::KeyEvent::keyName() const {
     return keyName(_key);
 }
 #endif
+
+auto GlfwApplication::MouseMoveEvent::buttons() -> Buttons {
+    if(!_buttons) {
+        _buttons = Buttons{};
+        for(const Int button: {GLFW_MOUSE_BUTTON_LEFT,
+                               GLFW_MOUSE_BUTTON_MIDDLE,
+                               GLFW_MOUSE_BUTTON_RIGHT}) {
+            if(glfwGetMouseButton(_window, button) == GLFW_PRESS)
+                *_buttons |= Button(1 << button);
+        }
+    }
+
+    return *_buttons;
+}
+
+auto GlfwApplication::MouseMoveEvent::modifiers() -> Modifiers {
+    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    return *_modifiers;
+}
+
+Vector2i GlfwApplication::MouseScrollEvent::position() {
+    if(!_position) {
+        Vector2d position;
+        glfwGetCursorPos(_window, &position.x(), &position.y());
+        _position = Vector2i{position};
+    }
+
+    return *_position;
+}
+
+auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
+    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    return *_modifiers;
+}
 
 template class BasicScreen<GlfwApplication>;
 template class BasicScreenedApplication<GlfwApplication>;
