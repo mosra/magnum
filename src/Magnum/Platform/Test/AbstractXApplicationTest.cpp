@@ -253,6 +253,13 @@ struct AbstractXApplicationTest: Platform::Application {
         Debug{} << "mouse move:" << event.buttons() << event.modifiers() << Debug::packed << event.position();
     }
 
+    /* Comment out to test the deprecated scroll as press/release reporting */
+    #if 1
+    void mouseScrollEvent(MouseScrollEvent& event) override {
+        Debug{} << "mouse scroll:" << event.buttons() << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
+    }
+    #endif
+
     void keyPressEvent(KeyEvent& event) override {
         Debug{} << "key press:" << event.key() << int(event.key()) << event.modifiers() << event.buttons() << Debug::packed << event.position();
     }
