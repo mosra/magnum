@@ -606,6 +606,52 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 }
 #endif
 
+namespace {
+
+GlfwApplication::Pointer buttonToPointer(const int button) {
+    switch(button) {
+        case GLFW_MOUSE_BUTTON_LEFT:
+            return GlfwApplication::Pointer::MouseLeft;
+        case GLFW_MOUSE_BUTTON_MIDDLE:
+            return GlfwApplication::Pointer::MouseMiddle;
+        case GLFW_MOUSE_BUTTON_RIGHT:
+            return GlfwApplication::Pointer::MouseRight;
+        case GLFW_MOUSE_BUTTON_4:
+            return GlfwApplication::Pointer::MouseButton4;
+        case GLFW_MOUSE_BUTTON_5:
+            return GlfwApplication::Pointer::MouseButton5;
+        case GLFW_MOUSE_BUTTON_6:
+            return GlfwApplication::Pointer::MouseButton6;
+        case GLFW_MOUSE_BUTTON_7:
+            return GlfwApplication::Pointer::MouseButton7;
+        case GLFW_MOUSE_BUTTON_8:
+            return GlfwApplication::Pointer::MouseButton8;
+    }
+
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+}
+
+GlfwApplication::Pointers currentGlfwPointers(GLFWwindow* const window) {
+    GlfwApplication::Pointers pointers;
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        pointers |= GlfwApplication::Pointer::MouseLeft;
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
+        pointers |= GlfwApplication::Pointer::MouseMiddle;
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+        pointers |= GlfwApplication::Pointer::MouseRight;
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_4) == GLFW_PRESS)
+        pointers |= GlfwApplication::Pointer::MouseButton4;
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS)
+        pointers |= GlfwApplication::Pointer::MouseButton5;
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_6) == GLFW_PRESS)
+        pointers |= GlfwApplication::Pointer::MouseButton6;
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_7) == GLFW_PRESS)
+        pointers |= GlfwApplication::Pointer::MouseButton7;
+    return pointers;
+}
+
+}
+
 void GlfwApplication::setupCallbacks() {
     glfwSetWindowUserPointer(_window, this);
     glfwSetWindowCloseCallback(_window, [](GLFWwindow* const window){
@@ -644,25 +690,41 @@ void GlfwApplication::setupCallbacks() {
     glfwSetMouseButtonCallback(_window, [](GLFWwindow* const window, const int button, const int action, const int mods) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
+        const Pointer pointer = buttonToPointer(button);
         double x, y;
         glfwGetCursorPos(window, &x, &y);
-        MouseEvent e(static_cast<MouseEvent::Button>(button), {Int(x), Int(y)}, {static_cast<InputEvent::Modifier>(mods)});
+        const Vector2 position{Float(x), Float(y)};
 
-        if(action == GLFW_PRESS) /* we don't handle GLFW_REPEAT */
-            app.mousePressEvent(e);
-        else if(action == GLFW_RELEASE)
-            app.mouseReleaseEvent(e);
+        /* If an additional mouse button was pressed or some buttons are still
+           left pressed after a release, call a move event instead */
+        const Pointers pointers = currentGlfwPointers(window);
+        if((action == GLFW_PRESS && (pointers & ~pointer)) ||
+           (action == GLFW_RELEASE && pointers)) {
+            PointerMoveEvent e{window, pointer, position, {}};
+            /* We had to query the pointers already and get the modifiers in
+               the callback, set them directly instead of having them lazily
+               populated later */
+            e._pointers = pointers;
+            e._modifiers = InputEvent::Modifiers{mods};
+            app.pointerMoveEvent(e);
+        } else {
+            PointerEvent e{pointer, position, InputEvent::Modifiers{mods}};
+            if(action == GLFW_PRESS) /* we don't handle GLFW_REPEAT */
+                app.pointerPressEvent(e);
+            else if(action == GLFW_RELEASE)
+                app.pointerReleaseEvent(e);
+        }
     });
     glfwSetCursorPosCallback(_window, [](GLFWwindow* const window, const double x, const double y) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
         /* Avoid bogus offset at first -- report 0 when the event is called for
            the first time */
-        Vector2i position{Int(x), Int(y)};
-        MouseMoveEvent e{window, position,
-            app._previousMouseMovePosition == Vector2i{-1} ? Vector2i{} :
+        const Vector2 position{Float(x), Float(y)};
+        PointerMoveEvent e{window, {}, position,
+            Math::isNan(app._previousMouseMovePosition).all() ? Vector2{} :
             position - app._previousMouseMovePosition};
         app._previousMouseMovePosition = position;
-        app.mouseMoveEvent(e);
+        app.pointerMoveEvent(e);
     });
     glfwSetScrollCallback(_window, [](GLFWwindow* window, double xoffset, double yoffset) {
         MouseScrollEvent e(window, Vector2{Float(xoffset), Float(yoffset)});
@@ -903,9 +965,113 @@ void GlfwApplication::tickEvent() {
 void GlfwApplication::viewportEvent(ViewportEvent&) {}
 void GlfwApplication::keyPressEvent(KeyEvent&) {}
 void GlfwApplication::keyReleaseEvent(KeyEvent&) {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace {
+
+CORRADE_IGNORE_DEPRECATED_PUSH
+GlfwApplication::MouseEvent::Button pointerToButton(const GlfwApplication::Pointer pointer) {
+    switch(pointer) {
+        case GlfwApplication::Pointer::MouseLeft:
+            return GlfwApplication::MouseEvent::Button::Left;
+        case GlfwApplication::Pointer::MouseMiddle:
+            return GlfwApplication::MouseEvent::Button::Middle;
+        case GlfwApplication::Pointer::MouseRight:
+            return GlfwApplication::MouseEvent::Button::Right;
+        case GlfwApplication::Pointer::MouseButton4:
+            return GlfwApplication::MouseEvent::Button::Button4;
+        case GlfwApplication::Pointer::MouseButton5:
+            return GlfwApplication::MouseEvent::Button::Button5;
+        case GlfwApplication::Pointer::MouseButton6:
+            return GlfwApplication::MouseEvent::Button::Button6;
+        case GlfwApplication::Pointer::MouseButton7:
+            return GlfwApplication::MouseEvent::Button::Button7;
+        case GlfwApplication::Pointer::MouseButton8:
+            return GlfwApplication::MouseEvent::Button::Button8;
+    }
+
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+}
+CORRADE_IGNORE_DEPRECATED_POP
+
+}
+#endif
+
+void GlfwApplication::pointerPressEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent mouseEvent{pointerToButton(event.pointer()), Vector2i{Math::round(event.position())}, event.modifiers()};
+    mousePressEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void GlfwApplication::mousePressEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void GlfwApplication::pointerReleaseEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent mouseEvent{pointerToButton(event.pointer()), Vector2i{Math::round(event.position())}, event.modifiers()};
+    mouseReleaseEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void GlfwApplication::mouseReleaseEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void GlfwApplication::pointerMoveEvent(PointerMoveEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    const Vector2i roundedPosition{Math::round(event.position())};
+
+    /* If the event is due to some button being additionally pressed or one
+       button from a larger set being released, delegate to a press/release
+       event instead */
+    if(event.pointer()) {
+        /* GLFW reports either a move or a press/release, so there shouldn't be
+           any move in this case */
+        CORRADE_INTERNAL_ASSERT(event.relativePosition() == Vector2{});
+        MouseEvent mouseEvent{pointerToButton(*event.pointer()),
+            roundedPosition, event.modifiers()};
+        event.pointers() >= *event.pointer() ?
+            mousePressEvent(mouseEvent) : mouseReleaseEvent(mouseEvent);
+    } else {
+        /* Can't do just Math::round(event.relativePosition()) because if the
+           previous position was 4.6 and the new 5.3, they both round to 5 but
+           the relativePosition is 0.6 and rounds to 1. Conversely, if it'd be
+           5.3 and 5.6, the positions round to 5 and 6 but relative position
+           stays 0. */
+        const Vector2i previousRoundedPosition{Math::round(event.position() - event.relativePosition())};
+        /* Call the event only if the integer values actually changed */
+        if(roundedPosition != previousRoundedPosition) {
+            MouseMoveEvent mouseEvent{_window, roundedPosition, roundedPosition - previousRoundedPosition};
+            mouseMoveEvent(mouseEvent);
+        }
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void GlfwApplication::mouseMoveEvent(MouseMoveEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
 void GlfwApplication::textInputEvent(TextInputEvent&) {}
 
@@ -952,6 +1118,20 @@ Containers::StringView GlfwApplication::KeyEvent::keyName() const {
 }
 #endif
 
+GlfwApplication::Pointers GlfwApplication::PointerMoveEvent::pointers() {
+    if(!_pointers)
+        _pointers = currentGlfwPointers(_window);
+
+    return *_pointers;
+}
+
+auto GlfwApplication::PointerMoveEvent::modifiers() -> Modifiers {
+    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    return *_modifiers;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 auto GlfwApplication::MouseMoveEvent::buttons() -> Buttons {
     if(!_buttons) {
         _buttons = Buttons{};
@@ -970,6 +1150,8 @@ auto GlfwApplication::MouseMoveEvent::modifiers() -> Modifiers {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 Vector2i GlfwApplication::MouseScrollEvent::position() {
     if(!_position) {

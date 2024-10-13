@@ -57,7 +57,28 @@ static Debug& operator<<(Debug& debug, Application::InputEvent::Modifier value) 
     return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
 }
 
-static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value) {
+static Debug& operator<<(Debug& debug, Application::Pointer value) {
+    debug << "Pointer" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::Pointer::value: return debug << "::" #value;
+        _c(MouseLeft)
+        _c(MouseMiddle)
+        _c(MouseRight)
+        _c(MouseButton4)
+        _c(MouseButton5)
+        _c(MouseButton6)
+        _c(MouseButton7)
+        _c(MouseButton8)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_UNUSED static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value) {
     debug << "Button" << Debug::nospace;
 
     switch(value) {
@@ -70,6 +91,8 @@ static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value
 
     return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 namespace Test { namespace {
 
@@ -82,7 +105,22 @@ Debug& operator<<(Debug& debug, Application::InputEvent::Modifiers value) {
     });
 }
 
-Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
+Debug& operator<<(Debug& debug, Application::Pointers value) {
+    return Containers::enumSetDebugOutput(debug, value, "Pointers{}", {
+        Application::Pointer::MouseLeft,
+        Application::Pointer::MouseMiddle,
+        Application::Pointer::MouseRight,
+        Application::Pointer::MouseButton4,
+        Application::Pointer::MouseButton5,
+        Application::Pointer::MouseButton6,
+        Application::Pointer::MouseButton7,
+        Application::Pointer::MouseButton8,
+    });
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
     debug << "Button" << Debug::nospace;
 
     switch(value) {
@@ -101,13 +139,15 @@ Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
     return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Buttons value) {
+CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Buttons value) {
     return Containers::enumSetDebugOutput(debug, value, "Buttons{}", {
         Application::MouseMoveEvent::Button::Left,
         Application::MouseMoveEvent::Button::Middle,
         Application::MouseMoveEvent::Button::Right,
     });
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 Debug& operator<<(Debug& debug, const Application::KeyEvent::Key value) {
     debug << "Key" << Debug::nospace;
@@ -312,17 +352,30 @@ struct GlfwApplicationTest: Platform::Application {
             << event.modifiers();
     }
 
+    /* Set to 0 to test the deprecated mouse events instead */
+    #if 1
+    void pointerPressEvent(PointerEvent& event) override {
+        Debug{} << "pointer press:" << event.pointer() << event.modifiers() << Debug::packed << event.position();
+    }
+    void pointerReleaseEvent(PointerEvent& event) override {
+        Debug{} << "pointer release:" << event.pointer() << event.modifiers() << Debug::packed << event.position();
+    }
+    void pointerMoveEvent(PointerMoveEvent& event) override {
+        Debug{} << "pointer move:" << event.pointer() << event.pointers() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
+    }
+    #else
+    CORRADE_IGNORE_DEPRECATED_PUSH
     void mousePressEvent(MouseEvent& event) override {
         Debug{} << "mouse press:" << event.button() << event.modifiers() << Debug::packed << event.position();
     }
-
     void mouseReleaseEvent(MouseEvent& event) override {
         Debug{} << "mouse release:" << event.button() << event.modifiers() << Debug::packed << event.position();
     }
-
     void mouseMoveEvent(MouseMoveEvent& event) override {
         Debug{} << "mouse move:" << event.buttons() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
     }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     void mouseScrollEvent(MouseScrollEvent& event) override {
         Debug{} << "mouse scroll:" << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
