@@ -169,18 +169,18 @@ bool AbstractXApplication::mainLoopIteration() {
             /* Key/mouse events */
             case KeyPress:
             case KeyRelease: {
-                KeyEvent e(static_cast<KeyEvent::Key>(XLookupKeysym(&event.xkey, 0)), static_cast<InputEvent::Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
+                KeyEvent e(static_cast<KeyEvent::Key>(XLookupKeysym(&event.xkey, 0)), event.xkey.state, {event.xkey.x, event.xkey.y});
                 event.type == KeyPress ? keyPressEvent(e) : keyReleaseEvent(e);
             } break;
             case ButtonPress:
             case ButtonRelease: {
-                MouseEvent e(static_cast<MouseEvent::Button>(event.xbutton.button), static_cast<InputEvent::Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
+                MouseEvent e(static_cast<MouseEvent::Button>(event.xbutton.button), event.xkey.state, {event.xbutton.x, event.xbutton.y});
                 event.type == ButtonPress ? mousePressEvent(e) : mouseReleaseEvent(e);
             } break;
 
             /* Mouse move events */
             case MotionNotify: {
-                MouseMoveEvent e(static_cast<InputEvent::Modifier>(event.xmotion.state), {event.xmotion.x, event.xmotion.y});
+                MouseMoveEvent e(event.xmotion.state, {event.xmotion.x, event.xmotion.y});
                 mouseMoveEvent(e);
             } break;
         }
