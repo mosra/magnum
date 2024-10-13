@@ -106,6 +106,7 @@ class AbstractXApplication {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
+        class MouseScrollEvent;
 
         /** @brief Copying is not allowed */
         AbstractXApplication(const AbstractXApplication&) = delete;
@@ -295,6 +296,20 @@ class AbstractXApplication {
 
         /** @copydoc Sdl2Application::mouseMoveEvent() */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /**
+         * @brief Mouse scroll event
+         * @m_since_latest
+         *
+         * Called when a scrolling device is used (mouse wheel or scrolling
+         * area on a touchpad).
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mousePressEvent() and
+         * @ref mouseReleaseEvent() with @ref MouseEvent::Button::WheelDown and
+         * @ref MouseEvent::Button::WheelUp.
+         */
+        virtual void mouseScrollEvent(MouseScrollEvent& event);
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
@@ -660,6 +675,10 @@ class AbstractXApplication::InputEvent {
     #endif
 
     private:
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        friend AbstractXApplication; /* mouseScrollEvent() backwards compat */
+        #endif
+
         unsigned int _modifiers;
         bool _accepted;
 };
@@ -1027,7 +1046,8 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
 /**
 @brief Mouse event
 
-@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
+    @ref mouseReleaseEvent()
 */
 class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
     public:
@@ -1040,8 +1060,22 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
             Left      = 1 /*Button1*/,  /**< Left button */
             Middle    = 2 /*Button2*/,  /**< Middle button */
             Right     = 3 /*Button3*/,  /**< Right button */
-            WheelUp   = 4 /*Button4*/,  /**< Wheel up */
-            WheelDown = 5 /*Button5*/   /**< Wheel down */
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Wheel up
+             * @m_deprecated_since_latest Implement @ref mouseScrollEvent()
+             *      instead.
+             */
+            WheelUp CORRADE_DEPRECATED_ENUM("implement mouseScrollEvent() instead") = 4,
+
+            /**
+             * Wheel down
+             * @m_deprecated_since_latest Implement @ref mouseScrollEvent()
+             *      instead.
+             */
+            WheelDown CORRADE_DEPRECATED_ENUM("implement mouseScrollEvent() instead") = 5
+            #endif
         };
 
         /** @brief Button */
@@ -1062,7 +1096,7 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
 /**
 @brief Mouse move event
 
-@see @ref MouseEvent, @ref mouseMoveEvent()
+@see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
 class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
     public:
@@ -1074,6 +1108,33 @@ class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEv
 
         explicit MouseMoveEvent(unsigned int modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
 
+        const Vector2i _position;
+};
+
+/**
+@brief Mouse scroll event
+@m_since_latest
+
+@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+*/
+class AbstractXApplication::MouseScrollEvent: public InputEvent {
+    public:
+        /**
+         * @brief Scroll offset
+         *
+         * Is always either @cpp -1.0f @ce or @cpp +1.0f @ce.
+         */
+        Vector2 offset() const { return _offset; }
+
+        /** @brief Position */
+        Vector2i position() const { return _position; }
+
+    private:
+        friend AbstractXApplication;
+
+        explicit MouseScrollEvent(const Vector2& offset, const Vector2i& position, unsigned int modifiers): InputEvent{modifiers}, _offset{offset}, _position{position} {}
+
+        const Vector2 _offset;
         const Vector2i _position;
 };
 

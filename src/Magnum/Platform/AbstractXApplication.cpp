@@ -174,8 +174,19 @@ bool AbstractXApplication::mainLoopIteration() {
             } break;
             case ButtonPress:
             case ButtonRelease: {
-                MouseEvent e(static_cast<MouseEvent::Button>(event.xbutton.button), event.xkey.state, {event.xbutton.x, event.xbutton.y});
-                event.type == ButtonPress ? mousePressEvent(e) : mouseReleaseEvent(e);
+                /* Expose wheel as a scroll event, consistently with all other
+                   applications */
+                if(event.xbutton.button == 4 /*Button4*/ ||
+                   event.xbutton.button == 5 /*Button5*/) {
+                    MouseScrollEvent e{Vector2::yAxis(event.xbutton.button == 4 ? 1.0f : -1.0f), {event.xbutton.x, event.xbutton.y}, event.xbutton.state};
+                    /* It reports both press and release. Fire the scroll event
+                       just on press. */
+                    if(event.type == ButtonPress)
+                        mouseScrollEvent(e);
+                } else {
+                    MouseEvent e(MouseEvent::Button(event.xbutton.button), event.xkey.state, {event.xbutton.x, event.xbutton.y});
+                    event.type == ButtonPress ? mousePressEvent(e) : mouseReleaseEvent(e);
+                }
             } break;
 
             /* Mouse move events */
@@ -200,6 +211,18 @@ void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
 void AbstractXApplication::mousePressEvent(MouseEvent&) {}
 void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
 void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
+
+void AbstractXApplication::mouseScrollEvent(MouseScrollEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent e{event.offset().y() > 0.0f ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, event._modifiers, event.position()};
+    mousePressEvent(e);
+    mouseReleaseEvent(e);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
 
 AbstractXApplication::GLConfiguration::GLConfiguration(): _version(GL::Version::None) {}
 AbstractXApplication::GLConfiguration::~GLConfiguration() = default;
