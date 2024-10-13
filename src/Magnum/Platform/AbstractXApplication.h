@@ -560,12 +560,43 @@ class AbstractXApplication::InputEvent {
          * @see @ref Modifiers, @ref modifiers()
          */
         enum class Modifier: unsigned int {
-            Shift = ShiftMask,          /**< Shift */
-            Ctrl = ControlMask,         /**< Ctrl */
-            Alt = Mod1Mask,             /**< Alt */
+            /**
+             * Shift
+             *
+             * @see @ref KeyEvent::Key::LeftShift,
+             *      @ref KeyEvent::Key::RightShift
+             */
+            Shift = ShiftMask,
+
+            /**
+             * Ctrl
+             *
+             * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
+             */
+            Ctrl = ControlMask,
+
+            /**
+             * Alt
+             *
+             * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
+             */
+            Alt = Mod1Mask,
+
             AltGr = Mod5Mask,           /**< AltGr */
-            CapsLock = LockMask,        /**< Caps lock */
-            NumLock = Mod2Mask          /**< Num lock */
+
+            /**
+             * Caps lock
+             *
+             * @see @ref KeyEvent::Key::CapsLock
+             */
+            CapsLock = LockMask,
+
+            /**
+             * Num lock
+             *
+             * @see @ref KeyEvent::Key::NumLock
+             */
+            NumLock = Mod2Mask
         };
 
         /**
@@ -647,6 +678,68 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
          * @see @ref key()
          */
         enum class Key: KeySym {
+            /**
+             * Left Shift
+             * @m_since_latest
+             *
+             * @see @ref InputEvent::Modifier::Shift
+             */
+            LeftShift = XK_Shift_L,
+
+            /**
+             * Right Shift
+             * @m_since_latest
+             *
+             * @see @ref InputEvent::Modifier::Shift
+             */
+            RightShift = XK_Shift_R,
+
+            /**
+             * Left Ctrl
+             * @m_since_latest
+             *
+             * @see @ref InputEvent::Modifier::Ctrl
+             */
+            LeftCtrl = XK_Control_L,
+
+            /**
+             * Right Ctrl
+             * @m_since_latest
+             *
+             * @see @ref InputEvent::Modifier::Ctrl
+             */
+            RightCtrl = XK_Control_R,
+
+            /**
+             * Left Alt
+             * @m_since_latest
+             *
+             * @see @ref InputEvent::Modifier::Alt
+             */
+            LeftAlt = XK_Alt_L,
+
+            /**
+             * Right Alt
+             * @m_since_latest
+             *
+             * @see @ref InputEvent::Modifier::Alt
+             */
+            RightAlt = XK_Alt_R,
+
+            /**
+             * Left Super key (Windows/⌘)
+             * @m_since_latest
+             */
+            LeftSuper = XK_Super_L,
+
+            /**
+             * Right Super key (Windows/⌘)
+             * @m_since_latest
+             */
+            RightSuper = XK_Super_R,
+
+            /* AltGr missing */
+
             Enter = XK_Return,          /**< Enter */
             Esc = XK_Escape,            /**< Escape */
 
@@ -654,6 +747,29 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
             Down = XK_Down,             /**< Down arrow */
             Left = XK_Left,             /**< Left arrow */
             Right = XK_Right,           /**< Right arrow */
+            Home = XK_Home,             /**< Home */
+            End = XK_End,               /**< End */
+            PageUp = XK_Page_Up,        /**< Page up */
+            PageDown = XK_Page_Down,    /**< Page down */
+
+            /**
+             * Backspace
+             * @m_since_latest
+             */
+            Backspace = XK_BackSpace,
+
+            /**
+             * Insert
+             * @m_since_latest
+             */
+            Insert = XK_Insert,
+
+            /**
+             * Delete
+             * @m_since_latest
+             */
+            Delete = XK_Delete,
+
             F1 = XK_F1,                 /**< F1 */
             F2 = XK_F2,                 /**< F2 */
             F3 = XK_F3,                 /**< F3 */
@@ -666,19 +782,59 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
             F10 = XK_F10,               /**< F10 */
             F11 = XK_F11,               /**< F11 */
             F12 = XK_F12,               /**< F12 */
-            Home = XK_Home,             /**< Home */
-            End = XK_End,               /**< End */
-            PageUp = XK_Page_Up,        /**< Page up */
-            PageDown = XK_Page_Down,    /**< Page down */
 
             Space = XK_space,           /**< Space */
+
+            /**
+             * Tab
+             * @m_since_latest
+             */
+            Tab = XK_Tab,
+
+            /**
+             * Quote (<tt>'</tt>)
+             * @m_since_latest
+             */
+            Quote = XK_apostrophe,
+
             Comma = XK_comma,           /**< Comma */
             Period = XK_period,         /**< Period */
             Minus = XK_minus,           /**< Minus */
             Plus = XK_plus,             /**< Plus */
             Slash = XK_slash,           /**< Slash */
             Percent = XK_percent,       /**< Percent */
+
+            /**
+             * Semicolon (`;`)
+             * @m_since_latest
+             */
+            Semicolon = XK_semicolon,
+
             Equal = XK_equal,           /**< Equal */
+
+            /**
+             * Left bracket (`[`)
+             * @m_since_latest
+             */
+            LeftBracket = XK_bracketleft,
+
+            /**
+             * Right bracket (`]`)
+             * @m_since_latest
+             */
+            RightBracket = XK_bracketright,
+
+            /**
+             * Backslash (`\`)
+             * @m_since_latest
+             */
+            Backslash = XK_backslash,
+
+            /**
+             * Backquote (<tt>`</tt>)
+             * @m_since_latest
+             */
+            Backquote = XK_grave,
 
             Zero = XK_0,                /**< Zero */
             One = XK_1,                 /**< One */
@@ -716,7 +872,139 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
             W = XK_w,                   /**< Small letter W */
             X = XK_x,                   /**< Small letter X */
             Y = XK_y,                   /**< Small letter Y */
-            Z = XK_z                    /**< Small letter Z */
+            Z = XK_z,                   /**< Small letter Z */
+
+            /**
+             * Caps lock
+             *
+             * @see @ref InputEvent::Modifier::CapsLock
+             * @m_since_latest
+             */
+            CapsLock = XK_Caps_Lock,
+
+            /**
+             * Scroll lock
+             * @m_since_latest
+             */
+            ScrollLock = XK_Scroll_Lock,
+
+            /**
+             * Num lock
+             *
+             * @see @ref InputEvent::Modifier::NumLock
+             * @m_since_latest
+             */
+            NumLock = XK_Num_Lock,
+
+            /**
+             * Print screen
+             * @m_since_latest
+             */
+            PrintScreen = XK_Print,
+
+            /* Pause, Menu missing */
+
+            /**
+             * Numpad zero
+             * @m_since_latest
+             */
+            NumZero = XK_KP_0,
+
+            /**
+             * Numpad one
+             * @m_since_latest
+             */
+            NumOne = XK_KP_1,
+
+            /**
+             * Numpad two
+             * @m_since_latest
+             */
+            NumTwo = XK_KP_2,
+
+            /**
+             * Numpad three
+             * @m_since_latest
+             */
+            NumThree = XK_KP_3,
+
+            /**
+             * Numpad four
+             * @m_since_latest
+             */
+            NumFour = XK_KP_4,
+
+            /**
+             * Numpad five
+             * @m_since_latest
+             */
+            NumFive = XK_KP_5,
+
+            /**
+             * Numpad six
+             * @m_since_latest
+             */
+            NumSix = XK_KP_6,
+
+            /**
+             * Numpad seven
+             * @m_since_latest
+             */
+            NumSeven = XK_KP_7,
+
+            /**
+             * Numpad eight
+             * @m_since_latest
+             */
+            NumEight = XK_KP_8,
+
+            /**
+             * Numpad nine
+             * @m_since_latest
+             */
+            NumNine = XK_KP_9,
+
+            /**
+             * Numpad decimal
+             * @m_since_latest
+             */
+            NumDecimal = XK_KP_Decimal,
+
+            /**
+             * Numpad divide
+             * @m_since_latest
+             */
+            NumDivide = XK_KP_Divide,
+
+            /**
+             * Numpad multiply
+             * @m_since_latest
+             */
+            NumMultiply = XK_KP_Multiply,
+
+            /**
+             * Numpad subtract
+             * @m_since_latest
+             */
+            NumSubtract = XK_KP_Subtract,
+
+            /**
+             * Numpad add
+             * @m_since_latest
+             */
+            NumAdd = XK_KP_Add,
+
+            /**
+             * Numpad enter
+             * @m_since_latest
+             */
+            NumEnter = XK_KP_Enter,
+
+            /**
+             * Numpad equal
+             * @m_since_latest
+             */
+            NumEqual = XK_KP_Equal
         };
 
         /** @brief Key */

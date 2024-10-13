@@ -807,6 +807,8 @@ See also:
     UI scale. However note that this does not yet properly handle DPI change
     events themselves, which happen for example when moving windows across
     displays with different DPI.
+-   Added more keys to @ref Platform::AbstractXApplication::KeyEvent::Key for
+    better consistency with other application implementations
 
 @subsubsection changelog-latest-changes-scenegraph SceneGraph library
 
