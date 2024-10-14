@@ -495,6 +495,12 @@ class AndroidApplication {
          */
 
     private:
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /* Calls the base pointer*Event() in order to delegate to deprecated
+           mouse events */
+        template<class> friend class BasicScreenedApplication;
+        #endif
+
         struct LogOutput;
 
         enum class Flag: UnsignedByte;

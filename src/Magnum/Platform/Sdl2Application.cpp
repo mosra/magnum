@@ -1483,7 +1483,18 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifi
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
 
+/* WinRT builds by default have deprecation warnings as errors. Combined with a
+   MSVC 2017 bug where deprecation warning suppression doesn't work on virtual
+   function overrides this make the build fail on deprecation warnings due to
+   ScreenedApplication overriding mousePressEvent(), mouseReleaseEvent() and
+   mouseMoveEvent(). Disable the warnings at a higher level instead. */
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(CORRADE_TARGET_WINDOWS_RT)
+CORRADE_IGNORE_DEPRECATED_PUSH
+#endif
 template class BasicScreen<Sdl2Application>;
 template class BasicScreenedApplication<Sdl2Application>;
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(CORRADE_TARGET_WINDOWS_RT)
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 }}
