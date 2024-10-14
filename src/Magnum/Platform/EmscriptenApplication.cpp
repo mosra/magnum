@@ -770,6 +770,23 @@ void EmscriptenApplication::exit(int) {
     _flags |= Flag::ExitRequested;
 }
 
+namespace {
+
+template<class T> EmscriptenApplication::InputEvent::Modifiers eventModifiers(const T& event) {
+    EmscriptenApplication::InputEvent::Modifiers modifiers;
+    if(event.ctrlKey)
+        modifiers |= EmscriptenApplication::InputEvent::Modifier::Ctrl;
+    if(event.shiftKey)
+        modifiers |= EmscriptenApplication::InputEvent::Modifier::Shift;
+    if(event.altKey)
+        modifiers |= EmscriptenApplication::InputEvent::Modifier::Alt;
+    if(event.metaKey)
+        modifiers |= EmscriptenApplication::InputEvent::Modifier::Super;
+    return modifiers;
+}
+
+}
+
 EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::button() const {
     return Button(_event.button);
 }
@@ -782,12 +799,7 @@ Vector2i EmscriptenApplication::MouseEvent::position() const {
 }
 
 EmscriptenApplication::MouseEvent::Modifiers EmscriptenApplication::MouseEvent::modifiers() const {
-    Modifiers m;
-    if(_event.ctrlKey) m |= Modifier::Ctrl;
-    if(_event.shiftKey) m |= Modifier::Shift;
-    if(_event.altKey) m |= Modifier::Alt;
-    if(_event.metaKey) m |= Modifier::Super;
-    return m;
+    return eventModifiers(_event);
 }
 
 EmscriptenApplication::MouseMoveEvent::Buttons EmscriptenApplication::MouseMoveEvent::buttons() const {
@@ -802,12 +814,7 @@ Vector2i EmscriptenApplication::MouseMoveEvent::position() const {
 }
 
 EmscriptenApplication::MouseMoveEvent::Modifiers EmscriptenApplication::MouseMoveEvent::modifiers() const {
-    Modifiers m;
-    if(_event.ctrlKey) m |= Modifier::Ctrl;
-    if(_event.shiftKey) m |= Modifier::Shift;
-    if(_event.altKey) m |= Modifier::Alt;
-    if(_event.metaKey) m |= Modifier::Super;
-    return m;
+    return eventModifiers(_event);
 }
 
 Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
@@ -831,12 +838,7 @@ Vector2i EmscriptenApplication::MouseScrollEvent::position() const {
 }
 
 EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::MouseScrollEvent::modifiers() const {
-    Modifiers m;
-    if(_event.mouse.ctrlKey) m |= Modifier::Ctrl;
-    if(_event.mouse.shiftKey) m |= Modifier::Shift;
-    if(_event.mouse.altKey) m |= Modifier::Alt;
-    if(_event.mouse.metaKey) m |= Modifier::Super;
-    return m;
+    return eventModifiers(_event.mouse);
 }
 
 Key EmscriptenApplication::KeyEvent::key() const {
@@ -851,12 +853,7 @@ Containers::StringView EmscriptenApplication::KeyEvent::keyName() const {
 }
 
 EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::KeyEvent::modifiers() const {
-    Modifiers m;
-    if(_event.ctrlKey) m |= Modifier::Ctrl;
-    if(_event.shiftKey) m |= Modifier::Shift;
-    if(_event.altKey) m |= Modifier::Alt;
-    if(_event.metaKey) m |= Modifier::Super;
-    return m;
+    return eventModifiers(_event);
 }
 
 template class BasicScreen<EmscriptenApplication>;
