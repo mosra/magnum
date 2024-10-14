@@ -122,14 +122,14 @@ event, they are propagated to the screens:
 -   @ref Sdl2Application::drawEvent() "drawEvent()" is propagated in
     back-to-front order to screens which have @ref BasicScreen::PropagatedEvent::Draw
     enabled.
--   Input events (@ref Sdl2Application::keyPressEvent() "keyPressEvent()",
-    @ref Sdl2Application::keyReleaseEvent() "keyReleaseEvent()",
-    @ref Sdl2Application::mousePressEvent() "mousePressEvent()",
-    @ref Sdl2Application::mouseReleaseEvent() "mouseReleaseEvent()",
-    @ref Sdl2Application::mouseMoveEvent() "mouseMoveEvent()",
-    @ref Sdl2Application::mouseMoveEvent() "mouseScrollEvent()",
-    @ref Sdl2Application::textInputEvent() "textInputEvent()" and
-    @ref Sdl2Application::textEditingEvent() "textEditingEvent()")
+-   Input events (@relativeref{Sdl2Application,keyPressEvent()},
+    @relativeref{Sdl2Application,keyReleaseEvent()},
+    @relativeref{Sdl2Application,pointerPressEvent()},
+    @relativeref{Sdl2Application,pointerReleaseEvent()},
+    @relativeref{Sdl2Application,pointerMoveEvent()},
+    @relativeref{Sdl2Application,mouseScrollEvent()},
+    @relativeref{Sdl2Application,textInputEvent()} and
+    @relativeref{Sdl2Application,textEditingEvent()})
     are propagated in front-to-back order to screens which have
     @ref BasicScreen::PropagatedEvent::Input enabled. If any screen sets the
     event as accepted, it is not propagated further.
@@ -324,9 +324,16 @@ template<class Application> class BasicScreenedApplication:
            implementations are dispatching the events to attached screens. */
         void viewportEvent(typename Application::ViewportEvent& event) override final;
         void drawEvent() override final;
+        void pointerPressEvent(typename Application::PointerEvent& event) override final;
+        void pointerReleaseEvent(typename Application::PointerEvent& event) override final;
+        void pointerMoveEvent(typename Application::PointerMoveEvent& event) override final;
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_IGNORE_DEPRECATED_PUSH
         void mousePressEvent(typename Application::MouseEvent& event) override final;
         void mouseReleaseEvent(typename Application::MouseEvent& event) override final;
         void mouseMoveEvent(typename Application::MouseMoveEvent& event) override final;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /* These events are not available in all cases, so if the Application
            doesn't have them, they're overriding a mixin dummy */
