@@ -146,8 +146,8 @@ template<class Application> class BasicScreen:
              * Input events.
              *
              * When enabled, @ref keyPressEvent(), @ref keyReleaseEvent(),
-             * @ref mousePressEvent(), @ref mouseReleaseEvent(),
-             * @ref mouseMoveEvent(), @ref mouseScrollEvent(),
+             * @ref pointerPressEvent(), @ref pointerReleaseEvent(),
+             * @ref pointerMoveEvent(), @ref mouseScrollEvent(),
              * @ref textInputEvent() and @ref textEditingEvent() are propagated
              * to this screen.
              */
@@ -181,11 +181,52 @@ template<class Application> class BasicScreen:
         typedef typename BasicScreenedApplication<Application>::KeyEvent KeyEvent;
         #endif
 
-        /** @brief Mouse event */
-        typedef typename BasicScreenedApplication<Application>::MouseEvent MouseEvent;
+        /**
+         * @brief Pointer type
+         * @m_since_latest
+         */
+        typedef typename BasicScreenedApplication<Application>::Pointer Pointer;
 
-        /** @brief Mouse move event */
-        typedef typename BasicScreenedApplication<Application>::MouseMoveEvent MouseMoveEvent;
+        /**
+         * @brief Set of pointer types
+         * @m_since_latest
+         */
+        typedef typename BasicScreenedApplication<Application>::Pointers Pointers;
+
+        /**
+         * @brief Pointer event
+         * @m_since_latest
+         */
+        typedef typename BasicScreenedApplication<Application>::PointerEvent PointerEvent;
+
+        /**
+         * @brief Pointer move event
+         * @m_since_latest
+         */
+        typedef typename BasicScreenedApplication<Application>::PointerMoveEvent PointerMoveEvent;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse event
+         * @m_deprecated_since_latest Use @ref PointerEvent,
+         *      @ref pointerPressEvent() and @ref pointerReleaseEvent()
+         *      instead, which is a better abstraction for covering both mouse
+         *      and touch / pen input.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        typedef CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerReleaseEvent() instead") typename BasicScreenedApplication<Application>::MouseEvent MouseEvent;
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /**
+         * @brief Mouse move event
+         * @m_deprecated_since_latest Use @ref PointerMoveEvent and
+         *      @ref pointerMoveEvent() instead, which is a better abstraction
+         *      for covering both mouse and touch / pen input.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        typedef CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") typename BasicScreenedApplication<Application>::MouseMoveEvent MouseMoveEvent;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
@@ -401,34 +442,84 @@ template<class Application> class BasicScreen:
          * @}
          */
 
-        /** @{ @name Mouse handling */
+        /** @{ @name Pointer handling */
 
         /**
+         * @brief Pointer press event
+         * @m_since_latest
+         *
+         * Called when @ref PropagatedEvent::Input is enabled and a pointer is
+         * pressed. See @ref Sdl2Application::pointerPressEvent() "*Application::pointerPressEvent()"
+         * for more information.
+         */
+        virtual void pointerPressEvent(PointerEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
          * @brief Mouse press event
+         * @m_deprecated_since_latest Use @ref pointerPressEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
          *
          * Called when @ref PropagatedEvent::Input is enabled and mouse button
          * is pressed. See @ref Sdl2Application::mousePressEvent() "*Application::mousePressEvent()"
          * for more information.
          */
-        virtual void mousePressEvent(MouseEvent& event);
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        virtual CORRADE_DEPRECATED("use pointerPressEvent() instead") void mousePressEvent(MouseEvent& event);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
+         * @brief Pointer release event
+         * @m_since_latest
+         *
+         * Called when @ref PropagatedEvent::Input is enabled and a pointer is
+         * released. See @ref Sdl2Application::pointerReleaseEvent() "*Application::pointerReleaseEvent()"
+         * for more information.
+         */
+        virtual void pointerReleaseEvent(PointerEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
          * @brief Mouse release event
+         * @m_deprecated_since_latest Use @ref pointerReleaseEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
          *
          * Called when @ref PropagatedEvent::Input is enabled and mouse button
          * is released. See @ref Sdl2Application::mouseReleaseEvent() "*Application::mouseReleaseEvent()"
          * for more information.
          */
-        virtual void mouseReleaseEvent(MouseEvent& event);
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        virtual CORRADE_DEPRECATED("use pointerReleaseEvent() instead") void mouseReleaseEvent(MouseEvent& event);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
+         * @brief Pointer move event
+         *
+         * Called when @ref PropagatedEvent::Input is enabled and a pointer is
+         * moved. See @ref Sdl2Application::pointerMoveEvent() "*Application::pointerMoveEvent()"
+         * for more information.
+         */
+        virtual void pointerMoveEvent(PointerMoveEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
          * @brief Mouse move event
+         * @m_deprecated_since_latest Use @ref pointerMoveEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
          *
          * Called when @ref PropagatedEvent::Input is enabled and mouse is
          * moved. See @ref Sdl2Application::mouseMoveEvent() "*Application::mouseMoveEvent()"
          * for more information.
          */
-        virtual void mouseMoveEvent(MouseMoveEvent& event);
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        virtual CORRADE_DEPRECATED("use pointerMoveEvent() instead") void mouseMoveEvent(MouseMoveEvent& event);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**

@@ -1168,7 +1168,17 @@ auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
     return *_modifiers;
 }
 
+/* On MSVC 2017, deprecation warning suppression doesn't work on virtual
+   function overrides, so ScreenedApplication overriding mousePressEvent(),
+   mouseReleaseEvent(), and mouseMoveEvent() causes warnings. Disable them at a
+   higher level instead. */
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG) && _MSC_VER < 1920
+CORRADE_IGNORE_DEPRECATED_PUSH
+#endif
 template class BasicScreen<GlfwApplication>;
 template class BasicScreenedApplication<GlfwApplication>;
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG) && _MSC_VER < 1920
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 }}

@@ -421,6 +421,12 @@ class AbstractXApplication {
         explicit AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT);
 
     private:
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /* Calls the base pointer*Event() in order to delegate to deprecated
+           mouse events */
+        template<class> friend class BasicScreenedApplication;
+        #endif
+
         enum class Flag: unsigned int {
             Redraw = 1 << 0,
             Exit = 1 << 1

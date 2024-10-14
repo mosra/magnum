@@ -143,9 +143,17 @@ template<class Application> void BasicScreen<Application>::viewportEvent(Viewpor
     static_cast<void>(event);
 }
 
+template<class Application> void BasicScreen<Application>::pointerPressEvent(PointerEvent&) {}
+template<class Application> void BasicScreen<Application>::pointerReleaseEvent(PointerEvent&) {}
+template<class Application> void BasicScreen<Application>::pointerMoveEvent(PointerMoveEvent&) {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<class Application> void BasicScreen<Application>::mousePressEvent(MouseEvent&) {}
 template<class Application> void BasicScreen<Application>::mouseReleaseEvent(MouseEvent&) {}
 template<class Application> void BasicScreen<Application>::mouseMoveEvent(MouseMoveEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 #ifdef MAGNUM_TARGET_GL
 template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration, const typename Application::GLConfiguration& glConfiguration): Application(arguments, configuration, glConfiguration) {}
@@ -225,6 +233,65 @@ template<class Application> void BasicScreenedApplication<Application>::keyRelea
     this->callKeyReleaseEvent(event, screens());
 }
 
+template<class Application> void BasicScreenedApplication<Application>::pointerPressEvent(typename Application::PointerEvent& event) {
+    /* Front-to-back event propagation, stop when the event gets accepted */
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
+            s->pointerPressEvent(event);
+            if(event.isAccepted()) break;
+        }
+    }
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* If the event wasn't accepted, it's possible that the screens still only
+       implement the deprecated mouse events. Call into the base
+       implementation and assume it appropriately delegates to
+       mousePressEvent(). */
+    if(!event.isAccepted())
+        Application::pointerPressEvent(event);
+    #endif
+}
+
+template<class Application> void BasicScreenedApplication<Application>::pointerReleaseEvent(typename Application::PointerEvent& event) {
+    /* Front-to-back event propagation, stop when the event gets accepted */
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
+            s->pointerReleaseEvent(event);
+            if(event.isAccepted()) break;
+        }
+    }
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* If the event wasn't accepted, it's possible that the screens still only
+       implement the deprecated mouse events. Call into the base
+       implementation and assume it appropriately delegates to
+       mouseReleaseEvent(). */
+    if(!event.isAccepted())
+        Application::pointerReleaseEvent(event);
+    #endif
+}
+
+template<class Application> void BasicScreenedApplication<Application>::pointerMoveEvent(typename Application::PointerMoveEvent& event) {
+    /* Front-to-back event propagation, stop when the event gets accepted */
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
+            s->pointerMoveEvent(event);
+            if(event.isAccepted()) break;
+        }
+    }
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* If the event wasn't accepted, it's possible that the screens still only
+       implement the deprecated mouse events. Call into the base
+       implementation and assume it appropriately delegates to
+       mouseMoveEvent(), mousePressEvent() or mouseReleaseEvent(). */
+    if(!event.isAccepted())
+        Application::pointerMoveEvent(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<class Application> void BasicScreenedApplication<Application>::mousePressEvent(typename Application::MouseEvent& event) {
     /* Front-to-back event propagation, stop when the event gets accepted */
     for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
@@ -254,6 +321,8 @@ template<class Application> void BasicScreenedApplication<Application>::mouseMov
         }
     }
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 template<class Application> void BasicScreenedApplication<Application>::mouseScrollEvent(typename BasicScreenedApplication<Application>::MouseScrollEvent& event) {
     this->callMouseScrollEvent(event, screens());

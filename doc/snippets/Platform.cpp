@@ -163,6 +163,13 @@ MyApplication::MyApplication(const Arguments& arguments):
 
 namespace F {
 
+/* On MSVC 2017, deprecation warning suppression doesn't work on virtual
+   function overrides, so ScreenedApplication overriding mousePressEvent(),
+   mouseReleaseEvent() mouseMoveEvent() and mouseScrollEvent() causes warnings.
+   Disable them at a higher level instead. */
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG) && _MSC_VER < 1920
+CORRADE_IGNORE_DEPRECATED_PUSH
+#endif
 int argc = 0;
 struct MyApplication: Platform::ScreenedApplication {
     MyApplication(): Platform::ScreenedApplication{Arguments{argc, nullptr}} {}
@@ -170,6 +177,9 @@ struct MyApplication: Platform::ScreenedApplication {
     void globalViewportEvent(ViewportEvent& event) override;
     void globalDrawEvent() override;
 };
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG) && _MSC_VER < 1920
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /* [ScreenedApplication-global-events] */
 void MyApplication::globalViewportEvent(ViewportEvent& event) {
