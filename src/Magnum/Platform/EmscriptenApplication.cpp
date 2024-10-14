@@ -501,6 +501,42 @@ void EmscriptenApplication::handleCanvasResize(const EmscriptenUiEvent* event) {
     }
 }
 
+namespace {
+
+EmscriptenApplication::Pointer buttonToPointer(const std::int32_t button) {
+    /* https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button */
+    switch(button) {
+        case 0:
+            return EmscriptenApplication::Pointer::MouseLeft;
+        case 1:
+            return EmscriptenApplication::Pointer::MouseMiddle;
+        case 2:
+            return EmscriptenApplication::Pointer::MouseRight;
+    }
+
+    /* W3C spec allows other, platform-specific buttons:
+        https://www.w3.org/TR/uievents/#dom-mouseevent-button
+       Return an invalid value in that case, don't treat this as an unreachable
+       scenario. */
+    return {};
+}
+
+EmscriptenApplication::Pointers buttonsToPointers(const std::uint32_t buttons) {
+    /* https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons,
+       note that Middle and Right has order swapped compared to button, for
+       some unexplainable reason */
+    EmscriptenApplication::Pointers pointers;
+    if(buttons & (1 << 0))
+        pointers |= EmscriptenApplication::Pointer::MouseLeft;
+    if(buttons & (1 << 2))
+        pointers |= EmscriptenApplication::Pointer::MouseMiddle;
+    if(buttons & (1 << 1))
+        pointers |= EmscriptenApplication::Pointer::MouseRight;
+    return pointers;
+}
+
+}
+
 void EmscriptenApplication::setupCallbacks(bool resizable) {
     /* Since 1.38.17 all emscripten_set_*_callback() are macros. Play it safe
        and wrap all lambdas in () to avoid the preprocessor getting upset when
@@ -524,32 +560,55 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
 
     emscripten_set_mousedown_callback(_canvasTarget.data(), this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
-            MouseEvent e{*event};
-            static_cast<EmscriptenApplication*>(userData)->mousePressEvent(e);
-            return e.isAccepted();
+            auto& app = *static_cast<EmscriptenApplication*>(userData);
+            const Pointer pointer = buttonToPointer(event->button);
+            const Pointers pointers = buttonsToPointers(event->buttons);
+
+            /* If an additional mouse button was pressed, call a move event
+               instead */
+            if(pointers & ~pointer) {
+                PointerMoveEvent e{*event, pointer, pointers, {}};
+                app.pointerMoveEvent(e);
+                return e.isAccepted();
+            } else {
+                PointerEvent e{*event, pointer};
+                app.pointerPressEvent(e);
+                return e.isAccepted();
+            }
         }));
 
     emscripten_set_mouseup_callback(_canvasTarget.data(), this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
-            MouseEvent e{*event};
-            static_cast<EmscriptenApplication*>(userData)->mouseReleaseEvent(e);
-            return e.isAccepted();
+            auto& app = *static_cast<EmscriptenApplication*>(userData);
+            const Pointer pointer = buttonToPointer(event->button);
+            const Pointers pointers = buttonsToPointers(event->buttons);
+
+            /* If some buttons are still left pressed after a release, call a
+               move event instead */
+            if(pointers) {
+                PointerMoveEvent e{*event, pointer, pointers, {}};
+                app.pointerMoveEvent(e);
+                return e.isAccepted();
+            } else {
+                PointerEvent e{*event, pointer};
+                app.pointerReleaseEvent(e);
+                return e.isAccepted();
+            }
         }));
 
     emscripten_set_mousemove_callback(_canvasTarget.data(), this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
             /* Relies on the target being the canvas, which should be always
-               true for mouse events. The targetX and targetY variables used
-               to be a `long` before 3.1.47, which is why the cast. */
-            Vector2i position{Int(event->targetX), Int(event->targetY)};
-            MouseMoveEvent e{*event,
+               true for mouse events */
+            Vector2 position{Float(event->targetX), Float(event->targetY)};
+            PointerMoveEvent e{*event, {}, buttonsToPointers(event->buttons),
                 /* Avoid bogus offset at first -- report 0 when the event is
                    called for the first time. */
-                app._previousMouseMovePosition == Vector2i{-1} ? Vector2i{} :
+                Math::isNan(app._previousMouseMovePosition).all() ? Vector2{} :
                 position - app._previousMouseMovePosition};
             app._previousMouseMovePosition = position;
-            static_cast<EmscriptenApplication*>(userData)->mouseMoveEvent(e);
+            app.pointerMoveEvent(e);
             return e.isAccepted();
         }));
 
@@ -729,9 +788,72 @@ void EmscriptenApplication::setTextInputRect(const Range2Di&) {
 void EmscriptenApplication::viewportEvent(ViewportEvent&) {}
 void EmscriptenApplication::keyPressEvent(KeyEvent&) {}
 void EmscriptenApplication::keyReleaseEvent(KeyEvent&) {}
+
+void EmscriptenApplication::pointerPressEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent mouseEvent{event.event()};
+    mousePressEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void EmscriptenApplication::mousePressEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void EmscriptenApplication::pointerReleaseEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent mouseEvent{event.event()};
+    mouseReleaseEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void EmscriptenApplication::mouseReleaseEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void EmscriptenApplication::pointerMoveEvent(PointerMoveEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* If the event is due to some button being additionally pressed or one
+       button from a larger set being released, delegate to a press/release
+       event instead */
+    if(event.pointer()) {
+        /* Emscripten reports either a move or a press/release, so there
+           shouldn't be any move in this case */
+        CORRADE_INTERNAL_ASSERT(event.relativePosition() == Vector2{});
+        MouseEvent mouseEvent{event.event()};
+        event.pointers() >= *event.pointer() ?
+            mousePressEvent(mouseEvent) : mouseReleaseEvent(mouseEvent);
+    } else {
+        /* The positions are reported in integers in the first place, no need
+           to round anything */
+        MouseMoveEvent mouseEvent{event.event(), Vector2i{event.relativePosition()}};
+        mouseMoveEvent(mouseEvent);
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void EmscriptenApplication::mouseMoveEvent(MouseMoveEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 void EmscriptenApplication::mouseScrollEvent(MouseScrollEvent&) {}
 void EmscriptenApplication::textInputEvent(TextInputEvent&) {}
 
@@ -787,6 +909,18 @@ template<class T> EmscriptenApplication::InputEvent::Modifiers eventModifiers(co
 
 }
 
+Vector2 EmscriptenApplication::PointerEvent::position() const {
+    /* Relies on the target being the canvas, which should be always true for
+       mouse events */
+    return {Float(_event.targetX), Float(_event.targetY)};
+}
+
+EmscriptenApplication::PointerEvent::Modifiers EmscriptenApplication::PointerEvent::modifiers() const {
+    return eventModifiers(_event);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::button() const {
     return Button(_event.button);
 }
@@ -801,10 +935,25 @@ Vector2i EmscriptenApplication::MouseEvent::position() const {
 EmscriptenApplication::MouseEvent::Modifiers EmscriptenApplication::MouseEvent::modifiers() const {
     return eventModifiers(_event);
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
+Vector2 EmscriptenApplication::PointerMoveEvent::position() const {
+    /* Relies on the target being the canvas, which should be always true for
+       mouse events */
+    return {Float(_event.targetX), Float(_event.targetY)};
+}
+
+EmscriptenApplication::PointerMoveEvent::Modifiers EmscriptenApplication::PointerMoveEvent::modifiers() const {
+    return eventModifiers(_event);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 EmscriptenApplication::MouseMoveEvent::Buttons EmscriptenApplication::MouseMoveEvent::buttons() const {
     return EmscriptenApplication::MouseMoveEvent::Button(_event.buttons);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 Vector2i EmscriptenApplication::MouseMoveEvent::position() const {
     /* Relies on the target being the canvas, which should be always true for
@@ -816,6 +965,7 @@ Vector2i EmscriptenApplication::MouseMoveEvent::position() const {
 EmscriptenApplication::MouseMoveEvent::Modifiers EmscriptenApplication::MouseMoveEvent::modifiers() const {
     return eventModifiers(_event);
 }
+#endif
 
 Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
     /* From emscripten's Browser.getMouseWheelDelta() function in
