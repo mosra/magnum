@@ -140,6 +140,34 @@ int AbstractXApplication::exec() {
     return _exitCode;
 }
 
+namespace {
+
+AbstractXApplication::Pointer buttonToPointer(const unsigned int button) {
+    switch(button) {
+        case 1 /*Button1*/:
+            return AbstractXApplication::Pointer::MouseLeft;
+        case 2 /*Button2*/:
+            return AbstractXApplication::Pointer::MouseMiddle;
+        case 3 /*Button3*/:
+            return AbstractXApplication::Pointer::MouseRight;
+    }
+
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+}
+
+AbstractXApplication::Pointers buttonsToPointers(const unsigned int state) {
+    AbstractXApplication::Pointers pointers;
+    if(state & Button1Mask)
+        pointers |= AbstractXApplication::Pointer::MouseLeft;
+    if(state & Button2Mask)
+        pointers |= AbstractXApplication::Pointer::MouseMiddle;
+    if(state & Button3Mask)
+        pointers |= AbstractXApplication::Pointer::MouseRight;
+    return pointers;
+}
+
+}
+
 bool AbstractXApplication::mainLoopIteration() {
     /* If exit was requested directly in the constructor, exit immediately
        without calling anything else */
@@ -184,15 +212,52 @@ bool AbstractXApplication::mainLoopIteration() {
                     if(event.type == ButtonPress)
                         mouseScrollEvent(e);
                 } else {
-                    MouseEvent e(MouseEvent::Button(event.xbutton.button), event.xkey.state, {event.xbutton.x, event.xbutton.y});
-                    event.type == ButtonPress ? mousePressEvent(e) : mouseReleaseEvent(e);
+                    const Pointer pointer = buttonToPointer(event.xbutton.button);
+                    Pointers pointers = buttonsToPointers(event.xbutton.state);
+                    /* Compared to other toolkits, the `pointers` don't include
+                       the currently pressed button on press yet, and still
+                       include the currently released button on release. Make
+                       it consistent. */
+                    if(event.type == ButtonPress) {
+                        CORRADE_INTERNAL_ASSERT(!(pointers & pointer));
+                        pointers |= pointer;
+                    } else {
+                        CORRADE_INTERNAL_ASSERT(pointers & pointer);
+                        pointers &= ~pointer;
+                    }
+
+                    /* If an additional mouse button was pressed or some other
+                       buttons are still left pressed after a release, call a
+                       move event instead */
+                    if((event.type == ButtonPress && (pointers & ~pointer)) ||
+                       (event.type == ButtonRelease && pointers)) {
+                        /* As we are patching up the set of currently pressed
+                           pointers, the move event can't just figure that
+                           out from the state */
+                        PointerMoveEvent e{pointer, pointers,
+                            {Float(event.xbutton.x), Float(event.xbutton.y)},
+                            event.xbutton.state};
+                        pointerMoveEvent(e);
+                    } else {
+                        PointerEvent e(pointer,
+                            {Float(event.xbutton.x), Float(event.xbutton.y)},
+                            event.xbutton.state);
+                        event.type == ButtonPress ?
+                            pointerPressEvent(e) : pointerReleaseEvent(e);
+                    }
                 }
             } break;
 
             /* Mouse move events */
             case MotionNotify: {
-                MouseMoveEvent e(event.xmotion.state, {event.xmotion.x, event.xmotion.y});
-                mouseMoveEvent(e);
+                /* Because for the move-from-press/release above we're patching
+                   up the set of pressed pointers, we need to explicitly pass
+                   it in here as well. No need to patch anything in this case
+                   tho -- the set should be up-to-date. */
+                PointerMoveEvent e({}, buttonsToPointers(event.xmotion.state),
+                    {Float(event.xmotion.x), Float(event.xmotion.y)},
+                    event.xmotion.state);
+                pointerMoveEvent(e);
             } break;
         }
     }
@@ -208,9 +273,92 @@ bool AbstractXApplication::mainLoopIteration() {
 void AbstractXApplication::viewportEvent(ViewportEvent&) {}
 void AbstractXApplication::keyPressEvent(KeyEvent&) {}
 void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace {
+
+CORRADE_IGNORE_DEPRECATED_PUSH
+AbstractXApplication::MouseEvent::Button pointerToButton(const AbstractXApplication::Pointer pointer) {
+    switch(pointer) {
+        case AbstractXApplication::Pointer::MouseLeft:
+            return AbstractXApplication::MouseEvent::Button::Left;
+        case AbstractXApplication::Pointer::MouseMiddle:
+            return AbstractXApplication::MouseEvent::Button::Middle;
+        case AbstractXApplication::Pointer::MouseRight:
+            return AbstractXApplication::MouseEvent::Button::Right;
+    }
+
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+}
+CORRADE_IGNORE_DEPRECATED_POP
+
+}
+#endif
+
+void AbstractXApplication::pointerPressEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* The positions are reported in integers in the first place, no need to
+       round anything */
+    MouseEvent mouseEvent{pointerToButton(event.pointer()), event._modifiers, Vector2i{event.position()}};
+    mousePressEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void AbstractXApplication::mousePressEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void AbstractXApplication::pointerReleaseEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* The positions are reported in integers in the first place, no need to
+       round anything */
+    MouseEvent mouseEvent{pointerToButton(event.pointer()), event._modifiers, Vector2i{event.position()}};
+    mouseReleaseEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void AbstractXApplication::pointerMoveEvent(PointerMoveEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* If the event is due to some button being additionally pressed or one
+       button from a larger set being released, delegate to a press/release
+       event instead */
+    if(event.pointer()) {
+        MouseEvent mouseEvent{pointerToButton(*event.pointer()), event._modifiers,
+            Vector2i{event.position()}};
+        event.pointers() >= *event.pointer() ?
+            mousePressEvent(mouseEvent) : mouseReleaseEvent(mouseEvent);
+    } else {
+        MouseMoveEvent mouseEvent{event._modifiers, Vector2i{event.position()}};
+        mouseMoveEvent(mouseEvent);
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 void AbstractXApplication::mouseScrollEvent(MouseScrollEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -231,5 +379,13 @@ AbstractXApplication::Configuration::Configuration():
     _title{Containers::String::nullTerminatedGlobalView("Magnum X Application"_s)},
     _size(800, 600) {}
 AbstractXApplication::Configuration::~Configuration() = default;
+
+AbstractXApplication::Pointers AbstractXApplication::KeyEvent::pointers() const {
+    return buttonsToPointers(_modifiers);
+}
+
+AbstractXApplication::Pointers AbstractXApplication::MouseScrollEvent::pointers() const {
+    return buttonsToPointers(_modifiers);
+}
 
 }}

@@ -104,9 +104,27 @@ class AbstractXApplication {
         class ViewportEvent;
         class InputEvent;
         class KeyEvent;
+        class PointerEvent;
+        class PointerMoveEvent;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         class MouseEvent;
         class MouseMoveEvent;
+        #endif
         class MouseScrollEvent;
+
+        /* The damn thing cannot handle forward enum declarations */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class Pointer: UnsignedByte;
+        #endif
+
+        /**
+         * @brief Set of pointer types
+         * @m_since_latest
+         *
+         * @see @ref KeyEvent::pointers(), @ref PointerMoveEvent::pointers(),
+         *      @ref MouseScrollEvent::pointers()
+         */
+        typedef Containers::EnumSet<Pointer> Pointers;
 
         /** @brief Copying is not allowed */
         AbstractXApplication(const AbstractXApplication&) = delete;
@@ -286,16 +304,92 @@ class AbstractXApplication {
          * @}
          */
 
-        /** @{ @name Mouse handling */
+        /** @{ @name Pointer handling */
 
-        /** @copydoc Sdl2Application::mousePressEvent() */
-        virtual void mousePressEvent(MouseEvent& event);
+        /**
+         * @brief Pointer press event
+         * @m_since_latest
+         *
+         * Called when a mouse is pressed. Note that if at least one mouse
+         * button is already pressed and another button gets pressed in
+         * addition, @ref pointerMoveEvent() with the new combination is
+         * called, not this function.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mousePressEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
+         */
+        virtual void pointerPressEvent(PointerEvent& event);
 
-        /** @copydoc Sdl2Application::mouseReleaseEvent() */
-        virtual void mouseReleaseEvent(MouseEvent& event);
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse press event
+         * @m_deprecated_since_latest Use @ref pointerPressEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use pointerPressEvent() instead") void mousePressEvent(MouseEvent& event);
+        #endif
 
-        /** @copydoc Sdl2Application::mouseMoveEvent() */
-        virtual void mouseMoveEvent(MouseMoveEvent& event);
+        /**
+         * @brief Pointer release event
+         * @m_since_latest
+         *
+         * Called when a mouse is released. Note that if multiple mouse buttons
+         * are pressed and one of these is released, @ref pointerMoveEvent()
+         * with the new combination is called, not this function.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseReleaseEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
+         */
+        virtual void pointerReleaseEvent(PointerEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse release event
+         * @m_deprecated_since_latest Use @ref pointerReleaseEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use pointerReleaseEvent() instead") void mouseReleaseEvent(MouseEvent& event);
+        #endif
+
+        /**
+         * @brief Pointer move event
+         * @m_since_latest
+         *
+         * Called when any of the currently pressed pointers is moved or
+         * changes its properties. Gets called also if the set of pressed mouse
+         * buttons changes.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseMoveEvent(), or if
+         * @ref PointerMoveEvent::pointer() is not
+         * @relativeref{Corrade,Containers::NullOpt}, to either
+         * @ref mousePressEvent() or @ref mouseReleaseEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
+         */
+        virtual void pointerMoveEvent(PointerMoveEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse move event
+         * @m_deprecated_since_latest Use @ref pointerMoveEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use pointerMoveEvent() instead") void mouseMoveEvent(MouseMoveEvent& event);
+        #endif
 
         /**
          * @brief Mouse scroll event
@@ -350,6 +444,31 @@ class AbstractXApplication {
 
         Flags _flags;
 };
+
+/**
+@brief Pointer type
+@m_since_latest
+
+@see @ref Pointers, @ref KeyEvent::pointers(), @ref PointerEvent::pointer(),
+    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers(),
+    @ref MouseScrollEvent::pointers()
+*/
+enum class AbstractXApplication::Pointer: UnsignedByte {
+    /** Left mouse button. Corresponds to `Button1` / `Button1Mask`. */
+    MouseLeft = 1 << 0,
+
+    /**
+     * Middle mouse button. Corresponds to `Button2` / `Button2Mask`.
+     */
+    MouseMiddle = 1 << 1,
+
+    /**
+     * Right mouse button. Corresponds to `Button3` / `Button3Mask`.
+     */
+    MouseRight = 1 << 2
+};
+
+CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Pointers)
 
 /**
 @brief OpenGL context configuration
@@ -563,9 +682,10 @@ class AbstractXApplication::ViewportEvent {
 /**
 @brief Base for input events
 
-@see @ref KeyEvent, @ref MouseEvent, @ref MouseMoveEvent, @ref keyPressEvent(),
-    @ref keyReleaseEvent(), @ref mousePressEvent(), @ref mouseReleaseEvent(),
-    @ref mouseMoveEvent()
+@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent,
+    @ref MouseScrollEvent, @ref keyPressEvent(), @ref keyReleaseEvent(),
+    @ref pointerPressEvent(), @ref pointerReleaseEvent(),
+    @ref pointerMoveEvent(), @ref mouseScrollEvent()
 */
 class AbstractXApplication::InputEvent {
     public:
@@ -621,12 +741,12 @@ class AbstractXApplication::InputEvent {
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Mouse button
-         *
-         * @see @ref Buttons, @ref buttons()
+         * @m_deprecated_since_latest Use @ref Pointer instead.
          */
-        enum class Button: unsigned int {
+        enum class CORRADE_DEPRECATED_ENUM("use Pointer instead") Button: unsigned int {
             Left = Button1Mask,     /**< Left button */
             Middle = Button2Mask,   /**< Middle button */
             Right = Button3Mask     /**< Right button */
@@ -634,10 +754,12 @@ class AbstractXApplication::InputEvent {
 
         /**
          * @brief Set of mouse buttons
-         *
-         * @see @ref buttons()
+         * @m_deprecated_since_latest Use @ref Pointers instead.
          */
-        typedef Containers::EnumSet<Button> Buttons;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        typedef CORRADE_DEPRECATED("use Pointers instead") Containers::EnumSet<Button> Buttons;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /** @brief Copying is not allowed */
         InputEvent(const InputEvent&) = delete;
@@ -662,10 +784,16 @@ class AbstractXApplication::InputEvent {
             return Modifiers(_modifiers & (ShiftMask|ControlMask|Mod1Mask|Mod5Mask|LockMask|Mod2Mask));
         }
 
-        /** @brief Mouse buttons */
-        Buttons buttons() const {
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse buttons
+         * @m_deprecated_since_latest Use @ref KeyEvent::pointers() or
+         *      @ref PointerMoveEvent::pointers() instead.
+         */
+        CORRADE_DEPRECATED("use pointers() instead") Buttons buttons() const {
             return Buttons(_modifiers & (Button1Mask|Button2Mask|Button3Mask));
         }
+        #endif
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -675,16 +803,19 @@ class AbstractXApplication::InputEvent {
     #endif
 
     private:
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        friend AbstractXApplication; /* mouseScrollEvent() backwards compat */
-        #endif
+        friend AbstractXApplication;
 
         unsigned int _modifiers;
         bool _accepted;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Buttons)
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /**
 @brief Key event
@@ -1034,6 +1165,15 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
         /** @brief Position */
         Vector2i position() const { return _position; }
 
+        /**
+         * @brief Pointer types pressed in this event
+         * @m_since_latest
+         *
+         * Returns an empty set if no pointers are pressed in addition to the
+         * key.
+         */
+        Pointers pointers() const;
+
     private:
         friend AbstractXApplication;
 
@@ -1044,12 +1184,56 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
 };
 
 /**
+@brief Pointer event
+@m_since_latest
+
+@see @ref PointerMoveEvent, @ref pointerPressEvent(),
+    @ref pointerReleaseEvent()
+*/
+class AbstractXApplication::PointerEvent: public InputEvent {
+    public:
+        /** @brief Copying is not allowed */
+        PointerEvent(const PointerEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerEvent(PointerEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        PointerEvent& operator=(const PointerEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerEvent& operator=(PointerEvent&&) = delete;
+
+        /** @brief Pointer type that was pressed or released */
+        Pointer pointer() const { return _pointer; }
+
+        /**
+         * @brief Position
+         *
+         * For mouse input the position is always reported in whole pixels.
+         */
+        Vector2 position() const { return _position; }
+
+    private:
+        friend AbstractXApplication;
+
+        explicit PointerEvent(Pointer pointer, const Vector2& position, unsigned int modifiers): InputEvent{modifiers}, _pointer(pointer), _position{position} {}
+
+        const Pointer _pointer;
+        const Vector2 _position;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
 @brief Mouse event
+@m_deprecated_since_latest Use @ref PointerEvent, @ref pointerPressEvent() and
+    @ref pointerReleaseEvent() instead, which is a better abstraction for
+    covering both mouse and touch / pen input.
 
 @see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
     @ref mouseReleaseEvent()
 */
-class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
+class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerReleaseEvent() instead") AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
     public:
         /**
          * @brief Mouse button
@@ -1092,13 +1276,75 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
         const Button _button;
         const Vector2i _position;
 };
+#endif
 
 /**
+@brief Pointer move event
+@m_since_latest
+
+@see @ref PointerEvent, @ref pointerMoveEvent()
+*/
+class AbstractXApplication::PointerMoveEvent: public InputEvent {
+    public:
+        /** @brief Copying is not allowed */
+        PointerMoveEvent(const PointerMoveEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerMoveEvent(PointerMoveEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        PointerMoveEvent& operator=(const PointerMoveEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerMoveEvent& operator=(PointerMoveEvent&&) = delete;
+
+        /**
+         * @brief Pointer type that was added or removed from the set of pressed pointers
+         *
+         * Is non-empty only in case a mouse button was pressed in addition to
+         * an already pressed button, or if one mouse button from multiple
+         * pressed buttons was released. If non-empty and @ref pointers() don't
+         * contain given @ref Pointer value, the button was released, if they
+         * contain given value, the button was pressed.
+         */
+        Containers::Optional<Pointer> pointer() const { return _pointer; }
+
+        /**
+         * @brief Pointer types pressed in this event
+         *
+         * Returns an empty set if no pointers are pressed, which happens for
+         * example when a mouse is just moved around.
+         * @see @ref pointer()
+         */
+        Pointers pointers() const { return _pointers; }
+
+        /**
+         * @brief Position
+         *
+         * For mouse input the position is always reported in whole pixels.
+         */
+        Vector2 position() const { return _position; }
+
+    private:
+        friend AbstractXApplication;
+
+        explicit PointerMoveEvent(Containers::Optional<Pointer> pointer, Pointers pointers, const Vector2& position, unsigned int modifiers): InputEvent{modifiers}, _pointer{pointer}, _pointers{pointers}, _position{position} {}
+
+        const Containers::Optional<Pointer> _pointer;
+        Pointers _pointers;
+        const Vector2 _position;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
 @brief Mouse move event
+@m_deprecated_since_latest Use @ref PointerMoveEvent and
+    @ref pointerMoveEvent() instead, which is a better abstraction for covering
+    both mouse and touch / pen input.
 
 @see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
-class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
+class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
     public:
         /** @brief Position */
         Vector2i position() const { return _position; }
@@ -1110,12 +1356,13 @@ class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEv
 
         const Vector2i _position;
 };
+#endif
 
 /**
 @brief Mouse scroll event
 @m_since_latest
 
-@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref mouseScrollEvent()
 */
 class AbstractXApplication::MouseScrollEvent: public InputEvent {
     public:
@@ -1128,6 +1375,14 @@ class AbstractXApplication::MouseScrollEvent: public InputEvent {
 
         /** @brief Position */
         Vector2i position() const { return _position; }
+
+        /**
+         * @brief Pointer types pressed in this event
+         *
+         * Returns an empty set if no pointers are pressed in addition to the
+         * mouse wheel.
+         */
+        Pointers pointers() const;
 
     private:
         friend AbstractXApplication;
