@@ -296,11 +296,28 @@ class EmscriptenApplication {
         class GLConfiguration;
         class ViewportEvent;
         class InputEvent;
+        class PointerEvent;
+        class PointerMoveEvent;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         class MouseEvent;
         class MouseMoveEvent;
+        #endif
         class MouseScrollEvent;
         class KeyEvent;
         class TextInputEvent;
+
+        /* The damn thing cannot handle forward enum declarations */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class Pointer: UnsignedByte;
+        #endif
+
+        /**
+         * @brief Set of pointer types
+         * @m_since_latest
+         *
+         * @see @ref PointerMoveEvent::pointers()
+         */
+        typedef Containers::EnumSet<Pointer> Pointers;
 
         #ifdef MAGNUM_TARGET_GL
         /**
@@ -600,7 +617,7 @@ class EmscriptenApplication {
          * @}
          */
 
-        /** @{ @name Mouse handling */
+        /** @{ @name Pointer handling */
 
     public:
         /**
@@ -808,27 +825,89 @@ class EmscriptenApplication {
 
     private:
         /**
-         * @brief Mouse press event
+         * @brief Pointer press event
+         * @m_since_latest
          *
-         * Called when mouse button is pressed. Default implementation does
+         * Called when a mouse is pressed. Note that if at least one mouse
+         * button is already pressed and another button gets pressed in
+         * addition, @ref pointerMoveEvent() with the new combination is
+         * called, not this function.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mousePressEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
          * nothing.
          */
-        virtual void mousePressEvent(MouseEvent& event);
+        virtual void pointerPressEvent(PointerEvent& event);
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse press event
+         * @m_deprecated_since_latest Use @ref pointerPressEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use pointerPressEvent() instead") void mousePressEvent(MouseEvent& event);
+        #endif
+
+        /**
+         * @brief Pointer release event
+         * @m_since_latest
+         *
+         * Called when a mouse is released. Note that if multiple mouse buttons
+         * are pressed and one of these is released, @ref pointerMoveEvent()
+         * with the new combination is called, not this function.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseReleaseEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
+         */
+        virtual void pointerReleaseEvent(PointerEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Mouse release event
+         * @m_deprecated_since_latest Use @ref pointerReleaseEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
          *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
+         * Default implementation does nothing.
          */
-        virtual void mouseReleaseEvent(MouseEvent& event);
+        virtual CORRADE_DEPRECATED("use pointerReleaseEvent() instead") void mouseReleaseEvent(MouseEvent& event);
+        #endif
 
         /**
-         * @brief Mouse move event
+         * @brief Pointer move event
+         * @m_since_latest
          *
-         * Called when mouse is moved. Default implementation does nothing.
+         * Called when any of the currently pressed pointers is moved or
+         * changes its properties. Gets called also if the set of pressed mouse
+         * buttons changes.
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseMoveEvent(), or if
+         * @ref PointerMoveEvent::pointer() is not
+         * @relativeref{Corrade,Containers::NullOpt}, to either
+         * @ref mousePressEvent() or @ref mouseReleaseEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
          */
-        virtual void mouseMoveEvent(MouseMoveEvent& event);
+        virtual void pointerMoveEvent(PointerMoveEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse move event
+         * @m_deprecated_since_latest Use @ref pointerMoveEvent() instead,
+         *      which is a better abstraction for covering both mouse and touch
+         *      / pen input.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use pointerMoveEvent() instead") void mouseMoveEvent(MouseMoveEvent& event);
+        #endif
 
         /**
          * @brief Mouse scroll event
@@ -912,7 +991,8 @@ class EmscriptenApplication {
         void setupCallbacks(bool resizable);
         void setupAnimationFrame(bool ForceAnimationFrame);
 
-        Vector2i _lastKnownCanvasSize, _previousMouseMovePosition{-1};
+        Vector2i _lastKnownCanvasSize;
+        Vector2 _previousMouseMovePosition{Constants::nan()};
         Vector2 _lastKnownDevicePixelRatio;
 
         Flags _flags;
@@ -936,6 +1016,26 @@ class EmscriptenApplication {
         /* Animation frame callback */
         int (*_callback)(void*);
 };
+
+/**
+@brief Pointer type
+@m_since_latest
+
+@see @ref Pointers, @ref PointerEvent::pointer(),
+    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers()
+*/
+enum class EmscriptenApplication::Pointer: UnsignedByte {
+    /** Left mouse button */
+    MouseLeft = 1 << 0,
+
+    /** Middle mouse button */
+    MouseMiddle = 1 << 1,
+
+    /** Right mouse button */
+    MouseRight = 1 << 2
+};
+
+CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Pointers)
 
 #ifdef MAGNUM_TARGET_GL
 /**
@@ -1466,8 +1566,10 @@ class EmscriptenApplication::ViewportEvent {
 /**
 @brief Base for input events
 
-@see @ref KeyEvent, @ref MouseEvent, @ref MouseMoveEvent, @ref keyPressEvent(),
-    @ref mousePressEvent(), @ref mouseReleaseEvent(), @ref mouseMoveEvent()
+@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent,
+    @ref MouseScrollEvent, @ref keyPressEvent(), @ref keyReleaseEvent(),
+    @ref pointerPressEvent(), @ref pointerReleaseEvent(),
+    @ref pointerMoveEvent(), @ref mouseScrollEvent()
 */
 class EmscriptenApplication::InputEvent {
     public:
@@ -1475,7 +1577,9 @@ class EmscriptenApplication::InputEvent {
          * @brief Modifier
          *
          * @see @ref Modifiers, @ref KeyEvent::modifiers(),
-         *      @ref MouseEvent::modifiers()
+         *      @ref PointerEvent::modifiers(),
+         *      @ref PointerMoveEvent::modifiers(),
+         *      @ref MouseScrollEvent::modifiers()
          */
         enum class Modifier: Int {
             /**
@@ -1510,8 +1614,9 @@ class EmscriptenApplication::InputEvent {
         /**
          * @brief Set of modifiers
          *
-         * @see @ref KeyEvent::modifiers(), @ref MouseEvent::modifiers(),
-         *      @ref MouseMoveEvent::modifiers()
+         * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
+         *      @ref PointerMoveEvent::modifiers(),
+         *      @ref MouseScrollEvent::modifiers()
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -1551,11 +1656,69 @@ class EmscriptenApplication::InputEvent {
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::InputEvent::Modifiers)
 
 /**
-@brief Mouse event
+@brief Pointer event
+@m_since_latest
 
-@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
+@see @ref PointerMoveEvent, @ref MouseScrollEvent, @ref pointerPressEvent(),
+    @ref pointerReleaseEvent()
 */
-class EmscriptenApplication::MouseEvent: public EmscriptenApplication::InputEvent {
+class EmscriptenApplication::PointerEvent: public InputEvent {
+    public:
+        /** @brief Copying is not allowed */
+        PointerEvent(const PointerEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerEvent(PointerEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        PointerEvent& operator=(const PointerEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerEvent& operator=(PointerEvent&&) = delete;
+
+        /**
+         * @brief Pointer type that was pressed or released
+         *
+         * The browser is free to report any extra mouse buttons in addition to
+         * the ones listed in @ref Pointer. In that case a zero value is
+         * returned and you can get the actual button index through
+         * @ref event().
+         */
+        Pointer pointer() const { return _pointer; }
+
+        /**
+         * @brief Position
+         *
+         * The position is always reported in whole pixels.
+         */
+        Vector2 position() const;
+
+        /** @brief Modifiers */
+        Modifiers modifiers() const;
+
+        /** @brief Underlying Emscripten event */
+        const EmscriptenMouseEvent& event() const { return _event; }
+
+    private:
+        friend EmscriptenApplication;
+
+        explicit PointerEvent(const EmscriptenMouseEvent& event, Pointer pointer): _event(event), _pointer{pointer} {}
+
+        const EmscriptenMouseEvent& _event;
+        const Pointer _pointer;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Mouse event
+@m_deprecated_since_latest Use @ref PointerEvent, @ref pointerPressEvent() and
+    @ref pointerReleaseEvent() instead, which is a better abstraction for
+    covering both mouse and touch / pen input.
+
+@see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
+    @ref mouseReleaseEvent()
+*/
+class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerReleaseEvent() instead") EmscriptenApplication::MouseEvent: public InputEvent {
     public:
         /**
          * @brief Mouse button
@@ -1588,13 +1751,92 @@ class EmscriptenApplication::MouseEvent: public EmscriptenApplication::InputEven
 
         const EmscriptenMouseEvent& _event;
 };
+#endif
 
 /**
-@brief Mouse move event
+@brief Pointer move event
+@m_since_latest
 
-@see @ref MouseEvent, @ref mouseMoveEvent()
+@see @ref PointerEvent, @ref MouseScrollEvent, @ref pointerMoveEvent()
 */
-class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::InputEvent {
+class EmscriptenApplication::PointerMoveEvent: public InputEvent {
+    public:
+        /** @brief Copying is not allowed */
+        PointerMoveEvent(const PointerMoveEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerMoveEvent(PointerMoveEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        PointerMoveEvent& operator=(const PointerMoveEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        PointerMoveEvent& operator=(PointerMoveEvent&&) = delete;
+
+        /**
+         * @brief Pointer type that was added or removed from the set of pressed pointers
+         *
+         * Is non-empty only in case a mouse button was pressed in addition to
+         * an already pressed button, or if one mouse button from multiple
+         * pressed buttons was released. If non-empty and @ref pointers() don't
+         * contain given @ref Pointer value, the button was released, if they
+         * contain given value, the button was pressed.
+         */
+        Containers::Optional<Pointer> pointer() const { return _pointer; }
+
+        /**
+         * @brief Pointer types pressed in this event
+         *
+         * Returns an empty set if no pointers are pressed, which happens for
+         * example when a mouse is just moved around.
+         * @see @ref pointer()
+         */
+        Pointers pointers() const { return _pointers; }
+
+        /**
+         * @brief Position
+         *
+         * The position is always reported in whole pixels.
+         */
+        Vector2 position() const;
+
+        /**
+         * @brief Position relative to the previous touch event
+         *
+         * The position is always reported in whole pixels. Unlike
+         * @ref Sdl2Application, HTML APIs don't provide relative position
+         * directly, so this is calculated explicitly as a delta from previous
+         * move event position.
+         */
+        Vector2 relativePosition() const { return _relativePosition; }
+
+        /** @brief Modifiers */
+        Modifiers modifiers() const;
+
+        /** @brief Underlying Emscripten event */
+        const EmscriptenMouseEvent& event() const { return _event; }
+
+    private:
+        friend EmscriptenApplication;
+
+        explicit PointerMoveEvent(const EmscriptenMouseEvent& event, Containers::Optional<Pointer> pointer, Pointers pointers, const Vector2& relativePosition): _event(event), _pointer{pointer}, _pointers{pointers}, _relativePosition{relativePosition} {}
+
+        const EmscriptenMouseEvent& _event;
+        const Containers::Optional<Pointer> _pointer;
+        const Pointers _pointers;
+        const Vector2 _relativePosition;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Mouse move event
+@m_deprecated_since_latest Use @ref PointerMoveEvent and
+    @ref pointerMoveEvent() instead, which is a better abstraction for covering
+    both mouse and touch / pen input.
+
+@see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
+*/
+class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") EmscriptenApplication::MouseMoveEvent: public InputEvent {
     public:
         /**
          * @brief Mouse button
@@ -1649,12 +1891,15 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
         const Vector2i _relativePosition;
 };
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::MouseMoveEvent::Buttons)
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /**
 @brief Mouse scroll event
 
-@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref mouseScrollEvent()
 */
 class EmscriptenApplication::MouseScrollEvent: public EmscriptenApplication::InputEvent {
     public:
