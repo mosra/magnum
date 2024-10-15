@@ -141,24 +141,23 @@ Containers::Pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const V
     info.descriptorPool = _handle;
     info.descriptorSetCount = 1;
     info.pSetLayouts = &layout;
-    /* VK_ERROR_OUT_OF_POOL_MEMORY is only available since VK_KHR_maintenance1
-       and it's not really clear what was supposed to happen before that. At
-       the very least, running the allocateFail() test using
+    /* VK_ERROR_OUT_OF_POOL_MEMORY is only available since VK_KHR_maintenance1.
+       It's not really clear what was supposed to happen before that. At the
+       very least, running the allocateFail() test using
 
-        ./VkDescriptorPoolVkTest --magnum-vulkan-version 1.0 --magnum-enable-layers VK_LAYER_KHRONOS_validation
+        ./VkDescriptorPoolVkTest --magnum-vulkan-version 1.0 --magnum-disable-extensions VK_KHR_maintenance1 --magnum-enable-layers VK_LAYER_KHRONOS_validation
 
-       without VK_KHR_maintenance1 enabled, the validation layer complains that
-       I'm allocating from a pool that doesn't have enough free items, which
-       implies it used to be a user error and thus the driver is free to do
-       *anything*, including random crashes, as noted on
-       https://community.khronos.org/t/descriptor-pool-able-to-allocate-even-though-pool-should-be-empty/7330/6
+       the validation layer complains that I'm allocating from a pool that
+       doesn't have enough free items, which implies it used to be a user error
+       and thus the driver is free to do *anything*, including random crashes,
+       as noted on https://community.khronos.org/t/descriptor-pool-able-to-allocate-even-though-pool-should-be-empty/7330/6
 
        From practical testing, even the oldest Vulkan driver I have (ARM Mali
        on Huawei P9, Vulkan 1.0.66) seems to return VK_ERROR_OUT_OF_POOL_MEMORY
-       no matter whether the extension is enabled or not. So I'll assume all
-       contemporary drivers in early 2021 do this, there's nothing I can do
-       otherwise. */
-    const Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR((**_device).AllocateDescriptorSets(*_device, &info, &set._handle), Result::ErrorOutOfPoolMemory, Result::ErrorFragmentedPool);
+       no matter whether the extension is enabled or not. On the other hand,
+       NVidia returns VK_ERROR_OUT_OF_DEVICE_MEMORY in this case. So I'm
+       testing for both. */
+    const Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR((**_device).AllocateDescriptorSets(*_device, &info, &set._handle), Result::ErrorOutOfDeviceMemory, Result::ErrorOutOfPoolMemory, Result::ErrorFragmentedPool);
     return {result, Utility::move(set)};
 }
 
@@ -192,9 +191,10 @@ Containers::Pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const V
     info.descriptorPool = _handle;
     info.descriptorSetCount = 1;
     info.pSetLayouts = &layout;
-    /* See the not about VK_ERROR_OUT_OF_POOL_MEMORY and VK_KHR_maintenance1
-       in the other allocateInternal() implementation above. */
-    const Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR((**_device).AllocateDescriptorSets(*_device, &info, &set._handle), Result::ErrorOutOfPoolMemory, Result::ErrorFragmentedPool);
+    /* See the note about VK_ERROR_OUT_OF_{DEVICE,POOL}_MEMORY and
+       VK_KHR_maintenance1 in the other allocateInternal() implementation
+       above. */
+    const Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR((**_device).AllocateDescriptorSets(*_device, &info, &set._handle), Result::ErrorOutOfDeviceMemory, Result::ErrorOutOfPoolMemory, Result::ErrorFragmentedPool);
     return {result, Utility::move(set)};
 }
 
