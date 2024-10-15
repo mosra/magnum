@@ -52,6 +52,8 @@ See also:
 -   Minimal supported Emscripten version is now 1.39.5 which implicitly sets
     `-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1`, as the deprecated
     code paths were removed.
+-   Support for Android API versions older than 14 (i.e., before Android 4.0,
+    which is from 2011) has been dropped from @ref Platform::AndroidApplication.
 
 @subsection changelog-latest-new New features
 

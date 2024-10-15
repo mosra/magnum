@@ -755,45 +755,19 @@ class AndroidApplication::MouseEvent: public InputEvent {
             /**
              * Left mouse button. Note that this button is not set if only
              * touch or stylus event occurred.
-             * @attention Available since Android 4.0 (API level 14), not
-             *      detectable in earlier versions.
              */
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Left = AMOTION_EVENT_BUTTON_PRIMARY,
-            #else
-            Left = 1 << 0,
-            #endif
 
-            /**
-             * Middle mouse button or second stylus button
-             * @attention Available since Android 4.0 (API level 14), not
-             *      detectable in earlier versions.
-             */
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
+            /** Middle mouse button or second stylus button */
             Middle = AMOTION_EVENT_BUTTON_TERTIARY,
-            #else
-            Middle = 1 << 1,
-            #endif
 
-            /**
-             * Right mouse button or first stylus button
-             * @attention Available since Android 4.0 (API level 14), not
-             *      detectable in earlier versions.
-             */
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
+            /** Right mouse button or first stylus button */
             Right = AMOTION_EVENT_BUTTON_SECONDARY
-            #else
-            Right = 1 << 2
-            #endif
         };
 
         /** @brief Button */
         Button button() {
-            #if __ANDROID_API__ >= 14
             return Button(AMotionEvent_getButtonState(_event));
-            #else
-            return Button::None;
-            #endif
         }
 
         /** @brief Position */
@@ -824,36 +798,14 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
             /**
              * Left mouse button. Note that this button is not set if only
              * touch or stylus event occurred.
-             * @attention Available since Android 4.0 (API level 14), not
-             *      detectable in earlier versions.
              */
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Left = AMOTION_EVENT_BUTTON_PRIMARY,
-            #else
-            Left = 1 << 0,
-            #endif
 
-            /**
-             * Middle mouse button or second stylus button
-             * @attention Available since Android 4.0 (API level 14), not
-             *      detectable in earlier versions.
-             */
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
+            /** Middle mouse button or second stylus button */
             Middle = AMOTION_EVENT_BUTTON_TERTIARY,
-            #else
-            Middle = 1 << 1,
-            #endif
 
-            /**
-             * Right mouse button or first stylus button
-             * @attention Available since Android 4.0 (API level 14), not
-             *      detectable in earlier versions.
-             */
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
+            /** Right mouse button or first stylus button */
             Right = AMOTION_EVENT_BUTTON_SECONDARY
-            #else
-            Right = 1 << 2
-            #endif
         };
 
         /**
@@ -882,11 +834,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
 
         /** @brief Mouse buttons */
         Buttons buttons() const {
-            #if __ANDROID_API__ >= 14
             return Button(AMotionEvent_getButtonState(_event));
-            #else
-            return {};
-            #endif
         }
 
     private:
