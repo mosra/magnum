@@ -754,6 +754,7 @@ workflows:
         - linux-sanitizers
     - macos-gl:
         requires:
+        - linux-arm64
         - linux-gl
         - linux-nondeprecated
     - macos-vulkan:
@@ -795,4 +796,3 @@ workflows:
         requires:
         - macos-gles3
         - macos-static
-        - linux-arm64
