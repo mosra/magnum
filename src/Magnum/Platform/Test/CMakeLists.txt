@@ -40,7 +40,8 @@ if(MAGNUM_WITH_ANDROIDAPPLICATION)
     add_library(PlatformAndroidApplicationTest SHARED AndroidApplicationTest.cpp)
     target_link_libraries(PlatformAndroidApplicationTest PRIVATE MagnumAndroidApplication)
     if(CMAKE_ANDROID_NDK)
-        android_create_apk(PlatformAndroidApplicationTest AndroidManifest.xml)
+        android_create_apk(PlatformAndroidApplicationTest AndroidManifest.xml
+            RESOURCE_DIRECTORY AndroidApplicationTestFiles/resources)
     endif()
 endif()
 
