@@ -26,6 +26,7 @@
 
 #include <Corrade/Containers/EnumSet.hpp>
 
+#include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/Platform/AndroidApplication.h"
 
 namespace Magnum { namespace Platform {
@@ -76,7 +77,11 @@ struct AndroidApplicationTest: Platform::Application {
         Debug{} << "window size" << windowSize() << framebufferSize() << dpiScaling();
     }
 
-    void drawEvent() override {}
+    void drawEvent() override {
+        GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+
+        swapBuffers();
+    }
 
     /* For testing HiDPI resize events */
     void viewportEvent(ViewportEvent& event) override {
