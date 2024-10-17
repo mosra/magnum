@@ -1399,7 +1399,8 @@ See also:
     @relativeref{Platform::Sdl2Application,PointerMoveEvent} APIs that provide
     a better abstraction over general pointer input, not just a mouse alone.
     The same change is done in @ref Platform::AbstractXApplication,
-    @ref Platform::EmscriptenApplication and @ref Platform::GlfwApplication.
+    @ref Platform::AndroidApplication, @ref Platform::EmscriptenApplication and
+    @ref Platform::GlfwApplication.
 -   @cpp Platform::AbstractXApplication::MouseEvent::Button::WheelUp @ce and
     `WheelDown` members are deprecated in favor of a dedicated
     @ref Platform::AbstractXApplication::mouseScrollEvent(). Similar change was
