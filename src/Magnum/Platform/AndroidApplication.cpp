@@ -31,6 +31,7 @@
 #include <android_native_app_glue.h>
 
 #include "Magnum/GL/Version.h"
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 #include "Implementation/Egl.h"
@@ -188,9 +189,6 @@ void AndroidApplication::redraw() {
 }
 
 void AndroidApplication::viewportEvent(ViewportEvent&) {}
-void AndroidApplication::mousePressEvent(MouseEvent&) {}
-void AndroidApplication::mouseReleaseEvent(MouseEvent&) {}
-void AndroidApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
 namespace {
     struct Data {
@@ -241,6 +239,47 @@ void AndroidApplication::commandEvent(android_app* state, int32_t cmd) {
     }
 }
 
+namespace {
+
+AndroidApplication::Pointers motionEventButtons(AInputEvent* event) {
+    const std::int32_t buttons = AMotionEvent_getButtonState(event);
+    AndroidApplication::Pointers pointers;
+    if(buttons & AMOTION_EVENT_BUTTON_PRIMARY)
+        pointers |= AndroidApplication::Pointer::MouseLeft;
+    if(buttons & AMOTION_EVENT_BUTTON_TERTIARY)
+        pointers |= AndroidApplication::Pointer::MouseMiddle;
+    if(buttons & AMOTION_EVENT_BUTTON_SECONDARY)
+        pointers |= AndroidApplication::Pointer::MouseRight;
+    /** @todo AMOTION_EVENT_BUTTON_BACK, AMOTION_EVENT_BUTTON_FORWARD once it's
+        possible to verify they match MouseButton4 / MouseButton5 in
+        GlfwApplication and Sdl2Application */
+    return pointers;
+}
+
+AndroidApplication::Pointers motionEventPointers(AInputEvent* event, const AndroidApplication::Pointers pressedButtons) {
+    switch(AMotionEvent_getToolType(event, 0)) {
+        case AMOTION_EVENT_TOOL_TYPE_MOUSE:
+            /** @todo MouseButton4 / MouseButton5, once they're added &
+                tested */
+            return (AndroidApplication::Pointer::MouseLeft|
+                    AndroidApplication::Pointer::MouseMiddle|
+                    AndroidApplication::Pointer::MouseRight) & pressedButtons;
+        case AMOTION_EVENT_TOOL_TYPE_FINGER:
+            return AndroidApplication::Pointer::Finger;
+        case AMOTION_EVENT_TOOL_TYPE_STYLUS:
+            /** @todo use pressedButtonsPointers once there's additional pen
+                button enum values */
+            return AndroidApplication::Pointer::Pen;
+        case AMOTION_EVENT_TOOL_TYPE_ERASER:
+            return AndroidApplication::Pointer::Eraser;
+        case AMOTION_EVENT_TOOL_TYPE_UNKNOWN:
+        default:
+            return AndroidApplication::Pointer::Unknown;
+    }
+}
+
+}
+
 std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* event) {
     CORRADE_INTERNAL_ASSERT(static_cast<Data*>(state->userData)->instance);
     AndroidApplication& app = *static_cast<Data*>(state->userData)->instance;
@@ -249,24 +288,132 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
         switch(action) {
             case AMOTION_EVENT_ACTION_DOWN:
             case AMOTION_EVENT_ACTION_UP: {
-                /* On a touch screen move events aren't reported when the
-                   finger is moving above (of course), so remember the position
-                   always */
-                app._previousMouseMovePosition = {Int(AMotionEvent_getX(event, 0)), Int(AMotionEvent_getY(event, 0))};
-                MouseEvent e(event);
-                action == AMOTION_EVENT_ACTION_DOWN ? app.mousePressEvent(e) : app.mouseReleaseEvent(e);
-                return e.isAccepted() ? 1 : 0;
+                const Vector2 position{AMotionEvent_getX(event, 0),
+                                       AMotionEvent_getY(event, 0)};
+
+                /* Query the currently pressed buttons. If this is not a mouse
+                   event, it'll give back garbage, but that's fine as we won't
+                   use it in that case. Then, based on whether it's a press or
+                   a release, use the previously recorded pointers to figure
+                   out what was actually pressed. */
+                const Pointers pressedButtons = motionEventButtons(event);
+                const Pointers pointers = motionEventPointers(event,
+                    action == AMOTION_EVENT_ACTION_DOWN ?
+                        pressedButtons & ~app._previousPressedButtons :
+                        ~pressedButtons & app._previousPressedButtons);
+
+                /* The expectation is that the difference betweeen the
+                   previously recorded set of pointers and current one will be
+                   exactly one bit for a pointer type that got either pressed
+                   or released. If it's not, it means we lost some events, and
+                   until API 33+ and AMotionEvent_getActionButton() on
+                   AMOTION_EVENT_BUTTON_PRESS / AMOTION_EVENT_BUTTON_RELEASE,
+                   there's no way to reliably know what concrete mouse / pen
+                   button caused the event. */
+                Pointer pointer;
+                /* http://www.graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2 */
+                if(pointers && !(UnsignedByte(pointers) & (UnsignedByte(pointers) - 1)))
+                    pointer = Pointer(UnsignedByte(pointers));
+                else
+                    pointer = Pointer::Unknown;
+
+                /** @todo Once there's an ability to actually *know* what
+                    button was pressed or released (API 33+), implement
+                    translation to move events like in GlfwApplication,
+                    Sdl2Application and EmscriptenApplication. With my emulator
+                    testing, where a mouse was interpreted as a stylus (?!),
+                    multiple buttons being pressed didn't even trigger a press
+                    or release event, so this scenario is seemingly impossible
+                    to happen. */
+                PointerEvent e{event, pointer};
+                action == AMOTION_EVENT_ACTION_DOWN ?
+                    app.pointerPressEvent(e) : app.pointerReleaseEvent(e);
+
+                /* Remember the currently pressed pointers for the next time */
+                app._previousPressedButtons = pressedButtons;
+                /* A touch screen doesn't have hover events, so remember the
+                   position here as well. See below for why this has to be
+                   remembered at all. */
+                app._previousPointerPosition = position;
+
+                return e.isAccepted();
             }
 
             case AMOTION_EVENT_ACTION_MOVE: {
-                Vector2i position{Int(AMotionEvent_getX(event, 0)), Int(AMotionEvent_getY(event, 0))};
-                MouseMoveEvent e{event,
-                    app._previousMouseMovePosition == Vector2i{-1} ? Vector2i{} :
-                    position - app._previousMouseMovePosition};
-                app._previousMouseMovePosition = position;
-                app.mouseMoveEvent(e);
-                return e.isAccepted() ? 1 : 0;
+                const Pointers pressedButtons = motionEventButtons(event);
+                const Pointers pointers = motionEventPointers(event, pressedButtons);
+                const Vector2 position{AMotionEvent_getX(event, 0),
+                                       AMotionEvent_getY(event, 0)};
+                const Vector2 relativePosition =
+                    Math::isNan(app._previousPointerPosition).all() ?
+                        Vector2{} : position - app._previousPointerPosition;
+
+                /* The thing fires move events right after press events, with
+                   the exact same position, for (emulated?) events at least. I
+                   suppose that's some sort of unasked-for misfeature for
+                   "improving" UX or fixing broken apps. Not interested, filter
+                   those out if the relative position is zero and the set of
+                   pressed buttons is the same. Hopefully not accepting those
+                   doesn't lead to some strange behavior. */
+                bool accepted = false;
+                if(relativePosition != Vector2{} || pressedButtons != app._previousPressedButtons) {
+                    PointerMoveEvent e{event, {}, pointers, relativePosition};
+                    app.pointerMoveEvent(e);
+                    accepted = e.isAccepted();
+                }
+
+                /* Remember the currently pressed buttons for the next time.
+                   Ideally should only be needed for AMOTION_EVENT_ACTION_DOWN
+                   and AMOTION_EVENT_ACTION_UP, but if some events get lost, we
+                   have a chance to resynchronize here. */
+                app._previousPressedButtons = pressedButtons;
+
+                /* Remember also the current position. There's
+                   AMotionEvent_getHistoricalX()/Y(), but those are coalesced
+                   events between the previous and currently fired move events,
+                   i.e. not the full delta. Documented here:
+                    https://developer.android.com/reference/android/view/MotionEvent#batching
+                   There's also AMOTION_EVENT_AXIS_RELATIVE_X/_Y, but based on
+                    https://developer.android.com/reference/android/view/MotionEvent#AXIS_X
+                   the coordinate system is different for each event type, and
+                   the last thing I want to do is adding special handling for
+                   things the damn platform API should be doing for me. */
+                app._previousPointerPosition = position;
+
+                return accepted;
             }
+
+            /* Like AMOTION_EVENT_ACTION_MOVE, but without anything pressed */
+            case AMOTION_EVENT_ACTION_HOVER_MOVE: {
+                const Vector2 position{AMotionEvent_getX(event, 0), AMotionEvent_getY(event, 0)};
+                const Vector2 relativePosition =
+                    Math::isNan(app._previousPointerPosition).all() ?
+                        Vector2{} : position - app._previousPointerPosition;
+
+                /* Similarly as with AMOTION_EVENT_ACTION_MOVE, the damn thing
+                   fires hover events with zero position delta when scrolling
+                   the mouse wheel. Useless, filter those away. */
+                bool accepted = false;
+                if(relativePosition != Vector2{}) {
+                    PointerMoveEvent e{event, {}, {}, relativePosition};
+                    app.pointerMoveEvent(e);
+                    accepted = e.isAccepted();
+                }
+
+                /* Reset the currently pressed buttons, since there should be
+                   none if we're just hovering */
+                app._previousPressedButtons = {};
+                /* Remember the current position. See above for why
+                   AMotionEvent_getHistoricalX()/Y() is useless. */
+                app._previousPointerPosition = position;
+
+                return accepted;
+            }
+
+            /** @todo there's AMOTION_EVENT_ACTION_HOVER_ENTER and
+                AMOTION_EVENT_ACTION_HOVER_EXIT, implement once other apps get
+                something similar */
+            /** @todo AMOTION_EVENT_ACTION_SCROLL */
         }
 
     /** @todo Implement also other input events */
@@ -323,6 +470,83 @@ void AndroidApplication::exec(android_app* state, Containers::Pointer<AndroidApp
 
     state->userData = nullptr;
 }
+
+void AndroidApplication::pointerPressEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent mouseEvent{event._event};
+    mousePressEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+void AndroidApplication::mousePressEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void AndroidApplication::pointerReleaseEvent(PointerEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseEvent mouseEvent{event._event};
+    mouseReleaseEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+void AndroidApplication::mouseReleaseEvent(MouseEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void AndroidApplication::pointerMoveEvent(PointerMoveEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    const Vector2i roundedPosition{Math::round(event.position())};
+
+    /* If the event is due to some button being additionally pressed or one
+       button from a larger set being released, delegate to a press/release
+       event instead */
+    /** @todo This codepath is never used as move events with pointer() being
+        set aren't emitted at all above. Keeping it here as that may change
+        with API 33+. */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    if(event.pointer()) {
+        /* Android reports either a move or a press/release, so there shouldn't
+           be any move in this case */
+        CORRADE_INTERNAL_ASSERT(event.relativePosition() == Vector2{});
+        MouseEvent mouseEvent{event._event};
+        event.pointers() >= *event.pointer() ?
+            mousePressEvent(mouseEvent) : mouseReleaseEvent(mouseEvent);
+    } else {
+        /* Can't do just Math::round(event.relativePosition()) because if the
+           previous position was 4.6 and the new 5.3, they both round to 5 but
+           the relativePosition is 0.6 and rounds to 1. Conversely, if it'd be
+           5.3 and 5.6, the positions round to 5 and 6 but relative position
+           stays 0. */
+        const Vector2i previousRoundedPosition{Math::round(event.position() - event.relativePosition())};
+        /* Call the event only if the integer values actually changed */
+        if(roundedPosition != previousRoundedPosition) {
+            MouseMoveEvent mouseEvent{event._event, roundedPosition - previousRoundedPosition};
+            mouseMoveEvent(mouseEvent);
+        }
+    }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+void AndroidApplication::mouseMoveEvent(MouseMoveEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 template class BasicScreen<AndroidApplication>;
 template class BasicScreenedApplication<AndroidApplication>;
