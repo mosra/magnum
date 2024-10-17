@@ -502,15 +502,17 @@ utility. See @ref Corrade::Utility::AndroidLogStreamBuffer for more
 information.
 
 The @ref Platform::AndroidApplication sets this up implicitly with a `magnum`
-tag, you can then filter it out like this, for example:
+tag, you can then filter it out like this, for example. Omit
+@cb{.shell-session} -v raw @ce to show also a date/time prefix and other info
+for each printed line.
 
 @code{.shell-session}
-$ adb logcat *:S magnum
+$ adb logcat *:S magnum -v raw
 ...
-03-16 17:35:26.703 17726 17745 I magnum  : Renderer: Mali-G71 by ARM
-03-16 17:35:26.703 17726 17745 I magnum  : OpenGL version: OpenGL ES 3.2 v1.r2p0
-03-16 17:35:26.703 17726 17745 I magnum  : Using optional features:
-03-16 17:35:26.703 17726 17745 I magnum  :     GL_EXT_robustness
+Renderer: Mali-G71 by ARM
+OpenGL version: OpenGL ES 3.2 v1.r2p0
+Using optional features:
+    GL_EXT_robustness
 @endcode
 
 @section platforms-android-system-cmake Using system-wide CMake installation
