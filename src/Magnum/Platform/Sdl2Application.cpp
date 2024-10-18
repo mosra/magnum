@@ -1041,8 +1041,8 @@ bool Sdl2Application::mainLoopIteration() {
             } break;
 
             case SDL_MOUSEWHEEL: {
-                MouseScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
-                mouseScrollEvent(e);
+                ScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
+                scrollEvent(e);
             } break;
 
             case SDL_MOUSEMOTION: {
@@ -1400,7 +1400,23 @@ void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
+void Sdl2Application::scrollEvent(ScrollEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseScrollEvent mouseEvent{event.event(), event.offset()};
+    mouseScrollEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void Sdl2Application::mouseScrollEvent(MouseScrollEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
@@ -1470,6 +1486,22 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifier
 }
 #endif
 
+Vector2 Sdl2Application::ScrollEvent::position() {
+    if(!_position) {
+        Vector2i position;
+        SDL_GetMouseState(&position.x(), &position.y());
+        _position = Vector2{position};
+    }
+    return *_position;
+}
+
+Sdl2Application::InputEvent::Modifiers Sdl2Application::ScrollEvent::modifiers() {
+    if(!_modifiers)
+        _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+    return *_modifiers;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 Vector2i Sdl2Application::MouseScrollEvent::position() {
     if(_position) return *_position;
     _position = Vector2i{};
@@ -1481,6 +1513,7 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifi
     if(_modifiers) return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
+#endif
 
 /* WinRT builds by default have deprecation warnings as errors. Combined with a
    MSVC 2017 bug where deprecation warning suppression doesn't work on virtual
