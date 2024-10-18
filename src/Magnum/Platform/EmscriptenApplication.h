@@ -323,7 +323,13 @@ class EmscriptenApplication {
             MouseMiddle = 1 << 1,
 
             /** Right mouse button */
-            MouseRight = 1 << 2
+            MouseRight = 1 << 2,
+
+            /** Fourth mouse button, such as wheel left */
+            MouseButton4 = 1 << 3,
+
+            /** Fourth mouse button, such as wheel right */
+            MouseButton5 = 1 << 4,
         };
 
         /**
