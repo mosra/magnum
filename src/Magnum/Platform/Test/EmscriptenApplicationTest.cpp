@@ -299,6 +299,9 @@ struct EmscriptenApplicationTest: Platform::Application {
     void pointerMoveEvent(PointerMoveEvent& event) override {
         Debug{} << "pointer move:" << event.pointer() << event.pointers() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
     }
+    void scrollEvent(ScrollEvent& event) override {
+        Debug{} << "scroll:" << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
+    }
     #else
     CORRADE_IGNORE_DEPRECATED_PUSH
     void mousePressEvent(MouseEvent& event) override {
@@ -310,12 +313,11 @@ struct EmscriptenApplicationTest: Platform::Application {
     void mouseMoveEvent(MouseMoveEvent& event) override {
         Debug{} << "mouse move:" << event.buttons() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
     }
-    CORRADE_IGNORE_DEPRECATED_POP
-    #endif
-
     void mouseScrollEvent(MouseScrollEvent& event) override {
         Debug{} << "mouse scroll:" << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
     }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     /* For testing keyboard capture */
     void keyPressEvent(KeyEvent& event) override {

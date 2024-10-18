@@ -180,11 +180,12 @@ class GlfwApplication {
         class KeyEvent;
         class PointerEvent;
         class PointerMoveEvent;
+        class ScrollEvent;
         #ifdef MAGNUM_BUILD_DEPRECATED
         class MouseEvent;
         class MouseMoveEvent;
-        #endif
         class MouseScrollEvent;
+        #endif
         class TextInputEvent;
 
         /* The damn thing cannot handle forward enum declarations */
@@ -776,8 +777,30 @@ class GlfwApplication {
         virtual CORRADE_DEPRECATED("use pointerMoveEvent() instead") void mouseMoveEvent(MouseMoveEvent& event);
         #endif
 
-        /** @copydoc Sdl2Application::mouseScrollEvent() */
-        virtual void mouseScrollEvent(MouseScrollEvent& event);
+        /**
+         * @brief Scroll event
+         * @m_since_latest
+         *
+         * Called when a scrolling device is used (mouse wheel or scrolling
+         * area on a touchpad).
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseScrollEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
+         */
+        virtual void scrollEvent(ScrollEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse move event
+         * @m_deprecated_since_latest Use @ref scrollEvent() instead, which
+         *      isn't semantically tied to just a mouse.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use scrollEvent() instead") void mouseScrollEvent(MouseScrollEvent& event);
+        #endif
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
@@ -870,6 +893,7 @@ class GlfwApplication {
         /* Calls the base pointer*Event() in order to delegate to deprecated
            mouse events */
         template<class> friend class BasicScreenedApplication;
+        template<class, bool> friend struct Implementation::ApplicationScrollEventMixin;
         #endif
 
         enum class Flag: UnsignedByte;
@@ -1696,10 +1720,9 @@ class GlfwApplication::ViewportEvent {
 /**
 @brief Base for input events
 
-@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent,
-    @ref MouseScrollEvent, @ref keyPressEvent(), @ref keyReleaseEvent(),
-    @ref pointerPressEvent(), @ref pointerReleaseEvent(),
-    @ref pointerMoveEvent(), @ref mouseScrollEvent()
+@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent, @ref ScrollEvent,
+    @ref keyPressEvent(), @ref keyReleaseEvent(), @ref pointerPressEvent(),
+    @ref pointerReleaseEvent(), @ref pointerMoveEvent(), @ref scrollEvent()
 */
 class GlfwApplication::InputEvent {
     public:
@@ -1709,7 +1732,7 @@ class GlfwApplication::InputEvent {
          * @see @ref Modifiers, @ref KeyEvent::modifiers(),
          *      @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref MouseScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers()
          */
         enum class Modifier: Int {
             /**
@@ -1746,7 +1769,7 @@ class GlfwApplication::InputEvent {
          *
          * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref MouseScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers()
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -2092,7 +2115,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
 @brief Pointer event
 @m_since_latest
 
-@see @ref PointerMoveEvent, @ref MouseScrollEvent, @ref pointerPressEvent(),
+@see @ref PointerMoveEvent, @ref ScrollEvent, @ref pointerPressEvent(),
     @ref pointerReleaseEvent()
 */
 class GlfwApplication::PointerEvent: public InputEvent {
@@ -2189,7 +2212,7 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
 @brief Pointer move event
 @m_since_latest
 
-@see @ref PointerEvent, @ref MouseScrollEvent, @ref pointerMoveEvent()
+@see @ref PointerEvent, @ref ScrollEvent, @ref pointerMoveEvent()
 */
 class GlfwApplication::PointerMoveEvent: public InputEvent {
     public:
@@ -2340,11 +2363,53 @@ CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 /**
-@brief Mouse scroll event
+@brief Scroll event
+@m_since_latest
 
-@see @ref PointerEvent, @ref PointerMoveEvent, @ref mouseScrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent()
 */
-class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
+class GlfwApplication::ScrollEvent: public InputEvent {
+    public:
+        /** @brief Scroll offset */
+        Vector2 offset() const { return _offset; }
+
+        /**
+         * @brief Position
+         *
+         * May return fractional values for example on HiDPI systems where
+         * window size is smaller than actual framebuffer size. Use
+         * @ref Math::round() to snap them to the nearest window pixel. Lazily
+         * populated on first request.
+         */
+        Vector2 position();
+
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
+    private:
+        friend GlfwApplication;
+
+        explicit ScrollEvent(GLFWwindow* window, const Vector2& offset): _window{window}, _offset{offset} {}
+
+        GLFWwindow* const _window;
+        const Vector2 _offset;
+        Containers::Optional<Vector2> _position;
+        Containers::Optional<Modifiers> _modifiers;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Mouse scroll event
+@m_deprecated_since_latest Use @ref ScrollEvent and @ref scrollEvent() instead,
+    which isn't semantically tied to just a mouse.
+
+@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+*/
+class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
     public:
         /** @brief Scroll offset */
         Vector2 offset() const { return _offset; }
@@ -2373,6 +2438,7 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
         Containers::Optional<Vector2i> _position;
         Containers::Optional<Modifiers> _modifiers;
 };
+#endif
 
 /**
 @brief Text input event

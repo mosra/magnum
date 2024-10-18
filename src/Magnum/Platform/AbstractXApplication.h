@@ -63,6 +63,7 @@ typedef int Bool;
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
 #include "Magnum/Math/Vector2.h"
+#include "Magnum/Platform/Platform.h"
 #include "Magnum/Platform/GLContext.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -110,7 +111,7 @@ class AbstractXApplication {
         class MouseEvent;
         class MouseMoveEvent;
         #endif
-        class MouseScrollEvent;
+        class ScrollEvent;
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -122,7 +123,7 @@ class AbstractXApplication {
          * @m_since_latest
          *
          * @see @ref KeyEvent::pointers(), @ref PointerMoveEvent::pointers(),
-         *      @ref MouseScrollEvent::pointers()
+         *      @ref ScrollEvent::pointers()
          */
         typedef Containers::EnumSet<Pointer> Pointers;
 
@@ -403,7 +404,7 @@ class AbstractXApplication {
          * @ref mouseReleaseEvent() with @ref MouseEvent::Button::WheelDown and
          * @ref MouseEvent::Button::WheelUp.
          */
-        virtual void mouseScrollEvent(MouseScrollEvent& event);
+        virtual void scrollEvent(ScrollEvent& event);
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
@@ -425,6 +426,7 @@ class AbstractXApplication {
         /* Calls the base pointer*Event() in order to delegate to deprecated
            mouse events */
         template<class> friend class BasicScreenedApplication;
+        template<class, bool> friend struct Implementation::ApplicationScrollEventMixin;
         #endif
 
         enum class Flag: unsigned int {
@@ -457,7 +459,7 @@ class AbstractXApplication {
 
 @see @ref Pointers, @ref KeyEvent::pointers(), @ref PointerEvent::pointer(),
     @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers(),
-    @ref MouseScrollEvent::pointers()
+    @ref ScrollEvent::pointers()
 */
 enum class AbstractXApplication::Pointer: UnsignedByte {
     /** Left mouse button. Corresponds to `Button1` / `Button1Mask`. */
@@ -688,10 +690,9 @@ class AbstractXApplication::ViewportEvent {
 /**
 @brief Base for input events
 
-@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent,
-    @ref MouseScrollEvent, @ref keyPressEvent(), @ref keyReleaseEvent(),
-    @ref pointerPressEvent(), @ref pointerReleaseEvent(),
-    @ref pointerMoveEvent(), @ref mouseScrollEvent()
+@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent, @ref ScrollEvent,
+    @ref keyPressEvent(), @ref keyReleaseEvent(), @ref pointerPressEvent(),
+    @ref pointerReleaseEvent(), @ref pointerMoveEvent(), @ref scrollEvent()
 */
 class AbstractXApplication::InputEvent {
     public:
@@ -1236,7 +1237,7 @@ class AbstractXApplication::PointerEvent: public InputEvent {
     @ref pointerReleaseEvent() instead, which is a better abstraction for
     covering both mouse and touch / pen input.
 
-@see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
+@see @ref MouseMoveEvent, @ref ScrollEvent, @ref mousePressEvent(),
     @ref mouseReleaseEvent()
 */
 class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerReleaseEvent() instead") AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
@@ -1254,17 +1255,15 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * Wheel up
-             * @m_deprecated_since_latest Implement @ref mouseScrollEvent()
-             *      instead.
+             * @m_deprecated_since_latest Implement @ref scrollEvent() instead.
              */
-            WheelUp CORRADE_DEPRECATED_ENUM("implement mouseScrollEvent() instead") = 4,
+            WheelUp CORRADE_DEPRECATED_ENUM("implement scrollEvent() instead") = 4,
 
             /**
              * Wheel down
-             * @m_deprecated_since_latest Implement @ref mouseScrollEvent()
-             *      instead.
+             * @m_deprecated_since_latest Implement @ref scrollEvent() instead.
              */
-            WheelDown CORRADE_DEPRECATED_ENUM("implement mouseScrollEvent() instead") = 5
+            WheelDown CORRADE_DEPRECATED_ENUM("implement scrollEvent() instead") = 5
             #endif
         };
 
@@ -1348,7 +1347,7 @@ class AbstractXApplication::PointerMoveEvent: public InputEvent {
     @ref pointerMoveEvent() instead, which is a better abstraction for covering
     both mouse and touch / pen input.
 
-@see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
+@see @ref MouseEvent, @ref ScrollEvent, @ref mouseMoveEvent()
 */
 class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
     public:
@@ -1365,12 +1364,12 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
 #endif
 
 /**
-@brief Mouse scroll event
+@brief Scroll event
 @m_since_latest
 
-@see @ref PointerEvent, @ref PointerMoveEvent, @ref mouseScrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent()
 */
-class AbstractXApplication::MouseScrollEvent: public InputEvent {
+class AbstractXApplication::ScrollEvent: public InputEvent {
     public:
         /**
          * @brief Scroll offset
@@ -1379,8 +1378,12 @@ class AbstractXApplication::MouseScrollEvent: public InputEvent {
          */
         Vector2 offset() const { return _offset; }
 
-        /** @brief Position */
-        Vector2i position() const { return _position; }
+        /**
+         * @brief Position
+         *
+         * For mouse input the position is always reported in whole pixels.
+         */
+        Vector2 position() const { return _position; }
 
         /**
          * @brief Pointer types pressed in this event
@@ -1393,10 +1396,10 @@ class AbstractXApplication::MouseScrollEvent: public InputEvent {
     private:
         friend AbstractXApplication;
 
-        explicit MouseScrollEvent(const Vector2& offset, const Vector2i& position, unsigned int modifiers): InputEvent{modifiers}, _offset{offset}, _position{position} {}
+        explicit ScrollEvent(const Vector2& offset, const Vector2& position, unsigned int modifiers): InputEvent{modifiers}, _offset{offset}, _position{position} {}
 
         const Vector2 _offset;
-        const Vector2i _position;
+        const Vector2 _position;
 };
 
 }}

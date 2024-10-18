@@ -502,11 +502,12 @@ class Sdl2Application {
         class KeyEvent;
         class PointerEvent;
         class PointerMoveEvent;
+        class ScrollEvent;
         #ifdef MAGNUM_BUILD_DEPRECATED
         class MouseEvent;
         class MouseMoveEvent;
-        #endif
         class MouseScrollEvent;
+        #endif
         class MultiGestureEvent;
         class TextInputEvent;
         class TextEditingEvent;
@@ -1184,12 +1185,29 @@ class Sdl2Application {
         #endif
 
         /**
-         * @brief Mouse scroll event
+         * @brief Scroll event
+         * @m_since_latest
          *
          * Called when a scrolling device is used (mouse wheel or scrolling
-         * area on a touchpad). Default implementation does nothing.
+         * area on a touchpad).
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseScrollEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
          */
-        virtual void mouseScrollEvent(MouseScrollEvent& event);
+        virtual void scrollEvent(ScrollEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse move event
+         * @m_deprecated_since_latest Use @ref scrollEvent() instead, which
+         *      isn't semantically tied to just a mouse.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use scrollEvent() instead") void mouseScrollEvent(MouseScrollEvent& event);
+        #endif
 
         /**
          * @brief Multi gesture event
@@ -1327,6 +1345,7 @@ class Sdl2Application {
         /* Calls the base pointer*Event() in order to delegate to deprecated
            mouse events */
         template<class> friend class BasicScreenedApplication;
+        template<class, bool> friend struct Implementation::ApplicationScrollEventMixin;
         #endif
 
         enum class Flag: UnsignedByte;
@@ -2259,10 +2278,9 @@ class Sdl2Application::ViewportEvent {
 /**
 @brief Base for input events
 
-@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent,
-    @ref MouseScrollEvent, @ref keyPressEvent(), @ref keyReleaseEvent(),
-    @ref pointerPressEvent(), @ref pointerReleaseEvent(),
-    @ref pointerMoveEvent(), @ref mouseScrollEvent()
+@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent, @ref ScrollEvent,
+    @ref keyPressEvent(), @ref keyReleaseEvent(), @ref pointerPressEvent(),
+    @ref pointerReleaseEvent(), @ref pointerMoveEvent(), @ref scrollEvent()
 */
 class Sdl2Application::InputEvent {
     public:
@@ -2272,7 +2290,7 @@ class Sdl2Application::InputEvent {
          * @see @ref Modifiers, @ref KeyEvent::modifiers(),
          *      @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref MouseScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers()
          */
         enum class Modifier: Uint16 {
             /**
@@ -2331,7 +2349,7 @@ class Sdl2Application::InputEvent {
          *
          * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref MouseScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers()
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -2366,7 +2384,7 @@ class Sdl2Application::InputEvent {
          * Of type `SDL_KEYDOWN` / `SDL_KEYUP` for @ref KeyEvent,
          * `SDL_MOUSEBUTTONDOWN` / `SDL_MOUSEBUTTONUP` for @ref PointerEvent,
          * `SDL_MOUSEMOTION` for @ref PointerMoveEvent and `SDL_MOUSEWHEEL` for
-         * @ref MouseScrollEvent.
+         * @ref ScrollEvent.
          * @see @ref Sdl2Application::anyEvent()
          */
         const SDL_Event& event() const { return _event; }
@@ -2991,11 +3009,50 @@ CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 /**
-@brief Mouse scroll event
+@brief Scroll event
+@m_since_latest
 
-@see @ref PointerEvent, @ref PointerMoveEvent, @ref mouseScrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent()
 */
-class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
+class Sdl2Application::ScrollEvent: public Sdl2Application::InputEvent {
+    public:
+        /** @brief Scroll offset */
+        Vector2 offset() const { return _offset; }
+
+        /**
+         * @brief Position
+         *
+         * For mouse input the position is always reported in whole pixels.
+         * Lazily populated on first request.
+         */
+        Vector2 position();
+
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
+    private:
+        friend Sdl2Application;
+
+        explicit ScrollEvent(const SDL_Event& event, const Vector2& offset): InputEvent{event}, _offset{offset} {}
+
+        const Vector2 _offset;
+        Containers::Optional<Vector2> _position;
+        Containers::Optional<Modifiers> _modifiers;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Mouse scroll event
+@m_deprecated_since_latest Use @ref ScrollEvent and @ref scrollEvent() instead,
+    which isn't semantically tied to just a mouse.
+
+@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+*/
+class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Sdl2Application::MouseScrollEvent: public InputEvent {
     public:
         /** @brief Scroll offset */
         Vector2 offset() const { return _offset; }
@@ -3023,6 +3080,7 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
         Containers::Optional<Vector2i> _position;
         Containers::Optional<Modifiers> _modifiers;
 };
+#endif
 
 /**
 @brief Multi gesture event

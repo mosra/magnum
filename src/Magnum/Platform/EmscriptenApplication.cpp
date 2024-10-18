@@ -614,8 +614,8 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
 
     emscripten_set_wheel_callback(_canvasTarget.data(), this, false,
         ([](int, const EmscriptenWheelEvent* event, void* userData) -> EM_BOOL {
-            MouseScrollEvent e{*event};
-            static_cast<EmscriptenApplication*>(userData)->mouseScrollEvent(e);
+            ScrollEvent e{*event};
+            static_cast<EmscriptenApplication*>(userData)->scrollEvent(e);
             return e.isAccepted();
         }));
 
@@ -854,7 +854,23 @@ void EmscriptenApplication::mouseMoveEvent(MouseMoveEvent&) {}
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
+void EmscriptenApplication::scrollEvent(ScrollEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseScrollEvent mouseEvent{event.event()};
+    mouseScrollEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void EmscriptenApplication::mouseScrollEvent(MouseScrollEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 void EmscriptenApplication::textInputEvent(TextInputEvent&) {}
 
 #ifdef MAGNUM_TARGET_GL
@@ -967,13 +983,31 @@ EmscriptenApplication::MouseMoveEvent::Modifiers EmscriptenApplication::MouseMov
 }
 #endif
 
-Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
+Vector2 EmscriptenApplication::ScrollEvent::offset() const {
     /* From emscripten's Browser.getMouseWheelDelta() function in
        library_browser.js:
 
        DOM_DELTA_PIXEL => 100 pixels = 1 step
        DOM_DELTA_LINE => 3 lines = 1 step
        DOM_DELTA_PAGE => 1 page = 80 steps */
+    const Float f = (_event.deltaMode == DOM_DELTA_PIXEL) ? -0.01f :
+        ((_event.deltaMode == DOM_DELTA_LINE) ? -1.0f/3.0f : -80.0f);
+
+    return {f*Float(_event.deltaX), f*Float(_event.deltaY)};
+}
+
+Vector2 EmscriptenApplication::ScrollEvent::position() const {
+    /* Relies on the target being the canvas, which should be always true for
+       mouse events */
+    return {Float(_event.mouse.targetX), Float(_event.mouse.targetY)};
+}
+
+EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::ScrollEvent::modifiers() const {
+    return eventModifiers(_event.mouse);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
     const Float f = (_event.deltaMode == DOM_DELTA_PIXEL) ? -0.01f :
         ((_event.deltaMode == DOM_DELTA_LINE) ? -1.0f/3.0f : -80.0f);
 
@@ -990,6 +1024,7 @@ Vector2i EmscriptenApplication::MouseScrollEvent::position() const {
 EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::MouseScrollEvent::modifiers() const {
     return eventModifiers(_event.mouse);
 }
+#endif
 
 Key EmscriptenApplication::KeyEvent::key() const {
     return toKey(_event.key, _event.code);

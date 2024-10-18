@@ -810,8 +810,8 @@ See also:
     events themselves, which happen for example when moving windows across
     displays with different DPI.
 -   Added more keys to @ref Platform::AbstractXApplication::KeyEvent::Key and
-    implemented @ref Platform::AbstractXApplication::mouseScrollEvent() for
-    better consistency with other application implementations
+    implemented @ref Platform::AbstractXApplication::scrollEvent() for better
+    consistency with other application implementations
 
 @subsubsection changelog-latest-changes-scenegraph SceneGraph library
 
@@ -1391,13 +1391,16 @@ See also:
     @relativeref{Platform::Sdl2Application,setMinimalLoopPeriod(Nanoseconds)}
 -   @cpp Platform::Sdl2Application::mousePressEvent() @ce,
     @cpp mouseReleaseEvent() @ce, @cpp mouseMoveEvent() @ce,
-    @cpp MouseEvent @ce and @cpp MouseMoveEvent @ce are deprecated in favor of
-    new @ref Platform::Sdl2Application::pointerPressEvent(),
+    @cpp mouseScrollEvent() @ce, @cpp MouseEvent @ce. @cpp MouseMoveEvent @ce
+    and @cpp MouseScrollEvent @ce are deprecated in favor of new
+    @ref Platform::Sdl2Application::pointerPressEvent(),
     @relativeref{Platform::Sdl2Application,pointerReleaseEvent()},
     @relativeref{Platform::Sdl2Application,pointerMoveEvent()},
-    @relativeref{Platform::Sdl2Application,PointerEvent} and
-    @relativeref{Platform::Sdl2Application,PointerMoveEvent} APIs that provide
-    a better abstraction over general pointer input, not just a mouse alone.
+    @relativeref{Platform::Sdl2Application,scrollEvent()},
+    @relativeref{Platform::Sdl2Application,PointerEvent},
+    @relativeref{Platform::Sdl2Application,PointerMoveEvent} and
+    @relativeref{Platform::Sdl2Application,ScrollEvent} APIs that provide a
+    better abstraction over general pointer input, not just a mouse alone.
     The same change is done in @ref Platform::AbstractXApplication,
     @ref Platform::AndroidApplication, @ref Platform::EmscriptenApplication,
     @ref Platform::GlfwApplication and the
@@ -1405,8 +1408,8 @@ See also:
     wrappers as well.
 -   @cpp Platform::AbstractXApplication::MouseEvent::Button::WheelUp @ce and
     `WheelDown` members are deprecated in favor of a dedicated
-    @ref Platform::AbstractXApplication::mouseScrollEvent(). Similar change was
-    done for all other application classes in 2016 already.
+    @ref Platform::AbstractXApplication::scrollEvent(). Similar change was done
+    for all other application classes in 2016 already.
 -   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
     @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
     @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,
