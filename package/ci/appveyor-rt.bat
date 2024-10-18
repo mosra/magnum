@@ -7,10 +7,11 @@ rem hell breaks loose. Thus also not passing CORRADE_RC_EXECUTABLE anywhere
 rem below to ensure this doesn't regress.
 set PATH=%APPVEYOR_BUILD_FOLDER%\deps-native\bin;%PATH%
 
-rem Build SDL
-appveyor DownloadFile https://www.libsdl.org/release/SDL2-2.0.4.zip || exit /b
-7z x SDL2-2.0.4.zip || exit /b
-ren SDL2-2.0.4 SDL || exit /b
+rem Build SDL, 2.0.6 is the oldest release that has SDL_HINT_TOUCH_MOUSE_EVENTS
+rem https://github.com/libsdl-org/SDL/commit/56cab6d45280fbb4b645083eceeaa8f474c0aac3
+appveyor DownloadFile https://www.libsdl.org/release/SDL2-2.0.6.zip || exit /b
+7z x SDL2-2.0.6.zip || exit /b
+ren SDL2-2.0.6 SDL || exit /b
 cd SDL/VisualC-WinRT/UWP_VS2015 || exit/b
 msbuild /p:Configuration=Release || exit /b
 cd ..\..\..

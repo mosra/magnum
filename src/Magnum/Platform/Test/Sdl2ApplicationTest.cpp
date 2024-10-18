@@ -87,6 +87,9 @@ static Debug& operator<<(Debug& debug, Application::Pointer value) {
         _c(MouseRight)
         _c(MouseButton4)
         _c(MouseButton5)
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        _c(Finger)
+        #endif
         #undef _c
     }
 
@@ -115,6 +118,21 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 namespace Test { namespace {
 
+static Debug& operator<<(Debug& debug, Application::PointerEventSource value) {
+    debug << "PointerEventSource" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::PointerEventSource::value: return debug << "::" #value;
+        _c(Mouse)
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        _c(Touch)
+        #endif
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
 Debug& operator<<(Debug& debug, Application::InputEvent::Modifiers value) {
     return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
         Application::InputEvent::Modifier::Shift,
@@ -134,6 +152,9 @@ Debug& operator<<(Debug& debug, Application::Pointers value) {
         Application::Pointer::MouseRight,
         Application::Pointer::MouseButton4,
         Application::Pointer::MouseButton5,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        Application::Pointer::Finger,
+        #endif
     });
 }
 
@@ -322,17 +343,17 @@ struct Sdl2ApplicationTest: Platform::Application {
     /* Set to 0 to test the deprecated mouse events instead */
     #if 1
     void pointerPressEvent(PointerEvent& event) override {
-        Debug{} << "pointer press:" << event.pointer() << event.modifiers() << Debug::packed << event.position();
+        Debug{} << "pointer press:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position();
         _gestureDistance = {};
         _gestureRotation = {};
     }
     void pointerReleaseEvent(PointerEvent& event) override {
-        Debug{} << "pointer release:" << event.pointer() << event.modifiers() << Debug::packed << event.position();
+        Debug{} << "pointer release:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position();
         _gestureDistance = {};
         _gestureRotation = {};
     }
     void pointerMoveEvent(PointerMoveEvent& event) override {
-        Debug{} << "pointer move:" << event.pointer() << event.pointers() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
+        Debug{} << "pointer move:" << event.source() << event.pointer() << event.pointers() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
     }
     void scrollEvent(ScrollEvent& event) override {
         Debug{} << "scroll:" << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();

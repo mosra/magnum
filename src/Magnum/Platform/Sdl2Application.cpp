@@ -144,6 +144,39 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
         .parse(arguments.argc, arguments.argv);
     #endif
 
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Disable translation of touch events to mouse events and vice versa as
+       that's a very poor way of freeing users from having to implement
+       separate event handling for mouse and touch (and, in SDL3, pen). Instead
+       the Sdl2Application is providing a PointerEvent abstracting all of
+       those, so no event translation needs to take place anymore.
+
+       Though, just for historical records, what is quite funny / strange about
+       the SDL's translation, is that when the touch goes out of the window,
+       translated mouse events get clamped to the window size and thus also not
+       even being reported if the clamped value doesn't change. On the other
+       hand, with a regular mouse event, if a drag goes out of the window, it's
+       still reported correctly, with the coordinates being either larger than
+       the window size or negative. No idea why the SDL touch->mouse emulation
+       doesn't do this -- maybe because having a touchscreen device with a
+       window manager is still relatively rare so nobody reported that? Heh.
+
+       These enums are not exposed in the minimal Emscripten SDL implementation
+       which in turn means touch support there isn't implemented, because I
+       don't want to filter duplicate events by hand. Use EmscriptenApplication
+       instead, please. */
+    /* Added in 2.0.6, before it was apparently impossible to turn off the
+       event translation altogether. I could also make the touch available only
+       on 2.0.6+, but 2.0.6 is from 2017 and I don't think it makes sense to
+       bother with support for older versions. Ubuntu 18.04 has 2.0.8.
+        https://github.com/libsdl-org/SDL/commit/56cab6d45280fbb4b645083eceeaa8f474c0aac3 */
+    SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+    /* Added in 2.0.10, before mouse events don't generate touch events
+        https://github.com/libsdl-org/SDL/commit/e41576188d17fd09c95777d665f6c4532574f8ac */
+    #ifdef SDL_HINT_MOUSE_TOUCH_EVENTS
+    SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+    #endif
+    #endif
     /* Available since 2.0.4, disables interception of SIGINT and SIGTERM so
        it's possible to Ctrl-C the application even if exitEvent() doesn't set
        event.setAccepted(). */
@@ -1028,10 +1061,28 @@ bool Sdl2Application::mainLoopIteration() {
                 if((event.type == SDL_MOUSEBUTTONDOWN && (buttons & ~SDL_BUTTON(event.button.button))) ||
                    (event.type == SDL_MOUSEBUTTONUP && buttons)) {
                     Pointers pointers = buttonsToPointers(buttons);
-                    PointerMoveEvent e{event, pointer, pointers, position, {}};
+                    PointerMoveEvent e{event, PointerEventSource::Mouse, pointer, pointers, true,
+                        #ifdef CORRADE_TARGET_EMSCRIPTEN
+                        0,
+                        /* Since 2.0.22, added w/ SDL_HINT_MOUSE_TOUCH_EVENTS */
+                        #elif defined(SDL_MOUSE_TOUCHID)
+                        SDL_MOUSE_TOUCHID,
+                        #else
+                        -1,
+                        #endif
+                        position, {}};
                     pointerMoveEvent(e);
                 } else {
-                    PointerEvent e{event, pointer, position
+                    PointerEvent e{event, PointerEventSource::Mouse, pointer, true,
+                        #ifdef CORRADE_TARGET_EMSCRIPTEN
+                        0,
+                        /* Since 2.0.22, added w/ SDL_HINT_MOUSE_TOUCH_EVENTS */
+                        #elif defined(SDL_MOUSE_TOUCHID)
+                        SDL_MOUSE_TOUCHID,
+                        #else
+                        -1,
+                        #endif
+                        position
                         #ifndef CORRADE_TARGET_EMSCRIPTEN
                         , event.button.clicks
                         #endif
@@ -1047,11 +1098,94 @@ bool Sdl2Application::mainLoopIteration() {
             } break;
 
             case SDL_MOUSEMOTION: {
-                PointerMoveEvent e{event, {}, buttonsToPointers(event.motion.state),
+                PointerMoveEvent e{event, PointerEventSource::Mouse, {}, buttonsToPointers(event.motion.state), true,
+                    #ifdef CORRADE_TARGET_EMSCRIPTEN
+                    0,
+                    /* Since 2.0.22, added w/ SDL_HINT_MOUSE_TOUCH_EVENTS */
+                    #elif defined(SDL_MOUSE_TOUCHID)
+                    SDL_MOUSE_TOUCHID,
+                    #else
+                    -1,
+                    #endif
                     {Float(event.motion.x), Float(event.motion.y)},
                     {Float(event.motion.xrel), Float(event.motion.yrel)}};
                 pointerMoveEvent(e);
             } break;
+
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            case SDL_FINGERDOWN:
+            case SDL_FINGERUP: {
+                /* Scale the event from useless [0, 1] to the actual window
+                   size, not sure why is it so weird. Also let's hope the
+                   SDL_GetWindowSize() call isn't too demanding, I don't want
+                   to be caching this value, it's bad enough to have to track
+                   that on Emscripten. */
+                Vector2i windowSize{NoInit};
+                SDL_GetWindowSize(_window, &windowSize.x(), &windowSize.y());
+
+                /* Update primary finger info. If there's no primary finger yet
+                   and this is the first finger pressed, it becomes the primary
+                   finger. If the primary finger is lifted, no other finger
+                   becomes primary until all others are lifted as well. This
+                   was empirically verified by looking at behavior of a mouse
+                   cursor on a multi-touch screen under X11, it's possible that
+                   other systems do it differently. Also, right now there's an
+                   assumption that there is just one touch device, fingers from
+                   different touch devices would steal the primary bit from
+                   each other on every press. */
+                bool primary;
+                if(_primaryFingerId == ~Long{} && event.type == SDL_FINGERDOWN && SDL_GetNumTouchFingers(event.tfinger.touchId) == 1) {
+                    primary = true;
+                    _primaryFingerId = event.tfinger.fingerId;
+                /* Otherwise, if this is the primary finger, mark it as such */
+                } else if(_primaryFingerId == event.tfinger.fingerId) {
+                    primary = true;
+                    /* ... but if it's a release, it's no longer primary */
+                    if(event.type == SDL_FINGERUP)
+                        _primaryFingerId = ~Long{};
+                /* Otherwise this is not the primary finger */
+                } else primary = false;
+
+                /* Make it so that value of 0 is reported as 0 and 1 is
+                   reported as the rightmost / bottommost pixel, i.e. 799 / 599
+                   for 800x600. This matches with what SDL itself does for the
+                   touch event translation. */
+                const Vector2 scale = Vector2{windowSize - Vector2i{1}};
+                PointerEvent e{event, PointerEventSource::Touch,
+                    Pointer::Finger, primary, event.tfinger.fingerId,
+                    Vector2{event.tfinger.x, event.tfinger.y}*scale, 1};
+                event.type == SDL_FINGERDOWN ?
+                    pointerPressEvent(e) : pointerReleaseEvent(e);
+            } break;
+
+            case SDL_FINGERMOTION: {
+                /* Scale the event from useless [0, 1] to the actual window
+                   size, not sure why is it so weird. Also let's hope the
+                   SDL_GetWindowSize() call isn't too demanding, I don't want
+                   to be caching this value, it's bad enough to have to track
+                   that on Emscripten. */
+                Vector2i windowSize{NoInit};
+                SDL_GetWindowSize(_window, &windowSize.x(), &windowSize.y());
+
+                /* In this case, it's a primary finger only if it was
+                   registered as such during the last press. If the primary
+                   finger was lifted, no other finger will step into its place
+                   until all others are lifted as well. */
+                const bool primary = _primaryFingerId == event.tfinger.fingerId;
+
+                /* Make it so that value of 0 is reported as 0 and 1 is
+                   reported as the rightmost / bottommost pixel, i.e. 799 / 599
+                   for 800x600. This matches with what SDL itself does for the
+                   touch event translation. */
+                const Vector2 scale = Vector2{windowSize - Vector2i{1}};
+                PointerMoveEvent e{event, PointerEventSource::Touch, {},
+                    Pointer::Finger, primary, event.tfinger.fingerId,
+                    Vector2{event.tfinger.x, event.tfinger.y}*scale,
+                    Vector2{event.tfinger.dx, event.tfinger.dy}*scale};
+                pointerMoveEvent(e);
+                break;
+            }
+            #endif
 
             case SDL_MULTIGESTURE: {
                 MultiGestureEvent e{event, {event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers};
@@ -1284,6 +1418,9 @@ CORRADE_IGNORE_DEPRECATED_PUSH
 Sdl2Application::MouseEvent::Button pointerToButton(const Sdl2Application::Pointer pointer) {
     switch(pointer) {
         case Sdl2Application::Pointer::MouseLeft:
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        case Sdl2Application::Pointer::Finger:
+        #endif
             return Sdl2Application::MouseEvent::Button::Left;
         case Sdl2Application::Pointer::MouseMiddle:
             return Sdl2Application::MouseEvent::Button::Middle;
@@ -1304,6 +1441,9 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 void Sdl2Application::pointerPressEvent(PointerEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    if(!event.isPrimary())
+        return;
+
     CORRADE_IGNORE_DEPRECATED_PUSH
     MouseEvent mouseEvent{event.event(), pointerToButton(event.pointer()), Vector2i{Math::round(event.position())}
         #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -1325,6 +1465,9 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 void Sdl2Application::pointerReleaseEvent(PointerEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    if(!event.isPrimary())
+        return;
+
     CORRADE_IGNORE_DEPRECATED_PUSH
     MouseEvent mouseEvent{event.event(), pointerToButton(event.pointer()), Vector2i{Math::round(event.position())}
         #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -1346,6 +1489,9 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 void Sdl2Application::pointerMoveEvent(PointerMoveEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    if(!event.isPrimary())
+        return;
+
     const Vector2i roundedPosition{Math::round(event.position())};
 
     CORRADE_IGNORE_DEPRECATED_PUSH
@@ -1366,7 +1512,11 @@ void Sdl2Application::pointerMoveEvent(PointerMoveEvent& event) {
             mousePressEvent(mouseEvent) : mouseReleaseEvent(mouseEvent);
     } else {
         MouseMoveEvent::Buttons buttons;
-        if(event.pointers() & Pointer::MouseLeft)
+        if(event.pointers() & (Pointer::MouseLeft
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            |Pointer::Finger
+            #endif
+        ))
             buttons |= MouseMoveEvent::Button::Left;
         if(event.pointers() & Pointer::MouseMiddle)
             buttons |= MouseMoveEvent::Button::Middle;
