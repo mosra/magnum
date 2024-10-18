@@ -512,6 +512,10 @@ EmscriptenApplication::Pointer buttonToPointer(const std::int32_t button) {
             return EmscriptenApplication::Pointer::MouseMiddle;
         case 2:
             return EmscriptenApplication::Pointer::MouseRight;
+        case 3:
+            return EmscriptenApplication::Pointer::MouseButton4;
+        case 4:
+            return EmscriptenApplication::Pointer::MouseButton5;
     }
 
     /* W3C spec allows other, platform-specific buttons:
@@ -532,6 +536,19 @@ EmscriptenApplication::Pointers buttonsToPointers(const std::uint32_t buttons) {
         pointers |= EmscriptenApplication::Pointer::MouseMiddle;
     if(buttons & (1 << 1))
         pointers |= EmscriptenApplication::Pointer::MouseRight;
+    /* https://www.w3.org/TR/uievents/#dom-mouseevent-buttons doesn't list
+       those even though the X1 and X2 buttons from
+        https://www.w3.org/TR/uievents/#dom-mouseevent-button
+       don't have any matching value here. In addition to the order swap and
+       the spec trying to describe bit flags in a *really* roundabout and
+       complicated way, this isn't entirely surprising. Chrome reports the
+       extra buttons, and the bit flags match here as well, so assume that's
+       correct. Firefox doesn't report X1 and X2 at all, so they're not present
+       here either. */
+    if(buttons & (1 << 3))
+        pointers |= EmscriptenApplication::Pointer::MouseButton4;
+    if(buttons & (1 << 4))
+        pointers |= EmscriptenApplication::Pointer::MouseButton5;
     return pointers;
 }
 
