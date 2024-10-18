@@ -285,6 +285,37 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
 
+@section Platform-Sdl2Application-touch Touch input
+
+The application recognizes touch input and reports it as @ref Pointer::Finger
+and @ref PointerEventSource::Touch. Because both mouse and touch events are
+exposed through a unified @ref PointerEvent / @ref PointerMoveEvent interface,
+there's no need for compatibility mouse events to be synthesized from touch
+events and vice versa, and thus given behavior is disabled in SDL. Pen input is
+still reported as a mouse because SDL has dedicated support for pen stylus only
+since SDL 3.
+
+In case of a multi-touch scenario, @ref PointerEvent::isPrimary() /
+@ref PointerMoveEvent::isPrimary() can be used to distinguish the primary touch
+from secondary. For example, if an application doesn't need to recognize
+gestures like pinch to zoom or rotate, it can ignore all non-primary pointer
+events. @ref PointerEventSource::Mouse events are always marked as primary,
+for touch input the first pressed finger is marked as primary and all following
+pressed fingers are non-primary. Note that there can be up to one primary
+pointer for each pointer event source, e.g. a finger and a mouse press may both
+be marked as primary. On the other hand, in a multi-touch scenario, if the
+first (and thus primary) finger is lifted, no other finger becomes primary
+until all others are lifted as well.
+
+If gesture recognition is desirable, @ref PointerEvent::id() /
+@ref PointerMoveEvent::id() contains a pointer ID that's unique among all
+pointer event sources, which can be used to track movements of secondary,
+tertiary and further touch points. The ID allocation is platform-specific and
+you can't rely on it to be contiguous or in any bounded range --- for example,
+each new touch may generate a new ID that's only used until given finger is
+lifted, and then never again. For @ref PointerEventSource::Mouse the ID is a
+constant, as there's always just a single mouse cursor.
+
 @section Platform-Sdl2Application-platform-specific Platform-specific behavior
 
 @subsection Platform-Sdl2Application-platform-specific-power Power management
@@ -514,6 +545,7 @@ class Sdl2Application {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
 
@@ -1103,15 +1135,16 @@ class Sdl2Application {
          * @brief Pointer press event
          * @m_since_latest
          *
-         * Called when a mouse is pressed. Note that if at least one mouse
-         * button is already pressed and another button gets pressed in
-         * addition, @ref pointerMoveEvent() with the new combination is
-         * called, not this function.
+         * Called when either a mouse or a finger is pressed. Note that if at
+         * least one mouse button is already pressed and another button gets
+         * pressed in addition, @ref pointerMoveEvent() with the new
+         * combination is called, not this function.
          *
-         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
-         * implementation delegates to @ref mousePressEvent(). On builds with
-         * deprecated functionality disabled, default implementation does
-         * nothing.
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, if the pointer
+         * is primary, default implementation delegates to
+         * @ref mousePressEvent(), interpreting @ref Pointer::Finger as
+         * @ref MouseEvent::Button::Left. On builds with deprecated
+         * functionality disabled, default implementation does nothing.
          */
         virtual void pointerPressEvent(PointerEvent& event);
 
@@ -1131,14 +1164,16 @@ class Sdl2Application {
          * @brief Pointer release event
          * @m_since_latest
          *
-         * Called when a mouse is released. Note that if multiple mouse buttons
-         * are pressed and one of these is released, @ref pointerMoveEvent()
-         * with the new combination is called, not this function.
+         * Called when either a mouse or a finger is released. Note that if
+         * multiple mouse buttons are pressed and one of these is released,
+         * @ref pointerMoveEvent() with the new combination is called, not this
+         * function.
          *
-         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
-         * implementation delegates to @ref mouseReleaseEvent(). On builds with
-         * deprecated functionality disabled, default implementation does
-         * nothing.
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, if the pointer
+         * is primary, default implementation delegates to
+         * @ref mouseReleaseEvent(), interpreting @ref Pointer::Finger as
+         * @ref MouseEvent::Button::Left. On builds with deprecated
+         * functionality disabled, default implementation does nothing.
          */
         virtual void pointerReleaseEvent(PointerEvent& event);
 
@@ -1162,13 +1197,14 @@ class Sdl2Application {
          * changes its properties. Gets called also if the set of pressed mouse
          * buttons changes.
          *
-         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
-         * implementation delegates to @ref mouseMoveEvent(), or if
-         * @ref PointerMoveEvent::pointer() is not
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, if the pointer
+         * is primary, default implementation delegates to
+         * @ref mouseMoveEvent(), or if @ref PointerMoveEvent::pointer() is not
          * @relativeref{Corrade,Containers::NullOpt}, to either
-         * @ref mousePressEvent() or @ref mouseReleaseEvent(). On builds with
-         * deprecated functionality disabled, default implementation does
-         * nothing.
+         * @ref mousePressEvent() or @ref mouseReleaseEvent().
+         * @ref Pointer::Finger is interpreted as @ref MouseEvent::Button::Left.
+         * On builds with deprecated functionality disabled, default
+         * implementation does nothing.
          */
         virtual void pointerMoveEvent(PointerMoveEvent& event);
 
@@ -1368,6 +1404,7 @@ class Sdl2Application {
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window{};
+        Long _primaryFingerId = ~Long{};
         /* Not using Nanoseconds as that would require including Time.h */
         UnsignedInt _minimalLoopPeriodMilliseconds{};
         #else
@@ -1391,6 +1428,36 @@ class Sdl2Application {
 };
 
 /**
+@brief Pointer event source
+@m_since_latest
+
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+*/
+enum class Sdl2Application::PointerEventSource: UnsignedByte {
+    /**
+     * The event is coming from a mouse. Corresponds to the
+     * `SDL_MOUSEBUTTONDOWN`, `SDL_MOUSEBUTTONUP` and `SDL_MOUSEMOTION` events.
+     * @see @ref Pointer::MouseLeft, @ref Pointer::MouseMiddle,
+     *      @ref Pointer::MouseRight, @ref Pointer::MouseButton4,
+     *      @ref Pointer::MouseButton5
+     */
+    Mouse,
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /**
+     * The event is coming from a touch contact. Corresponds to the
+     * `SDL_FINGERDOWN`, `SDL_FINGERUP` and `SDL_FINGERMOTION` events.
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" as
+     *      the minimal SDL2 implementation there doesn't expose a way to
+     *      disable touch to mouse event translation, which would lead to
+     *      duplicate events being emitted.
+     * @see @ref Pointer::Finger
+     */
+    Touch
+    #endif
+};
+
+/**
 @brief Pointer type
 @m_since_latest
 
@@ -1401,32 +1468,51 @@ enum class Sdl2Application::Pointer: UnsignedByte {
     /**
      * Left mouse button. Corresponds to `SDL_BUTTON_LEFT` /
      * `SDL_BUTTON_LMASK`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseLeft = 1 << 0,
 
     /**
      * Middle mouse button. Corresponds to `SDL_BUTTON_MIDDLE` /
      * `SDL_BUTTON_MMASK`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseMiddle = 1 << 1,
 
     /**
      * Right mouse button. Corresponds to `SDL_BUTTON_RIGHT` /
      * `SDL_BUTTON_RMASK`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseRight = 1 << 2,
 
     /**
      * Fourth mouse button, such as wheel left. Corresponds to `SDL_BUTTON_X1`
      * / `SDL_BUTTON_X1MASK`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseButton4 = 1 << 3,
 
     /**
      * Fifth mouse button, such as wheel right. Corresponds to `SDL_BUTTON_X2`
      * / `SDL_BUTTON_X2MASK`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseButton5 = 1 << 4,
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /**
+     * Finger
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" as
+     *      the minimal SDL2 implementation there doesn't expose a way to
+     *      disable touch to mouse event translation, which would lead to
+     *      duplicate events being emitted.
+     * @see @ref PointerEventSource::Touch
+     */
+    Finger = 1 << 5,
+    #endif
+
+    /* Pen support is since SDL3 only */
 };
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Pointers)
@@ -2382,9 +2468,10 @@ class Sdl2Application::InputEvent {
          * @brief Underlying SDL event
          *
          * Of type `SDL_KEYDOWN` / `SDL_KEYUP` for @ref KeyEvent,
-         * `SDL_MOUSEBUTTONDOWN` / `SDL_MOUSEBUTTONUP` for @ref PointerEvent,
-         * `SDL_MOUSEMOTION` for @ref PointerMoveEvent and `SDL_MOUSEWHEEL` for
-         * @ref ScrollEvent.
+         * `SDL_MOUSEBUTTONDOWN` / `SDL_MOUSEBUTTONUP` or `SDL_FINGERDOWN` /
+         * `SDL_FINGERUP` for @ref PointerEvent, `SDL_MOUSEMOTION` or
+         * `SDL_FINGERMOTION` for @ref PointerMoveEvent and `SDL_MOUSEWHEEL`
+         * for @ref ScrollEvent.
          * @see @ref Sdl2Application::anyEvent()
          */
         const SDL_Event& event() const { return _event; }
@@ -2746,13 +2833,39 @@ class Sdl2Application::PointerEvent: public InputEvent {
         /** @brief Moving is not allowed */
         PointerEvent& operator=(PointerEvent&&) = delete;
 
+        /** @brief Pointer event source */
+        PointerEventSource source() const { return _source; }
+
         /** @brief Pointer type that was pressed or released */
         Pointer pointer() const { return _pointer; }
 
         /**
+         * @brief Whether the pointer is primary
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-Sdl2Application-touch for more
+         * information.
+         */
+        bool isPrimary() const { return _primary; }
+
+        /**
+         * @brief Pointer ID
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-Sdl2Application-touch for more
+         * information.
+         */
+        Long id() const { return _id; }
+
+        /**
          * @brief Position
          *
-         * For mouse input the position is always reported in whole pixels.
+         * For mouse input the position is always reported in whole pixels. For
+         * @ref Pointer::Finger the events may be reported with a subpixel
+         * precision, use @ref Math::round() to snap them to the nearest pixel.
+         * Note that, unlike the `SDL_TouchFingerEvent`, which is normalized in
+         * the @f$ [0, 1] @f$ range, the position for touch events is in the
+         * same coordinate system as mouse events.
          */
         Vector2 position() const { return _position; }
 
@@ -2760,6 +2873,7 @@ class Sdl2Application::PointerEvent: public InputEvent {
         /**
          * @brief Click count
          *
+         * For @ref Pointer::Finger is always @cpp 1 @ce.
          * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         Int clickCount() const { return _clickCount; }
@@ -2775,18 +2889,21 @@ class Sdl2Application::PointerEvent: public InputEvent {
     private:
         friend Sdl2Application;
 
-        explicit PointerEvent(const SDL_Event& event, Pointer pointer, const Vector2& position
+        explicit PointerEvent(const SDL_Event& event, PointerEventSource source, Pointer pointer, bool primary, Long id, const Vector2& position
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             , Int clickCount
             #endif
-        ): InputEvent{event}, _pointer(pointer), _position{position}
+        ): InputEvent{event}, _source{source}, _pointer{pointer}, _primary{primary}, _id{id}, _position{position}
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             , _clickCount{clickCount}
             #endif
         {}
 
+        const PointerEventSource _source;
         const Pointer _pointer;
         Containers::Optional<Modifiers> _modifiers;
+        const bool _primary;
+        const Long _id;
         const Vector2 _position;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         const Int _clickCount;
@@ -2887,6 +3004,15 @@ class Sdl2Application::PointerMoveEvent: public InputEvent {
         PointerMoveEvent& operator=(PointerMoveEvent&&) = delete;
 
         /**
+         * @brief Pointer event source
+         *
+         * Can be used to distinguish which source the event is coming from in
+         * case it's a movement with both @ref pointer() and @ref pointers()
+         * being empty.
+         */
+        PointerEventSource source() const { return _source; }
+
+        /**
          * @brief Pointer type that was added or removed from the set of pressed pointers
          *
          * Is non-empty only in case a mouse button was pressed in addition to
@@ -2894,6 +3020,7 @@ class Sdl2Application::PointerMoveEvent: public InputEvent {
          * pressed buttons was released. If non-empty and @ref pointers() don't
          * contain given @ref Pointer value, the button was released, if they
          * contain given value, the button was pressed.
+         * @see @ref source()
          */
         Containers::Optional<Pointer> pointer() const { return _pointer; }
 
@@ -2907,16 +3034,44 @@ class Sdl2Application::PointerMoveEvent: public InputEvent {
         Pointers pointers() const { return _pointers; }
 
         /**
+         * @brief Whether the pointer is primary
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-Sdl2Application-touch for more
+         * information.
+         */
+        bool isPrimary() const { return _primary; }
+
+        /**
+         * @brief Pointer ID
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-Sdl2Application-touch for more
+         * information.
+         */
+        Long id() const { return _id; }
+
+        /**
          * @brief Position
          *
-         * For mouse input the position is always reported in whole pixels.
+         * For mouse input the position is always reported in whole pixels. For
+         * @ref Pointer::Finger the events may be reported with a subpixel
+         * precision. Use @ref Math::round() to snap them to the nearest pixel.
+         * Note that, unlike the `SDL_TouchFingerEvent`, which is normalized in
+         * the @f$ [0, 1] @f$ range, the position for touch events is in the
+         * same coordinate system as mouse events.
          */
         Vector2 position() const { return _position; }
 
         /**
          * @brief Position relative to the previous touch event
          *
-         * For mouse input the position is always reported in whole pixels.
+         * For mouse input the position is always reported in whole pixels. For
+         * @ref Pointer::Finger the events may be reported with a subpixel
+         * precision, meaning that the relative position might be less than a
+         * pixel. Note that, unlike the `SDL_TouchFingerEvent`, which is
+         * normalized in the @f$ [0, 1] @f$ range, the position for touch
+         * events is in the same coordinate system as mouse events.
          */
         Vector2 relativePosition() const { return _relativePosition; }
 
@@ -2930,12 +3085,15 @@ class Sdl2Application::PointerMoveEvent: public InputEvent {
     private:
         friend Sdl2Application;
 
-        explicit PointerMoveEvent(const SDL_Event& event, Containers::Optional<Pointer> pointer, Pointers pointers, const Vector2& position, const Vector2& relativePosition): InputEvent{event}, _pointer{pointer}, _pointers{pointers}, _position{position}, _relativePosition{relativePosition} {}
+        explicit PointerMoveEvent(const SDL_Event& event, PointerEventSource source, Containers::Optional<Pointer> pointer, Pointers pointers, bool primary, Long id, const Vector2& position, const Vector2& relativePosition): InputEvent{event}, _source{source}, _pointer{pointer}, _pointers{pointers}, _primary{primary}, _id{id}, _position{position}, _relativePosition{relativePosition} {}
 
+        const PointerEventSource _source;
         const Containers::Optional<Pointer> _pointer;
         const Pointers _pointers;
-        const Vector2 _position, _relativePosition;
+        const bool _primary;
         Containers::Optional<Modifiers> _modifiers;
+        const Long _id;
+        const Vector2 _position, _relativePosition;
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED

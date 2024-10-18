@@ -337,6 +337,10 @@ See also:
     @relativeref{Platform::GlfwApplication,tickEvent()} to match the interface
     of @ref Platform::Sdl2Application (see [mosra/magnum#577](https://github.com/mosra/magnum/issues/577)
     and [mosra/magnum#580](https://github.com/mosra/magnum/pull/580))
+-   Multi-touch support in @ref Platform::Sdl2Application through new
+    @relativeref{Platform::Sdl2Application,PointerEvent} and
+    @relativeref{Platform::Sdl2Application,PointerMoveEvent} that unify mouse
+    and touch input events
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
