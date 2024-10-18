@@ -37,6 +37,13 @@ namespace Magnum { namespace Platform {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class> class BasicScreen;
 template<class> class BasicScreenedApplication;
+/* For ScreenedApplication backwards compatibility with mouseScrollEvent()
+   delegated from scrollEvent(), remove once gone */
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace Implementation {
+    template<class, bool> struct ApplicationScrollEventMixin;
+}
+#endif
 
 #ifdef MAGNUM_TARGET_GL
 class GLContext;

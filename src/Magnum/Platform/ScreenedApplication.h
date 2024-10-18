@@ -41,7 +41,10 @@ namespace Magnum { namespace Platform {
 namespace Implementation {
 
 CORRADE_HAS_TYPE(HasKeyEvent, typename T::KeyEvent);
+CORRADE_HAS_TYPE(HasScrollEvent, typename T::ScrollEvent);
+#ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_HAS_TYPE(HasMouseScrollEvent, typename T::MouseScrollEvent);
+#endif
 CORRADE_HAS_TYPE(HasTextInputEvent, typename T::TextInputEvent);
 CORRADE_HAS_TYPE(HasTextEditingEvent, typename T::TextEditingEvent);
 
@@ -60,9 +63,22 @@ template<class Application> struct ApplicationKeyEventMixin<Application, true> {
     void callKeyReleaseEvent(typename Application::KeyEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens);
 };
 
-/* Calls into the screen in case the application has a mouseScrollEvent(),
-   otherwise provides a dummy virtual so the application can unconditionally
-   override */
+/* Calls into the screen in case the application has a scrollEvent(), otherwise
+   provides a dummy virtual so the application can unconditionally override */
+template<class Application, bool implements> struct ApplicationScrollEventMixin {
+    typedef int ScrollEvent;
+    virtual void scrollEvent(ScrollEvent&) = 0;
+
+    void callScrollEvent(Application&, ScrollEvent&, Containers::LinkedList<BasicScreen<Application>>&);
+};
+template<class Application> struct ApplicationScrollEventMixin<Application, true> {
+    void callScrollEvent(Application& application, typename Application::ScrollEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens);
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Calls into the screen in case the application has a (deprecated)
+   mouseScrollEvent(), otherwise provides a dummy virtual so the application
+   can unconditionally override */
 template<class Application, bool> struct ApplicationMouseScrollEventMixin {
     typedef int MouseScrollEvent;
     virtual void mouseScrollEvent(MouseScrollEvent&) = 0;
@@ -70,8 +86,11 @@ template<class Application, bool> struct ApplicationMouseScrollEventMixin {
     void callMouseScrollEvent(MouseScrollEvent&, Containers::LinkedList<BasicScreen<Application>>&);
 };
 template<class Application> struct ApplicationMouseScrollEventMixin<Application, true> {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     void callMouseScrollEvent(typename Application::MouseScrollEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens);
+    CORRADE_IGNORE_DEPRECATED_POP
 };
+#endif
 
 /* Calls into the screen in case the application has a textInputEvent(),
    otherwise provides a dummy virtual so the application can unconditionally
@@ -175,7 +194,10 @@ template<class Application> class BasicScreenedApplication:
     public Application,
     private Containers::LinkedList<BasicScreen<Application>>,
     private Implementation::ApplicationKeyEventMixin<Application, Implementation::HasKeyEvent<Application>::value>,
+    private Implementation::ApplicationScrollEventMixin<Application, Implementation::HasScrollEvent<Application>::value>,
+    #ifdef MAGNUM_BUILD_DEPRECATED
     private Implementation::ApplicationMouseScrollEventMixin<Application, Implementation::HasMouseScrollEvent<Application>::value>,
+    #endif
     private Implementation::ApplicationTextInputEventMixin<Application, Implementation::HasTextInputEvent<Application>::value>,
     private Implementation::ApplicationTextEditingEventMixin<Application, Implementation::HasTextEditingEvent<Application>::value>
 {
@@ -339,7 +361,12 @@ template<class Application> class BasicScreenedApplication:
            doesn't have them, they're overriding a mixin dummy */
         void keyPressEvent(typename BasicScreenedApplication<Application>::KeyEvent& event) override final;
         void keyReleaseEvent(typename BasicScreenedApplication<Application>::KeyEvent& event) override final;
+        void scrollEvent(typename BasicScreenedApplication<Application>::ScrollEvent& event) override final;
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_IGNORE_DEPRECATED_PUSH
         void mouseScrollEvent(typename BasicScreenedApplication<Application>::MouseScrollEvent& event) override final;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
         void textInputEvent(typename BasicScreenedApplication<Application>::TextInputEvent& event) override final;
         void textEditingEvent(typename BasicScreenedApplication<Application>::TextEditingEvent& event) override final;
 };

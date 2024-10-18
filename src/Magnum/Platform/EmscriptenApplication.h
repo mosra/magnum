@@ -298,11 +298,12 @@ class EmscriptenApplication {
         class InputEvent;
         class PointerEvent;
         class PointerMoveEvent;
+        class ScrollEvent;
         #ifdef MAGNUM_BUILD_DEPRECATED
         class MouseEvent;
         class MouseMoveEvent;
-        #endif
         class MouseScrollEvent;
+        #endif
         class KeyEvent;
         class TextInputEvent;
 
@@ -910,12 +911,29 @@ class EmscriptenApplication {
         #endif
 
         /**
-         * @brief Mouse scroll event
+         * @brief Scroll event
+         * @m_since_latest
          *
          * Called when a scrolling device is used (mouse wheel or scrolling
-         * area on a touchpad). Default implementation does nothing.
+         * area on a touchpad).
+         *
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
+         * implementation delegates to @ref mouseScrollEvent(). On builds with
+         * deprecated functionality disabled, default implementation does
+         * nothing.
          */
-        virtual void mouseScrollEvent(MouseScrollEvent& event);
+        virtual void scrollEvent(ScrollEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Mouse move event
+         * @m_deprecated_since_latest Use @ref scrollEvent() instead, which
+         *      isn't semantically tied to just a mouse.
+         *
+         * Default implementation does nothing.
+         */
+        virtual CORRADE_DEPRECATED("use scrollEvent() instead") void mouseScrollEvent(MouseScrollEvent& event);
+        #endif
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
@@ -984,6 +1002,7 @@ class EmscriptenApplication {
         /* Calls the base pointer*Event() in order to delegate to deprecated
            mouse events */
         template<class> friend class BasicScreenedApplication;
+        template<class, bool> friend struct Implementation::ApplicationScrollEventMixin;
         #endif
 
         enum class Flag: UnsignedByte;
@@ -1572,10 +1591,9 @@ class EmscriptenApplication::ViewportEvent {
 /**
 @brief Base for input events
 
-@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent,
-    @ref MouseScrollEvent, @ref keyPressEvent(), @ref keyReleaseEvent(),
-    @ref pointerPressEvent(), @ref pointerReleaseEvent(),
-    @ref pointerMoveEvent(), @ref mouseScrollEvent()
+@see @ref KeyEvent, @ref PointerEvent, @ref PointerMoveEvent, @ref ScrollEvent,
+    @ref keyPressEvent(), @ref keyReleaseEvent(), @ref pointerPressEvent(),
+    @ref pointerReleaseEvent(), @ref pointerMoveEvent(), @ref scrollEvent()
 */
 class EmscriptenApplication::InputEvent {
     public:
@@ -1585,7 +1603,7 @@ class EmscriptenApplication::InputEvent {
          * @see @ref Modifiers, @ref KeyEvent::modifiers(),
          *      @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref MouseScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers()
          */
         enum class Modifier: Int {
             /**
@@ -1622,7 +1640,7 @@ class EmscriptenApplication::InputEvent {
          *
          * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref MouseScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers()
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -1665,7 +1683,7 @@ CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::InputEvent::Modifiers)
 @brief Pointer event
 @m_since_latest
 
-@see @ref PointerMoveEvent, @ref MouseScrollEvent, @ref pointerPressEvent(),
+@see @ref PointerMoveEvent, @ref ScrollEvent, @ref pointerPressEvent(),
     @ref pointerReleaseEvent()
 */
 class EmscriptenApplication::PointerEvent: public InputEvent {
@@ -1763,7 +1781,7 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
 @brief Pointer move event
 @m_since_latest
 
-@see @ref PointerEvent, @ref MouseScrollEvent, @ref pointerMoveEvent()
+@see @ref PointerEvent, @ref ScrollEvent, @ref pointerMoveEvent()
 */
 class EmscriptenApplication::PointerMoveEvent: public InputEvent {
     public:
@@ -1903,11 +1921,46 @@ CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 /**
-@brief Mouse scroll event
+@brief Scroll event
+@m_since_latest
 
-@see @ref PointerEvent, @ref PointerMoveEvent, @ref mouseScrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent()
 */
-class EmscriptenApplication::MouseScrollEvent: public EmscriptenApplication::InputEvent {
+class EmscriptenApplication::ScrollEvent: public EmscriptenApplication::InputEvent {
+    public:
+        /** @brief Scroll offset */
+        Vector2 offset() const;
+
+        /**
+         * @brief Position
+         *
+         * The position is always reported in whole pixels.
+         */
+        Vector2 position() const;
+
+        /** @brief Modifiers */
+        Modifiers modifiers() const;
+
+        /** @brief Underlying Emscripten event */
+        const EmscriptenWheelEvent& event() const { return _event; }
+
+    private:
+        friend EmscriptenApplication;
+
+        explicit ScrollEvent(const EmscriptenWheelEvent& event): _event(event) {}
+
+        const EmscriptenWheelEvent& _event;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Mouse scroll event
+@m_deprecated_since_latest Use @ref ScrollEvent and @ref scrollEvent() instead,
+    which isn't semantically tied to just a mouse.
+
+@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+*/
+class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") EmscriptenApplication::MouseScrollEvent: public InputEvent {
     public:
         /** @brief Scroll offset */
         Vector2 offset() const;
@@ -1928,6 +1981,7 @@ class EmscriptenApplication::MouseScrollEvent: public EmscriptenApplication::Inp
 
         const EmscriptenWheelEvent& _event;
 };
+#endif
 
 /**
 @brief Key event

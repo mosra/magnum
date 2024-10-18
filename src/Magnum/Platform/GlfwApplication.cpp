@@ -727,8 +727,8 @@ void GlfwApplication::setupCallbacks() {
         app.pointerMoveEvent(e);
     });
     glfwSetScrollCallback(_window, [](GLFWwindow* window, double xoffset, double yoffset) {
-        MouseScrollEvent e(window, Vector2{Float(xoffset), Float(yoffset)});
-        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->mouseScrollEvent(e);
+        ScrollEvent e{window, {Float(xoffset), Float(yoffset)}};
+        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->scrollEvent(e);
     });
     glfwSetCharCallback(_window, [](GLFWwindow* window, unsigned int codepoint) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
@@ -1072,7 +1072,23 @@ void GlfwApplication::mouseMoveEvent(MouseMoveEvent&) {}
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
+void GlfwApplication::scrollEvent(ScrollEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseScrollEvent mouseEvent{_window, event.offset()};
+    mouseScrollEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 void GlfwApplication::textInputEvent(TextInputEvent&) {}
 
 bool GlfwApplication::isTextInputActive() const {
@@ -1153,6 +1169,21 @@ auto GlfwApplication::MouseMoveEvent::modifiers() -> Modifiers {
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
+auto GlfwApplication::ScrollEvent::modifiers() -> Modifiers {
+    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    return *_modifiers;
+}
+Vector2 GlfwApplication::ScrollEvent::position() {
+    if(!_position) {
+        Vector2d position;
+        glfwGetCursorPos(_window, &position.x(), &position.y());
+        _position = Vector2{position};
+    }
+    return *_position;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 Vector2i GlfwApplication::MouseScrollEvent::position() {
     if(!_position) {
         Vector2d position;
@@ -1167,11 +1198,13 @@ auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /* On MSVC 2017, deprecation warning suppression doesn't work on virtual
    function overrides, so ScreenedApplication overriding mousePressEvent(),
-   mouseReleaseEvent(), and mouseMoveEvent() causes warnings. Disable them at a
-   higher level instead. */
+   mouseReleaseEvent() mouseMoveEvent() and mouseScrollEvent() causes warnings.
+   Disable them at a higher level instead. */
 #if defined(MAGNUM_BUILD_DEPRECATED) && defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG) && _MSC_VER < 1920
 CORRADE_IGNORE_DEPRECATED_PUSH
 #endif

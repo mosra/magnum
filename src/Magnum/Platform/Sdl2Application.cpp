@@ -1042,8 +1042,8 @@ bool Sdl2Application::mainLoopIteration() {
             } break;
 
             case SDL_MOUSEWHEEL: {
-                MouseScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
-                mouseScrollEvent(e);
+                ScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
+                scrollEvent(e);
             } break;
 
             case SDL_MOUSEMOTION: {
@@ -1401,7 +1401,23 @@ void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
+void Sdl2Application::scrollEvent(ScrollEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MouseScrollEvent mouseEvent{event.event(), event.offset()};
+    mouseScrollEvent(mouseEvent);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 void Sdl2Application::mouseScrollEvent(MouseScrollEvent&) {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
@@ -1473,6 +1489,23 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifier
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
+Vector2 Sdl2Application::ScrollEvent::position() {
+    if(!_position) {
+        Vector2i position;
+        SDL_GetMouseState(&position.x(), &position.y());
+        _position = Vector2{position};
+    }
+    return *_position;
+}
+
+Sdl2Application::InputEvent::Modifiers Sdl2Application::ScrollEvent::modifiers() {
+    if(!_modifiers)
+        _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+    return *_modifiers;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 Vector2i Sdl2Application::MouseScrollEvent::position() {
     if(_position) return *_position;
     _position = Vector2i{};
@@ -1484,12 +1517,15 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifi
     if(_modifiers) return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /* WinRT builds by default have deprecation warnings as errors. Combined with a
    MSVC 2017 bug where deprecation warning suppression doesn't work on virtual
    function overrides this make the build fail on deprecation warnings due to
-   ScreenedApplication overriding mousePressEvent(), mouseReleaseEvent() and
-   mouseMoveEvent(). Disable the warnings at a higher level instead. */
+   ScreenedApplication overriding mousePressEvent(), mouseReleaseEvent(),
+   mouseMoveEvent() and mouseScrollEvent(). Disable the warnings at a higher
+   level instead. */
 #if defined(MAGNUM_BUILD_DEPRECATED) && defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG) && _MSC_VER < 1920
 CORRADE_IGNORE_DEPRECATED_PUSH
 #endif

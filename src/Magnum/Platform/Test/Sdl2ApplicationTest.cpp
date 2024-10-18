@@ -334,6 +334,9 @@ struct Sdl2ApplicationTest: Platform::Application {
     void pointerMoveEvent(PointerMoveEvent& event) override {
         Debug{} << "pointer move:" << event.pointer() << event.pointers() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
     }
+    void scrollEvent(ScrollEvent& event) override {
+        Debug{} << "scroll:" << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
+    }
     #else
     CORRADE_IGNORE_DEPRECATED_PUSH
     void mousePressEvent(MouseEvent& event) override {
@@ -349,12 +352,11 @@ struct Sdl2ApplicationTest: Platform::Application {
     void mouseMoveEvent(MouseMoveEvent& event) override {
         Debug{} << "mouse move:" << event.buttons() << Debug::packed << event.position() << Debug::packed << event.relativePosition() << event.modifiers();
     }
-    CORRADE_IGNORE_DEPRECATED_POP
-    #endif
-
     void mouseScrollEvent(MouseScrollEvent& event) override {
         Debug{} << "mouse scroll:" << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
     }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     void multiGestureEvent(MultiGestureEvent& event) override {
         Debug{} << "multi gesture:" << event.center() << "rotation:" << Deg{_gestureRotation} << Debug::nospace << ", relative" << Deg{event.relativeRotation()} << Debug::nospace << ", distance" << _gestureDistance << Debug::nospace << ", relative" << event.relativeDistance() << Debug::nospace << ", fingers" << event.fingerCount();

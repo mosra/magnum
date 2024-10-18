@@ -62,16 +62,33 @@ template<class Application> class ScreenKeyEventMixin<Application, true> {
         virtual void keyReleaseEvent(KeyEvent& event);
 };
 
+template<class Application, bool> class ScreenScrollEventMixin {};
+template<class Application> class ScreenScrollEventMixin<Application, true> {
+    public:
+        typedef typename BasicScreenedApplication<Application>::ScrollEvent ScrollEvent;
+
+    private:
+        friend ApplicationScrollEventMixin<Application, true>;
+
+        virtual void scrollEvent(ScrollEvent& event);
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 template<class Application, bool> class ScreenMouseScrollEventMixin {};
 template<class Application> class ScreenMouseScrollEventMixin<Application, true> {
     public:
-        typedef typename BasicScreenedApplication<Application>::MouseScrollEvent MouseScrollEvent;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        typedef CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") typename BasicScreenedApplication<Application>::MouseScrollEvent MouseScrollEvent;
+        CORRADE_IGNORE_DEPRECATED_POP
 
     private:
         friend ApplicationMouseScrollEventMixin<Application, true>;
 
-        virtual void mouseScrollEvent(MouseScrollEvent& event);
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        virtual CORRADE_DEPRECATED("use scrollEvent() instead") void mouseScrollEvent(MouseScrollEvent& event);
+        CORRADE_IGNORE_DEPRECATED_POP
 };
+#endif
 
 template<class Application, bool> class ScreenTextInputEventMixin {};
 template<class Application> class ScreenTextInputEventMixin<Application, true> {
@@ -123,7 +140,10 @@ The following specialization are explicitly compiled into each particular
 template<class Application> class BasicScreen:
     private Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>,
     public Implementation::ScreenKeyEventMixin<Application, Implementation::HasKeyEvent<Application>::value>,
+    public Implementation::ScreenScrollEventMixin<Application, Implementation::HasScrollEvent<Application>::value>,
+    #ifdef MAGNUM_BUILD_DEPRECATED
     public Implementation::ScreenMouseScrollEventMixin<Application, Implementation::HasMouseScrollEvent<Application>::value>,
+    #endif
     public Implementation::ScreenTextInputEventMixin<Application, Implementation::HasTextInputEvent<Application>::value>,
     public Implementation::ScreenTextEditingEventMixin<Application, Implementation::HasTextEditingEvent<Application>::value>
 {
@@ -230,13 +250,26 @@ template<class Application> class BasicScreen:
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
+         * @brief Scroll event
+         * @m_since_latest
+         *
+         * Defined only if the application has a
+         * @relativeref{Sdl2Application,ScrollEvent}.
+         */
+        typedef typename BasicScreenedApplication<Application>::ScrollEvent ScrollEvent;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
          * @brief Mouse scroll event
-         * @m_since{2019,10}
+         * @m_deprecated_since_latest Use @ref ScrollEvent and
+         *      @ref scrollEvent() instead, which isn't semantically tied to
+         *      just a mouse.
          *
          * Defined only if the application has a
          * @ref Sdl2Application::MouseScrollEvent "MouseScrollEvent".
          */
         typedef typename BasicScreenedApplication<Application>::MouseScrollEvent MouseScrollEvent;
+        #endif
 
         /**
          * @brief Text input event
@@ -523,8 +556,21 @@ template<class Application> class BasicScreen:
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
+         * @brief Scroll event
+         * @m_since_latest
+         *
+         * Called when @ref PropagatedEvent::Input is enabled and mouse wheel
+         * is rotated. See @ref Sdl2Application::scrollEvent() "*Application::scrollEvent()"
+         * for more information. Defined only if the application has a
+         * @ref Sdl2Application::ScrollEvent "ScrollEvent".
+         */
+        virtual void scrollEvent(ScrollEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
          * @brief Mouse scroll event
-         * @m_since{2019,10}
+         * @m_deprecated_since_latest Use @ref scrollEvent() instead, which
+         *      isn't semantically tied to just a mouse.
          *
          * Called when @ref PropagatedEvent::Input is enabled and mouse wheel
          * is rotated. See @ref Sdl2Application::mouseScrollEvent() "*Application::mouseScrollEvent()"
@@ -532,6 +578,7 @@ template<class Application> class BasicScreen:
          * @ref Sdl2Application::MouseScrollEvent "MouseScrollEvent".
          */
         virtual void mouseScrollEvent(MouseScrollEvent& event);
+        #endif
         #endif
 
         /* Since 1.8.17, the original short-hand group closing doesn't work

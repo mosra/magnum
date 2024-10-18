@@ -206,11 +206,11 @@ bool AbstractXApplication::mainLoopIteration() {
                    applications */
                 if(event.xbutton.button == 4 /*Button4*/ ||
                    event.xbutton.button == 5 /*Button5*/) {
-                    MouseScrollEvent e{Vector2::yAxis(event.xbutton.button == 4 ? 1.0f : -1.0f), {event.xbutton.x, event.xbutton.y}, event.xbutton.state};
+                    ScrollEvent e{Vector2::yAxis(event.xbutton.button == 4 ? 1.0f : -1.0f), {Float(event.xbutton.x), Float(event.xbutton.y)}, event.xbutton.state};
                     /* It reports both press and release. Fire the scroll event
                        just on press. */
                     if(event.type == ButtonPress)
-                        mouseScrollEvent(e);
+                        scrollEvent(e);
                 } else {
                     const Pointer pointer = buttonToPointer(event.xbutton.button);
                     Pointers pointers = buttonsToPointers(event.xbutton.state);
@@ -360,10 +360,12 @@ void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-void AbstractXApplication::mouseScrollEvent(MouseScrollEvent& event) {
+void AbstractXApplication::scrollEvent(ScrollEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
-    MouseEvent e{event.offset().y() > 0.0f ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, event._modifiers, event.position()};
+    /* The positions are reported in integers in the first place, no need to
+       round anything */
+    MouseEvent e{event.offset().y() > 0.0f ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, event._modifiers, Vector2i{event.position()}};
     mousePressEvent(e);
     mouseReleaseEvent(e);
     CORRADE_IGNORE_DEPRECATED_POP
@@ -384,7 +386,7 @@ AbstractXApplication::Pointers AbstractXApplication::KeyEvent::pointers() const 
     return buttonsToPointers(_modifiers);
 }
 
-AbstractXApplication::Pointers AbstractXApplication::MouseScrollEvent::pointers() const {
+AbstractXApplication::Pointers AbstractXApplication::ScrollEvent::pointers() const {
     return buttonsToPointers(_modifiers);
 }
 

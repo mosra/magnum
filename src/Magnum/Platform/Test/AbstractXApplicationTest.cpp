@@ -299,8 +299,8 @@ struct AbstractXApplicationTest: Platform::Application {
 
     /* Comment out to test the deprecated scroll as press/release reporting */
     #if 1
-    void mouseScrollEvent(MouseScrollEvent& event) override {
-        Debug{} << "mouse scroll:" << event.pointers() << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
+    void scrollEvent(ScrollEvent& event) override {
+        Debug{} << "scroll:" << event.pointers() << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
     }
     #endif
 

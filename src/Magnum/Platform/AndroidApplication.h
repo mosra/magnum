@@ -499,6 +499,8 @@ class AndroidApplication {
         /* Calls the base pointer*Event() in order to delegate to deprecated
            mouse events */
         template<class> friend class BasicScreenedApplication;
+        /* Not ApplicationScrollEventMixin, as this class doesn't have the
+           deprecated mouseScrollEvent() */
         #endif
 
         struct LogOutput;
