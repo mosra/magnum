@@ -73,6 +73,8 @@ static Debug& operator<<(Debug& debug, Application::Pointer value) {
         _c(MouseLeft)
         _c(MouseMiddle)
         _c(MouseRight)
+        _c(MouseButton4)
+        _c(MouseButton5)
         #undef _c
     }
 
@@ -113,6 +115,8 @@ Debug& operator<<(Debug& debug, Application::Pointers value) {
         Application::Pointer::MouseLeft,
         Application::Pointer::MouseMiddle,
         Application::Pointer::MouseRight,
+        Application::Pointer::MouseButton4,
+        Application::Pointer::MouseButton5,
     });
 }
 
