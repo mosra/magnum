@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Arguments.h>
+#include <emscripten/html5.h>
 
 #include "Magnum/Platform/EmscriptenApplication.h"
 #include "Magnum/GL/Renderer.h"
@@ -75,6 +76,9 @@ static Debug& operator<<(Debug& debug, Application::Pointer value) {
         _c(MouseRight)
         _c(MouseButton4)
         _c(MouseButton5)
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        _c(Finger)
+        #endif
         #undef _c
     }
 
@@ -101,6 +105,21 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 namespace Test { namespace {
 
+static Debug& operator<<(Debug& debug, Application::PointerEventSource value) {
+    debug << "PointerEventSource" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::PointerEventSource::value: return debug << "::" #value;
+        _c(Mouse)
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        _c(Touch)
+        #endif
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
 Debug& operator<<(Debug& debug, Application::InputEvent::Modifiers value) {
     return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
         Application::InputEvent::Modifier::Shift,
@@ -117,6 +136,9 @@ Debug& operator<<(Debug& debug, Application::Pointers value) {
         Application::Pointer::MouseRight,
         Application::Pointer::MouseButton4,
         Application::Pointer::MouseButton5,
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        Application::Pointer::Finger,
+        #endif
     });
 }
 
@@ -295,13 +317,34 @@ struct EmscriptenApplicationTest: Platform::Application {
     /* Set to 0 to test the deprecated mouse events instead */
     #if 1
     void pointerPressEvent(PointerEvent& event) override {
-        Debug{} << "pointer press:" << event.pointer() << event.modifiers() << Debug::packed << event.position();
+        Debug{} << "pointer press:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position()
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            /* Just to verify the access works for both cases */
+            << (event.source() == PointerEventSource::Mouse ?
+                event.event<EmscriptenMouseEvent>().timestamp :
+                event.event<EmscriptenTouchEvent>().timestamp)
+            #endif
+            ;
     }
     void pointerReleaseEvent(PointerEvent& event) override {
-        Debug{} << "pointer release:" << event.pointer() << event.modifiers() << Debug::packed << event.position();
+        Debug{} << "pointer release:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position()
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            /* Just to verify the access works for both cases */
+            << (event.source() == PointerEventSource::Mouse ?
+                event.event<EmscriptenMouseEvent>().timestamp :
+                event.event<EmscriptenTouchEvent>().timestamp)
+            #endif
+            ;
     }
     void pointerMoveEvent(PointerMoveEvent& event) override {
-        Debug{} << "pointer move:" << event.pointer() << event.pointers() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
+        Debug{} << "pointer move:" << event.source() << event.pointer() << event.pointers() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition()
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            /* Just to verify the access works for both cases */
+            << (event.source() == PointerEventSource::Mouse ?
+                event.event<EmscriptenMouseEvent>().timestamp :
+                event.event<EmscriptenTouchEvent>().timestamp)
+            #endif
+            ;
     }
     void scrollEvent(ScrollEvent& event) override {
         Debug{} << "scroll:" << event.modifiers() << Debug::packed << event.offset() << Debug::packed << event.position();
