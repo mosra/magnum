@@ -552,6 +552,58 @@ EmscriptenApplication::Pointers buttonsToPointers(const std::uint32_t buttons) {
     return pointers;
 }
 
+template<class T> EmscriptenApplication::InputEvent::Modifiers eventModifiers(const T& event) {
+    EmscriptenApplication::InputEvent::Modifiers modifiers;
+    if(event.ctrlKey)
+        modifiers |= EmscriptenApplication::InputEvent::Modifier::Ctrl;
+    if(event.shiftKey)
+        modifiers |= EmscriptenApplication::InputEvent::Modifier::Shift;
+    if(event.altKey)
+        modifiers |= EmscriptenApplication::InputEvent::Modifier::Alt;
+    if(event.metaKey)
+        modifiers |= EmscriptenApplication::InputEvent::Modifier::Super;
+    return modifiers;
+}
+
+template<class T> Vector2 eventTargetPosition(const T& event) {
+    /* Relies on the target being the canvas, which should be always true for
+       mouse events */
+    return {Float(event.targetX), Float(event.targetY)};
+}
+
+template<class T> Vector2 updatePreviousTouch(T(&previousTouches)[32], const Int id, const Containers::Optional<Vector2>& position) {
+    std::size_t firstFree = ~std::size_t{};
+    for(std::size_t i = 0; i != Containers::arraySize(previousTouches); ++i) {
+        /* Previous position found */
+        if(previousTouches[i].id == id) {
+            /* Update with the current position, return delta to previous */
+            if(position) {
+                const Vector2 relative = *position - previousTouches[i].position;
+                previousTouches[i].position = *position;
+                return relative;
+            /* Clear previous position */
+            } else {
+                previousTouches[i].id = ~Int{};
+                return {};
+            }
+        /* Unused slot, remember in case there won't be any previous position
+           found */
+        } else if(previousTouches[i].id == ~Int{} && firstFree == ~std::size_t{}) {
+            firstFree = i;
+        }
+    }
+
+    /* If we're not resetting the position and there's a place where to put the
+       new one, save. Otherwise don't do anything -- the touch that didn't fit
+       will always report as having no relative position. */
+    if(position && firstFree != ~std::size_t{}) {
+        previousTouches[firstFree].id = id;
+        previousTouches[firstFree].position = *position;
+    }
+
+    return {};
+}
+
 }
 
 void EmscriptenApplication::setupCallbacks(bool resizable) {
@@ -575,55 +627,99 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         emscripten_set_resize_callback(target, this, false, cb);
     }
 
-    emscripten_set_mousedown_callback(_canvasTarget.data(), this, false,
-        ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
+    /* Done this way instead of passing the lambda inline so it can have the
+       #if inside. Because, apparently, emscripten_set_mousedown_callback() is
+       some crazy macro, and I get "warning: embedding a directive within macro
+       arguments has undefined behavior" when doing that. */
+    /** @todo put back once support for Emscripten < 2.0.27 is dropped */
+    const auto mousedown =
+        [](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
+
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            /* If the event timestamp is the same (bit-exact, in fact) as the
+               timestamp of the last touch event, it's a compatibility mouse
+               event. Ignore. On Chrome at least, the mouseup will have the
+               same timestamp and gets ignored as well.
+
+               Touch events are available on older Emscripten as well, but the
+               events don't expose the timestamp field until 2.0.27. */
+            if(event->timestamp == app._lastTouchEventTimestamp)
+                return false;
+            #endif
+
             const Pointer pointer = buttonToPointer(event->button);
             const Pointers pointers = buttonsToPointers(event->buttons);
+            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Vector2 position = eventTargetPosition(*event);
 
             /* If an additional mouse button was pressed, call a move event
                instead */
             if(pointers & ~pointer) {
-                PointerMoveEvent e{*event, pointer, pointers, {}};
+                PointerMoveEvent e{*event, pointer, pointers, modifiers, position, {}};
                 app.pointerMoveEvent(e);
                 return e.isAccepted();
             } else {
-                PointerEvent e{*event, pointer};
+                PointerEvent e{*event, pointer, modifiers, position};
                 app.pointerPressEvent(e);
                 return e.isAccepted();
             }
-        }));
+        };
+    emscripten_set_mousedown_callback(_canvasTarget.data(), this, false, mousedown);
 
-    emscripten_set_mouseup_callback(_canvasTarget.data(), this, false,
-        ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
+    /* Done this way instead of passing the lambda inline so it can have the
+       #if inside. Because, apparently, emscripten_set_mousedown_callback() is
+       some crazy macro, and I get "warning: embedding a directive within macro
+       arguments has undefined behavior" when doing that. */
+    /** @todo put back once support for Emscripten < 2.0.27 is dropped */
+    const auto mouseup =
+        [](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
+
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            /* If the event timestamp is the same (bit-exact, in fact) as the
+               timestamp of the last touch event, it's a compatibility mouse
+               event. Ignore. On Chrome at least, the mouseup will have the
+               same timestamp and gets ignored as well.
+
+               Touch events are available on older Emscripten as well, but the
+               events don't expose the timestamp field until 2.0.27. */
+            if(event->timestamp == app._lastTouchEventTimestamp)
+                return false;
+            #endif
+
             const Pointer pointer = buttonToPointer(event->button);
             const Pointers pointers = buttonsToPointers(event->buttons);
+            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Vector2 position = eventTargetPosition(*event);
 
             /* If some buttons are still left pressed after a release, call a
                move event instead */
             if(pointers) {
-                PointerMoveEvent e{*event, pointer, pointers, {}};
+                PointerMoveEvent e{*event, pointer, pointers, modifiers, position, {}};
                 app.pointerMoveEvent(e);
                 return e.isAccepted();
             } else {
-                PointerEvent e{*event, pointer};
+                PointerEvent e{*event, pointer, modifiers, position};
                 app.pointerReleaseEvent(e);
                 return e.isAccepted();
             }
-        }));
+        };
+    emscripten_set_mouseup_callback(_canvasTarget.data(), this, false, mouseup);
 
     emscripten_set_mousemove_callback(_canvasTarget.data(), this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
-            /* Relies on the target being the canvas, which should be always
-               true for mouse events */
-            Vector2 position{Float(event->targetX), Float(event->targetY)};
-            PointerMoveEvent e{*event, {}, buttonsToPointers(event->buttons),
-                /* Avoid bogus offset at first -- report 0 when the event is
-                   called for the first time. */
-                Math::isNan(app._previousMouseMovePosition).all() ? Vector2{} :
-                position - app._previousMouseMovePosition};
+            const Pointers pointers = buttonsToPointers(event->buttons);
+            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Vector2 position = eventTargetPosition(*event);
+            /* Avoid bogus offset at first -- report 0 when the event is called
+               for the first time. */
+            const Vector2 relativePosition =
+                Math::isNan(app._previousMouseMovePosition).all() ?
+                    Vector2{} : position - app._previousMouseMovePosition;
+
+            PointerMoveEvent e{*event, {}, pointers, modifiers, position, relativePosition};
             app._previousMouseMovePosition = position;
             app.pointerMoveEvent(e);
             return e.isAccepted();
@@ -635,6 +731,147 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             static_cast<EmscriptenApplication*>(userData)->scrollEvent(e);
             return e.isAccepted();
         }));
+
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+    /* Touch events are available on older Emscripten as well, but the events
+       don't expose the timestamp field, which is *essential* for ignoring
+       compatibility mouse events synthesized from touch. Favoring correctness
+       over broad support and thus the touch support is not even available on
+       older versions. */
+    emscripten_set_touchstart_callback(_canvasTarget.data(), this, false,
+        ([](int, const EmscriptenTouchEvent* event, void* userData) -> EM_BOOL {
+            auto& app = *static_cast<EmscriptenApplication*>(userData);
+            /** @todo somehow desktop Chrome doesn't populate these for touch
+                events, is that a browser bug? Emscripten seems to fill them in
+                https://github.com/emscripten-core/emscripten/blob/10cb9d46cdd17e7a96de68137c9649d9a630fbc7/src/library_html5.js#L1930-L1933
+                correctly. */
+            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+
+            bool accepted = false;
+            for(Int i = 0; i != event->numTouches; ++i) {
+                const EmscriptenTouchPoint& touch = event->touches[i];
+                /* Don't report touches that didn't change */
+                if(!touch.isChanged)
+                    continue;
+
+                /* Update primary finger info. If there's no primary finger yet
+                   and this is the first finger pressed, it becomes the primary
+                   finger. If the primary finger is lifted, no other finger
+                   becomes primary until all others are lifted as well. This
+                   was empirically verified by looking at behavior of a mouse
+                   cursor on a multi-touch screen under X11, it's possible that
+                   other systems do it differently. The same logic is used in
+                   Sdl2Application. */
+                bool primary;
+                if(app._primaryFingerId == ~Int{} && event->numTouches == 1) {
+                    primary = true;
+                    app._primaryFingerId = touch.identifier;
+                /* Otherwise, if this is the primary finger, mark it as such */
+                } else if(app._primaryFingerId == touch.identifier) {
+                    primary = true;
+                /* Otherwise this is not the primary finger */
+                } else primary = false;
+
+                const Vector2 position = eventTargetPosition(event->touches[i]);
+                /* Remember position of this identifier for next events */
+                updatePreviousTouch(app._previousTouches, touch.identifier, position);
+
+                PointerEvent e{*event, primary, touch.identifier, modifiers, position};
+                app.pointerPressEvent(e);
+                accepted = accepted || e.isAccepted();
+            }
+
+            return accepted;
+        }));
+
+    emscripten_set_touchend_callback(_canvasTarget.data(), this, false,
+        ([](int, const EmscriptenTouchEvent* event, void* userData) -> EM_BOOL {
+            auto& app = *static_cast<EmscriptenApplication*>(userData);
+            /** @todo somehow desktop Chrome doesn't populate these for touch
+                events, see above */
+            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+
+            /* Remember the touch event timestamp. Chromium (at least) then
+               fires the compatibility mouse press and release event with the
+               same timestamp as the touch end, both after the touch actually
+               ends, and doesn't fire them if the touch becomes a drag. Not
+               sure about other browsers.
+
+               The W3C-recommended way to deal with these is to
+               preventDefault(), i.e. return false from this function. But,
+               while that stops the mouse events from being emitted, it also
+               stops any further propagation of the touch event. I want to be
+               able to control both independently, ffs.
+
+               In order to fire the deprecated MouseEvent from these, the
+               default pointerReleaseEvent() implementation then clears this
+               back to a NaN, thus letting the mouse events through. */
+            app._lastTouchEventTimestamp = event->timestamp;
+
+            bool accepted = false;
+            for(Int i = 0; i != event->numTouches; ++i) {
+                const EmscriptenTouchPoint& touch = event->touches[i];
+                /* Don't report touches that didn't change */
+                if(!touch.isChanged)
+                    continue;
+
+                /* Update primary finger info. If this is the primary finger
+                   being released, mark it as such and reset. */
+                bool primary;
+                if(app._primaryFingerId == touch.identifier) {
+                    primary = true;
+                    app._primaryFingerId = ~Int{};
+                /* Otherwise this is not the primary finger */
+                } else primary = false;
+
+                const Vector2 position = eventTargetPosition(event->touches[i]);
+                /* Free the slot used by this identifier for next events */
+                updatePreviousTouch(app._previousTouches, touch.identifier, {});
+
+                PointerEvent e{*event, primary, touch.identifier, modifiers, position};
+                app.pointerReleaseEvent(e);
+                accepted = accepted || e.isAccepted();
+            }
+
+            return accepted;
+        }));
+
+    emscripten_set_touchmove_callback(_canvasTarget.data(), this, false,
+        ([](int, const EmscriptenTouchEvent* event, void* userData) -> EM_BOOL {
+            auto& app = *static_cast<EmscriptenApplication*>(userData);
+            /** @todo somehow desktop Chrome doesn't populate these for touch
+                events, see above */
+            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+
+            bool accepted = false;
+            for(Int i = 0; i != event->numTouches; ++i) {
+                const EmscriptenTouchPoint& touch = event->touches[i];
+                /* Don't report touches that didn't change */
+                if(!touch.isChanged)
+                    continue;
+
+                /* In this case, it's a primary finger only if it was
+                   registered as such during the last press. If the primary
+                   finger was lifted, no other finger will step into its place
+                   until all others are lifted as well. */
+                const bool primary = app._primaryFingerId == touch.identifier;
+
+                const Vector2 position = eventTargetPosition(event->touches[i]);
+                /* Query position relative to the previous touch of the same
+                   identifier, update it with current */
+                const Vector2 relativePosition = updatePreviousTouch(app._previousTouches, touch.identifier, position);
+
+                PointerMoveEvent e{*event, primary, touch.identifier, modifiers, position, relativePosition};
+                app.pointerMoveEvent(e);
+                accepted = accepted || e.isAccepted();
+            }
+
+            return accepted;
+        }));
+
+    /** @todo touch cancel, maybe reset previous touch moves or something
+        there? */
+    #endif
 
     /* document and window are 'specialEventTargets' in emscripten, matching
        EMSCRIPTEN_EVENT_TARGET_DOCUMENT and EMSCRIPTEN_EVENT_TARGET_WINDOW.
@@ -808,9 +1045,17 @@ void EmscriptenApplication::keyReleaseEvent(KeyEvent&) {}
 
 void EmscriptenApplication::pointerPressEvent(PointerEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Not skipping non-primary events because we're only handling Mouse, which
+       is always primary */
     CORRADE_IGNORE_DEPRECATED_PUSH
-    MouseEvent mouseEvent{event.event()};
-    mousePressEvent(mouseEvent);
+    if(event.source() == PointerEventSource::Mouse) {
+        MouseEvent mouseEvent{event.event<EmscriptenMouseEvent>()};
+        mousePressEvent(mouseEvent);
+    } else {
+        /* Not doing anything, relying on the browser to fire a compatibility
+           mouse event after, which we then don't filter out. See
+           pointerReleaseEvent() below for the next step. */
+    }
     CORRADE_IGNORE_DEPRECATED_POP
     #else
     static_cast<void>(event);
@@ -825,9 +1070,19 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 void EmscriptenApplication::pointerReleaseEvent(PointerEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Not skipping non-primary events because we're only handling Mouse, which
+       is always primary */
     CORRADE_IGNORE_DEPRECATED_PUSH
-    MouseEvent mouseEvent{event.event()};
-    mouseReleaseEvent(mouseEvent);
+    if(event.source() == PointerEventSource::Mouse) {
+        MouseEvent mouseEvent{event.event<EmscriptenMouseEvent>()};
+        mouseReleaseEvent(mouseEvent);
+    } else {
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        /* Clear the recorded timestap of the last touch end event, which then
+           makes the compatibility mouse events go through */
+        _lastTouchEventTimestamp = Constantsd::nan();
+        #endif
+    }
     CORRADE_IGNORE_DEPRECATED_POP
     #else
     static_cast<void>(event);
@@ -842,22 +1097,35 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 void EmscriptenApplication::pointerMoveEvent(PointerMoveEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Not skipping non-primary events because we're only handling Mouse, which
+       is always primary */
     CORRADE_IGNORE_DEPRECATED_PUSH
     /* If the event is due to some button being additionally pressed or one
        button from a larger set being released, delegate to a press/release
        event instead */
     if(event.pointer()) {
         /* Emscripten reports either a move or a press/release, so there
-           shouldn't be any move in this case */
-        CORRADE_INTERNAL_ASSERT(event.relativePosition() == Vector2{});
-        MouseEvent mouseEvent{event.event()};
+           shouldn't be any move in this case. Also, only mouse events should
+           have a non-empty pointer(). */
+        CORRADE_INTERNAL_ASSERT(event.relativePosition() == Vector2{} && event.source() == PointerEventSource::Mouse);
+        MouseEvent mouseEvent{event.event<EmscriptenMouseEvent>()};
         event.pointers() >= *event.pointer() ?
             mousePressEvent(mouseEvent) : mouseReleaseEvent(mouseEvent);
     } else {
-        /* The positions are reported in integers in the first place, no need
-           to round anything */
-        MouseMoveEvent mouseEvent{event.event(), Vector2i{event.relativePosition()}};
-        mouseMoveEvent(mouseEvent);
+        if(event.source() == PointerEventSource::Mouse) {
+            MouseMoveEvent mouseEvent{event.event<EmscriptenMouseEvent>(),
+                /* The positions are reported in integers in the first place,
+                   no need to round anything */
+                Vector2i{event.relativePosition()}};
+            mouseMoveEvent(mouseEvent);
+        } else {
+            /* Not doing anything here -- touch drag events for some reason
+               never had compatibility mouse events fired, resulting in bug
+               reports like https://github.com/mosra/magnum/issues/532 . So
+               by continuing to do nothing, preserve the backwards
+               compatibility. People who want touch drag to work should migrate
+               to the pointer events. */
+        }
     }
     CORRADE_IGNORE_DEPRECATED_POP
     #else
@@ -925,33 +1193,6 @@ void EmscriptenApplication::exit(int) {
     _flags |= Flag::ExitRequested;
 }
 
-namespace {
-
-template<class T> EmscriptenApplication::InputEvent::Modifiers eventModifiers(const T& event) {
-    EmscriptenApplication::InputEvent::Modifiers modifiers;
-    if(event.ctrlKey)
-        modifiers |= EmscriptenApplication::InputEvent::Modifier::Ctrl;
-    if(event.shiftKey)
-        modifiers |= EmscriptenApplication::InputEvent::Modifier::Shift;
-    if(event.altKey)
-        modifiers |= EmscriptenApplication::InputEvent::Modifier::Alt;
-    if(event.metaKey)
-        modifiers |= EmscriptenApplication::InputEvent::Modifier::Super;
-    return modifiers;
-}
-
-}
-
-Vector2 EmscriptenApplication::PointerEvent::position() const {
-    /* Relies on the target being the canvas, which should be always true for
-       mouse events */
-    return {Float(_event.targetX), Float(_event.targetY)};
-}
-
-EmscriptenApplication::PointerEvent::Modifiers EmscriptenApplication::PointerEvent::modifiers() const {
-    return eventModifiers(_event);
-}
-
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
 EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::button() const {
@@ -969,19 +1210,7 @@ EmscriptenApplication::MouseEvent::Modifiers EmscriptenApplication::MouseEvent::
     return eventModifiers(_event);
 }
 CORRADE_IGNORE_DEPRECATED_POP
-#endif
 
-Vector2 EmscriptenApplication::PointerMoveEvent::position() const {
-    /* Relies on the target being the canvas, which should be always true for
-       mouse events */
-    return {Float(_event.targetX), Float(_event.targetY)};
-}
-
-EmscriptenApplication::PointerMoveEvent::Modifiers EmscriptenApplication::PointerMoveEvent::modifiers() const {
-    return eventModifiers(_event);
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
 EmscriptenApplication::MouseMoveEvent::Buttons EmscriptenApplication::MouseMoveEvent::buttons() const {
     return EmscriptenApplication::MouseMoveEvent::Button(_event.buttons);

@@ -306,7 +306,8 @@ pressed fingers are non-primary. Note that there can be up to one primary
 pointer for each pointer event source, e.g. a finger and a mouse press may both
 be marked as primary. On the other hand, in a multi-touch scenario, if the
 first (and thus primary) finger is lifted, no other finger becomes primary
-until all others are lifted as well.
+until all others are lifted as well. The same logic is implemented in
+@ref EmscriptenApplication.
 
 If gesture recognition is desirable, @ref PointerEvent::id() /
 @ref PointerMoveEvent::id() contains a pointer ID that's unique among all

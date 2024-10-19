@@ -71,6 +71,7 @@
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct EmscriptenKeyboardEvent;
 struct EmscriptenMouseEvent;
+struct EmscriptenTouchEvent;
 struct EmscriptenWheelEvent;
 struct EmscriptenUiEvent;
 
@@ -183,6 +184,39 @@ MAGNUM_EMSCRIPTENAPPLICATION_MAIN(MyApplication)
 If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
+
+@section Platform-EmscriptenApplication-touch Touch input
+
+The application recognizes touch input and reports it as @ref Pointer::Finger
+and @ref PointerEventSource::Touch. Because both mouse and touch events are
+exposed through a unified @ref PointerEvent / @ref PointerMoveEvent interface,
+there's no need for compatibility mouse events synthesized from touch events,
+and thus they get ignored when fired right after the corresponding touch.
+Emscripten so far [doesn't support pointer events](https://github.com/emscripten-core/emscripten/issues/7278),
+so pen input isn't implemented yet.
+
+In case of a multi-touch scenario, @ref PointerEvent::isPrimary() /
+@ref PointerMoveEvent::isPrimary() can be used to distinguish the primary touch
+from secondary. For example, if an application doesn't need to recognize
+gestures like pinch to zoom or rotate, it can ignore all non-primary pointer
+events. @ref PointerEventSource::Mouse events are always marked as primary,
+for touch input the first pressed finger is marked as primary and all following
+pressed fingers are non-primary. Note that there can be up to one primary
+pointer for each pointer event source. For example, a finger and a mouse press
+may both be marked as primary. On the other hand, in a multi-touch scenario, if
+the first (and thus primary) finger is lifted, no other finger becomes primary
+until all others are lifted as well. This is consistent with the logic in
+@ref Sdl2Application.
+
+If gesture recognition is desirable, @ref PointerEvent::id() /
+@ref PointerMoveEvent::id() contains a pointer ID that's unique among all
+pointer event sources, which can be used to track movements of secondary,
+tertiary and further touch points. The ID allocation is platform-specific and
+you can't rely on it to be contiguous or in any bounded range --- for example,
+each new touch may generate a new ID that's only used until given finger is
+lifted, and then never again, or the IDs may get heavily reused, being unique
+only for the period given finger is pressed. For @ref PointerEventSource::Mouse
+the ID is a constant, as there's always just a single mouse cursor.
 
 @section Platform-EmscriptenApplication-browser Browser-specific behavior
 
@@ -309,6 +343,7 @@ class EmscriptenApplication {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
 
@@ -829,15 +864,17 @@ class EmscriptenApplication {
          * @brief Pointer press event
          * @m_since_latest
          *
-         * Called when a mouse is pressed. Note that if at least one mouse
-         * button is already pressed and another button gets pressed in
-         * addition, @ref pointerMoveEvent() with the new combination is
-         * called, not this function.
+         * Called when either a mouse or a finger is pressed. Note that if at
+         * least one mouse button is already pressed and another button gets
+         * pressed in addition, @ref pointerMoveEvent() with the new
+         * combination is called, not this function.
          *
-         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
-         * implementation delegates to @ref mousePressEvent(). On builds with
-         * deprecated functionality disabled, default implementation does
-         * nothing.
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, if the pointer
+         * is a mouse, default implementation delegates to
+         * @ref mousePressEvent(). Touch events rely on browser's implicit
+         * translation to compatibility mouse events in this case, which is
+         * otherwise disabled. On builds with deprecated functionality
+         * disabled, default implementation does nothing.
          */
         virtual void pointerPressEvent(PointerEvent& event);
 
@@ -857,14 +894,17 @@ class EmscriptenApplication {
          * @brief Pointer release event
          * @m_since_latest
          *
-         * Called when a mouse is released. Note that if multiple mouse buttons
-         * are pressed and one of these is released, @ref pointerMoveEvent()
-         * with the new combination is called, not this function.
+         * Called when either a mouse or a finger is released. Note that if
+         * multiple mouse buttons are pressed and one of these is released,
+         * @ref pointerMoveEvent() with the new combination is called, not this
+         * function.
          *
-         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
-         * implementation delegates to @ref mouseReleaseEvent(). On builds with
-         * deprecated functionality disabled, default implementation does
-         * nothing.
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, if the pointer
+         * is a mouse, default implementation delegates to
+         * @ref mouseReleaseEvent(). Touch events rely on browser's implicit
+         * translation to compatibility mouse events in this case, which is
+         * otherwise disabled. On builds with deprecated functionality
+         * disabled, default implementation does nothing.
          */
         virtual void pointerReleaseEvent(PointerEvent& event);
 
@@ -888,13 +928,15 @@ class EmscriptenApplication {
          * changes its properties. Gets called also if the set of pressed mouse
          * buttons changes.
          *
-         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, default
-         * implementation delegates to @ref mouseMoveEvent(), or if
-         * @ref PointerMoveEvent::pointer() is not
+         * On builds with @ref MAGNUM_BUILD_DEPRECATED enabled, if the pointer
+         * is a mouse, default implementation delegates to
+         * @ref mouseMoveEvent(), or if @ref PointerMoveEvent::pointer() is not
          * @relativeref{Corrade,Containers::NullOpt}, to either
-         * @ref mousePressEvent() or @ref mouseReleaseEvent(). On builds with
-         * deprecated functionality disabled, default implementation does
-         * nothing.
+         * @ref mousePressEvent() or @ref mouseReleaseEvent(). Unlike touch
+         * press and release, touch drag events weren't translated to
+         * compatibility mouse events before, so they're not propagated now
+         * either. On builds with deprecated functionality disabled, default
+         * implementation does nothing.
          */
         virtual void pointerMoveEvent(PointerMoveEvent& event);
 
@@ -1020,6 +1062,21 @@ class EmscriptenApplication {
         Vector2 _previousMouseMovePosition{Constants::nan()};
         Vector2 _lastKnownDevicePixelRatio;
 
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        /* We have no way to query previous touch positions, so we have to
+           maintain them like this. The id is ~Int{} if given slot is unused,
+           32 is what EmscriptenTouchEvent uses for the touch list. */
+        struct {
+            Int id = ~Int{};
+            Vector2 position;
+        } _previousTouches[32];
+        Int _primaryFingerId = ~Int{};
+        /* Timestamp of the last touch event, to detect and ignore
+           compatibility mouse events. There's no better way either, see the
+           source for details. */
+        Double _lastTouchEventTimestamp = Constantsd::nan();
+        #endif
+
         Flags _flags;
         Cursor _cursor = Cursor::Arrow;
 
@@ -1043,6 +1100,31 @@ class EmscriptenApplication {
 };
 
 /**
+@brief Pointer event source
+@m_since_latest
+
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+*/
+enum class EmscriptenApplication::PointerEventSource: UnsignedByte {
+    /**
+     * The event is coming from a mouse
+     * @see @ref Pointer::MouseLeft, @ref Pointer::MouseMiddle,
+     *      @ref Pointer::MouseRight, @ref Pointer::MouseButton4,
+     *      @ref Pointer::MouseButton5
+     */
+    Mouse,
+
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027 || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * The event is coming from a touch contact
+     * @note Available since Emscripten 2.0.27.
+     * @see @ref Pointer::Finger
+     */
+    Touch
+    #endif
+};
+
+/**
 @brief Pointer type
 @m_since_latest
 
@@ -1050,20 +1132,47 @@ class EmscriptenApplication {
     @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers()
 */
 enum class EmscriptenApplication::Pointer: UnsignedByte {
-    /** Left mouse button */
+    /**
+     * Left mouse button
+     * @see @ref PointerEventSource::Mouse
+     */
     MouseLeft = 1 << 0,
 
-    /** Middle mouse button */
+    /**
+     * Middle mouse button
+     * @see @ref PointerEventSource::Mouse
+     */
     MouseMiddle = 1 << 1,
 
-    /** Right mouse button */
+    /**
+     * Right mouse button
+     * @see @ref PointerEventSource::Mouse
+     */
     MouseRight = 1 << 2,
 
-    /** Fourth mouse button, such as wheel left */
+    /**
+     * Fourth mouse button, such as wheel left
+     * @see @ref PointerEventSource::Mouse
+     */
     MouseButton4 = 1 << 3,
 
-    /** Fourth mouse button, such as wheel right */
+    /**
+     * Fourth mouse button, such as wheel right
+     * @see @ref PointerEventSource::Mouse
+     */
     MouseButton5 = 1 << 4,
+
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027 || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * Finger
+     * @note Available since Emscripten 2.0.27.
+     * @see @ref PointerEventSource::Touch
+     */
+    Finger = 1 << 5,
+    #endif
+
+    /** @todo pen support, once there's any progress in
+        https://github.com/emscripten-core/emscripten/issues/7278 */
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Pointers)
@@ -1706,6 +1815,9 @@ class EmscriptenApplication::PointerEvent: public InputEvent {
         /** @brief Moving is not allowed */
         PointerEvent& operator=(PointerEvent&&) = delete;
 
+        /** @brief Pointer event source */
+        PointerEventSource source() { return _source; }
+
         /**
          * @brief Pointer type that was pressed or released
          *
@@ -1717,26 +1829,82 @@ class EmscriptenApplication::PointerEvent: public InputEvent {
         Pointer pointer() const { return _pointer; }
 
         /**
+         * @brief Whether the pointer is primary
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-EmscriptenApplication-touch for more
+         * information.
+         */
+        bool isPrimary() const { return _primary; }
+
+        /**
+         * @brief Pointer ID
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-EmscriptenApplication-touch for more
+         * information.
+         */
+        /* Long is for consistency with Sdl2Application, Emscripten uses just
+           an Int */
+        Long id() const { return _id; }
+
+        /**
          * @brief Position
          *
          * The position is always reported in whole pixels.
          */
-        Vector2 position() const;
+        Vector2 position() const { return _position; }
 
         /** @brief Modifiers */
-        Modifiers modifiers() const;
+        Modifiers modifiers() const { return _modifiers; }
 
-        /** @brief Underlying Emscripten event */
-        const EmscriptenMouseEvent& event() const { return _event; }
+        /**
+         * @brief Underlying Emscripten event
+         *
+         * The @p T can only be `EmscriptenMouseEvent` for
+         * @ref PointerEventSource::Mouse and `EmscriptenTouchEvent` for
+         * @ref PointerEventSource::Touch. Note that in case of a multi-touch
+         * event, all emitted events point to the same `EmscriptenTouchEvent`
+         * instance. The concrete `EmscriptenTouchPoint` corresponding to given
+         * event is the one that has the @cpp touches[i].identifier @ce
+         * matching @ref id().
+         */
+        template<class T> const T& event() const;
 
     private:
         friend EmscriptenApplication;
 
-        explicit PointerEvent(const EmscriptenMouseEvent& event, Pointer pointer): _event(event), _pointer{pointer} {}
+        explicit PointerEvent(const EmscriptenMouseEvent& event, Pointer pointer, Modifiers modifiers, const Vector2& position): _event{&event}, _source{PointerEventSource::Mouse}, _primary{true}, _pointer{pointer}, _modifiers{modifiers}, _id{~Int{}}, _position{position} {}
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        explicit PointerEvent(const EmscriptenTouchEvent& event, bool primary, Int id, Modifiers modifiers, const Vector2& position): _event{&event}, _source{PointerEventSource::Touch}, _primary{primary}, _pointer{Pointer::Finger}, _modifiers{modifiers}, _id{id}, _position{position} {}
+        #endif
 
-        const EmscriptenMouseEvent& _event;
+        const void* _event;
+        const PointerEventSource _source;
+        const bool _primary;
         const Pointer _pointer;
+        const Modifiers _modifiers;
+        const Int _id;
+        const Vector2 _position;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<> inline const EmscriptenMouseEvent& EmscriptenApplication::PointerEvent::event<EmscriptenMouseEvent>() const {
+    CORRADE_ASSERT(_source == PointerEventSource::Mouse,
+        "Platform::EmscriptenApplication::PointerEvent::event(): not a mouse event",
+        *static_cast<const EmscriptenMouseEvent*>(_event));
+    return *static_cast<const EmscriptenMouseEvent*>(_event);
+}
+
+#if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+template<> inline const EmscriptenTouchEvent& EmscriptenApplication::PointerEvent::event<EmscriptenTouchEvent>() const {
+    CORRADE_ASSERT(_source == PointerEventSource::Touch,
+        "Platform::EmscriptenApplication::PointerEvent::event(): not a touch event",
+        *static_cast<const EmscriptenTouchEvent*>(_event));
+    return *static_cast<const EmscriptenTouchEvent*>(_event);
+}
+#endif
+#endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
@@ -1804,6 +1972,15 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
         PointerMoveEvent& operator=(PointerMoveEvent&&) = delete;
 
         /**
+         * @brief Pointer event source
+         *
+         * Can be used to distinguish which source the event is coming from in
+         * case it's a movement with both @ref pointer() and @ref pointers()
+         * being empty.
+         */
+        PointerEventSource source() { return _source; }
+
+        /**
          * @brief Pointer type that was added or removed from the set of pressed pointers
          *
          * Is non-empty only in case a mouse button was pressed in addition to
@@ -1824,11 +2001,31 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
         Pointers pointers() const { return _pointers; }
 
         /**
+         * @brief Whether the pointer is primary
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-EmscriptenApplication-touch for more
+         * information.
+         */
+        bool isPrimary() const { return _primary; }
+
+        /**
+         * @brief Pointer ID
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-EmscriptenApplication-touch for more
+         * information.
+         */
+        /* Long is for consistency with Sdl2Application, Emscripten uses just
+           an Int */
+        Long id() const { return _id; }
+
+        /**
          * @brief Position
          *
          * The position is always reported in whole pixels.
          */
-        Vector2 position() const;
+        Vector2 position() const { return _position; }
 
         /**
          * @brief Position relative to the previous touch event
@@ -1841,21 +2038,57 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
         Vector2 relativePosition() const { return _relativePosition; }
 
         /** @brief Modifiers */
-        Modifiers modifiers() const;
+        Modifiers modifiers() const { return _modifiers; }
 
-        /** @brief Underlying Emscripten event */
-        const EmscriptenMouseEvent& event() const { return _event; }
+        /**
+         * @brief Underlying Emscripten event
+         *
+         * The @p T can only be `EmscriptenMouseEvent` for
+         * @ref PointerEventSource::Mouse and `EmscriptenTouchEvent` for
+         * @ref PointerEventSource::Touch. Note that in case of a multi-touch
+         * event, all emitted events point to the same `EmscriptenTouchEvent`
+         * instance. The concrete `EmscriptenTouchPoint` corresponding to given
+         * event is the one that has the @cpp touches[i].identifier @ce
+         * matching @ref id().
+         */
+        template<class T> const T& event() const;
 
     private:
         friend EmscriptenApplication;
 
-        explicit PointerMoveEvent(const EmscriptenMouseEvent& event, Containers::Optional<Pointer> pointer, Pointers pointers, const Vector2& relativePosition): _event(event), _pointer{pointer}, _pointers{pointers}, _relativePosition{relativePosition} {}
+        explicit PointerMoveEvent(const EmscriptenMouseEvent& event, Containers::Optional<Pointer> pointer, Pointers pointers, Modifiers modifiers, const Vector2& position, const Vector2& relativePosition): _event{&event}, _source{PointerEventSource::Mouse}, _primary{true}, _pointer{pointer}, _pointers{pointers}, _modifiers{modifiers}, _id{~Int{}}, _position{position}, _relativePosition{relativePosition} {}
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        explicit PointerMoveEvent(const EmscriptenTouchEvent& event, bool primary, Int id, Modifiers modifiers, const Vector2& position, const Vector2& relativePosition): _event{&event}, _source{PointerEventSource::Touch}, _primary{primary}, _pointer{}, _pointers{Pointer::Finger}, _modifiers{modifiers}, _id{id}, _position{position}, _relativePosition{relativePosition} {}
+        #endif
 
-        const EmscriptenMouseEvent& _event;
+        const void* _event;
+        const PointerEventSource _source;
+        const bool _primary;
         const Containers::Optional<Pointer> _pointer;
         const Pointers _pointers;
+        const Modifiers _modifiers;
+        const Int _id;
+        const Vector2 _position;
         const Vector2 _relativePosition;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<> inline const EmscriptenMouseEvent& EmscriptenApplication::PointerMoveEvent::event<EmscriptenMouseEvent>() const {
+    CORRADE_ASSERT(_source == PointerEventSource::Mouse,
+        "Platform::EmscriptenApplication::PointerEvent::event(): not a mouse event",
+        *static_cast<const EmscriptenMouseEvent*>(_event));
+    return *static_cast<const EmscriptenMouseEvent*>(_event);
+}
+
+#if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+template<> inline const EmscriptenTouchEvent& EmscriptenApplication::PointerMoveEvent::event<EmscriptenTouchEvent>() const {
+    CORRADE_ASSERT(_source == PointerEventSource::Touch,
+        "Platform::EmscriptenApplication::PointerEvent::event(): not a touch event",
+        *static_cast<const EmscriptenTouchEvent*>(_event));
+    return *static_cast<const EmscriptenTouchEvent*>(_event);
+}
+#endif
+#endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
