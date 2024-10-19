@@ -9,9 +9,7 @@ cd corrade
 mkdir build-emscripten && cd build-emscripten
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE="../../toolchains/generic/Emscripten-wasm.cmake" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -O1" \
-    -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCORRADE_WITH_INTERCONNECT=OFF \
     -G Ninja
@@ -24,9 +22,7 @@ cd ..
 mkdir build-emscripten && cd build-emscripten
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten-wasm.cmake" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -O1" \
-    -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
     -DMAGNUM_WITH_AUDIO=ON \
