@@ -6,6 +6,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022, 2023, 2024
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2021 nodoteve <nodoteve@yandex.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -160,6 +161,37 @@ The application by default redirects @ref Corrade::Utility::Debug "Debug",
 output to Android log buffer with tag `"magnum"`, which can be then accessed
 through `logcat` utility. See also @ref Corrade::Utility::AndroidLogStreamBuffer
 for more information.
+
+@section Platform-AndroidApplication-touch Touch input
+
+The application recognizes touch and pen input and reports it as
+@ref Pointer::Finger, @ref Pointer::Pen, @ref Pointer::Eraser with
+@ref PointerEventSource::Touch and @ref PointerEventSource::Pen.
+
+In case of a multi-touch scenario, @ref PointerEvent::isPrimary() /
+@ref PointerMoveEvent::isPrimary() can be used to distinguish the primary touch
+from secondary. For example, if an application doesn't need to recognize
+gestures like pinch to zoom or rotate, it can ignore all non-primary pointer
+events. @ref PointerEventSource::Mouse and @ref PointerEventSource::Pen events
+are always marked as primary, for touch input the first pressed finger is
+marked as primary and all following pressed fingers are non-primary. Note that
+there can be up to one primary pointer for each pointer event source, e.g. a
+finger, pen and a mouse press may all be marked as primary. On the other hand,
+in a multi-touch scenario, if the first (and thus primary) finger is lifted, no
+other finger becomes primary until all others are lifted as well. This is
+consistent with the logic in @ref Sdl2Application and @ref EmscriptenApplication
+but may not necessarily match what other Android applications do.
+
+If gesture recognition is desirable, @ref PointerEvent::id() /
+@ref PointerMoveEvent::id() contains a pointer ID that's unique among all
+pointer event sources, which can be used to track movements of secondary,
+tertiary and further touch points. The ID allocation isn't defined and you
+can't rely on it to be contiguous or in any bounded range --- for example,
+each new touch may generate a new ID that's only used until given finger is
+lifted, and then never again, or the IDs may get heavily reused, being unique
+only for the period given finger is pressed. For @ref PointerEventSource::Mouse
+and @ref PointerEventSource::Pen  the ID is a constant, as there's always just
+a single mouse cursor or a pen stylus.
 */
 class AndroidApplication {
     public:
@@ -179,6 +211,7 @@ class AndroidApplication {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
 
@@ -518,8 +551,22 @@ class AndroidApplication {
         EGLSurface _surface;
         EGLContext _glContext;
 
-        Vector2 _previousPointerPosition{Constants::nan()};
-        /* Contains just the Mouse* values */
+        /* We have no way to query previous pointer positions, so we have to
+           maintain them like this. For pointers capable of hover (mouse, pen)
+           the _previousHoverPointerPosition is used, NaN signalling that the
+           previous position is unknown. */
+        Vector2 _previousHoverPointerPosition{Constants::nan()};
+        /* For touches the _previousTouches array is used. The id is ~Int{} if
+           given slot is unused, 32 "should be enough" and is consistent with
+           what EmscriptenApplication does here. */
+        struct {
+            Int id = ~Int{};
+            Vector2 position;
+        } _previousTouches[32];
+        Int _primaryFingerId = ~Int{};
+
+        /* In order to know which mouse button was pressed / released in
+           current event. Contains just the Mouse* values. */
         Pointers _previousPressedButtons;
 
         /* Has to be in an Optional because it gets explicitly destroyed before
@@ -528,6 +575,43 @@ class AndroidApplication {
         Containers::Pointer<LogOutput> _logOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+};
+
+/**
+@brief Pointer event source
+@m_since_latest
+
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+*/
+enum class AndroidApplication::PointerEventSource: UnsignedByte {
+    /**
+     * The event source is unknown. Corresponds to
+     * `AMOTION_EVENT_TOOL_TYPE_UNKNOWN` and other types not listed below.
+     * @see @ref Pointer::Unknown
+     */
+    Unknown,
+
+    /**
+     * The event is coming from a mouse. Corresponds to
+     * `AMOTION_EVENT_TOOL_TYPE_MOUSE`.
+     * @see @ref Pointer::MouseLeft, @ref Pointer::MouseMiddle,
+     *      @ref Pointer::MouseRight
+     */
+    Mouse,
+
+    /**
+     * The event is coming from a touch contact, Corresponds to
+     * `AMOTION_EVENT_TOOL_TYPE_FINGER`.
+     * @see @ref Pointer::Finger
+     */
+    Touch,
+
+    /**
+     * The event is coming from a pen stylus. Corresponds to
+     * `AMOTION_EVENT_TOOL_TYPE_STYLUS` and `AMOTION_EVENT_TOOL_TYPE_ERASER`.
+     * @see @ref Pointer::Pen, @ref Pointer::Eraser
+     */
+    Pen
 };
 
 /**
@@ -541,24 +625,28 @@ enum class AndroidApplication::Pointer: UnsignedByte {
     /**
      * Unknown. Corresponds to `AMOTION_EVENT_TOOL_TYPE_UNKNOWN` and other
      * types not listed below.
+     * @see @ref PointerEventSource::Unknown
      */
     Unknown = 1 << 0,
 
     /**
      * Left mouse button. Corresponds to `AMOTION_EVENT_TOOL_TYPE_MOUSE` and
      * `AMOTION_EVENT_BUTTON_PRIMARY`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseLeft = 1 << 1,
 
     /**
      * Middle mouse button. Corresponds to `AMOTION_EVENT_TOOL_TYPE_MOUSE` and
      * `AMOTION_EVENT_BUTTON_SECONDARY`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseMiddle = 1 << 2,
 
     /**
      * Right mouse button. Corresponds to `AMOTION_EVENT_TOOL_TYPE_MOUSE` and
      * `AMOTION_EVENT_BUTTON_TERTIARY`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseRight = 1 << 3,
 
@@ -566,14 +654,20 @@ enum class AndroidApplication::Pointer: UnsignedByte {
         possible to verify they match MouseButton4 / MouseButton5 in
         GlfwApplication and Sdl2Application */
 
-    /** Finger. Corresponds to `AMOTION_EVENT_TOOL_TYPE_FINGER`. */
+    /**
+     * Finger. Corresponds to `AMOTION_EVENT_TOOL_TYPE_FINGER`.
+     * @see @ref PointerEventSource::Touch
+     */
     Finger = 1 << 4,
 
     /** @todo There's AMOTION_EVENT_TOOL_TYPE_PALM, but no corresponding
         constant on the Java MotionEvent class, and all links to it broken.
         Accidental omission? Some scrapped feature with leftover traces? */
 
-    /** Pen. Corresponds to `AMOTION_EVENT_TOOL_TYPE_STYLUS`. */
+    /**
+     * Pen. Corresponds to `AMOTION_EVENT_TOOL_TYPE_STYLUS`.
+     * @see @ref PointerEventSource::Pen
+     */
     Pen = 1 << 5,
 
     /** @todo There's AMOTION_EVENT_BUTTON_STYLUS_PRIMARY and
@@ -581,7 +675,10 @@ enum class AndroidApplication::Pointer: UnsignedByte {
         exist for EmscriptenApplication / Sdl3Application; implement chorded
         behavior for those like w/ mouse buttons */
 
-    /** Eraser. Corresponds to `AMOTION_EVENT_TOOL_TYPE_ERASER`. */
+    /**
+     * Eraser. Corresponds to `AMOTION_EVENT_TOOL_TYPE_ERASER`.
+     * @see @ref PointerEventSource::Pen
+     */
     Eraser = 1 << 6
 };
 
@@ -902,8 +999,31 @@ class AndroidApplication::PointerEvent: public InputEvent {
         /** @brief Moving is not allowed */
         PointerEvent& operator=(PointerEvent&&) = delete;
 
+        /** @brief Pointer event source */
+        PointerEventSource source() const { return _source; }
+
         /** @brief Pointer type that was pressed or released */
         Pointer pointer() const { return _pointer; }
+
+        /**
+         * @brief Whether the pointer is primary
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-AndroidApplication-touch for more
+         * information.
+         */
+        bool isPrimary() const { return _primary; }
+
+        /**
+         * @brief Pointer ID
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-AndroidApplication-touch for more
+         * information.
+         */
+        /* Long is for consistency with Sdl2Application, Android uses just an
+           Int */
+        Long id() const { return _id; }
 
         /**
          * @brief Position
@@ -913,16 +1033,20 @@ class AndroidApplication::PointerEvent: public InputEvent {
          * pixel.
          */
         Vector2 position() const {
-            return {AMotionEvent_getX(_event, 0),
-                    AMotionEvent_getY(_event, 0)};
+            return {AMotionEvent_getX(_event, _i),
+                    AMotionEvent_getY(_event, _i)};
         }
 
     private:
         friend AndroidApplication;
 
-        explicit PointerEvent(AInputEvent* event, Pointer pointer): InputEvent(event), _pointer{pointer} {}
+        explicit PointerEvent(AInputEvent* event, UnsignedByte i, PointerEventSource source, Pointer pointer, bool primary, Int id): InputEvent(event), _source{source}, _pointer{pointer}, _primary{primary}, _i{i}, _id{id} {}
 
+        const PointerEventSource _source;
         const Pointer _pointer;
+        const bool _primary;
+        const UnsignedByte _i; /* Pointer index, not ID */
+        const Int _id;
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -997,6 +1121,15 @@ class AndroidApplication::PointerMoveEvent: public InputEvent {
         PointerMoveEvent& operator=(PointerMoveEvent&&) = delete;
 
         /**
+         * @brief Pointer event source
+         *
+         * Can be used to distinguish which source the event is coming from in
+         * case it's a movement with both @ref pointer() and @ref pointers()
+         * being empty.
+         */
+        PointerEventSource source() const { return _source; }
+
+        /**
          * @brief Pointer type that was added or removed from the set of pressed pointers
          *
          * Is non-empty only in case a mouse button was pressed in addition to
@@ -1017,6 +1150,26 @@ class AndroidApplication::PointerMoveEvent: public InputEvent {
         Pointers pointers() const { return _pointers; }
 
         /**
+         * @brief Whether the pointer is primary
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-AndroidApplication-touch for more
+         * information.
+         */
+        bool isPrimary() const { return _primary; }
+
+        /**
+         * @brief Pointer ID
+         *
+         * Useful to distinguish among multiple pointers in a multi-touch
+         * scenario. See @ref Platform-AndroidApplication-touch for more
+         * information.
+         */
+        /* Long is for consistency with Sdl2Application, Android uses just an
+           Int */
+        Long id() const { return _id; }
+
+        /**
          * @brief Position
          *
          * May return fractional values if the touch hardware has sub-pixel
@@ -1024,8 +1177,8 @@ class AndroidApplication::PointerMoveEvent: public InputEvent {
          * pixel.
          */
         Vector2 position() const {
-            return {AMotionEvent_getX(_event, 0),
-                    AMotionEvent_getY(_event, 0)};
+            return {AMotionEvent_getX(_event, _i),
+                    AMotionEvent_getY(_event, _i)};
         }
 
         /**
@@ -1042,10 +1195,14 @@ class AndroidApplication::PointerMoveEvent: public InputEvent {
     private:
         friend AndroidApplication;
 
-        explicit PointerMoveEvent(AInputEvent* event, Containers::Optional<Pointer> pointer, Pointers pointers, const Vector2& relativePosition): InputEvent{event}, _pointer{pointer}, _pointers{pointers}, _relativePosition{relativePosition} {}
+        explicit PointerMoveEvent(AInputEvent* event, UnsignedByte i, PointerEventSource source, Containers::Optional<Pointer> pointer, Pointers pointers, bool primary, Int id, const Vector2& relativePosition): InputEvent{event}, _source{source}, _pointer{pointer}, _pointers{pointers}, _primary{primary}, _i{i}, _id{id}, _relativePosition{relativePosition} {}
 
+        const PointerEventSource _source;
         const Containers::Optional<Pointer> _pointer;
         const Pointers _pointers;
+        const bool _primary;
+        const UnsignedByte _i; /* Pointer index, not ID */
+        const Int _id;
         const Vector2 _relativePosition;
 };
 

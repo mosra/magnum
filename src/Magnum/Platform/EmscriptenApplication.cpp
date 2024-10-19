@@ -761,7 +761,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
                    was empirically verified by looking at behavior of a mouse
                    cursor on a multi-touch screen under X11, it's possible that
                    other systems do it differently. The same logic is used in
-                   Sdl2Application. */
+                   Sdl2Application and AndroidApplication. */
                 bool primary;
                 if(app._primaryFingerId == ~Int{} && event->numTouches == 1) {
                     primary = true;
