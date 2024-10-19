@@ -202,6 +202,12 @@ template<class Application> class BasicScreen:
         #endif
 
         /**
+         * @brief Pointer event source
+         * @m_since_latest
+         */
+        typedef typename BasicScreenedApplication<Application>::PointerEventSource PointerEventSource;
+
+        /**
          * @brief Pointer type
          * @m_since_latest
          */

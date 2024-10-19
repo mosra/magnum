@@ -190,6 +190,7 @@ class GlfwApplication {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
 
@@ -938,6 +939,23 @@ class GlfwApplication {
 };
 
 /**
+@brief Pointer event source
+@m_since_latest
+
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+*/
+enum class GlfwApplication::PointerEventSource: UnsignedByte {
+    /**
+     * The event is coming from a mouse
+     * @see @ref Pointer::MouseLeft, @ref Pointer::MouseMiddle,
+     *      @ref Pointer::MouseRight, @ref Pointer::MouseButton4,
+     *      @ref Pointer::MouseButton5, @ref Pointer::MouseButton6,
+     *      @ref Pointer::MouseButton7, @ref Pointer::MouseButton8
+     */
+    Mouse
+};
+
+/**
 @brief Pointer type
 @m_since_latest
 
@@ -948,41 +966,61 @@ enum class GlfwApplication::Pointer: UnsignedByte {
     /**
      * Left mouse button. Corresponds to `GLFW_MOUSE_BUTTON_LEFT` or
      * `GLFW_MOUSE_BUTTON_1`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseLeft = 1 << 0,
 
     /**
      * Middle mouse button. Corresponds to `GLFW_MOUSE_BUTTON_MIDDLE` or
      * `GLFW_MOUSE_BUTTON_2`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseMiddle = 1 << 1,
 
     /**
      * Right mouse button. Corresponds to `GLFW_MOUSE_BUTTON_RIGHT` or
      * `GLFW_MOUSE_BUTTON_3`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseRight = 1 << 2,
 
     /**
      * Fourth mouse button, such as wheel left. Corresponds to
      * `GLFW_MOUSE_BUTTON_4`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseButton4 = 1 << 3,
 
     /**
      * Fifth mouse button, such as wheel right. Corresponds to
      * `GLFW_MOUSE_BUTTON_5`.
+     * @see @ref PointerEventSource::Mouse
      */
     MouseButton5 = 1 << 4,
 
-    /** Sixth mouse button. Corresponds to `GLFW_MOUSE_BUTTON_6`. */
+    /**
+     * Sixth mouse button. Corresponds to `GLFW_MOUSE_BUTTON_6`.
+     * @see @ref PointerEventSource::Mouse
+     */
     MouseButton6 = 1 << 5,
 
-    /** Seventh mouse button. Corresponds to `GLFW_MOUSE_BUTTON_7`. */
+    /**
+     * Seventh mouse button. Corresponds to `GLFW_MOUSE_BUTTON_7`.
+     * @see @ref PointerEventSource::Mouse
+     */
     MouseButton7 = 1 << 6,
 
-    /** Eighth mouse button. Corresponds to `GLFW_MOUSE_BUTTON_8`. */
+    /**
+     * Eighth mouse button. Corresponds to `GLFW_MOUSE_BUTTON_8`.
+     * @see @ref PointerEventSource::Mouse
+     */
     MouseButton8 = 1 << 7
+
+    /** @todo look into touch / pen input once anything from
+        https://github.com/glfw/glfw/issues/42
+        https://github.com/glfw/glfw/issues/403
+        https://github.com/glfw/glfw/pull/1445
+        https://github.com/glfw/glfw/pull/1736 gets any updates */
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Pointers)
@@ -2132,8 +2170,35 @@ class GlfwApplication::PointerEvent: public InputEvent {
         /** @brief Moving is not allowed */
         PointerEvent& operator=(PointerEvent&&) = delete;
 
+        /**
+         * @brief Pointer event source
+         *
+         * Included mainly for compatibility with touch-aware application
+         * implementations such as @ref Sdl2Application, returns always
+         * @ref PointerEventSource::Mouse.
+         */
+        PointerEventSource source() const { return PointerEventSource::Mouse; }
+
         /** @brief Pointer type that was pressed or released */
         Pointer pointer() const { return _pointer; }
+
+        /**
+         * @brief Whether the pointer is primary
+         *
+         * Included mainly for compatibility with touch-aware application
+         * implementations such as @ref Sdl2Application, returns always
+         * @cpp true @ce.
+         */
+        bool isPrimary() const { return true; }
+
+        /**
+         * @brief Pointer ID
+         *
+         * Included mainly for compatibility with touch-aware application
+         * implementations such as @ref Sdl2Application, returns always
+         * @cpp 0 @ce.
+         */
+        Long id() const { return 0; }
 
         /**
          * @brief Position
@@ -2229,6 +2294,15 @@ class GlfwApplication::PointerMoveEvent: public InputEvent {
         PointerMoveEvent& operator=(PointerMoveEvent&&) = delete;
 
         /**
+         * @brief Pointer event source
+         *
+         * Included mainly for compatibility with touch-aware application
+         * implementations such as @ref Sdl2Application, returns always
+         * @ref PointerEventSource::Mouse.
+         */
+        PointerEventSource source() const { return PointerEventSource::Mouse; }
+
+        /**
          * @brief Pointer type that was added or removed from the set of pressed pointers
          *
          * Is non-empty only in case a mouse button was pressed in addition to
@@ -2248,6 +2322,24 @@ class GlfwApplication::PointerMoveEvent: public InputEvent {
          * @see @ref pointer()
          */
         Pointers pointers();
+
+        /**
+         * @brief Whether the pointer is primary
+         *
+         * Included mainly for compatibility with touch-aware application
+         * implementations such as @ref Sdl2Application, returns always
+         * @cpp true @ce.
+         */
+        bool isPrimary() const { return true; }
+
+        /**
+         * @brief Pointer ID
+         *
+         * Included mainly for compatibility with touch-aware application
+         * implementations such as @ref Sdl2Application, returns always
+         * @cpp 0 @ce.
+         */
+        Long id() const { return 0; }
 
         /**
          * @brief Position
