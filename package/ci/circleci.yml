@@ -38,7 +38,9 @@ executors:
     # using some newer version. 2.0.18 to 2.0.24 then fails due to an
     # unresolved malloc dependency of glGetString() (!!!), in 2.0.25 it
     # mysteriously disappears. See https://github.com/mosra/magnum/issues/507.
-    - image: emscripten/emsdk:2.0.25
+    # 2.0.27 is then the first that adds timestamps to events, which are needed
+    # internally by touch events.
+    - image: emscripten/emsdk:2.0.27
   android-29:
     machine:
       image: android:2021.10.1
