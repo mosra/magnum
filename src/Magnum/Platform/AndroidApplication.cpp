@@ -4,6 +4,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022, 2023, 2024
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2021 nodoteve <nodoteve@yandex.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -256,25 +257,79 @@ AndroidApplication::Pointers motionEventButtons(AInputEvent* event) {
     return pointers;
 }
 
-AndroidApplication::Pointers motionEventPointers(AInputEvent* event, const AndroidApplication::Pointers pressedButtons) {
-    switch(AMotionEvent_getToolType(event, 0)) {
+Containers::Pair<AndroidApplication::PointerEventSource, AndroidApplication::Pointers> motionEventPointers(AInputEvent* event, std::size_t i, const AndroidApplication::Pointers pressedButtons) {
+    switch(AMotionEvent_getToolType(event, i)) {
         case AMOTION_EVENT_TOOL_TYPE_MOUSE:
             /** @todo MouseButton4 / MouseButton5, once they're added &
                 tested */
-            return (AndroidApplication::Pointer::MouseLeft|
-                    AndroidApplication::Pointer::MouseMiddle|
-                    AndroidApplication::Pointer::MouseRight) & pressedButtons;
+            return {AndroidApplication::PointerEventSource::Mouse,
+                    (AndroidApplication::Pointer::MouseLeft|
+                     AndroidApplication::Pointer::MouseMiddle|
+                     AndroidApplication::Pointer::MouseRight) & pressedButtons};
         case AMOTION_EVENT_TOOL_TYPE_FINGER:
-            return AndroidApplication::Pointer::Finger;
+            return {AndroidApplication::PointerEventSource::Touch,
+                    AndroidApplication::Pointer::Finger};
         case AMOTION_EVENT_TOOL_TYPE_STYLUS:
             /** @todo use pressedButtonsPointers once there's additional pen
                 button enum values */
-            return AndroidApplication::Pointer::Pen;
+            return {AndroidApplication::PointerEventSource::Pen,
+                    AndroidApplication::Pointer::Pen};
         case AMOTION_EVENT_TOOL_TYPE_ERASER:
-            return AndroidApplication::Pointer::Eraser;
+            return {AndroidApplication::PointerEventSource::Touch,
+                    AndroidApplication::Pointer::Eraser};
         case AMOTION_EVENT_TOOL_TYPE_UNKNOWN:
         default:
-            return AndroidApplication::Pointer::Unknown;
+            return {AndroidApplication::PointerEventSource::Unknown,
+                    AndroidApplication::Pointer::Unknown};
+    }
+}
+
+template<class T> Vector2 updatePreviousTouch(T(&previousTouches)[32], const std::int32_t id, const Containers::Optional<Vector2>& position) {
+    std::size_t firstFree = ~std::size_t{};
+    for(std::size_t i = 0; i != Containers::arraySize(previousTouches); ++i) {
+        /* Previous position found */
+        if(previousTouches[i].id == id) {
+            /* Update with the current position, return delta to previous */
+            if(position) {
+                const Vector2 relative = *position - previousTouches[i].position;
+                previousTouches[i].position = *position;
+                return relative;
+            /* Clear previous position */
+            } else {
+                previousTouches[i].id = ~Int{};
+                return {};
+            }
+        /* Unused slot, remember in case there won't be any previous position
+           found */
+        } else if(previousTouches[i].id == ~Int{} && firstFree == ~std::size_t{}) {
+            firstFree = i;
+        }
+    }
+
+    /* If we're not resetting the position and there's a place where to put the
+       new one, save. Otherwise don't do anything -- the touch that didn't fit
+       will always report as having no relative position. */
+    if(position && firstFree != ~std::size_t{}) {
+        previousTouches[firstFree].id = id;
+        previousTouches[firstFree].position = *position;
+    }
+
+    return {};
+}
+
+/* Unlike e.g. SDL, which guarantees that pointer IDs are unique among all
+   pointer types, here they of course don't care. So use the reported ID only
+   for touches and artificial constants for the rest. */
+std::int32_t pointerIdForSource(AndroidApplication::PointerEventSource source, std::int32_t id) {
+    switch(source) {
+        case AndroidApplication::PointerEventSource::Touch:
+            return id;
+        case AndroidApplication::PointerEventSource::Mouse:
+            return -1;
+        case AndroidApplication::PointerEventSource::Pen:
+            return -2;
+        case AndroidApplication::PointerEventSource::Unknown:
+            return -3;
     }
 }
 
@@ -287,9 +342,46 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
         const std::int32_t action = AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_MASK;
         switch(action) {
             case AMOTION_EVENT_ACTION_DOWN:
-            case AMOTION_EVENT_ACTION_UP: {
-                const Vector2 position{AMotionEvent_getX(event, 0),
-                                       AMotionEvent_getY(event, 0)};
+            case AMOTION_EVENT_ACTION_POINTER_DOWN:
+            case AMOTION_EVENT_ACTION_UP:
+            case AMOTION_EVENT_ACTION_POINTER_UP: {
+                /* Figure out which pointer actually changed in given event,
+                   because OF COURSE the API is so horrible that this is
+                   non-trivial. For AMOTION_EVENT_ACTION_DOWN we assume it's
+                   the first ever pointer being pressed, and thus the count
+                   being 1, thus the pointer that changed is the first and
+                   only. */
+                std::int32_t pointerChanged;
+                if(action == AMOTION_EVENT_ACTION_DOWN) {
+                    CORRADE_INTERNAL_ASSERT(AMotionEvent_getPointerCount(event) == 1);
+                    pointerChanged = 0;
+                /* For AMOTION_EVENT_ACTION_UP it's ... apparently the last
+                   remaining pointer going up. Not the primary one (see below
+                   for the `primary` bit decision tree). The docs make it look
+                   like the event also contains any other pointers, but it's
+                   probably just mentioning the AMotionEvent_getHistoricalX()
+                   etc. fields? Er? Why is it not mentioning that for for
+                   AMOTION_EVENT_ACTION_POINTER_UP then?
+                    https://developer.android.com/reference/android/view/MotionEvent#ACTION_UP */
+                } else if(action == AMOTION_EVENT_ACTION_UP) {
+                    CORRADE_INTERNAL_ASSERT(AMotionEvent_getPointerCount(event) == 1);
+                    pointerChanged = 0;
+                /* The AMOTION_EVENT_ACTION_POINTER_DOWN/_UP actually mean a
+                   secondary pointer was pressed or released. Who would have
+                   thought. In that case, the actual changed pointer is given
+                   to us with this fucking atrocity of a bitmask. Well,
+                   alright, what can I do, but why such a bitmask couldn't be
+                   done above as well, huh??? */
+                } else if(action == AMOTION_EVENT_ACTION_POINTER_DOWN ||
+                          action == AMOTION_EVENT_ACTION_POINTER_UP) {
+                    pointerChanged = (AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+                } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+                const bool press =
+                    action == AMOTION_EVENT_ACTION_DOWN ||
+                    action == AMOTION_EVENT_ACTION_POINTER_DOWN;
+                const Vector2 position{AMotionEvent_getX(event, pointerChanged),
+                                       AMotionEvent_getY(event, pointerChanged)};
 
                 /* Query the currently pressed buttons. If this is not a mouse
                    event, it'll give back garbage, but that's fine as we won't
@@ -297,10 +389,67 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                    a release, use the previously recorded pointers to figure
                    out what was actually pressed. */
                 const Pointers pressedButtons = motionEventButtons(event);
-                const Pointers pointers = motionEventPointers(event,
-                    action == AMOTION_EVENT_ACTION_DOWN ?
+                const Containers::Pair<PointerEventSource, Pointers> sourcePointers =
+                    motionEventPointers(event, pointerChanged, press ?
                         pressedButtons & ~app._previousPressedButtons :
                         ~pressedButtons & app._previousPressedButtons);
+                const std::int32_t pointerId = pointerIdForSource(sourcePointers.first(), AMotionEvent_getPointerId(event, pointerChanged));
+
+                /* Decide whether this is a primary pointer. It's tempting to
+                   use the distinction between _DOWN and _POINTER_DOWN to
+                   distinguish a primary pointer from a secondary one, but
+                   that'd be giving too much credit to this damn API. The
+                   problem is that, if multiple fingers is pressed, _POINTER_UP
+                   is fired if any of the secondary fingers are lifted, but
+                   also if the primary finger is lifted. Which in turn means
+                   the primary finger would be treated as secondary for the
+                   up event, which is wrong. Second, then none of the remaining
+                   fingers then have any reasonable way to get promoted to a
+                   primary one, so they all stay secondary. BUT THEN, if the
+                   last one of the secondary fingers gets lifted, _UP is fired
+                   for it, so it suddenly becomes primary. Which a total trash
+                   fire of a broken behavior. A mention worth a laugh is the
+                   official Android developer blog, where in 2010 they
+                   suggested the same thing --- in particular, when the primary
+                   pointer is lifted, *an arbitrary one* from the rest is
+                   chosen as primary.
+                    https://android-developers.googleblog.com/2010/06/making-sense-of-multitouch.html
+                   Eh. Maybe it makes sense for just two touches, but
+                   definitely not for multiple. So let's just ignore all that
+                   and do it by hand like in Sdl2Application and
+                   EmscriptenApplication, to have consistent behavior across
+                   all.
+
+                   Mouse and pen is always a primary pointer. */
+                bool primary;
+                if(sourcePointers.first() == PointerEventSource::Mouse ||
+                   sourcePointers.first() == PointerEventSource::Pen) {
+                    primary = true;
+
+                /* For touch update primary finger info */
+                } else if(sourcePointers.first() == PointerEventSource::Touch) {
+                    /* If there's no primary finger yet and this is the first
+                       finger pressed (i.e., what AMOTION_EVENT_ACTION_DOWN
+                       implies), it becomes the primary finger. If the primary
+                       finger is lifted, no other finger becomes primary until
+                       all others are lifted as well. Again, this is the same
+                       as in Sdl2Application and EmscriptenApplication. */
+                    if(app._primaryFingerId == ~Int{} && action == AMOTION_EVENT_ACTION_DOWN) {
+                        CORRADE_INTERNAL_ASSERT(AMotionEvent_getPointerCount(event) == 1);
+                        primary = true;
+                        app._primaryFingerId = pointerId;
+                    /* Otherwise, if this is the primary finger, mark it as
+                       such */
+                    } else if(app._primaryFingerId == pointerId) {
+                        primary = true;
+                        /* ... but if it's a release, it's no longer primary */
+                        if(!press)
+                            app._primaryFingerId = ~Int{};
+                    /* Otherwise this is not the primary finger */
+                    } else primary = false;
+
+                /* Unknown pointer is probably not a primary one */
+                } else primary = false;
 
                 /* The expectation is that the difference betweeen the
                    previously recorded set of pointers and current one will be
@@ -312,8 +461,8 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                    button caused the event. */
                 Pointer pointer;
                 /* http://www.graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2 */
-                if(pointers && !(UnsignedByte(pointers) & (UnsignedByte(pointers) - 1)))
-                    pointer = Pointer(UnsignedByte(pointers));
+                if(sourcePointers.second() && !(UnsignedByte(sourcePointers.second()) & (UnsignedByte(sourcePointers.second()) - 1)))
+                    pointer = Pointer(UnsignedByte(sourcePointers.second()));
                 else
                     pointer = Pointer::Unknown;
 
@@ -325,41 +474,102 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                     multiple buttons being pressed didn't even trigger a press
                     or release event, so this scenario is seemingly impossible
                     to happen. */
-                PointerEvent e{event, pointer};
-                action == AMOTION_EVENT_ACTION_DOWN ?
-                    app.pointerPressEvent(e) : app.pointerReleaseEvent(e);
+
+                /* Assuming there's never more than 256 pointers in a single
+                   event. Even that feels like a lot. */
+                PointerEvent e{event, UnsignedByte(pointerChanged), sourcePointers.first(), pointer, primary, pointerId};
+                press ? app.pointerPressEvent(e) : app.pointerReleaseEvent(e);
 
                 /* Remember the currently pressed pointers for the next time */
                 app._previousPressedButtons = pressedButtons;
-                /* A touch screen doesn't have hover events, so remember the
-                   position here as well. See below for why this has to be
-                   remembered at all. */
-                app._previousPointerPosition = position;
+
+                /* If this is a touch press, remember its position for next
+                   events. If this is a touch release, free the slot used by
+                   this identifier for next events. Mouse and pen supports
+                   hover and thus is updated only in AMOTION_EVENT_ACTION_MOVE.
+                   See below for why this has to be remembered at all. */
+                if(sourcePointers.first() == PointerEventSource::Touch) {
+                    if(press)
+                        updatePreviousTouch(app._previousTouches, pointerId, position);
+                    else
+                        updatePreviousTouch(app._previousTouches, pointerId, {});
+                }
 
                 return e.isAccepted();
             }
 
             case AMOTION_EVENT_ACTION_MOVE: {
                 const Pointers pressedButtons = motionEventButtons(event);
-                const Pointers pointers = motionEventPointers(event, pressedButtons);
-                const Vector2 position{AMotionEvent_getX(event, 0),
-                                       AMotionEvent_getY(event, 0)};
-                const Vector2 relativePosition =
-                    Math::isNan(app._previousPointerPosition).all() ?
-                        Vector2{} : position - app._previousPointerPosition;
 
-                /* The thing fires move events right after press events, with
-                   the exact same position, for (emulated?) events at least. I
-                   suppose that's some sort of unasked-for misfeature for
-                   "improving" UX or fixing broken apps. Not interested, filter
-                   those out if the relative position is zero and the set of
-                   pressed buttons is the same. Hopefully not accepting those
-                   doesn't lead to some strange behavior. */
+                /* Unlike AMOTION_EVENT_ACTION_DOWN / AMOTION_EVENT_ACTION_UP,
+                   the move event can contain multiple moving pointers so
+                   there's no mask telling which pointer moved. Go through all
+                   and emit a move event only for those that changed. */
                 bool accepted = false;
-                if(relativePosition != Vector2{} || pressedButtons != app._previousPressedButtons) {
-                    PointerMoveEvent e{event, {}, pointers, relativePosition};
-                    app.pointerMoveEvent(e);
-                    accepted = e.isAccepted();
+                const std::size_t pointerCount = AMotionEvent_getPointerCount(event);
+                for(std::size_t i = 0; i != pointerCount; ++i) {
+                    const Containers::Pair<PointerEventSource, Pointers> sourcePointers = motionEventPointers(event, i, pressedButtons);
+                    const std::int32_t pointerId = pointerIdForSource(sourcePointers.first(), AMotionEvent_getPointerId(event, i));
+                    const Vector2 position{AMotionEvent_getX(event, i),
+                                           AMotionEvent_getY(event, i)};
+
+                    /* Query position relative to the previous one for the same
+                       pointer type and identifier, update it with current.
+                       Ideally I would get it somewhere from the platform APIs.
+                       There's AMotionEvent_getHistoricalX()/Y(), but those are
+                       coalesced events between the previous and currently
+                       fired events, i.e. not the full delta. Documented here:
+                        https://developer.android.com/reference/android/view/MotionEvent#batching
+                       There's also AMOTION_EVENT_AXIS_RELATIVE_X/_Y, but
+                       according to
+                        https://developer.android.com/reference/android/view/MotionEvent#AXIS_X
+                       the coordinate system is different for each event type,
+                       and the last thing I want to do is adding special
+                       handling for things the damn platform API should be
+                       doing for me. */
+                    Vector2 relativePosition{NoInit};
+                    if(sourcePointers.first() == PointerEventSource::Mouse ||
+                       sourcePointers.first() == PointerEventSource::Pen) {
+                        relativePosition = Math::isNan(app._previousHoverPointerPosition).all() ?
+                            Vector2{} : position - app._previousHoverPointerPosition;
+                        app._previousHoverPointerPosition = position;
+                    } else if(sourcePointers.first() == PointerEventSource::Touch) {
+                        relativePosition = updatePreviousTouch(app._previousTouches, pointerId, position);
+                    } else {
+                        /* No relative position for Unknown */
+                        relativePosition = {};
+                    }
+
+                    /* Decide whether this is a primary pointer. Mouse and pen
+                       is always a primary pointer. */
+                    bool primary;
+                    if(sourcePointers.first() == PointerEventSource::Mouse ||
+                       sourcePointers.first() == PointerEventSource::Pen) {
+                        primary = true;
+                    /* For touch, it's a primary finger only if it was
+                       registered as such during the last press. If the primary
+                       finger was lifted, no other finger will step into its
+                       place until all others are lifted as well. */
+                    } else if(sourcePointers.first() == PointerEventSource::Touch) {
+                        primary = app._primaryFingerId == pointerId;
+                    /* Unknown pointer is probably not a primary one */
+                    } else primary = false;
+
+                    /* The thing fires move events right after press events,
+                       with the exact same position, for (emulated?) events at
+                       least. I suppose that's some sort of unasked-for
+                       misfeature for "improving" UX or fixing broken apps. Not
+                       interested, filter those out if the relative position is
+                       zero and the set of pressed buttons is the same.
+                       Hopefully not accepting those doesn't lead to some
+                       strange behavior. */
+                    if(relativePosition != Vector2{} || pressedButtons != app._previousPressedButtons) {
+                        /* Assuming there's never more than 256 pointers in a
+                           single event. Even that feels like a lot. */
+                        PointerMoveEvent e{event, UnsignedByte(i), sourcePointers.first(), {}, sourcePointers.second(), primary, pointerId, relativePosition};
+                        app.pointerMoveEvent(e);
+                        accepted = accepted || e.isAccepted();
+                    }
                 }
 
                 /* Remember the currently pressed buttons for the next time.
@@ -368,34 +578,44 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                    have a chance to resynchronize here. */
                 app._previousPressedButtons = pressedButtons;
 
-                /* Remember also the current position. There's
-                   AMotionEvent_getHistoricalX()/Y(), but those are coalesced
-                   events between the previous and currently fired move events,
-                   i.e. not the full delta. Documented here:
-                    https://developer.android.com/reference/android/view/MotionEvent#batching
-                   There's also AMOTION_EVENT_AXIS_RELATIVE_X/_Y, but based on
-                    https://developer.android.com/reference/android/view/MotionEvent#AXIS_X
-                   the coordinate system is different for each event type, and
-                   the last thing I want to do is adding special handling for
-                   things the damn platform API should be doing for me. */
-                app._previousPointerPosition = position;
-
                 return accepted;
             }
 
             /* Like AMOTION_EVENT_ACTION_MOVE, but without anything pressed */
             case AMOTION_EVENT_ACTION_HOVER_MOVE: {
-                const Vector2 position{AMotionEvent_getX(event, 0), AMotionEvent_getY(event, 0)};
+                /* Assuming there's just one pointer reported for a hover, and
+                   it's either a mouse or a pen. Or something unknown. */
+                CORRADE_INTERNAL_ASSERT(AMotionEvent_getPointerCount(event) == 1);
+                PointerEventSource source;
+                switch(AMotionEvent_getToolType(event, 0)) {
+                    case AMOTION_EVENT_TOOL_TYPE_MOUSE:
+                        source = AndroidApplication::PointerEventSource::Mouse;
+                        break;
+                    case AMOTION_EVENT_TOOL_TYPE_FINGER:
+                        CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+                    case AMOTION_EVENT_TOOL_TYPE_STYLUS:
+                    case AMOTION_EVENT_TOOL_TYPE_ERASER:
+                        source = AndroidApplication::PointerEventSource::Pen;
+                        break;
+                    case AMOTION_EVENT_TOOL_TYPE_UNKNOWN:
+                    default:
+                        source = AndroidApplication::PointerEventSource::Unknown;
+                        break;
+                }
+
+                const std::int32_t pointerId = pointerIdForSource(source, AMotionEvent_getPointerId(event, 0));
+                const Vector2 position{AMotionEvent_getX(event, 0),
+                                       AMotionEvent_getY(event, 0)};
                 const Vector2 relativePosition =
-                    Math::isNan(app._previousPointerPosition).all() ?
-                        Vector2{} : position - app._previousPointerPosition;
+                    Math::isNan(app._previousHoverPointerPosition).all() ?
+                        Vector2{} : position - app._previousHoverPointerPosition;
 
                 /* Similarly as with AMOTION_EVENT_ACTION_MOVE, the damn thing
                    fires hover events with zero position delta when scrolling
                    the mouse wheel. Useless, filter those away. */
                 bool accepted = false;
                 if(relativePosition != Vector2{}) {
-                    PointerMoveEvent e{event, {}, {}, relativePosition};
+                    PointerMoveEvent e{event, 0, source, {}, {}, true, pointerId, relativePosition};
                     app.pointerMoveEvent(e);
                     accepted = e.isAccepted();
                 }
@@ -405,7 +625,7 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                 app._previousPressedButtons = {};
                 /* Remember the current position. See above for why
                    AMotionEvent_getHistoricalX()/Y() is useless. */
-                app._previousPointerPosition = position;
+                app._previousHoverPointerPosition = position;
 
                 return accepted;
             }
@@ -473,6 +693,9 @@ void AndroidApplication::exec(android_app* state, Containers::Pointer<AndroidApp
 
 void AndroidApplication::pointerPressEvent(PointerEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    if(!event.isPrimary())
+        return;
+
     CORRADE_IGNORE_DEPRECATED_PUSH
     MouseEvent mouseEvent{event._event};
     mousePressEvent(mouseEvent);
@@ -490,6 +713,9 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 void AndroidApplication::pointerReleaseEvent(PointerEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    if(!event.isPrimary())
+        return;
+
     CORRADE_IGNORE_DEPRECATED_PUSH
     MouseEvent mouseEvent{event._event};
     mouseReleaseEvent(mouseEvent);
@@ -507,6 +733,9 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 void AndroidApplication::pointerMoveEvent(PointerMoveEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
+    if(!event.isPrimary())
+        return;
+
     const Vector2i roundedPosition{Math::round(event.position())};
 
     /* If the event is due to some button being additionally pressed or one

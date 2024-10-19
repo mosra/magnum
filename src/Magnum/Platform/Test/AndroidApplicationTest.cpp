@@ -72,6 +72,21 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 namespace Test { namespace {
 
+static Debug& operator<<(Debug& debug, Application::PointerEventSource value) {
+    debug << "PointerEventSource" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::PointerEventSource::value: return debug << "::" #value;
+        _c(Unknown)
+        _c(Mouse)
+        _c(Touch)
+        _c(Pen)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
 Debug& operator<<(Debug& debug, Application::Pointers value) {
     return Containers::enumSetDebugOutput(debug, value, "Pointers{}", {
         Application::Pointer::Unknown,
@@ -130,13 +145,13 @@ struct AndroidApplicationTest: Platform::Application {
     /* Set to 0 to test the deprecated mouse events instead */
     #if 1
     void pointerPressEvent(PointerEvent& event) override {
-        Debug{} << "pointer press:" << event.pointer() << Debug::packed << event.position();
+        Debug{} << "pointer press:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << Debug::packed << event.position();
     }
     void pointerReleaseEvent(PointerEvent& event) override {
-        Debug{} << "pointer release:" << event.pointer() << Debug::packed << event.position();
+        Debug{} << "pointer release:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << Debug::packed << event.position();
     }
     void pointerMoveEvent(PointerMoveEvent& event) override {
-        Debug{} << "pointer move:" << event.pointer() << event.pointers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
+        Debug{} << "pointer move:" << event.source() << event.pointer() << event.pointers() << (event.isPrimary() ? "primary" : "secondary") << event.id() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
     }
     #else
     CORRADE_IGNORE_DEPRECATED_PUSH

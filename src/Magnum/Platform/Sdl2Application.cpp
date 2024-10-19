@@ -1122,10 +1122,10 @@ bool Sdl2Application::mainLoopIteration() {
                    was empirically verified by looking at behavior of a mouse
                    cursor on a multi-touch screen under X11, it's possible that
                    other systems do it differently. The same logic is used in
-                   EmscriptenApplication. Also, right now there's an assumption
-                   that there is just one touch device, fingers from different
-                   touch devices would steal the primary bit from each other on
-                   every press. */
+                   EmscriptenApplication and AndroidApplication. Also, right
+                   now there's an assumption that there is just one touch
+                   device, fingers from different touch devices would steal the
+                   primary bit from each other on every press. */
                 bool primary;
                 if(_primaryFingerId == ~Long{} && event.type == SDL_FINGERDOWN && SDL_GetNumTouchFingers(event.tfinger.touchId) == 1) {
                     primary = true;
