@@ -637,7 +637,9 @@ jobs:
       TARGET_GLES2: "ON"
     steps:
     - install-base-linux
-    - cap-ninja-jobs
+    # With a Debug build, 16+ is causing OOMs. Release was fine with 24.
+    - cap-ninja-jobs:
+        count: 8
     - build:
         script: emscripten.sh
 
@@ -648,7 +650,9 @@ jobs:
       TARGET_GLES2: "OFF"
     steps:
     - install-base-linux
-    - cap-ninja-jobs
+    # With a Debug build, 8+ is causing OOMs. Release was fine with 24.
+    - cap-ninja-jobs:
+        count: 4
     - build:
         script: emscripten.sh
 
