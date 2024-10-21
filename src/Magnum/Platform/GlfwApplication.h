@@ -929,6 +929,23 @@ class GlfwApplication {
          * will effectively stop the tick event from being fired and the app
          * returns back to waiting for input events. This can be used to
          * disable the tick event when not needed.
+         *
+         * @m_class{m-block m-success}
+         *
+         * @par Opting out of tick events at runtime
+         *      Unlike other event handlers, this function isn't @cpp private @ce
+         *      in order to allow subclasses to conditionally disable the tick
+         *      event by calling the base implementation. To the application it
+         *      looks the same as if the tick event wasn't overriden at all,
+         *      which effectively results in the function not being called ever
+         *      again. This is useful for example with
+         *      @relativeref{Corrade,Utility::Tweakable}, where periodical
+         *      polling for file updates doesn't need to be done if tweakable
+         *      constants aren't enabled at all.
+         * @par
+         *      @snippet Platform.cpp tickEvent-conditional
+         * @par
+         *      It's not possible to re-enable the tick event afterwards.
          */
         virtual void tickEvent();
 

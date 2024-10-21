@@ -26,6 +26,11 @@
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
+#include <Corrade/configure.h>
+#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <Corrade/Utility/Tweakable.h>
+#endif
+
 /* [windowed] */
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
@@ -236,3 +241,28 @@ MyApplication::MyApplication(const Arguments& arguments):
 /* [exit-from-constructor] */
 
 }
+
+#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+namespace H {
+
+struct MyApplication: Platform::Application {
+    MyApplication(const Arguments& arguments);
+
+    void tickEvent() override;
+
+    Utility::Tweakable _tweakable;
+};
+
+/* [tickEvent-conditional] */
+void MyApplication::tickEvent() {
+    if(!_tweakable.isEnabled()) {
+        Platform::Application::tickEvent();
+        return;
+    }
+
+    _tweakable.update();
+}
+/* [tickEvent-conditional] */
+
+}
+#endif
