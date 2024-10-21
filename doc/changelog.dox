@@ -1421,6 +1421,15 @@ See also:
     @ref Platform::GlfwApplication and the
     @ref Platform::BasicScreenedApplication / @ref Platform::BasicScreen
     wrappers as well.
+-   @cpp Platform::Sdl2Application::InputEvent::Modifier @ce,
+    @cpp Modifiers @ce and @cpp Platform::Sdl2Application::KeyEvent::Key @ce
+    enums are deprecated in favor of @ref Platform::Sdl2Application::Modifier,
+    @relativeref{Platform::Sdl2Application,Modifiers} and
+    @relativeref{Platform::Sdl2Application,Key} enums contained directly in
+    the application class. Besides the obvious advantage of them being shorter
+    to type, this allows them to be used outside of the event class scope. The
+    same change is done in @ref Platform::AbstractXApplication,
+    @ref Platform::EmscriptenApplication and @ref Platform::GlfwApplication.
 -   @cpp Platform::AbstractXApplication::MouseEvent::Button::WheelUp @ce and
     `WheelDown` members are deprecated in favor of a dedicated
     @ref Platform::AbstractXApplication::scrollEvent(). Similar change was done

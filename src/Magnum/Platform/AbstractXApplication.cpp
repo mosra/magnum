@@ -197,7 +197,7 @@ bool AbstractXApplication::mainLoopIteration() {
             /* Key/mouse events */
             case KeyPress:
             case KeyRelease: {
-                KeyEvent e(static_cast<KeyEvent::Key>(XLookupKeysym(&event.xkey, 0)), event.xkey.state, {event.xkey.x, event.xkey.y});
+                KeyEvent e{Key(XLookupKeysym(&event.xkey, 0)), event.xkey.state, {event.xkey.x, event.xkey.y}};
                 event.type == KeyPress ? keyPressEvent(e) : keyReleaseEvent(e);
             } break;
             case ButtonPress:
