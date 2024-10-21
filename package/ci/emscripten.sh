@@ -12,6 +12,7 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCORRADE_WITH_INTERCONNECT=OFF \
+    $EXTRA_OPTS \
     -G Ninja
 ninja install
 cd ..
@@ -53,6 +54,7 @@ cmake .. \
     -DMAGNUM_BUILD_AL_TESTS=ON \
     -DMAGNUM_BUILD_GL_TESTS=ON \
     -DMAGNUM_TARGET_GLES2=$TARGET_GLES2 \
+    $EXTRA_OPTS \
     -G Ninja
 ninja $NINJA_JOBS
 
