@@ -343,9 +343,8 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     return dpiScaling;
 
     /* Take a physical display DPI. On Linux it gets the (usually very off)
-       physical value from X11. Also only since SDL 2.0.4. */
+       physical value from X11. */
     #elif defined(CORRADE_TARGET_UNIX)
-    #if SDL_VERSION_ATLEAST(2, 0, 4)
     Vector2 dpi;
     if(SDL_GetDisplayDPI(0, nullptr, &dpi.x(), &dpi.y()) == 0) {
         const Vector2 dpiScaling{dpi/96.0f};
@@ -354,9 +353,6 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     }
 
     Warning{} << "Platform::Sdl2Application: can't get physical display DPI, falling back to no scaling:" << SDL_GetError();
-    #else
-    Debug{verbose} << "Platform::Sdl2Application: sorry, physical DPI scaling only available on SDL 2.0.4+";
-    #endif
     return Vector2{1.0f};
 
     /* HOWEVER, on Windows it gets the virtual DPI scaling, which we don't
@@ -393,7 +389,7 @@ void Sdl2Application::setWindowTitle(const Containers::StringView title) {
     #endif
 }
 
-#if !defined(CORRADE_TARGET_EMSCRIPTEN) && SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 void Sdl2Application::setWindowIcon(const ImageView2D& image) {
     Uint32 format; /** @todo handle sRGB differently? */
     switch(image.format()) {
@@ -540,14 +536,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     GLConfiguration::Flags glFlags = glConfiguration.flags();
     if((glFlags & GLConfiguration::Flag::GpuValidation) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         glFlags |= GLConfiguration::Flag::Debug;
-    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006
     else if((glFlags & GLConfiguration::Flag::GpuValidationNoError) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
         glFlags |= GLConfiguration::Flag::NoError;
-    #endif
 
-    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, glFlags >= GLConfiguration::Flag::NoError);
-    #endif
 
     /* Set context version, if user-specified */
     if(glConfiguration.version() != GL::Version::None) {

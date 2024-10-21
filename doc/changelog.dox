@@ -54,6 +54,8 @@ See also:
     code paths were removed.
 -   Support for Android API versions older than 14 (i.e., before Android 4.0,
     which is from 2011) has been dropped from @ref Platform::AndroidApplication.
+-   Support for SDL2 older than 2.0.6 (released in 2017) has been dropped from
+    @ref Platform::Sdl2Application.
 
 @subsection changelog-latest-new New features
 

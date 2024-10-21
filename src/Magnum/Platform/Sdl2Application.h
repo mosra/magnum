@@ -210,7 +210,8 @@ final package along with a PowerShell script for easy local installation.
 @section Platform-Sdl2Application-usage General usage
 
 This application library depends on the [SDL2](http://www.libsdl.org) library
-(Emscripten has it built in) and is built if `MAGNUM_WITH_SDL2APPLICATION` is
+version 2.0.6 and newer. On Emscripten, the builtin minimal SDL implementation
+is used. The application library is built if `MAGNUM_WITH_SDL2APPLICATION` is
 enabled when building Magnum. To use this library with CMake, request the
 `Sdl2Application` component of the `Magnum` package and link to the
 `Magnum::Sdl2Application` target:
@@ -338,11 +339,11 @@ an exit event for it, instead of doing the usual application exit. This would
 mean that if the application fails to set @ref ExitEvent::setAccepted() in an
 @ref exitEvent() override for some reason, pressing
 @m_class{m-label m-warning} **Ctrl** @m_class{m-label m-default} **C** would
-not terminate it either and you'd have to forcibly kill it instead. When using
-SDL >= 2.0.4, @ref Sdl2Application turns this behavior off, making
-@ref exitEvent() behave consistently with other application implementations
-such as @ref GlfwApplication. You can turn this behavior back on by enabling
-the [corresponding SDL hint](https://wiki.libsdl.org/SDL2/SDL_HINT_NO_SIGNAL_HANDLERS)
+not terminate it either and you'd have to forcibly kill it instead.
+@ref Sdl2Application turns this behavior off, making @ref exitEvent() behave
+consistently with other application implementations such as
+@ref GlfwApplication. You can turn this behavior back on by enabling the
+[corresponding SDL hint](https://wiki.libsdl.org/SDL2/SDL_HINT_NO_SIGNAL_HANDLERS)
 through an environment variable:
 
 @code{.sh}
@@ -404,12 +405,12 @@ the flag is not enabled, no canvas resizing is performed.
 
 For OpenGL ES, SDL2 defaults to a "desktop GLES" context of the system driver.
 Because Magnum has the opposite default behavior, if @ref MAGNUM_TARGET_GLES is
-not defined and SDL >= 2.0.6 is used, @ref Sdl2Application sets the
-`SDL_HINT_OPENGL_ES_DRIVER` hint to 1, forcing it to load symbols from a
-dedicated libGLES library instead, making SDL and Magnum consistently use the
-same OpenGL entrypoints. This change also allows @ref platforms-gl-es-angle "ANGLE"
-to be used on Windows simply by placing the corresponding `libEGL.dll` and
-`libGLESv2.dll` files next to the application executable.
+not defined, @ref Sdl2Application sets the `SDL_HINT_OPENGL_ES_DRIVER` hint to
+1, forcing it to load symbols from a dedicated libGLES library instead, making
+SDL and Magnum consistently use the same OpenGL entrypoints. This change also
+allows @ref platforms-gl-es-angle "ANGLE" to be used on Windows simply by
+placing the corresponding `libEGL.dll` and `libGLESv2.dll` files next to the
+application executable.
 
 @section Platform-Sdl2Application-dpi DPI awareness
 
@@ -874,7 +875,7 @@ class Sdl2Application {
          */
         void setWindowTitle(Containers::StringView title);
 
-        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT))
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Set window icon
          * @m_since{2020,06}
@@ -885,12 +886,11 @@ class Sdl2Application {
          * @ref PixelFormat::RGBA8Unorm or @ref PixelFormat::RGBA8Srgb formats.
          * Unlike @ref GlfwApplication::setWindowIcon(), SDL doesn't provide a
          * way to supply multiple images in different sizes.
-         * @note Available since SDL 2.0.5. Not available on
-         *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", use
-         *      @cb{.html} <link rel="icon"> @ce in your HTML markup instead.
-         *      Although it's not documented in SDL itself, the function might
-         *      have no effect on macOS / Wayland, similarly to how
-         *      @ref GlfwApplication::setWindowIcon() behaves on those
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
+         *      use @cb{.html} <link rel="icon"> @ce in your HTML markup
+         *      instead. Although it's not documented in SDL itself, the
+         *      function might have no effect on macOS / Wayland, similarly to
+         *      how @ref GlfwApplication::setWindowIcon() behaves on those
          *      platforms.
          * @see @ref platform-windows-icon "Excecutable icon on Windows",
          *      @ref Trade::IcoImporter "IcoImporter"
@@ -1571,7 +1571,6 @@ class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
              */
             ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG,
 
-            #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
              * Context without error reporting. Might result in better
              * performance, but situations that would have generated errors
@@ -1580,14 +1579,12 @@ class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
              * flag is set or if the `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
              * is set to `no-error`.
              *
-             * @note Available since SDL 2.0.6.
              * @requires_gles Context flags are not available in WebGL.
              * @m_since_latest
              */
             /* Treated as a separate attribute and not a flag in SDL, thus
                handling manually. */
             NoError = 1ull << 32,
-            #endif
             #endif
 
             /**
@@ -1910,14 +1907,12 @@ class Sdl2Application::Configuration {
                 GLFW_FOCUSED (exposed as Focused) and GLFW_FOCUS_ON_SHOW (not
                 exposed) -- what's the relation? How to make these compatible? */
 
-            #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
              * Always on top
              * @m_since{2020,06}
              *
-             * @note Available since SDL 2.0.5, not available on
-             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
-             *      SDL docs works only on X11.
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             *      According to SDL docs works only on X11.
              */
             AlwaysOnTop = SDL_WINDOW_ALWAYS_ON_TOP,
 
@@ -1925,9 +1920,8 @@ class Sdl2Application::Configuration {
              * Don't add the window to taskbar
              * @m_since{2020,06}
              *
-             * @note Available since SDL 2.0.5, not available on
-             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
-             *      SDL docs works only on X11.
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             *      According to SDL docs works only on X11.
              */
             SkipTaskbar = SDL_WINDOW_SKIP_TASKBAR,
 
@@ -1935,9 +1929,8 @@ class Sdl2Application::Configuration {
              * Window should be treated as a utility window
              * @m_since{2020,06}
              *
-             * @note Available since SDL 2.0.5, not available on
-             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
-             *      SDL docs works only on X11.
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             *      According to SDL docs works only on X11.
              */
             Utility = SDL_WINDOW_UTILITY,
 
@@ -1945,9 +1938,8 @@ class Sdl2Application::Configuration {
              * Window should be treated as a tooltip
              * @m_since{2020,06}
              *
-             * @note Available since SDL 2.0.5, not available on
-             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
-             *      SDL docs works only on X11.
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             *      According to SDL docs works only on X11.
              */
             Tooltip = SDL_WINDOW_TOOLTIP,
 
@@ -1955,12 +1947,10 @@ class Sdl2Application::Configuration {
              * Window should be treated as a popup menu
              * @m_since{2020,06}
              *
-             * @note Available since SDL 2.0.5, not available on
-             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
-             *      SDL docs works only on X11.
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             *      According to SDL docs works only on X11.
              */
             PopupMenu = SDL_WINDOW_POPUP_MENU,
-            #endif
             #endif
 
             /**
@@ -1986,12 +1976,11 @@ class Sdl2Application::Configuration {
              */
             OpenGL = SDL_WINDOW_OPENGL,
 
-            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT))
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
             /**
              * Request a window for use with Vulkan. Useful in combination with
              * @ref WindowFlag::Contextless.
-             * @note Available since SDL 2.0.6, not available on
-             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
              * @m_since{2019,10}
              */
             Vulkan = SDL_WINDOW_VULKAN
