@@ -91,12 +91,16 @@ namespace {
  * (modifiers >= Shift) would pass only if both left and right were pressed,
  * which is usually not what the developers wants.
  */
-Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
-    Sdl2Application::InputEvent::Modifiers modifiers(static_cast<Sdl2Application::InputEvent::Modifier>(mod));
-    if(modifiers & Sdl2Application::InputEvent::Modifier::Shift) modifiers |= Sdl2Application::InputEvent::Modifier::Shift;
-    if(modifiers & Sdl2Application::InputEvent::Modifier::Ctrl) modifiers |= Sdl2Application::InputEvent::Modifier::Ctrl;
-    if(modifiers & Sdl2Application::InputEvent::Modifier::Alt) modifiers |= Sdl2Application::InputEvent::Modifier::Alt;
-    if(modifiers & Sdl2Application::InputEvent::Modifier::Super) modifiers |= Sdl2Application::InputEvent::Modifier::Super;
+Sdl2Application::Modifiers fixedModifiers(Uint16 mod) {
+    Sdl2Application::Modifiers modifiers{mod};
+    if(modifiers & Sdl2Application::Modifier::Shift)
+        modifiers |= Sdl2Application::Modifier::Shift;
+    if(modifiers & Sdl2Application::Modifier::Ctrl)
+        modifiers |= Sdl2Application::Modifier::Ctrl;
+    if(modifiers & Sdl2Application::Modifier::Alt)
+        modifiers |= Sdl2Application::Modifier::Alt;
+    if(modifiers & Sdl2Application::Modifier::Super)
+        modifiers |= Sdl2Application::Modifier::Super;
     return modifiers;
 }
 
@@ -1037,7 +1041,7 @@ bool Sdl2Application::mainLoopIteration() {
 
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
-                KeyEvent e{event, static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0};
+                KeyEvent e{event, Key(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0};
                 event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
             } break;
 
@@ -1594,7 +1598,7 @@ Sdl2Application::Configuration::Configuration():
 
 Sdl2Application::Configuration::~Configuration() = default;
 
-Containers::StringView Sdl2Application::KeyEvent::keyName(const Key key) {
+Containers::StringView Sdl2Application::KeyEvent::keyName(const Sdl2Application::Key key) {
     return SDL_GetKeyName(SDL_Keycode(key));
 }
 
@@ -1602,7 +1606,7 @@ Containers::StringView Sdl2Application::KeyEvent::keyName() const {
     return keyName(_key);
 }
 
-Sdl2Application::InputEvent::Modifiers Sdl2Application::PointerEvent::modifiers() {
+Sdl2Application::Modifiers Sdl2Application::PointerEvent::modifiers() {
     if(!_modifiers)
         _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
     return *_modifiers;
@@ -1610,14 +1614,14 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::PointerEvent::modifiers(
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
+Sdl2Application::Modifiers Sdl2Application::MouseEvent::modifiers() {
     if(_modifiers) return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-Sdl2Application::InputEvent::Modifiers Sdl2Application::PointerMoveEvent::modifiers() {
+Sdl2Application::Modifiers Sdl2Application::PointerMoveEvent::modifiers() {
     if(!_modifiers)
         _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
     return *_modifiers;
@@ -1625,7 +1629,7 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::PointerMoveEvent::modifi
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
+Sdl2Application::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
     if(_modifiers) return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
@@ -1641,7 +1645,7 @@ Vector2 Sdl2Application::ScrollEvent::position() {
     return *_position;
 }
 
-Sdl2Application::InputEvent::Modifiers Sdl2Application::ScrollEvent::modifiers() {
+Sdl2Application::Modifiers Sdl2Application::ScrollEvent::modifiers() {
     if(!_modifiers)
         _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
     return *_modifiers;
@@ -1656,7 +1660,7 @@ Vector2i Sdl2Application::MouseScrollEvent::position() {
     return *_position;
 }
 
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
+Sdl2Application::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
     if(_modifiers) return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }

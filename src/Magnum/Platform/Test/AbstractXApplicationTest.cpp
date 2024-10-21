@@ -40,11 +40,11 @@ namespace Magnum { namespace Platform {
 /* These cannot be in an anonymous namespace as enumSetDebugOutput() below
    wouldn't be able to pick them up */
 
-static Debug& operator<<(Debug& debug, Application::InputEvent::Modifier value) {
+static Debug& operator<<(Debug& debug, Application::Modifier value) {
     debug << "Modifier" << Debug::nospace;
 
     switch(value) {
-        #define _c(value) case Application::InputEvent::Modifier::value: return debug << "::" #value;
+        #define _c(value) case Application::Modifier::value: return debug << "::" #value;
         _c(Shift)
         _c(Ctrl)
         _c(Alt)
@@ -91,14 +91,14 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 namespace Test { namespace {
 
-Debug& operator<<(Debug& debug, Application::InputEvent::Modifiers value) {
+Debug& operator<<(Debug& debug, Application::Modifiers value) {
     return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
-        Application::InputEvent::Modifier::Shift,
-        Application::InputEvent::Modifier::Ctrl,
-        Application::InputEvent::Modifier::Alt,
-        Application::InputEvent::Modifier::AltGr,
-        Application::InputEvent::Modifier::CapsLock,
-        Application::InputEvent::Modifier::NumLock,
+        Application::Modifier::Shift,
+        Application::Modifier::Ctrl,
+        Application::Modifier::Alt,
+        Application::Modifier::AltGr,
+        Application::Modifier::CapsLock,
+        Application::Modifier::NumLock,
     });
 }
 
@@ -139,11 +139,11 @@ CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Butt
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-Debug& operator<<(Debug& debug, const Application::KeyEvent::Key value) {
+Debug& operator<<(Debug& debug, const Application::Key value) {
     debug << "Key" << Debug::nospace;
 
     switch(value) {
-        #define _c(value) case Application::KeyEvent::Key::value: return debug << "::" #value;
+        #define _c(value) case Application::Key::value: return debug << "::" #value;
         _c(LeftShift)
         _c(RightShift)
         _c(LeftCtrl)

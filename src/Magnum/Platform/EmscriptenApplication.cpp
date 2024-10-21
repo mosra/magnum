@@ -69,7 +69,7 @@ enum class EmscriptenApplication::Flag: UnsignedByte {
 };
 
 namespace {
-    typedef EmscriptenApplication::KeyEvent::Key Key;
+    typedef EmscriptenApplication::Key Key;
 
     /* Entry for key name to `Key` enum mapping */
     struct Entry {
@@ -552,16 +552,16 @@ EmscriptenApplication::Pointers buttonsToPointers(const std::uint32_t buttons) {
     return pointers;
 }
 
-template<class T> EmscriptenApplication::InputEvent::Modifiers eventModifiers(const T& event) {
-    EmscriptenApplication::InputEvent::Modifiers modifiers;
+template<class T> EmscriptenApplication::Modifiers eventModifiers(const T& event) {
+    EmscriptenApplication::Modifiers modifiers;
     if(event.ctrlKey)
-        modifiers |= EmscriptenApplication::InputEvent::Modifier::Ctrl;
+        modifiers |= EmscriptenApplication::Modifier::Ctrl;
     if(event.shiftKey)
-        modifiers |= EmscriptenApplication::InputEvent::Modifier::Shift;
+        modifiers |= EmscriptenApplication::Modifier::Shift;
     if(event.altKey)
-        modifiers |= EmscriptenApplication::InputEvent::Modifier::Alt;
+        modifiers |= EmscriptenApplication::Modifier::Alt;
     if(event.metaKey)
-        modifiers |= EmscriptenApplication::InputEvent::Modifier::Super;
+        modifiers |= EmscriptenApplication::Modifier::Super;
     return modifiers;
 }
 
@@ -650,7 +650,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
 
             const Pointer pointer = buttonToPointer(event->button);
             const Pointers pointers = buttonsToPointers(event->buttons);
-            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Modifiers modifiers = eventModifiers(*event);
             const Vector2 position = eventTargetPosition(*event);
 
             /* If an additional mouse button was pressed, call a move event
@@ -690,7 +690,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
 
             const Pointer pointer = buttonToPointer(event->button);
             const Pointers pointers = buttonsToPointers(event->buttons);
-            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Modifiers modifiers = eventModifiers(*event);
             const Vector2 position = eventTargetPosition(*event);
 
             /* If some buttons are still left pressed after a release, call a
@@ -711,7 +711,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
             const Pointers pointers = buttonsToPointers(event->buttons);
-            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Modifiers modifiers = eventModifiers(*event);
             const Vector2 position = eventTargetPosition(*event);
             /* Avoid bogus offset at first -- report 0 when the event is called
                for the first time. */
@@ -745,7 +745,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
                 events, is that a browser bug? Emscripten seems to fill them in
                 https://github.com/emscripten-core/emscripten/blob/10cb9d46cdd17e7a96de68137c9649d9a630fbc7/src/library_html5.js#L1930-L1933
                 correctly. */
-            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Modifiers modifiers = eventModifiers(*event);
 
             bool accepted = false;
             for(Int i = 0; i != event->numTouches; ++i) {
@@ -789,7 +789,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
             /** @todo somehow desktop Chrome doesn't populate these for touch
                 events, see above */
-            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Modifiers modifiers = eventModifiers(*event);
 
             /* Remember the touch event timestamp. Chromium (at least) then
                fires the compatibility mouse press and release event with the
@@ -841,7 +841,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
             /** @todo somehow desktop Chrome doesn't populate these for touch
                 events, see above */
-            const InputEvent::Modifiers modifiers = eventModifiers(*event);
+            const Modifiers modifiers = eventModifiers(*event);
 
             bool accepted = false;
             for(Int i = 0; i != event->numTouches; ++i) {
@@ -1206,7 +1206,7 @@ Vector2i EmscriptenApplication::MouseEvent::position() const {
     return {Int(_event.targetX), Int(_event.targetY)};
 }
 
-EmscriptenApplication::MouseEvent::Modifiers EmscriptenApplication::MouseEvent::modifiers() const {
+EmscriptenApplication::Modifiers EmscriptenApplication::MouseEvent::modifiers() const {
     return eventModifiers(_event);
 }
 CORRADE_IGNORE_DEPRECATED_POP
@@ -1224,7 +1224,7 @@ Vector2i EmscriptenApplication::MouseMoveEvent::position() const {
     return {Int(_event.targetX), Int(_event.targetY)};
 }
 
-EmscriptenApplication::MouseMoveEvent::Modifiers EmscriptenApplication::MouseMoveEvent::modifiers() const {
+EmscriptenApplication::Modifiers EmscriptenApplication::MouseMoveEvent::modifiers() const {
     return eventModifiers(_event);
 }
 #endif
@@ -1248,7 +1248,7 @@ Vector2 EmscriptenApplication::ScrollEvent::position() const {
     return {Float(_event.mouse.targetX), Float(_event.mouse.targetY)};
 }
 
-EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::ScrollEvent::modifiers() const {
+EmscriptenApplication::Modifiers EmscriptenApplication::ScrollEvent::modifiers() const {
     return eventModifiers(_event.mouse);
 }
 
@@ -1267,12 +1267,12 @@ Vector2i EmscriptenApplication::MouseScrollEvent::position() const {
     return {Int(_event.mouse.targetX), Int(_event.mouse.targetY)};
 }
 
-EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::MouseScrollEvent::modifiers() const {
+EmscriptenApplication::Modifiers EmscriptenApplication::MouseScrollEvent::modifiers() const {
     return eventModifiers(_event.mouse);
 }
 #endif
 
-Key EmscriptenApplication::KeyEvent::key() const {
+EmscriptenApplication::Key EmscriptenApplication::KeyEvent::key() const {
     return toKey(_event.key, _event.code);
 }
 
@@ -1283,7 +1283,7 @@ Containers::StringView EmscriptenApplication::KeyEvent::keyName() const {
     return _event.code;
 }
 
-EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::KeyEvent::modifiers() const {
+EmscriptenApplication::Modifiers EmscriptenApplication::KeyEvent::modifiers() const {
     return eventModifiers(_event);
 }
 

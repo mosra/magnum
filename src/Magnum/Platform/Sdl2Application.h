@@ -550,9 +550,21 @@ class Sdl2Application {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class Modifier: Uint16;
+        enum class Key: SDL_Keycode;
         enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
+
+        /**
+         * @brief Set of keyboard modifiers
+         * @m_since_latest
+         *
+         * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
+         *      @ref PointerMoveEvent::modifiers(),
+         *      @ref ScrollEvent::modifiers()
+         */
+        typedef Containers::EnumSet<Modifier> Modifiers;
 
         /**
          * @brief Set of pointer types
@@ -1429,6 +1441,322 @@ class Sdl2Application {
         Flags _flags;
 
         int _exitCode = 0;
+};
+
+/**
+@brief Keyboard modifier
+@m_since_latest
+
+@see @ref Modifiers, @ref KeyEvent::modifiers(),
+    @ref PointerEvent::modifiers(), @ref PointerMoveEvent::modifiers(),
+    @ref ScrollEvent::modifiers()
+ */
+enum class Sdl2Application::Modifier: Uint16 {
+    /**
+     * Shift
+     *
+     * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
+     */
+    Shift = KMOD_SHIFT,
+
+    /**
+     * Ctrl
+     *
+     * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
+     */
+    Ctrl = KMOD_CTRL,
+
+    /**
+     * Alt
+     *
+     * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
+     */
+    Alt = KMOD_ALT,
+
+    /**
+     * Super key (Windows/⌘)
+     *
+     * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
+     */
+    Super = KMOD_GUI,
+
+    /**
+     * AltGr
+     *
+     * @see @ref KeyEvent::Key::AltGr
+     * @todo AltGr gets reported as RightAlt, what's this for?
+     */
+    AltGr = KMOD_MODE,
+
+    /**
+     * Caps lock
+     *
+     * @see @ref KeyEvent::Key::CapsLock
+     */
+    CapsLock = KMOD_CAPS,
+
+    /**
+     * Num lock
+     *
+     * @see @ref KeyEvent::Key::NumLock
+     */
+    NumLock = KMOD_NUM
+};
+
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Modifiers)
+
+/**
+@brief Key
+@m_since_latest
+
+@see @ref KeyEvent::key()
+*/
+enum class Sdl2Application::Key: SDL_Keycode {
+    Unknown = SDLK_UNKNOWN,     /**< Unknown key */
+
+    /**
+     * Left Shift
+     *
+     * @see @ref InputEvent::Modifier::Shift
+     */
+    LeftShift = SDLK_LSHIFT,
+
+    /**
+     * Right Shift
+     *
+     * @see @ref InputEvent::Modifier::Shift
+     */
+    RightShift = SDLK_RSHIFT,
+
+    /**
+     * Left Ctrl
+     *
+     * @see @ref InputEvent::Modifier::Ctrl
+     */
+    LeftCtrl = SDLK_LCTRL,
+
+    /**
+     * Right Ctrl
+     *
+     * @see @ref InputEvent::Modifier::Ctrl
+     */
+    RightCtrl = SDLK_RCTRL,
+
+    /**
+     * Left Alt
+     *
+     * @see @ref InputEvent::Modifier::Alt
+     */
+    LeftAlt = SDLK_LALT,
+
+    /**
+     * Right Alt
+     *
+     * @see @ref InputEvent::Modifier::Alt
+     */
+    RightAlt = SDLK_RALT,
+
+    /**
+     * Left Super key (Windows/⌘)
+     *
+     * @see @ref InputEvent::Modifier::Super
+     */
+    LeftSuper = SDLK_LGUI,
+
+    /**
+     * Right Super key (Windows/⌘)
+     *
+     * @see @ref InputEvent::Modifier::Super
+     */
+    RightSuper = SDLK_RGUI,
+
+    /**
+     * AltGr
+     *
+     * @see @ref InputEvent::Modifier::AltGr
+     * @todo AltGr gets reported as RightAlt, what's this for?
+     */
+    AltGr = SDLK_MODE,
+
+    Enter = SDLK_RETURN,        /**< Enter */
+    Esc = SDLK_ESCAPE,          /**< Escape */
+
+    Up = SDLK_UP,               /**< Up arrow */
+    Down = SDLK_DOWN,           /**< Down arrow */
+    Left = SDLK_LEFT,           /**< Left arrow */
+    Right = SDLK_RIGHT,         /**< Right arrow */
+    Home = SDLK_HOME,           /**< Home */
+    End = SDLK_END,             /**< End */
+    PageUp = SDLK_PAGEUP,       /**< Page up */
+    PageDown = SDLK_PAGEDOWN,   /**< Page down */
+    Backspace = SDLK_BACKSPACE, /**< Backspace */
+    Insert = SDLK_INSERT,       /**< Insert */
+    Delete = SDLK_DELETE,       /**< Delete */
+
+    F1 = SDLK_F1,               /**< F1 */
+    F2 = SDLK_F2,               /**< F2 */
+    F3 = SDLK_F3,               /**< F3 */
+    F4 = SDLK_F4,               /**< F4 */
+    F5 = SDLK_F5,               /**< F5 */
+    F6 = SDLK_F6,               /**< F6 */
+    F7 = SDLK_F7,               /**< F7 */
+    F8 = SDLK_F8,               /**< F8 */
+    F9 = SDLK_F9,               /**< F9 */
+    F10 = SDLK_F10,             /**< F10 */
+    F11 = SDLK_F11,             /**< F11 */
+    F12 = SDLK_F12,             /**< F12 */
+
+    Space = SDLK_SPACE,         /**< Space */
+    Tab = SDLK_TAB,             /**< Tab */
+
+    /**
+     * Quote (<tt>'</tt>)
+     * @m_since{2020,06}
+     */
+    Quote = SDLK_QUOTE,
+
+    Comma = SDLK_COMMA,         /**< Comma */
+    Period = SDLK_PERIOD,       /**< Period */
+    Minus = SDLK_MINUS,         /**< Minus */
+
+    /**
+     * Plus. On the US keyboard layout this may only be representable as
+     * @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **=**.
+     */
+    Plus = SDLK_PLUS,
+
+    Slash = SDLK_SLASH,         /**< Slash */
+
+    /**
+     * Percent. On the US keyboard layout this may only be representable as
+     * @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **5**.
+     */
+    Percent = SDLK_PERCENT,
+
+    Semicolon = SDLK_SEMICOLON, /**< Semicolon (`;`) */
+    Equal = SDLK_EQUALS,        /**< Equal */
+
+    /**
+     * Left bracket (`[`)
+     * @m_since{2020,06}
+     */
+    LeftBracket = SDLK_LEFTBRACKET,
+
+    /**
+     * Right bracket (`]`)
+     * @m_since{2020,06}
+     */
+    RightBracket = SDLK_RIGHTBRACKET,
+
+    /**
+     * Backslash (`\`)
+     * @m_since{2020,06}
+     */
+    Backslash = SDLK_BACKSLASH,
+
+    /**
+     * Backquote (<tt>`</tt>)
+     * @m_since{2020,06}
+     */
+    Backquote = SDLK_BACKQUOTE,
+
+    /* no equivalent for GlfwApplication's World1 / World2 */
+
+    Zero = SDLK_0,              /**< Zero */
+    One = SDLK_1,               /**< One */
+    Two = SDLK_2,               /**< Two */
+    Three = SDLK_3,             /**< Three */
+    Four = SDLK_4,              /**< Four */
+    Five = SDLK_5,              /**< Five */
+    Six = SDLK_6,               /**< Six */
+    Seven = SDLK_7,             /**< Seven */
+    Eight = SDLK_8,             /**< Eight */
+    Nine = SDLK_9,              /**< Nine */
+
+    A = SDLK_a,                 /**< Letter A */
+    B = SDLK_b,                 /**< Letter B */
+    C = SDLK_c,                 /**< Letter C */
+    D = SDLK_d,                 /**< Letter D */
+    E = SDLK_e,                 /**< Letter E */
+    F = SDLK_f,                 /**< Letter F */
+    G = SDLK_g,                 /**< Letter G */
+    H = SDLK_h,                 /**< Letter H */
+    I = SDLK_i,                 /**< Letter I */
+    J = SDLK_j,                 /**< Letter J */
+    K = SDLK_k,                 /**< Letter K */
+    L = SDLK_l,                 /**< Letter L */
+    M = SDLK_m,                 /**< Letter M */
+    N = SDLK_n,                 /**< Letter N */
+    O = SDLK_o,                 /**< Letter O */
+    P = SDLK_p,                 /**< Letter P */
+    Q = SDLK_q,                 /**< Letter Q */
+    R = SDLK_r,                 /**< Letter R */
+    S = SDLK_s,                 /**< Letter S */
+    T = SDLK_t,                 /**< Letter T */
+    U = SDLK_u,                 /**< Letter U */
+    V = SDLK_v,                 /**< Letter V */
+    W = SDLK_w,                 /**< Letter W */
+    X = SDLK_x,                 /**< Letter X */
+    Y = SDLK_y,                 /**< Letter Y */
+    Z = SDLK_z,                 /**< Letter Z */
+
+    /**
+     * Caps lock
+     *
+     * @see @ref InputEvent::Modifier::CapsLock
+     * @m_since_latest
+     */
+    CapsLock = SDLK_CAPSLOCK,
+
+    /**
+     * Scroll lock
+     * @m_since_latest
+     */
+    ScrollLock = SDLK_SCROLLLOCK,
+
+    /**
+     * Num lock
+     *
+     * @see @ref InputEvent::Modifier::NumLock
+     * @m_since_latest
+     */
+    NumLock = SDLK_NUMLOCKCLEAR,
+
+    /**
+     * Print screen
+     * @m_since_latest
+     */
+    PrintScreen = SDLK_PRINTSCREEN,
+
+    /**
+     * Pause
+     * @m_since_latest
+     */
+    Pause = SDLK_PAUSE,
+
+    /**
+     * Menu
+     * @m_since_latest
+     */
+    Menu = SDLK_APPLICATION,
+
+    NumZero = SDLK_KP_0,            /**< Numpad zero */
+    NumOne = SDLK_KP_1,             /**< Numpad one */
+    NumTwo = SDLK_KP_2,             /**< Numpad two */
+    NumThree = SDLK_KP_3,           /**< Numpad three */
+    NumFour = SDLK_KP_4,            /**< Numpad four */
+    NumFive = SDLK_KP_5,            /**< Numpad five */
+    NumSix = SDLK_KP_6,             /**< Numpad six */
+    NumSeven = SDLK_KP_7,           /**< Numpad seven */
+    NumEight = SDLK_KP_8,           /**< Numpad eight */
+    NumNine = SDLK_KP_9,            /**< Numpad nine */
+    NumDecimal = SDLK_KP_DECIMAL,   /**< Numpad decimal */
+    NumDivide = SDLK_KP_DIVIDE,     /**< Numpad divide */
+    NumMultiply = SDLK_KP_MULTIPLY, /**< Numpad multiply */
+    NumSubtract = SDLK_KP_MINUS,    /**< Numpad subtract */
+    NumAdd = SDLK_KP_PLUS,          /**< Numpad add */
+    NumEnter = SDLK_KP_ENTER,       /**< Numpad enter */
+    NumEqual = SDLK_KP_EQUALS       /**< Numpad equal */
 };
 
 /**
@@ -2363,74 +2691,21 @@ class Sdl2Application::ViewportEvent {
 */
 class Sdl2Application::InputEvent {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Modifier
-         *
-         * @see @ref Modifiers, @ref KeyEvent::modifiers(),
-         *      @ref PointerEvent::modifiers(),
-         *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         * @brief @copybrief Sdl2Application::Modifier
+         * @m_deprecated_since_latest Use @ref Sdl2Application::Modifier
+         *      instead.
          */
-        enum class Modifier: Uint16 {
-            /**
-             * Shift
-             *
-             * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
-             */
-            Shift = KMOD_SHIFT,
-
-            /**
-             * Ctrl
-             *
-             * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
-             */
-            Ctrl = KMOD_CTRL,
-
-            /**
-             * Alt
-             *
-             * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
-             */
-            Alt = KMOD_ALT,
-
-            /**
-             * Super key (Windows/⌘)
-             *
-             * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
-             */
-            Super = KMOD_GUI,
-
-            /**
-             * AltGr
-             *
-             * @see @ref KeyEvent::Key::AltGr
-             * @todo AltGr gets reported as RightAlt, what's this for?
-             */
-            AltGr = KMOD_MODE,
-
-            /**
-             * Caps lock
-             *
-             * @see @ref KeyEvent::Key::CapsLock
-             */
-            CapsLock = KMOD_CAPS,
-
-            /**
-             * Num lock
-             *
-             * @see @ref KeyEvent::Key::NumLock
-             */
-            NumLock = KMOD_NUM
-        };
+        typedef CORRADE_DEPRECATED("use Sdl2Application::Modifier instead") Sdl2Application::Modifier Modifier;
 
         /**
-         * @brief Set of modifiers
-         *
-         * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
-         *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         * @brief @copybrief Sdl2Application::Modifiers
+         * @m_deprecated_since_latest Use @ref Sdl2Application::Modifiers
+         *      instead.
          */
-        typedef Containers::EnumSet<Modifier> Modifiers;
+        typedef CORRADE_DEPRECATED("use Sdl2Application::Modifiers instead") Sdl2Application::Modifiers Modifiers;
+        #endif
 
         /** @brief Copying is not allowed */
         InputEvent(const InputEvent&) = delete;
@@ -2488,260 +2763,13 @@ class Sdl2Application::InputEvent {
 */
 class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Key
-         *
-         * @see @ref key()
+         * @brief @copybrief Sdl2Application::Key
+         * @m_deprecated_since_latest Use @ref Sdl2Application::Key instead.
          */
-        enum class Key: SDL_Keycode {
-            Unknown = SDLK_UNKNOWN,     /**< Unknown key */
-
-            /**
-             * Left Shift
-             *
-             * @see @ref InputEvent::Modifier::Shift
-             */
-            LeftShift = SDLK_LSHIFT,
-
-            /**
-             * Right Shift
-             *
-             * @see @ref InputEvent::Modifier::Shift
-             */
-            RightShift = SDLK_RSHIFT,
-
-            /**
-             * Left Ctrl
-             *
-             * @see @ref InputEvent::Modifier::Ctrl
-             */
-            LeftCtrl = SDLK_LCTRL,
-
-            /**
-             * Right Ctrl
-             *
-             * @see @ref InputEvent::Modifier::Ctrl
-             */
-            RightCtrl = SDLK_RCTRL,
-
-            /**
-             * Left Alt
-             *
-             * @see @ref InputEvent::Modifier::Alt
-             */
-            LeftAlt = SDLK_LALT,
-
-            /**
-             * Right Alt
-             *
-             * @see @ref InputEvent::Modifier::Alt
-             */
-            RightAlt = SDLK_RALT,
-
-            /**
-             * Left Super key (Windows/⌘)
-             *
-             * @see @ref InputEvent::Modifier::Super
-             */
-            LeftSuper = SDLK_LGUI,
-
-            /**
-             * Right Super key (Windows/⌘)
-             *
-             * @see @ref InputEvent::Modifier::Super
-             */
-            RightSuper = SDLK_RGUI,
-
-            /**
-             * AltGr
-             *
-             * @see @ref InputEvent::Modifier::AltGr
-             * @todo AltGr gets reported as RightAlt, what's this for?
-             */
-            AltGr = SDLK_MODE,
-
-            Enter = SDLK_RETURN,        /**< Enter */
-            Esc = SDLK_ESCAPE,          /**< Escape */
-
-            Up = SDLK_UP,               /**< Up arrow */
-            Down = SDLK_DOWN,           /**< Down arrow */
-            Left = SDLK_LEFT,           /**< Left arrow */
-            Right = SDLK_RIGHT,         /**< Right arrow */
-            Home = SDLK_HOME,           /**< Home */
-            End = SDLK_END,             /**< End */
-            PageUp = SDLK_PAGEUP,       /**< Page up */
-            PageDown = SDLK_PAGEDOWN,   /**< Page down */
-            Backspace = SDLK_BACKSPACE, /**< Backspace */
-            Insert = SDLK_INSERT,       /**< Insert */
-            Delete = SDLK_DELETE,       /**< Delete */
-
-            F1 = SDLK_F1,               /**< F1 */
-            F2 = SDLK_F2,               /**< F2 */
-            F3 = SDLK_F3,               /**< F3 */
-            F4 = SDLK_F4,               /**< F4 */
-            F5 = SDLK_F5,               /**< F5 */
-            F6 = SDLK_F6,               /**< F6 */
-            F7 = SDLK_F7,               /**< F7 */
-            F8 = SDLK_F8,               /**< F8 */
-            F9 = SDLK_F9,               /**< F9 */
-            F10 = SDLK_F10,             /**< F10 */
-            F11 = SDLK_F11,             /**< F11 */
-            F12 = SDLK_F12,             /**< F12 */
-
-            Space = SDLK_SPACE,         /**< Space */
-            Tab = SDLK_TAB,             /**< Tab */
-
-            /**
-             * Quote (<tt>'</tt>)
-             * @m_since{2020,06}
-             */
-            Quote = SDLK_QUOTE,
-
-            Comma = SDLK_COMMA,         /**< Comma */
-            Period = SDLK_PERIOD,       /**< Period */
-            Minus = SDLK_MINUS,         /**< Minus */
-
-            /**
-             * Plus. On the US keyboard layout this may only be representable
-             * as @m_class{m-label m-warning} **Shift**
-             * @m_class{m-label m-default} **=**.
-             */
-            Plus = SDLK_PLUS,
-
-            Slash = SDLK_SLASH,         /**< Slash */
-
-            /**
-             * Percent. On the US keyboard layout this may only be
-             * representable as @m_class{m-label m-warning} **Shift**
-             * @m_class{m-label m-default} **5**.
-             */
-            Percent = SDLK_PERCENT,
-
-            Semicolon = SDLK_SEMICOLON, /**< Semicolon (`;`) */
-            Equal = SDLK_EQUALS,        /**< Equal */
-
-            /**
-             * Left bracket (`[`)
-             * @m_since{2020,06}
-             */
-            LeftBracket = SDLK_LEFTBRACKET,
-
-            /**
-             * Right bracket (`]`)
-             * @m_since{2020,06}
-             */
-            RightBracket = SDLK_RIGHTBRACKET,
-
-            /**
-             * Backslash (`\`)
-             * @m_since{2020,06}
-             */
-            Backslash = SDLK_BACKSLASH,
-
-            /**
-             * Backquote (<tt>`</tt>)
-             * @m_since{2020,06}
-             */
-            Backquote = SDLK_BACKQUOTE,
-
-            /* no equivalent for GlfwApplication's World1 / World2 */
-
-            Zero = SDLK_0,              /**< Zero */
-            One = SDLK_1,               /**< One */
-            Two = SDLK_2,               /**< Two */
-            Three = SDLK_3,             /**< Three */
-            Four = SDLK_4,              /**< Four */
-            Five = SDLK_5,              /**< Five */
-            Six = SDLK_6,               /**< Six */
-            Seven = SDLK_7,             /**< Seven */
-            Eight = SDLK_8,             /**< Eight */
-            Nine = SDLK_9,              /**< Nine */
-
-            A = SDLK_a,                 /**< Letter A */
-            B = SDLK_b,                 /**< Letter B */
-            C = SDLK_c,                 /**< Letter C */
-            D = SDLK_d,                 /**< Letter D */
-            E = SDLK_e,                 /**< Letter E */
-            F = SDLK_f,                 /**< Letter F */
-            G = SDLK_g,                 /**< Letter G */
-            H = SDLK_h,                 /**< Letter H */
-            I = SDLK_i,                 /**< Letter I */
-            J = SDLK_j,                 /**< Letter J */
-            K = SDLK_k,                 /**< Letter K */
-            L = SDLK_l,                 /**< Letter L */
-            M = SDLK_m,                 /**< Letter M */
-            N = SDLK_n,                 /**< Letter N */
-            O = SDLK_o,                 /**< Letter O */
-            P = SDLK_p,                 /**< Letter P */
-            Q = SDLK_q,                 /**< Letter Q */
-            R = SDLK_r,                 /**< Letter R */
-            S = SDLK_s,                 /**< Letter S */
-            T = SDLK_t,                 /**< Letter T */
-            U = SDLK_u,                 /**< Letter U */
-            V = SDLK_v,                 /**< Letter V */
-            W = SDLK_w,                 /**< Letter W */
-            X = SDLK_x,                 /**< Letter X */
-            Y = SDLK_y,                 /**< Letter Y */
-            Z = SDLK_z,                 /**< Letter Z */
-
-            /**
-             * Caps lock
-             *
-             * @see @ref InputEvent::Modifier::CapsLock
-             * @m_since_latest
-             */
-            CapsLock = SDLK_CAPSLOCK,
-
-            /**
-             * Scroll lock
-             * @m_since_latest
-             */
-            ScrollLock = SDLK_SCROLLLOCK,
-
-            /**
-             * Num lock
-             *
-             * @see @ref InputEvent::Modifier::NumLock
-             * @m_since_latest
-             */
-            NumLock = SDLK_NUMLOCKCLEAR,
-
-            /**
-             * Print screen
-             * @m_since_latest
-             */
-            PrintScreen = SDLK_PRINTSCREEN,
-
-            /**
-             * Pause
-             * @m_since_latest
-             */
-            Pause = SDLK_PAUSE,
-
-            /**
-             * Menu
-             * @m_since_latest
-             */
-            Menu = SDLK_APPLICATION,
-
-            NumZero = SDLK_KP_0,            /**< Numpad zero */
-            NumOne = SDLK_KP_1,             /**< Numpad one */
-            NumTwo = SDLK_KP_2,             /**< Numpad two */
-            NumThree = SDLK_KP_3,           /**< Numpad three */
-            NumFour = SDLK_KP_4,            /**< Numpad four */
-            NumFive = SDLK_KP_5,            /**< Numpad five */
-            NumSix = SDLK_KP_6,             /**< Numpad six */
-            NumSeven = SDLK_KP_7,           /**< Numpad seven */
-            NumEight = SDLK_KP_8,           /**< Numpad eight */
-            NumNine = SDLK_KP_9,            /**< Numpad nine */
-            NumDecimal = SDLK_KP_DECIMAL,   /**< Numpad decimal */
-            NumDivide = SDLK_KP_DIVIDE,     /**< Numpad divide */
-            NumMultiply = SDLK_KP_MULTIPLY, /**< Numpad multiply */
-            NumSubtract = SDLK_KP_MINUS,    /**< Numpad subtract */
-            NumAdd = SDLK_KP_PLUS,          /**< Numpad add */
-            NumEnter = SDLK_KP_ENTER,       /**< Numpad enter */
-            NumEqual = SDLK_KP_EQUALS       /**< Numpad equal */
-        };
+        typedef CORRADE_DEPRECATED("use Sdl2Application::Key instead") Sdl2Application::Key Key;
+        #endif
 
         /**
          * @brief Name for given key
@@ -2754,14 +2782,14 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          * @ref keyName() const or to the underlying @cpp SDL_GetKeyName() @ce
          * API.
          */
-        static Containers::StringView keyName(Key key);
+        static Containers::StringView keyName(Sdl2Application::Key key);
 
         /**
          * @brief Key
          *
          * @see @ref keyName()
          */
-        Key key() const { return _key; }
+        Sdl2Application::Key key() const { return _key; }
 
         /**
          * @brief Key name
@@ -2777,7 +2805,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         Containers::StringView keyName() const;
 
         /** @brief Modifiers */
-        Modifiers modifiers() const { return _modifiers; }
+        Sdl2Application::Modifiers modifiers() const { return _modifiers; }
 
         /**
          * @brief Whether the key press is repeated
@@ -2790,10 +2818,10 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
     private:
         friend Sdl2Application;
 
-        explicit KeyEvent(const SDL_Event& event, Key key, Modifiers modifiers, bool repeated): InputEvent{event}, _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        explicit KeyEvent(const SDL_Event& event, Sdl2Application::Key key, Sdl2Application::Modifiers modifiers, bool repeated): InputEvent{event}, _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
-        const Key _key;
-        const Modifiers _modifiers;
+        const Sdl2Application::Key _key;
+        const Sdl2Application::Modifiers _modifiers;
         const bool _repeated;
 };
 
@@ -2869,7 +2897,7 @@ class Sdl2Application::PointerEvent: public InputEvent {
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        Sdl2Application::Modifiers modifiers();
 
     private:
         friend Sdl2Application;
@@ -2886,7 +2914,7 @@ class Sdl2Application::PointerEvent: public InputEvent {
 
         const PointerEventSource _source;
         const Pointer _pointer;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<Sdl2Application::Modifiers> _modifiers;
         const bool _primary;
         const Long _id;
         const Vector2 _position;
@@ -2944,7 +2972,7 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        Sdl2Application::Modifiers modifiers();
 
     private:
         friend Sdl2Application;
@@ -2964,7 +2992,7 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         const Int _clickCount;
         #endif
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<Sdl2Application::Modifiers> _modifiers;
 };
 #endif
 
@@ -3065,7 +3093,7 @@ class Sdl2Application::PointerMoveEvent: public InputEvent {
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        Sdl2Application::Modifiers modifiers();
 
     private:
         friend Sdl2Application;
@@ -3076,7 +3104,7 @@ class Sdl2Application::PointerMoveEvent: public InputEvent {
         const Containers::Optional<Pointer> _pointer;
         const Pointers _pointers;
         const bool _primary;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<Sdl2Application::Modifiers> _modifiers;
         const Long _id;
         const Vector2 _position, _relativePosition;
 };
@@ -3134,7 +3162,7 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        Sdl2Application::Modifiers modifiers();
 
     private:
         friend Sdl2Application;
@@ -3143,7 +3171,7 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
 
         const Vector2i _position, _relativePosition;
         const Buttons _buttons;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<Sdl2Application::Modifiers> _modifiers;
 };
 
 CORRADE_IGNORE_DEPRECATED_PUSH
@@ -3175,7 +3203,7 @@ class Sdl2Application::ScrollEvent: public Sdl2Application::InputEvent {
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        Sdl2Application::Modifiers modifiers();
 
     private:
         friend Sdl2Application;
@@ -3184,7 +3212,7 @@ class Sdl2Application::ScrollEvent: public Sdl2Application::InputEvent {
 
         const Vector2 _offset;
         Containers::Optional<Vector2> _position;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<Sdl2Application::Modifiers> _modifiers;
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -3212,7 +3240,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Sdl2Applic
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        Sdl2Application::Modifiers modifiers();
 
     private:
         friend Sdl2Application;
@@ -3221,7 +3249,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Sdl2Applic
 
         const Vector2 _offset;
         Containers::Optional<Vector2i> _position;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<Sdl2Application::Modifiers> _modifiers;
 };
 #endif
 
@@ -3483,7 +3511,6 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
 
 }}
 

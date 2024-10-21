@@ -343,9 +343,21 @@ class EmscriptenApplication {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class Modifier: Int;
+        enum class Key: Int;
         enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
+
+        /**
+         * @brief Set of keyboard modifiers
+         * @m_since_latest
+         *
+         * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
+         *      @ref PointerMoveEvent::modifiers(),
+         *      @ref ScrollEvent::modifiers()
+         */
+        typedef Containers::EnumSet<Modifier> Modifiers;
 
         /**
          * @brief Set of pointer types
@@ -1100,6 +1112,242 @@ class EmscriptenApplication {
 };
 
 /**
+@brief Keyboard modifier
+@m_since_latest
+
+@see @ref Modifiers, @ref KeyEvent::modifiers(),
+    @ref PointerEvent::modifiers(), @ref PointerMoveEvent::modifiers(),
+    @ref ScrollEvent::modifiers()
+*/
+enum class EmscriptenApplication::Modifier: Int {
+    /**
+     * Shift
+     *
+     * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
+     */
+    Shift = 1 << 0,
+
+    /**
+     * Ctrl
+     *
+     * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
+     */
+    Ctrl = 1 << 1,
+
+    /**
+     * Alt
+     *
+     * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
+     */
+    Alt = 1 << 2,
+
+    /**
+     * Super key (Windows/⌘)
+     *
+     * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
+     */
+    Super = 1 << 3
+};
+
+CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Modifiers)
+
+/**
+@brief Key
+@m_since_latest
+
+@see @ref KeyEvent::key()
+*/
+enum class EmscriptenApplication::Key: Int {
+    Unknown,         /**< Unknown key */
+
+    /**
+     * Left Shift
+     *
+     * @see @ref InputEvent::Modifier::Shift
+     */
+    LeftShift,
+
+    /**
+     * Right Shift
+     *
+     * @see @ref InputEvent::Modifier::Shift
+     */
+    RightShift,
+
+    /**
+     * Left Ctrl
+     *
+     * @see @ref InputEvent::Modifier::Ctrl
+     */
+    LeftCtrl,
+
+    /**
+     * Right Ctrl
+     *
+     * @see @ref InputEvent::Modifier::Ctrl
+     */
+    RightCtrl,
+
+    /**
+     * Left Alt
+     *
+     * @see @ref InputEvent::Modifier::Alt
+     */
+    LeftAlt,
+
+    /**
+     * Right Alt
+     *
+     * @see @ref InputEvent::Modifier::Alt
+     */
+    RightAlt,
+
+    /**
+     * Left Super key (Windows/⌘)
+     *
+     * @see @ref InputEvent::Modifier::Super
+     */
+    LeftSuper,
+
+    /**
+     * Right Super key (Windows/⌘)
+     *
+     * @see @ref InputEvent::Modifier::Super
+     */
+    RightSuper,
+
+    /* no equivalent for Sdl2Application's AltGr */
+
+    Enter,              /**< Enter */
+    Esc,                /**< Escape */
+
+    Up,                 /**< Up arrow */
+    Down,               /**< Down arrow */
+    Left,               /**< Left arrow */
+    Right,              /**< Right arrow */
+    Home,               /**< Home */
+    End,                /**< End */
+    PageUp,             /**< Page up */
+    PageDown,           /**< Page down */
+    Backspace,          /**< Backspace */
+    Insert,             /**< Insert */
+    Delete,             /**< Delete */
+
+    F1,                 /**< F1 */
+    F2,                 /**< F2 */
+    F3,                 /**< F3 */
+    F4,                 /**< F4 */
+    F5,                 /**< F5 */
+    F6,                 /**< F6 */
+    F7,                 /**< F7 */
+    F8,                 /**< F8 */
+    F9,                 /**< F9 */
+    F10,                /**< F10 */
+    F11,                /**< F11 */
+    F12,                /**< F12 */
+
+    Zero = '0',         /**< Zero */
+    One,                /**< One */
+    Two,                /**< Two */
+    Three,              /**< Three */
+    Four,               /**< Four */
+    Five,               /**< Five */
+    Six,                /**< Six */
+    Seven,              /**< Seven */
+    Eight,              /**< Eight */
+    Nine,               /**< Nine */
+
+    A = 'a',            /**< Letter A */
+    B,                  /**< Letter B */
+    C,                  /**< Letter C */
+    D,                  /**< Letter D */
+    E,                  /**< Letter E */
+    F,                  /**< Letter F */
+    G,                  /**< Letter G */
+    H,                  /**< Letter H */
+    I,                  /**< Letter I */
+    J,                  /**< Letter J */
+    K,                  /**< Letter K */
+    L,                  /**< Letter L */
+    M,                  /**< Letter M */
+    N,                  /**< Letter N */
+    O,                  /**< Letter O */
+    P,                  /**< Letter P */
+    Q,                  /**< Letter Q */
+    R,                  /**< Letter R */
+    S,                  /**< Letter S */
+    T,                  /**< Letter T */
+    U,                  /**< Letter U */
+    V,                  /**< Letter V */
+    W,                  /**< Letter W */
+    X,                  /**< Letter X */
+    Y,                  /**< Letter Y */
+    Z,                  /**< Letter Z */
+
+    Space,              /**< Space */
+    Tab,                /**< Tab */
+    Quote,              /**< Quote (<tt>'</tt>) */
+    Comma,              /**< Comma */
+    Period,             /**< Period */
+    Minus,              /**< Minus */
+
+    /**
+     * Plus. On the US keyboard layout this may only be representable as
+     * @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **=**.
+     */
+    Plus,
+
+    Slash,              /**< Slash */
+
+    /**
+     * Percent. On the US keyboard layout this may only be representable as
+     * @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **5**.
+     */
+    Percent,
+
+    /**
+     * Semicolon (`;`)
+     * @m_since{2020,06}
+     */
+    Semicolon,
+
+    Equal,              /**< Equal */
+    LeftBracket,        /**< Left bracket (`[`) */
+    RightBracket,       /**< Right bracket (`]`) */
+    Backslash,          /**< Backslash (`\`) */
+    Backquote,          /**< Backquote (<tt>`</tt>) */
+
+    /* no equivalent for GlfwApplication's World1 / World2 */
+    /** @todo there's IntlBackslash for World1, implement once there's
+        consensus about naming */
+
+    CapsLock,           /**< Caps lock */
+    ScrollLock,         /**< Scroll lock */
+    NumLock,            /**< Num lock */
+    PrintScreen,        /**< Print screen */
+    Pause,              /**< Pause */
+    Menu,               /**< Menu */
+
+    NumZero,            /**< Numpad zero */
+    NumOne,             /**< Numpad one */
+    NumTwo,             /**< Numpad two */
+    NumThree,           /**< Numpad three */
+    NumFour,            /**< Numpad four */
+    NumFive,            /**< Numpad five */
+    NumSix,             /**< Numpad six */
+    NumSeven,           /**< Numpad seven */
+    NumEight,           /**< Numpad eight */
+    NumNine,            /**< Numpad nine */
+    NumDecimal,         /**< Numpad decimal */
+    NumDivide,          /**< Numpad divide */
+    NumMultiply,        /**< Numpad multiply */
+    NumSubtract,        /**< Numpad subtract */
+    NumAdd,             /**< Numpad add */
+    NumEnter,           /**< Numpad enter */
+    NumEqual            /**< Numpad equal */
+};
+
+/**
 @brief Pointer event source
 @m_since_latest
 
@@ -1712,52 +1960,21 @@ class EmscriptenApplication::ViewportEvent {
 */
 class EmscriptenApplication::InputEvent {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Modifier
-         *
-         * @see @ref Modifiers, @ref KeyEvent::modifiers(),
-         *      @ref PointerEvent::modifiers(),
-         *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         * @brief @copybrief EmscriptenApplication::Modifier
+         * @m_deprecated_since_latest Use @ref EmscriptenApplication::Modifier
+         *      instead.
          */
-        enum class Modifier: Int {
-            /**
-             * Shift
-             *
-             * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
-             */
-            Shift = 1 << 0,
-
-            /**
-             * Ctrl
-             *
-             * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
-             */
-            Ctrl = 1 << 1,
-
-            /**
-             * Alt
-             *
-             * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
-             */
-            Alt = 1 << 2,
-
-            /**
-             * Super key (Windows/⌘)
-             *
-             * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
-             */
-            Super = 1 << 3
-        };
+        typedef CORRADE_DEPRECATED("use EmscriptenApplication::Modifier instead") EmscriptenApplication::Modifier Modifier;
 
         /**
-         * @brief Set of modifiers
-         *
-         * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
-         *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         * @brief @copybrief EmscriptenApplication::Modifiers
+         * @m_deprecated_since_latest Use @ref EmscriptenApplication::Modifiers
+         *      instead.
          */
-        typedef Containers::EnumSet<Modifier> Modifiers;
+        typedef CORRADE_DEPRECATED("use EmscriptenApplication::Modifiers instead") EmscriptenApplication::Modifiers Modifiers;
+        #endif
 
         /** @brief Copying is not allowed */
         InputEvent(const InputEvent&) = delete;
@@ -1791,8 +2008,6 @@ class EmscriptenApplication::InputEvent {
     private:
         bool _accepted;
 };
-
-CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::InputEvent::Modifiers)
 
 /**
 @brief Pointer event
@@ -1856,7 +2071,7 @@ class EmscriptenApplication::PointerEvent: public InputEvent {
         Vector2 position() const { return _position; }
 
         /** @brief Modifiers */
-        Modifiers modifiers() const { return _modifiers; }
+        EmscriptenApplication::Modifiers modifiers() const { return _modifiers; }
 
         /**
          * @brief Underlying Emscripten event
@@ -1874,16 +2089,16 @@ class EmscriptenApplication::PointerEvent: public InputEvent {
     private:
         friend EmscriptenApplication;
 
-        explicit PointerEvent(const EmscriptenMouseEvent& event, Pointer pointer, Modifiers modifiers, const Vector2& position): _event{&event}, _source{PointerEventSource::Mouse}, _primary{true}, _pointer{pointer}, _modifiers{modifiers}, _id{~Int{}}, _position{position} {}
+        explicit PointerEvent(const EmscriptenMouseEvent& event, Pointer pointer, EmscriptenApplication::Modifiers modifiers, const Vector2& position): _event{&event}, _source{PointerEventSource::Mouse}, _primary{true}, _pointer{pointer}, _modifiers{modifiers}, _id{~Int{}}, _position{position} {}
         #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
-        explicit PointerEvent(const EmscriptenTouchEvent& event, bool primary, Int id, Modifiers modifiers, const Vector2& position): _event{&event}, _source{PointerEventSource::Touch}, _primary{primary}, _pointer{Pointer::Finger}, _modifiers{modifiers}, _id{id}, _position{position} {}
+        explicit PointerEvent(const EmscriptenTouchEvent& event, bool primary, Int id, EmscriptenApplication::Modifiers modifiers, const Vector2& position): _event{&event}, _source{PointerEventSource::Touch}, _primary{primary}, _pointer{Pointer::Finger}, _modifiers{modifiers}, _id{id}, _position{position} {}
         #endif
 
         const void* _event;
         const PointerEventSource _source;
         const bool _primary;
         const Pointer _pointer;
-        const Modifiers _modifiers;
+        const EmscriptenApplication::Modifiers _modifiers;
         const Int _id;
         const Vector2 _position;
 };
@@ -2038,7 +2253,7 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
         Vector2 relativePosition() const { return _relativePosition; }
 
         /** @brief Modifiers */
-        Modifiers modifiers() const { return _modifiers; }
+        EmscriptenApplication::Modifiers modifiers() const { return _modifiers; }
 
         /**
          * @brief Underlying Emscripten event
@@ -2056,9 +2271,9 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
     private:
         friend EmscriptenApplication;
 
-        explicit PointerMoveEvent(const EmscriptenMouseEvent& event, Containers::Optional<Pointer> pointer, Pointers pointers, Modifiers modifiers, const Vector2& position, const Vector2& relativePosition): _event{&event}, _source{PointerEventSource::Mouse}, _primary{true}, _pointer{pointer}, _pointers{pointers}, _modifiers{modifiers}, _id{~Int{}}, _position{position}, _relativePosition{relativePosition} {}
+        explicit PointerMoveEvent(const EmscriptenMouseEvent& event, Containers::Optional<Pointer> pointer, Pointers pointers, EmscriptenApplication::Modifiers modifiers, const Vector2& position, const Vector2& relativePosition): _event{&event}, _source{PointerEventSource::Mouse}, _primary{true}, _pointer{pointer}, _pointers{pointers}, _modifiers{modifiers}, _id{~Int{}}, _position{position}, _relativePosition{relativePosition} {}
         #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
-        explicit PointerMoveEvent(const EmscriptenTouchEvent& event, bool primary, Int id, Modifiers modifiers, const Vector2& position, const Vector2& relativePosition): _event{&event}, _source{PointerEventSource::Touch}, _primary{primary}, _pointer{}, _pointers{Pointer::Finger}, _modifiers{modifiers}, _id{id}, _position{position}, _relativePosition{relativePosition} {}
+        explicit PointerMoveEvent(const EmscriptenTouchEvent& event, bool primary, Int id, EmscriptenApplication::Modifiers modifiers, const Vector2& position, const Vector2& relativePosition): _event{&event}, _source{PointerEventSource::Touch}, _primary{primary}, _pointer{}, _pointers{Pointer::Finger}, _modifiers{modifiers}, _id{id}, _position{position}, _relativePosition{relativePosition} {}
         #endif
 
         const void* _event;
@@ -2066,7 +2281,7 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
         const bool _primary;
         const Containers::Optional<Pointer> _pointer;
         const Pointers _pointers;
-        const Modifiers _modifiers;
+        const EmscriptenApplication::Modifiers _modifiers;
         const Int _id;
         const Vector2 _position;
         const Vector2 _relativePosition;
@@ -2140,7 +2355,7 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
         Buttons buttons() const;
 
         /** @brief Modifiers */
-        Modifiers modifiers() const;
+        EmscriptenApplication::Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
         const EmscriptenMouseEvent& event() const { return _event; }
@@ -2178,7 +2393,7 @@ class EmscriptenApplication::ScrollEvent: public EmscriptenApplication::InputEve
         Vector2 position() const;
 
         /** @brief Modifiers */
-        Modifiers modifiers() const;
+        EmscriptenApplication::Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
         const EmscriptenWheelEvent& event() const { return _event; }
@@ -2208,7 +2423,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Emscripten
         Vector2i position() const;
 
         /** @brief Modifiers */
-        Modifiers modifiers() const;
+        EmscriptenApplication::Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
         const EmscriptenWheelEvent& event() const { return _event; }
@@ -2229,202 +2444,14 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Emscripten
 */
 class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Key
-         *
-         * @see @ref key()
+         * @brief @copybrief EmscriptenApplication::Key
+         * @m_deprecated_since_latest Use @ref EmscriptenApplication::Key
+         *      instead.
          */
-        enum class Key: Int {
-            Unknown,         /**< Unknown key */
-
-            /**
-             * Left Shift
-             *
-             * @see @ref InputEvent::Modifier::Shift
-             */
-            LeftShift,
-
-            /**
-             * Right Shift
-             *
-             * @see @ref InputEvent::Modifier::Shift
-             */
-            RightShift,
-
-            /**
-             * Left Ctrl
-             *
-             * @see @ref InputEvent::Modifier::Ctrl
-             */
-            LeftCtrl,
-
-            /**
-             * Right Ctrl
-             *
-             * @see @ref InputEvent::Modifier::Ctrl
-             */
-            RightCtrl,
-
-            /**
-             * Left Alt
-             *
-             * @see @ref InputEvent::Modifier::Alt
-             */
-            LeftAlt,
-
-            /**
-             * Right Alt
-             *
-             * @see @ref InputEvent::Modifier::Alt
-             */
-            RightAlt,
-
-            /**
-             * Left Super key (Windows/⌘)
-             *
-             * @see @ref InputEvent::Modifier::Super
-             */
-            LeftSuper,
-
-            /**
-             * Right Super key (Windows/⌘)
-             *
-             * @see @ref InputEvent::Modifier::Super
-             */
-            RightSuper,
-
-            /* no equivalent for Sdl2Application's AltGr */
-
-            Enter,              /**< Enter */
-            Esc,                /**< Escape */
-
-            Up,                 /**< Up arrow */
-            Down,               /**< Down arrow */
-            Left,               /**< Left arrow */
-            Right,              /**< Right arrow */
-            Home,               /**< Home */
-            End,                /**< End */
-            PageUp,             /**< Page up */
-            PageDown,           /**< Page down */
-            Backspace,          /**< Backspace */
-            Insert,             /**< Insert */
-            Delete,             /**< Delete */
-
-            F1,                 /**< F1 */
-            F2,                 /**< F2 */
-            F3,                 /**< F3 */
-            F4,                 /**< F4 */
-            F5,                 /**< F5 */
-            F6,                 /**< F6 */
-            F7,                 /**< F7 */
-            F8,                 /**< F8 */
-            F9,                 /**< F9 */
-            F10,                /**< F10 */
-            F11,                /**< F11 */
-            F12,                /**< F12 */
-
-            Zero = '0',         /**< Zero */
-            One,                /**< One */
-            Two,                /**< Two */
-            Three,              /**< Three */
-            Four,               /**< Four */
-            Five,               /**< Five */
-            Six,                /**< Six */
-            Seven,              /**< Seven */
-            Eight,              /**< Eight */
-            Nine,               /**< Nine */
-
-            A = 'a',            /**< Letter A */
-            B,                  /**< Letter B */
-            C,                  /**< Letter C */
-            D,                  /**< Letter D */
-            E,                  /**< Letter E */
-            F,                  /**< Letter F */
-            G,                  /**< Letter G */
-            H,                  /**< Letter H */
-            I,                  /**< Letter I */
-            J,                  /**< Letter J */
-            K,                  /**< Letter K */
-            L,                  /**< Letter L */
-            M,                  /**< Letter M */
-            N,                  /**< Letter N */
-            O,                  /**< Letter O */
-            P,                  /**< Letter P */
-            Q,                  /**< Letter Q */
-            R,                  /**< Letter R */
-            S,                  /**< Letter S */
-            T,                  /**< Letter T */
-            U,                  /**< Letter U */
-            V,                  /**< Letter V */
-            W,                  /**< Letter W */
-            X,                  /**< Letter X */
-            Y,                  /**< Letter Y */
-            Z,                  /**< Letter Z */
-
-            Space,              /**< Space */
-            Tab,                /**< Tab */
-            Quote,              /**< Quote (<tt>'</tt>) */
-            Comma,              /**< Comma */
-            Period,             /**< Period */
-            Minus,              /**< Minus */
-
-            /**
-             * Plus. On the US keyboard layout this may only be representable
-             * as @m_class{m-label m-warning} **Shift**
-             * @m_class{m-label m-default} **=**.
-             */
-            Plus,
-
-            Slash,              /**< Slash */
-
-            /**
-             * Percent. On the US keyboard layout this may only be
-             * representable as @m_class{m-label m-warning} **Shift**
-             * @m_class{m-label m-default} **5**.
-             */
-            Percent,
-
-            /**
-             * Semicolon (`;`)
-             * @m_since{2020,06}
-             */
-            Semicolon,
-
-            Equal,              /**< Equal */
-            LeftBracket,        /**< Left bracket (`[`) */
-            RightBracket,       /**< Right bracket (`]`) */
-            Backslash,          /**< Backslash (`\`) */
-            Backquote,          /**< Backquote (<tt>`</tt>) */
-
-            /* no equivalent for GlfwApplication's World1 / World2 */
-            /** @todo there's IntlBackslash for World1, implement once there's
-                consensus about naming */
-
-            CapsLock,           /**< Caps lock */
-            ScrollLock,         /**< Scroll lock */
-            NumLock,            /**< Num lock */
-            PrintScreen,        /**< Print screen */
-            Pause,              /**< Pause */
-            Menu,               /**< Menu */
-
-            NumZero,            /**< Numpad zero */
-            NumOne,             /**< Numpad one */
-            NumTwo,             /**< Numpad two */
-            NumThree,           /**< Numpad three */
-            NumFour,            /**< Numpad four */
-            NumFive,            /**< Numpad five */
-            NumSix,             /**< Numpad six */
-            NumSeven,           /**< Numpad seven */
-            NumEight,           /**< Numpad eight */
-            NumNine,            /**< Numpad nine */
-            NumDecimal,         /**< Numpad decimal */
-            NumDivide,          /**< Numpad divide */
-            NumMultiply,        /**< Numpad multiply */
-            NumSubtract,        /**< Numpad subtract */
-            NumAdd,             /**< Numpad add */
-            NumEnter,           /**< Numpad enter */
-            NumEqual            /**< Numpad equal */
-        };
+        typedef CORRADE_DEPRECATED("use EmscriptenApplication::Key instead") EmscriptenApplication::Key Key;
+        #endif
 
         /**
          * @brief Key
@@ -2435,7 +2462,7 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
          * @m_class{m-doc-external} [EmscriptenkeyboardEvent::key](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenKeyboardEvent.key),
          * which respects the keyboard layout.
          */
-        Key key() const;
+        EmscriptenApplication::Key key() const;
 
         /**
          * @brief Key name
@@ -2447,7 +2474,7 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
         Containers::StringView keyName() const;
 
         /** @brief Modifiers */
-        Modifiers modifiers() const;
+        EmscriptenApplication::Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
         const EmscriptenKeyboardEvent& event() const { return _event; }

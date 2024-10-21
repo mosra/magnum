@@ -59,11 +59,11 @@ namespace Magnum { namespace Platform {
 /* These cannot be in an anonymous namespace as enumSetDebugOutput() below
    wouldn't be able to pick them up */
 
-static Debug& operator<<(Debug& debug, Application::InputEvent::Modifier value) {
+static Debug& operator<<(Debug& debug, Application::Modifier value) {
     debug << "Modifier" << Debug::nospace;
 
     switch(value) {
-        #define _c(value) case Application::InputEvent::Modifier::value: return debug << "::" #value;
+        #define _c(value) case Application::Modifier::value: return debug << "::" #value;
         _c(Shift)
         _c(Ctrl)
         _c(Alt)
@@ -133,15 +133,15 @@ static Debug& operator<<(Debug& debug, Application::PointerEventSource value) {
     return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, Application::InputEvent::Modifiers value) {
+Debug& operator<<(Debug& debug, Application::Modifiers value) {
     return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
-        Application::InputEvent::Modifier::Shift,
-        Application::InputEvent::Modifier::Ctrl,
-        Application::InputEvent::Modifier::Alt,
-        Application::InputEvent::Modifier::Super,
-        Application::InputEvent::Modifier::AltGr,
-        Application::InputEvent::Modifier::CapsLock,
-        Application::InputEvent::Modifier::NumLock,
+        Application::Modifier::Shift,
+        Application::Modifier::Ctrl,
+        Application::Modifier::Alt,
+        Application::Modifier::Super,
+        Application::Modifier::AltGr,
+        Application::Modifier::CapsLock,
+        Application::Modifier::NumLock,
     });
 }
 
@@ -188,11 +188,11 @@ CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Butt
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-Debug& operator<<(Debug& debug, Application::KeyEvent::Key value) {
+Debug& operator<<(Debug& debug, Application::Key value) {
     debug << "Key" << Debug::nospace;
 
     switch(value) {
-        #define _c(value) case Application::KeyEvent::Key::value: return debug << "::" #value;
+        #define _c(value) case Application::Key::value: return debug << "::" #value;
         _c(Unknown)
         _c(LeftShift)
         _c(RightShift)
@@ -392,53 +392,53 @@ struct Sdl2ApplicationTest: Platform::Application {
             #endif
             << event.modifiers();
 
-        if(event.key() == KeyEvent::Key::F1) {
+        if(event.key() == Key::F1) {
             Debug{} << "starting text input";
             startTextInput();
-        } else if(event.key() == KeyEvent::Key::F2) {
+        } else if(event.key() == Key::F2) {
             _redraw = !_redraw;
             Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
             if(_redraw) redraw();
         }
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        else if(event.key() == KeyEvent::Key::V) {
+        else if(event.key() == Key::V) {
             _vsync = !_vsync;
             Debug{} << "vsync" << (_vsync? "on" : "off");
             setSwapInterval(_vsync ? 1 : 0);
         }
         #endif
-        else if(event.key() == KeyEvent::Key::Esc) {
+        else if(event.key() == Key::Esc) {
             Debug{} << "stopping text input";
             stopTextInput();
-        } else if(event.key() == KeyEvent::Key::T) {
+        } else if(event.key() == Key::T) {
             Debug{} << "setting window title";
             setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
         }
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        else if(event.key() == KeyEvent::Key::S) {
+        else if(event.key() == Key::S) {
             Debug{} << "setting window size, which should trigger a viewport event";
             setWindowSize(Vector2i{300, 200});
-        } else if(event.key() == KeyEvent::Key::W) {
+        } else if(event.key() == Key::W) {
             Debug{} << "setting max window size, which should trigger a viewport event";
             setMaxWindowSize(Vector2i{700, 500});
         }
         #endif
-        else if(event.key() == KeyEvent::Key::H) {
+        else if(event.key() == Key::H) {
             Debug{} << "toggling hand cursor";
             setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
         }
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        else if(event.key() == KeyEvent::Key::L) {
+        else if(event.key() == Key::L) {
             Debug{} << "toggling locked mouse";
             setCursor(cursor() == Cursor::Arrow ? Cursor::HiddenLocked : Cursor::Arrow);
         }
         #else
-        else if(event.key() == KeyEvent::Key::F) {
+        else if(event.key() == Key::F) {
             Debug{} << "toggling fullscreen";
             setContainerCssClass((_fullscreen ^= true) ? "mn-fullsize" : "");
         }
         #endif
-        else if(event.key() == KeyEvent::Key::X) {
+        else if(event.key() == Key::X) {
             Debug{} << "requesting an exit with code 5";
             exit(5);
         }

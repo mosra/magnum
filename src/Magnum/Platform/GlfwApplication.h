@@ -190,9 +190,21 @@ class GlfwApplication {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class Modifier: Int;
+        enum class Key: Int;
         enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
+
+        /**
+         * @brief Set of keyboard modifiers
+         * @m_since_latest
+         *
+         * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
+         *      @ref PointerMoveEvent::modifiers(),
+         *      @ref ScrollEvent::modifiers()
+         */
+        typedef Containers::EnumSet<Modifier> Modifiers;
 
         /**
          * @brief Set of pointer types
@@ -930,6 +942,286 @@ class GlfwApplication {
 
         Vector2i _minWindowSize, _maxWindowSize;
         Vector2 _previousMouseMovePosition{Constants::nan()};
+};
+
+/**
+@brief Keyboard modifier
+@m_since_latest
+
+@see @ref Modifiers, @ref KeyEvent::modifiers(),
+    @ref PointerEvent::modifiers(), @ref PointerMoveEvent::modifiers(),
+    @ref ScrollEvent::modifiers()
+*/
+enum class GlfwApplication::Modifier: Int {
+    /**
+     * Shift
+     *
+     * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
+     */
+    Shift = GLFW_MOD_SHIFT,
+
+    /**
+     * Ctrl
+     *
+     * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
+     */
+    Ctrl = GLFW_MOD_CONTROL,
+
+    /**
+     * Alt
+     *
+     * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
+     */
+    Alt = GLFW_MOD_ALT,
+
+    /**
+     * Super key (Windows/⌘)
+     *
+     * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
+     */
+    Super = GLFW_MOD_SUPER
+};
+
+CORRADE_ENUMSET_OPERATORS(GlfwApplication::Modifiers)
+
+/**
+@brief Key
+@m_since_latest
+
+@see @ref KeyEvent::key()
+*/
+enum class GlfwApplication::Key: Int {
+    Unknown = GLFW_KEY_UNKNOWN,         /**< Unknown key */
+
+    /**
+     * Left Shift
+     *
+     * @see @ref InputEvent::Modifier::Shift
+     */
+    LeftShift = GLFW_KEY_LEFT_SHIFT,
+
+    /**
+     * Right Shift
+     *
+     * @see @ref InputEvent::Modifier::Shift
+     */
+    RightShift = GLFW_KEY_RIGHT_SHIFT,
+
+    /**
+     * Left Ctrl
+     *
+     * @see @ref InputEvent::Modifier::Ctrl
+     */
+    LeftCtrl = GLFW_KEY_LEFT_CONTROL,
+
+    /**
+     * Right Ctrl
+     *
+     * @see @ref InputEvent::Modifier::Ctrl
+     */
+    RightCtrl = GLFW_KEY_RIGHT_CONTROL,
+
+    /**
+     * Left Alt
+     *
+     * @see @ref InputEvent::Modifier::Alt
+     */
+    LeftAlt = GLFW_KEY_LEFT_ALT,
+
+    /**
+     * Right Alt
+     *
+     * @see @ref InputEvent::Modifier::Alt
+     */
+    RightAlt = GLFW_KEY_RIGHT_ALT,
+
+    /**
+     * Left Super key (Windows/⌘)
+     *
+     * @see @ref InputEvent::Modifier::Super
+     */
+    LeftSuper = GLFW_KEY_LEFT_SUPER,
+
+    /**
+     * Right Super key (Windows/⌘)
+     *
+     * @see @ref InputEvent::Modifier::Super
+     */
+    RightSuper = GLFW_KEY_RIGHT_SUPER,
+
+    /* no equivalent for Sdl2Application's AltGr */
+
+    Enter = GLFW_KEY_ENTER,             /**< Enter */
+    Esc = GLFW_KEY_ESCAPE,              /**< Escape */
+
+    Up = GLFW_KEY_UP,                   /**< Up arrow */
+    Down = GLFW_KEY_DOWN,               /**< Down arrow */
+    Left = GLFW_KEY_LEFT,               /**< Left arrow */
+    Right = GLFW_KEY_RIGHT,             /**< Right arrow */
+    Home = GLFW_KEY_HOME,               /**< Home */
+    End = GLFW_KEY_END,                 /**< End */
+    PageUp = GLFW_KEY_PAGE_UP,          /**< Page up */
+    PageDown = GLFW_KEY_PAGE_DOWN,      /**< Page down */
+    Backspace = GLFW_KEY_BACKSPACE,     /**< Backspace */
+    Insert = GLFW_KEY_INSERT,           /**< Insert */
+    Delete = GLFW_KEY_DELETE,           /**< Delete */
+
+    F1 = GLFW_KEY_F1,                   /**< F1 */
+    F2 = GLFW_KEY_F2,                   /**< F2 */
+    F3 = GLFW_KEY_F3,                   /**< F3 */
+    F4 = GLFW_KEY_F4,                   /**< F4 */
+    F5 = GLFW_KEY_F5,                   /**< F5 */
+    F6 = GLFW_KEY_F6,                   /**< F6 */
+    F7 = GLFW_KEY_F7,                   /**< F7 */
+    F8 = GLFW_KEY_F8,                   /**< F8 */
+    F9 = GLFW_KEY_F9,                   /**< F9 */
+    F10 = GLFW_KEY_F10,                 /**< F10 */
+    F11 = GLFW_KEY_F11,                 /**< F11 */
+    F12 = GLFW_KEY_F12,                 /**< F12 */
+
+    Space = GLFW_KEY_SPACE,             /**< Space */
+    Tab = GLFW_KEY_TAB,                 /**< Tab */
+
+    /**
+     * Quote (<tt>'</tt>)
+     * @m_since{2020,06}
+     */
+    Quote = GLFW_KEY_APOSTROPHE,
+
+    Comma = GLFW_KEY_COMMA,             /**< Comma */
+    Period = GLFW_KEY_PERIOD,           /**< Period */
+    Minus = GLFW_KEY_MINUS,             /**< Minus */
+
+    /**
+     * Plus. On the US keyboard layout this may only be representable as
+     * @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **=**.
+     */
+    Plus = '+',
+
+    Slash = GLFW_KEY_SLASH,             /**< Slash */
+
+    /**
+     * Percent. On the US keyboard layout this may only be representable as
+     * @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **5**.
+     */
+    Percent = '%',
+
+    Semicolon = GLFW_KEY_SEMICOLON,     /**< Semicolon (`;`) */
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /** Semicolon (`;`)
+     * @m_deprecated_since{2019,01} Use @ref Key::Semicolon instead.
+     */
+    Smicolon CORRADE_DEPRECATED_ENUM("use Key::Semicolon instead") = Semicolon,
+    #endif
+
+    Equal = GLFW_KEY_EQUAL,             /**< Equal */
+
+    /**
+     * Left bracket (`[`)
+     * @m_since{2020,06}
+     */
+    LeftBracket = GLFW_KEY_LEFT_BRACKET,
+
+    /**
+     * Right bracket (`]`)
+     * @m_since{2020,06}
+     */
+    RightBracket = GLFW_KEY_RIGHT_BRACKET,
+
+    /**
+     * Backslash (`\`)
+     * @see @ref Key::World1, @ref Key::World2
+     * @m_since{2020,06}
+     */
+    Backslash = GLFW_KEY_BACKSLASH,
+
+    /**
+     * Backquote (<tt>`</tt>)
+     * @m_since{2020,06}
+     */
+    Backquote = GLFW_KEY_GRAVE_ACCENT,
+
+    /**
+     * Non-US \#1. Can be for example a backslash (`\`) next to left Shift.
+     * @see @ref Key::Backslash
+     * @m_since{2020,06}
+     * @todo Revisit / rename together with World2 once
+     *      https://github.com/glfw/glfw/issues/2481 is resolved. SDL
+     *      scancode for this key is SDL_SCANCODE_NONUSBACKSLASH, HTML5
+     *      names it IntlBackslash.
+     */
+    World1 = GLFW_KEY_WORLD_1,
+
+    /**
+     * Non-US \#2
+     * @see @ref Key::Backslash
+     * @m_since{2020,06}
+     */
+    World2 = GLFW_KEY_WORLD_2,
+
+    Zero = GLFW_KEY_0,                  /**< Zero */
+    One = GLFW_KEY_1,                   /**< One */
+    Two = GLFW_KEY_2,                   /**< Two */
+    Three = GLFW_KEY_3,                 /**< Three */
+    Four = GLFW_KEY_4,                  /**< Four */
+    Five = GLFW_KEY_5,                  /**< Five */
+    Six = GLFW_KEY_6,                   /**< Six */
+    Seven = GLFW_KEY_7,                 /**< Seven */
+    Eight = GLFW_KEY_8,                 /**< Eight */
+    Nine = GLFW_KEY_9,                  /**< Nine */
+
+    A = GLFW_KEY_A,                     /**< Letter A */
+    B = GLFW_KEY_B,                     /**< Letter B */
+    C = GLFW_KEY_C,                     /**< Letter C */
+    D = GLFW_KEY_D,                     /**< Letter D */
+    E = GLFW_KEY_E,                     /**< Letter E */
+    F = GLFW_KEY_F,                     /**< Letter F */
+    G = GLFW_KEY_G,                     /**< Letter G */
+    H = GLFW_KEY_H,                     /**< Letter H */
+    I = GLFW_KEY_I,                     /**< Letter I */
+    J = GLFW_KEY_J,                     /**< Letter J */
+    K = GLFW_KEY_K,                     /**< Letter K */
+    L = GLFW_KEY_L,                     /**< Letter L */
+    M = GLFW_KEY_M,                     /**< Letter M */
+    N = GLFW_KEY_N,                     /**< Letter N */
+    O = GLFW_KEY_O,                     /**< Letter O */
+    P = GLFW_KEY_P,                     /**< Letter P */
+    Q = GLFW_KEY_Q,                     /**< Letter Q */
+    R = GLFW_KEY_R,                     /**< Letter R */
+    S = GLFW_KEY_S,                     /**< Letter S */
+    T = GLFW_KEY_T,                     /**< Letter T */
+    U = GLFW_KEY_U,                     /**< Letter U */
+    V = GLFW_KEY_V,                     /**< Letter V */
+    W = GLFW_KEY_W,                     /**< Letter W */
+    X = GLFW_KEY_X,                     /**< Letter X */
+    Y = GLFW_KEY_Y,                     /**< Letter Y */
+    Z = GLFW_KEY_Z,                     /**< Letter Z */
+
+    CapsLock = GLFW_KEY_CAPS_LOCK,      /**< Caps lock */
+    ScrollLock = GLFW_KEY_SCROLL_LOCK,  /**< Scroll lock */
+    NumLock = GLFW_KEY_NUM_LOCK,        /**< Num lock */
+    PrintScreen = GLFW_KEY_PRINT_SCREEN,/**< Print screen */
+    Pause = GLFW_KEY_PAUSE,             /**< Pause */
+    Menu = GLFW_KEY_MENU,               /**< Menu */
+
+    NumZero = GLFW_KEY_KP_0,            /**< Numpad zero */
+    NumOne = GLFW_KEY_KP_1,             /**< Numpad one */
+    NumTwo = GLFW_KEY_KP_2,             /**< Numpad two */
+    NumThree = GLFW_KEY_KP_3,           /**< Numpad three */
+    NumFour = GLFW_KEY_KP_4,            /**< Numpad four */
+    NumFive = GLFW_KEY_KP_5,            /**< Numpad five */
+    NumSix = GLFW_KEY_KP_6,             /**< Numpad six */
+    NumSeven = GLFW_KEY_KP_7,           /**< Numpad seven */
+    NumEight = GLFW_KEY_KP_8,           /**< Numpad eight */
+    NumNine = GLFW_KEY_KP_9,            /**< Numpad nine */
+    NumDecimal = GLFW_KEY_KP_DECIMAL,   /**< Numpad decimal */
+    NumDivide = GLFW_KEY_KP_DIVIDE,     /**< Numpad divide */
+    NumMultiply = GLFW_KEY_KP_MULTIPLY, /**< Numpad multiply */
+    NumSubtract = GLFW_KEY_KP_SUBTRACT, /**< Numpad subtract */
+    NumAdd = GLFW_KEY_KP_ADD,           /**< Numpad add */
+    NumEnter = GLFW_KEY_KP_ENTER,       /**< Numpad enter */
+    NumEqual = GLFW_KEY_KP_EQUAL        /**< Numpad equal */
 };
 
 /**
@@ -1742,52 +2034,21 @@ class GlfwApplication::ViewportEvent {
 */
 class GlfwApplication::InputEvent {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Modifier
-         *
-         * @see @ref Modifiers, @ref KeyEvent::modifiers(),
-         *      @ref PointerEvent::modifiers(),
-         *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         * @brief @copybrief GlfwApplication::Modifier
+         * @m_deprecated_since_latest Use @ref GlfwApplication::Modifier
+         *      instead.
          */
-        enum class Modifier: Int {
-            /**
-             * Shift
-             *
-             * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
-             */
-            Shift = GLFW_MOD_SHIFT,
-
-            /**
-             * Ctrl
-             *
-             * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
-             */
-            Ctrl = GLFW_MOD_CONTROL,
-
-            /**
-             * Alt
-             *
-             * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
-             */
-            Alt = GLFW_MOD_ALT,
-
-            /**
-             * Super key (Windows/⌘)
-             *
-             * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
-             */
-            Super = GLFW_MOD_SUPER
-        };
+        typedef CORRADE_DEPRECATED("use GlfwApplication::Modifier instead") GlfwApplication::Modifier Modifier;
 
         /**
-         * @brief Set of modifiers
-         *
-         * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
-         *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         * @brief @copybrief GlfwApplication::Modifiers
+         * @m_deprecated_since_latest Use @ref GlfwApplication::Modifiers
+         *      instead.
          */
-        typedef Containers::EnumSet<Modifier> Modifiers;
+        typedef CORRADE_DEPRECATED("use GlfwApplication::Modifiers instead") GlfwApplication::Modifiers Modifiers;
+        #endif
 
         /** @brief Copying is not allowed */
         InputEvent(const InputEvent&) = delete;
@@ -1816,8 +2077,6 @@ class GlfwApplication::InputEvent {
         bool _accepted;
 };
 
-CORRADE_ENUMSET_OPERATORS(GlfwApplication::InputEvent::Modifiers)
-
 /**
 @brief Key event
 
@@ -1825,247 +2084,13 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::InputEvent::Modifiers)
 */
 class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Key
-         *
-         * @see @ref key()
+         * @brief @copybrief GlfwApplication::Key
+         * @m_deprecated_since_latest Use @ref GlfwApplication::Key instead.
          */
-        enum class Key: Int {
-            Unknown = GLFW_KEY_UNKNOWN,         /**< Unknown key */
-
-            /**
-             * Left Shift
-             *
-             * @see @ref InputEvent::Modifier::Shift
-             */
-            LeftShift = GLFW_KEY_LEFT_SHIFT,
-
-            /**
-             * Right Shift
-             *
-             * @see @ref InputEvent::Modifier::Shift
-             */
-            RightShift = GLFW_KEY_RIGHT_SHIFT,
-
-            /**
-             * Left Ctrl
-             *
-             * @see @ref InputEvent::Modifier::Ctrl
-             */
-            LeftCtrl = GLFW_KEY_LEFT_CONTROL,
-
-            /**
-             * Right Ctrl
-             *
-             * @see @ref InputEvent::Modifier::Ctrl
-             */
-            RightCtrl = GLFW_KEY_RIGHT_CONTROL,
-
-            /**
-             * Left Alt
-             *
-             * @see @ref InputEvent::Modifier::Alt
-             */
-            LeftAlt = GLFW_KEY_LEFT_ALT,
-
-            /**
-             * Right Alt
-             *
-             * @see @ref InputEvent::Modifier::Alt
-             */
-            RightAlt = GLFW_KEY_RIGHT_ALT,
-
-            /**
-             * Left Super key (Windows/⌘)
-             *
-             * @see @ref InputEvent::Modifier::Super
-             */
-            LeftSuper = GLFW_KEY_LEFT_SUPER,
-
-            /**
-             * Right Super key (Windows/⌘)
-             *
-             * @see @ref InputEvent::Modifier::Super
-             */
-            RightSuper = GLFW_KEY_RIGHT_SUPER,
-
-            /* no equivalent for Sdl2Application's AltGr */
-
-            Enter = GLFW_KEY_ENTER,             /**< Enter */
-            Esc = GLFW_KEY_ESCAPE,              /**< Escape */
-
-            Up = GLFW_KEY_UP,                   /**< Up arrow */
-            Down = GLFW_KEY_DOWN,               /**< Down arrow */
-            Left = GLFW_KEY_LEFT,               /**< Left arrow */
-            Right = GLFW_KEY_RIGHT,             /**< Right arrow */
-            Home = GLFW_KEY_HOME,               /**< Home */
-            End = GLFW_KEY_END,                 /**< End */
-            PageUp = GLFW_KEY_PAGE_UP,          /**< Page up */
-            PageDown = GLFW_KEY_PAGE_DOWN,      /**< Page down */
-            Backspace = GLFW_KEY_BACKSPACE,     /**< Backspace */
-            Insert = GLFW_KEY_INSERT,           /**< Insert */
-            Delete = GLFW_KEY_DELETE,           /**< Delete */
-
-            F1 = GLFW_KEY_F1,                   /**< F1 */
-            F2 = GLFW_KEY_F2,                   /**< F2 */
-            F3 = GLFW_KEY_F3,                   /**< F3 */
-            F4 = GLFW_KEY_F4,                   /**< F4 */
-            F5 = GLFW_KEY_F5,                   /**< F5 */
-            F6 = GLFW_KEY_F6,                   /**< F6 */
-            F7 = GLFW_KEY_F7,                   /**< F7 */
-            F8 = GLFW_KEY_F8,                   /**< F8 */
-            F9 = GLFW_KEY_F9,                   /**< F9 */
-            F10 = GLFW_KEY_F10,                 /**< F10 */
-            F11 = GLFW_KEY_F11,                 /**< F11 */
-            F12 = GLFW_KEY_F12,                 /**< F12 */
-
-            Space = GLFW_KEY_SPACE,             /**< Space */
-            Tab = GLFW_KEY_TAB,                 /**< Tab */
-
-            /**
-             * Quote (<tt>'</tt>)
-             * @m_since{2020,06}
-             */
-            Quote = GLFW_KEY_APOSTROPHE,
-
-            Comma = GLFW_KEY_COMMA,             /**< Comma */
-            Period = GLFW_KEY_PERIOD,           /**< Period */
-            Minus = GLFW_KEY_MINUS,             /**< Minus */
-
-            /**
-             * Plus. On the US keyboard layout this may only be representable
-             * as @m_class{m-label m-warning} **Shift**
-             * @m_class{m-label m-default} **=**.
-             */
-            Plus = '+',
-
-            Slash = GLFW_KEY_SLASH,             /**< Slash */
-
-            /**
-             * Percent. On the US keyboard layout this may only be
-             * representable as @m_class{m-label m-warning} **Shift**
-             * @m_class{m-label m-default} **5**.
-             */
-            Percent = '%',
-
-            Semicolon = GLFW_KEY_SEMICOLON,     /**< Semicolon (`;`) */
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /** Semicolon (`;`)
-             * @m_deprecated_since{2019,01} Use @ref Key::Semicolon instead.
-             */
-            Smicolon CORRADE_DEPRECATED_ENUM("use Key::Semicolon instead") = Semicolon,
-            #endif
-
-            Equal = GLFW_KEY_EQUAL,             /**< Equal */
-
-            /**
-             * Left bracket (`[`)
-             * @m_since{2020,06}
-             */
-            LeftBracket = GLFW_KEY_LEFT_BRACKET,
-
-            /**
-             * Right bracket (`]`)
-             * @m_since{2020,06}
-             */
-            RightBracket = GLFW_KEY_RIGHT_BRACKET,
-
-            /**
-             * Backslash (`\`)
-             * @see @ref Key::World1, @ref Key::World2
-             * @m_since{2020,06}
-             */
-            Backslash = GLFW_KEY_BACKSLASH,
-
-            /**
-             * Backquote (<tt>`</tt>)
-             * @m_since{2020,06}
-             */
-            Backquote = GLFW_KEY_GRAVE_ACCENT,
-
-            /**
-             * Non-US \#1. Can be for example a backslash (`\`) next to left
-             * Shift.
-             * @see @ref Key::Backslash
-             * @m_since{2020,06}
-             * @todo Revisit / rename together with World2 once
-             *      https://github.com/glfw/glfw/issues/2481 is resolved. SDL
-             *      scancode for this key is SDL_SCANCODE_NONUSBACKSLASH, HTML5
-             *      names it IntlBackslash.
-             */
-            World1 = GLFW_KEY_WORLD_1,
-
-            /**
-             * Non-US \#2
-             * @see @ref Key::Backslash
-             * @m_since{2020,06}
-             */
-            World2 = GLFW_KEY_WORLD_2,
-
-            Zero = GLFW_KEY_0,                  /**< Zero */
-            One = GLFW_KEY_1,                   /**< One */
-            Two = GLFW_KEY_2,                   /**< Two */
-            Three = GLFW_KEY_3,                 /**< Three */
-            Four = GLFW_KEY_4,                  /**< Four */
-            Five = GLFW_KEY_5,                  /**< Five */
-            Six = GLFW_KEY_6,                   /**< Six */
-            Seven = GLFW_KEY_7,                 /**< Seven */
-            Eight = GLFW_KEY_8,                 /**< Eight */
-            Nine = GLFW_KEY_9,                  /**< Nine */
-
-            A = GLFW_KEY_A,                     /**< Letter A */
-            B = GLFW_KEY_B,                     /**< Letter B */
-            C = GLFW_KEY_C,                     /**< Letter C */
-            D = GLFW_KEY_D,                     /**< Letter D */
-            E = GLFW_KEY_E,                     /**< Letter E */
-            F = GLFW_KEY_F,                     /**< Letter F */
-            G = GLFW_KEY_G,                     /**< Letter G */
-            H = GLFW_KEY_H,                     /**< Letter H */
-            I = GLFW_KEY_I,                     /**< Letter I */
-            J = GLFW_KEY_J,                     /**< Letter J */
-            K = GLFW_KEY_K,                     /**< Letter K */
-            L = GLFW_KEY_L,                     /**< Letter L */
-            M = GLFW_KEY_M,                     /**< Letter M */
-            N = GLFW_KEY_N,                     /**< Letter N */
-            O = GLFW_KEY_O,                     /**< Letter O */
-            P = GLFW_KEY_P,                     /**< Letter P */
-            Q = GLFW_KEY_Q,                     /**< Letter Q */
-            R = GLFW_KEY_R,                     /**< Letter R */
-            S = GLFW_KEY_S,                     /**< Letter S */
-            T = GLFW_KEY_T,                     /**< Letter T */
-            U = GLFW_KEY_U,                     /**< Letter U */
-            V = GLFW_KEY_V,                     /**< Letter V */
-            W = GLFW_KEY_W,                     /**< Letter W */
-            X = GLFW_KEY_X,                     /**< Letter X */
-            Y = GLFW_KEY_Y,                     /**< Letter Y */
-            Z = GLFW_KEY_Z,                     /**< Letter Z */
-
-            CapsLock = GLFW_KEY_CAPS_LOCK,      /**< Caps lock */
-            ScrollLock = GLFW_KEY_SCROLL_LOCK,  /**< Scroll lock */
-            NumLock = GLFW_KEY_NUM_LOCK,        /**< Num lock */
-            PrintScreen = GLFW_KEY_PRINT_SCREEN,/**< Print screen */
-            Pause = GLFW_KEY_PAUSE,             /**< Pause */
-            Menu = GLFW_KEY_MENU,               /**< Menu */
-
-            NumZero = GLFW_KEY_KP_0,            /**< Numpad zero */
-            NumOne = GLFW_KEY_KP_1,             /**< Numpad one */
-            NumTwo = GLFW_KEY_KP_2,             /**< Numpad two */
-            NumThree = GLFW_KEY_KP_3,           /**< Numpad three */
-            NumFour = GLFW_KEY_KP_4,            /**< Numpad four */
-            NumFive = GLFW_KEY_KP_5,            /**< Numpad five */
-            NumSix = GLFW_KEY_KP_6,             /**< Numpad six */
-            NumSeven = GLFW_KEY_KP_7,           /**< Numpad seven */
-            NumEight = GLFW_KEY_KP_8,           /**< Numpad eight */
-            NumNine = GLFW_KEY_KP_9,            /**< Numpad nine */
-            NumDecimal = GLFW_KEY_KP_DECIMAL,   /**< Numpad decimal */
-            NumDivide = GLFW_KEY_KP_DIVIDE,     /**< Numpad divide */
-            NumMultiply = GLFW_KEY_KP_MULTIPLY, /**< Numpad multiply */
-            NumSubtract = GLFW_KEY_KP_SUBTRACT, /**< Numpad subtract */
-            NumAdd = GLFW_KEY_KP_ADD,           /**< Numpad add */
-            NumEnter = GLFW_KEY_KP_ENTER,       /**< Numpad enter */
-            NumEqual = GLFW_KEY_KP_EQUAL        /**< Numpad equal */
-        };
+        typedef CORRADE_DEPRECATED("use GlfwApplication::Key instead") GlfwApplication::Key Key;
+        #endif
 
         /**
          * @brief Name for given key
@@ -2078,10 +2103,10 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
          * exits.
          * @see @ref keyName(Key)
          */
-        static Containers::StringView keyName(Key key);
+        static Containers::StringView keyName(GlfwApplication::Key key);
 
         /** @copydoc Sdl2Application::KeyEvent::key() */
-        Key key() const { return _key; }
+        GlfwApplication::Key key() const { return _key; }
 
         /**
          * @brief Key name
@@ -2098,7 +2123,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         Containers::StringView keyName() const;
 
         /** @brief Modifiers */
-        Modifiers modifiers() const { return _modifiers; }
+        GlfwApplication::Modifiers modifiers() const { return _modifiers; }
 
         /** @copydoc Sdl2Application::KeyEvent::isRepeated() */
         bool isRepeated() const { return _repeated; }
@@ -2106,10 +2131,10 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
     private:
         friend GlfwApplication;
 
-        explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        explicit KeyEvent(GlfwApplication::Key key, GlfwApplication::Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
-        const Key _key;
-        const Modifiers _modifiers;
+        const GlfwApplication::Key _key;
+        const GlfwApplication::Modifiers _modifiers;
         const bool _repeated;
 };
 
@@ -2174,16 +2199,16 @@ class GlfwApplication::PointerEvent: public InputEvent {
         Vector2 position() const { return _position; }
 
         /** @brief Modifiers */
-        Modifiers modifiers() const { return _modifiers; }
+        GlfwApplication::Modifiers modifiers() const { return _modifiers; }
 
     private:
         friend GlfwApplication;
 
-        explicit PointerEvent(Pointer pointer, const Vector2& position, Modifiers modifiers): _pointer(pointer), _position{position}, _modifiers{modifiers} {}
+        explicit PointerEvent(Pointer pointer, const Vector2& position, GlfwApplication::Modifiers modifiers): _pointer(pointer), _position{position}, _modifiers{modifiers} {}
 
         const Pointer _pointer;
         const Vector2 _position;
-        const Modifiers _modifiers;
+        const GlfwApplication::Modifiers _modifiers;
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -2224,16 +2249,16 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
         Vector2i position() const { return _position; }
 
         /** @brief Modifiers */
-        Modifiers modifiers() const { return _modifiers; }
+        GlfwApplication::Modifiers modifiers() const { return _modifiers; }
 
     private:
         friend GlfwApplication;
 
-        explicit MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): _button{button}, _position{position}, _modifiers{modifiers} {}
+        explicit MouseEvent(Button button, const Vector2i& position, GlfwApplication::Modifiers modifiers): _button{button}, _position{position}, _modifiers{modifiers} {}
 
         const Button _button;
         const Vector2i _position;
-        const Modifiers _modifiers;
+        const GlfwApplication::Modifiers _modifiers;
 };
 #endif
 
@@ -2331,7 +2356,7 @@ class GlfwApplication::PointerMoveEvent: public InputEvent {
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        GlfwApplication::Modifiers modifiers();
 
     private:
         friend GlfwApplication;
@@ -2342,7 +2367,7 @@ class GlfwApplication::PointerMoveEvent: public InputEvent {
         const Containers::Optional<Pointer> _pointer;
         Containers::Optional<Pointers> _pointers;
         const Vector2 _position, _relativePosition;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<GlfwApplication::Modifiers> _modifiers;
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -2400,7 +2425,7 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        GlfwApplication::Modifiers modifiers();
 
     private:
         friend GlfwApplication;
@@ -2410,7 +2435,7 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
         GLFWwindow* const _window;
         const Vector2i _position, _relativePosition;
         Containers::Optional<Buttons> _buttons;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<GlfwApplication::Modifiers> _modifiers;
 };
 
 CORRADE_IGNORE_DEPRECATED_PUSH
@@ -2444,7 +2469,7 @@ class GlfwApplication::ScrollEvent: public InputEvent {
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        GlfwApplication::Modifiers modifiers();
 
     private:
         friend GlfwApplication;
@@ -2454,7 +2479,7 @@ class GlfwApplication::ScrollEvent: public InputEvent {
         GLFWwindow* const _window;
         const Vector2 _offset;
         Containers::Optional<Vector2> _position;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<GlfwApplication::Modifiers> _modifiers;
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -2482,7 +2507,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") GlfwApplic
          *
          * Lazily populated on first request.
          */
-        Modifiers modifiers();
+        GlfwApplication::Modifiers modifiers();
 
     private:
         friend GlfwApplication;
@@ -2492,7 +2517,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") GlfwApplic
         GLFWwindow* const _window;
         const Vector2 _offset;
         Containers::Optional<Vector2i> _position;
-        Containers::Optional<Modifiers> _modifiers;
+        Containers::Optional<GlfwApplication::Modifiers> _modifiers;
 };
 #endif
 

@@ -382,23 +382,23 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
 
 namespace {
 
-GlfwApplication::InputEvent::Modifiers currentGlfwModifiers(GLFWwindow* window) {
+GlfwApplication::Modifiers currentGlfwModifiers(GLFWwindow* window) {
     static_assert(GLFW_PRESS == true && GLFW_RELEASE == false,
         "GLFW press and release constants do not correspond to bool values");
 
-    GlfwApplication::InputEvent::Modifiers mods;
+    GlfwApplication::Modifiers mods;
     if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) ||
        glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT))
-        mods |= GlfwApplication::InputEvent::Modifier::Shift;
+        mods |= GlfwApplication::Modifier::Shift;
     if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) ||
        glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL))
-        mods |= GlfwApplication::InputEvent::Modifier::Ctrl;
+        mods |= GlfwApplication::Modifier::Ctrl;
     if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) ||
        glfwGetKey(window, GLFW_KEY_RIGHT_ALT))
-        mods |= GlfwApplication::InputEvent::Modifier::Alt;
+        mods |= GlfwApplication::Modifier::Alt;
     if(glfwGetKey(window, GLFW_KEY_LEFT_SUPER) ||
        glfwGetKey(window, GLFW_KEY_RIGHT_SUPER))
-        mods |= GlfwApplication::InputEvent::Modifier::Super;
+        mods |= GlfwApplication::Modifier::Super;
 
     return mods;
 }
@@ -665,7 +665,7 @@ void GlfwApplication::setupCallbacks() {
     glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, int, const int action, const int mods) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
-        KeyEvent e(static_cast<KeyEvent::Key>(key), {static_cast<InputEvent::Modifier>(mods)}, action == GLFW_REPEAT);
+        KeyEvent e(Key(key), Modifiers{mods}, action == GLFW_REPEAT);
 
         if(action == GLFW_PRESS || action == GLFW_REPEAT)
             app.keyPressEvent(e);
@@ -690,10 +690,10 @@ void GlfwApplication::setupCallbacks() {
                the callback, set them directly instead of having them lazily
                populated later */
             e._pointers = pointers;
-            e._modifiers = InputEvent::Modifiers{mods};
+            e._modifiers = Modifiers{mods};
             app.pointerMoveEvent(e);
         } else {
-            PointerEvent e{pointer, position, InputEvent::Modifiers{mods}};
+            PointerEvent e{pointer, position, Modifiers{mods}};
             if(action == GLFW_PRESS) /* we don't handle GLFW_REPEAT */
                 app.pointerPressEvent(e);
             else if(action == GLFW_RELEASE)
@@ -1107,7 +1107,7 @@ GlfwApplication::Configuration::Configuration():
 
 GlfwApplication::Configuration::~Configuration() = default;
 
-Containers::StringView GlfwApplication::KeyEvent::keyName(const Key key) {
+Containers::StringView GlfwApplication::KeyEvent::keyName(const GlfwApplication::Key key) {
     return glfwGetKeyName(int(key), 0);
 }
 
@@ -1122,7 +1122,7 @@ GlfwApplication::Pointers GlfwApplication::PointerMoveEvent::pointers() {
     return *_pointers;
 }
 
-auto GlfwApplication::PointerMoveEvent::modifiers() -> Modifiers {
+GlfwApplication::Modifiers GlfwApplication::PointerMoveEvent::modifiers() {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
@@ -1143,14 +1143,14 @@ auto GlfwApplication::MouseMoveEvent::buttons() -> Buttons {
     return *_buttons;
 }
 
-auto GlfwApplication::MouseMoveEvent::modifiers() -> Modifiers {
+GlfwApplication::Modifiers GlfwApplication::MouseMoveEvent::modifiers() {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-auto GlfwApplication::ScrollEvent::modifiers() -> Modifiers {
+GlfwApplication::Modifiers GlfwApplication::ScrollEvent::modifiers() {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
@@ -1175,7 +1175,7 @@ Vector2i GlfwApplication::MouseScrollEvent::position() {
     return *_position;
 }
 
-auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
+GlfwApplication::Modifiers GlfwApplication::MouseScrollEvent::modifiers() {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }

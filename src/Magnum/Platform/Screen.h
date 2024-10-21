@@ -53,6 +53,9 @@ CORRADE_ENUMSET_OPERATORS(PropagatedScreenEvents)
 template<class Application, bool> class ScreenKeyEventMixin {};
 template<class Application> class ScreenKeyEventMixin<Application, true> {
     public:
+        typedef typename BasicScreenedApplication<Application>::Modifier Modifier;
+        typedef typename BasicScreenedApplication<Application>::Modifiers Modifiers;
+        typedef typename BasicScreenedApplication<Application>::Key Key;
         typedef typename BasicScreenedApplication<Application>::KeyEvent KeyEvent;
 
     private:
@@ -192,6 +195,33 @@ template<class Application> class BasicScreen:
         typedef typename BasicScreenedApplication<Application>::InputEvent InputEvent;
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief Keyboard modifier
+         * @m_since_latest
+         *
+         * Defined only if the application has a
+         * @relativeref{Sdl2Application,KeyEvent}.
+         */
+        typedef typename BasicScreenedApplication<Application>::Modifier Modifier;
+
+        /**
+         * @brief Set of keyboard modifiers
+         * @m_since_latest
+         *
+         * Defined only if the application has a
+         * @relativeref{Sdl2Application,KeyEvent}.
+         */
+        typedef typename BasicScreenedApplication<Application>::Modifiers Modifiers;
+
+        /**
+         * @brief Key
+         * @m_since_latest
+         *
+         * Defined only if the application has a
+         * @relativeref{Sdl2Application,KeyEvent}.
+         */
+        typedef typename BasicScreenedApplication<Application>::Key Key;
+
         /**
          * @brief Key event
          *
