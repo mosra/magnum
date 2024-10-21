@@ -265,7 +265,6 @@ void GlfwApplication::setWindowTitle(const Containers::StringView title) {
     glfwSetWindowTitle(_window, Containers::String::nullTerminatedView(title).data());
 }
 
-#if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
 void GlfwApplication::setWindowIcon(const ImageView2D& image) {
     setWindowIcon({&image, 1});
 }
@@ -325,14 +324,10 @@ void GlfwApplication::setWindowIcon(const Containers::ArrayView<const ImageView2
 void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
     setWindowIcon(Containers::arrayView(images));
 }
-#endif
 
 bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
-    #ifdef GLFW_NO_API
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless))
-    #endif
-    {
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless)) {
         return tryCreate(configuration, GLConfiguration{});
     }
     #endif
@@ -355,17 +350,13 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
         glfwWindowHint(GLFW_DECORATED, !(flags >= Configuration::WindowFlag::Borderless));
         glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
         glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
-        #ifdef GLFW_MAXIMIZED
         glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
-        #endif
         glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::AlwaysOnTop);
     }
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
-    #ifdef GLFW_NO_API
     /* Disable implicit GL context creation */
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    #endif
 
     /* Create the window */
     CORRADE_INTERNAL_ASSERT(configuration.title().flags() & Containers::StringViewFlag::NullTerminated);
@@ -437,9 +428,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_DECORATED, !(flags >= Configuration::WindowFlag::Borderless));
         glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
         glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
-        #ifdef GLFW_MAXIMIZED
         glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
-        #endif
         glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::AlwaysOnTop);
     }
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
@@ -459,14 +448,10 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     GLConfiguration::Flags glFlags = glConfiguration.flags();
     if((glFlags & GLConfiguration::Flag::GpuValidation) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         glFlags |= GLConfiguration::Flag::Debug;
-    #ifdef GLFW_CONTEXT_NO_ERROR
     else if((glFlags & GLConfiguration::Flag::GpuValidationNoError) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
         glFlags |= GLConfiguration::Flag::NoError;
-    #endif
 
-    #ifdef GLFW_CONTEXT_NO_ERROR
     glfwWindowHint(GLFW_CONTEXT_NO_ERROR, glFlags >= GLConfiguration::Flag::NoError);
-    #endif
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, glFlags >= GLConfiguration::Flag::Debug);
     glfwWindowHint(GLFW_STEREO, glFlags >= GLConfiguration::Flag::Stereo);
 
@@ -771,7 +756,6 @@ void GlfwApplication::setWindowSize(const Vector2i& size) {
     glfwSetWindowSize(_window, newSize.x(), newSize.y());
 }
 
-#if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
 void GlfwApplication::setMinWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::setMinWindowSize(): no window opened", );
 
@@ -787,7 +771,6 @@ void GlfwApplication::setMaxWindowSize(const Vector2i& size) {
     glfwSetWindowSizeLimits(_window, _minWindowSize.x(), _minWindowSize.y(), newSize.x(), newSize.y());
     _maxWindowSize = newSize;
 }
-#endif
 
 #ifdef MAGNUM_TARGET_GL
 Vector2i GlfwApplication::framebufferSize() const {
@@ -1124,7 +1107,6 @@ GlfwApplication::Configuration::Configuration():
 
 GlfwApplication::Configuration::~Configuration() = default;
 
-#if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
 Containers::StringView GlfwApplication::KeyEvent::keyName(const Key key) {
     return glfwGetKeyName(int(key), 0);
 }
@@ -1132,7 +1114,6 @@ Containers::StringView GlfwApplication::KeyEvent::keyName(const Key key) {
 Containers::StringView GlfwApplication::KeyEvent::keyName() const {
     return keyName(_key);
 }
-#endif
 
 GlfwApplication::Pointers GlfwApplication::PointerMoveEvent::pointers() {
     if(!_pointers)

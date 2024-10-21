@@ -100,8 +100,8 @@ See @ref cmake for more information.
 
 @section Platform-GlfwApplication-usage General usage
 
-This application library depends on the [GLFW](http://glfw.org) library and is
-built if `MAGNUM_WITH_GLFWAPPLICATION` is enabled when building Magnum. To use
+This application library depends on [GLFW](http://glfw.org) 3.2 and newer and
+is built if `MAGNUM_WITH_GLFWAPPLICATION` is enabled when building Magnum. To use
 this library with CMake, request the `GlfwApplication` component of the
 `Magnum` package and link to the `Magnum::GlfwApplication` target:
 
@@ -121,7 +121,7 @@ necessary.
 
 @code{.cmake}
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-# These two will be off-by-default when GLFW 3.4 gets released
+# These two are be off-by-default and thus no longer needed with GLFW 3.4+
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(glfw EXCLUDE_FROM_ALL)
@@ -419,7 +419,6 @@ class GlfwApplication {
          */
         void setWindowSize(const Vector2i& size);
 
-        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302 || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set window minimum size
          * @param size    The minimum size, in screen coordinates
@@ -429,7 +428,6 @@ class GlfwApplication {
          * corresponding limit. To make the sizing work independently of the
          * display DPI, @p size is internally multiplied with @ref dpiScaling()
          * before getting applied. Expects that a window is already created.
-         * @note Supported since GLFW 3.2.
          * @see @ref setMaxWindowSize(), @ref setWindowSize()
          */
         void setMinWindowSize(const Vector2i& size = {-1, -1});
@@ -443,11 +441,9 @@ class GlfwApplication {
          * corresponding limit. To make the sizing work independently of the
          * display DPI, @p size is internally multiplied with @ref dpiScaling()
          * before getting applied. Expects that a window is already created.
-         * @note Supported since GLFW 3.2.
          * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
          */
         void setMaxWindowSize(const Vector2i& size = {-1, -1});
-        #endif
 
         #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
@@ -497,7 +493,6 @@ class GlfwApplication {
          */
         void setWindowTitle(Containers::StringView title);
 
-        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302 || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set window icon
          * @m_since_latest
@@ -508,8 +503,8 @@ class GlfwApplication {
          * @ref PixelFormat::RGBA8Unorm or @ref PixelFormat::RGBA8Srgb formats.
          * If you have just one image, you can use
          * @ref setWindowIcon(const ImageView2D&) instead.
-         * @note Available since GLFW 3.2. The function has no effect on macOS
-         *      / Wayland, see @m_class{m-doc-external} [glfwSetWindowIcon()](https://www.glfw.org/docs/latest/group__window.html#gadd7ccd39fe7a7d1f0904666ae5932dc5)
+         * @note The function has no effect on macOS / Wayland, see
+         *      @m_class{m-doc-external} [glfwSetWindowIcon()](https://www.glfw.org/docs/latest/group__window.html#gadd7ccd39fe7a7d1f0904666ae5932dc5)
          *      for more information.
          * @see @ref platform-windows-icon "Excecutable icon on Windows",
          *      @ref Trade::IcoImporter "IcoImporter"
@@ -527,7 +522,6 @@ class GlfwApplication {
          * @m_since{2020,06}
          */
         void setWindowIcon(const ImageView2D& image);
-        #endif
 
         /**
          * @brief Swap buffers
@@ -1058,7 +1052,6 @@ class GlfwApplication::GLConfiguration: public GL::Context::Configuration {
             ForwardCompatible = 1 << 0,
             #endif
 
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_CONTEXT_NO_ERROR)
             /**
              * Context without error reporting. Might result in better
              * performance, but situations that would have generated errors
@@ -1066,11 +1059,8 @@ class GlfwApplication::GLConfiguration: public GL::Context::Configuration {
              * supported by the driver and the @ref Flag::GpuValidationNoError
              * flag is set or if the `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
              * is set to `no-error`.
-             *
-             * @note Supported since GLFW 3.2.
              */
             NoError = 1 << 1,
-            #endif
 
             /**
              * Debug context. Enabled automatically if supported by the driver
@@ -1313,15 +1303,7 @@ class GlfwApplication::Configuration {
 
             Resizable = 1 << 2,    /**< Resizable window */
             Hidden = 1 << 3,       /**< Hidden window */
-
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_MAXIMIZED)
-            /**
-             * Maximized window
-             *
-             * @note Supported since GLFW 3.2.
-             */
-            Maximized = 1 << 4,
-            #endif
+            Maximized = 1 << 4,    /**< Maximized window */
 
             Minimized = 1 << 5,    /**< Minimized window */
 
@@ -1352,7 +1334,6 @@ class GlfwApplication::Configuration {
              */
             Focused = 1 << 8,
 
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_NO_API)
             /**
              * Do not create any GPU context. Use together with
              * @ref GlfwApplication(const Arguments&, const Configuration&),
@@ -1362,11 +1343,8 @@ class GlfwApplication::Configuration {
              * @ref GlfwApplication(const Arguments&, const Configuration&, const GLConfiguration&),
              * @ref create(const Configuration&, const GLConfiguration&) or
              * @ref tryCreate(const Configuration&, const GLConfiguration&).
-             *
-             * @note Supported since GLFW 3.2.
              */
             Contextless = 1 << 9
-            #endif
         };
 
         /**
@@ -2097,7 +2075,6 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             NumEqual = GLFW_KEY_KP_EQUAL        /**< Numpad equal */
         };
 
-        #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
         /**
          * @brief Name for given key
          *
@@ -2108,15 +2085,12 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
          * and is valid until the keyboard layout is changed or the application
          * exits.
          * @see @ref keyName(Key)
-         * @note Supported since GLFW 3.2.
          */
         static Containers::StringView keyName(Key key);
-        #endif
 
         /** @copydoc Sdl2Application::KeyEvent::key() */
         Key key() const { return _key; }
 
-        #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
         /**
          * @brief Key name
          *
@@ -2128,10 +2102,8 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
          * is valid until the keyboard layout is changed or the application
          * exits.
          * @see @ref keyName(Key)
-         * @note Supported since GLFW 3.2.
          */
         Containers::StringView keyName() const;
-        #endif
 
         /** @brief Modifiers */
         Modifiers modifiers() const { return _modifiers; }

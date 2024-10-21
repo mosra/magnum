@@ -299,11 +299,7 @@ struct GlfwApplicationTest: Platform::Application {
     }
 
     void keyPressEvent(KeyEvent& event) override {
-        Debug{} << "key press:" << event.key() << int(event.key())
-            #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
-            << event.keyName()
-            #endif
-            << event.modifiers();
+        Debug{} << "key press:" << event.key() << int(event.key()) << event.keyName() << event.modifiers();
 
         if(event.key() == KeyEvent::Key::F1) {
             Debug{} << "starting text input";
@@ -325,14 +321,10 @@ struct GlfwApplicationTest: Platform::Application {
         } else if(event.key() == KeyEvent::Key::S) {
             Debug{} << "setting window size, which should trigger a viewport event";
             setWindowSize(Vector2i{300, 200});
-        }
-        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
-        else if(event.key() == KeyEvent::Key::W) {
+        } else if(event.key() == KeyEvent::Key::W) {
             Debug{} << "setting max window size, which should trigger a viewport event if the size changes";
             setMaxWindowSize(Vector2i{700, 500});
-        }
-        #endif
-        else if(event.key() == KeyEvent::Key::H) {
+        } else if(event.key() == KeyEvent::Key::H) {
             Debug{} << "toggling hand cursor";
             setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
         } else if(event.key() == KeyEvent::Key::L) {
@@ -345,11 +337,7 @@ struct GlfwApplicationTest: Platform::Application {
     }
 
     void keyReleaseEvent(KeyEvent& event) override {
-        Debug{} << "key release:" << event.key() << int(event.key())
-            #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
-            << event.keyName()
-            #endif
-            << event.modifiers();
+        Debug{} << "key release:" << event.key() << int(event.key()) << event.keyName() << event.modifiers();
     }
 
     /* Set to 0 to test the deprecated mouse events instead */
@@ -453,7 +441,6 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         #endif
         << dpiScaling();
 
-    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
     Utility::Resource rs{"icons"};
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer;
@@ -463,9 +450,6 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         importer->openData(rs.getRaw("icon-32.tga")) && (image32 = importer->image2D(0)) &&
         importer->openData(rs.getRaw("icon-64.tga")) && (image64 = importer->image2D(0))) setWindowIcon({*image16, *image32, *image64});
     else Warning{} << "Can't load the plugin / images, not setting window icon";
-    #else
-    Debug{} << "GLFW too old, can't set window icon";
-    #endif
 }
 
 }}}}
