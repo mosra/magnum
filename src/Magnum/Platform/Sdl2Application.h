@@ -2602,26 +2602,18 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             Minus = SDLK_MINUS,         /**< Minus */
 
             /**
-             * Plus
-             * @todo Impossible to represent via a scancode on US layout
-             *      (Shift + =). The reason this was included is that Sdl2App
-             *      historically uses layout-dependent keycodes instead of
-             *      scancodes because otherwise Z and Y would be swapped on
-             *      QWERTZ layouts (unlike GLFW and HTML5), which is a far
-             *      worse problem.
+             * Plus. On the US keyboard layout this may only be representable
+             * as @m_class{m-label m-warning} **Shift**
+             * @m_class{m-label m-default} **=**.
              */
             Plus = SDLK_PLUS,
 
             Slash = SDLK_SLASH,         /**< Slash */
 
             /**
-             * Percent
-             * @todo Impossible to represent via a scancode on US layout
-             *      (Shift + 5). The reason this was included is that Sdl2App
-             *      historically uses layout-dependent keycodes instead of
-             *      scancodes because otherwise Z and Y would be swapped on
-             *      QWERTZ layouts (unlike GLFW and HTML5), which is a far
-             *      worse problem.
+             * Percent. On the US keyboard layout this may only be
+             * representable as @m_class{m-label m-warning} **Shift**
+             * @m_class{m-label m-default} **5**.
              */
             Percent = SDLK_PERCENT,
 
