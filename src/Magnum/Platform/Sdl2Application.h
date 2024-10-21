@@ -1418,7 +1418,6 @@ class Sdl2Application {
          */
         virtual void exitEvent(ExitEvent& event);
 
-    protected:
         /**
          * @brief Tick event
          *
@@ -1435,7 +1434,6 @@ class Sdl2Application {
          */
         virtual void tickEvent();
 
-    private:
         /**
          * @brief Any event
          *

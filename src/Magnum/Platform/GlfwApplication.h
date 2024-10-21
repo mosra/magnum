@@ -914,7 +914,6 @@ class GlfwApplication {
          * @}
          */
 
-    protected:
         /**
          * @brief Tick event
          * @m_since_latest
