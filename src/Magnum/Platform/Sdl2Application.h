@@ -101,11 +101,11 @@ namespace Implementation {
 
 @m_keywords{Application}
 
-Application using [Simple DirectMedia Layer](http://www.libsdl.org/) toolkit.
-Supports keyboard and mouse handling. This application library is available for
-all platforms for which SDL2 is ported except Android (thus also
-@ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", see
-respective sections in @ref building-corrade-cross-emscripten "Corrade's" and
+Application using the [Simple DirectMedia Layer](http://www.libsdl.org/)
+toolkit. Supports keyboard and mouse handling. This application library is
+available for all platforms for which SDL2 is ported except Android (thus is
+avaiable also on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", see respective
+sections in @ref building-corrade-cross-emscripten "Corrade's" and
 @ref building-cross-emscripten "Magnum's" building documentation).
 
 @m_class{m-block m-success}
@@ -387,6 +387,14 @@ a particular value for details:
 
 @subsection Platform-Sdl2Application-platform-specific-emscripten Emscripten specifics
 
+On Emscripten, the builtin minimal SDL implementation is used, which is
+sufficiently complete, yet without a too large impact on binary sizes. In
+particular, the full SDL2 implementation, available when the `-s USE_SDL=2`
+option is set, is *not* used, as it only significantly increases the generated
+binary size without really offering more. In any case, @ref EmscriptenApplication
+is now the preferred application implementation for the web. It offers a
+broader range of features, more efficient idle behavior and smaller code size.
+
 Leaving a default (zero) window size in @ref Configuration will cause the app
 to use a window size that corresponds to *CSS pixel size* of the
 @cb{.html} <canvas> @ce element. The size is then multiplied by DPI scaling
@@ -395,11 +403,6 @@ value, see @ref Platform-Sdl2Application-dpi "DPI awareness" below for details.
 If you enable @ref Configuration::WindowFlag::Resizable, the canvas will be
 resized when size of the canvas changes and you get @ref viewportEvent(). If
 the flag is not enabled, no canvas resizing is performed.
-
-@note While this implementation supports Esmcripten and is going to continue
-    supporting it for the foreseeable future, @ref EmscriptenApplication is now
-    the preferred application implementation for the web. It offers a broader
-    range of features, more efficient idle behavior and smaller code size.
 
 @subsection Platform-Sdl2Application-platform-specific-gles OpenGL ES specifics
 
