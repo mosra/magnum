@@ -368,7 +368,7 @@ struct EmscriptenApplicationTest: Platform::Application {
 
     /* For testing keyboard capture */
     void keyPressEvent(KeyEvent& event) override {
-        Debug{} << "key press:" << event.key() << event.keyName() << event.modifiers();
+        Debug{} << "key press:" << event.key() << event.keyName() << "scancode:" << event.scanCodeName() << event.modifiers();
 
         if(event.key() == Key::F1) {
             Debug{} << "starting text input";
@@ -395,7 +395,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
 
     void keyReleaseEvent(KeyEvent& event) override {
-        Debug{} << "key release:" << event.key() << event.keyName() << event.modifiers();
+        Debug{} << "key release:" << event.key() << event.keyName() << "scancode:" << event.scanCodeName() << event.modifiers();
 
         event.setAccepted();
     }

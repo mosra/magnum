@@ -662,10 +662,10 @@ void GlfwApplication::setupCallbacks() {
         #endif
         app.viewportEvent(e);
     });
-    glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, int, const int action, const int mods) {
+    glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, const int scancode, const int action, const int mods) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
-        KeyEvent e(Key(key), Modifiers{mods}, action == GLFW_REPEAT);
+        KeyEvent e(Key(key), scancode, Modifiers{mods}, action == GLFW_REPEAT);
 
         if(action == GLFW_PRESS || action == GLFW_REPEAT)
             app.keyPressEvent(e);
@@ -740,6 +740,19 @@ GlfwApplication::~GlfwApplication() {
         glfwDestroyCursor(cursor);
     glfwTerminate();
 }
+
+Containers::StringView GlfwApplication::keyName(const Key key, const UnsignedInt scancode) const {
+    return glfwGetKeyName(int(key), scancode);
+}
+
+#if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+Containers::Optional<UnsignedInt> GlfwApplication::keyToScanCode(const Key key) const {
+    const int scancode = glfwGetKeyScancode(int(key));
+    if(scancode == -1)
+        return {};
+    return UnsignedInt(scancode);
+}
+#endif
 
 Vector2i GlfwApplication::windowSize() const {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::windowSize(): no window opened", {});
@@ -1107,12 +1120,14 @@ GlfwApplication::Configuration::Configuration():
 
 GlfwApplication::Configuration::~Configuration() = default;
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 Containers::StringView GlfwApplication::KeyEvent::keyName(const GlfwApplication::Key key) {
     return glfwGetKeyName(int(key), 0);
 }
+#endif
 
 Containers::StringView GlfwApplication::KeyEvent::keyName() const {
-    return keyName(_key);
+    return glfwGetKeyName(Int(_key), _scancode);
 }
 
 GlfwApplication::Pointers GlfwApplication::PointerMoveEvent::pointers() {

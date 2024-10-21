@@ -56,8 +56,8 @@
 
 namespace Magnum { namespace Platform {
 
-/* These cannot be in an anonymous namespace as enumSetDebugOutput() below
-   wouldn't be able to pick them up */
+/* These cannot be in an anonymous namespace as enumSetDebugOutput() /
+   Optional<Key> below wouldn't be able to pick them up */
 
 static Debug& operator<<(Debug& debug, Application::Modifier value) {
     debug << "Modifier" << Debug::nospace;
@@ -77,118 +77,7 @@ static Debug& operator<<(Debug& debug, Application::Modifier value) {
     return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
 }
 
-static Debug& operator<<(Debug& debug, Application::Pointer value) {
-    debug << "Pointer" << Debug::nospace;
-
-    switch(value) {
-        #define _c(value) case Application::Pointer::value: return debug << "::" #value;
-        _c(MouseLeft)
-        _c(MouseMiddle)
-        _c(MouseRight)
-        _c(MouseButton4)
-        _c(MouseButton5)
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        _c(Finger)
-        #endif
-        #undef _c
-    }
-
-    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-CORRADE_UNUSED static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value) {
-    debug << "Button" << Debug::nospace;
-
-    switch(value) {
-        #define _c(value) case Application::MouseMoveEvent::Button::value: return debug << "::" #value;
-        _c(Left)
-        _c(Middle)
-        _c(Right)
-        _c(X1)
-        _c(X2)
-        #undef _c
-    }
-
-    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
-
-namespace Test { namespace {
-
-static Debug& operator<<(Debug& debug, Application::PointerEventSource value) {
-    debug << "PointerEventSource" << Debug::nospace;
-
-    switch(value) {
-        #define _c(value) case Application::PointerEventSource::value: return debug << "::" #value;
-        _c(Mouse)
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        _c(Touch)
-        #endif
-        #undef _c
-    }
-
-    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, Application::Modifiers value) {
-    return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
-        Application::Modifier::Shift,
-        Application::Modifier::Ctrl,
-        Application::Modifier::Alt,
-        Application::Modifier::Super,
-        Application::Modifier::AltGr,
-        Application::Modifier::CapsLock,
-        Application::Modifier::NumLock,
-    });
-}
-
-Debug& operator<<(Debug& debug, Application::Pointers value) {
-    return Containers::enumSetDebugOutput(debug, value, "Pointers{}", {
-        Application::Pointer::MouseLeft,
-        Application::Pointer::MouseMiddle,
-        Application::Pointer::MouseRight,
-        Application::Pointer::MouseButton4,
-        Application::Pointer::MouseButton5,
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        Application::Pointer::Finger,
-        #endif
-    });
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
-    debug << "Button" << Debug::nospace;
-
-    switch(value) {
-        #define _c(value) case Application::MouseEvent::Button::value: return debug << "::" #value;
-        _c(Left)
-        _c(Middle)
-        _c(Right)
-        _c(X1)
-        _c(X2)
-        #undef _c
-    }
-
-    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Buttons value) {
-    return Containers::enumSetDebugOutput(debug, value, "Buttons{}", {
-        Application::MouseMoveEvent::Button::Left,
-        Application::MouseMoveEvent::Button::Middle,
-        Application::MouseMoveEvent::Button::Right,
-        Application::MouseMoveEvent::Button::X1,
-        Application::MouseMoveEvent::Button::X2,
-    });
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
-
-Debug& operator<<(Debug& debug, Application::Key value) {
+static Debug& operator<<(Debug& debug, Application::Key value) {
     debug << "Key" << Debug::nospace;
 
     switch(value) {
@@ -308,6 +197,117 @@ Debug& operator<<(Debug& debug, Application::Key value) {
     return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
 }
 
+static Debug& operator<<(Debug& debug, Application::Pointer value) {
+    debug << "Pointer" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::Pointer::value: return debug << "::" #value;
+        _c(MouseLeft)
+        _c(MouseMiddle)
+        _c(MouseRight)
+        _c(MouseButton4)
+        _c(MouseButton5)
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        _c(Finger)
+        #endif
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_UNUSED static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value) {
+    debug << "Button" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::MouseMoveEvent::Button::value: return debug << "::" #value;
+        _c(Left)
+        _c(Middle)
+        _c(Right)
+        _c(X1)
+        _c(X2)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+namespace Test { namespace {
+
+static Debug& operator<<(Debug& debug, Application::PointerEventSource value) {
+    debug << "PointerEventSource" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::PointerEventSource::value: return debug << "::" #value;
+        _c(Mouse)
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        _c(Touch)
+        #endif
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, Application::Modifiers value) {
+    return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
+        Application::Modifier::Shift,
+        Application::Modifier::Ctrl,
+        Application::Modifier::Alt,
+        Application::Modifier::Super,
+        Application::Modifier::AltGr,
+        Application::Modifier::CapsLock,
+        Application::Modifier::NumLock,
+    });
+}
+
+Debug& operator<<(Debug& debug, Application::Pointers value) {
+    return Containers::enumSetDebugOutput(debug, value, "Pointers{}", {
+        Application::Pointer::MouseLeft,
+        Application::Pointer::MouseMiddle,
+        Application::Pointer::MouseRight,
+        Application::Pointer::MouseButton4,
+        Application::Pointer::MouseButton5,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        Application::Pointer::Finger,
+        #endif
+    });
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
+    debug << "Button" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::MouseEvent::Button::value: return debug << "::" #value;
+        _c(Left)
+        _c(Middle)
+        _c(Right)
+        _c(X1)
+        _c(X2)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Buttons value) {
+    return Containers::enumSetDebugOutput(debug, value, "Buttons{}", {
+        Application::MouseMoveEvent::Button::Left,
+        Application::MouseMoveEvent::Button::Middle,
+        Application::MouseMoveEvent::Button::Right,
+        Application::MouseMoveEvent::Button::X1,
+        Application::MouseMoveEvent::Button::X2,
+    });
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 using namespace Containers::Literals;
 using namespace Math::Literals;
 
@@ -386,11 +386,19 @@ struct Sdl2ApplicationTest: Platform::Application {
     }
 
     void keyPressEvent(KeyEvent& event) override {
-        Debug{} << "key press:" << event.key() << "keycode:" << SDL_Keycode(event.key()) << event.keyName() << "scancode:" << event.event().key.keysym.scancode
+        Debug{} << "key press:" << event.key() << event.keyName() << "scancode:" << event.scanCode()
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            << SDL_GetScancodeName(event.event().key.keysym.scancode)
+            << event.scanCodeName()
             #endif
-            << event.modifiers();
+            << event.modifiers()
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30125
+            << "converted:"
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            << scanCodeToKey(event.scanCode())
+            #endif
+            << keyToScanCode(event.key())
+            #endif
+            ;
 
         if(event.key() == Key::F1) {
             Debug{} << "starting text input";
@@ -451,11 +459,19 @@ struct Sdl2ApplicationTest: Platform::Application {
     }
 
     void keyReleaseEvent(KeyEvent& event) override {
-        Debug{} << "key release:" << event.key() << "keycode:" << SDL_Keycode(event.key()) << event.keyName() << "scancode:" << event.event().key.keysym.scancode
+        Debug{} << "key release:" << event.key() << event.keyName() << "scancode:" << event.scanCode()
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            << SDL_GetScancodeName(event.event().key.keysym.scancode)
+            << event.scanCodeName()
             #endif
-            << event.modifiers();
+            << event.modifiers()
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30125
+            << "converted:"
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            << scanCodeToKey(event.scanCode())
+            #endif
+            << keyToScanCode(event.key())
+            #endif
+            ;
 
         /* With EmscriptenApplication, this makes the event stop from
            propagating further to the page (such as when pressing F1).

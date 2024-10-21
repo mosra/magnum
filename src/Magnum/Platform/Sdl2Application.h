@@ -86,6 +86,18 @@
 #include <Corrade/Containers/StringStl.h>
 #endif
 
+#if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
+/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
+   3.1.4 moved them to a version header and version 3.1.23 dropped the
+   backwards compatibility. To work consistently on all versions, including the
+   header only if the version macros aren't present.
+   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
+   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
+#ifndef __EMSCRIPTEN_major__
+#include <emscripten/version.h>
+#endif
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 union SDL_Event; /* for anyEvent() */
 #endif
@@ -573,6 +585,71 @@ class Sdl2Application {
          * @see @ref PointerMoveEvent::pointers()
          */
         typedef Containers::EnumSet<Pointer> Pointers;
+
+        /**
+         * @brief Name for given key
+         * @m_since_latest
+         *
+         * Human-readable localized UTF-8 name for given @p key, intended for
+         * displaying to the user in e.g. a key binding configuration. If there
+         * is no name for given key, empty string is returned. The returned
+         * view is always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and is valid at least until the next call to this function, to
+         * @ref KeyEvent::keyName() const or to the underlying
+         * @cpp SDL_GetKeyName() @ce API.
+         * @see @ref scanCodeName(), @ref keyToScanCode(), @ref KeyEvent::key()
+         */
+        static Containers::StringView keyName(Key key);
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Name for given key scan code
+         * @m_since_latest
+         *
+         * Human-readable localized UTF-8 name for given @p scancode. Note that
+         * unlike @ref keyName(), the scancode names are not consistent across
+         * platforms. If there is no name for given scancode, empty string is
+         * returned. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * is valid at least until the next call to this function, to
+         * @ref KeyEvent::scanCodeName() const or to the underlying
+         * @cpp SDL_GetScancodeName() @ce API.
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref scanCodeToKey(), @ref KeyEvent::scanCode()
+         */
+        static Containers::StringView scanCodeName(UnsignedInt scanCode);
+        #endif
+
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30125
+        /**
+         * @brief Scan code for given key
+         * @m_since_latest
+         *
+         * If @p key doesn't correspond to a physical key supported on given
+         * platform, returns @relativeref{Corrade,Containers::NullOpt}. Note
+         * that this is implemented as a linear lookup inside SDL, prefer to
+         * query the scan code directly via @ref KeyEvent::scanCode() rather
+         * than converting it from a @ref KeyEvent::key() at a later time.
+         * @note On @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" available only
+         *      since version 3.1.25.
+         * @see @ref scanCodeToKey(), @ref keyName()
+         */
+        static Containers::Optional<UnsignedInt> keyToScanCode(Key key);
+        #endif
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Scan code for given key
+         * @m_since_latest
+         *
+         * If @p scanCode isn't a known scan code, returns
+         * @relativeref{Corrade,Containers::NullOpt}.
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref KeyEvent::key(), @ref KeyEvent::scanCode(),
+         *      @ref keyToScanCode(), @ref scanCodeName()
+         */
+        static Containers::Optional<Key> scanCodeToKey(UnsignedInt scanCode);
+        #endif
 
         #ifdef MAGNUM_TARGET_GL
         /**
@@ -2769,40 +2846,67 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          * @m_deprecated_since_latest Use @ref Sdl2Application::Key instead.
          */
         typedef CORRADE_DEPRECATED("use Sdl2Application::Key instead") Sdl2Application::Key Key;
-        #endif
 
         /**
-         * @brief Name for given key
-         *
-         * Human-readable localized UTF-8 name for given @p key, intended for
-         * displaying to the user in e.g. key binding configuration. If there
-         * is no name for given key, empty string is returned. The returned
-         * view is always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
-         * and is valid at least until the next call to this function, to
-         * @ref keyName() const or to the underlying @cpp SDL_GetKeyName() @ce
-         * API.
+         * @brief @copybrief Sdl2Application::keyName()
+         * @m_deprecated_since_latest Use @ref Sdl2Application::keyName()
+         *      instead.
          */
-        static Containers::StringView keyName(Sdl2Application::Key key);
+        CORRADE_DEPRECATED("use Sdl2Application::keyName() instead") static Containers::StringView keyName(Sdl2Application::Key key);
+        #endif
 
         /**
          * @brief Key
          *
-         * @see @ref keyName()
+         * Layout-dependent name of given key. Use @ref scanCode() to get a
+         * platform-specific but layout-independent identifier of given key.
+         * @see @ref keyName() const, @ref keyToScanCode()
          */
         Sdl2Application::Key key() const { return _key; }
+
+        /**
+         * @brief Scancode
+         * @m_since_latest
+         *
+         * Platform-specific but layout-independent identifier of given key.
+         * Use @ref key() to get a key name in the currently used layout.
+         * @see @ref scanCodeName(), @ref scanCodeToKey()
+         */
+        UnsignedInt scanCode() const { return _scancode; }
 
         /**
          * @brief Key name
          *
          * Human-readable localized UTF-8 name for the key returned by
-         * @ref key(), intended for displaying to the user in e.g.
-         * key binding configuration. If there is no name for that key, empty
-         * string is returned. The returned string is always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * @ref key(), intended for displaying to the user in e.g. a key
+         * binding configuration. If there is no name for that key, an empty
+         * string is returned. The returned string is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
          * and is valid at least until the next call to this function, to
-         * @ref keyName(Key) or to the underlying @cpp SDL_GetKeyName() @ce
-         * API.
+         * @ref Sdl2Application::keyName() or to the underlying
+         * @cpp SDL_GetKeyName() @ce API.
+         * @see @ref scanCodeName()
          */
         Containers::StringView keyName() const;
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Scan code name
+         * @m_since_latest
+         *
+         * Human-readable localized UTF-8 name for the scancode returned by
+         * @ref scanCode(), intended for displaying to the user in e.g. a key
+         * binding configuration. If there is no name for that key, an
+         * empty string is returned. The returned string is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and is valid at least until the next call to this function, to
+         * @ref Sdl2Application::scanCodeName() or to the underlying
+         * @cpp SDL_GetScancodeName() @ce API.
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref keyName()
+         */
+        Containers::StringView scanCodeName() const;
+        #endif
 
         /** @brief Modifiers */
         Sdl2Application::Modifiers modifiers() const { return _modifiers; }
@@ -2818,11 +2922,12 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
     private:
         friend Sdl2Application;
 
-        explicit KeyEvent(const SDL_Event& event, Sdl2Application::Key key, Sdl2Application::Modifiers modifiers, bool repeated): InputEvent{event}, _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        explicit KeyEvent(const SDL_Event& event, Sdl2Application::Key key, UnsignedInt scancode, Sdl2Application::Modifiers modifiers, bool repeated): InputEvent{event}, _repeated{repeated}, _modifiers{modifiers}, _key{key}, _scancode{scancode} {}
 
-        const Sdl2Application::Key _key;
-        const Sdl2Application::Modifiers _modifiers;
         const bool _repeated;
+        const Sdl2Application::Modifiers _modifiers;
+        const Sdl2Application::Key _key;
+        const UnsignedInt _scancode;
 };
 
 /**

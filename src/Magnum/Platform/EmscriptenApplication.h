@@ -2456,22 +2456,42 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
         /**
          * @brief Key
          *
-         * Note that the key is mapped from @m_class{m-doc-external}
+         * Layout-dependent name of given key. Mapped from @m_class{m-doc-external}
          * [EmscriptenKeyboardEvent::code](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenKeyboardEvent.code)
          * in all cases except A--Z, which are mapped from
          * @m_class{m-doc-external} [EmscriptenkeyboardEvent::key](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenKeyboardEvent.key),
-         * which respects the keyboard layout.
+         * which respects the keyboard layout. Note that, unlike e.g.
+         * @ref Sdl2Application::KeyEvent::scanCode(), there's no numeric
+         * layout-independent identifier of given key, you have to use
+         * @ref scanCodeName() instead.
          */
         EmscriptenApplication::Key key() const;
 
         /**
          * @brief Key name
          *
-         * The returned view is always
+         * Layout-dependent name of given key. Returns
+         * @m_class{m-doc-external} [EmscriptenkeyboardEvent::key](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenKeyboardEvent.key)
+         * for keys A--Z and @m_class{m-doc-external} [EmscriptenKeyboardEvent::code](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenKeyboardEvent.code)
+         * for other keys, the view is always
          * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
-         * is valid until the event is destroyed.
+         * is valid until the event is destroyed. Use @ref scanCodeName() to
+         * get a platform-specific but layout-independent identifier of given
+         * key.
          */
         Containers::StringView keyName() const;
+
+        /**
+         * @brief Scancode name
+         * @m_since_latest
+         *
+         * Platform-specific but layout-independent identifier of given key.
+         * Returns @m_class{m-doc-external} [EmscriptenKeyboardEvent::code](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenKeyboardEvent.code),
+         * the view is always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and is valid until the event is destroyed. Use @ref keyName() to get
+         * a key name in the currently used layout.
+         */
+        Containers::StringView scanCodeName() const;
 
         /** @brief Modifiers */
         EmscriptenApplication::Modifiers modifiers() const;

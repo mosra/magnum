@@ -277,6 +277,43 @@ class GlfwApplication {
         GlfwApplication& operator=(GlfwApplication&&) = delete;
 
         /**
+         * @brief Name for given key
+         * @m_since_latest
+         *
+         * Human-readable localized UTF-8 name for given @p key, intended for
+         * displaying to the user in e.g. a key binding configuration. For
+         * @ref Key::Unknown, a concrete @p scanCode can be passed. If there is
+         * no name for given key, an empty string is returned. If non-empty,
+         * the returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * is valid until the keyboard layout is changed or the application
+         * exits.
+         *
+         * Unlike e.g. @ref Sdl2Application::keyName(), the function isn't
+         * @cpp static @ce because it relies on GLFW being initialized.
+         * @see @ref KeyEvent::keyName(), @ref keyToScanCode()
+         */
+        Containers::StringView keyName(Key key, UnsignedInt scanCode = 0) const;
+
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303 || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Scan code for given key
+         * @m_since_latest
+         *
+         * If @p key doesn't correspond to a physical key supported on given
+         * platform, returns @relativeref{Corrade,Containers::NullOpt}. Unlike
+         * e.g. @ref Sdl2Application::scanCodeToKey(), GLFW doesn't provide any
+         * way to map from a scan code to a key.
+         *
+         * Unlike e.g. @ref Sdl2Application::keyToScanCode(), the function
+         * isn't @cpp static @ce because it relies on GLFW being initialized.
+         * @note Available since GLFW 3.3.
+         * @see @ref KeyEvent::key(), @ref KeyEvent::scanCode(), @ref keyName()
+         */
+        Containers::Optional<UnsignedInt> keyToScanCode(Key key) const;
+        #endif
+
+        /**
          * @brief Execute main loop
          * @return Value for returning from @cpp main() @ce
          *
@@ -2090,33 +2127,42 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
          * @m_deprecated_since_latest Use @ref GlfwApplication::Key instead.
          */
         typedef CORRADE_DEPRECATED("use GlfwApplication::Key instead") GlfwApplication::Key Key;
+
+        /**
+         * @brief @copybrief GlfwApplication::keyName()
+         * @m_deprecated_since_latest Use @ref GlfwApplication::keyName()
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use GlfwApplication::keyName() instead") static Containers::StringView keyName(GlfwApplication::Key key);
         #endif
 
         /**
-         * @brief Name for given key
+         * @brief Key
          *
-         * Human-readable localized UTF-8 name for given @p key, intended for
-         * displaying to the user in e.g. key binding configuration. If there
-         * is no name for given key, empty string is returned. The returned
-         * view is always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
-         * and is valid until the keyboard layout is changed or the application
-         * exits.
-         * @see @ref keyName(Key)
+         * Layout-dependent name of given key. Use @ref scanCode() to get a
+         * platform-specific but layout-independent identifier of given key.
+         * @see @ref keyName() const
          */
-        static Containers::StringView keyName(GlfwApplication::Key key);
-
-        /** @copydoc Sdl2Application::KeyEvent::key() */
         GlfwApplication::Key key() const { return _key; }
+
+        /**
+         * @brief Scancode
+         * @m_since_latest
+         *
+         * Platform-specific but layout-independent identifier of given key.
+         * Use @ref key() to get a key name in the currently used layout.
+         */
+        UnsignedInt scanCode() const { return _scancode; }
 
         /**
          * @brief Key name
          *
          * Human-readable localized UTF-8 name for the key returned by
-         * @ref key(), intended for displaying to the user in e.g.
-         * key binding configuration. If there is no name for that key, empty
-         * string is returned. The returned view is always
-         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
-         * is valid until the keyboard layout is changed or the application
+         * @ref key() and @ref scanCode(), intended for displaying to the user
+         * in e.g. key binding configuration. If there is no name for that key,
+         * an empty string is returned. If non-empty, the returned view is
+         * always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and is valid until the keyboard layout is changed or the application
          * exits.
          * @see @ref keyName(Key)
          */
@@ -2131,11 +2177,12 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
     private:
         friend GlfwApplication;
 
-        explicit KeyEvent(GlfwApplication::Key key, GlfwApplication::Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        explicit KeyEvent(GlfwApplication::Key key, UnsignedInt scancode, GlfwApplication::Modifiers modifiers, bool repeated): _repeated{repeated}, _modifiers{modifiers}, _key{key}, _scancode{scancode} {}
 
-        const GlfwApplication::Key _key;
-        const GlfwApplication::Modifiers _modifiers;
         const bool _repeated;
+        const GlfwApplication::Modifiers _modifiers;
+        const GlfwApplication::Key _key;
+        const UnsignedInt _scancode;
 };
 
 /**

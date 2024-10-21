@@ -121,6 +121,34 @@ enum class Sdl2Application::Flag: UnsignedByte {
     #endif
 };
 
+Containers::StringView Sdl2Application::keyName(const Key key) {
+    return SDL_GetKeyName(SDL_Keycode(key));
+}
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+Containers::StringView Sdl2Application::scanCodeName(const UnsignedInt scanCode) {
+    return SDL_GetScancodeName(SDL_Scancode(scanCode));
+}
+#endif
+
+/* https://github.com/emscripten-core/emscripten/pull/18060 */
+#if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30125
+Containers::Optional<UnsignedInt> Sdl2Application::keyToScanCode(const Key key) {
+    static_assert(SDL_SCANCODE_UNKNOWN == 0, "assumed SDL_SCANCODE_UNKNOWN to be 0");
+    if(const SDL_Scancode scanCode = SDL_GetScancodeFromKey(SDL_Keycode(key)))
+        return UnsignedInt(scanCode);
+    return {};
+}
+#endif
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+Containers::Optional<Sdl2Application::Key> Sdl2Application::scanCodeToKey(const UnsignedInt scanCode) {
+    if(const SDL_Keycode key = SDL_GetKeyFromScancode(SDL_Scancode(scanCode)))
+        return Key(key);
+    return {};
+}
+#endif
+
 Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}} {}
 
 Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration): Sdl2Application{arguments, NoCreate} {
@@ -1041,7 +1069,7 @@ bool Sdl2Application::mainLoopIteration() {
 
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
-                KeyEvent e{event, Key(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0};
+                KeyEvent e{event, Key(event.key.keysym.sym), UnsignedInt(event.key.keysym.scancode), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0};
                 event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
             } break;
 
@@ -1598,13 +1626,21 @@ Sdl2Application::Configuration::Configuration():
 
 Sdl2Application::Configuration::~Configuration() = default;
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 Containers::StringView Sdl2Application::KeyEvent::keyName(const Sdl2Application::Key key) {
-    return SDL_GetKeyName(SDL_Keycode(key));
+    return Sdl2Application::keyName(key);
 }
+#endif
 
 Containers::StringView Sdl2Application::KeyEvent::keyName() const {
-    return keyName(_key);
+    return Sdl2Application::keyName(_key);
 }
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+Containers::StringView Sdl2Application::KeyEvent::scanCodeName() const {
+    return Sdl2Application::scanCodeName(_scancode);
+}
+#endif
 
 Sdl2Application::Modifiers Sdl2Application::PointerEvent::modifiers() {
     if(!_modifiers)
