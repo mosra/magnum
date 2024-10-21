@@ -1281,6 +1281,10 @@ Containers::StringView EmscriptenApplication::KeyEvent::keyName() const {
     return _event.code;
 }
 
+Containers::StringView EmscriptenApplication::KeyEvent::scanCodeName() const {
+    return _event.code;
+}
+
 EmscriptenApplication::Modifiers EmscriptenApplication::KeyEvent::modifiers() const {
     return eventModifiers(_event);
 }

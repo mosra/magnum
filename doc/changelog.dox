@@ -827,6 +827,16 @@ See also:
 -   Added more keys to @ref Platform::AbstractXApplication::KeyEvent::Key and
     implemented @ref Platform::AbstractXApplication::scrollEvent() for better
     consistency with other application implementations
+-   Added @ref Platform::Sdl2Application::KeyEvent::scanCode(),
+    @relativeref{Platform::Sdl2Application::KeyEvent,scanCodeName()},
+    @ref Platform::GlfwApplication::KeyEvent::scanCode() and
+    @ref Platform::EmscriptenApplication::KeyEvent::scanCodeName() for querying
+    layout-independent key identifiers as well as
+    @ref Platform::Sdl2Application::scanCodeName(UnsignedInt),
+    @relativeref{Platform::Sdl2Application,keyToScanCode()},
+    @relativeref{Platform::Sdl2Application,scanCodeToKey()} and
+    @ref Platform::GlfwApplication::keyToScanCode() helpers for key / scan code
+    conversion outside of event handlers
 
 @subsubsection changelog-latest-changes-scenegraph SceneGraph library
 
@@ -1423,12 +1433,14 @@ See also:
     wrappers as well.
 -   @cpp Platform::Sdl2Application::InputEvent::Modifier @ce,
     @cpp Modifiers @ce and @cpp Platform::Sdl2Application::KeyEvent::Key @ce
-    enums are deprecated in favor of @ref Platform::Sdl2Application::Modifier,
-    @relativeref{Platform::Sdl2Application,Modifiers} and
-    @relativeref{Platform::Sdl2Application,Key} enums contained directly in
-    the application class. Besides the obvious advantage of them being shorter
-    to type, this allows them to be used outside of the event class scope. The
-    same change is done in @ref Platform::AbstractXApplication,
+    enums and the @cpp Platform::Sdl2Application::KeyEvent::keyName(Key) @ce
+    function are deprecated in favor of @ref Platform::Sdl2Application::Modifier,
+    @relativeref{Platform::Sdl2Application,Modifiers},
+    @relativeref{Platform::Sdl2Application,Key} and
+    @relativeref{Platform::Sdl2Application,keyName()} APIs contained directly
+    in the application class. Besides the obvious advantage of them being
+    shorter to type, this allows the enums to be used outside of the event
+    class scope. The same change is done in @ref Platform::AbstractXApplication,
     @ref Platform::EmscriptenApplication and @ref Platform::GlfwApplication.
 -   @cpp Platform::AbstractXApplication::MouseEvent::Button::WheelUp @ce and
     `WheelDown` members are deprecated in favor of a dedicated

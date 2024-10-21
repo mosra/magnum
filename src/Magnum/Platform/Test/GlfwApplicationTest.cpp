@@ -299,7 +299,11 @@ struct GlfwApplicationTest: Platform::Application {
     }
 
     void keyPressEvent(KeyEvent& event) override {
-        Debug{} << "key press:" << event.key() << int(event.key()) << event.keyName() << event.modifiers();
+        Debug{} << "key press:" << event.key() << int(event.key()) << event.keyName() << "scancode:" << event.scanCode() << event.modifiers()
+            #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+            << "converted:" << keyToScanCode(event.key())
+            #endif
+            ;
 
         if(event.key() == Key::F1) {
             Debug{} << "starting text input";
@@ -337,7 +341,11 @@ struct GlfwApplicationTest: Platform::Application {
     }
 
     void keyReleaseEvent(KeyEvent& event) override {
-        Debug{} << "key release:" << event.key() << int(event.key()) << event.keyName() << event.modifiers();
+        Debug{} << "key release:" << event.key() << int(event.key()) << event.keyName() << "scancode:" << event.scanCode() << event.modifiers()
+            #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+            << "converted:" << keyToScanCode(event.key())
+            #endif
+            ;
     }
 
     /* Set to 0 to test the deprecated mouse events instead */
