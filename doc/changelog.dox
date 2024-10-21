@@ -56,6 +56,8 @@ See also:
     which is from 2011) has been dropped from @ref Platform::AndroidApplication.
 -   Support for SDL2 older than 2.0.6 (released in 2017) has been dropped from
     @ref Platform::Sdl2Application.
+-   Support for GLFW older than 3.2 (released in 2016) has been dropped from
+    @ref Platform::GlfwApplication.
 
 @subsection changelog-latest-new New features
 
