@@ -175,6 +175,25 @@ commands:
           ls -l /usr/bin/llvm-symbolizer-6.0
           ln -s /usr/bin/llvm-symbolizer{-6.0,}
 
+  install-nodejs:
+    parameters:
+      version:
+        type: string
+        default: "18"
+    steps:
+    - run:
+        name: Install Node.js << parameters.version >>
+        # cd'ing to the home directory as otherwise it'd download into
+        # /root/project and a checkout would then fail because it's not empty.
+        # Also emsdk forces the PATH to prefer its own nodejs, so explicitly
+        # call /usr/bin/node.
+        command: |
+          cd ~
+          curl -fsSL https://deb.nodesource.com/setup_<< parameters.version >>.x -o nodesource_setup.sh
+          bash nodesource_setup.sh
+          apt-get install -y nodejs
+          /usr/bin/node -v
+
   install-cmake:
     parameters:
       version:
@@ -650,8 +669,14 @@ jobs:
     environment:
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
+      # emsdk forces the PATH to prefer its own nodejs, so explicitly force
+      # /usr/bin/node to be used by CMake
+      EXTRA_OPTS: >
+        -DNODEJS_EXECUTABLE=/usr/bin/node
     steps:
-    - install-base-linux
+    - install-base-linux:
+        extra: curl
+    - install-nodejs
     # With a Debug build, 8+ is causing OOMs. Release was fine with 24.
     - cap-ninja-jobs:
         count: 4
