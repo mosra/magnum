@@ -41,19 +41,21 @@
 #include <Magnum/Platform/GLContext.h>
 
 using namespace Magnum;
+using namespace Magnum::Math::Literals;
 
 class MyApplication: public Platform::Application {
     public:
-        MyApplication(const Arguments& arguments);
+        explicit MyApplication(const Arguments& arguments);
 
     private:
         void drawEvent() override;
 };
 
-MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
-    using namespace Math::Literals;
-    /* Set clear color to dark blue */
-    GL::Renderer::setClearColor(0x000066_rgbf);
+MyApplication::MyApplication(const Arguments& arguments):
+    Platform::Application{arguments}
+{
+    /* Set clear color to a nice blue */
+    GL::Renderer::setClearColor(0x2f83cc_rgbf);
 }
 
 void MyApplication::drawEvent() {
@@ -70,42 +72,100 @@ MAGNUM_APPLICATION_MAIN(MyApplication)
 /* In this case `int main()` can't be avoided, but other snippets compiled into
    the same static library all use a different name so it shouldn't conflict */
 
+/* Sdl2Application is included unconditionally as part of a snippet above, and
+   it doesn't implement Pointer::Finger on Emscripten */
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 namespace B {
 
-/* [size] */
+/* [windowed-pointer-events] */
 class MyApplication: public Platform::Application {
-    // ...
+    DOXYGEN_ELLIPSIS()
 
     private:
-        void viewportEvent(ViewportEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override {
+            /* Handling just left mouse press or equivalent */
+            if(!event.isPrimary() ||
+               !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+                return;
+
+            DOXYGEN_ELLIPSIS()
+            event.setAccepted();
+        }
+
+        void pointerReleaseEvent(PointerEvent& event) override {
+            /* Handling just left mouse press or equivalent */
+            if(!event.isPrimary() ||
+               !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+                return;
+
+            DOXYGEN_ELLIPSIS()
+            event.setAccepted();
+        }
+
+        void pointerMoveEvent(PointerMoveEvent& event) override {
+            /* Handling just left mouse drag or equivalent */
+            if(!event.isPrimary() ||
+               !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+                return;
+
+            DOXYGEN_ELLIPSIS()
+            event.setAccepted();
+        }
 };
-
-// ...
-
-void MyApplication::viewportEvent(ViewportEvent& event) {
-    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
-}
-/* [size] */
+/* [windowed-pointer-events] */
 
 }
+#endif
 
 namespace C {
 
+/* [windowed-key-events] */
+class MyApplication: public Platform::Application {
+    DOXYGEN_ELLIPSIS(void performUndo() {} void performRedo() {} void performInput(int, Containers::StringView) {})
+
+    private:
+        void keyPressEvent(KeyEvent& event) override {
+            /* Editing shortcuts */
+            if(event.key() == Key::Z &&
+               event.modifiers() == Modifier::Ctrl)
+                performUndo(DOXYGEN_ELLIPSIS());
+            else if(event.key() == Key::Z &&
+                    event.modifiers() == (Modifier::Shift|Modifier::Ctrl))
+                performRedo(DOXYGEN_ELLIPSIS());
+            DOXYGEN_ELLIPSIS()
+            else return;
+
+            event.setAccepted();
+        }
+
+        void textInputEvent(TextInputEvent& event) override {
+            /* Assuming text input is currently active */
+            performInput(DOXYGEN_ELLIPSIS(0), event.text());
+
+            event.setAccepted();
+        }
+};
+/* [windowed-key-events] */
+
+}
+
+namespace D {
+
 struct MyApplication: Platform::Application {
-    MyApplication(const Arguments& arguments);
+    explicit MyApplication(const Arguments& arguments);
 
     void foo();
 };
 
-/* [configuration] */
+/* [windowed-configuration] */
 MyApplication::MyApplication(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}
         .setTitle("My Application")
-        .setSize({800, 600})}
+        .setSize({12800, 800})}
 {
-    // ...
+    DOXYGEN_ELLIPSIS()
 }
-/* [configuration] */
+/* [windowed-configuration] */
 
 void MyApplication::foo() {
 /* [Sdl2Application-dpi-scaling] */
@@ -116,9 +176,29 @@ static_cast<void>(scaling);
 
 }
 
-namespace D {
+namespace E {
 
-constexpr Vector2i size;
+/* [windowed-viewport-events] */
+class MyApplication: public Platform::Application {
+    public:
+        explicit MyApplication(const Arguments& arguments):
+            Platform::Application{arguments, Configuration{}
+                .addWindowFlags(Configuration::WindowFlag::Resizable)}
+        {
+            DOXYGEN_ELLIPSIS()
+        }
+
+    private:
+        void viewportEvent(ViewportEvent& event) override {
+            GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
+            DOXYGEN_ELLIPSIS()
+        }
+};
+/* [windowed-viewport-events] */
+
+}
+
+namespace F {
 
 struct MyApplication: Platform::Application {
     MyApplication(const Arguments& arguments);
@@ -128,19 +208,19 @@ struct MyApplication: Platform::Application {
 MyApplication::MyApplication(const Arguments& arguments):
     Platform::Application{arguments, NoCreate}
 {
-    // ...
+    DOXYGEN_ELLIPSIS(Vector2i size;)
 
     create(Configuration{}
         .setTitle("My Application")
         .setSize(size));
 
-    // ...
+    DOXYGEN_ELLIPSIS()
 }
 /* [createcontext] */
 
 }
 
-namespace E {
+namespace G {
 
 struct MyApplication: Platform::Application {
     MyApplication(const Arguments& arguments);
@@ -150,7 +230,7 @@ struct MyApplication: Platform::Application {
 MyApplication::MyApplication(const Arguments& arguments):
     Platform::Application{arguments, NoCreate}
 {
-    // ...
+    DOXYGEN_ELLIPSIS()
 
     Configuration conf;
     conf.setTitle("My Application");
@@ -160,13 +240,13 @@ MyApplication::MyApplication(const Arguments& arguments):
     if(!tryCreate(conf, glConf))
         create(conf, glConf.setSampleCount(0));
 
-    // ...
+    DOXYGEN_ELLIPSIS()
 }
 /* [trycreatecontext] */
 
 }
 
-namespace F {
+namespace H {
 
 /* On MSVC 2017, deprecation warning suppression doesn't work on virtual
    function overrides, so ScreenedApplication overriding mousePressEvent(),
@@ -218,7 +298,7 @@ for(Platform::Screen* s = app.screens().first(); s; s = s->nextFartherScreen()) 
 
 }
 
-namespace G {
+namespace I {
 
 struct MyApplication: Platform::Application {
     MyApplication(const Arguments& arguments);
@@ -243,7 +323,7 @@ MyApplication::MyApplication(const Arguments& arguments):
 }
 
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-namespace H {
+namespace J {
 
 struct MyApplication: Platform::Application {
     MyApplication(const Arguments& arguments);

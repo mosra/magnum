@@ -125,7 +125,7 @@ class AbstractXApplication {
          * @brief Set of keyboard modifiers
          * @m_since_latest
          *
-         * @see @ref InputEvent::modifiers()
+         * @see @ref InputEvent::modifiers(), @ref platform-windowed-key-events
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -134,7 +134,8 @@ class AbstractXApplication {
          * @m_since_latest
          *
          * @see @ref KeyEvent::pointers(), @ref PointerMoveEvent::pointers(),
-         *      @ref ScrollEvent::pointers()
+         *      @ref ScrollEvent::pointers(),
+         *      @ref platform-windowed-pointer-events
          */
         typedef Containers::EnumSet<Pointer> Pointers;
 
@@ -290,6 +291,7 @@ class AbstractXApplication {
          * cameras, framebuffers etc. in application constructor rather than
          * relying on this function to be called. Size of the window can be
          * retrieved using @ref windowSize().
+         * @see @ref platform-windowed-viewport-events
          */
         virtual void viewportEvent(ViewportEvent& event);
 
@@ -304,10 +306,20 @@ class AbstractXApplication {
 
         /** @{ @name Keyboard handling */
 
-        /** @copydoc Sdl2Application::keyPressEvent() */
+        /**
+         * @brief Key press event
+         *
+         * Called when a key is pressed. Default implementation does nothing.
+         * @see @ref platform-windowed-key-events
+         */
         virtual void keyPressEvent(KeyEvent& event);
 
-        /** @copydoc Sdl2Application::keyReleaseEvent() */
+        /**
+         * @brief Key release event
+         *
+         * Called when a key is released. Default implementation does nothing.
+         * @see @ref platform-windowed-key-events
+         */
         virtual void keyReleaseEvent(KeyEvent& event);
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
@@ -331,6 +343,7 @@ class AbstractXApplication {
          * implementation delegates to @ref mousePressEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void pointerPressEvent(PointerEvent& event);
 
@@ -358,6 +371,7 @@ class AbstractXApplication {
          * implementation delegates to @ref mouseReleaseEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void pointerReleaseEvent(PointerEvent& event);
 
@@ -388,6 +402,7 @@ class AbstractXApplication {
          * @ref mousePressEvent() or @ref mouseReleaseEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void pointerMoveEvent(PointerMoveEvent& event);
 
@@ -414,6 +429,7 @@ class AbstractXApplication {
          * implementation delegates to @ref mousePressEvent() and
          * @ref mouseReleaseEvent() with @ref MouseEvent::Button::WheelDown and
          * @ref MouseEvent::Button::WheelUp.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void scrollEvent(ScrollEvent& event);
 
@@ -468,7 +484,8 @@ class AbstractXApplication {
 @brief Keyboard modifier
 @m_since_latest
 
-@see @ref Modifiers, @ref InputEvent::modifiers()
+@see @ref Modifiers, @ref InputEvent::modifiers(),
+    @ref platform-windowed-key-events
 */
 enum class AbstractXApplication::Modifier: unsigned int {
     /**
@@ -515,7 +532,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Modifiers)
 @brief Key
 @m_since_latest
 
-@see @ref KeyEvent::key()
+@see @ref KeyEvent::key(), @ref platform-windowed-key-events
 */
 enum class AbstractXApplication::Key: KeySym {
     /**
@@ -851,7 +868,8 @@ enum class AbstractXApplication::Key: KeySym {
 @brief Pointer event source
 @m_since_latest
 
-@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source(),
+    @ref platform-windowed-pointer-events
 */
 enum class AbstractXApplication::PointerEventSource: UnsignedByte {
     /**
@@ -868,7 +886,7 @@ enum class AbstractXApplication::PointerEventSource: UnsignedByte {
 
 @see @ref Pointers, @ref KeyEvent::pointers(), @ref PointerEvent::pointer(),
     @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers(),
-    @ref ScrollEvent::pointers()
+    @ref ScrollEvent::pointers(), @ref platform-windowed-pointer-events
 */
 enum class AbstractXApplication::Pointer: UnsignedByte {
     /**
@@ -1061,7 +1079,7 @@ class AbstractXApplication::Configuration {
 /**
 @brief Viewport event
 
-@see @ref viewportEvent()
+@see @ref viewportEvent(), @ref platform-windowed-viewport-events
 */
 class AbstractXApplication::ViewportEvent {
     public:
@@ -1162,7 +1180,7 @@ class AbstractXApplication::InputEvent {
         /** @copydoc Sdl2Application::InputEvent::isAccepted() */
         bool isAccepted() const { return _accepted; }
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         AbstractXApplication::Modifiers modifiers() const {
             return AbstractXApplication::Modifiers(_modifiers & (ShiftMask|ControlMask|Mod1Mask|Mod5Mask|LockMask|Mod2Mask));
         }
@@ -1201,7 +1219,8 @@ CORRADE_IGNORE_DEPRECATED_POP
 /**
 @brief Key event
 
-@see @ref keyPressEvent(), @ref keyReleaseEvent()
+@see @ref keyPressEvent(), @ref keyReleaseEvent(),
+    @ref platform-windowed-key-events
 */
 class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
     public:
@@ -1243,7 +1262,7 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
 @m_since_latest
 
 @see @ref PointerMoveEvent, @ref pointerPressEvent(),
-    @ref pointerReleaseEvent()
+    @ref pointerReleaseEvent(), @ref platform-windowed-pointer-events
 */
 class AbstractXApplication::PointerEvent: public InputEvent {
     public:
@@ -1362,7 +1381,8 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
 @brief Pointer move event
 @m_since_latest
 
-@see @ref PointerEvent, @ref pointerMoveEvent()
+@see @ref PointerEvent, @ref pointerMoveEvent(),
+    @ref platform-windowed-pointer-events
 */
 class AbstractXApplication::PointerMoveEvent: public InputEvent {
     public:
@@ -1469,7 +1489,8 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
 @brief Scroll event
 @m_since_latest
 
-@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent(),
+    @ref platform-windowed-pointer-events
 */
 class AbstractXApplication::ScrollEvent: public InputEvent {
     public:

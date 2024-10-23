@@ -185,7 +185,7 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
 
-@section Platform-EmscriptenApplication-touch Touch input
+@section Platform-EmscriptenApplication-touch Touch input in HTML5
 
 The application recognizes touch input and reports it as @ref Pointer::Finger
 and @ref PointerEventSource::Touch. Because both mouse and touch events are
@@ -217,6 +217,9 @@ each new touch may generate a new ID that's only used until given finger is
 lifted, and then never again, or the IDs may get heavily reused, being unique
 only for the period given finger is pressed. For @ref PointerEventSource::Mouse
 the ID is a constant, as there's always just a single mouse cursor.
+
+See also @ref platform-windowed-pointer-events for general information about
+handling pointer input in a portable way.
 
 @section Platform-EmscriptenApplication-browser Browser-specific behavior
 
@@ -355,7 +358,8 @@ class EmscriptenApplication {
          *
          * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers(),
+         *      @ref platform-windowed-key-events
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -363,7 +367,9 @@ class EmscriptenApplication {
          * @brief Set of pointer types
          * @m_since_latest
          *
-         * @see @ref PointerMoveEvent::pointers()
+         * @see @ref PointerMoveEvent::pointers(),
+         *      @ref platform-windowed-pointer-events,
+         *      @ref Platform-EmscriptenApplication-touch
          */
         typedef Containers::EnumSet<Pointer> Pointers;
 
@@ -639,7 +645,25 @@ class EmscriptenApplication {
         void redraw();
 
     private:
-        /** @copydoc GlfwApplication::viewportEvent(ViewportEvent&) */
+        /**
+         * @brief Viewport event
+         *
+         * Called when window size changes. The default implementation does
+         * nothing. If you want to respond to size changes, you should pass the
+         * new size to @ref GL::DefaultFramebuffer::setViewport() (if using
+         * OpenGL) and possibly elsewhere (to
+         * @ref SceneGraph::Camera::setViewport(), other framebuffers...).
+         *
+         * Note that this function might not get called at all if the window
+         * size doesn't change. You should configure the initial state of your
+         * cameras, framebuffers etc. in application constructor rather than
+         * relying on this function to be called. Size of the window can be
+         * retrieved using @ref windowSize(), size of the backing framebuffer
+         * via @ref framebufferSize() and DPI scaling using @ref dpiScaling().
+         * See @ref Platform-EmscriptenApplication-dpi for detailed info about
+         * these values.
+         * @see @ref platform-windowed-viewport-events
+         */
         virtual void viewportEvent(ViewportEvent& event);
 
         /** @copydoc Sdl2Application::drawEvent() */
@@ -653,10 +677,20 @@ class EmscriptenApplication {
 
         /** @{ @name Keyboard handling */
 
-        /** @copydoc Sdl2Application::keyPressEvent() */
+        /**
+         * @brief Key press event
+         *
+         * Called when a key is pressed. Default implementation does nothing.
+         * @see @ref platform-windowed-key-events
+         */
         virtual void keyPressEvent(KeyEvent& event);
 
-        /** @copydoc Sdl2Application::keyReleaseEvent() */
+        /**
+         * @brief Key release event
+         *
+         * Called when a key is released. Default implementation does nothing.
+         * @see @ref platform-windowed-key-events
+         */
         virtual void keyReleaseEvent(KeyEvent& event);
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
@@ -887,6 +921,8 @@ class EmscriptenApplication {
          * translation to compatibility mouse events in this case, which is
          * otherwise disabled. On builds with deprecated functionality
          * disabled, default implementation does nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-EmscriptenApplication-touch
          */
         virtual void pointerPressEvent(PointerEvent& event);
 
@@ -917,6 +953,8 @@ class EmscriptenApplication {
          * translation to compatibility mouse events in this case, which is
          * otherwise disabled. On builds with deprecated functionality
          * disabled, default implementation does nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-EmscriptenApplication-touch
          */
         virtual void pointerReleaseEvent(PointerEvent& event);
 
@@ -949,6 +987,8 @@ class EmscriptenApplication {
          * compatibility mouse events before, so they're not propagated now
          * either. On builds with deprecated functionality disabled, default
          * implementation does nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-EmscriptenApplication-touch
          */
         virtual void pointerMoveEvent(PointerMoveEvent& event);
 
@@ -975,6 +1015,7 @@ class EmscriptenApplication {
          * implementation delegates to @ref mouseScrollEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void scrollEvent(ScrollEvent& event);
 
@@ -1004,7 +1045,8 @@ class EmscriptenApplication {
          * @note Note that in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" the
          *      value is emulated and might not reflect external events like
          *      closing on-screen keyboard.
-         * @see @ref startTextInput(), @ref stopTextInput()
+         * @see @ref startTextInput(), @ref stopTextInput(),
+         *      @ref platform-windowed-key-events
          */
         bool isTextInputActive() const;
 
@@ -1013,7 +1055,7 @@ class EmscriptenApplication {
          *
          * Starts text input that will go to @ref textInputEvent().
          * @see @ref stopTextInput(), @ref isTextInputActive(),
-         *      @ref setTextInputRect()
+         *      @ref setTextInputRect(), @ref platform-windowed-key-events
          */
         void startTextInput();
 
@@ -1022,7 +1064,7 @@ class EmscriptenApplication {
          *
          * Stops text input that went to @ref textInputEvent().
          * @see @ref startTextInput(), @ref isTextInputActive(),
-         *      @ref textInputEvent()
+         *      @ref textInputEvent(), @ref platform-windowed-key-events
          */
         void stopTextInput();
 
@@ -1031,8 +1073,9 @@ class EmscriptenApplication {
          *
          * The @p rect defines an area where the text is being displayed, for
          * example to hint the system where to place on-screen keyboard.
-         * @note Currently not implemented, included only for compatibility with
-         * other Application implementations.
+         * @note Currently not implemented, included only for compatibility
+         *      with other Application implementations.
+         * @see @ref platform-windowed-key-events
          */
         void setTextInputRect(const Range2Di& rect);
 
@@ -1041,7 +1084,7 @@ class EmscriptenApplication {
          * @brief Text input event
          *
          * Called when text input is active and the text is being input.
-         * @see @ref isTextInputActive()
+         * @see @ref isTextInputActive(), @ref platform-windowed-key-events
          */
         virtual void textInputEvent(TextInputEvent& event);
 
@@ -1117,7 +1160,7 @@ class EmscriptenApplication {
 
 @see @ref Modifiers, @ref KeyEvent::modifiers(),
     @ref PointerEvent::modifiers(), @ref PointerMoveEvent::modifiers(),
-    @ref ScrollEvent::modifiers()
+    @ref ScrollEvent::modifiers(), @ref platform-windowed-key-events
 */
 enum class EmscriptenApplication::Modifier: Int {
     /**
@@ -1155,7 +1198,7 @@ CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Modifiers)
 @brief Key
 @m_since_latest
 
-@see @ref KeyEvent::key()
+@see @ref KeyEvent::key(), @ref platform-windowed-key-events
 */
 enum class EmscriptenApplication::Key: Int {
     Unknown,         /**< Unknown key */
@@ -1351,7 +1394,9 @@ enum class EmscriptenApplication::Key: Int {
 @brief Pointer event source
 @m_since_latest
 
-@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source(),
+    @ref platform-windowed-pointer-events,
+    @ref Platform-EmscriptenApplication-touch
 */
 enum class EmscriptenApplication::PointerEventSource: UnsignedByte {
     /**
@@ -1377,7 +1422,9 @@ enum class EmscriptenApplication::PointerEventSource: UnsignedByte {
 @m_since_latest
 
 @see @ref Pointers, @ref PointerEvent::pointer(),
-    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers()
+    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers(),
+    @ref platform-windowed-pointer-events,
+    @ref Platform-EmscriptenApplication-touch
 */
 enum class EmscriptenApplication::Pointer: UnsignedByte {
     /**
@@ -1848,7 +1895,7 @@ CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Configuration::WindowFlags)
 /**
 @brief Viewport event
 
-@see @ref viewportEvent()
+@see @ref viewportEvent(), @ref platform-windowed-viewport-events
 */
 class EmscriptenApplication::ViewportEvent {
     public:
@@ -2014,7 +2061,8 @@ class EmscriptenApplication::InputEvent {
 @m_since_latest
 
 @see @ref PointerMoveEvent, @ref ScrollEvent, @ref pointerPressEvent(),
-    @ref pointerReleaseEvent()
+    @ref pointerReleaseEvent(), @ref platform-windowed-pointer-events,
+    @ref Platform-EmscriptenApplication-touch
 */
 class EmscriptenApplication::PointerEvent: public InputEvent {
     public:
@@ -2070,7 +2118,7 @@ class EmscriptenApplication::PointerEvent: public InputEvent {
          */
         Vector2 position() const { return _position; }
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         EmscriptenApplication::Modifiers modifiers() const { return _modifiers; }
 
         /**
@@ -2151,7 +2199,7 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
         /** @brief Position */
         Vector2i position() const;
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
@@ -2170,7 +2218,9 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
 @brief Pointer move event
 @m_since_latest
 
-@see @ref PointerEvent, @ref ScrollEvent, @ref pointerMoveEvent()
+@see @ref PointerEvent, @ref ScrollEvent, @ref pointerMoveEvent(),
+    @ref platform-windowed-pointer-events,
+    @ref Platform-EmscriptenApplication-touch
 */
 class EmscriptenApplication::PointerMoveEvent: public InputEvent {
     public:
@@ -2252,7 +2302,7 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
          */
         Vector2 relativePosition() const { return _relativePosition; }
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         EmscriptenApplication::Modifiers modifiers() const { return _modifiers; }
 
         /**
@@ -2354,7 +2404,7 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
         /** @brief Mouse buttons */
         Buttons buttons() const;
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         EmscriptenApplication::Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
@@ -2378,7 +2428,8 @@ CORRADE_IGNORE_DEPRECATED_POP
 @brief Scroll event
 @m_since_latest
 
-@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent(),
+    @ref platform-windowed-pointer-events
 */
 class EmscriptenApplication::ScrollEvent: public EmscriptenApplication::InputEvent {
     public:
@@ -2392,7 +2443,7 @@ class EmscriptenApplication::ScrollEvent: public EmscriptenApplication::InputEve
          */
         Vector2 position() const;
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         EmscriptenApplication::Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
@@ -2422,7 +2473,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Emscripten
         /** @brief Position */
         Vector2i position() const;
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         EmscriptenApplication::Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
@@ -2440,7 +2491,8 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Emscripten
 /**
 @brief Key event
 
-@see @ref keyPressEvent(), @ref keyReleaseEvent()
+@see @ref keyPressEvent(), @ref keyReleaseEvent(),
+    @ref platform-windowed-key-events
 */
 class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent {
     public:
@@ -2493,7 +2545,7 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
          */
         Containers::StringView scanCodeName() const;
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         EmscriptenApplication::Modifiers modifiers() const;
 
         /** @brief Underlying Emscripten event */
@@ -2510,7 +2562,7 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
 /**
 @brief Text input event
 
-@see @ref textInputEvent()
+@see @ref textInputEvent(), @ref platform-windowed-key-events
 */
 class EmscriptenApplication::TextInputEvent {
     public:

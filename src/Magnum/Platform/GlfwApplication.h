@@ -202,7 +202,8 @@ class GlfwApplication {
          *
          * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers(),
+         *      @ref platform-windowed-key-events
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -210,7 +211,8 @@ class GlfwApplication {
          * @brief Set of pointer types
          * @m_since_latest
          *
-         * @see @ref PointerMoveEvent::pointers()
+         * @see @ref PointerMoveEvent::pointers(),
+         *      @ref platform-windowed-pointer-events
          */
         typedef Containers::EnumSet<Pointer> Pointers;
 
@@ -632,6 +634,7 @@ class GlfwApplication {
          * via @ref framebufferSize() and DPI scaling using @ref dpiScaling().
          * See @ref Platform-GlfwApplication-dpi for detailed info about these
          * values.
+         * @see @ref platform-windowed-viewport-events
          */
         virtual void viewportEvent(ViewportEvent& event);
 
@@ -646,10 +649,20 @@ class GlfwApplication {
 
         /** @{ @name Keyboard handling */
 
-        /** @copydoc Sdl2Application::keyPressEvent() */
+        /**
+         * @brief Key press event
+         *
+         * Called when a key is pressed. Default implementation does nothing.
+         * @see @ref platform-windowed-key-events
+         */
         virtual void keyPressEvent(KeyEvent& event);
 
-        /** @copydoc Sdl2Application::keyReleaseEvent() */
+        /**
+         * @brief Key release event
+         *
+         * Called when a key is released. Default implementation does nothing.
+         * @see @ref platform-windowed-key-events
+         */
         virtual void keyReleaseEvent(KeyEvent& event);
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
@@ -749,6 +762,7 @@ class GlfwApplication {
          * implementation delegates to @ref mousePressEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void pointerPressEvent(PointerEvent& event);
 
@@ -776,6 +790,7 @@ class GlfwApplication {
          * implementation delegates to @ref mouseReleaseEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void pointerReleaseEvent(PointerEvent& event);
 
@@ -806,6 +821,7 @@ class GlfwApplication {
          * @ref mousePressEvent() or @ref mouseReleaseEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void pointerMoveEvent(PointerMoveEvent& event);
 
@@ -832,6 +848,7 @@ class GlfwApplication {
          * implementation delegates to @ref mouseScrollEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void scrollEvent(ScrollEvent& event);
 
@@ -859,7 +876,8 @@ class GlfwApplication {
          *
          * If text input is active, text input events go to
          * @ref textInputEvent().
-         * @see @ref startTextInput(), @ref stopTextInput()
+         * @see @ref startTextInput(), @ref stopTextInput(),
+         *      @ref platform-windowed-key-events
          */
         bool isTextInputActive() const;
 
@@ -867,7 +885,8 @@ class GlfwApplication {
          * @brief Start text input
          *
          * Starts text input that will go to @ref textInputEvent().
-         * @see @ref stopTextInput(), @ref isTextInputActive()
+         * @see @ref stopTextInput(), @ref isTextInputActive(),
+         *      @ref platform-windowed-key-events
          */
         void startTextInput();
 
@@ -876,7 +895,7 @@ class GlfwApplication {
          *
          * Stops text input that went to @ref textInputEvent().
          * @see @ref startTextInput(), @ref isTextInputActive(),
-         *      @ref textInputEvent()
+         *      @ref textInputEvent(), @ref platform-windowed-key-events
          */
         void stopTextInput();
 
@@ -885,7 +904,7 @@ class GlfwApplication {
          * @brief Text input event
          *
          * Called when text input is active and the text is being input.
-         * @see @ref isTextInputActive()
+         * @see @ref isTextInputActive(), @ref platform-windowed-key-events
          */
         virtual void textInputEvent(TextInputEvent& event);
 
@@ -1004,7 +1023,7 @@ class GlfwApplication {
 
 @see @ref Modifiers, @ref KeyEvent::modifiers(),
     @ref PointerEvent::modifiers(), @ref PointerMoveEvent::modifiers(),
-    @ref ScrollEvent::modifiers()
+    @ref ScrollEvent::modifiers(), @ref platform-windowed-key-events
 */
 enum class GlfwApplication::Modifier: Int {
     /**
@@ -1042,7 +1061,7 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::Modifiers)
 @brief Key
 @m_since_latest
 
-@see @ref KeyEvent::key()
+@see @ref KeyEvent::key(), @ref platform-windowed-key-events
 */
 enum class GlfwApplication::Key: Int {
     Unknown = GLFW_KEY_UNKNOWN,         /**< Unknown key */
@@ -1282,7 +1301,8 @@ enum class GlfwApplication::Key: Int {
 @brief Pointer event source
 @m_since_latest
 
-@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source(),
+    @ref platform-windowed-pointer-events
 */
 enum class GlfwApplication::PointerEventSource: UnsignedByte {
     /**
@@ -1300,7 +1320,8 @@ enum class GlfwApplication::PointerEventSource: UnsignedByte {
 @m_since_latest
 
 @see @ref Pointers, @ref PointerEvent::pointer(),
-    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers()
+    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers(),
+    @ref platform-windowed-pointer-events
 */
 enum class GlfwApplication::Pointer: UnsignedByte {
     /**
@@ -2005,7 +2026,7 @@ class GlfwApplication::ExitEvent {
 /**
 @brief Viewport event
 
-@see @ref viewportEvent()
+@see @ref viewportEvent(), @ref platform-windowed-viewport-events
 */
 class GlfwApplication::ViewportEvent {
     public:
@@ -2134,7 +2155,8 @@ class GlfwApplication::InputEvent {
 /**
 @brief Key event
 
-@see @ref keyPressEvent(), @ref keyReleaseEvent()
+@see @ref keyPressEvent(), @ref keyReleaseEvent(),
+    @ref platform-windowed-key-events
 */
 class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
     public:
@@ -2185,7 +2207,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
          */
         Containers::StringView keyName() const;
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         GlfwApplication::Modifiers modifiers() const { return _modifiers; }
 
         /** @copydoc Sdl2Application::KeyEvent::isRepeated() */
@@ -2207,7 +2229,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
 @m_since_latest
 
 @see @ref PointerMoveEvent, @ref ScrollEvent, @ref pointerPressEvent(),
-    @ref pointerReleaseEvent()
+    @ref pointerReleaseEvent(), @ref platform-windowed-pointer-events
 */
 class GlfwApplication::PointerEvent: public InputEvent {
     public:
@@ -2262,7 +2284,7 @@ class GlfwApplication::PointerEvent: public InputEvent {
          */
         Vector2 position() const { return _position; }
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         GlfwApplication::Modifiers modifiers() const { return _modifiers; }
 
     private:
@@ -2312,7 +2334,7 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
         /** @brief Position */
         Vector2i position() const { return _position; }
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         GlfwApplication::Modifiers modifiers() const { return _modifiers; }
 
     private:
@@ -2330,7 +2352,8 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
 @brief Pointer move event
 @m_since_latest
 
-@see @ref PointerEvent, @ref ScrollEvent, @ref pointerMoveEvent()
+@see @ref PointerEvent, @ref ScrollEvent, @ref pointerMoveEvent(),
+    @ref platform-windowed-pointer-events
 */
 class GlfwApplication::PointerMoveEvent: public InputEvent {
     public:
@@ -2416,7 +2439,7 @@ class GlfwApplication::PointerMoveEvent: public InputEvent {
         Vector2 relativePosition() const { return _relativePosition; }
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -2485,7 +2508,7 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
         Vector2i relativePosition() const { return _relativePosition; }
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -2511,7 +2534,8 @@ CORRADE_IGNORE_DEPRECATED_POP
 @brief Scroll event
 @m_since_latest
 
-@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent(),
+    @ref platform-windowed-pointer-events
 */
 class GlfwApplication::ScrollEvent: public InputEvent {
     public:
@@ -2529,7 +2553,7 @@ class GlfwApplication::ScrollEvent: public InputEvent {
         Vector2 position();
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -2567,7 +2591,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") GlfwApplic
         Vector2i position();
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -2588,7 +2612,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") GlfwApplic
 /**
 @brief Text input event
 
-@see @ref textInputEvent()
+@see @ref textInputEvent(), @ref platform-windowed-key-events
 */
 class GlfwApplication::TextInputEvent {
     public:

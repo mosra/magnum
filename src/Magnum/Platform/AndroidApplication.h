@@ -162,7 +162,7 @@ output to Android log buffer with tag `"magnum"`, which can be then accessed
 through `logcat` utility. See also @ref Corrade::Utility::AndroidLogStreamBuffer
 for more information.
 
-@section Platform-AndroidApplication-touch Touch input
+@section Platform-AndroidApplication-touch Touch input on Android
 
 The application recognizes touch and pen input and reports it as
 @ref Pointer::Finger, @ref Pointer::Pen, @ref Pointer::Eraser with
@@ -192,6 +192,9 @@ lifted, and then never again, or the IDs may get heavily reused, being unique
 only for the period given finger is pressed. For @ref PointerEventSource::Mouse
 and @ref PointerEventSource::Pen  the ID is a constant, as there's always just
 a single mouse cursor or a pen stylus.
+
+See also @ref platform-windowed-pointer-events for general information about
+handling pointer input in a portable way.
 */
 class AndroidApplication {
     public:
@@ -219,7 +222,8 @@ class AndroidApplication {
          * @brief Set of pointer types
          * @m_since_latest
          *
-         * @see @ref PointerMoveEvent::pointers()
+         * @see @ref PointerMoveEvent::pointers(),
+         *      @ref platform-windowed-pointer-events
          */
         typedef Containers::EnumSet<Pointer> Pointers;
 
@@ -421,6 +425,7 @@ class AndroidApplication {
          * via @ref framebufferSize() and DPI scaling using @ref dpiScaling().
          * See @ref Platform-GlfwApplication-dpi for detailed info about these
          * values.
+         * @see @ref platform-windowed-viewport-events
          */
         virtual void viewportEvent(ViewportEvent& event);
 
@@ -449,6 +454,8 @@ class AndroidApplication {
          * implementation delegates to @ref mousePressEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-AndroidApplication-touch
          */
         virtual void pointerPressEvent(PointerEvent& event);
 
@@ -476,6 +483,8 @@ class AndroidApplication {
          * implementation delegates to @ref mouseReleaseEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-AndroidApplication-touch
          */
         virtual void pointerReleaseEvent(PointerEvent& event);
 
@@ -506,6 +515,8 @@ class AndroidApplication {
          * @ref mousePressEvent() or @ref mouseReleaseEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-AndroidApplication-touch
          */
         virtual void pointerMoveEvent(PointerMoveEvent& event);
 
@@ -581,7 +592,9 @@ class AndroidApplication {
 @brief Pointer event source
 @m_since_latest
 
-@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source(),
+    @ref platform-windowed-pointer-events,
+    @ref Platform-AndroidApplication-touch
 */
 enum class AndroidApplication::PointerEventSource: UnsignedByte {
     /**
@@ -619,7 +632,9 @@ enum class AndroidApplication::PointerEventSource: UnsignedByte {
 @m_since_latest
 
 @see @ref Pointers, @ref PointerEvent::pointer(),
-    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers()
+    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers(),
+    @ref platform-windowed-pointer-events,
+    @ref Platform-AndroidApplication-touch
 */
 enum class AndroidApplication::Pointer: UnsignedByte {
     /**
@@ -885,7 +900,7 @@ class AndroidApplication::Configuration {
 /**
 @brief Viewport event
 
-@see @ref viewportEvent()
+@see @ref viewportEvent(), @ref platform-windowed-viewport-events
 */
 class AndroidApplication::ViewportEvent {
     public:
@@ -983,7 +998,8 @@ class AndroidApplication::InputEvent {
 @m_since_latest
 
 @see @ref PointerMoveEvent, @ref pointerPressEvent(),
-    @ref pointerReleaseEvent()
+    @ref pointerReleaseEvent(), @ref platform-windowed-pointer-events,
+    @ref Platform-AndroidApplication-touch
 */
 class AndroidApplication::PointerEvent: public InputEvent {
     public:
@@ -1104,7 +1120,9 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
 @brief Pointer move event
 @m_since_latest
 
-@see @ref PointerEvent, @ref pointerMoveEvent()
+@see @ref PointerEvent, @ref pointerMoveEvent(),
+    @ref platform-windowed-pointer-events,
+    @ref Platform-AndroidApplication-touch
 */
 class AndroidApplication::PointerMoveEvent: public InputEvent {
     public:

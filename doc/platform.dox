@@ -31,84 +31,150 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@ref Platform namespace contains classes integrating Magnum engine into
-various toolkits, both windowed and windowless. Each class has slightly
-different dependencies and platform requirements, see documentation of
+The @ref Platform namespace contains `*Application` classes integrating Magnum
+into various toolkits, both windowed and windowless. Each class has slightly
+different dependencies and platform requirements, see documentation of the
 @ref Platform namespace and particular `*Application` classes for more
 information about building and usage with CMake.
 
-All the classes have common API to achieve static polymorphism, so basically
-you can use different toolkits on different platforms and the only thing you
-need to change is the class name, everything else is the same. Basic usage is
-to subclass the chosen `*Application` class and implement required methods.
+The classes aim to provide a common API to achieve static polymorphism, which
+ultimately means you should be able to use different toolkits on different
+platforms by only changing an @cpp #include @ce and linking to a different
+library.
 
 @section platform-windowed Windowed applications
 
-Windowed applications provide a window and keyboard and mouse handling. The
-de-facto standard and most widely used toolkit is SDL2, which is implemented in
-@ref Platform::Sdl2Application. As said above, the usage is similar for all
-toolkits, you must provide one-argument constructor and implement at least
-@ref Platform::Sdl2Application::drawEvent() "drawEvent()" function. The class
-can be then used directly in @cpp main() @ce, but for convenience and
-portability it's better to use @ref MAGNUM_SDL2APPLICATION_MAIN() macro.
-
-To simplify the porting, the library provides @cpp Platform::Application @ce
-typedef and @cpp MAGNUM_APPLICATION_MAIN() @ce macro (but only if only one
-application header is included, to avoid ambiguity). Changing the code to use
-different toolkit is then matter of replacing only the @cpp #include @ce
-statement (and changing one line in CMake build script, as you see later).
+Windowed applications provide a window, keyboard and pointer input handling.
+The most widely used toolkit is SDL2, which is implemented in
+@ref Platform::Sdl2Application. At the very least, provide an one-argument
+constructor and the @relativeref{Platform::Sdl2Application,drawEvent()}
+function. The class can be then used directly in @cpp main() @ce, but for
+convenience and portability to other toolkits and platforms it's better to use
+the @ref MAGNUM_SDL2APPLICATION_MAIN() macro. If just a single application
+header is included, the class is aliased to a @cpp Platform::Application @ce
+typedef and to a @cpp MAGNUM_APPLICATION_MAIN() @ce macro.
 
 Barebone application implementation which will just clear the window to dark
 blue color is shown in the following code listing.
 
-@note Fully contained base application along with CMake setup is available in
-    `base` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
+@note A fully contained base application along with CMake setup is available in
+    the `base` branch of the [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
 
 @snippet Platform.cpp windowed
 
-@subsection platform-windowed-viewport Responding to viewport size changes
+@subsection platform-windowed-pointer-events Handling mouse, touch and pen events
+
+All application implementations have a generalized pointer input that covers
+mouse, (multi-)touch and pen input in a single interface, exposed through
+@relativeref{Platform::Sdl2Application,pointerPressEvent()},
+@relativeref{Platform::Sdl2Application,pointerReleaseEvent()} and
+@relativeref{Platform::Sdl2Application,pointerMoveEvent()}. Override a subset
+based on the events you want to handle. Mouse input is present in every
+application, touch and pen support varies based on the underlying toolkit.
+
+To make the application touch- and pen-aware, all you need to do is treat
+@relativeref{Platform::Sdl2Application,Pointer::Finger} (and
+@relativeref{Platform::AndroidApplication,Pointer::Pen}) the same way as
+@relativeref{Platform::Sdl2Application,Pointer::MouseLeft}. The pointer types
+can be ORed into an enum set for a simpler check, as shown below. Additionally,
+pointer events report also secondary touches from multi-touch interfaces.
+Unless you specifically handle multi-touch gestures in the application, it
+makes sense to handle only primary touches, i.e. only the first pressed finger,
+with @relativeref{Platform::Sdl2Application,PointerEvent::isPrimary()}. Mouse
+and pen input is marked as primary always.
+
+@snippet Platform.cpp windowed-pointer-events
+
+In addition to the above generalized interface, there's
+@relativeref{Platform::Sdl2Application,scrollEvent()} providing 2D scroll
+events from a mouse wheel, trackball or touchpad.
+
+@subsection platform-windowed-key-events Attaching to keyboard and text input
+
+The @relativeref{Platform::Sdl2Application,keyPressEvent()} and
+@relativeref{Platform::Sdl2Application,keyReleaseEvent()} provide key input
+events, both a from a physical keyboard and a virtual one on touch-only
+devices. Apart from the @relativeref{Platform::Sdl2Application,Key} being
+pressed or released, they track information about which keyboard
+@relativeref{Platform::Sdl2Application,Modifiers} are pressed.
+
+For text input there's @relativeref{Platform::Sdl2Application,textInputEvent()},
+which has to be explicitly enabled with
+@relativeref{Platform::Sdl2Application,startTextInput()} and then disabled
+again with @relativeref{Platform::Sdl2Application,stopTextInput()}. The text
+input directly gives the application bits of UTF-8 text, matching current
+keyboard layout, system configuration and other platform-specific state.
+
+Key events are still fired even with text input enabled in order to be able to
+react to arrow keys for cursor movement, editing shortcuts and such. Key events
+* *should not* be used for getting actual typed characters, attempting to do so
+will never lead to a solution that works reliably on all platforms.
+
+@snippet Platform.cpp windowed-key-events
+
+For [IME](https://en.wikipedia.org/wiki/Input_method) and other advanced text
+editing, certain application implementations provide also a
+@relativeref{Platform::Sdl2Application,textEditingEvent()}.
+
+@section platform-windowed-configuration Specifying configuration
+
+By default the application is created with reasonable defaults (such as a
+window size of 800x600 pixels). Pass a
+@relativeref{Platform::Sdl2Application,Configuration} instance to the
+application constructor to modify those. Using method chaining it can be done
+conveniently like this:
+
+@snippet Platform.cpp windowed-configuration
+
+@subsection platform-windowed-viewport-events Responding to window size changes
 
 By default the application doesn't respond to window size changes in any way,
-as the window has fixed size in most cases. To respond to size change for
-example by resizing the default framebuffer, you need to reimplement
-@ref Platform::Sdl2Application::viewportEvent() "viewportEvent()" function and
-pass the new size to the framebuffer:
+and the window has a fixed size. To make the window resizable and properly
+respond to size changes, construct the application with
+@relativeref{Platform::Sdl2Application,Configuration::WindowFlag::Resizable}
+and override the @relativeref{Platform::Sdl2Application,viewportEvent()}
+function, where you pass the new size to the default framebuffer and where else
+is appropriate:
 
-@snippet Platform.cpp size
+@snippet Platform.cpp windowed-viewport-events
 
 @section platform-windowless Windowless applications
 
-Windowless applications provide just a context for ofscreen rendering or
-performing tasks on GPU. There is not yet any platform-independent toolkit
+Windowless applications provide just a context for offscreen rendering or for
+performing tasks on a GPU. For OpenGL there is no platform-independent toolkit
 which could handle this in portable way, thus you have to use platform-specific
-ones. Magnum provides windowless applications for X11-based Unix, macOS and
-Windows. To make things simple, as an example we will use only
-@ref Platform::WindowlessEglApplication, see link for bootstrap application
-below for fully portable example.
+implementations. Magnum provides windowless applications for GLX and EGL on
+Unix, CGL on macOS and WGL or EGL on Windows. To make things simple, as an
+example we will use only @ref Platform::WindowlessEglApplication, below is a
+link to a bootstrap application for a fully cross-platform example.
 
-You need to implement just @ref Platform::WindowlessEglApplication::exec() "exec()"
-function. The class can be then used directly in @cpp main() @ce, but again,
-for convenience and portability it's better to use
-@ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN() macro.
+You need to implement just the
+@relativeref{Platform::WindowlessEglApplication,exec()} function. The class can
+be then used directly in @cpp main() @ce, but again, for convenience and
+portability it's better to use the @ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN()
+macro.
 
-Similarly as with windowed applications, to simplify the porting, the library
-provides @cpp Platform::WindowlessApplication @ce typedef and
-@cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce macro, but only if just one
-windowless application header is included. Changing the code to use different
-toolkit is then matter of replacing only the @cpp #include @ce statement.
-Aliases for windowless applications are separated from aliases for windowed
-applications, because projects commonly contain both graphics application and
-command-line tools (for data preparation etc.).
+Similarly as with windowed applications, if just a single windowless
+application header is included, the library provides a
+@cpp Platform::WindowlessApplication @ce typedef and a
+@cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce macro. Changing the code to use
+a different toolkit is then again a matter of using a different
+@cpp #include @ce and linking to a different library. Aliases for windowless
+applications are separated from aliases for windowed applications, because
+projects commonly contain both graphics applications and helper command-line
+tools for data processing and such.
 
-Barebone application which will just print out current OpenGL version and
-renderer string and exits is in the following code listing.
+A barebone application which will just print out the current OpenGL version and
+renderer string is in the following code listing.
 
-@note Fully contained windowless application using @ref Platform::WindowlessCglApplication
-    on macOS, @ref Platform::WindowlessGlxApplication on Unix and
+@note A fully contained windowless application using
+    @ref Platform::WindowlessCglApplication on macOS,
+    @ref Platform::WindowlessGlxApplication /
+    @ref Platform::WindowlessEglApplication on Unix and
     @ref Platform::WindowlessWglApplication on Windows along with CMake setup
-    is available in `windowless` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
-    repository.
+    is available in the `windowless` branch of the
+    [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository.
 
 @snippet Platform-windowless.cpp windowless
 
@@ -134,17 +200,7 @@ target_link_libraries(myapplication
     Magnum::Application)
 @endcode
 
-@section platform-configuration Specifying configuration
-
-By default the application is created with some reasonable defaults (e.g.
-window size 800x600 pixels). If you want something else, you can pass
-@ref Platform::Sdl2Application::Configuration "Configuration" instance to
-application constructor. Using method chaining it can be done conveniently like
-this:
-
-@snippet Platform.cpp configuration
-
-@subsection platform-configuration-delayed Delayed context creation
+@section platform-configuration-delayed Delayed context creation
 
 Sometimes you may want to set up the application based on a configuration file
 or system introspection, which can't really be done inside the base class

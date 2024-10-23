@@ -298,7 +298,7 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
 
-@section Platform-Sdl2Application-touch Touch input
+@section Platform-Sdl2Application-touch Touch input in SDL2
 
 The application recognizes touch input and reports it as @ref Pointer::Finger
 and @ref PointerEventSource::Touch. Because both mouse and touch events are
@@ -329,6 +329,9 @@ you can't rely on it to be contiguous or in any bounded range --- for example,
 each new touch may generate a new ID that's only used until given finger is
 lifted, and then never again. For @ref PointerEventSource::Mouse the ID is a
 constant, as there's always just a single mouse cursor.
+
+See also @ref platform-windowed-pointer-events for general information about
+handling pointer input in a portable way.
 
 @section Platform-Sdl2Application-platform-specific Platform-specific behavior
 
@@ -574,7 +577,8 @@ class Sdl2Application {
          *
          * @see @ref KeyEvent::modifiers(), @ref PointerEvent::modifiers(),
          *      @ref PointerMoveEvent::modifiers(),
-         *      @ref ScrollEvent::modifiers()
+         *      @ref ScrollEvent::modifiers(),
+         *      @ref platform-windowed-key-events
          */
         typedef Containers::EnumSet<Modifier> Modifiers;
 
@@ -582,7 +586,8 @@ class Sdl2Application {
          * @brief Set of pointer types
          * @m_since_latest
          *
-         * @see @ref PointerMoveEvent::pointers()
+         * @see @ref PointerMoveEvent::pointers(),
+         *      @ref platform-windowed-pointer-events
          */
         typedef Containers::EnumSet<Pointer> Pointers;
 
@@ -1102,6 +1107,7 @@ class Sdl2Application {
          * via @ref framebufferSize() and DPI scaling using @ref dpiScaling().
          * See @ref Platform-Sdl2Application-dpi for detailed info about these
          * values.
+         * @see @ref platform-windowed-viewport-events
          */
         virtual void viewportEvent(ViewportEvent& event);
 
@@ -1127,14 +1133,16 @@ class Sdl2Application {
         /**
          * @brief Key press event
          *
-         * Called when an key is pressed. Default implementation does nothing.
+         * Called when a key is pressed. Default implementation does nothing.
+         * @see @ref platform-windowed-key-events
          */
         virtual void keyPressEvent(KeyEvent& event);
 
         /**
          * @brief Key release event
          *
-         * Called when an key is released. Default implementation does nothing.
+         * Called when a key is released. Default implementation does nothing.
+         * @see @ref platform-windowed-key-events
          */
         virtual void keyReleaseEvent(KeyEvent& event);
 
@@ -1238,6 +1246,8 @@ class Sdl2Application {
          * @ref mousePressEvent(), interpreting @ref Pointer::Finger as
          * @ref MouseEvent::Button::Left. On builds with deprecated
          * functionality disabled, default implementation does nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-Sdl2Application-touch
          */
         virtual void pointerPressEvent(PointerEvent& event);
 
@@ -1267,6 +1277,8 @@ class Sdl2Application {
          * @ref mouseReleaseEvent(), interpreting @ref Pointer::Finger as
          * @ref MouseEvent::Button::Left. On builds with deprecated
          * functionality disabled, default implementation does nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-Sdl2Application-touch
          */
         virtual void pointerReleaseEvent(PointerEvent& event);
 
@@ -1298,6 +1310,8 @@ class Sdl2Application {
          * @ref Pointer::Finger is interpreted as @ref MouseEvent::Button::Left.
          * On builds with deprecated functionality disabled, default
          * implementation does nothing.
+         * @see @ref platform-windowed-pointer-events,
+         *      @ref Platform-Sdl2Application-touch
          */
         virtual void pointerMoveEvent(PointerMoveEvent& event);
 
@@ -1324,6 +1338,7 @@ class Sdl2Application {
          * implementation delegates to @ref mouseScrollEvent(). On builds with
          * deprecated functionality disabled, default implementation does
          * nothing.
+         * @see @ref platform-windowed-pointer-events
          */
         virtual void scrollEvent(ScrollEvent& event);
 
@@ -1358,12 +1373,13 @@ class Sdl2Application {
         /**
          * @brief Whether text input is active
          *
-         * If text input is active, text input events go to @ref textInputEvent()
-         * and @ref textEditingEvent().
+         * If text input is active, text input events go to
+         * @ref textInputEvent() and @ref textEditingEvent().
          * @note Note that in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" the
          *      value is emulated and might not reflect external events like
          *      closing on-screen keyboard.
-         * @see @ref startTextInput(), @ref stopTextInput()
+         * @see @ref startTextInput(), @ref stopTextInput(),
+         *      @ref platform-windowed-key-events
          */
         bool isTextInputActive();
 
@@ -1373,7 +1389,7 @@ class Sdl2Application {
          * Starts text input that will go to @ref textInputEvent() and
          * @ref textEditingEvent().
          * @see @ref stopTextInput(), @ref isTextInputActive(),
-         *      @ref setTextInputRect()
+         *      @ref setTextInputRect(), @ref platform-windowed-key-events
          */
         void startTextInput();
 
@@ -1382,8 +1398,9 @@ class Sdl2Application {
          *
          * Stops text input that went to @ref textInputEvent() and
          * @ref textEditingEvent().
-         * @see @ref startTextInput(), @ref isTextInputActive(), @ref textInputEvent()
-         *      @ref textEditingEvent()
+         * @see @ref startTextInput(), @ref isTextInputActive(),
+         *      @ref textInputEvent(), @ref textEditingEvent(),
+         *      @ref platform-windowed-key-events
          */
         void stopTextInput();
 
@@ -1392,6 +1409,7 @@ class Sdl2Application {
          *
          * The @p rect defines an area where the text is being displayed, for
          * example to hint the system where to place on-screen keyboard.
+         * @see @ref platform-windowed-key-events
          */
         void setTextInputRect(const Range2Di& rect);
 
@@ -1400,7 +1418,7 @@ class Sdl2Application {
          * @brief Text input event
          *
          * Called when text input is active and the text is being input.
-         * @see @ref isTextInputActive()
+         * @see @ref isTextInputActive(), @ref platform-windowed-key-events
          */
         virtual void textInputEvent(TextInputEvent& event);
 
@@ -1408,6 +1426,7 @@ class Sdl2Application {
          * @brief Text editing event
          *
          * Called when text input is active and the text is being edited.
+         * @see @ref platform-windowed-key-events
          */
         virtual void textEditingEvent(TextEditingEvent& event);
 
@@ -1543,7 +1562,7 @@ class Sdl2Application {
 
 @see @ref Modifiers, @ref KeyEvent::modifiers(),
     @ref PointerEvent::modifiers(), @ref PointerMoveEvent::modifiers(),
-    @ref ScrollEvent::modifiers()
+    @ref ScrollEvent::modifiers(), @ref platform-windowed-key-events
  */
 enum class Sdl2Application::Modifier: Uint16 {
     /**
@@ -1603,7 +1622,7 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Modifiers)
 @brief Key
 @m_since_latest
 
-@see @ref KeyEvent::key()
+@see @ref KeyEvent::key(), @ref platform-windowed-key-events
 */
 enum class Sdl2Application::Key: SDL_Keycode {
     Unknown = SDLK_UNKNOWN,     /**< Unknown key */
@@ -1857,7 +1876,8 @@ enum class Sdl2Application::Key: SDL_Keycode {
 @brief Pointer event source
 @m_since_latest
 
-@see @ref PointerEvent::source(), @ref PointerMoveEvent::source()
+@see @ref PointerEvent::source(), @ref PointerMoveEvent::source(),
+    @ref platform-windowed-pointer-events, @ref Platform-Sdl2Application-touch
 */
 enum class Sdl2Application::PointerEventSource: UnsignedByte {
     /**
@@ -1888,7 +1908,8 @@ enum class Sdl2Application::PointerEventSource: UnsignedByte {
 @m_since_latest
 
 @see @ref Pointers, @ref PointerEvent::pointer(),
-    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers()
+    @ref PointerMoveEvent::pointer(), @ref PointerMoveEvent::pointers(),
+    @ref platform-windowed-pointer-events, @ref Platform-Sdl2Application-touch
 */
 enum class Sdl2Application::Pointer: UnsignedByte {
     /**
@@ -2680,7 +2701,7 @@ class Sdl2Application::ExitEvent {
 /**
 @brief Viewport event
 
-@see @ref viewportEvent()
+@see @ref viewportEvent(), @ref platform-windowed-viewport-events
 */
 class Sdl2Application::ViewportEvent {
     public:
@@ -2853,7 +2874,8 @@ class Sdl2Application::InputEvent {
 /**
 @brief Key event
 
-@see @ref keyPressEvent(), @ref keyReleaseEvent()
+@see @ref keyPressEvent(), @ref keyReleaseEvent(),
+    @ref platform-windowed-key-events
 */
 class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
     public:
@@ -2925,7 +2947,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         Containers::StringView scanCodeName() const;
         #endif
 
-        /** @brief Modifiers */
+        /** @brief Keyboard modifiers */
         Sdl2Application::Modifiers modifiers() const { return _modifiers; }
 
         /**
@@ -2952,7 +2974,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 @m_since_latest
 
 @see @ref PointerMoveEvent, @ref pointerPressEvent(),
-    @ref pointerReleaseEvent()
+    @ref pointerReleaseEvent(), @ref platform-windowed-pointer-events,
+    @ref Platform-Sdl2Application-touch
 */
 class Sdl2Application::PointerEvent: public InputEvent {
     public:
@@ -3015,7 +3038,7 @@ class Sdl2Application::PointerEvent: public InputEvent {
         #endif
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -3090,7 +3113,7 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
         #endif
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -3122,7 +3145,8 @@ class CORRADE_DEPRECATED("use PointerEvent, pointerPressEvent() and pointerRelea
 @brief Pointer move event
 @m_since_latest
 
-@see @ref PointerEvent, @ref pointerMoveEvent()
+@see @ref PointerEvent, @ref pointerMoveEvent(),
+    @ref platform-windowed-pointer-events, @ref Platform-Sdl2Application-touch
 */
 class Sdl2Application::PointerMoveEvent: public InputEvent {
     public:
@@ -3211,7 +3235,7 @@ class Sdl2Application::PointerMoveEvent: public InputEvent {
         Vector2 relativePosition() const { return _relativePosition; }
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -3280,7 +3304,7 @@ class CORRADE_DEPRECATED("use PointerMoveEvent and pointerMoveEvent() instead") 
         Buttons buttons() const { return _buttons; }
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -3305,7 +3329,8 @@ CORRADE_IGNORE_DEPRECATED_POP
 @brief Scroll event
 @m_since_latest
 
-@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent()
+@see @ref PointerEvent, @ref PointerMoveEvent, @ref scrollEvent(),
+    @ref platform-windowed-pointer-events
 */
 class Sdl2Application::ScrollEvent: public Sdl2Application::InputEvent {
     public:
@@ -3321,7 +3346,7 @@ class Sdl2Application::ScrollEvent: public Sdl2Application::InputEvent {
         Vector2 position();
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -3358,7 +3383,7 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Sdl2Applic
         Vector2i position();
 
         /**
-         * @brief Modifiers
+         * @brief Keyboard modifiers
          *
          * Lazily populated on first request.
          */
@@ -3456,7 +3481,8 @@ class Sdl2Application::MultiGestureEvent {
 /**
 @brief Text input event
 
-@see @ref TextEditingEvent, @ref textInputEvent()
+@see @ref TextEditingEvent, @ref textInputEvent(),
+    @ref platform-windowed-key-events
 */
 class Sdl2Application::TextInputEvent {
     public:
@@ -3514,7 +3540,7 @@ class Sdl2Application::TextInputEvent {
 /**
 @brief Text editing event
 
-@see @ref textEditingEvent()
+@see @ref textEditingEvent(), @ref platform-windowed-key-events
 */
 class Sdl2Application::TextEditingEvent {
     public:
