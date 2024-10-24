@@ -33,7 +33,6 @@ set(CMAKE_FOLDER "Magnum/Platform")
 set(MagnumPlatform_SRCS )
 
 set(MagnumPlatform_HEADERS
-    GLContext.h
     Platform.h
     Screen.h
     ScreenedApplication.h
@@ -94,9 +93,9 @@ endif()
 # Files to display in project view of IDEs only (filled in below)
 set(MagnumPlatform_FILES )
 
-install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-
 if(MAGNUM_TARGET_GL)
+    list(APPEND MagnumPlatform_HEADERS GLContext.h)
+
     # Decide about platform-specific context for cross-platform toolkits
     if(MAGNUM_WITH_GLFWAPPLICATION OR MAGNUM_WITH_SDL2APPLICATION)
         # On WebGL windowless apps don't use anything from EGL, only windowless
@@ -132,6 +131,8 @@ if(MAGNUM_TARGET_GL)
         endif()
     endif()
 endif()
+
+install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # Android application
 if(MAGNUM_WITH_ANDROIDAPPLICATION)
