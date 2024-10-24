@@ -843,6 +843,10 @@ See also:
 -   @ref SceneGraph trees are now destructed in a way that preserves
     @ref SceneGraph::Object::parent() links up to the root as well as
     @ref SceneGraph::AbstractFeature::object() references
+-   Added @ref SceneGraph::Object::addFeature() as a counterpart to
+    @ref SceneGraph::AbstractObject::addFeature() that passes a concrete object
+    type to the feature constructor, in order to make it work with for example
+    the @ref BulletIntegration::MotionState
 
 @subsubsection changelog-latest-changes-scenetools SceneTools library
 

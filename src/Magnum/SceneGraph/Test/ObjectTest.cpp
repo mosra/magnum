@@ -41,6 +41,7 @@ struct ObjectTest: TestSuite::Tester {
     explicit ObjectTest();
 
     template<class T> void addFeature();
+    template<class T> void addFeatureAbstractObject();
 
     template<class T> void parenting();
     template<class T> void addChild();
@@ -67,6 +68,8 @@ ObjectTest::ObjectTest() {
     addTests<ObjectTest>({
         &ObjectTest::addFeature<Float>,
         &ObjectTest::addFeature<Double>,
+        &ObjectTest::addFeatureAbstractObject<Float>,
+        &ObjectTest::addFeatureAbstractObject<Double>,
 
         &ObjectTest::parenting<Float>,
         &ObjectTest::parenting<Double>,
@@ -127,14 +130,34 @@ template<class T> void ObjectTest::addFeature() {
 
     class MyFeature: public AbstractBasicFeature3D<T> {
         public:
-            explicit MyFeature(AbstractBasicObject3D<T>& object, Int&, Containers::Pointer<int>&&): AbstractBasicFeature3D<T>{object} {}
+            explicit MyFeature(Object3D<T>& object, Int&, Containers::Pointer<int>&&): AbstractBasicFeature3D<T>{object} {}
     };
 
     Object3D<T> o;
     CORRADE_VERIFY(o.features().isEmpty());
     /* Test perfect forwarding as well */
     int a = 0;
+    /* When called on Object3D, the feature constructor should get the concrete
+       Object type. AbstractObject::addFeature() is tested below. */
     MyFeature& f = o.template addFeature<MyFeature>(a, Containers::Pointer<int>{});
+    CORRADE_VERIFY(!o.features().isEmpty());
+    CORRADE_COMPARE(&f.object(), &o);
+}
+
+template<class T> void ObjectTest::addFeatureAbstractObject() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Like addFeature(), but calling the base variant on AbstractObject */
+
+    class MyFeature: public AbstractBasicFeature3D<T> {
+        public:
+            explicit MyFeature(AbstractBasicObject3D<T>& object, Int&, Containers::Pointer<int>&&): AbstractBasicFeature3D<T>{object} {}
+    };
+
+    Object3D<T> o;
+    CORRADE_VERIFY(o.features().isEmpty());
+    int a = 0;
+    MyFeature& f = static_cast<AbstractBasicObject3D<T>&>(o).template addFeature<MyFeature>(a, Containers::Pointer<int>{});
     CORRADE_VERIFY(!o.features().isEmpty());
     CORRADE_COMPARE(&f.object(), &o);
 }

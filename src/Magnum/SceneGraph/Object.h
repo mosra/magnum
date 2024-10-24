@@ -140,6 +140,18 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         Object<Transformation>& operator=(Object<Transformation>&&) = delete;
 
         /**
+         * @brief Add a feature
+         * @m_since_latest
+         *
+         * Like @ref AbstractObject::addFeature(), but passing a concrete
+         * object type to the feature constructor, instead of just the base
+         * @ref AbstractObject.
+         */
+        template<class U, class ...Args> U& addFeature(Args&&... args) {
+            return *(new U{*this, std::forward<Args>(args)...});
+        }
+
+        /**
          * @{ @name Scene hierarchy
          *
          * See @ref scenegraph-hierarchy for more information.
