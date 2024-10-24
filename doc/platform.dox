@@ -90,6 +90,12 @@ In addition to the above generalized interface, there's
 @relativeref{Platform::Sdl2Application,scrollEvent()} providing 2D scroll
 events from a mouse wheel, trackball or touchpad.
 
+See @ref Platform-Sdl2Application-touch,
+@ref Platform-EmscriptenApplication-touch and
+@ref Platform-AndroidApplication-touch for additional tookit-specific
+information. A @ref Platform::TwoFingerGesture helper provides recognition of
+common two-finger gestures for zoom, rotation and pan.
+
 @subsection platform-windowed-key-events Attaching to keyboard and text input
 
 The @relativeref{Platform::Sdl2Application,keyPressEvent()} and

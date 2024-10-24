@@ -352,6 +352,8 @@ See also:
     touch-to-mouse event passthrough needs to be implemented, it works out of
     the box with the new pointer events. The Android implementation is
     building upon [mosra/magnum#527](https://github.com/mosra/magnum/pull/527).
+    There's also a new @ref Platform::TwoFingerGesture helper for recognition
+    of common two-finger gestures for zoom, rotation and pan.
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 

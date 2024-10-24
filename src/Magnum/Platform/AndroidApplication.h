@@ -194,7 +194,9 @@ and @ref PointerEventSource::Pen  the ID is a constant, as there's always just
 a single mouse cursor or a pen stylus.
 
 See also @ref platform-windowed-pointer-events for general information about
-handling pointer input in a portable way.
+handling pointer input in a portable way. There's also a
+@ref Platform::TwoFingerGesture helper for recognition of common two-finger
+gestures for zoom, rotation and pan.
 */
 class AndroidApplication {
     public:

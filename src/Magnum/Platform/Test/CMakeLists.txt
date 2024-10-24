@@ -31,6 +31,8 @@ set(CMAKE_FOLDER "Magnum/Platform/Test")
 
 find_package(Corrade REQUIRED Main)
 
+corrade_add_test(PlatformGestureTest GestureTest.cpp LIBRARIES Magnum)
+
 # Icons for SDL/GLFW
 if(NOT CORRADE_TARGET_EMSCRIPTEN AND (MAGNUM_WITH_SDL2APPLICATION OR MAGNUM_WITH_GLFWAPPLICATION))
     corrade_add_resource(Platform_RESOURCES resources.conf)

@@ -31,6 +31,8 @@
 #include <Corrade/Utility/Tweakable.h>
 #endif
 
+#include "Magnum/Platform/Gesture.h"
+
 /* [windowed] */
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
@@ -346,3 +348,50 @@ void MyApplication::tickEvent() {
 
 }
 #endif
+
+namespace K {
+
+struct MyApplication: Platform::Application {
+    void pointerPressEvent(PointerEvent& event) override;
+    void pointerReleaseEvent(PointerEvent& event) override;
+    void pointerMoveEvent(PointerMoveEvent& event) override;
+
+    void translateSomething(const Vector2&) {}
+    void rotateSomething(const Complex&) {}
+    void scaleSomething(Float) {}
+
+    Platform::TwoFingerGesture _gesture;
+};
+
+/* [TwoFingerGesture] */
+void MyApplication::pointerPressEvent(PointerEvent& event) {
+    _gesture.pressEvent(event);
+
+    DOXYGEN_ELLIPSIS()
+}
+
+void MyApplication::pointerReleaseEvent(PointerEvent& event) {
+    _gesture.releaseEvent(event);
+
+    DOXYGEN_ELLIPSIS()
+}
+
+void MyApplication::pointerMoveEvent(PointerMoveEvent& event) {
+    _gesture.moveEvent(event);
+
+    /* A gesture is recognized, perform appropriate action */
+    if(_gesture) {
+        translateSomething(_gesture.relativeTranslation());
+        rotateSomething(_gesture.relativeRotation());
+        scaleSomething(_gesture.relativeScaling());
+
+        event.setAccepted();
+        redraw();
+        return;
+    }
+
+    DOXYGEN_ELLIPSIS()
+}
+/* [TwoFingerGesture] */
+
+}

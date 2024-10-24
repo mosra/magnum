@@ -45,6 +45,8 @@ namespace Implementation {
 }
 #endif
 
+class TwoFingerGesture;
+
 #ifdef MAGNUM_TARGET_GL
 class GLContext;
 #endif

@@ -33,6 +33,7 @@ set(CMAKE_FOLDER "Magnum/Platform")
 set(MagnumPlatform_SRCS )
 
 set(MagnumPlatform_HEADERS
+    Gesture.h
     Platform.h
     Screen.h
     ScreenedApplication.h
