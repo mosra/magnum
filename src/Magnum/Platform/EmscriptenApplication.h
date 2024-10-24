@@ -2079,7 +2079,7 @@ class EmscriptenApplication::PointerEvent: public InputEvent {
         PointerEvent& operator=(PointerEvent&&) = delete;
 
         /** @brief Pointer event source */
-        PointerEventSource source() { return _source; }
+        PointerEventSource source() const { return _source; }
 
         /**
          * @brief Pointer type that was pressed or released
@@ -2243,7 +2243,7 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
          * case it's a movement with both @ref pointer() and @ref pointers()
          * being empty.
          */
-        PointerEventSource source() { return _source; }
+        PointerEventSource source() const { return _source; }
 
         /**
          * @brief Pointer type that was added or removed from the set of pressed pointers
