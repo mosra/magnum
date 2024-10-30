@@ -143,8 +143,8 @@ useful for example in case of @ref DistanceFieldGlyphCache, where a single
 prerendered glyph size can be used to render arbitrarily large font sizes
 without becoming blurry or jaggy. When not using a distance field glyph cache,
 it's usually desirable to have the font size and the actual rendered size
-match. See @ref Text-Renderer-usage-font-size "the Renderer documentation" for
-further information about picking font sizes.
+match. See @ref Text-BasicRenderer-usage-font-size "the Renderer documentation"
+for further information about picking font sizes.
 
 @subsection Text-AbstractFont-usage-callbacks Loading data from memory, using file callbacks
 

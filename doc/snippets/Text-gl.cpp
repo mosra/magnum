@@ -111,7 +111,7 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
    the font pointer. I don't care, I just want you to check compilation errors,
    not more! */
 PluginManager::Manager<Text::AbstractFont> manager;
-/* [Renderer-usage1] */
+/* [BasicRenderer-usage1] */
 /* Font instance, received from a plugin manager */
 Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
 
@@ -143,9 +143,9 @@ shader
     .setColor(0xffffff_rgbf)
     .bindVectorTexture(cache.texture())
     .draw(mesh);
-/* [Renderer-usage1] */
+/* [BasicRenderer-usage1] */
 
-/* [Renderer-usage2] */
+/* [BasicRenderer-usage2] */
 /* Initialize the renderer and reserve memory for enough glyphs */
 Text::Renderer2D renderer{*font, cache, 12.0f, Text::Alignment::LineCenter};
 renderer.reserve(32, GL::BufferUsage::DynamicDraw, GL::BufferUsage::StaticDraw);
@@ -158,17 +158,17 @@ shader.setTransformationProjectionMatrix(projectionMatrix)
     .setColor(0xffffff_rgbf)
     .bindVectorTexture(cache.texture())
     .draw(renderer.mesh());
-/* [Renderer-usage2] */
+/* [BasicRenderer-usage2] */
 }
 
 {
-/* [Renderer-dpi-interface-size] */
+/* [BasicRenderer-dpi-interface-size] */
 Vector2 interfaceSize = Vector2{windowSize()}/dpiScaling();
-/* [Renderer-dpi-interface-size] */
-/* [Renderer-dpi-size-multiplier] */
+/* [BasicRenderer-dpi-interface-size] */
+/* [BasicRenderer-dpi-size-multiplier] */
 Float sizeMultiplier =
     (Vector2{framebufferSize()}*dpiScaling()/Vector2{windowSize()}).max();
-/* [Renderer-dpi-size-multiplier] */
+/* [BasicRenderer-dpi-size-multiplier] */
 static_cast<void>(interfaceSize);
 static_cast<void>(sizeMultiplier);
 }
