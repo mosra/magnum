@@ -908,7 +908,7 @@ See also:
 
 -   Added @ref Text::AbstractFont::glyphCount() and
     @relativeref{Text::AbstractFont,glyphSize()}
--   Added @ref Text::Renderer::fontSize()
+-   Added @ref Text::AbstractRenderer::fontSize()
 -   @ref Text::Alignment now has separate values for alignment based on font
     metrics and cursor position alone, which is the more commonly expected
     behavior, and `*GlyphBounds` values that align based on actual glyph
@@ -1985,6 +1985,11 @@ See also:
     -   The @ref Text::AbstractGlyphCache::image() query now returns a
         @ref MutableImageView3D instead of an @ref Image2D in order to support
         incremental population and texture arrays
+-   The @cpp Text::Renderer @ce class template was renamed to
+    @ref Text::BasicRenderer in order to make room for a new, more flexible
+    implementation. The assumption is that most existing code uses it through
+    the @ref Text::Renderer2D and @ref Text::Renderer3D typedefs and thus it
+    shouldn't result in any breakage.
 -   The @ref Text::Alignment left, right, top and middle values now work with
     the font metrics and cursor position instead of glyph bounding rectangles,
     as that's the more commonly expected behavior. The original behavior with
@@ -3154,7 +3159,7 @@ Released 2019-10-24, tagged as
 -   A new @ref Text::AbstractGlyphCache base now makes @ref Text::AbstractFont
     and @ref Text::AbstractFontConverter independent on the graphics API used,
     meaning the @ref Text library now has just an optional dependency on
-    @ref GL. The @ref Text::Renderer, @cpp Text::GlyphCache @ce and
+    @ref GL. The @cpp Text::Renderer @ce, @cpp Text::GlyphCache @ce and
     @cpp Text::DistanceFieldGlyphCache @ce classes are now built only if
     `TARGET_GL` is enabled (done by default).
 -   New @ref Text::AbstractFont::setFileCallback() to allow opening multi-file

@@ -27,7 +27,7 @@
 */
 
 /** @file Text/Renderer.h
- * @brief Class @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::Renderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto()
+ * @brief Class @ref Magnum::Text::AbstractRenderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto()
  */
 
 #include "Magnum/Magnum.h"
@@ -339,9 +339,9 @@ MAGNUM_TEXT_EXPORT Containers::Pair<UnsignedInt, UnsignedInt> glyphRangeForBytes
 
 #ifdef MAGNUM_TARGET_GL
 /**
-@brief Base for text renderers
+@brief Base for OpenGL text renderers
 
-Not meant to be used directly, see the @ref Renderer class for more
+Not meant to be used directly, see the @ref BasicRenderer class for more
 information.
 
 @note This class is available only if Magnum is compiled with
@@ -470,19 +470,19 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
 };
 
 /**
-@brief Text renderer
+@brief OpenGL text renderer
 
 Lays out the text into mesh using given font. Use of ligatures, kerning etc.
 depends on features supported by particular font and its layouter.
 
-@section Text-Renderer-usage Usage
+@section Text-BasicRenderer-usage Usage
 
 Immutable text (e.g. menu items, credits) can be simply rendered using static
 methods, returning result either as data arrays or as fully configured mesh.
 The text can be then drawn as usual by configuring the shader and drawing the
 mesh:
 
-@snippet Text-gl.cpp Renderer-usage1
+@snippet Text-gl.cpp BasicRenderer-usage1
 
 See @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, Alignment)
 and @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, GL::Buffer&, GL::Buffer&, GL::BufferUsage, Alignment)
@@ -492,17 +492,18 @@ While this method is sufficient for one-shot rendering of static texts, for
 mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
 
-@snippet Text-gl.cpp Renderer-usage2
+@snippet Text-gl.cpp BasicRenderer-usage2
 
-@subsection Text-Renderer-usage-font-size Font size
+@subsection Text-BasicRenderer-usage-font-size Font size
 
 As mentioned in @ref Text-AbstractFont-usage-font-size "AbstractFont class documentation",
 the size at which the font is loaded is decoupled from the size at which a
 concrete text is rendered. In particular, with a concrete projection matrix,
-the size you pass to either @ref render() or to the @ref Renderer() constructor
-will always result in the same size of the rendered text, independently of the
-size the font was loaded in. Size of the loaded font is the size at which the
-glyphs get prerendered into the glyph cache, affecting visual quality.
+the size you pass to either @ref render() or to the @ref BasicRenderer()
+constructor will always result in the same size of the rendered text,
+independently of the size the font was loaded in. Size of the loaded font is
+the size at which the glyphs get prerendered into the glyph cache, affecting
+visual quality.
 
 When rendering the text, there are two common approaches --- either setting up
 the size to match a global user interface scale, or having the text size
@@ -514,7 +515,7 @@ If using the regular @ref GlyphCache, for best visual quality it should be
 created with the @ref AbstractFont loaded at the same size as the text to be
 rendered, although often a double supersampling achieves a crisper result.
 I.e., loading the font with 24 pt, but rendering with 12 pt. See below for
-@ref Text-Renderer-usage-font-size-dpi "additional considerations for proper DPI awareness".
+@ref Text-BasicRenderer-usage-font-size-dpi "additional considerations for proper DPI awareness".
 
 The second approach, with text size being relative to the window size, is for
 cases where the text is meant to match surrounding art, such as in a game menu.
@@ -525,7 +526,7 @@ provide text at different sizes with minimal quality loss. See its
 documentation for details about picking the right font size and other
 parameters for best results.
 
-@subsection Text-Renderer-usage-font-size-dpi DPI awareness
+@subsection Text-BasicRenderer-usage-font-size-dpi DPI awareness
 
 To achieve crisp rendering and/or text size matching other applications on
 HiDPI displays, additional steps need to be taken. There are two separate
@@ -536,8 +537,8 @@ concepts for DPI-aware rendering:
     units", so a 12 pt font is still a 12 pt font independently of how the
     interface is scaled compared to actual display properties (for example by
     setting a global 150% scale in the desktop environment, or by zooming a
-    browser window). The size used by the @ref Renderer should match these
-    virtual units.
+    browser window). The size used by the @ref BasicRenderer "Renderer*D"
+    should match these virtual units.
 -   Framebuffer size --- how many pixels is actually there. If a 192 DPI
     display has a 200% interface scale, a 12 pt font would be 32 pixels. But if
     it only has a 150% scale, all interface elements will be smaller, and a 12
@@ -554,14 +555,15 @@ documented thoroughly in @ref Platform-Sdl2Application-dpi, for this particular
 case a scaled interface size, used instead of window size for the projection,
 would be calculated like this:
 
-@snippet Text-gl.cpp Renderer-dpi-interface-size
+@snippet Text-gl.cpp BasicRenderer-dpi-interface-size
 
 And a multiplier for the @ref AbstractFont and @ref GlyphCache font size like
-this. The @ref Renderer keeps using the size without this multiplier.
+this. The @ref BasicRenderer "Renderer*D" keeps using the size without this
+multiplier.
 
-@snippet Text-gl.cpp Renderer-dpi-size-multiplier
+@snippet Text-gl.cpp BasicRenderer-dpi-size-multiplier
 
-@section Text-Renderer-required-opengl-functionality Required OpenGL functionality
+@section Text-BasicRenderer-required-opengl-functionality Required OpenGL functionality
 
 Mutable text rendering requires @gl_extension{ARB,map_buffer_range} on desktop
 OpenGL (also part of OpenGL ES 3.0). If @gl_extension{EXT,map_buffer_range} is not
@@ -576,7 +578,7 @@ asynchronous buffer updates. There is no similar extension in WebGL, thus plain
 @see @ref Renderer2D, @ref Renderer3D, @ref AbstractFont,
     @ref Shaders::VectorGL, @ref Shaders::DistanceFieldVectorGL
 */
-template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public AbstractRenderer {
+template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT BasicRenderer: public AbstractRenderer {
     public:
         /**
          * @brief Render text
@@ -603,8 +605,8 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param size          Font size
          * @param alignment     Text alignment
          */
-        explicit Renderer(AbstractFont& font, const AbstractGlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
-        Renderer(AbstractFont&, AbstractGlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
+        explicit BasicRenderer(AbstractFont& font, const AbstractGlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
+        BasicRenderer(AbstractFont&, AbstractGlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         using AbstractRenderer::render;
@@ -618,7 +620,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-typedef Renderer<2> Renderer2D;
+typedef BasicRenderer<2> Renderer2D;
 
 /**
 @brief Three-dimensional text renderer
@@ -627,7 +629,7 @@ typedef Renderer<2> Renderer2D;
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-typedef Renderer<3> Renderer3D;
+typedef BasicRenderer<3> Renderer3D;
 #endif
 
 }}

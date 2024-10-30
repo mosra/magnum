@@ -52,9 +52,9 @@ Create the @ref GlyphCacheGL object with sufficient size and then call
 
 @snippet Text-gl.cpp GlyphCacheGL-usage
 
-See the @ref Renderer class for information about text rendering. The
-@ref AbstractGlyphCache base class has more information about general glyph
-cache usage.
+See the @ref BasicRenderer "Renderer*D" class for information about text
+rendering. The @ref AbstractGlyphCache base class has more information about
+general glyph cache usage.
 
 @section Text-GlyphCacheGL-internal-format Internal texture format
 

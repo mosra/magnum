@@ -71,9 +71,9 @@ channels.
 
 @snippet Text-gl.cpp DistanceFieldGlyphCacheGL-usage
 
-See the @ref Renderer class for information about text rendering. The
-@ref AbstractGlyphCache base class has more information about general glyph
-cache usage.
+See the @ref BasicRenderer "Renderer*D" class for information about text
+rendering. The @ref AbstractGlyphCache base class has more information about
+general glyph cache usage.
 
 @section Text-DistanceFieldGlyphCacheGL-internal-format Internal texture format
 

@@ -585,7 +585,7 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(Utility::move(positions), Utility::move(textureCoordinates), Utility::move(indices), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<GL::Mesh, Range2D> Renderer<dimensions>::render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
+template<UnsignedInt dimensions> std::tuple<GL::Mesh, Range2D> BasicRenderer<dimensions>::render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
     /* Finalize mesh configuration and return the result */
     auto r = renderInternal(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
     GL::Mesh& mesh = std::get<0>(r);
@@ -652,7 +652,7 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const AbstractGlyphCache&
 
 AbstractRenderer::~AbstractRenderer() = default;
 
-template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& font, const AbstractGlyphCache& cache, const Float size, const Alignment alignment): AbstractRenderer(font, cache, size, alignment) {
+template<UnsignedInt dimensions> BasicRenderer<dimensions>::BasicRenderer(AbstractFont& font, const AbstractGlyphCache& cache, const Float size, const Alignment alignment): AbstractRenderer(font, cache, size, alignment) {
     /* Finalize mesh configuration */
     _mesh.addVertexBuffer(_vertexBuffer, 0,
         typename Shaders::GenericGL<dimensions>::Position(
@@ -717,8 +717,8 @@ void AbstractRenderer::render(const std::string& text) {
     _mesh.setCount(indexCount);
 }
 
-template class MAGNUM_TEXT_EXPORT Renderer<2>;
-template class MAGNUM_TEXT_EXPORT Renderer<3>;
+template class MAGNUM_TEXT_EXPORT BasicRenderer<2>;
+template class MAGNUM_TEXT_EXPORT BasicRenderer<3>;
 #endif
 
 }}

@@ -64,9 +64,9 @@ typedef CORRADE_DEPRECATED("use DistanceFieldGlyphCacheGL instead") DistanceFiel
 typedef CORRADE_DEPRECATED("use GlyphCacheGL instead") GlyphCacheGL GlyphCache;
 #endif
 class AbstractRenderer;
-template<UnsignedInt> class Renderer;
-typedef Renderer<2> Renderer2D;
-typedef Renderer<3> Renderer3D;
+template<UnsignedInt> class BasicRenderer;
+typedef BasicRenderer<2> Renderer2D;
+typedef BasicRenderer<3> Renderer3D;
 #endif
 
 }}

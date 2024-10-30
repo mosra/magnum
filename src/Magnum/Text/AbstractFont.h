@@ -122,7 +122,7 @@ all error handling:
 See @ref plugins for more information about general plugin usage and the list
 of @m_class{m-doc} <a href="#derived-classes">derived classes</a> for available
 font plugins. See @ref GlyphCache for more information about glyph caches and
-@ref Renderer for information about actual text rendering.
+@ref BasicRenderer "Renderer*D" for information about actual text rendering.
 
 @subsection Text-AbstractFont-usage-font-size Font size
 
@@ -136,14 +136,15 @@ properties are specified *in pixels* in @ref lineHeight(), @ref ascent() and
 @ref descent().
 
 The font size used when opening the font affects how large the glyphs will be
-when rendered into the @ref GlyphCache. Actual text rendering with @ref Renderer
-however uses its own font size, and the rendered size is then additionally
-depending on the actual projection used. This decoupling of font sizes is
-useful for example in case of @ref DistanceFieldGlyphCache, where a single
-prerendered glyph size can be used to render arbitrarily large font sizes
-without becoming blurry or jaggy. When not using a distance field glyph cache,
-it's usually desirable to have the font size and the actual rendered size
-match. See @ref Text-Renderer-usage-font-size "the Renderer documentation" for
+when rendered into the @ref GlyphCache. Actual text rendering with
+@ref BasicRenderer "Renderer*D" however uses its own font size, and the
+rendered size is then additionally depending on the actual projection used.
+This decoupling of font sizes is useful for example in case of
+@ref DistanceFieldGlyphCache, where a single prerendered glyph size can be used
+to render arbitrarily large font sizes without becoming blurry or jaggy. When
+not using a distance field glyph cache, it's usually desirable to have the font
+size and the actual rendered size match. See
+@ref Text-BasicRenderer-usage-font-size "the Renderer*D documentation" for
 further information about picking font sizes.
 
 @subsection Text-AbstractFont-usage-callbacks Loading data from memory, using file callbacks
@@ -604,8 +605,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *      @ref AbstractShaper class instead.
          *
          * Note that the layouters support rendering of single-line text only.
-         * See @ref Renderer class for more advanced text layouting. Expects
-         * that a font is opened.
+         * See @ref BasicRenderer "Renderer*D" class for more advanced text
+         * layouting. Expects that a font is opened.
          * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
         CORRADE_DEPRECATED("use createShaper() instead") Containers::Pointer<AbstractLayouter> layout(const AbstractGlyphCache& cache, Float size, Containers::StringView text);

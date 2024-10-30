@@ -1419,7 +1419,7 @@ for a high-level overview.
     -   Removed deprecated `Shaders/magnumShadersResourceImport.hpp` file, use
         `Shaders/resourceImport.hpp` instead.
     -   Removed deprecated @cpp Text::TextRenderer @ce alias, use
-        @ref Text::Renderer instead.
+        @cpp Text::Renderer @ce instead.
     -   Removed long-deprecated @cpp BufferImage::setData() @ce overload, use
         the other one instead.
 
@@ -1636,7 +1636,7 @@ No dependency changes in this release.
     @ref troubleshooting "troubleshooting page" for most common building and
     rendering issues
 -   Support for horizontal and vertical text alignment and multi-line text in
-    @ref Text::Renderer (line wrapping is still left up to the user)
+    @cpp Text::Renderer @ce (line wrapping is still left up to the user)
 -   New @ref magnum-fontconverter utility for converting between font formats
     (e.g. creating distance-field raster font from TTF font). Enable it with
     `WITH_FONTCONVERTER` CMake option (currently Linux only), see
@@ -1766,7 +1766,7 @@ No dependency changes in this release.
     favor of less verbose `Magnum/Shaders/resourceImport.hpp`
 -   @cpp Text::TextRenderer @ce class (and @cpp Text::TextRenderer2D @ce,
     @cpp Text::TextRenderer3D @ce typedefs) is deprecated, use less redundant
-    name @ref Text::Renderer instead
+    name @cpp Text::Renderer @ce instead
 
 @subsection changelog-2014-01-compatibility Potential compatibility breakages, removed APIs
 
