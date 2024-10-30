@@ -51,7 +51,7 @@ echo "** building package version: ${version_hash}"
 sudo dnf builddep -y magnum.spec
 
 # Build package
-rpmbuild --define "debug_package %{nil}" --clean -ba magnum.spec
+rpmbuild --define "debug_package %{nil}" --clean -bb magnum.spec
 
 echo "** packages for magnum-${version_hash} complete:"
 ls ~/rpmbuild/RPMS/$(uname -m)/magnum-${version_hash}*.rpm | cat
