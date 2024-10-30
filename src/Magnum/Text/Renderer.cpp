@@ -38,6 +38,9 @@
 #include "Magnum/Text/Direction.h"
 
 #ifdef MAGNUM_TARGET_GL
+#include <string>
+#include <tuple>
+#include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h> /** @todo remove once Renderer is STL-free */
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Renderer is STL-free */

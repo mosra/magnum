@@ -24,6 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
+#include <tuple>
+#include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>

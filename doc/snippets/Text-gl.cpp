@@ -24,6 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
+#include <tuple>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 
