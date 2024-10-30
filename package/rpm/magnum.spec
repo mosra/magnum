@@ -18,7 +18,7 @@ powerful and not give up on flexibility?
 
 %package devel
 Summary: Magnum development files
-Requires: %{name} = %{version}
+Requires: %{name} = %{version}, corrade-devel
 
 %description devel
 Headers and tools needed for developing with Magnum engine.
