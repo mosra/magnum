@@ -2381,11 +2381,13 @@ class GlfwApplication::PointerMoveEvent: public InputEvent {
         /**
          * @brief Pointer type that was added or removed from the set of pressed pointers
          *
-         * Is non-empty only in case a mouse button was pressed in addition to
-         * an already pressed button, or if one mouse button from multiple
-         * pressed buttons was released. If non-empty and @ref pointers() don't
-         * contain given @ref Pointer value, the button was released, if they
-         * contain given value, the button was pressed.
+         * Use @ref pointers() to query the set of pointers pressed in this
+         * event. This field is is non-empty only in case a mouse button was
+         * pressed in addition to an already pressed button, or if one mouse
+         * button from multiple pressed buttons was released. If non-empty and
+         * @ref pointers() don't contain given @ref Pointer value, the button
+         * was released, if they contain given value, the button was pressed.
+         * @see @ref source()
          */
         Containers::Optional<Pointer> pointer() const { return _pointer; }
 
