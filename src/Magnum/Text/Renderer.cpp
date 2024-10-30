@@ -382,10 +382,6 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
     Vector2 linePosition;
 
     /* Temp buffer so we don't allocate for each new line */
-    /**
-     * @todo C++1z: use std::string_view to avoid the one allocation and all
-     *      the copying altogether
-     */
     std::string line;
     line.reserve(text.size());
 
