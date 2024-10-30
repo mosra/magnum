@@ -35,9 +35,9 @@
 #include "Magnum/Text/visibility.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include <string>
-#include <tuple>
-#include <vector>
+#include <Corrade/Utility/StlForwardTuple.h>
+#include <Corrade/Utility/StlForwardVector.h>
+#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Range.h"
