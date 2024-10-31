@@ -560,8 +560,8 @@ class Sdl2Application {
         class MouseEvent;
         class MouseMoveEvent;
         class MouseScrollEvent;
-        #endif
         class MultiGestureEvent;
+        #endif
         class TextInputEvent;
         class TextEditingEvent;
 
@@ -1353,16 +1353,24 @@ class Sdl2Application {
          * Default implementation does nothing.
          */
         virtual CORRADE_DEPRECATED("use scrollEvent() instead") void mouseScrollEvent(MouseScrollEvent& event);
-        #endif
 
         /**
          * @brief Multi gesture event
+         * @m_deprecated_since_latest The SDL event reports relative distance
+         *      to previous finger positions instead of a relative diameter
+         *      between multiple pressed fingers, making it practically useless
+         *      for implementing pinch zoom. It additionally reports everything
+         *      in normalized coordinates, thus the distance and rotation is
+         *      only meaningful when the window is an exact square. Use the
+         *      @ref TwoFingerGesture helper instead and feed it with events
+         *      coming from @ref pointerPressEvent(),
+         *      @ref pointerReleaseEvent() and @ref pointerMoveEvent().
          *
          * Called when the user performs a gesture using multiple fingers.
          * Default implementation does nothing.
-         * @experimental
          */
-        virtual void multiGestureEvent(MultiGestureEvent& event);
+        virtual CORRADE_DEPRECATED("use pointerEvent(), pointerMoveEvent() and TwoFingerGesture instead") void multiGestureEvent(MultiGestureEvent& event);
+        #endif
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
@@ -3401,15 +3409,21 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Sdl2Applic
         Containers::Optional<Vector2i> _position;
         Containers::Optional<Sdl2Application::Modifiers> _modifiers;
 };
-#endif
 
 /**
 @brief Multi gesture event
+@m_deprecated_since_latest The SDL event reports relative distance to previous
+    finger positions instead of a relative diameter between multiple pressed
+    fingers, making it practically useless for implementing pinch zoom. It
+    additionally reports everything in normalized coordinates, thus the
+    distance and rotation is only meaningful when the window is an exact
+    square. Use the @ref TwoFingerGesture helper instead and feed it with
+    events coming from @ref pointerPressEvent(), @ref pointerReleaseEvent() and
+    @ref pointerMoveEvent().
 
-@experimental
 @see @ref multiGestureEvent()
 */
-class Sdl2Application::MultiGestureEvent {
+class CORRADE_DEPRECATED("use TwoFingerGesture with pointerPressEvent(), pointerReleaseEvent() and pointerMoveEvent() instead") Sdl2Application::MultiGestureEvent {
     public:
         /** @brief Copying is not allowed */
         MultiGestureEvent(const MultiGestureEvent&) = delete;
@@ -3480,6 +3494,7 @@ class Sdl2Application::MultiGestureEvent {
         const Int _fingerCount;
         bool _accepted;
 };
+#endif
 
 /**
 @brief Text input event

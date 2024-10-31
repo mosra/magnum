@@ -1437,6 +1437,14 @@ See also:
     @ref Platform::GlfwApplication and the
     @ref Platform::BasicScreenedApplication / @ref Platform::BasicScreen
     wrappers as well.
+-   @cpp Platform::Sdl2Application::multiGestureEvent() @ce and the
+    @cpp MultiGestureEvent @ce event class is deprecated in favor of a new
+    @ref Platform::TwoFingerGesture helper. The SDL event reported relative
+    distance to previous finger positions instead of a relative diameter
+    between multiple pressed fingers, making it practically useless for
+    implementing pinch zoom. It additionally reported everything in normalized
+    coordinates, thus the distance and rotation was only meaningful when the
+    window was an exact square.
 -   @cpp Platform::Sdl2Application::InputEvent::Modifier @ce,
     @cpp Modifiers @ce and @cpp Platform::Sdl2Application::KeyEvent::Key @ce
     enums and the @cpp Platform::Sdl2Application::KeyEvent::keyName(Key) @ce

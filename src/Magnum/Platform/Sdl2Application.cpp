@@ -1212,11 +1212,15 @@ bool Sdl2Application::mainLoopIteration() {
             }
             #endif
 
+            #ifdef MAGNUM_BUILD_DEPRECATED
             case SDL_MULTIGESTURE: {
+                CORRADE_IGNORE_DEPRECATED_PUSH
                 MultiGestureEvent e{event, {event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers};
                 multiGestureEvent(e);
+                CORRADE_IGNORE_DEPRECATED_POP
                 break;
             }
+            #endif
 
             case SDL_TEXTINPUT: {
                 TextInputEvent e{event, event.text.text};
@@ -1590,10 +1594,10 @@ void Sdl2Application::scrollEvent(ScrollEvent& event) {
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
 void Sdl2Application::mouseScrollEvent(MouseScrollEvent&) {}
+void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
 

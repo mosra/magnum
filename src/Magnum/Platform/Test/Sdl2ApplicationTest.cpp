@@ -344,13 +344,9 @@ struct Sdl2ApplicationTest: Platform::Application {
     #if 1
     void pointerPressEvent(PointerEvent& event) override {
         Debug{} << "pointer press:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position();
-        _gestureDistance = {};
-        _gestureRotation = {};
     }
     void pointerReleaseEvent(PointerEvent& event) override {
         Debug{} << "pointer release:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position();
-        _gestureDistance = {};
-        _gestureRotation = {};
     }
     void pointerMoveEvent(PointerMoveEvent& event) override {
         Debug{} << "pointer move:" << event.source() << event.pointer() << event.pointers() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition();
@@ -362,13 +358,9 @@ struct Sdl2ApplicationTest: Platform::Application {
     CORRADE_IGNORE_DEPRECATED_PUSH
     void mousePressEvent(MouseEvent& event) override {
         Debug{} << "mouse press:" << event.button() << Debug::packed << event.position() << event.modifiers();
-        _gestureDistance = {};
-        _gestureRotation = {};
     }
     void mouseReleaseEvent(MouseEvent& event) override {
         Debug{} << "mouse release:" << event.button() << Debug::packed << event.position() << event.modifiers();
-        _gestureDistance = {};
-        _gestureRotation = {};
     }
     void mouseMoveEvent(MouseMoveEvent& event) override {
         Debug{} << "mouse move:" << event.buttons() << Debug::packed << event.position() << Debug::packed << event.relativePosition() << event.modifiers();
@@ -378,12 +370,6 @@ struct Sdl2ApplicationTest: Platform::Application {
     }
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
-
-    void multiGestureEvent(MultiGestureEvent& event) override {
-        Debug{} << "multi gesture:" << event.center() << "rotation:" << Deg{_gestureRotation} << Debug::nospace << ", relative" << Deg{event.relativeRotation()} << Debug::nospace << ", distance" << _gestureDistance << Debug::nospace << ", relative" << event.relativeDistance() << Debug::nospace << ", fingers" << event.fingerCount();
-        _gestureDistance += event.relativeDistance();
-        _gestureRotation += Rad(event.relativeRotation());
-    }
 
     void keyPressEvent(KeyEvent& event) override {
         Debug{} << "key press:" << event.key() << event.keyName() << "scancode:" << event.scanCode()
@@ -517,8 +503,6 @@ struct Sdl2ApplicationTest: Platform::Application {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         bool _vsync = false;
         #endif
-        Float _gestureDistance{};
-        Rad _gestureRotation{};
 };
 
 Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
