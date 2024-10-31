@@ -853,7 +853,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @brief Add buffer with (interleaved) vertex attributes for use with given shader
          * @return Reference to self (for method chaining)
          *
-         * Parameter @p offset is offset of the array from the beginning,
+         * The @p offset is a byte offset from the beginning of the buffer, the
          * attribute list is combination of @ref Attribute "attribute definitions"
          * (specified in implementation of given shader) and offsets between
          * interleaved attributes.
