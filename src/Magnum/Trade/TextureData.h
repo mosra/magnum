@@ -109,7 +109,12 @@ enum class TextureType: UnsignedByte {
 /**
 @brief Texture data
 
-@see @ref AbstractImporter::texture()
+Provides access to texture metadata such as sampler properties and association
+with a concrete image. Populated instances of this class are returned from
+@ref AbstractImporter::texture() and can be passed to
+@ref AbstractSceneConverter::add(const TextureData&, Containers::StringView).
+Similarly to other @ref Trade types, the internal representation is fixed upon
+construction and doesn't allow any modification afterwards.
 */
 class TextureData {
     public:

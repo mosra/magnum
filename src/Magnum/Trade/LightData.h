@@ -96,6 +96,12 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, LightType value);
 /**
 @brief Light data
 
+Provides access to light properties. Populated instances of this class are
+returned from @ref AbstractImporter::light() and
+can be passed to @ref AbstractSceneConverter::add(const LightData&, Containers::StringView).
+Similarly to other @ref Trade types, the internal representation is fixed upon
+construction and doesn't allow any modification afterwards.
+
 @section Trade-LightData-usage Usage
 
 The class exposes light parameters in a way that makes sense as a whole,
@@ -172,8 +178,6 @@ To follow physically-based principles in lighting calculation, intensity is
 assumed to be in in *candela* (lm/sr) for @ref LightType::Point and
 @ref LightType::Spot, and in *lux* (lm/m<sup>2</sup>) for
 @ref LightType::Directional. Distance @f$ d @f$ is in meters.
-
-@see @ref AbstractImporter::light()
 */
 class MAGNUM_TRADE_EXPORT LightData {
     public:

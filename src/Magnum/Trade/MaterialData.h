@@ -1801,7 +1801,13 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialAlphaMode value);
 Key-value store for builtin as well as custom material attributes, with an
 ability to define additional layers further affecting the base material.
 Populated instances of this class are returned from
-@ref AbstractImporter::material().
+@ref AbstractImporter::material(), can be passed to
+@ref AbstractSceneConverter::add(const MaterialData&, Containers::StringView)
+as well as used in various
+@ref MaterialTools algorithms
+. Like with other @ref Trade types, the internal
+representation is fixed upon construction and allows only optional in-place
+modification of the attribute values itself, but not of the overall structure.
 
 @section Trade-MaterialData-usage Usage
 

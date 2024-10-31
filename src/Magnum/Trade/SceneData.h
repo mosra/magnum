@@ -1553,8 +1553,10 @@ Containers::Array<SceneFieldData> MAGNUM_TRADE_EXPORT sceneFieldDataNonOwningArr
 
 Contains scene node hierarchy, transformations, resource assignment as well as
 any other data associated with the scene. Populated instances of this class are
-returned from @ref AbstractImporter::scene() as well as from various
-@ref SceneTools algorithms.
+returned from @ref AbstractImporter::scene() as well as used in various
+@ref SceneTools algorithms. Like with other @ref Trade types, the internal
+representation is fixed upon construction and allows only optional in-place
+modification of the data itself, but not of the overall structure.
 
 @section Trade-SceneData-representation Data representation and terminology
 

@@ -55,8 +55,12 @@ enum class CameraType: UnsignedByte {
 /**
 @brief Camera data
 
-@see @ref AbstractImporter::camera(),
-    @ref Math::Matrix4::perspectiveProjection(Rad<T>, T, T, T),
+Provides access to perspective and orthographic camera properties. Populated
+instances of this class are returned from @ref AbstractImporter::camera() and
+can be passed to @ref AbstractSceneConverter::add(const CameraData&, Containers::StringView).
+Similarly to other @ref Trade types, the internal representation is fixed upon
+construction and doesn't allow any modification afterwards.
+@see @ref Math::Matrix4::perspectiveProjection(Rad<T>, T, T, T),
     @ref Math::Matrix4::perspectiveProjection(const Vector2<T>&, T, T),
     @ref Math::Matrix4::orthographicProjection(const Vector2<T>&, T, T),
     @ref Math::Matrix3::projection(const Vector2<T>&)

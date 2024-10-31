@@ -43,8 +43,13 @@ namespace Magnum { namespace Trade {
 @brief Skin data
 @m_since_latest
 
-@see @ref SkinData2D, @ref SkinData3D, @ref AbstractImporter::skin2D(),
-    @ref AbstractImporter::skin3D()
+Provides access to skin properties used for skeletal animations. Populated
+instances of this class are returned from @ref AbstractImporter::skin2D() or
+@relativeref{AbstractImporter,skin3D()} and can be passed to
+@ref AbstractSceneConverter::add(const SkinData3D&, Containers::StringView) and
+overloads. Similarly to other @ref Trade types, the internal representation is
+fixed upon construction and doesn't allow any modification afterwards.
+@see @ref SkinData2D, @ref SkinData3D
 */
 template<UnsignedInt dimensions> class SkinData {
     public:

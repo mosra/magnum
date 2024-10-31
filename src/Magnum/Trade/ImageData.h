@@ -59,12 +59,13 @@ Provides access to both uncompressed and compressed image data together with
 information about data layout, image size and pixel format. Populated instances
 of this class are returned from @ref AbstractImporter::image1D(),
 @relativeref{AbstractImporter,image2D()},
-@relativeref{AbstractImporter,image3D()},
-@ref AbstractImageConverter::convert() and other APIs.
-
-Used mainly by @ref AbstractImporter classes to store either compressed or
-non-compressed multi-dimensional image data together with layout and pixel
-format description.
+@relativeref{AbstractImporter,image3D()}, can be passed to
+@ref AbstractImageConverter::convert(),
+@ref AbstractSceneConverter::add(const ImageData2D&, Containers::StringView)
+and related APIs, as well as used in various @ref TextureTools algorithms. Like
+with other @ref Trade types, the internal representation is fixed upon
+construction and allows only optional in-place modification of the data itself,
+but not of the overall structure.
 
 This class can act as a drop-in replacement for @ref Image or
 @ref CompressedImage, @ref ImageView or @ref CompressedImageView and is

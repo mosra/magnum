@@ -680,12 +680,17 @@ class MAGNUM_TRADE_EXPORT AnimationTrackData {
 /**
 @brief Animation clip data
 
-Provides access to animation data and track properties of given clip. The
-instance is commonly returned from @ref AbstractImporter::animation() and a
-typical usage is feeding all the tracks directly to @ref Animation::Player.
-For every track, you need to query its concrete type and then feed the
-resulting @ref Animation::TrackView of correct type to
-@ref Animation::Player::add(), for example.
+Provides access to animation data and track properties of given clip. Populated
+instances of this class are returned from @ref AbstractImporter::animation()
+and can be passed to @ref AbstractSceneConverter::add(const AnimationData&, Containers::StringView).
+Like with other @ref Trade types, the internal representation is fixed upon
+construction and allows only optional in-place modification of the data itself,
+but not of the overall structure.
+
+Typical usage is feeding all the tracks directly to @ref Animation::Player. For
+every track, you need to query its concrete type and then feed the resulting
+@ref Animation::TrackView of correct type to @ref Animation::Player::add(), for
+example.
 
 Note that this class owns the animation track data and the tracks are only
 views on it. In order to be able to destroy the @ref AnimationData instance and
