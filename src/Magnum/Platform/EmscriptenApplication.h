@@ -1338,7 +1338,7 @@ enum class EmscriptenApplication::Key: Int {
 
     /**
      * Plus. On the US keyboard layout this may only be representable as
-     * @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **=**.
+     * @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} <b>=</b>.
      */
     Plus,
 
