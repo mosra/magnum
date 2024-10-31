@@ -1912,7 +1912,8 @@ See also:
         incremental population and texture arrays
 -   The @ref Text::Alignment left, right, top and middle values now work with
     the font metrics and cursor position instead of glyph bounding rectangles,
-    as that's the more commonly expected behavior. The original behavior with alignment based on glyph bounds is now in the `*GlyphBounds` variants
+    as that's the more commonly expected behavior. The original behavior with
+    alignment based on glyph bounds is now in the `*GlyphBounds` variants
     except for `*LeftGlyphBounds`, where the left glyph offset is also removed
     by the alignment compared to `*Left` which performs no horizontal
     translation like in the original case. Additionally, the `*Integer`

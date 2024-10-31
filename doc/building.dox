@@ -315,9 +315,11 @@ the packages (assuming Fedora Linux):
 sudo dnf install fedora-packager rpmdevtools
 @endcode
 
-After that, run the `build.sh` script. Internally it queries the Git version,
-makes a tarball, may ask you to install appropriate dependencies if not present
-already, and then builds the package.
+After that, make sure you build and install the
+@ref building-corrade-packages-rpm "Corrade RPM package" first and then run the
+`build.sh` script. Internally it queries the Git version, makes a tarball, may
+ask you to install appropriate dependencies if not present already, and then
+builds the package.
 
 @code{.sh}
 ./package/rpm/build.sh
@@ -329,6 +331,11 @@ located in `~/rpmbuild/RPMS`. The script will print their names at the end.
 If you want to pass additional flags to CMake or
 @ref building-features "enable / disable additional features", edit the
 `*.spec` file.
+
+There are also RPM packages for @ref building-plugins-packages-rpm "Magnum Plugins",
+@ref building-extras-packages-rpm "Magnum Extras",
+@ref building-integration-packages-rpm "Magnum Integration" and
+@ref building-examples-packages-rpm "Magnum Examples".
 
 @subsection building-packages-brew Homebrew formulas for macOS
 
