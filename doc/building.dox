@@ -212,8 +212,8 @@ Edit the PKGBUILDs if you want to pass additional flags to CMake or
 @ref building-features "enable / disable additional features".
 
 There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnum Plugins",
-@ref building-integration-packages-arch "Magnum Integration",
-@ref building-extras-packages-arch "Magnum Extras" and
+@ref building-extras-packages-arch "Magnum Extras",
+@ref building-integration-packages-arch "Magnum Integration" and
 @ref building-examples-packages-arch "Magnum Examples".
 
 @subsection building-packages-msys MSYS2 packages
@@ -280,8 +280,8 @@ If you want to pass additional flags to CMake or
 indentation has to be done using tabs, not spaces.
 
 There are also Debian packages for @ref building-plugins-packages-deb "Magnum Plugins",
-@ref building-integration-packages-deb "Magnum Integration",
-@ref building-extras-packages-deb "Magnum Extras" and
+@ref building-extras-packages-deb "Magnum Extras",
+@ref building-integration-packages-deb "Magnum Integration" and
 @ref building-examples-packages-deb "Magnum Examples".
 
 @subsection building-packages-gentoo Gentoo Linux ebuilds
@@ -301,8 +301,8 @@ If you want to pass additional flags to CMake or
 `mycmakeargs` in the `*.ebuild` file.
 
 There are also Gentoo packages for @ref building-plugins-packages-gentoo "Magnum Plugins",
-@ref building-integration-packages-gentoo "Magnum Integration",
-@ref building-extras-packages-gentoo "Magnum Extras" and
+@ref building-extras-packages-gentoo "Magnum Extras",
+@ref building-integration-packages-gentoo "Magnum Integration" and
 @ref building-examples-packages-gentoo "Magnum Examples".
 
 @subsection building-packages-rpm Packages for Fedora, openSUSE and other RPM-based Linux distributions
@@ -367,8 +367,8 @@ want to pass additional flags to CMake or
 file.
 
 There are also Homebrew packages for @ref building-plugins-packages-brew "Magnum Plugins",
-@ref building-integration-packages-brew "Magnum Integration",
-@ref building-extras-packages-brew "Magnum Extras" and
+@ref building-extras-packages-brew "Magnum Extras",
+@ref building-integration-packages-brew "Magnum Integration" and
 @ref building-examples-packages-brew "Magnum Examples".
 
 @section building-manual Manual build
