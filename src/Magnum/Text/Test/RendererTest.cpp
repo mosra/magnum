@@ -73,11 +73,11 @@ struct RendererTest: TestSuite::Tester {
 
     void glyphRangeForBytes();
 
+    #ifdef MAGNUM_TARGET_GL
     void renderData();
 
     void multiline();
 
-    #ifdef MAGNUM_TARGET_GL
     void arrayGlyphCache();
     void fontNotFoundInCache();
     #endif
@@ -364,13 +364,13 @@ RendererTest::RendererTest() {
     addInstancedTests({&RendererTest::glyphRangeForBytes},
         Containers::arraySize(GlyphRangeForBytesData));
 
+    #ifdef MAGNUM_TARGET_GL
     addInstancedTests({&RendererTest::renderData},
         Containers::arraySize(RenderDataData));
 
     addInstancedTests({&RendererTest::multiline},
         Containers::arraySize(MultilineData));
 
-    #ifdef MAGNUM_TARGET_GL
     addTests({&RendererTest::arrayGlyphCache,
               &RendererTest::fontNotFoundInCache});
     #endif
@@ -1166,6 +1166,7 @@ void RendererTest::glyphRangeForBytes() {
     }
 }
 
+#ifdef MAGNUM_TARGET_GL
 void RendererTest::renderData() {
     auto&& data = RenderDataData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -1424,7 +1425,6 @@ void RendererTest::multiline() {
     }), TestSuite::Compare::Container);
 }
 
-#ifdef MAGNUM_TARGET_GL
 void RendererTest::arrayGlyphCache() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
