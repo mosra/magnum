@@ -34,9 +34,9 @@
 
 #include "Magnum/Magnum.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 enum class Access: UnsignedInt;
 typedef Containers::EnumSet<Access> Accesses;
 class Buffer;
@@ -138,15 +138,15 @@ class ShaderSet;
 enum class ShaderStage: UnsignedInt;
 /* 0x7FFFFFFF = VK_SHADER_STAGE_ALL, but that would mean including the whole
    Vulkan headers. Using a number here and then the actual enum value in
-   Shadder.h to ensure it doesn't get out of sync. */
+   Shader.h to ensure it doesn't get out of sync. */
 typedef Containers::EnumSet<ShaderStage, 0x7FFFFFFF> ShaderStages;
 class SubmitInfo;
 class SubpassBeginInfo;
 class SubpassEndInfo;
 enum class Version: UnsignedInt;
 enum class VertexFormat: Int;
-#endif
 
 }}
+#endif
 
 #endif

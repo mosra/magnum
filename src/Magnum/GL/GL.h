@@ -38,11 +38,9 @@
 typedef int GLint; /* Needed for sampler enums */
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 typedef unsigned int GLuint; /* Needed by Implementation/State.h */
-#endif
 
 namespace Magnum { namespace GL {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     /* Needed by Context as well as all Implementation::*State classes */
     enum: std::size_t {
@@ -182,9 +180,9 @@ class TransformFeedback;
 #endif
 
 enum class Version: Int;
-#endif
 
 }}
+#endif
 
 #endif
 

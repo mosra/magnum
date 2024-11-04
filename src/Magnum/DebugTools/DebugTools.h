@@ -36,9 +36,9 @@
 #include <Corrade/Utility/Macros.h>
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace DebugTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifdef MAGNUM_BUILD_DEPRECATED
 class CORRADE_DEPRECATED("use FrameProfiler instead") Profiler;
 #endif
@@ -62,8 +62,8 @@ class ObjectRendererOptions;
 
 class ResourceManager;
 #endif
-#endif
 
 }}
+#endif
 
 #endif

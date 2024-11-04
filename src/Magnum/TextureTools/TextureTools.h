@@ -34,12 +34,12 @@
 
 #include "Magnum/Magnum.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace TextureTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 class AtlasLandfill;
-#endif
 
 }}
+#endif
 
 #endif

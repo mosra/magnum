@@ -33,13 +33,13 @@
 
 #include "Magnum/Types.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace ShaderTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractConverter;
 enum class Stage: UnsignedInt;
-#endif
 
 }}
+#endif
 
 #endif

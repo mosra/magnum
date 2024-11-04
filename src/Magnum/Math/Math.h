@@ -38,11 +38,11 @@
 #include <Corrade/Utility/Macros.h>
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace Math {
 
 /** @todo Denormals to zero */
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t> class BitVector;
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<std::size_t size> using BoolVector CORRADE_DEPRECATED_ALIAS("use BitVector instead") = BitVector<size>;
@@ -120,8 +120,8 @@ namespace Implementation {
     template<class> struct StrictWeakOrdering;
 }
 #endif
-#endif
 
 }}
+#endif
 
 #endif

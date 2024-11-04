@@ -32,9 +32,9 @@
 
 #include "Magnum/configure.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace Platform {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template<class> class BasicScreen;
 template<class> class BasicScreenedApplication;
 /* For ScreenedApplication backwards compatibility with mouseScrollEvent()
@@ -50,8 +50,8 @@ class TwoFingerGesture;
 #ifdef MAGNUM_TARGET_GL
 class GLContext;
 #endif
-#endif
 
 }}
+#endif
 
 #endif

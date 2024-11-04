@@ -36,9 +36,9 @@
 #include <Corrade/Utility/Macros.h>
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace Text {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractFont;
 class AbstractFontConverter;
 class AbstractGlyphCache;
@@ -68,8 +68,8 @@ template<UnsignedInt> class Renderer;
 typedef Renderer<2> Renderer2D;
 typedef Renderer<3> Renderer3D;
 #endif
-#endif
 
 }}
+#endif
 
 #endif

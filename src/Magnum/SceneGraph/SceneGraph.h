@@ -32,9 +32,9 @@
 
 #include "Magnum/Types.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace SceneGraph {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 enum class AspectRatioPolicy: UnsignedByte;
 
 /* Enum CachedTransformation and CachedTransformations used only directly */
@@ -152,8 +152,8 @@ typedef BasicTranslationRotationScalingTransformation3D<Float> TranslationRotati
 namespace Implementation {
     template<class> struct Transformation;
 }
-#endif
 
 }}
+#endif
 
 #endif

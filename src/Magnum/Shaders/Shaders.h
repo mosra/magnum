@@ -36,9 +36,9 @@
 #include <Corrade/Utility/Macros.h>
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace Shaders {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt> class DistanceFieldVectorGL;
 typedef DistanceFieldVectorGL<2> DistanceFieldVectorGL2D;
 typedef DistanceFieldVectorGL<3> DistanceFieldVectorGL3D;
@@ -98,8 +98,8 @@ template<UnsignedInt dimensions> using VertexColor CORRADE_DEPRECATED_ALIAS("use
 typedef CORRADE_DEPRECATED("use VertexColorGL2D instead") VertexColorGL2D VertexColor2D;
 typedef CORRADE_DEPRECATED("use VertexColorGL3D instead") VertexColorGL3D VertexColor3D;
 #endif
-#endif
 
 }}
+#endif
 
 #endif

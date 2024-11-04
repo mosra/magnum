@@ -38,9 +38,9 @@
 #include <Corrade/Utility/Macros.h>
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace Trade {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractImageConverter;
 class AbstractImporter;
 class AbstractSceneConverter;
@@ -116,8 +116,8 @@ class SceneData;
 template<UnsignedInt> class SkinData;
 typedef SkinData<2> SkinData2D;
 typedef SkinData<3> SkinData3D;
-#endif
 
 }}
+#endif
 
 #endif
