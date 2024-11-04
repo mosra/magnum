@@ -73,6 +73,7 @@ control and @ref building-cross for cross-compiling to other platforms.
 -   @ref building-packages-gentoo
 -   @ref building-packages-rpm
 -   @ref building-packages-brew
+-   @ref building-packages-cpm
 -   @ref building-packages-vcpkg
 -   @ref building-packages-hunter
 
@@ -283,6 +284,47 @@ There are also Homebrew packages for @ref building-plugins-packages-brew "Magnum
 @ref building-extras-packages-brew "Magnum Extras",
 @ref building-integration-packages-brew "Magnum Integration" and
 @ref building-examples-packages-brew "Magnum Examples".
+
+@subsection building-packages-cpm CMake Package Manager / CPM
+
+If you're using [CPM](https://github.com/cpm-cmake/CPM.cmake), adding Magnum
+as a dependency can be done with the following, together with the
+@ref building-corrade-packages-cpm "Corrade CPM package". If you're fetching
+the `master` branch, it's recommended to disable `GIT_SHALLOW` to perform a
+full clone including all tags. If not, the build prints a warning about being
+unable to fetch a Git version for the `version.h` header, and will generate a
+fallback file instead.
+
+@code{.cmake}
+CPMAddPackage(
+    NAME corrade
+    GIT_REPOSITORY https://github.com/mosra/corrade.git
+    GIT_TAG master
+    GIT_SHALLOW NO)
+
+CPMAddPackage(
+    NAME magnum
+    GIT_REPOSITORY https://github.com/mosra/magnum.git
+    GIT_TAG master
+    GIT_SHALLOW NO)
+@endcode
+
+You'll most likely want to @ref building-features "enable / disable additional features", or perhaps pass additional flags to CMake, which can be done via
+`OPTIONS`. Note that certain features will require additional dependencies, see
+their documentation for more information.
+
+@code{.cmake}
+CPMAddPackage(
+    NAME magnum
+    ...
+    OPTIONS
+        "MAGNUM_WITH_ANYIMAGEIMPORTER ON"
+        "MAGNUM_WITH_SDL2APPLICATION ON")
+@endcode
+
+CPM can be used also for @ref building-plugins-packages-cpm "Magnum Plugins",
+@ref building-extras-packages-cpm "Magnum Extras" and
+@ref building-integration-packages-cpm "Magnum Integration".
 
 @subsection building-packages-vcpkg Vcpkg package
 
