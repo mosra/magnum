@@ -314,7 +314,12 @@ template<UnsignedInt location, class T> class Attribute {
          * count is set to the same value as in type used in shader (e.g.
          * @ref Components::Three for @ref Magnum::Vector3 "Vector3").
          */
-        constexpr Attribute(DataOptions dataOptions = DataOptions()): Attribute{Implementation::Attribute<T>::DefaultComponents, Implementation::Attribute<T>::DefaultComponentCount*Implementation::Attribute<T>::DefaultDataTypeSize, Implementation::Attribute<T>::DefaultDataType, dataOptions} {}
+        constexpr Attribute(DataOptions dataOptions = DataOptions()): Attribute{
+            Implementation::Attribute<T>::DefaultComponents,
+            /* Cast one enum to avoid -Wdeprecated-anon-enum-conversion when
+               compiling as C++20 */
+            Implementation::Attribute<T>::DefaultComponentCount*UnsignedInt(Implementation::Attribute<T>::DefaultDataTypeSize),
+            Implementation::Attribute<T>::DefaultDataType, dataOptions} {}
 
         /**
          * @brief Constructor
