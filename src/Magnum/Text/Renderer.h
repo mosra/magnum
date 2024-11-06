@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractRenderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto(), @ref Magnum::Text::glyphRangeForBytes()
+ * @brief Class @ref Magnum::Text::AbstractRenderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::glyphQuadBounds(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto(), @ref Magnum::Text::glyphRangeForBytes()
  */
 
 #include "Magnum/Magnum.h"
@@ -155,6 +155,7 @@ overload to get just 2D texture coordinates out. Use the
 @ref renderGlyphQuadsInto(const AbstractGlyphCache&, Float, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&)
 overload if you already have cache-global glyph IDs. Use
 @ref renderGlyphQuadIndicesInto() to populate the corresponding index array.
+@see @ref glyphQuadBounds()
 */
 MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractFont& font, Float size, const AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& fontGlyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector3>& vertexTextureCoordinates);
 
@@ -187,6 +188,7 @@ mapping from font-specific glyph IDs to cache-global IDs happens in this case.
 As with the above overload, to optimize memory use, it's possible to alias
 @p glyphPositions and @p glyphIds with @cpp vertexPositions.every(4) @ce and
 @cpp vertexTextureCoordinates.every(4) @ce.
+@see @ref AbstractGlyphCache::glyphIdsInto(), @ref glyphQuadBounds()
 */
 MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector3>& vertexTextureCoordinates);
 
@@ -199,6 +201,29 @@ outputs just 2D texture coordinates. Expects that @ref AbstractGlyphCache::size(
 depth is @cpp 1 @ce.
 */
 MAGNUM_TEXT_EXPORT Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds, const Containers::StridedArrayView1D<Vector2>& vertexPositions, const Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates);
+
+/**
+@brief Calculate glyph quad bounds from cache-global glyph IDs
+@param[in] cache                Glyph cache to query for glyph rectangles
+@param[in] scale                Size to render the glyphs at divided by size of
+    the input font
+@param[in] glyphPositions       Glyph positions coming from an earlier call to
+    @ref renderLineGlyphPositionsInto()
+@param[in] glyphIds             Cache-global glyph IDs
+@return Rectangle spanning the glyph quads
+@m_since_latest
+
+Returns the same rectangle as @ref renderGlyphQuadsInto(const AbstractGlyphCache&, Float, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector3>&)
+but without actually generating the glyph quads. Use the returned value for
+@ref alignRenderedLine() with a `*GlyphBounds` @ref Alignment value.
+
+Note that, unlike with @ref renderGlyphQuadsInto(const AbstractFont&, Float, const AbstractGlyphCache&, const Containers::StridedArrayView1D<const Vector2>&, const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector3>&),
+this function doesn't have an overload taking font-local glyph IDs, as it
+doesn't have any scratch space to store them. Use
+@ref AbstractGlyphCache::glyphIdsInto() instead to convert them to cache-global
+and then call this function with the result.
+*/
+MAGNUM_TEXT_EXPORT Range2D glyphQuadBounds(const AbstractGlyphCache& cache, Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds);
 
 /**
 @brief Align a rendered line
@@ -223,9 +248,12 @@ If @p alignment isn't `*GlyphBounds`, this function should get glyph
 and @p lineRectangle being all rectangles returned by that function combined
 together with @ref Math::join().
 
-If @p alignment is `*GlyphBounds`, this function should get vertex @p positions
-for a whole line coming from @ref renderGlyphQuadsInto() and @p lineRectangle
-being all rectangles returned by that function combined together with
+If @p alignment is `*GlyphBounds`, this function should get glyph @p positions
+for the whole line coming from @ref renderLineGlyphPositionsInto() and a
+@p lineRectangle being generated with @ref glyphQuadBounds() from those
+positions. Alternatively, it should get vertex @p positions for a whole line
+coming from @ref renderGlyphQuadsInto() and @p lineRectangle being all
+rectangles returned by that function combined together with
 @ref Math::join().
 
 The @p positions are translated in one axis based on the @p inputRectangle and
@@ -312,8 +340,8 @@ Assuming @p clusters is a view containing cluster IDs returned from
 @ref AbstractShaper::glyphClustersInto() and @p begin and @p end are byte
 positions in the text passed to @ref AbstractShaper::shape() for which the
 cluster IDs were retrieved, returns a range in the glyph array that contains
-given range. Assumes that @p clusters are either monotonically non-dereasing or
-non-increasing.
+given range. Assumes that @p clusters are either monotonically non-decreasing
+or non-increasing.
 
 If @p clusters are empty or @p end is less or equal to all @p clusters, returns
 @cpp {0, 0} @ce. If @p begin is greater than all @p clusters are, both return

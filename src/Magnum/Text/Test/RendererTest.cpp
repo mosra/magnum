@@ -62,6 +62,9 @@ struct RendererTest: TestSuite::Tester {
     void glyphQuads2D();
     void glyphQuads2DArrayGlyphCache();
 
+    void glyphQuadBounds();
+    void glyphQuadBoundsInvalidViewSizes();
+
     void alignLine();
     void alignLineInvalidDirection();
 
@@ -344,7 +347,10 @@ RendererTest::RendererTest() {
     addInstancedTests({&RendererTest::glyphQuads2D},
         Containers::arraySize(GlyphQuadsData));
 
-    addTests({&RendererTest::glyphQuads2DArrayGlyphCache});
+    addTests({&RendererTest::glyphQuads2DArrayGlyphCache,
+
+              &RendererTest::glyphQuadBounds,
+              &RendererTest::glyphQuadBoundsInvalidViewSizes});
 
     addInstancedTests({&RendererTest::alignLine},
         Containers::arraySize(AlignLineData));
@@ -875,6 +881,51 @@ void RendererTest::glyphQuads2DArrayGlyphCache() {
     Error redirectError{&out};
     renderGlyphQuadsInto(font, 10.0f, cache, nullptr, nullptr, nullptr, Containers::StridedArrayView1D<Vector2>{});
     CORRADE_COMPARE(out, "Text::renderGlyphQuadsInto(): can't use this overload with an array glyph cache\n");
+}
+
+void RendererTest::glyphQuadBounds() {
+    /* Input like in glyphQuads(), verifying just the output rectangle */
+
+    TestFont font;
+    font.openFile({}, 2.5f);
+    DummyGlyphCache cache = testGlyphCacheArray(font);
+
+    Vector2 glyphPositions[]{
+        {100.0f, 200.0f},
+        {103.0f, 202.0f},
+        {107.0f, 196.0f}
+    };
+    UnsignedInt glyphIds[]{
+        /* Glyph 0 is the cache-global invalid glyph */
+        1, 3, 2
+    };
+
+    /* The font is opened at 2.5, rendering at 1.25, so everything will be
+       scaled by 0.5 */
+    Range2D rectangle = Text::glyphQuadBounds(cache, 1.25f/2.5f, glyphPositions, glyphIds);
+    CORRADE_COMPARE(rectangle, (Range2D{{102.5f, 198.5f}, {114.5f, 210.0f}}));
+}
+
+void RendererTest::glyphQuadBoundsInvalidViewSizes() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    TestFont font;
+    font.openFile({}, 5.0f);
+    DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20}};
+    cache.addFont(96, &font);
+    Vector2 glyphPositions[4];
+    Vector2 glyphPositionsInvalid[5];
+    UnsignedInt glyphIds[4]{};
+    UnsignedInt glyphIdsInvalid[3];
+
+    Containers::String out;
+    Error redirectError{&out};
+    Text::glyphQuadBounds(cache, 2.0f, glyphPositions, glyphIdsInvalid);
+    Text::glyphQuadBounds(cache, 2.0f, glyphPositionsInvalid, glyphIds);
+    CORRADE_COMPARE_AS(out,
+        "Text::glyphQuadBounds(): expected glyphIds and glyphPositions views to have the same size, got 3 and 4\n"
+        "Text::glyphQuadBounds(): expected glyphIds and glyphPositions views to have the same size, got 4 and 5\n",
+        TestSuite::Compare::String);
 }
 
 void RendererTest::alignLine() {

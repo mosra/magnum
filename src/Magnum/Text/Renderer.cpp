@@ -191,6 +191,28 @@ Range2D renderGlyphQuadsInto(const AbstractGlyphCache& cache, const Float scale,
     return renderGlyphQuadsInto(cache, scale, glyphPositions, glyphIds, vertexPositions, vertexTextureCoordinates, nullptr);
 }
 
+Range2D glyphQuadBounds(const AbstractGlyphCache& cache, const Float scale, const Containers::StridedArrayView1D<const Vector2>& glyphPositions, const Containers::StridedArrayView1D<const UnsignedInt>& glyphIds) {
+    CORRADE_ASSERT(glyphIds.size() == glyphPositions.size(),
+        "Text::glyphQuadBounds(): expected glyphIds and glyphPositions views to have the same size, got" << glyphIds.size() << "and" << glyphPositions.size(), {});
+
+    /* Direct views on the cache data */
+    const Containers::StridedArrayView1D<const Vector2i> cacheGlyphOffsets = cache.glyphOffsets();
+    const Containers::StridedArrayView1D<const Range2Di> cacheGlyphRectangles = cache.glyphRectangles();
+
+    /* Basically what renderGlyphQuadsInto() does above, but producing just the
+       rectangle */
+    Range2D rectangle;
+    for(std::size_t i = 0; i != glyphIds.size(); ++i) {
+        const UnsignedInt glyphId = glyphIds[i];
+        const Range2D quad = Range2D::fromSize(
+            glyphPositions[i] + Vector2{cacheGlyphOffsets[glyphId]}*scale,
+            Vector2{cacheGlyphRectangles[glyphId].size()}*scale);
+        rectangle = Math::join(rectangle, quad);
+    }
+
+    return rectangle;
+}
+
 Range2D alignRenderedLine(const Range2D& lineRectangle, const LayoutDirection direction, const Alignment alignment, const Containers::StridedArrayView1D<Vector2>& positions) {
     CORRADE_ASSERT(direction == LayoutDirection::HorizontalTopToBottom,
         "Text::alignRenderedLine(): only" << LayoutDirection::HorizontalTopToBottom << "is supported right now, got" << direction, {});
