@@ -26,7 +26,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file Text/Renderer.h
+/** @file
  * @brief Class @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::BasicRenderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto()
  */
 

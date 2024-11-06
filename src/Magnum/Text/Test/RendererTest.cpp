@@ -756,7 +756,7 @@ void RendererTest::glyphQuadsInvalidViewSizes() {
     renderGlyphQuadsInto(font, 10.0f, cache, glyphPositions, glyphIds, positions, textureCoordinatesInvalid);
     renderGlyphQuadsInto(cache, 2.0f, glyphPositions, glyphIds, positions, textureCoordinatesInvalid);
     renderGlyphQuadsInto(font, 10.0f, cache, glyphPositions, glyphIds, positionsInvalid, textureCoordinates);
-    renderGlyphQuadsInto(cache, 10.0f, glyphPositions, glyphIds, positionsInvalid, textureCoordinates);
+    renderGlyphQuadsInto(cache, 2.0f, glyphPositions, glyphIds, positionsInvalid, textureCoordinates);
     CORRADE_COMPARE_AS(out,
         "Text::renderGlyphQuadsInto(): expected fontGlyphIds and glyphPositions views to have the same size, got 3 and 4\n"
         "Text::renderGlyphQuadsInto(): expected glyphIds and glyphPositions views to have the same size, got 3 and 4\n"
