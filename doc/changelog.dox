@@ -458,9 +458,10 @@ See also:
     @ref TextureTools::AtlasLandfill allowing more efficient and incremental
     glyph packing together with support for texture arrays
 -   New @ref Text::renderLineGlyphPositionsInto(),
-    @ref Text::renderGlyphQuadsInto(), @ref Text::alignRenderedLine(),
-    @ref Text::alignRenderedBlock() and @ref Text::renderGlyphQuadIndicesInto()
-    APIs providing low-level access to the text renderer building blocks
+    @ref Text::renderGlyphQuadsInto(), @ref Text::glyphQuadBounds(),
+    @ref Text::alignRenderedLine(), @ref Text::alignRenderedBlock() and
+    @ref Text::renderGlyphQuadIndicesInto() APIs providing low-level access to
+    the text renderer building blocks
 -   New @ref Text::glyphRangeForBytes() API for providing byte-to-glyph mapping
     for arbitrarily complex shapers using the output from
     @ref Text::AbstractShaper::glyphClustersInto()
