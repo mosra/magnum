@@ -415,10 +415,10 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Font ascent in pixels
          *
-         * Distance from baseline to top, positive value. Font size is defined
-         * as the distance between @ref ascent() and @ref descent(), thus the
-         * value of @cpp (ascent - descent)*0.75f @ce (i.e., converted to
-         * points) is equal to @ref size(). Expects that a font is opened.
+         * Distance from the baseline to the top, a *positive* value. Font size
+         * is defined as the distance between @ref ascent() and @ref descent(),
+         * thus the value of @cpp (ascent - descent)*0.75f @ce (i.e., converted
+         * to points) is equal to @ref size(). Expects that a font is opened.
          * @see @ref lineHeight(), @ref glyphAdvance()
          */
         Float ascent() const;
@@ -426,10 +426,11 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Font descent in pixels
          *
-         * Distance from baseline to bottom, negative value. Font size is defined
-         * as the distance between @ref ascent() and @ref descent(), thus the
-         * value of @cpp (ascent - descent)*0.75f @ce (i.e., converted to
-         * points) is equal to @ref size(). Expects that a font is opened.
+         * Distance from the baseline to the bottom, a *negative* value. Font
+         * size is defined as the distance between @ref ascent() and
+         * @ref descent(), thus the value of @cpp (ascent - descent)*0.75f @ce
+         * (i.e., converted to points) is equal to @ref size(). Expects that a
+         * font is opened.
          * @see @ref lineHeight(), @ref glyphAdvance()
          */
         Float descent() const;
@@ -438,8 +439,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Line height in pixels
          *
          * Distance between baselines in consecutive text lines that
-         * corresponds to @ref ascent() and @ref descent(). Expects that a font
-         * is opened.
+         * corresponds to @ref ascent() and @ref descent(), a *positive* value.
+         * Expects that a font is opened.
          * @see @ref size(), @ref glyphAdvance()
          */
         Float lineHeight() const;
