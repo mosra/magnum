@@ -56,6 +56,8 @@ enum class Script: UnsignedInt;
 
 class FeatureRange;
 
+class RendererCore;
+
 #ifdef MAGNUM_TARGET_GL
 class DistanceFieldGlyphCacheGL;
 class GlyphCacheGL;

@@ -27,8 +27,11 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractRenderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::glyphQuadBounds(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto(), @ref Magnum::Text::glyphRangeForBytes()
+ * @brief Class @ref Magnum::Text::RendererCore, @ref Magnum::Text::AbstractRenderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::glyphQuadBounds(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto(), @ref Magnum::Text::glyphRangeForBytes()
  */
+
+#include <initializer_list>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Text/Text.h"
@@ -51,6 +54,570 @@
 #endif
 
 namespace Magnum { namespace Text {
+
+/**
+@brief Text renderer core flag
+@m_since_latest
+
+@see @ref RendererFlags, @ref Renderer
+*/
+enum class RendererCoreFlag: UnsignedByte {
+    /**
+     * Populate glyph cluster info in @ref RendererCore::glyphClusters() for
+     * text selection and editing purposes.
+     */
+    GlyphClusters = 1 << 0,
+};
+
+/**
+ * @debugoperatorenum{RendererCoreFlag}
+ * @m_since_latest
+ */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, RendererCoreFlag value);
+
+/**
+@brief Text renderer core flags
+@m_since_latest
+
+@see @ref Renderer
+*/
+typedef Containers::EnumSet<RendererCoreFlag> RendererCoreFlags;
+
+CORRADE_ENUMSET_OPERATORS(RendererCoreFlags)
+
+/**
+ * @debugoperatorenum{RendererCoreFlags}
+ * @m_since_latest
+ */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, RendererCoreFlags value);
+
+/**
+@brief Text renderer core
+@m_since_latest
+*/
+class MAGNUM_TEXT_EXPORT RendererCore {
+    public:
+        /**
+         * @brief Construct
+         * @param glyphCache    Glyph cache to use for glyph ID mapping
+         * @param flags         Opt-in feature flags
+         *
+         * By default, the renderer allocates the memory for glyph and run data
+         * internally. Use the overload below to supply external allocators.
+         * @todoc the damn thing can't link to functions taking functions
+         */
+        explicit RendererCore(const AbstractGlyphCache& glyphCache, RendererCoreFlags flags = {}): RendererCore{glyphCache, nullptr, nullptr, nullptr, nullptr, flags} {}
+
+        /**
+         * @brief Construct with external allocators
+         * @param glyphCache        Glyph cache to use for glyph ID mapping
+         * @param glyphAllocator    Glyph allocator function or
+         *      @cpp nullptr @ce
+         * @param glyphAllocatorState  State pointer to pass to
+         *      @p glyphAllocator
+         * @param runAllocator      Run allocator function or @cpp nullptr @ce
+         * @param runAllocatorState  State pointer to pass to @p runAllocator
+         * @param flags             Opt-in feature flags
+         *
+         * The @p glyphAllocator gets called with desired @p glyphCount every
+         * time @ref glyphCount() reaches @ref glyphCapacity(). Size of
+         * passed-in @p glyphPositions, @p glyphIds and @p glyphClusters views
+         * matches @ref glyphCount(). The @p glyphAdvances view is a temporary
+         * storage with contents that don't need to be preserved on
+         * reallocation and is thus passed in empty. If the renderer wasn't
+         * constructed with @ref RendererCoreFlag::GlyphClusters, the
+         * @p glyphClusters is @cpp nullptr @ce to indicate it's not meant to
+         * be allocated. The allocator is expected to replace all passed views
+         * with new views that are larger by *at least* @p glyphCount, pointing
+         * to a reallocated memory with contents from the original view
+         * preserved. Initially @ref glyphCount() is @cpp 0 @ce and the views
+         * are all passed in empty, every subsequent time the views match a
+         * prefix of views previously returned by the allocator. To save
+         * memory, the renderer guarantees that @p glyphIds and
+         * @p glyphClusters are only filled once @p glyphAdvances were merged
+         * into @p glyphPositions. In other words, the @p glyphAdvances can
+         * alias a suffix of @p glyphIds and @p glyphClusters.
+         *
+         * The @p runAllocator gets called with desired @p runCount every time
+         * @ref runCount() reaches @ref runCapacity(). Size of passed-in
+         * @p runScales and @p runEnds views matches @ref runCount(). The
+         * allocator is expected to replace the views with new views that are
+         * larger by *at least* @p runCount, pointing to a reallocated memory
+         * with contents from the original views preserved. Initially
+         * @ref runCount() is @cpp 0 @ce and the views are passed in empty,
+         * every subsequent time the views match a prefix of views previously
+         * returned by the allocator.
+         *
+         * The renderer always requests only exactly the desired size and the
+         * growth strategy is up to the allocators themselves --- the returned
+         * views can be larger than requested and aren't all required to all
+         * have the same size. The minimum of size increases across all views
+         * is then treated as the new @ref glyphCapacity() / @ref runCapacity().
+         *
+         * As a special case, when @ref clear() or @ref reset() is called, the
+         * allocators are called with empty views and @p glyphCount /
+         * @p runCount being @cpp 0 @ce. This is to allow the allocators to
+         * perform any needed reset as well.
+         *
+         * If @p glyphAllocator or @p runAllocator is @cpp nullptr @ce,
+         * @p glyphAllocatorState or @p runAllocatorState is ignored and
+         * default builtin allocator get used for either. Passing
+         * @cpp nullptr @ce for both is equivalent to calling the
+         * @ref RendererCore(const AbstractGlyphCache&, RendererCoreFlags)
+         * constructor.
+         */
+        explicit RendererCore(const AbstractGlyphCache& glyphCache, void(*glyphAllocator)(void* state, UnsignedInt glyphCount, Containers::StridedArrayView1D<Vector2>& glyphPositions, Containers::StridedArrayView1D<UnsignedInt>& glyphIds, Containers::StridedArrayView1D<UnsignedInt>* glyphClusters, Containers::StridedArrayView1D<Vector2>& glyphAdvances), void* glyphAllocatorState, void(*runAllocator)(void* state, UnsignedInt runCount, Containers::StridedArrayView1D<Float>& runScales, Containers::StridedArrayView1D<UnsignedInt>& runEnds), void* runAllocatorState, RendererCoreFlags flags = {});
+
+        /**
+         * @brief Construct without creating the internal state
+         * @m_since_latest
+         *
+         * The constructed instance is equivalent to moved-from state, i.e. no
+         * APIs can be safely called on the object. Useful in cases where you
+         * will overwrite the instance later anyway. Move another object over
+         * it to make it useful.
+         *
+         * Note that this is a low-level and a potentially dangerous API, see
+         * the documentation of @ref NoCreate for alternatives.
+         */
+        explicit RendererCore(NoCreateT) noexcept;
+
+        /** @brief Copying is not allowed */
+        RendererCore(RendererCore&) = delete;
+
+        /**
+         * @brief Move constructor
+         *
+         * Performs a destructive move, i.e. the original object isn't usable
+         * afterwards anymore.
+         */
+        RendererCore(RendererCore&&) noexcept;
+
+        ~RendererCore();
+
+        /** @brief Copying is not allowed */
+        RendererCore& operator=(RendererCore&) = delete;
+
+        /** @brief Move assignment */
+        RendererCore& operator=(RendererCore&&) noexcept;
+
+        /** @brief Glyph cache associated with the renderer */
+        const AbstractGlyphCache& glyphCache() const;
+
+        /** @brief Flags */
+        RendererCoreFlags flags() const;
+
+        /**
+         * @brief Total count of rendered glyphs
+         *
+         * Does *not* include glyphs from the current in-progress rendering, if
+         * any, as their contents are not finalized yet. Use
+         * @ref renderingGlyphCount() to query the count including the
+         * in-progress glyphs.
+         * @see @ref isRendering(), @ref runCount()
+         */
+        UnsignedInt glyphCount() const;
+
+        /**
+         * @brief Glyph capacity
+         *
+         * @see @ref glyphCount(), @ref runCapacity(), @ref reserve()
+         */
+        UnsignedInt glyphCapacity() const;
+
+        /**
+         * @brief Total count of rendered runs
+         *
+         * Does *not* include runs from the current in-progress rendering, if
+         * any, as their contents are not finalized yet. Use
+         * @ref renderingRunCount() to query the count including the
+         * in-progress runs.
+         * @see @ref isRendering(), @ref glyphCount()
+         */
+        UnsignedInt runCount() const;
+
+        /**
+         * @brief Run capacity
+         *
+         * @see @ref runCount(), @ref glyphCapacity() @ref reserve()
+         */
+        UnsignedInt runCapacity() const;
+
+        /**
+         * @brief Whether text rendering is currently in progress
+         *
+         * Returns @cpp true @ce if there are any @ref add() calls not yet
+         * followed by a @ref render(), @cpp false @ce otherwise. If rendering
+         * is in progress, @ref setCursor(), @ref setAlignment() and
+         * @ref setLayoutDirection() cannot be called. The @ref glyphCount(),
+         * @ref runCount() and all data accessors don't include the
+         * yet-to-be-finalized contents.
+         */
+        bool isRendering() const;
+
+        /**
+         * @brief Total count of glyphs including current in-progress rendering
+         *
+         * Can be used for example to query which glyphs correspond to the last
+         * @ref add() call. If @ref isRendering() is @cpp false @ce, the
+         * returned value is the same as @ref glyphCount().
+         */
+        UnsignedInt renderingGlyphCount() const;
+
+        /**
+         * @brief Total count of runs including current in-progress rendering
+         *
+         * Can be used for example to query which runs correspond to the last
+         * @ref add() call. If @ref isRendering() is @cpp false @ce, the
+         * returned value is the same as @ref runCount().
+         */
+        UnsignedInt renderingRunCount() const;
+
+        /**
+         * @brief Cursor position
+         *
+         * Note that this does *not* return the current position at which an
+         * in-progress rendering is happening --- the way the glyphs get placed
+         * before they're aligned to their final position is internal to the
+         * implementation and querying such in-progress state would be of
+         * little use.
+         */
+        Vector2 cursor() const;
+
+        /**
+         * @brief Set cursor position for the next rendered text
+         * @return Reference to self (for method chaining)
+         *
+         * The next rendered text is placed according to specified @p cursor,
+         * @ref alignment() and @ref lineAdvance(). Expects that rendering is
+         * currently not in progress, meaning that the cursor can be only
+         * specified before rendering a particular piece of text. Initial value
+         * is @cpp {0.0f, 0.0f} @ce.
+         * @see @ref isRendering()
+         */
+        RendererCore& setCursor(const Vector2& cursor);
+
+        /** @brief Text alignment */
+        Alignment alignment() const;
+
+        /**
+         * @brief Set alignment for the next rendered text
+         * @return Reference to self (for method chaining)
+         *
+         * The next rendered text is placed according to specified
+         * @ref cursor(), @p alignment and @ref lineAdvance(). Expects that
+         * rendering is currently not in progress, meaning that the alignment
+         * can be only specified before rendering a particular piece of text.
+         * Initial value is @ref Alignment::MiddleCenter.
+         * @see @ref isRendering()
+         */
+        RendererCore& setAlignment(Alignment alignment);
+
+        /** @brief Line advance */
+        Float lineAdvance() const;
+
+        /**
+         * @brief Set line advance for the next rendered text
+         * @return Reference to self (for method chaining)
+         *
+         * The next rendered text is placed according to specified
+         * @ref cursor(), @ref alignment and @p advance. The advance value is
+         * used according to @ref layoutDirection() and in a coordinate system
+         * matching @ref AbstractFont::ascent() and
+         * @relativeref{AbstractFont,descent()}, so for example causes the next
+         * line to be shifted in a negative Y direction for
+         * @ref LayoutDirection::HorizontalTopToBottom. Expects that rendering
+         * is currently not in progress, meaning that the line advance can be
+         * only specified before rendering a particular piece of text. If set
+         * to @cpp 0.0f @ce, the line advance is picked metrics of the first
+         * font a corresponding size passed to @ref add().
+         * @see @ref isRendering(), @ref AbstractFont::lineHeight()
+         */
+        RendererCore& setLineAdvance(Float advance);
+
+        /** @brief Layout direction */
+        LayoutDirection layoutDirection() const;
+
+        /**
+         * @brief Set layout direction
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that rendering is currently not in progress. Currently
+         * expected to always be @ref LayoutDirection::HorizontalTopToBottom.
+         * Initial value is @ref LayoutDirection::HorizontalTopToBottom.
+         * @see @ref isRendering()
+         */
+        RendererCore& setLayoutDirection(LayoutDirection direction);
+
+        /**
+         * @brief Glyph positions
+         *
+         * The returned view has a size of @ref glyphCount(). Note that the
+         * contents are not guaranteed to be meaningful if custom glyph
+         * allocator is used, as the user code is free to perform subsequent
+         * operations on those.
+         */
+        Containers::StridedArrayView1D<const Vector2> glyphPositions() const;
+
+        /**
+         * @brief Glyph IDs
+         *
+         * The returned view has a size of @ref glyphCount(). Note that the
+         * contents are not guaranteed to be meaningful if custom glyph
+         * allocator is used, as the user code is free to perform subsequent
+         * operations on those.
+         */
+        Containers::StridedArrayView1D<const UnsignedInt> glyphIds() const;
+
+        /**
+         * @brief Glyph cluster IDs
+         *
+         * Expects that the renderer was constructed with
+         * @ref RendererCoreFlag::GlyphClusters. The returned view has a size
+         * of @ref glyphCount(). Note that the contents are not guaranteed to
+         * be meaningful if custom glyph allocator is used, as the user code is
+         * free to perform subsequent operations on those.
+         */
+        Containers::StridedArrayView1D<const UnsignedInt> glyphClusters() const;
+
+        /**
+         * @brief Text run scales
+         *
+         * The returned view has a size of @ref runCount(). Note that the
+         * contents are not guaranteed to be meaningful if custom run allocator
+         * is used, as the user code is free to perform subsequent operations
+         * on those.
+         */
+        Containers::StridedArrayView1D<const Float> runScales() const;
+
+        /**
+         * @brief Text run end glyph offsets
+         *
+         * The returned view has a size of @ref runCount(), the last value is
+         * equal to @ref glyphCount(), and the values index the
+         * @ref glyphPositions(), @ref glyphIds() and @ref glyphClusters()
+         * views. The first text run glyphs start at offset @cpp 0 @ce and end
+         * at @cpp runEnds()[0] @ce, the second text run glyphs start at offset
+         * @cpp runEnds()[0] @ce and end at @cpp runEnds()[1] @ce, etc. See
+         * also the @ref glyphsForRuns() function which provides a convenient
+         * way to get a range of glyphs corresponding to a range of runs
+         * without having to deal with edge cases.
+         *
+         * Note that the contents of the returned view are not guaranteed to be
+         * meaningful if custom run allocator is used, as the user code is free
+         * to perform subsequent operations on those.
+         */
+        Containers::StridedArrayView1D<const UnsignedInt> runEnds() const;
+
+        /**
+         * @brief Range of glyphs corresponding to a range of runs
+         *
+         * With @p runRange being for example the second value returned by
+         * @ref render(), returns a begin and end glyph offset for given run
+         * range, which can then be used to index the @ref glyphPositions(),
+         * @ref glyphIds() and @ref glyphClusters() views. Expects that both
+         * the min and max @p runRange value are less than or equal to
+         * @ref renderingRunCount().
+         *
+         * Note that the returned value is not guaranteed to be meaningful if
+         * custom run allocator is used, as the user code is free to perform
+         * subsequent operations on the run data.
+         * @see @ref runEnds()
+         */
+        Range1Dui glyphsForRuns(const Range1Dui& runRange) const;
+
+        /**
+         * @brief Reserve capacity for given glyph and run count
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref glyphCapacity(), @ref glyphCount(),
+         *      @ref runCapacity(), @ref runCount()
+         */
+        RendererCore& reserve(UnsignedInt glyphCapacity, UnsignedInt runCapacity);
+
+        /**
+         * @brief Clear rendered glyphs and runs
+         * @return Reference to self (for method chaining)
+         *
+         * The @ref glyphCount() and @ref runCount() becomes @cpp 0 @ce after
+         * this call and any in-progress rendering is discarded, making
+         * @ref isRendering() return @cpp false @ce. If custom glyph or run
+         * allocators are used, they get called with empty views and zero
+         * sizes.
+         *
+         * Depending on allocator used, @ref glyphCapacity() and
+         * @ref runCapacity() may stay non-zero. The @ref cursor(),
+         * @ref alignment(), @ref lineAdvance() and @ref layoutDirection() are
+         * left untouched, use @ref reset() to reset those to their default
+         * values as well.
+         */
+        RendererCore& clear();
+
+        /**
+         * @brief Reset internal renderer state
+         * @return Reference to self (for method chaining)
+         *
+         * Calls @ref clear(), and additionally @ref cursor(),
+         * @ref alignment(), @ref lineAdvance() and @ref layoutDirection() are
+         * reset to their default values. Apart from @ref glyphCapacity() and
+         * @ref runCapacity(), which may stay non-zero depending on allocator
+         * used, the instance is equivalent to a default-constructed state.
+         */
+        RendererCore& reset();
+
+        /**
+         * @brief Add to the currently rendered text
+         * @param shaper    Shaper instance to render with
+         * @param size      Font size
+         * @param text      Text in UTF-8
+         * @param begin     Beginning byte in the input text
+         * @param end       (One byte after) the end byte in the input text
+         * @param features  Typographic features to apply for the whole text or
+         *      its subranges
+         * @return Reference to self (for method chaining)
+         *
+         * Splits @p text into individual lines and shapes each with given
+         * @p shaper. Places and aligns the text according to @ref cursor(),
+         * @ref alignment() and @ref layoutDirection(), continuing from the
+         * state left after the previous @ref add(), if any.
+         *
+         * After calling this function, @ref isRendering() returns
+         * @cpp true @ce, @ref renderingGlyphCount() and @ref renderingRunCount()
+         * are updated with the count of newly added glyphs and runs, and
+         * @ref setCursor(), @ref setAlignment() or @ref setLayoutDirection()
+         * cannot be called anymore. Call @ref add() more times and wrap up
+         * with @ref render() to perform the final alignment and other steps
+         * necessary to finalize the rendering. If you only need to render the
+         * whole text at once, you can use
+         * @ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>)
+         * instead.
+         *
+         * The function assumes that the @p shaper has either appropriate
+         * script, language and shape direction set, or has them left at
+         * defaults in order let them be autodetected. In order to allow the
+         * implementation to perform shaping aware of surrounding context, such
+         * as picking correct glyphs for beginning, middle or end of a word or a
+         * paragraph, the individual @ref add() calls should ideally be made
+         * with the same @p text view and the slices defined by @p begin and
+         * @p end. Use the @ref add(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>)
+         * overload to pass a string as a whole.
+         *
+         * The function uses @ref AbstractShaper::shape(),
+         * @ref renderLineGlyphPositionsInto(), @ref alignRenderedLine() and
+         * @ref glyphQuadBounds() internally, see their documentation for more
+         * information.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        RendererCore& add(AbstractShaper& shaper, Float size, Containers::StringView text, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange> features = {});
+        #else
+        /* To not have to include ArrayView */
+        RendererCore& add(AbstractShaper& shaper, Float size, Containers::StringView text, UnsignedInt begin, UnsignedInt end);
+        RendererCore& add(AbstractShaper& shaper, Float size, Containers::StringView text, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange> features);
+        #endif
+
+        /** @overload */
+        RendererCore& add(AbstractShaper& shaper, Float size, Containers::StringView text, UnsignedInt begin, UnsignedInt end, std::initializer_list<FeatureRange> features);
+
+        /**
+         * @brief Add a whole string to the currently rendered text
+         *
+         * Equivalent to @ref add(AbstractShaper&, Float, Containers::StringView, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>)
+         * with @p begin set to @cpp 0 @ce and @p end to size of @p text.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        RendererCore& add(AbstractShaper& shaper, Float size, Containers::StringView text, Containers::ArrayView<const FeatureRange> features = {});
+        #else
+        /* To not have to include ArrayView */
+        RendererCore& add(AbstractShaper& shaper, Float size, Containers::StringView text);
+        RendererCore& add(AbstractShaper& shaper, Float size, Containers::StringView text, Containers::ArrayView<const FeatureRange> features);
+        #endif
+
+        /** @overload */
+        RendererCore& add(AbstractShaper& shaper, Float size, Containers::StringView text, std::initializer_list<FeatureRange> features);
+
+        /**
+         * @brief Wrap up rendering of all text added so far
+         *
+         * Performs a final alignment of the text block added by preceding
+         * @ref add() calls and wraps up the rendering. After calling this
+         * function, @ref isRendering() returns @cpp false @ce,
+         * @ref glyphCount() and @ref runCount() are updated with the count of
+         * all rendered glyphs and runs, and @ref setCursor(),
+         * @ref setAlignment() or @ref setLayoutDirection() can be called again
+         * for the next text to be rendered.
+         *
+         * The function returns a bounding box and a range of runs of the
+         * currently rendered text, the run range can then be used to index
+         * the @ref runScales() and @ref runEnds() views. Note that it's
+         * possible for the render to produce an empty range, such as when an
+         * empty text was passed or when it was just newlines. You can use
+         * @ref glyphsForRuns() to convert the returned run range to a begin
+         * and end glyph offset, which can be then used to index the
+         * @ref glyphPositions(), @ref glyphIds() and @ref glyphClusters()
+         * views.
+         *
+         * The rendered glyph range is not touched or used by the renderer in
+         * any way afterwards. If the renderer was created with custom
+         * allocators, the caller can thus perform further operations on the
+         * allocated data.
+         *
+         * Use @ref clear() or @ref reset() to discard all text rendered so
+         * far. The function uses @ref alignRenderedBlock() internally, see its
+         * documentation for more information.
+         */
+        Containers::Pair<Range2D, Range1Dui> render();
+
+        /**
+         * @brief Render a whole text at once
+         *
+         * A convenience shortcut for rendering a single piece of text that's
+         * equivalent to calling @ref add(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>)
+         * followed by @ref render(). See their documentation for more
+         * information.
+         *
+         * After calling this function, @ref isRendering() returns
+         * @cpp false @ce. If this function is called while rendering is in
+         * progress, the glyphs rendered so far are included in the result as
+         * well.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Containers::Pair<Range2D, Range1Dui> render(AbstractShaper& shaper, Float size, Containers::StringView text, Containers::ArrayView<const FeatureRange> features = {});
+        #else
+        /* To not have to include ArrayView */
+        Containers::Pair<Range2D, Range1Dui> render(AbstractShaper& shaper, Float size, Containers::StringView text);
+        Containers::Pair<Range2D, Range1Dui> render(AbstractShaper& shaper, Float size, Containers::StringView text, Containers::ArrayView<const FeatureRange> features);
+        #endif
+
+        /** @overload */
+        Containers::Pair<Range2D, Range1Dui> render(AbstractShaper& shaper, Float size, Containers::StringView text, std::initializer_list<FeatureRange> features);
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        struct State;
+        struct AllocatorState;
+        Containers::Pointer<State> _state;
+
+        /* Called by reset() */
+        MAGNUM_TEXT_LOCAL void resetInternal();
+
+    private:
+        /* While the allocators get just size to grow by, these functions get
+           the total count */
+        MAGNUM_TEXT_LOCAL void allocateGlyphs(
+            #ifndef CORRADE_NO_ASSERT
+            const char* messagePrefix,
+            #endif
+            UnsignedInt totalGlyphCount);
+        MAGNUM_TEXT_LOCAL void allocateRuns(
+            #ifndef CORRADE_NO_ASSERT
+            const char* messagePrefix,
+            #endif
+            UnsignedInt totalRunCount);
+        MAGNUM_TEXT_LOCAL void alignAndFinishLine();
+};
 
 /**
 @brief Render glyph positions for a (part of a) single line

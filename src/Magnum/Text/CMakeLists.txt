@@ -60,7 +60,8 @@ set(MagnumText_HEADERS
     visibility.h)
 
 set(MagnumText_PRIVATE_HEADERS
-    Implementation/printFourCC.h)
+    Implementation/printFourCC.h
+    Implementation/rendererState.h)
 
 if(MAGNUM_TARGET_GL)
     list(APPEND MagnumText_GracefulAssert_SRCS
