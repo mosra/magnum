@@ -67,6 +67,8 @@ corrade_add_test(AnyImageImporterTest AnyImageImporterTest.cpp
         rgb.basis
         rgb.bmp
         rgb.hdr
+        # Created using https://github.com/kopaka1822/ImageViewer/
+        rgb.2.hdr
         rgb.png
         rgb.tga
         rgba_dxt1.dds

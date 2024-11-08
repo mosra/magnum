@@ -215,8 +215,16 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     /* http://www.openexr.com/openexrfilelayout.pdf */
     else if(dataString.hasPrefix("\x76\x2f\x31\x01"_s))
         plugin = "OpenExrImporter"_s;
-    /* https://en.wikipedia.org/wiki/Radiance_(software)#HDR_image_format */
-    else if(dataString.hasPrefix("#?RADIANCE"_s))
+    /* https://en.wikipedia.org/wiki/Radiance_(software)#HDR_image_format and
+       https://en.wikipedia.org/wiki/RGBE_image_format which lists also the \n
+       at the end. There's also a RGBE signature that isn't mentioned on
+       Wikipedia, at https://paulbourke.net/dataformats/pic/ or used by the
+       file utility https://github.com/file/file/blob/0fa2c8c3e64c372d038d46969bafaaa09a13a87b/magic/Magdir/images#L2755-L2759
+       but is used by https://www.graphics.cornell.edu/~bjw/rgbe/rgbe.c which
+       is subsequently derived from in e.g. https://github.com/kopaka1822/ImageViewer/blob/5ec358cf5c3f818c0cc4c363f5ec0c61aa99d372/dependencies/hdr/rgbe.h#L210
+       and stb_image recognizes that as well. */
+    else if(dataString.hasPrefix("#?RADIANCE\n"_s) ||
+            dataString.hasPrefix("#?RGBE\n"_s))
         plugin = "HdrImporter"_s;
     /* https://en.wikipedia.org/wiki/JPEG#Syntax_and_structure */
     else if(dataString.hasPrefix("\xff\xd8\xff"_s))
