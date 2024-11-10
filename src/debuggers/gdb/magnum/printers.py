@@ -383,7 +383,7 @@ def build_magnum_printer():
                                 "^Magnum::Math::RectangularMatrix<\d+, \d+, .*>$",
                                 MagnumMatrix)
     magnum_printers.add_printer("Math::Unit",
-                                "^Magnum::Math::Unit<.*>$"
+                                "^Magnum::Math::Unit<.*>$",
                                 MagnumUnit)
     magnum_printers.add_printer("Math::Vector",
                                 "^Magnum::Math::Vector<\d+,.*>$",
