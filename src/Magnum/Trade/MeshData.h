@@ -769,25 +769,23 @@ information such as primitive type. Populated instances of this class are
 returned from @ref AbstractImporter::mesh(), from particular functions in
 the @ref Primitives library, can be passed to
 @ref AbstractSceneConverter::convert(const MeshData&),
-@ref AbstractSceneConverter::add(const MeshData&, Containers::StringView),
-and related APIs, as well as used in various @ref MeshTools algorithms. Like
-with other @ref Trade types, the internal representation is fixed upon
-construction and allows only optional in-place modification of the data itself,
-but not of the overall structure.
+@ref AbstractSceneConverter::add(const MeshData&, Containers::StringView) and
+related APIs, as well as used in various @ref MeshTools algorithms. Like with
+other @ref Trade types, the internal representation is fixed upon construction
+and allows only optional in-place modification of the index and vertex data
+itself, but not of the overall structure.
 
-@section Trade-MeshData-usage-compile Quick usage with MeshTools::compile()
+@section Trade-MeshData-gpu-opengl Populating an OpenGL mesh
 
-If all you want is to create a @ref GL::Mesh that can be rendered by builtin
-shaders, a simple yet efficient way is to use @ref MeshTools::compile():
+If the goal is creating a @ref GL::Mesh instance to be rendered by builtin
+shaders, the most straightforward way is to use @ref MeshTools::compile(). This
+one-liner uploads the data and configures the mesh for all builtin attributes
+listed in the @ref MeshAttribute enum that are present in it:
 
-@snippet Trade.cpp MeshData-usage-compile
+@snippet Trade.cpp MeshData-gpu-opengl
 
-This one-liner uploads the data and configures the mesh for all attributes
-known by Magnum that are present in it. It's however rather opaque and doesn't
-give you any opportunity to do anything with the mesh data before they get sent
-to the GPU. It also won't be able to deal with any custom attributes that the
-mesh contains. Continue below to see how to achieve a similar effect with
-lower-level APIs.
+This works also with any custom shader that follows the attribute binding
+defined in @ref Shaders::GenericGL.
 
 @m_class{m-note m-success}
 
@@ -795,66 +793,88 @@ lower-level APIs.
     A generic mesh setup using the high-level utility is used in the
     @ref examples-primitives and @ref examples-viewer examples.
 
-@section Trade-MeshData-usage Basic usage
+@section Trade-MeshData-gpu-direct Setting GPU mesh properties directly
 
-The second simplest usage is accessing attributes through the convenience
-functions @ref positions2DAsArray(), @ref positions3DAsArray(),
-@ref tangentsAsArray(), @ref bitangentsAsArray(), @ref normalsAsArray(),
-@ref tangentsAsArray(), @ref textureCoordinates2DAsArray(),
-@ref colorsAsArray(), @ref jointIdsAsArray(), @ref weightsAsArray() and
-@ref objectIdsAsArray(). You're expected to check for attribute presence first
-with either @ref hasAttribute() (or @ref attributeCount(MeshAttribute, Int) const, as there can be multiple sets of texture coordinates, for example). If
-you are creating a @ref GL::Mesh, the usual path forward is then to
-@ref MeshTools::interleave() attributes of interest, upload them to a
-@ref GL::Buffer and configure attribute binding for the mesh.
+If you need more control, for example in presence of custom attributes, if
+you have a custom shader that doesn't follow the attribute binding defined in
+@ref Shaders::GenericGL, or if you want to use the mesh with a 3rd party
+renderer, you can access the index and attribute data and properties directly.
+The @ref MeshData class internally stores a contiguous blob of data, which you
+can directly upload, and then use the associated metadata to let the GPU know
+of the format and layout. The following is again creating an OpenGL mesh, but a
+similar workflow would be for Vulkan or any other GPU API:
 
-The mesh can be also indexed, in which case the index buffer is exposed through
-@ref indicesAsArray().
+@snippet Trade.cpp MeshData-gpu-opengl-direct
 
-@snippet Trade.cpp MeshData-usage
-
-@section Trade-MeshData-usage-advanced Advanced usage
-
-The @ref positions2DAsArray(), ... functions shown above always return a
-newly-allocated @relativeref{Corrade,Containers::Array} instance in a
-well-defined canonical type. While that's convenient and fine at a smaller
-scale, it can take significant amount of time for large models. Or maybe the
-imported data is already in a well-optimized layout and format that you want to
-preserve. The @ref MeshData class internally stores a contiguous blob of data,
-which you can directly upload, and then use provided metadata to let the GPU
-know of the format and layout. There's a lot of possible types of each
-attribute (floats, packed integers, ...), so @ref GL::DynamicAttribute accepts
-also a pair of @ref GL::Attribute defined by the shader and the actual
-@ref VertexFormat, figuring out the GL-specific properties such as component
-count or element data type for you:
-
-@snippet Trade.cpp MeshData-usage-advanced
-
-This approach is especially useful when dealing with custom attributes. See
-also @ref MeshTools::compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
+If using a shader that follows the @ref Shaders::GenericGL attribute binding
+and only has some custom attributes on top, you can use
+@ref MeshTools::compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
 for a combined way that gives you both the flexibility needed for custom
-attributes as well as the convenience for builtin attributes.
+attributes as well as the convenience for builtin attributes. See its
+documentation for an example.
 
-@section Trade-MeshData-usage-mutable Mutable data access
+@section Trade-MeshData-access Accessing mesh data
 
-The interfaces implicitly provide @cpp const @ce views on the contained index
-and vertex data through the @ref indexData(), @ref vertexData(),
-@ref indices() and @ref attribute() accessors. This is done because in general
-case the data can also refer to a memory-mapped file or constant memory. In
-cases when it's desirable to modify the data in-place, there's the
-@ref mutableIndexData(), @ref mutableVertexData(), @ref mutableIndices() and
-@ref mutableAttribute() set of functions. To use these, you need to check that
-the data are mutable using @ref indexDataFlags() or @ref vertexDataFlags()
-first, and if not then you may want to make a mutable copy first using
-@ref MeshTools::copy(). The following snippet applies a transformation to the
-mesh positions:
+When access to individual attributes from the CPU side is desired, for example
+to inspect the topology or to pass the data to a physics simulation, the
+simplest way is accessing attributes through the convenience
+@ref indicesAsArray(), @ref positions3DAsArray(), @ref normalsAsArray() etc.
+functions. Unless the mesh has a known layout, you're expected to check for
+index buffer and attribute presence first with @ref isIndexed() and
+@ref hasAttribute() (or, in case you need to access for example secondary
+texture coordinates, @ref attributeCount(MeshAttribute, Int) const). Apart from
+that, the convenience functions abstract away the internal layout of the mesh
+data, giving you always a contiguous array in a predictable type.
 
-@snippet Trade.cpp MeshData-usage-mutable
+@snippet Trade.cpp MeshData-access
 
-If the transformation includes a rotation or non-uniform scaling, you may want
-to do a similar operation with normals and tangents as well.
+If allocation is undesirable, the @ref indicesInto(), @ref positions3DInto()
+etc. variants take a target view where to put the output instead of returning a
+newly created array. The most efficient way is without copies or conversions
+however, by direct accessing the index and attribute data using @ref indices()
+and @ref attribute(). In that case you additionally need to be sure about the
+data types used or decide based on @ref indexType() and @ref attributeFormat().
+Replacing the above with with direct data access would look like this:
 
-@section Trade-MeshData-usage-morph-targets Morph targets
+@snippet Trade.cpp MeshData-access-direct
+
+There are also non-templated type-erased @ref indices() and @ref attribute()
+overloads returning @cpp void @ce views, useful for example when a dispatch
+based on the actual type is deferred to an external function. Compared to using
+the template versions you however lose the type safety checks implemented in
+@ref MeshData itself.
+
+@m_class{m-note m-success}
+
+@par
+    If you're loading a mesh from a file, the @ref magnum-sceneconverter "magnum-sceneconverter"
+    command-line utility can be used to conveniently inspect its layout and
+    used data formats before writing a code that processes it.
+
+@subsection Trade-MeshData-access-mutable Mutable data access
+
+In a general case, mesh index and vertex data can also refer to a memory-mapped
+file or constant memory and thus @ref indices() and @ref attribute() return
+@cpp const @ce views. When it's desirable to modify the data in-place, there's
+the @ref mutableIndexData(), @ref mutableVertexData(), @ref mutableIndices()
+and @ref mutableAttribute() set of functions. To use these, you need to
+additionally check that the data are mutable using @ref indexDataFlags() or
+@ref vertexDataFlags() first. Further continuing from the above, this snippet
+applies a transformation to the mesh positions in-place:
+
+@snippet Trade.cpp MeshData-access-mutable
+
+<b></b>
+
+@m_class{m-note m-success}
+
+@par
+    @ref MeshTools::transform3D() and other APIs in the @ref MeshTools
+    namespace provide a broad set of utilities for mesh transformation,
+    filtering and merging, operating on both whole @ref MeshData instances and
+    individual data views.
+
+@subsection Trade-MeshData-access-morph-targets Morph targets
 
 By default, named attribute access (either through the @ref positions3DAsArray()
 etc. convenience accesors or via @ref attribute(MeshAttribute, UnsignedInt, Int) const "attribute()"
@@ -862,7 +882,7 @@ and similar) searches only through the base attributes. Meshes that have morph
 targets can have the additional attributes accessed by passing a
 `morphTargetId` argument to these functions:
 
-@snippet Trade.cpp MeshData-usage-morph-targets
+@snippet Trade.cpp MeshData-access-morph-targets
 
 If a base attribute doesn't have a corresponding morph target attribute (which
 can be checked using @ref hasAttribute(MeshAttribute, Int) const with
@@ -899,10 +919,10 @@ advanced data layout features; and conversely all Magnum APIs *taking* a
 When passing mesh data to the GPU, the @ref MeshTools::compile() utility will
 check and expect that only GPU-compatible layout features are used. However,
 when configuring meshes directly like shown in the
-@ref Trade-MeshData-usage-advanced chapter above, you may want to check the
+@ref Trade-MeshData-gpu-direct chapter above, you may want to check the
 constraints explicitly before passing the values over.
 
-@snippet Trade.cpp MeshData-usage-special-layouts
+@snippet Trade.cpp MeshData-special-layouts
 
 In order to convert a mesh with a special data layout to something the GPU
 vertex pipeline is able to consume, @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "MeshTools::interleave()"
@@ -916,9 +936,17 @@ and how to handle it.
 
 @section Trade-MeshData-populating Populating an instance
 
-A @ref MeshData instance by default takes over the ownership of an
-@relativeref{Corrade,Containers::Array} containing the vertex / index data
-together with a @ref MeshIndexData instance and a list of
+If the goal is creating a @ref MeshData instance from individual attributes as
+opposed to getting it from an importer or as an output of another operation and
+making a copy of the data is acceptable, easiest is to pass them to the
+@ref MeshTools::interleave(MeshPrimitive, const Trade::MeshIndexData&, Containers::ArrayView<const Trade::MeshAttributeData>) "MeshTools::interleave()"
+helper and letting it handle all data massaging internally. See its
+documentation for a usage example.
+
+Otherwise, creating a @ref MeshData instance from scratch requires you to have
+all vertex data contained in a single chunk of memory. By default it takes over
+the ownership of an @relativeref{Corrade,Containers::Array} containing the
+vertex / index data together with a @ref MeshIndexData instance and a list of
 @ref MeshAttributeData describing various index and vertex properties. For
 example, an interleaved indexed mesh with 3D positions and RGBA colors would
 look like this --- and variants with just vertex data or just index data or

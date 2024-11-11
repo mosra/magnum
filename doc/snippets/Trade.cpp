@@ -792,48 +792,25 @@ Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
 #ifdef MAGNUM_TARGET_GL
 {
 /* This snippet is also used by GL::Mesh, bear that in mind when updating */
-/* [MeshData-usage-compile] */
+/* [MeshData-gpu-opengl] */
 Trade::MeshData data = DOXYGEN_ELLIPSIS(Trade::MeshData{MeshPrimitive::Points, 0});
 
 GL::Mesh mesh = MeshTools::compile(data);
-/* [MeshData-usage-compile] */
+/* [MeshData-gpu-opengl] */
 }
 
 {
 Trade::MeshData data{MeshPrimitive::Points, 0};
-/* [MeshData-usage] */
-/* Check that we have at least positions and normals */
+/* [MeshData-gpu-opengl-direct] */
 GL::Mesh mesh{data.primitive()};
-if(!data.hasAttribute(Trade::MeshAttribute::Position) ||
-   !data.hasAttribute(Trade::MeshAttribute::Normal))
-    Fatal{} << "Oh well";
+mesh.setCount(data.indexCount());
 
-/* Interleave vertex data */
-GL::Buffer vertices;
-vertices.setData(MeshTools::interleave(data.positions3DAsArray(),
-                                       data.normalsAsArray()));
-mesh.addVertexBuffer(std::move(vertices), 0,
-    Shaders::PhongGL::Position{}, Shaders::PhongGL::Normal{});
+/* Upload index data and configure their layout */
+GL::Buffer indices{data.indexData()};
+mesh.setIndexBuffer(indices, 0, data.indexType());
 
-/* Set up an index buffer, if the mesh is indexed */
-if(data.isIndexed()) {
-    GL::Buffer indices;
-    indices.setData(data.indicesAsArray());
-    mesh.setIndexBuffer(std::move(indices), 0, MeshIndexType::UnsignedInt)
-        .setCount(data.indexCount());
-} else mesh.setCount(data.vertexCount());
-/* [MeshData-usage] */
-}
-
-{
-Trade::MeshData data{MeshPrimitive::Points, 0};
-GL::Mesh mesh{data.primitive()};
-/* [MeshData-usage-advanced] */
-/* Upload the original packed vertex data */
-GL::Buffer vertices;
-vertices.setData(data.vertexData());
-
-/* Set up the position and normal attributes */
+/* Upload vertex data and set up position and normal attributes */
+GL::Buffer vertices{data.vertexData()};
 mesh.addVertexBuffer(vertices,
     data.attributeOffset(Trade::MeshAttribute::Position),
     data.attributeStride(Trade::MeshAttribute::Position),
@@ -844,40 +821,73 @@ mesh.addVertexBuffer(vertices,
     data.attributeStride(Trade::MeshAttribute::Normal),
     GL::DynamicAttribute{Shaders::PhongGL::Normal{},
         data.attributeFormat(Trade::MeshAttribute::Normal)});
-
-/* Upload the original packed index data */
-if(data.isIndexed()) {
-    GL::Buffer indices;
-    indices.setData(data.indexData());
-    mesh.setIndexBuffer(std::move(indices), 0, data.indexType())
-        .setCount(data.indexCount());
-} else mesh.setCount(data.vertexCount());
-/* [MeshData-usage-advanced] */
+/* [MeshData-gpu-opengl-direct] */
 }
 #endif
 
 {
 Trade::MeshData data{MeshPrimitive::Points, 0};
-/* [MeshData-usage-mutable] */
-/* Check prerequisites */
-if(!(data.vertexDataFlags() & Trade::DataFlag::Mutable) ||
-   !data.hasAttribute(Trade::MeshAttribute::Position) ||
-   data.attributeFormat(Trade::MeshAttribute::Position) != VertexFormat::Vector3)
+/* [MeshData-access] */
+if(data.primitive() != MeshPrimitive::Triangles ||
+   !data.isIndexed() ||
+   !data.hasAttribute(Trade::MeshAttribute::Position))
     Fatal{} << "Oh well";
 
-/* Scale the mesh two times */
-MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{2.0f}),
-    data.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
-/* [MeshData-usage-mutable] */
+/* Calculate the face area */
+Containers::Array<UnsignedInt> indices = data.indicesAsArray();
+Containers::Array<Vector3> positions = data.positions3DAsArray();
+Float area = 0.0f;
+for(std::size_t i = 0; i < indices.size(); i += 3)
+    area += Math::cross(
+        positions[indices[i + 1]] - positions[indices[i]],
+        positions[indices[i + 2]] - positions[indices[i]]).length()*0.5f;
+/* [MeshData-access] */
+static_cast<void>(area);
 }
 
 {
 Trade::MeshData data{MeshPrimitive::Points, 0};
-/* [MeshData-usage-morph-targets] */
+/* [MeshData-access-direct] */
+DOXYGEN_ELLIPSIS()
+
+if(data.indexType() != MeshIndexType::UnsignedInt ||
+   data.attributeFormat(Trade::MeshAttribute::Position) != VertexFormat::Vector3)
+    Fatal{} << "Dang";
+
+Containers::StridedArrayView1D<const UnsignedInt> indices =
+    data.indices<UnsignedInt>();
+Containers::StridedArrayView1D<const Vector3> positions =
+    data.attribute<Vector3>(Trade::MeshAttribute::Position);
+/* [MeshData-access-direct] */
+static_cast<void>(indices);
+static_cast<void>(positions);
+}
+
+{
+Trade::MeshData data{MeshPrimitive::Points, 0};
+/* [MeshData-access-mutable] */
+DOXYGEN_ELLIPSIS()
+
+if(data.attributeFormat(Trade::MeshAttribute::Position) != VertexFormat::Vector3)
+    Fatal{} << "Sigh";
+
+/* Scale the mesh two times */
+Matrix4 transformation = Matrix4::scaling(Vector3{2.0f});
+for(Vector3& i: data.mutableAttribute<Vector3>(Trade::MeshAttribute::Position))
+    i = transformation.transformPoint(i);
+/* [MeshData-access-mutable] */
+}
+
+{
+Trade::MeshData data{MeshPrimitive::Points, 0};
+/* [MeshData-access-morph-targets] */
+if(!data.hasAttribute(Trade::MeshAttribute::Position, 0) ||
+   !data.hasAttribute(Trade::MeshAttribute::Position, 1))
+    Fatal{} << "Positions not present in morph targets 0 and 1";
+
 Float weights[]{0.25f, 0.5f};
 
-/* Calculate morphed positions with the above weights, assuming the mesh has
-   a Vector3 Position attribute in morph targets 0 and 1 */
+/* Calculate morphed positions with the above weights */
 Containers::Array<Vector3> positions = data.positions3DAsArray(0, -1);
 for(Int morphTargetId: {0, 1}) {
     Containers::StridedArrayView1D<const Vector3> morphed =
@@ -885,12 +895,12 @@ for(Int morphTargetId: {0, 1}) {
     for(std::size_t i = 0; i != data.vertexCount(); ++i)
         positions[i] += morphed[i]*weights[morphTargetId];
 }
-/* [MeshData-usage-morph-targets] */
+/* [MeshData-access-morph-targets] */
 }
 
 {
 Trade::MeshData data{MeshPrimitive::Points, 0};
-/* [MeshData-usage-special-layouts] */
+/* [MeshData-special-layouts] */
 if(data.attributeStride(Trade::MeshAttribute::Position) <= 0 ||
    data.attributeStride(Trade::MeshAttribute::Normal) <= 0 ||
    (data.isIndexed() && !data.indices().isContiguous()))
@@ -898,7 +908,7 @@ if(data.attributeStride(Trade::MeshAttribute::Position) <= 0 ||
 
 // Now it's safe to use the Position and Normal attributes and the index buffer
 // in a GPU mesh
-/* [MeshData-usage-special-layouts] */
+/* [MeshData-special-layouts] */
 }
 
 {

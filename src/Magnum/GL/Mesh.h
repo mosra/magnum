@@ -252,7 +252,7 @@ If you have a @ref Trade::MeshData instance that you got for example from
 @ref Trade::AbstractImporter::mesh() or from the @ref Primitives library, the
 simplest possible way is to use @ref MeshTools::compile():
 
-@snippet Trade.cpp MeshData-usage-compile
+@snippet Trade.cpp MeshData-gpu-opengl
 
 This one-liner uploads the data and configures the mesh for all attributes
 known by Magnum that are present in it, making it suitable to be drawn by
