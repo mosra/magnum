@@ -302,17 +302,23 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     /* Use values from the configuration only if not overridden on command line
        to something non-default. In any case explicit scaling has a precedence
        before the policy. */
+    #ifndef CORRADE_TARGET_APPLE
     Implementation::Sdl2DpiScalingPolicy dpiScalingPolicy{};
+    #endif
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _commandLineDpiScaling;
         return _commandLineDpiScaling;
     } else if(_commandLineDpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Default) {
+        #ifndef CORRADE_TARGET_APPLE
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
+        #endif
     } else if(!configurationDpiScaling.isZero()) {
         Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << configurationDpiScaling;
         return configurationDpiScaling;
     } else {
+        #ifndef CORRADE_TARGET_APPLE
         dpiScalingPolicy = configurationDpiScalingPolicy;
+        #endif
     }
 
     /* There's no choice on Apple, it's all controlled by the plist file. So

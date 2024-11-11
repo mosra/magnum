@@ -168,17 +168,23 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
     /* Use values from the configuration only if not overridden on command line
        to something non-default. In any case explicit scaling has a precedence
        before the policy. */
+    #ifndef CORRADE_TARGET_APPLE
     Implementation::GlfwDpiScalingPolicy dpiScalingPolicy{};
+    #endif
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::GlfwApplication: user-defined DPI scaling" << _commandLineDpiScaling;
         return _commandLineDpiScaling;
     } else if(_commandLineDpiScalingPolicy != Implementation::GlfwDpiScalingPolicy::Default) {
+        #ifndef CORRADE_TARGET_APPLE
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
+        #endif
     } else if(!configurationDpiScaling.isZero()) {
         Debug{verbose} << "Platform::GlfwApplication: app-defined DPI scaling" << configurationDpiScaling;
         return configurationDpiScaling;
     } else {
+        #ifndef CORRADE_TARGET_APPLE
         dpiScalingPolicy = configurationDpiScalingPolicy;
+        #endif
     }
 
     /* There's no choice on Apple, it's all controlled by the plist file. So
