@@ -29,6 +29,7 @@
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/MeshTools/Combine.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Duplicate.h"
@@ -45,6 +46,8 @@
 #include "Magnum/MeshTools/CombineIndexedArrays.h"
 #endif
 
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
@@ -53,6 +56,17 @@ using namespace Magnum::Math::Literals;
    avoid -Wmisssing-prototypes */
 void mainMeshTools();
 void mainMeshTools() {
+{
+Trade::MeshData mesh{{}, 0};
+/* [combineFaceAttributes] */
+Containers::ArrayView<const Color3> faceColors = DOXYGEN_ELLIPSIS({});
+
+Trade::MeshData meshWithFaceColors = MeshTools::combineFaceAttributes(mesh, {
+    Trade::MeshAttributeData{Trade::MeshAttribute::Color, faceColors}
+});
+/* [combineFaceAttributes] */
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 {
 CORRADE_IGNORE_DEPRECATED_PUSH
@@ -95,6 +109,27 @@ Containers::Array<UnsignedShort> indexData =
 CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
+
+{
+/* [concatenate] */
+Trade::MeshData sphere = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, 0});
+Trade::MeshData cube = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, 0});
+Trade::MeshData cylinder = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, 0});
+
+Trade::MeshData primitives = MeshTools::concatenate({sphere, cube, cylinder});
+/* [concatenate] */
+
+/* [concatenate-offsets] */
+UnsignedInt sphereIndexOffset = 0;
+UnsignedInt sphereVertexOffset = 0;
+UnsignedInt cubeIndexOffset = sphereIndexOffset + sphere.indexCount(),
+    cubeVertexOffset = sphereVertexOffset + sphere.vertexCount();
+UnsignedInt cylinderIndexOffset = cubeIndexOffset + cube.indexCount(),
+    cylinderVertexOffset = cubeVertexOffset + cube.vertexCount();
+/* [concatenate-offsets] */
+static_cast<void>(cylinderIndexOffset);
+static_cast<void>(cylinderVertexOffset);
+}
 
 {
 /* [generateFlatNormals] */
@@ -161,6 +196,17 @@ Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> unique =
     MeshTools::removeDuplicatesInPlace(Containers::arrayCast<2, char>(data));
 data = data.prefix(unique.second());
 /* [removeDuplicates] */
+}
+
+{
+/* [removeDuplicatesFuzzy] */
+Containers::ArrayView<Vector3> positions;
+
+Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> unique =
+    MeshTools::removeDuplicatesFuzzyInPlace(
+        Containers::arrayCast<2, Float>(positions));
+positions = positions.prefix(unique.second());
+/* [removeDuplicatesFuzzy] */
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

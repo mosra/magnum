@@ -66,9 +66,9 @@ present, is left untouched. Attributes from the list that are not present in
 @p mesh are skipped, duplicates in the list are treated the same as if given
 attribute was listed just once. If given attribute is present multiple times in
 the mesh (such as secondary colors or texture coordinates), all its occurences
-are kept --- if you want a different behavior, use the
-@ref filterOnlyAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
-overload and pick attributes by their IDs instead.
+are kept --- if you want a different behavior, use
+@ref filterAttributes(const Trade::MeshData&, Containers::BitArrayView) and
+pick attributes by their IDs instead.
 
 This function only operates on the attribute metadata --- if you'd like to have
 the vertex data repacked to contain just the remaining attributes as well, pass
@@ -94,9 +94,9 @@ present, is left untouched. Attributes from the list that are not present in
 @p mesh are skipped, duplicates in the list are treated the same as if given
 attribute was listed just once. If given attribute is present multiple times in
 the mesh (such as secondary colors or texture coordinates), all its occurences
-are removed --- if you want a different behavior, use the
-@ref filterOnlyAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
-overload and pick attributes by their IDs instead.
+are removed --- if you want a different behavior, use
+@ref filterAttributes(const Trade::MeshData&, Containers::BitArrayView) and
+pick attributes by their IDs instead.
 
 This function only operates on the attribute metadata --- if you'd like to have
 the vertex mesh repacked to contain just the remaining attributes as well, pass

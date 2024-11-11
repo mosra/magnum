@@ -506,7 +506,7 @@ MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedAr
 MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const Containers::StridedArrayView1D<UnsignedByte>& output);
 
 /**
-@brief Convert a mesh to plain indexed lines or triangles
+@brief Convert a mesh to a plain indexed one
 @m_since{2020,06}
 
 If @p mesh is one of @ref MeshPrimitive::LineStrip,
@@ -535,7 +535,7 @@ avoid that copy.
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(const Trade::MeshData& mesh);
 
 /**
-@brief Convert a mesh to plain indexed lines or triangles
+@brief Convert a mesh to a plain indexed one
 @m_since{2020,06}
 
 Compared to @ref generateIndices(const Trade::MeshData&) this function can

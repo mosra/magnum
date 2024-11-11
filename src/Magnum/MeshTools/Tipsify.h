@@ -56,6 +56,7 @@ array for beter usage of post-transform vertex cache. Algorithm used:
 for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
 https://gfx.cs.princeton.edu/pubs/Sander_2007_%3eTR/tipsy.pdf*.
 @todo Ability to compute vertex count automatically
+@see @relativeref{Trade,MeshOptimizerSceneConverter}
 */
 MAGNUM_MESHTOOLS_EXPORT void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
 

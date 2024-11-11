@@ -114,17 +114,27 @@ indexed, it's assumed to have the data unique; if it's not indexed, it's first
 made unique using @ref removeDuplicates() and in that case it's expected to
 be interleaved. Index buffers and attributes in both meshes are expected to not
 have an implementation-specific format.
+
+The @ref combineFaceAttributes(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>)
+overload allows for more convenient addition of per-face attributes into a mesh
+without having to wrap them in a @ref Trade::MeshData first. See its
+documentation for a usage example.
 @see @ref isInterleaved(), @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::MeshData& faceAttributes);
 
 /**
-@overload
+@brief Combine per-face attributes into an existing mesh
 @m_since{2020,06}
 
-Same as above with @p faceAttributes wrapped in a @ref Trade::MeshData with
-@ref MeshPrimitive::Faces and no index buffer. Same as in the above case,
+Wraps @p faceAttributes in a @ref Trade::MeshData with @ref MeshPrimitive::Faces
+and no index buffer and calls @ref combineFaceAttributes(const Trade::MeshData&, const Trade::MeshData&).
+Example usage --- adding a per-face color to an existing mesh:
+
+@snippet MeshTools.cpp combineFaceAttributes
+
+Same as with @ref combineFaceAttributes(const Trade::MeshData&, const Trade::MeshData&),
 @p faceAttributes is expected to be interleaved. Note that offset-only
 @ref Trade::MeshAttributeData instances are not supported in the
 @p faceAttributes array.

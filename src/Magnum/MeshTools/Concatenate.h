@@ -51,16 +51,27 @@ namespace Implementation {
 @param flags            Flags to pass to @ref interleavedLayout()
 @m_since{2020,06}
 
-The returned mesh contains vertices from all meshes concatenated together. If
-any mesh is indexed (expected to not have an implementation-specific index
-type), the resulting mesh is indexed as well, with indices adjusted for vertex
-offsets of particular meshes. The behavior is undefined if any mesh has indices
-out of range for its particular vertex count. Meshes with
-@ref MeshPrimitive::LineStrip, @ref MeshPrimitive::LineLoop,
-@ref MeshPrimitive::TriangleStrip and @ref MeshPrimitive::TriangleFan can't be
-concatenated --- use @ref generateIndices() to turn them into
-@ref MeshPrimitive::Lines or @ref MeshPrimitive::Triangles first. The @p meshes
-array is expected to have at least one item.
+Returns a mesh that contains index and vertex data from all input meshes
+concatenated together. Usage example:
+
+@snippet MeshTools.cpp concatenate
+
+Relative order of passed meshes is preserved in the resulting index and vertex
+data, meaning you can directly calculate their offsets for example if it's
+desirable to render or modify them separately. If any mesh is indexed, the
+resulting mesh is indexed as well, with indices adjusted for vertex offsets of
+particular meshes.
+
+@snippet MeshTools.cpp concatenate-offsets
+
+The indices, if present, are expected to not have an implementation-specific
+index type. The behavior is undefined if any mesh has indices out of range for
+its particular vertex count. Meshes with @ref MeshPrimitive::LineStrip,
+@ref MeshPrimitive::LineLoop, @ref MeshPrimitive::TriangleStrip and
+@ref MeshPrimitive::TriangleFan can't be concatenated --- use
+@ref generateIndices() to turn them into @ref MeshPrimitive::Lines or
+@ref MeshPrimitive::Triangles first. The @p meshes array is expected to have at
+least one item.
 
 All attributes from the first mesh are taken, expected to not have an
 implementation-specific format. For each following mesh attributes present in

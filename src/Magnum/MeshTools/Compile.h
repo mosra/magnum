@@ -321,7 +321,8 @@ Useful to get subsequently fed to
 @ref Shaders::FlatGL::Configuration::setJointCount() or to
 @ref Shaders::FlatGL::setPerVertexJointCount() if
 @ref Shaders::FlatGL::Flag::DynamicPerVertexJointCount is enabled, and
-similarly with other builtin shaders.
+similarly with other builtin shaders. See @ref shaders-usage-skinning for a
+high-level introduction.
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features

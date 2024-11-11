@@ -55,20 +55,21 @@ namespace Magnum { namespace MeshTools {
 @m_since{2020,06}
 
 Removes duplicate data from given array by comparing the second dimension of
-each item, the second dimension is expected to be contiguous. A plain bit-exact
+each item. Usage example:
+
+@snippet MeshTools.cpp removeDuplicates
+
+The second dimension is expected to be contiguous. A plain bit-exact
 matching is used, if you need fuzzy comparison for floating-point data, use
 @ref removeDuplicatesFuzzyInPlace() instead. If you want to remove duplicate
 data from an already indexed array, use
 @ref removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<char>&)
-instead. Usage example:
-
-@snippet MeshTools.cpp removeDuplicates
-
-See @ref removeDuplicates(const Containers::StridedArrayView2D<const char>&)
+instead. See @ref removeDuplicates(const Containers::StridedArrayView2D<const char>&)
 for a variant that doesn't modify the input data in any way but instead returns
-an index array pointing to original data locations.
-@see @ref Corrade::Containers::StridedArrayView::isContiguous(),
-    @ref removeDuplicatesInPlaceInto()
+an index array pointing to original data locations. Use
+@ref removeDuplicatesInPlaceInto() to place the indices into existing memory
+instead of allocating a new array.
+@see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data);
 
@@ -80,8 +81,9 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::si
 @return Size of unique prefix in the cleaned up @p data array
 @m_since{2020,06}
 
-Same as above, except that the index array is not allocated but put into
-@p indices instead. Expects that @p indices has the same size as @p data.
+Like @ref removeDuplicatesInPlace(), except that the index array is not
+allocated but put into @p indices instead. Expects that @p indices has the same
+size as @p data.
 @see @ref removeDuplicatesInto()
 */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices);
@@ -95,7 +97,9 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesInPlaceInto(const Containers
 
 Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
 this function doesn't modify the input data array in any way but instead
-returns an index array pointing to original data locations.
+returns an index array pointing to original data locations. Use
+@ref removeDuplicatesInto() to place the indices into existing memory instead
+of allocating a new array.
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data);
 
@@ -162,14 +166,17 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Contain
 
 Removes duplicate data from the array by collapsing them into buckets of size
 @p epsilon. First vector in given bucket is used, other ones are thrown away,
-no interpolation is done. Note that this function is meant to be used for
-floating-point data (or generally with non-zero @p epsilon), for data where
-bit-exact matching is sufficient use @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
-instead.
+no interpolation is done. Usage example:
 
-If you want to remove duplicate data from an already indexed array, use
-@ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<Float>&, Float)
-and friends instead.
+@snippet MeshTools.cpp removeDuplicatesFuzzy
+
+Note that this function is meant to be used for floating-point data (or
+generally with non-zero @p epsilon), for data where bit-exact matching is
+sufficient use @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
+instead. If you want to remove duplicate data from an already indexed array,
+use @ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<Float>&, Float)
+and friends instead. Use @ref removeDuplicatesFuzzyInPlaceInto() to place the
+indices into existing memory instead of allocating a new array.
 
 If you want to remove duplicates in multiple incidental arrays, first remove
 duplicates in each array separately and then combine the resulting index arrays
@@ -193,8 +200,9 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::si
 @return Size of unique prefix in the cleaned up @p data array
 @m_since{2020,06}
 
-Same as above, except that the index array is not allocated but put into
-@p indices instead. Expects that @p indices has the same size as @p data.
+Like @ref removeDuplicatesFuzzyInPlace(), except that the index array is not
+allocated but put into @p indices instead. Expects that @p indices has the same
+size as @p data.
 */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView2D<Float>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
@@ -277,10 +285,10 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Co
 @brief Remove duplicates from indexed data using fuzzy comparison in-place on a type-erased index array
 @m_since{2020,06}
 
-Expects that the second dimension of @p indices is contiguous and represents
-the actual 1/2/4-byte index type. Based on its size then calls
-@ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<Float>&, Float)
-or the other overloads.
+Calls @ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<Float>&, Float)
+or the other overloads based on size of the second dimension of @p indices.
+Expects that the second dimension is contiguous and represents the actual
+1/2/4-byte index type.
 */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
