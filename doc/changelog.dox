@@ -318,6 +318,9 @@ See also:
 -   New @ref MeshTools::compileLines() utility for creating meshes compatible
     with the new @ref Shaders::LineGL. See also
     [mosra/magnum#601](https://github.com/mosra/magnum/pull/601).
+-   New @ref MeshTools::interleave(MeshPrimitive, const Trade::MeshIndexData&, Containers::ArrayView<const Trade::MeshAttributeData>)
+    overload for conveniently creating an interleaved mesh out of loose index
+    and attribute arrays
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

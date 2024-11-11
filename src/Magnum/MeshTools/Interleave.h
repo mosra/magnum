@@ -303,16 +303,18 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& mesh
 
 Returns a copy of @p mesh with all attributes interleaved. The @p extra
 attributes, if any, are interleaved together with existing attributes (or, in
-case the attribute view is empty, only the corresponding space for given
-attribute type is reserved, with memory left uninitialized). The data layouting
-is done by @ref interleavedLayout() with the @p flags parameter propagated to
-it, see its documentation for detailed behavior description. Note that
-offset-only @ref Trade::MeshAttributeData instances are not supported in the
-@p extra array.
+case the attribute view is null, only the corresponding space for given
+attribute type is reserved, with memory left uninitialized). See the
+@ref interleave(MeshPrimitive, const Trade::MeshIndexData&, Containers::ArrayView<const Trade::MeshAttributeData>)
+overload if you only have loose attributes and want to interleave them
+together.
 
-Indices (if any) are kept as-is only if they're tightly packed and not with an
-implementation-specific type. Otherwise the behavior depends on presence of
-@ref InterleaveFlag::PreserveStridedIndices.
+The data layouting is done by @ref interleavedLayout() with the @p flags
+parameter propagated to it, see its documentation for detailed behavior
+description. Note that offset-only @ref Trade::MeshAttributeData instances are
+not supported in the @p extra array. Indices (if any) are kept as-is only if
+they're tightly packed and not with an implementation-specific type. Otherwise
+the behavior depends on presence of @ref InterleaveFlag::PreserveStridedIndices.
 
 Expects that each attribute in @p extra has either the same amount of elements
 as @p mesh vertex count or has none. This function will unconditionally make a
@@ -355,6 +357,59 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& mesh, Conta
  * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& mesh, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+
+/**
+@brief Create an indexed interleaved mesh
+@m_since_latest
+
+Creates a mesh data instance out of given indices and attributes. Usage
+example:
+
+@snippet MeshTools.cpp interleave-meshdata
+
+The @ref interleave(MeshPrimitive, Containers::ArrayView<const Trade::MeshAttributeData>)
+overload creates a non-indexed mesh. This function is a convenience shorthand
+for calling @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags)
+with a @ref Trade::MeshData instance created out of @p primitive and
+@p indices and vertex count matching @p attributes. If a particular attribute
+view is null, only the corresponding space for given attribute type is
+reserved, with memory left uninitialized. The attribute can also be a are a
+padding value created with @ref Trade::MeshAttributeData::MeshAttributeData(Int),
+see documentation of @ref interleavedLayout() for an example snippet.
+
+Expects that @p attributes all have the same amount of elements or have none,
+there's at least one non-padding attribute, none of them have an
+implementation-specific format and none of them are offset-only
+@ref Trade::MeshAttributeData instances. The @p indices, if present, are
+assumed to not have an implementation-specific type. Returned instance vertex
+and index data flags have both @ref Trade::DataFlag::Mutable and
+@ref Trade::DataFlag::Owned, so mutable attribute access is guaranteed.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(MeshPrimitive primitive, const Trade::MeshIndexData& indices, Containers::ArrayView<const Trade::MeshAttributeData> attributes);
+
+/**
+@overload
+@m_since_latest
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(MeshPrimitive primitive, const Trade::MeshIndexData& indices, std::initializer_list<Trade::MeshAttributeData> attributes);
+
+/**
+@brief Create a non-indexed interleaved mesh
+@m_since_latest
+
+Same as calling @ref interleave(MeshPrimitive, const Trade::MeshIndexData&, Containers::ArrayView<const Trade::MeshAttributeData>)
+with a default-constructed @ref Trade::MeshIndexData instance. See its
+documentation for more information and a usage example.
+*/
+/* No InterleaveFlags as there's no index array for PreserveStridedIndices,
+   and PreserveInterleavedAttributes makes sense only for an input mesh */
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(MeshPrimitive primitive, Containers::ArrayView<const Trade::MeshAttributeData> attributes);
+
+/**
+@overload
+@m_since_latest
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(MeshPrimitive primitive, std::initializer_list<Trade::MeshAttributeData> attributes);
 
 namespace Implementation {
 

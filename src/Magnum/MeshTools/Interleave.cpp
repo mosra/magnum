@@ -350,7 +350,7 @@ Trade::MeshData interleave(Trade::MeshData&& mesh, const Containers::ArrayView<c
                 "MeshTools::interleave(): extra attribute" << i << "is offset-only",
                 (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
-            /* Copy the attribute in, if it is non-empty, otherwise keep the
+            /* Copy the attribute in, if it is non-null, otherwise keep the
                memory uninitialized */
             if(extra[i].data()) {
                 CORRADE_ASSERT(extra[i].data().size() == vertexCount,
@@ -385,6 +385,54 @@ Trade::MeshData interleave(const Trade::MeshData& mesh, const Containers::ArrayV
 
 Trade::MeshData interleave(const Trade::MeshData& mesh, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     return interleave(Utility::move(mesh), Containers::arrayView(extra), flags);
+}
+
+Trade::MeshData interleave(const MeshPrimitive primitive, const Trade::MeshIndexData& indices, const Containers::ArrayView<const Trade::MeshAttributeData> attributes) {
+    /* Get vertex count from the first non-padding attribute. Checking that all
+       arrays have the same size etc is done in the delegated-to function. */
+    UnsignedInt vertexCount = ~UnsignedInt{};
+    for(const Trade::MeshAttributeData& attribute: attributes) {
+        if(attribute.format() != VertexFormat{}) {
+            vertexCount = attribute.data().size();
+            break;
+        }
+    }
+    CORRADE_ASSERT(vertexCount != ~UnsignedInt{},
+        "MeshTools::interleave(): only padding found among" << attributes.size() << "attributes, can't infer vertex count",
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+
+    /* Check that indices aren't implementation-specific. The assert inside the
+       delegated-to interleave() suggests PreserveStridedIndices, which would
+       be confusing as here it's no such argument */
+    CORRADE_ASSERT(indices.type() == MeshIndexType{} || !isMeshIndexTypeImplementationSpecific(indices.type()),
+        "MeshTools::interleave(): implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(indices.type()),
+        (Trade::MeshData{MeshPrimitive{}, 0}));
+
+    return interleave(Trade::MeshData{primitive,
+        /* Pass indices as non-owned so they get copied. We can say the index
+           data is the whole memory as it's not going to get used because the
+           indices get tightly packed. */
+        {},
+        indices.type() == MeshIndexType{} ?
+            nullptr : Containers::ArrayView<char>{nullptr, ~std::size_t{}},
+        indices,
+        vertexCount},
+        attributes,
+        /* Explicitly *not* PreserveStridedIndices to ensure the indices get
+           tightly packed */
+        InterleaveFlags{});
+}
+
+Trade::MeshData interleave(const MeshPrimitive primitive, const Trade::MeshIndexData& indices, const std::initializer_list<Trade::MeshAttributeData> attributes) {
+    return interleave(primitive, indices, Containers::arrayView(attributes));
+}
+
+Trade::MeshData interleave(const MeshPrimitive primitive, const Containers::ArrayView<const Trade::MeshAttributeData> attributes) {
+    return interleave(primitive, Trade::MeshIndexData{}, attributes);
+}
+
+Trade::MeshData interleave(const MeshPrimitive primitive, const std::initializer_list<Trade::MeshAttributeData> attributes) {
+    return interleave(primitive, Containers::arrayView(attributes));
 }
 
 }}

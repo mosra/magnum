@@ -155,6 +155,21 @@ auto data = MeshTools::interleave(positions, weights, 2, vertexColors, 1);
 }
 
 {
+/* [interleave-meshdata] */
+Containers::ArrayView<const UnsignedInt> indices = DOXYGEN_ELLIPSIS({});
+Containers::ArrayView<const Vector3> positions = DOXYGEN_ELLIPSIS({});
+Containers::ArrayView<const Vector3> normals = DOXYGEN_ELLIPSIS({});
+
+Trade::MeshData mesh = MeshTools::interleave(
+    MeshPrimitive::Triangles,
+    Trade::MeshIndexData{indices}, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals},
+    });
+/* [interleave-meshdata] */
+}
+
+{
 Trade::MeshData data{MeshPrimitive::Lines, 0};
 UnsignedInt vertexCount{};
 Containers::Array<char> indexData;

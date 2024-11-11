@@ -27,12 +27,14 @@
 #include <sstream>
 #include <vector>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/Interleave.h"
@@ -99,6 +101,10 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleaveMeshDataAlreadyInterleavedMoveIndices();
     void interleaveMeshDataAlreadyInterleavedMoveNonOwned();
     void interleaveMeshDataNothing();
+
+    void interleaveMeshDataLooseAttributes();
+    void interleaveMeshDataLooseAttributesIndexed();
+    void interleaveMeshDataLooseAttributesInvalid();
 };
 
 const struct {
@@ -191,7 +197,11 @@ InterleaveTest::InterleaveTest() {
         Containers::arraySize(StridedIndicesData));
 
     addTests({&InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned,
-              &InterleaveTest::interleaveMeshDataNothing});
+              &InterleaveTest::interleaveMeshDataNothing,
+
+              &InterleaveTest::interleaveMeshDataLooseAttributes,
+              &InterleaveTest::interleaveMeshDataLooseAttributesIndexed,
+              &InterleaveTest::interleaveMeshDataLooseAttributesInvalid});
 }
 
 void InterleaveTest::attributeCount() {
@@ -1343,6 +1353,7 @@ void InterleaveTest::interleaveMeshDataExtraOriginalEmpty() {
     CORRADE_VERIFY(!interleaved.isIndexed());
     /* No reason to not be like this */
     CORRADE_COMPARE(interleaved.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(interleaved.attributeStride(0), sizeof(Vector2) + 4);
     CORRADE_COMPARE(interleaved.attributeCount(), 1);
     CORRADE_COMPARE_AS(interleaved.attribute<Vector2>(Trade::MeshAttribute::Position),
         Containers::stridedArrayView(positions),
@@ -1542,6 +1553,97 @@ void InterleaveTest::interleaveMeshDataNothing() {
     CORRADE_COMPARE(interleaved.vertexCount(), 2);
     CORRADE_VERIFY(!interleaved.vertexData());
     CORRADE_COMPARE(interleaved.vertexData().size(), 0);
+}
+
+void InterleaveTest::interleaveMeshDataLooseAttributes() {
+    /* Same as interleaveMeshDataExtraOriginalEmpty(), but testing the
+       convenience overload instead */
+
+    Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
+    Trade::MeshData interleaved = MeshTools::interleave(MeshPrimitive::TriangleFan, {
+        Trade::MeshAttributeData{4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
+    });
+
+    CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
+    CORRADE_COMPARE(interleaved.primitive(), MeshPrimitive::TriangleFan);
+    CORRADE_VERIFY(!interleaved.isIndexed());
+    /* No reason to not be like this */
+    CORRADE_COMPARE(interleaved.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(interleaved.attributeCount(), 1);
+    CORRADE_COMPARE(interleaved.attributeStride(0), sizeof(Vector2) + 4);
+    CORRADE_COMPARE_AS(interleaved.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::stridedArrayView(positions),
+        TestSuite::Compare::Container);
+}
+
+void InterleaveTest::interleaveMeshDataLooseAttributesIndexed() {
+    /* Same as interleaveMeshDataExtraOriginalEmpty(), but testing the
+       convenience overload instead */
+
+    struct Index {
+        UnsignedShort index;
+        Short dummy; /* MSVC 2015 doesn't like Short:16 in local structs */
+    } indices[]{{3, 0}, {6, 0}, {7, 0}, {9, 0}};
+    Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
+    Trade::MeshData interleaved = MeshTools::interleave(
+        MeshPrimitive::TriangleStrip,
+        Trade::MeshIndexData{Containers::stridedArrayView(indices).slice(&Index::index)}, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)},
+            Trade::MeshAttributeData{4}
+        });
+
+    CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
+    CORRADE_COMPARE(interleaved.primitive(), MeshPrimitive::TriangleStrip);
+
+    CORRADE_VERIFY(interleaved.isIndexed());
+    CORRADE_COMPARE(interleaved.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    /* Indices get copied and made tightly packed */
+    CORRADE_COMPARE(interleaved.indexStride(), 2);
+    CORRADE_COMPARE_AS(interleaved.indices<UnsignedShort>(),
+        Containers::stridedArrayView(indices).slice(&Index::index),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(interleaved.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(interleaved.attributeCount(), 1);
+    CORRADE_COMPARE(interleaved.attributeStride(0), sizeof(Vector2) + 4);
+    CORRADE_COMPARE_AS(interleaved.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::stridedArrayView(positions),
+        TestSuite::Compare::Container);
+}
+
+void InterleaveTest::interleaveMeshDataLooseAttributesInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    UnsignedShort indices[]{3, 6, 7, 9};
+
+    /* Null views are fine */
+    CORRADE_COMPARE(MeshTools::interleave(MeshPrimitive::Triangles, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::ArrayView<Vector3>{nullptr, 3}}
+    }).vertexCount(), 3);
+    CORRADE_COMPARE(MeshTools::interleave(MeshPrimitive::Triangles, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::ArrayView<Vector3>{nullptr, 0}}
+    }).vertexCount(), 0);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::interleave(MeshPrimitive::Triangles,
+        Trade::MeshIndexData{indices}, {
+            Trade::MeshAttributeData{4}
+        });
+    MeshTools::interleave(MeshPrimitive::Triangles, {
+            Trade::MeshAttributeData{4},
+            Trade::MeshAttributeData{4}
+        });
+    MeshTools::interleave(MeshPrimitive::Triangles,
+        Trade::MeshIndexData{meshIndexTypeWrap(0xcece), Containers::stridedArrayView(indices)}, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::ArrayView<Vector3>{nullptr, 3}}
+        });
+    CORRADE_COMPARE_AS(out.str(),
+        "MeshTools::interleave(): only padding found among 1 attributes, can't infer vertex count\n"
+        "MeshTools::interleave(): only padding found among 2 attributes, can't infer vertex count\n"
+        "MeshTools::interleave(): implementation-specific index type 0xcece\n",
+        TestSuite::Compare::String);
 }
 
 }}}}
