@@ -26,6 +26,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -43,13 +44,16 @@ struct FilterTest: TestSuite::Tester {
     explicit FilterTest();
 
     void fields();
+    void fieldsRvalue();
     void fieldsWrongBitCount();
 
     void onlyFields();
     void onlyFieldsNoFieldData();
+    void onlyFieldsRvalue();
 
     void exceptFields();
     void exceptFieldsNoFieldData();
+    void exceptFieldsRvalue();
 
     void fieldEntries();
     void fieldEntriesFieldNotFound();
@@ -72,6 +76,20 @@ using namespace Math::Literals;
 
 const struct {
     const char* name;
+    Trade::DataFlags dataFlags, expectedDataFlags;
+} FieldsRvalueData[]{
+    /* The Global or ExternallyOwned flags are not preserved, because
+       reference() doesn't preserve them either */
+    {"not owned",
+        Trade::DataFlag::Global|Trade::DataFlag::ExternallyOwned,
+        {}},
+    {"owned",
+        Trade::DataFlag::Owned,
+        Trade::DataFlag::Owned|Trade::DataFlag::Mutable}
+};
+
+const struct {
+    const char* name;
     bool byName;
 } FieldEntriesData[]{
     {"by ID", false},
@@ -79,14 +97,20 @@ const struct {
 };
 
 FilterTest::FilterTest() {
-    addTests({&FilterTest::fields,
-              &FilterTest::fieldsWrongBitCount,
+    addTests({&FilterTest::fields});
+
+    addInstancedTests({&FilterTest::fieldsRvalue},
+        Containers::arraySize(FieldsRvalueData));
+
+    addTests({&FilterTest::fieldsWrongBitCount,
 
               &FilterTest::onlyFields,
               &FilterTest::onlyFieldsNoFieldData,
+              &FilterTest::onlyFieldsRvalue,
 
               &FilterTest::exceptFields,
-              &FilterTest::exceptFieldsNoFieldData});
+              &FilterTest::exceptFieldsNoFieldData,
+              &FilterTest::exceptFieldsRvalue});
 
     addInstancedTests({&FilterTest::fieldEntries},
         Containers::arraySize(FieldEntriesData));
@@ -165,6 +189,62 @@ void FilterTest::fields() {
     CORRADE_VERIFY(!fieldData.deleter());
 }
 
+void FilterTest::fieldsRvalue() {
+    auto&& data = FieldsRvalueData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Subset of attributes() verifying data ownership transfer behavior */
+
+    struct Data {
+        UnsignedShort meshMaterialMapping[5];
+        UnsignedByte mesh[5];
+        Byte meshMaterial[5];
+        UnsignedShort lightVisibilityMapping[3];
+        UnsignedInt light[3];
+        bool visible[3];
+    };
+    Containers::Array<char> sceneData{sizeof(Data)};
+    Data& d = *reinterpret_cast<Data*>(sceneData.data());
+    Containers::Array<Trade::SceneFieldData> fields{InPlaceInit, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(d.meshMaterialMapping),
+            Containers::arrayView(d.mesh)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::arrayView(d.meshMaterialMapping),
+            Containers::arrayView(d.meshMaterial)},
+        Trade::SceneFieldData{Trade::SceneField::Light,
+            Containers::arrayView(d.lightVisibilityMapping),
+            Containers::arrayView(d.light)},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(15),
+            Containers::arrayView(d.lightVisibilityMapping),
+            Containers::stridedArrayView(d.visible).sliceBit(0)},
+    }};
+
+    Containers::Optional<Trade::SceneData> scene;
+    if(data.dataFlags >= Trade::DataFlag::Owned)
+        scene = Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 76, Utility::move(sceneData), Utility::move(fields)};
+    else
+        scene = Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 76, data.dataFlags, sceneData, Utility::move(fields)};
+
+    Containers::BitArray attributesToKeep{ValueInit, scene->fieldCount()};
+    attributesToKeep.set(0);
+    attributesToKeep.set(1);
+    attributesToKeep.set(3);
+
+    /* The data ownership should be transferred if possible */
+    Trade::SceneData filtered = filterFields(Utility::move(*scene), attributesToKeep);
+    CORRADE_COMPARE(filtered.mappingType(), Trade::SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(filtered.mappingBound(), 76);
+    CORRADE_COMPARE(filtered.data().data(), static_cast<const void*>(&d));
+    CORRADE_COMPARE(filtered.dataFlags(), data.expectedDataFlags);
+
+    /* Just checking that the fields get actually filtered instead of being
+       passed through verbatim, the actual verification is done in fields()
+       above */
+    CORRADE_COMPARE(filtered.fieldCount(), 3);
+    CORRADE_COMPARE(filtered.fieldName(0), Trade::SceneField::Mesh);
+}
+
 void FilterTest::fieldsWrongBitCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -236,13 +316,55 @@ void FilterTest::onlyFields() {
 void FilterTest::onlyFieldsNoFieldData() {
     /* Just to verify it doesn't crash */
 
-    Trade::SceneData filtered = filterOnlyFields(Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 331, nullptr, {}}, {
-        Trade::SceneField::MeshMaterial,
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 331, nullptr, {}};
+    Trade::SceneData filtered = filterOnlyFields(scene, {
+        Trade::SceneField::MeshMaterial
     });
     CORRADE_COMPARE(filtered.mappingType(), Trade::SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(filtered.mappingBound(), 331);
     CORRADE_COMPARE(filtered.data().data(), nullptr);
     CORRADE_COMPARE(filtered.dataFlags(), Trade::DataFlags{});
+}
+
+void FilterTest::onlyFieldsRvalue() {
+    /* Subset of onlyFields() verifying data ownership transfer behavior. All
+       cases of ownership transfer are verified in fieldsRvalue(), this only
+       checks that the r-value gets correctly passed through all overloads to
+       keep the data owned. */
+
+    struct Data {
+        UnsignedByte meshMaterialMapping[5];
+        UnsignedByte mesh[5];
+        Byte meshMaterial[5];
+        UnsignedByte lightMapping[3];
+        UnsignedInt light[3];
+    };
+    Containers::Array<char> data{sizeof(Data)};
+    Data& d = *reinterpret_cast<Data*>(data.data());
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedByte, 133, Utility::move(data), {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(d.meshMaterialMapping),
+            Containers::arrayView(d.mesh)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::arrayView(d.meshMaterialMapping),
+            Containers::arrayView(d.meshMaterial)},
+        Trade::SceneFieldData{Trade::SceneField::Light,
+            Containers::arrayView(d.lightMapping),
+            Containers::arrayView(d.light)},
+    }};
+
+    Trade::SceneData filtered = filterOnlyFields(Utility::move(scene), {
+        Trade::SceneField::Light,
+        Trade::SceneField::MeshMaterial
+    });
+    CORRADE_COMPARE(filtered.mappingType(), Trade::SceneMappingType::UnsignedByte);
+    CORRADE_COMPARE(filtered.mappingBound(), 133);
+    CORRADE_COMPARE(filtered.data().data(), static_cast<const void*>(&d));
+    CORRADE_COMPARE(filtered.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
+
+    CORRADE_COMPARE(filtered.fieldCount(), 2);
+    CORRADE_COMPARE(filtered.fieldName(0), Trade::SceneField::MeshMaterial);
 }
 
 void FilterTest::exceptFields() {
@@ -302,13 +424,59 @@ void FilterTest::exceptFields() {
 void FilterTest::exceptFieldsNoFieldData() {
     /* Just to verify it doesn't crash */
 
-    Trade::SceneData filtered = filterOnlyFields(Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 331, nullptr, {}}, {
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 331, nullptr, {}};
+    Trade::SceneData filtered = filterOnlyFields(scene, {
         Trade::SceneField::MeshMaterial,
     });
     CORRADE_COMPARE(filtered.mappingType(), Trade::SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(filtered.mappingBound(), 331);
     CORRADE_COMPARE(filtered.data().data(), nullptr);
     CORRADE_COMPARE(filtered.dataFlags(), Trade::DataFlags{});
+}
+
+void FilterTest::exceptFieldsRvalue() {
+    /* Subset of exceptFields() verifying data ownership transfer behavior. All
+       cases of ownership transfer are verified in fieldsRvalue(), this only
+       checks that the r-value gets correctly passed through all overloads to
+       keep the data owned. */
+
+    struct Data {
+        UnsignedLong meshMaterialMapping[5];
+        UnsignedByte mesh[5];
+        Byte meshMaterial[5];
+        UnsignedLong lightVisibilityMapping[3];
+        UnsignedInt light[3];
+        bool visible[3];
+    };
+    Containers::Array<char> data{sizeof(Data)};
+    Data& d = *reinterpret_cast<Data*>(data.data());
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedLong, 12, Utility::move(data), {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(d.meshMaterialMapping),
+            Containers::arrayView(d.mesh)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::arrayView(d.meshMaterialMapping),
+            Containers::arrayView(d.meshMaterial)},
+        Trade::SceneFieldData{Trade::SceneField::Light,
+            Containers::arrayView(d.lightVisibilityMapping),
+            Containers::arrayView(d.light)},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(15),
+            Containers::arrayView(d.lightVisibilityMapping),
+            Containers::stridedArrayView(d.visible).sliceBit(0)},
+    }};
+
+    Trade::SceneData filtered = filterExceptFields(Utility::move(scene), {
+        Trade::SceneField::Light,
+        Trade::SceneField::MeshMaterial
+    });
+    CORRADE_COMPARE(filtered.mappingType(), Trade::SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(filtered.mappingBound(), 12);
+    CORRADE_COMPARE(filtered.data().data(), static_cast<const void*>(&d));
+    CORRADE_COMPARE(filtered.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
+
+    CORRADE_COMPARE(filtered.fieldCount(), 2);
+    CORRADE_COMPARE(filtered.fieldName(0), Trade::SceneField::Mesh);
 }
 
 void FilterTest::fieldEntries() {

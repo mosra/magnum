@@ -30,6 +30,7 @@
 #include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Utility/BitAlgorithms.h>
 
+#include "Magnum/MeshTools/Copy.h"
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -39,7 +40,7 @@
 
 namespace Magnum { namespace MeshTools {
 
-Trade::MeshData filterAttributes(const Trade::MeshData& mesh, const Containers::BitArrayView attributesToKeep) {
+Trade::MeshData filterAttributes(Trade::MeshData&& mesh, const Containers::BitArrayView attributesToKeep) {
     CORRADE_ASSERT(attributesToKeep.size() == mesh.attributeCount(),
         "MeshTools::filterAttributes(): expected" << mesh.attributeCount() << "bits but got" << attributesToKeep.size(), (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
@@ -61,13 +62,39 @@ Trade::MeshData filterAttributes(const Trade::MeshData& mesh, const Containers::
             mesh.indexCount(),
             mesh.indexStride()}};
 
-    return Trade::MeshData{mesh.primitive(),
-        {}, mesh.indexData(), indices,
-        {}, mesh.vertexData(), Utility::move(filtered),
-        mesh.vertexCount()};
+    /* If either the index or vertex buffer is owned, transfer the ownership to
+       the returned instance, otherwise reference the original. Save vertex
+       count first to use for the returned instance because releaseVertexData()
+       would clear it. */
+    const UnsignedInt vertexCount = mesh.vertexCount();
+    if(mesh.indexDataFlags() >= Trade::DataFlag::Owned &&
+       mesh.vertexDataFlags() >= Trade::DataFlag::Owned)
+        return Trade::MeshData{mesh.primitive(),
+            mesh.releaseIndexData(), indices,
+            mesh.releaseVertexData(), Utility::move(filtered),
+            vertexCount};
+    else if(mesh.indexDataFlags() >= Trade::DataFlag::Owned)
+        return Trade::MeshData{mesh.primitive(),
+            mesh.releaseIndexData(), indices,
+            {}, mesh.vertexData(), Utility::move(filtered),
+            vertexCount};
+    else if(mesh.vertexDataFlags() >= Trade::DataFlag::Owned)
+        return Trade::MeshData{mesh.primitive(),
+            {}, mesh.indexData(), indices,
+            mesh.releaseVertexData(), Utility::move(filtered),
+            vertexCount};
+    else
+        return Trade::MeshData{mesh.primitive(),
+            {}, mesh.indexData(), indices,
+            {}, mesh.vertexData(), Utility::move(filtered),
+            mesh.vertexCount()};
 }
 
-Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
+Trade::MeshData filterAttributes(const Trade::MeshData& mesh, const Containers::BitArrayView attributesToKeep) {
+    return filterAttributes(reference(mesh), attributesToKeep);
+}
+
+Trade::MeshData filterOnlyAttributes(Trade::MeshData&& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
     Containers::BitArray attributesToKeep{DirectInit, mesh.attributeCount(), false};
     for(const Trade::MeshAttribute attribute: attributes) {
         /* Can't use findAttributeId() because all instances of the attribute
@@ -77,11 +104,19 @@ Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, const Containe
                 attributesToKeep.set(i);
         }
     }
-    return filterAttributes(mesh, attributesToKeep);
+    return filterAttributes(Utility::move(mesh), attributesToKeep);
+}
+
+Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
+    return filterOnlyAttributes(reference(mesh), attributes);
 }
 
 Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttribute> attributes) {
     return filterOnlyAttributes(mesh, Containers::arrayView(attributes));
+}
+
+Trade::MeshData filterOnlyAttributes(Trade::MeshData&& mesh, std::initializer_list<Trade::MeshAttribute> attributes) {
+    return filterOnlyAttributes(Utility::move(mesh), Containers::arrayView(attributes));
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -104,7 +139,7 @@ Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializ
 }
 #endif
 
-Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
+Trade::MeshData filterExceptAttributes(Trade::MeshData&& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
     Containers::BitArray attributesToKeep{DirectInit, mesh.attributeCount(), true};
     for(const Trade::MeshAttribute attribute: attributes) {
         /* Can't use findAttributeId() because all instances of the attribute
@@ -114,11 +149,19 @@ Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, const Contai
                 attributesToKeep.reset(i);
         }
     }
-    return filterAttributes(mesh, attributesToKeep);
+    return filterAttributes(Utility::move(mesh), attributesToKeep);
+}
+
+Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
+    return filterExceptAttributes(reference(mesh), attributes);
 }
 
 Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttribute> attributes) {
     return filterExceptAttributes(mesh, Containers::arrayView(attributes));
+}
+
+Trade::MeshData filterExceptAttributes(Trade::MeshData&& mesh, std::initializer_list<Trade::MeshAttribute> attributes) {
+    return filterExceptAttributes(Utility::move(mesh), Containers::arrayView(attributes));
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

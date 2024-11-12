@@ -35,11 +35,12 @@
 #include <Corrade/Utility/BitAlgorithms.h>
 
 #include "Magnum/SceneTools/Combine.h"
+#include "Magnum/SceneTools/Copy.h"
 #include "Magnum/Trade/SceneData.h"
 
 namespace Magnum { namespace SceneTools {
 
-Trade::SceneData filterFields(const Trade::SceneData& scene, const Containers::BitArrayView fieldsToKeep) {
+Trade::SceneData filterFields(Trade::SceneData&& scene, const Containers::BitArrayView fieldsToKeep) {
     CORRADE_ASSERT(fieldsToKeep.size() == scene.fieldCount(),
         "SceneTools::filterFields(): expected" << scene.fieldCount() << "bits but got" << fieldsToKeep.size(), (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}}));
 
@@ -48,34 +49,58 @@ Trade::SceneData filterFields(const Trade::SceneData& scene, const Containers::B
     Containers::Array<Trade::SceneFieldData> filtered{ValueInit, fieldsToKeep.count()};
     Utility::copyMasked(scene.fieldData(), fieldsToKeep, filtered);
 
-    return Trade::SceneData{scene.mappingType(), scene.mappingBound(),
-        {}, scene.data(), Utility::move(filtered)};
+    if(scene.dataFlags() >= Trade::DataFlag::Owned)
+        return Trade::SceneData{scene.mappingType(), scene.mappingBound(),
+            scene.releaseData(), Utility::move(filtered)};
+    else
+        return Trade::SceneData{scene.mappingType(), scene.mappingBound(),
+            {}, scene.data(), Utility::move(filtered)};
 }
 
-Trade::SceneData filterOnlyFields(const Trade::SceneData& scene, const Containers::ArrayView<const Trade::SceneField> fields) {
+Trade::SceneData filterFields(const Trade::SceneData& scene, const Containers::BitArrayView fieldsToKeep) {
+    return filterFields(reference(scene), fieldsToKeep);
+}
+
+Trade::SceneData filterOnlyFields(Trade::SceneData&& scene, const Containers::ArrayView<const Trade::SceneField> fields) {
     Containers::BitArray fieldsToKeep{DirectInit, scene.fieldCount(), false};
     for(const Trade::SceneField field: fields) {
         if(const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field))
             fieldsToKeep.set(*fieldId);
     }
-    return filterFields(scene, fieldsToKeep);
+    return filterFields(Utility::move(scene), fieldsToKeep);
+}
+
+Trade::SceneData filterOnlyFields(const Trade::SceneData& scene, const Containers::ArrayView<const Trade::SceneField> fields) {
+    return filterOnlyFields(reference(scene), fields);
 }
 
 Trade::SceneData filterOnlyFields(const Trade::SceneData& scene, std::initializer_list<Trade::SceneField> fields) {
     return filterOnlyFields(scene, Containers::arrayView(fields));
 }
 
-Trade::SceneData filterExceptFields(const Trade::SceneData& scene, const Containers::ArrayView<const Trade::SceneField> fields) {
+Trade::SceneData filterOnlyFields(Trade::SceneData&& scene, std::initializer_list<Trade::SceneField> fields) {
+    return filterOnlyFields(Utility::move(scene), Containers::arrayView(fields));
+}
+
+Trade::SceneData filterExceptFields(Trade::SceneData&& scene, const Containers::ArrayView<const Trade::SceneField> fields) {
     Containers::BitArray fieldsToKeep{DirectInit, scene.fieldCount(), true};
     for(const Trade::SceneField field: fields) {
         if(const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field))
             fieldsToKeep.reset(*fieldId);
     }
-    return filterFields(scene, fieldsToKeep);
+    return filterFields(Utility::move(scene), fieldsToKeep);
+}
+
+Trade::SceneData filterExceptFields(const Trade::SceneData& scene, const Containers::ArrayView<const Trade::SceneField> fields) {
+    return filterExceptFields(reference(scene), fields);
 }
 
 Trade::SceneData filterExceptFields(const Trade::SceneData& scene, std::initializer_list<Trade::SceneField> fields) {
     return filterExceptFields(scene, Containers::arrayView(fields));
+}
+
+Trade::SceneData filterExceptFields(Trade::SceneData&& scene, std::initializer_list<Trade::SceneField> fields) {
+    return filterExceptFields(Utility::move(scene), Containers::arrayView(fields));
 }
 
 Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, const Containers::ArrayView<const Containers::Pair<UnsignedInt, Containers::BitArrayView>> entriesToKeep) {
