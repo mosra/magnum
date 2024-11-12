@@ -24,12 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/SceneTools/Copy.h"
 #include "Magnum/Trade/SceneData.h"
@@ -39,24 +41,38 @@ namespace Magnum { namespace SceneTools { namespace Test { namespace {
 struct CopyTest: TestSuite::Tester {
     explicit CopyTest();
 
-    void test();
+    void copy();
 
-    void rvalueNotOwned();
-    void rvalueDataFieldsOwned();
-    void rvalueDataOwned();
-    void rvalueFieldsOwned();
+    void copyRvalueNotOwned();
+    void copyRvalueDataFieldsOwned();
+    void copyRvalueDataOwned();
+    void copyRvalueFieldsOwned();
+
+    void reference();
+    void referenceNoDataFieldData();
+
+    void mutableReference();
+    void mutableReferenceNoDataFieldData();
+    void mutableReferenceNotMutable();
 };
 
 CopyTest::CopyTest() {
-    addTests({&CopyTest::test,
+    addTests({&CopyTest::copy,
 
-              &CopyTest::rvalueNotOwned,
-              &CopyTest::rvalueDataFieldsOwned,
-              &CopyTest::rvalueDataOwned,
-              &CopyTest::rvalueFieldsOwned});
+              &CopyTest::copyRvalueNotOwned,
+              &CopyTest::copyRvalueDataFieldsOwned,
+              &CopyTest::copyRvalueDataOwned,
+              &CopyTest::copyRvalueFieldsOwned,
+
+              &CopyTest::reference,
+              &CopyTest::referenceNoDataFieldData,
+
+              &CopyTest::mutableReference,
+              &CopyTest::mutableReferenceNoDataFieldData,
+              &CopyTest::mutableReferenceNotMutable});
 }
 
-void CopyTest::test() {
+void CopyTest::copy() {
     const struct Data {
         UnsignedShort parentMeshMapping[4];
         Long parent[4];
@@ -174,7 +190,7 @@ void CopyTest::test() {
     CORRADE_VERIFY(!fieldData.deleter());
 }
 
-void CopyTest::rvalueNotOwned() {
+void CopyTest::copyRvalueNotOwned() {
     struct Data {
         UnsignedShort parentMapping[2];
         Int parent[2];
@@ -209,7 +225,7 @@ void CopyTest::rvalueNotOwned() {
     CORRADE_VERIFY(copy.fieldData().data() != fields);
 }
 
-void CopyTest::rvalueDataFieldsOwned() {
+void CopyTest::copyRvalueDataFieldsOwned() {
     struct Data {
         UnsignedShort parentMapping[2];
         Int parent[2];
@@ -249,7 +265,7 @@ void CopyTest::rvalueDataFieldsOwned() {
     CORRADE_COMPARE(copy.fieldData().data(), originalFields);
 }
 
-void CopyTest::rvalueDataOwned() {
+void CopyTest::copyRvalueDataOwned() {
     struct Data {
         UnsignedShort parentMapping[2];
         Int parent[2];
@@ -287,7 +303,7 @@ void CopyTest::rvalueDataOwned() {
     CORRADE_VERIFY(copy.fieldData().data() != fields);
 }
 
-void CopyTest::rvalueFieldsOwned() {
+void CopyTest::copyRvalueFieldsOwned() {
     struct Data {
         UnsignedShort parentMapping[2];
         Int parent[2];
@@ -325,6 +341,93 @@ void CopyTest::rvalueFieldsOwned() {
         CORRADE_EXPECT_FAIL("Field data currently get copied always when they need to be modified.");
         CORRADE_COMPARE(copy.fieldData().data(), originalFields);
     }
+}
+
+void CopyTest::reference() {
+    struct Data {
+        UnsignedShort parentMapping[2];
+        Int parent[2];
+    };
+    Containers::Array<char> data{NoInit, sizeof(Data)};
+    Containers::StridedArrayView1D<Data> view = Containers::arrayCast<Data>(data);
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 31, Utility::move(data), {
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            Containers::arrayView(view[0].parentMapping),
+            Containers::arrayView(view[0].parent)}
+    }};
+
+    Trade::SceneData reference = SceneTools::reference(scene);
+    CORRADE_COMPARE(reference.mappingType(), Trade::SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(reference.mappingBound(), 31);
+    CORRADE_COMPARE(reference.dataFlags(), Trade::DataFlags{});
+    CORRADE_COMPARE(static_cast<const void*>(reference.data().data()), scene.data().data());
+    CORRADE_COMPARE(static_cast<const void*>(reference.fieldData().data()), scene.fieldData().data());
+}
+
+void CopyTest::referenceNoDataFieldData() {
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 31, {}, {}};
+
+    Trade::SceneData reference = SceneTools::reference(scene);
+    CORRADE_COMPARE(reference.mappingType(), Trade::SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(reference.mappingBound(), 31);
+    CORRADE_COMPARE(reference.dataFlags(), Trade::DataFlags{});
+    CORRADE_VERIFY(!static_cast<const void*>(reference.data().data()));
+    CORRADE_VERIFY(!static_cast<const void*>(reference.fieldData().data()));
+}
+
+void CopyTest::mutableReference() {
+    struct Data {
+        UnsignedShort parentMapping[2];
+        Int parent[2];
+    };
+    Containers::Array<char> data{NoInit, sizeof(Data)};
+    Containers::StridedArrayView1D<Data> view = Containers::arrayCast<Data>(data);
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 31, Utility::move(data), {
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            Containers::arrayView(view[0].parentMapping),
+            Containers::arrayView(view[0].parent)}
+    }};
+
+    Trade::SceneData reference = SceneTools::mutableReference(scene);
+    CORRADE_COMPARE(reference.mappingType(), Trade::SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(reference.mappingBound(), 31);
+    CORRADE_COMPARE(reference.dataFlags(), Trade::DataFlag::Mutable);
+    CORRADE_COMPARE(static_cast<const void*>(reference.data().data()), scene.data().data());
+    CORRADE_COMPARE(static_cast<const void*>(reference.fieldData().data()), scene.fieldData().data());
+}
+
+void CopyTest::mutableReferenceNoDataFieldData() {
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 31, {}, {}};
+
+    Trade::SceneData reference = SceneTools::mutableReference(scene);
+    CORRADE_COMPARE(reference.mappingType(), Trade::SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(reference.mappingBound(), 31);
+    CORRADE_COMPARE(reference.dataFlags(), Trade::DataFlag::Mutable);
+    CORRADE_VERIFY(!static_cast<const void*>(reference.data().data()));
+    CORRADE_VERIFY(!static_cast<const void*>(reference.fieldData().data()));
+}
+
+void CopyTest::mutableReferenceNotMutable() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    const struct {
+        UnsignedShort parentMapping[2];
+        Int parent[2];
+    } data[1]{};
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 31, Trade::DataFlag::Global, data, {
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            Containers::arrayView(data[0].parentMapping),
+            Containers::arrayView(data[0].parent)}
+    }};
+    CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Global);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    SceneTools::mutableReference(scene);
+    CORRADE_COMPARE(out.str(), "SceneTools::mutableReference(): data not mutable\n");
 }
 
 }}}}

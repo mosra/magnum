@@ -33,6 +33,20 @@
 
 namespace Magnum { namespace SceneTools {
 
+Trade::SceneData reference(const Trade::SceneData& scene) {
+    return Trade::SceneData{scene.mappingType(), scene.mappingBound(),
+        {}, scene.data(), Trade::sceneFieldDataNonOwningArray(scene.fieldData())};
+}
+
+Trade::SceneData mutableReference(Trade::SceneData& scene) {
+    CORRADE_ASSERT(scene.dataFlags() & Trade::DataFlag::Mutable,
+        "SceneTools::mutableReference(): data not mutable",
+        (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, {}, {}}));
+
+    return Trade::SceneData{scene.mappingType(), scene.mappingBound(),
+        Trade::DataFlag::Mutable, scene.mutableData(), Trade::sceneFieldDataNonOwningArray(scene.fieldData())};
+}
+
 Trade::SceneData copy(const Trade::SceneData& scene) {
     return copy(Trade::SceneData{scene.mappingType(), scene.mappingBound(),
         {}, scene.data(),
