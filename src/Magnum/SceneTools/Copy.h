@@ -48,7 +48,7 @@ through unchanged, the data layout isn't changed in any way. The resulting
 @ref Trade::DataFlag::Mutable.
 @see @ref copy(Trade::SceneData&&)
 */
-MAGNUM_SCENETOOLS_EXPORT Trade::SceneData copy(const Trade::SceneData& material);
+MAGNUM_SCENETOOLS_EXPORT Trade::SceneData copy(const Trade::SceneData& scene);
 
 /**
 @brief Make a scene with owned data
@@ -61,7 +61,7 @@ allocates a copy of @ref Trade::SceneData::data() or
 ownership. The resulting data are always owned and mutable, the data layout
 isn't changed in any way.
 */
-MAGNUM_SCENETOOLS_EXPORT Trade::SceneData copy(Trade::SceneData&& material);
+MAGNUM_SCENETOOLS_EXPORT Trade::SceneData copy(Trade::SceneData&& scene);
 
 }}
 
