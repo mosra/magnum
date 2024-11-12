@@ -746,6 +746,7 @@ See also:
     @ref MeshTools::concatenate(const Containers::Iterable<const Trade::MeshData>&, InterleaveFlags)
     optionally take a @ref MeshTools::InterleaveFlags parameter affecting the
     output, in particular whether to preserve the original interleaved layout.
+-   @ref MeshTools::interleaveInto() now returns the actually filled size
 -   @ref MeshTools::concatenate() now allows concatenating an array attribute
     into an array attribute with more elements. The remaining elements are
     zero-filled, similarly to how missing attributes are handled. To avoid

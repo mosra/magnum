@@ -56,6 +56,8 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleaveEmpty();
 
     void interleaveInto();
+    void interleaveIntoLarger();
+    void interleaveIntoInvalid();
 
     void interleavedData();
     void interleavedDataUnordered();
@@ -142,6 +144,8 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::interleaveEmpty,
 
               &InterleaveTest::interleaveInto,
+              &InterleaveTest::interleaveIntoLarger,
+              &InterleaveTest::interleaveIntoInvalid,
 
               &InterleaveTest::interleavedData,
               &InterleaveTest::interleavedDataUnordered,
@@ -293,7 +297,8 @@ void InterleaveTest::interleaveInto() {
         0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77,
         0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77}};
 
-    MeshTools::interleaveInto(data, 2, std::vector<Int>{4, 5, 6, 7}, 1, std::vector<Short>{0, 1, 2, 3}, 3);
+    CORRADE_COMPARE(data.size(), 48);
+    CORRADE_COMPARE(MeshTools::interleaveInto(data, 2, std::vector<Int>{4, 5, 6, 7}, 1, std::vector<Short>{0, 1, 2, 3}, 3), 48);
 
     if(!Utility::Endianness::isBigEndian()) {
         /*  _______gap, int___________________, _gap, short_____, _____________gap */
@@ -312,6 +317,50 @@ void InterleaveTest::interleaveInto() {
             0x11, 0x33, 0x00, 0x00, 0x00, 0x07, 0x55, 0x00, 0x03, 0x33, 0x55, 0x77
         }));
     }
+}
+
+void InterleaveTest::interleaveIntoLarger() {
+    /* Same as interleaveInto(), just with the data buffer being larger */
+
+    Containers::Array<char> data{InPlaceInit, {
+        0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77,
+        0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77,
+        0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77,
+        0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11}};
+
+    CORRADE_COMPARE(data.size(), 49);
+    CORRADE_COMPARE(MeshTools::interleaveInto(data, 2, std::vector<Int>{4, 5, 6, 7}, 1, std::vector<Short>{0, 1, 2, 3}, 3), 48);
+
+    if(!Utility::Endianness::isBigEndian()) {
+        /*  _______gap, int___________________, _gap, short_____, _____________gap */
+        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+            0x11, 0x33, 0x04, 0x00, 0x00, 0x00, 0x55, 0x00, 0x00, 0x33, 0x55, 0x77,
+            0x11, 0x33, 0x05, 0x00, 0x00, 0x00, 0x55, 0x01, 0x00, 0x33, 0x55, 0x77,
+            0x11, 0x33, 0x06, 0x00, 0x00, 0x00, 0x55, 0x02, 0x00, 0x33, 0x55, 0x77,
+            0x11, 0x33, 0x07, 0x00, 0x00, 0x00, 0x55, 0x03, 0x00, 0x33, 0x55, 0x77,
+            0x11
+        }));
+    } else {
+        /*  _______gap, ___________________int, _gap, _____short, _____________gap */
+        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+            0x11, 0x33, 0x00, 0x00, 0x00, 0x04, 0x55, 0x00, 0x00, 0x33, 0x55, 0x77,
+            0x11, 0x33, 0x00, 0x00, 0x00, 0x05, 0x55, 0x00, 0x01, 0x33, 0x55, 0x77,
+            0x11, 0x33, 0x00, 0x00, 0x00, 0x06, 0x55, 0x00, 0x02, 0x33, 0x55, 0x77,
+            0x11, 0x33, 0x00, 0x00, 0x00, 0x07, 0x55, 0x00, 0x03, 0x33, 0x55, 0x77,
+            0x11
+        }));
+    }
+}
+
+void InterleaveTest::interleaveIntoInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Containers::Array<char> data{NoInit, 23};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::interleaveInto(data, 2, Containers::arrayView({1, 2, 3, 4}));
+    CORRADE_COMPARE(out.str(), "MeshTools::interleaveInto(): expected a buffer of at least 24 bytes but got 23\n");
 }
 
 void InterleaveTest::interleavedData() {

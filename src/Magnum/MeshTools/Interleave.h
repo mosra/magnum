@@ -171,6 +171,7 @@ template<class T, class ...U
 
 /**
 @brief Interleave vertex attributes into existing buffer
+@return Filled buffer size
 
 Unlike @ref interleave() this function interleaves the data into existing
 buffer and leaves gaps untouched instead of zero-initializing them. This
@@ -178,16 +179,17 @@ function can thus be used for interleaving data depending on runtime
 parameters. Expects that all arrays have the same size and the passed buffer is
 large enough to contain the interleaved data.
 */
-template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> buffer, const T& first, const U&... next) {
+template<class T, class ...U> std::size_t interleaveInto(Containers::ArrayView<char> buffer, const T& first, const U&... next) {
     /* Verify expected buffer size */
-    #ifndef CORRADE_NO_ASSERT
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
-    #endif
     const std::size_t stride = Implementation::Stride{}(first, next...);
-    CORRADE_ASSERT(attributeCount*stride <= buffer.size(), "MeshTools::interleaveInto(): the data buffer is too small, expected" << attributeCount*stride << "but got" << buffer.size(), );
+    CORRADE_ASSERT(attributeCount*stride <= buffer.size(),
+        "MeshTools::interleaveInto(): expected a buffer of at least" << attributeCount*stride << "bytes but got" << buffer.size(), {});
 
     /* Write data */
     Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
+
+    return attributeCount*stride;
 }
 
 /**
