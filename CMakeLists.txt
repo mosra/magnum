@@ -26,7 +26,7 @@
 #
 
 # Matches Corrade requirement, see its root CMakeLists for more information.
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...3.10)
 
 option(HUNTER_ENABLED "Get dependencies (Corrade, GLFW, SDL2, ...) via Hunter" OFF)
 # This option is meant to be passed on the very first invocation. If not done
@@ -37,6 +37,13 @@ mark_as_advanced(HUNTER_ENABLED)
 if(HUNTER_ENABLED)
     include(${CMAKE_CURRENT_LIST_DIR}/package/hunter/HunterInit.cmake)
 endif()
+
+# CMake 3.12+ uses the policy max version specified in
+# cmake_minimum_required(), meaning that with ...3.10, everything until CMP0071
+# gets set to NEW implicitly. We however want to keep compatibility with
+# versions before 3.12, so the NEW policies are still being hand-picked. Also
+# don't want to do a blanket cmake_policy(VERSION) because that may break
+# behavior for existing projects that rely on the OLD behavior.
 
 # Don't restrict INTERPROCEDURAL_OPTIMIZATION only for icc on Linux
 if(POLICY CMP0069)
