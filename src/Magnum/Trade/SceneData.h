@@ -2941,6 +2941,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief Parent indices as 32-bit integers
+         * @return Pairs of (object mapping, parent ID)
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -2995,6 +2996,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief 2D transformations as 3x3 float matrices
+         * @return Pairs of (object mapping, transformation)
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -3046,6 +3048,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief 2D transformations as float translation, rotation and scaling components
+         * @return Pairs of (object mapping, (translation, rotation, scaling))
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -3102,6 +3105,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief 3D transformations as 4x4 float matrices
+         * @return Pairs of (object mapping, transformation)
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -3153,6 +3157,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief 3D transformations as float translation, rotation and scaling components
+         * @return Pairs of (object mapping, (translation, rotation, scaling))
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -3209,6 +3214,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief Mesh and material IDs as 32-bit integers
+         * @return Pairs of (object mapping, (mesh ID, material ID))
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -3255,6 +3261,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief Light IDs as 32-bit integers
+         * @return Pairs of (object mapping, light ID)
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -3296,6 +3303,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief Camera IDs as 32-bit integers
+         * @return Pairs of (object mapping, camera ID)
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -3337,6 +3345,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief Skin IDs as 32-bit integers
+         * @return Pairs of (object mapping, skin ID)
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
@@ -3378,6 +3387,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
 
         /**
          * @brief Per-object importer state as `void` pointers
+         * @return Pairs of (object mapping, importer state)
          * @m_since_latest
          *
          * Convenience alternative to @ref mapping(SceneField) const together
