@@ -5,6 +5,7 @@
 #               2020, 2021, 2022, 2023, 2024
 #             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2022 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
+#   Copyright © 2024 Andy Maloney <asmaloney@gmail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
