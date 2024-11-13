@@ -329,7 +329,8 @@ implementation-specific format, except for @p mesh attributes in case @p data
 is already interleaved, then the layout is untouched.
 @see @ref isInterleaved(), @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific(),
-    @ref Trade::MeshData::attributeData()
+    @ref Trade::MeshData::attributeData(),
+    @ref meshtools-attributes-insert
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
@@ -386,6 +387,8 @@ implementation-specific format and none of them are offset-only
 assumed to not have an implementation-specific type. Returned instance vertex
 and index data flags have both @ref Trade::DataFlag::Mutable and
 @ref Trade::DataFlag::Owned, so mutable attribute access is guaranteed.
+@see @ref meshtools-create,
+    @ref Trade-MeshData-populating "Populating a MeshData instance directly"
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(MeshPrimitive primitive, const Trade::MeshIndexData& indices, Containers::ArrayView<const Trade::MeshAttributeData> attributes);
 

@@ -207,6 +207,7 @@ function.
 -   @subpage opengl-wrapping --- @copybrief opengl-wrapping
 -   @subpage vulkan-wrapping --- @copybrief vulkan-wrapping
 -   @subpage shaders --- @copybrief shaders
+-   @subpage meshtools --- @copybrief meshtools
 -   @subpage scenegraph --- @copybrief scenegraph
 -   @subpage debug-tools --- @copybrief debug-tools
 -   @subpage ui --- @copybrief ui

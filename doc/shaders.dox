@@ -177,6 +177,8 @@ changed between draws, it's possible to go even further by using
 @ref GL::MeshView instances onto a single @ref GL::Mesh instead of several
 different @ref GL::Mesh objects --- that way the attribute layout doesn't need
 to be updated and it's just submitting draws with different offsets and counts.
+See @ref meshtools-concatenate for more information about tools for batching
+meshes together.
 
 Finally, with mesh views and on platforms that support @gl_extension{ARB,shader_draw_parameters} from OpenGL 4.6 or the
 @gl_extension{ANGLE,multi_draw} / @webgl_extension{WEBGL,multi_draw} ES and

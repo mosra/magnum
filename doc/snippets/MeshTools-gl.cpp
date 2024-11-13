@@ -30,9 +30,11 @@
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/GL/MeshView.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/CompressIndices.h"
+#include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -44,12 +46,55 @@
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
+using namespace Magnum::Math::Literals;
 
 /* Make sure the name doesn't conflict with any other snippets to avoid linker
    warnings, unlike with `int main()` there now has to be a declaration to
    avoid -Wmisssing-prototypes */
 void mainMeshToolsGL();
 void mainMeshToolsGL() {
+{
+struct MyShader: GL::AbstractShaderProgram {
+    MyShader& setColor(const Color3&) {
+        return *this;
+    }
+    MyShader& draw(GL::MeshView& mesh) {
+        GL::AbstractShaderProgram::draw(mesh);
+        return *this;
+    }
+} shader;
+/* [meshtools-concatenate] */
+Trade::MeshData sphere = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, 0});
+Trade::MeshData cube = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, 0});
+Trade::MeshData cylinder = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, 0});
+Trade::MeshData primitives = MeshTools::concatenate({sphere, cube, cylinder});
+
+GL::Mesh mesh = MeshTools::compile(primitives);
+/* [meshtools-concatenate] */
+
+/* [meshtools-concatenate-offsets] */
+GL::MeshView meshSphereView{mesh},
+    meshCubeView{mesh},
+    meshCylinderView{mesh};
+meshSphereView
+    .setIndexOffset(0)
+    .setCount(sphere.indexCount());
+meshCubeView
+    .setIndexOffset(meshSphereView.indexOffset() + meshSphereView.count())
+    .setCount(cube.indexCount());
+meshCylinderView
+    .setIndexOffset(meshCubeView.indexOffset() + meshCubeView.count())
+    .setCount(cylinder.indexCount());
+shader
+    .setColor(0x2f83cc_rgbf)
+    .draw(meshSphereView)
+    .setColor(0x3bd267_rgbf)
+    .draw(meshCubeView)
+    .setColor(0xc7cf2f_rgbf)
+    .draw(meshCylinderView);
+/* [meshtools-concatenate-offsets] */
+}
+
 {
 Trade::MeshData meshData{MeshPrimitive::Lines, 5};
 /* [compile-external] */

@@ -52,7 +52,8 @@ This function only operates on the attribute metadata --- if you'd like to have
 the vertex data repacked to contain just the remaining attributes as well, pass
 the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleave()"
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
-@see @ref reference()
+@see @ref reference(), @ref filterOnlyAttributes(),
+    @ref filterExceptAttributes(), @ref meshtools-attributes-filter
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterAttributes(const Trade::MeshData& mesh, Containers::BitArrayView attributesToKeep);
 
@@ -88,7 +89,8 @@ This function only operates on the attribute metadata --- if you'd like to have
 the vertex data repacked to contain just the remaining attributes as well, pass
 the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleave()"
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
-@see @ref reference()
+@see @ref reference(), @ref filterExceptAttributes(),
+    @ref meshtools-attributes-filter
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttribute> attributes);
 
@@ -136,6 +138,8 @@ This function only operates on the attribute metadata --- if you'd like to have
 the vertex mesh repacked to contain just the remaining attributes as well, pass
 the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleave()"
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
+@see @ref reference(), @ref filterOnlyAttributes(),
+    @ref meshtools-attributes-filter
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttribute> attributes);
 

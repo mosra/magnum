@@ -46,7 +46,7 @@ namespace Magnum { namespace MeshTools {
 Same as @ref Math::minmax(const Containers::StridedArrayView1D<const T>&).
 @see @ref Math::Intersection::rayRange(),
     @ref Math::Intersection::rangeFrustum(),
-    @ref Math::Intersection::rangeCone()
+    @ref Math::Intersection::rangeCone(), @ref meshtools-bounding-volume
 */
 MAGNUM_MESHTOOLS_EXPORT Range3D boundingRange(const Containers::StridedArrayView1D<const Vector3>& positions);
 
@@ -67,7 +67,7 @@ problem, 2012, https://www.grin.com/document/204869*.
 @see @ref Math::Intersection::pointSphere(),
     @ref Math::Intersection::sphereFrustum(),
     @ref Math::Intersection::sphereCone(),
-    @ref Math::Intersection::sphereConeView()
+    @ref Math::Intersection::sphereConeView(), @ref meshtools-bounding-volume
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Vector3, Float> boundingSphereBouncingBubble(const Containers::StridedArrayView1D<const Vector3>& positions);
 

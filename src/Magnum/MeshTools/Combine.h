@@ -94,7 +94,8 @@ using @ref removeDuplicatesInPlace() and then call this function. Index buffers
 and attributes in all meshes are expected to not have an
 implementation-specific format.
 @see @ref isMeshIndexTypeImplementationSpecific(),
-    @ref isVertexFormatImplementationSpecific()
+    @ref isVertexFormatImplementationSpecific(),
+    @ref meshtools-attributes-insert
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData>& meshes);
 
@@ -138,6 +139,7 @@ Same as with @ref combineFaceAttributes(const Trade::MeshData&, const Trade::Mes
 @p faceAttributes is expected to be interleaved. Note that offset-only
 @ref Trade::MeshAttributeData instances are not supported in the
 @p faceAttributes array.
+@see @ref meshtools-attributes-insert
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttributeData> faceAttributes);
 

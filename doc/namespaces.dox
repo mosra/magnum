@@ -411,7 +411,7 @@ See @ref building and @ref cmake for more information.
 /** @namespace Magnum::MeshTools
 @brief Mesh tools
 
-Tools for generating, optimizing and cleaning meshes.
+Tools for transforming, filtering, optimizing and merging meshes.
 
 This library is built if `MAGNUM_WITH_MESHTOOLS` is enabled when building
 Magnum. To use this library with CMake, request the `MeshTools` component of
@@ -428,7 +428,7 @@ Note that functionality depending on @ref GL APIs is available only if Magnum
 is built with both `MAGNUM_WITH_GL` and `MAGNUM_TARGET_GL` enabled (which is
 done by default).
 
-See @ref building and @ref cmake for more information.
+See @ref building, @ref cmake and @ref meshtools for more information.
 */
 
 /** @dir Magnum/Primitives

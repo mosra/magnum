@@ -96,7 +96,7 @@ to compress it to a smaller type, if desired.
 @see @ref concatenateInto(), @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific(),
     @ref SceneTools::flattenMeshHierarchy2D(),
-    @ref SceneTools::flattenMeshHierarchy3D()
+    @ref SceneTools::flattenMeshHierarchy3D(), @ref meshtools-concatenate
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(const Containers::Iterable<const Trade::MeshData>& meshes, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 

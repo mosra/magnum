@@ -1,0 +1,411 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020, 2021, 2022, 2023, 2024
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page meshtools Mesh processing tools
+@brief Overview of algorithms and utilities in the @ref MeshTools namespace
+
+@m_keywords{MeshTools}
+
+@tableofcontents
+@m_footernavigation
+
+The @ref MeshTools namespace provides a broad set of tools for transforming,
+filtering, optimizing and merging mesh data, operating both on high-level
+@ref Trade::MeshData instances as well as directly on concrete data views.
+
+@todoc subdivide isn't mentioned because it's useless, neither is
+    fullScreenTriangle
+@todoc normal generation and flipping once it's more than "sorry this is shit"
+
+@section meshtools-create Creating MeshData instances from scratch
+
+When it's desirable to create a @ref Trade::MeshData instance from scratch, for
+example from runtime-generated data, @ref MeshTools::interleave(MeshPrimitive, const Trade::MeshIndexData&, Containers::ArrayView<const Trade::MeshAttributeData>) "MeshTools::interleave()"
+is the most convenient way.
+
+@snippet MeshTools.cpp interleave-meshdata
+
+Interleaving isn't the only possible layout option --- you can also
+@ref Trade-MeshData-populating "construct the MeshData instance directly". It's
+more involved, but gives you an ability to have any packing you need.
+
+Note that, however, a @ref Trade::MeshData instance isn't *required* in many
+cases --- most @ref MeshTools algorithms, including for example normal
+generation or duplicate removal, have alternatives that operate directly on
+plain data arrays, and wrapping those in a @ref Trade::MeshData instance just
+to call a function may be a needless complication. On the other hand, having a
+@ref Trade::MeshData instance may be beneficial when it's needed to abstract
+away optional vertex attributes or when the types or layout can be arbitrary.
+The only interface that unconditionally relies on @ref Trade::MeshData is the
+@ref Trade::AbstractSceneConverter, for example when you want to export a mesh
+to a file or when you want to call an external library to perform advanced
+tasks on the data.
+
+@section meshtools-gpu Uploading a mesh to the GPU
+
+The @ref MeshTools::compile() utility creates a @ref GL::Mesh instance out of
+an arbitrary @ref Trade::MeshData, binding builtin attributes listed in the
+@ref Trade::MeshData enum to known locations defined in @ref Shaders::GenericGL.
+
+@snippet Trade.cpp MeshData-gpu-opengl
+
+For more control over index / vertex data storage and handling custom
+attributes, the @ref MeshTools::compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
+overload can be used. Additionally, there's @ref MeshTools::compileLines() with
+specialized handling for line meshes to be rendered with @ref Shaders::LineGL,
+and the @ref MeshTools::compiledPerVertexJointCount() utility gives back a
+count of primary and secondary per-vertex joints for setting up an appropriate
+@ref shaders-usage-skinning "skinning shader".
+
+@section meshtools-optimization Data layout optimization
+
+Mesh import in @ref Trade::AbstractImporter subclasses is commonly done so that
+the input layout is preserved as much as possible, and without performing
+non-essential operations. Similarly, meshes coming from the @ref Primitives
+library preference common, unsurprising formats over the most efficient
+representation. Thus, depending on quality of the input data, the target use
+case and whether given mesh is used for further processing or rendering, there
+are various optimization possibilities.
+
+@subsection meshtools-optimization-interleave Interleaving vertex data
+
+Assuming a mesh is processed vertex-by-vertex with all attributes used, which
+is the common case for both CPU- and GPU-side operation, the best memory layout
+is interleaving the data so that attributes for a particular vertex are next to
+each other in memory.
+
+@snippet MeshTools.cpp meshtools-interleave
+
+Interleaving is however the default behavior in most importers, and most
+@ref MeshTools algorithms produce interleaved layouts by default as well.
+@ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "MeshTools::interleave()"
+is thus implicitly a passthrough in case the data is already interleaved, so
+it's often desirable to pass a r-value there like shown above, which causes it
+to be just moved through if nothing needs to be done.
+
+For interleaving of raw data arrays with types known at compile time, there's
+@ref MeshTools::interleave(const T&, const U&... next), or its non-allocating
+@ref MeshTools::interleaveInto() variant. If the vertex layout is a concrete
+@cpp struct @ce, another way is for example using
+@relativeref{Corrade,Utility::copy()} to members slices made with
+@relativeref{Corrade,Containers::StridedArrayView::slice(U T::*) const}.
+
+@subsection meshtools-optimization-pack-indices Packing index data
+
+Especially when importing data from text-based formats such as OBJ, index
+buffers have full 32-bit values, which is not always necessary. With
+@ref MeshTools::compressIndices(const Trade::MeshData&, MeshIndexType) "MeshTools::compressIndices()" the index buffer gets reduced to a smaller type.
+Because vertex data are untouched by this operation, it's again desirable to
+pass a r-value in, which causes vertex data to be moved through instead of
+copying:
+
+@snippet MeshTools.cpp meshtools-compressindices
+
+You can also use the same function to unpack already-packed index data back to
+a larger type, by passing an appropriate @ref MeshIndexType as the second
+argument.
+
+Index packing can be also done directly on an index array using
+@ref MeshTools::compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long).
+There's no non-allocating variant in this case, because one would have to do
+another pass over the index array to figure out the target array size first. If
+you want to perform packing to a concrete type, use one of the
+@ref Math::castInto() overloads.
+
+@subsection meshtools-optimization-cache Vertex transform cache optimization
+
+The @ref MeshTools::tipsify() utility reorders the index buffer in a way that
+tries to maximize use of GPU vertex cache, resulting in possibly faster
+rendering. It's however recommended to use the
+@relativeref{Trade,MeshOptimizerSceneConverter} plugin instead if possible. It
+contains a set of state-of-the-art algorithms and by default performs a
+non-destructive sequence of optimizations that make the mesh faster to render
+without affecting appearance in any way.
+
+@snippet MeshTools.cpp meshtools-meshoptimizer
+
+See documentation of @ref Trade::AbstractSceneConverter for more information
+about using the plugin interface.
+
+@m_class{m-note m-success}
+
+@par
+    If you're dealing with meshes loaded from files, you can call
+    the @ref magnum-sceneconverter "magnum-sceneconverter" utility with
+    `-C MeshOptimizerSceneConverter` to perform these optimizations offline.
+
+@section meshtools-index Index buffer generation
+
+A mesh can be non-indexed, meaning that e.g. each three vertices form a
+triangle, it can have an index buffer of an arbitrary type, or it can be formed
+from strips or fans. While such flexibility allows to pick a representation
+that best fits given topology or use case, it can be a burden for algorithms
+that need to work with arbitrary input meshes. The @ref MeshTools::generateIndices()
+helper takes an arbitrary mesh and produces an instance that always has a
+32-bit index buffer and has one of the base primitive types such as
+@ref MeshPrimitive::Triangles, @relativeref{MeshPrimitive,Lines} or
+@relativeref{MeshPrimitive,Points}, so it can then be then passed straight to
+an algorithm that expects indexed primitives.
+
+@snippet MeshTools.cpp meshtools-generateindices
+
+Ultimately, if a non-indexed list of primitives is expected, the mesh can be
+subsequently passed through @ref MeshTools::duplicate(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>) "MeshTools::duplicate()".
+
+Besides the variant taking a @ref Trade::MeshData, there are low-level
+@ref MeshTools::generateLineStripIndices(),
+@relativeref{MeshTools,generateLineLoopIndices()},
+@relativeref{MeshTools,generateTriangleStripIndices()} and
+@relativeref{MeshTools,generateTriangleFanIndices()} utilities producing an
+index buffer corresponding to a primitive strip, loop or fan. To complete the
+offering, @relativeref{MeshTools,generateTrivialIndices()} outputs a
+@cpp 0, 1, 2, 3, 4, 5, ... @ce sequence if an index buffer needs to be added to
+a mesh that otherwise doesn't need it. For all of these there are
+non-allocating @relativeref{MeshTools,generateLineStripIndicesInto()} etc.
+variants as well.
+
+Finally, @ref MeshTools::generateQuadIndices() /
+@relativeref{MeshTools,generateQuadIndicesInto()} creates a triangle index
+buffer for a list of (indexed) quads. It additionally takes vertex positions to
+favor edges that don't create overlapping or too thin triangles.
+
+@htmlinclude triangulate.svg
+
+@section meshtools-vertex Vertex data transformation
+
+The @ref MeshTools::transform2D(), @relativeref{MeshTools,transform3D()} and
+@relativeref{MeshTools,transformTextureCoordinates2D()} functions can be used
+to bake a transformation into vertex positions, tangent space and texture
+coordinates. One use case is preparing a set of meshes to be joined together,
+baking their transform hierarchy directly into the data, or for example making
+a mesh ready to be used with a renderer that doesn't support passing scaling or
+texture coordinate transformation as a parameter.
+
+@snippet MeshTools.cpp meshtools-transform
+
+If the mesh has the to-be-transformed attributes in a floating-point format,
+i.e. not packed in any way, the function can operate directly on the data
+itself without making a copy. For that reason, if the original unmodified
+instance isn't needed afterwards anymore, it's again useful to pass a r-value
+in, as shown in the snippet. Alternatively, the
+@relativeref{MeshTools,transform2DInPlace()},
+@relativeref{MeshTools,transform3DInPlace()} and
+@relativeref{MeshTools,transformTextureCoordinates2DInPlace()} variants operate
+in-place, not modifying the attribute layout in any way, but have with
+additional restrictions on the attribute types.
+
+@todoc mention the data overloads, once they're not laughable inline wrappers
+    over singular Math APIs
+
+@section meshtools-concatenate Joining multiple meshes together
+
+While models usually contain multiple smaller meshes because it makes editing
+easier, for rendering it's often better to batch them together. The
+@ref MeshTools::concatenate() function concatenates several input meshes into
+a single one. Then, if all the input meshes were using the same material and
+were already in their final transform relative to each other, you can render or
+further process them as a whole:
+
+@snippet MeshTools-gl.cpp meshtools-concatenate
+
+If not, their relative order is preserved in the output, so you can for example
+render each individual piece separately by passing an appropriate index range
+to @ref GL::Mesh::setIndexOffset() and @relativeref{GL::Mesh,setCount()},
+or by making @ref GL::MeshView instances and rendering those instead:
+
+@snippet MeshTools-gl.cpp meshtools-concatenate-offsets
+
+Meshes joined this way can make use of various rendering optimizations, see
+@ref shaders-usage-multidraw for the shader-side details. There's also a
+@ref MeshTools::concatenateInto() variant that reuses a @ref Trade::MeshData
+instance with previously allocated buffers to support use cases where meshes
+are repeatedly batched on-the-fly.
+
+@m_class{m-note m-success}
+
+@par
+    Joining all meshes in a file with scene hierarchy baked in can be also done
+    using the `--concatenate-meshes` option of the
+    @ref magnum-sceneconverter "magnum-sceneconverter" utility.
+
+@section meshtools-attributes-insert Inserting additional attributes into an existing mesh
+
+The @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "MeshTools::interleave()"
+API shown above can be also used to insert additional attributes to an existing
+mesh. The following snippet takes a cube primitive and copies an external
+vertex color attribute alongside existing attributes:
+
+@snippet MeshTools.cpp meshtools-interleave-insert
+
+It's also possible to add just an uninitialized attribute placeholder,
+specifying just the desired type, and copy the data to it later using
+@ref Trade-MeshData-access-mutable "mutable MeshData attribute access":
+
+@m_class{m-console-wrap}
+
+@snippet MeshTools.cpp meshtools-interleave-insert-placeholder
+
+Similar functionality is available also in the above-mentioned
+@ref MeshTools::duplicate(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>) "MeshTools::duplicate()"
+API, with the difference that the attribute gets inserted only after a
+duplication based on an index buffer is performed. This is useful for example
+when it's desirable to add a value that's different for each vertex:
+
+@snippet MeshTools.cpp meshtools-duplicate-insert
+
+In case you need to insert attributes that differ not per vertex but per face,
+@ref MeshTools::combineFaceAttributes(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>) "MeshTools::combineFaceAttributes()"
+can be used:
+
+@snippet MeshTools.cpp combineFaceAttributes
+
+Finally, for scenarios where a mesh has per-attribute index buffers, such as is
+the case when directly importing data from OBJ files,
+@ref MeshTools::combineIndexedAttributes() can be used to combine them into a
+mesh with a single index buffer.
+
+@section meshtools-attributes-filter Filtering mesh attributes
+
+The inverse of attribute insertion is possible with
+@ref MeshTools::filterAttributes(), @relativeref{MeshTools,filterOnlyAttributes()}
+and @relativeref{MeshTools,filterExceptAttributes()}. In this case however, the
+operation affects just the metadata and the result is a *non-owning reference*
+to data in the original mesh with just the attributes that passed the filter.
+In other words, the vertex data stay unchanged, there's just nothing
+referencing the data for attributes that were filtered away.
+
+@snippet MeshTools.cpp meshtools-filter
+
+This avoids a needless copy in cases the result is passed to other algorithms
+that perform further operations on the data. If filtering is the final step,
+pass the result to @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "MeshTools::interleave()"
+without @ref MeshTools::InterleaveFlag::PreserveInterleavedAttributes set to
+create a copy that contains only the remaining attributes:
+
+@snippet MeshTools.cpp meshtools-filter-unsparse
+
+@section meshtools-duplicates Duplicate vertex removal, duplication based on an index buffer
+
+The @ref MeshTools::removeDuplicates(const Trade::MeshData&) "MeshTools::removeDuplicates()"
+function returns a @ref Trade::MeshData instance that has contains only unique
+vertices, and has an index buffer that maps them back to their original
+locations. Besides cleaning up messy models the function can be also used for
+converting non-indexed meshes (imported from STL files, for example) to
+indexed. Sometimes bit-exact comparison isn't enough however, and the
+@ref MeshTools::removeDuplicatesFuzzy(const Trade::MeshData&, Float, Double) "MeshTools::removeDuplicatesFuzzy()"
+variant instead applies a fuzzy comparison to all floating-point attributes.
+
+@snippet MeshTools.cpp meshtools-removeduplicates
+
+The fuzzy thresholds are adjustable and setting them to higher values can
+perform rudimentary mesh simplification, but for a robust behavior with higher
+simplification ratios it's recommended to use the
+@relativeref{Trade,MeshOptimizerSceneConverter} simplification feature instead.
+Here for example attempting to reduce the mesh index count by a factor of 10:
+
+@snippet MeshTools.cpp meshtools-meshoptimizer-simplify
+
+<b></b>
+
+@m_class{m-note m-success}
+
+@par
+    The @ref magnum-sceneconverter "magnum-sceneconverter" utility can perform
+    duplicate vertex removal in all meshes in a file using
+    `--remove-duplicate-vertices` or `--remove-duplicate-vertices-fuzzy`. A
+    MeshOptimizer simplification equivalent to the above snippet is doable with
+    `-C MeshOptimizerSceneConverter -c simplify,simplifyTargetIndexCountThreshold=0.1`.
+
+Internally, the duplicate vertex removal is implemented using
+@ref MeshTools::removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&),
+@ref MeshTools::removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>&, Float)
+and their non-in-place, and non-allocating `*Into()` variants. These functions
+return an index array that maps from the original data to the deduplicated
+locations. Commonly, the index array eventually becomes an index buffer of the
+resulting mesh, or one uses the @ref MeshTools::removeDuplicatesIndexedInPlace()
+/ @ref MeshTools::removeDuplicatesFuzzyIndexedInPlace() variants if there's an
+existing buffer in the first place.
+
+Another use case for the index buffer returned by these functions is to perform
+an operation of on the deduplicated data and then apply the updates back to the
+original. One such scenario is for example with soft body simulation, where a
+simulation engine requires a watertight indexed mesh containing only positions.
+Rendering however usually needs at least normals as well, and potentially
+texture coordinates, vertex colors and others. Assuming an indexed mesh with
+arbitrary attributes, a watertight mesh consisting of just indexed positions
+would be made like this:
+
+@snippet MeshTools.cpp meshtools-removeduplicates-position-only
+
+@todoc Fix duplicate / duplicateInto to not need those massive casts, ffs
+
+The `positionIndices` are made in two steps instead of using
+@ref MeshTools::removeDuplicatesIndexedInPlace() because the `indexMapping`,
+without being mixed with the original index buffer, needs to be preserved for a
+later use. Once a simulation updates the positions, they get copied back to the
+original mesh:
+
+@snippet MeshTools.cpp meshtools-removeduplicates-position-only-copy
+
+@section meshtools-bounding-volume Bounding volume calculation
+
+The @ref MeshTools::boundingRange() and
+@ref MeshTools::boundingSphereBouncingBubble() utilities can be used to
+calculate a bounding volume for a given list of vertex positions, for example
+to use for culling. Because their output is just a single value, they take a
+position view directly and don't have any convenience variant operating on a
+@ref Trade::MeshData. The most straightforward way is to pass
+@ref Trade::MeshData::positions3DAsArray() to them, see the
+@ref Trade-MeshData-access "MeshData data access documentation" for more
+details and alternative approaches that don't allocate a temporary array.
+
+@section meshtools-helpers Memory ownership helpers
+
+Much like all other heavier data structures in Magnum, a @ref Trade::MeshData
+is move-only, to prevent accidental copies when passing it around. If a copy is
+desirable and it cannot be made as a side effect of some other operation,
+@ref MeshTools::copy() can be used.
+
+Another use case for it is creating a self-contained @ref Trade::MeshData
+instance --- in some cases, such as for example with @ref Primitives::cubeSolid()
+or with memory-mapped files, you may get back a @ref Trade::MeshData that
+references external data, instead of owning them, to avoid unnecessary copies.
+Such instances usually cannot be modified in-place and one has to ensure that
+the memoory they reference stays in scope. Calling @ref MeshTools::copy() on
+such an instance makes a self-contained copy that owns the data and can be
+modified. For example, turning the cube primitive into a skybox with normals
+flipped inwards:
+
+@snippet MeshTools.cpp meshtools-copy
+
+An inverse to @ref MeshTools::copy() is @ref MeshTools::reference(). It makes a
+non-owning reference to data contained in another @ref Trade::MeshData. It's
+mainly useful for tool internals, for example to implement common handling for
+@cpp const Trade::MeshData& @ce and @cpp Trade::MeshData& @ce.
+
+*/
+}

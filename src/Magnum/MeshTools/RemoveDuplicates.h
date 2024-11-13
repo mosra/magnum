@@ -69,7 +69,8 @@ for a variant that doesn't modify the input data in any way but instead returns
 an index array pointing to original data locations. Use
 @ref removeDuplicatesInPlaceInto() to place the indices into existing memory
 instead of allocating a new array.
-@see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
+@see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()},
+    @ref meshtools-duplicates
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data);
 
@@ -181,6 +182,7 @@ indices into existing memory instead of allocating a new array.
 If you want to remove duplicates in multiple incidental arrays, first remove
 duplicates in each array separately and then combine the resulting index arrays
 back into a single one using @ref combineIndexedAttributes().
+@see @ref meshtools-duplicates
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
@@ -317,7 +319,7 @@ In order to remove random padding values from the input and make the vertices
 suitable for fast in-place duplicate removal, this function unconditionally
 copies and interleaves the input vertex and index data.
 @see @ref isMeshIndexTypeImplementationSpecific(),
-    @ref isVertexFormatImplementationSpecific()
+    @ref isVertexFormatImplementationSpecific(), @ref meshtools-duplicates
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(const Trade::MeshData& mesh);
 
@@ -331,6 +333,7 @@ on floating-point attributes. For attributes with a known range (such as
 @ref Trade::MeshAttribute::Normal being always @f$ [-1, 1] @f$ in each
 direction) the @p floatEpsilon / @p doubleEpsilon is scaled appropriately,
 otherwise it's scaled to calculated value range.
+@see @ref meshtools-duplicates
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, Float floatEpsilon = Math::TypeTraits<Float>::epsilon(), Double doubleEpsilon = Math::TypeTraits<Double>::epsilon());
 

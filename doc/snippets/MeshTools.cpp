@@ -25,20 +25,27 @@
 */
 
 #include <vector>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
+#include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/Combine.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/Copy.h"
 #include "Magnum/MeshTools/Duplicate.h"
+#include "Magnum/MeshTools/Filter.h"
 #include "Magnum/MeshTools/FlipNormals.h"
+#include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/MeshTools/GenerateNormals.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Primitives/Cube.h"
+#include "Magnum/Trade/AbstractSceneConverter.h"
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -56,6 +63,153 @@ using namespace Magnum::Math::Literals;
    avoid -Wmisssing-prototypes */
 void mainMeshTools();
 void mainMeshTools() {
+{
+/* [meshtools-interleave] */
+Trade::MeshData mesh = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, 0});
+
+mesh = MeshTools::interleave(std::move(mesh));
+/* [meshtools-interleave] */
+
+/* [meshtools-compressindices] */
+if(mesh.isIndexed())
+    mesh = MeshTools::compressIndices(std::move(mesh));
+/* [meshtools-compressindices] */
+
+/* [meshtools-meshoptimizer] */
+PluginManager::Manager<Trade::AbstractSceneConverter> manager;
+Containers::Pointer<Trade::AbstractSceneConverter> meshOptimizer =
+    manager.loadAndInstantiate("MeshOptimizerSceneConverter");
+
+meshOptimizer->convertInPlace(mesh);
+/* [meshtools-meshoptimizer] */
+}
+
+{
+Trade::MeshData mesh{{}, 0};
+void performSomeProcessing(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
+/* [meshtools-generateindices] */
+Trade::MeshData indexed = MeshTools::generateIndices(mesh);
+
+performSomeProcessing(indexed.indices<UnsignedInt>(),
+                      indexed.positions3DAsArray());
+/* [meshtools-generateindices] */
+}
+
+{
+Trade::MeshData mesh{{}, 0};
+/* [meshtools-transform] */
+mesh = MeshTools::transform3D(std::move(mesh), Matrix4::scaling({0.5f, 2.0f, 1.0f}));
+/* [meshtools-transform] */
+}
+
+{
+/* [meshtools-interleave-insert] */
+Containers::ArrayView<const Color3> vertexColors = DOXYGEN_ELLIPSIS({});
+
+Trade::MeshData coloredCube = MeshTools::interleave(Primitives::cubeSolid(), {
+    Trade::MeshAttributeData{Trade::MeshAttribute::Color, vertexColors}
+});
+/* [meshtools-interleave-insert] */
+}
+
+{
+/* [meshtools-interleave-insert-placeholder] */
+Trade::MeshData coloredCube = MeshTools::interleave(Primitives::cubeSolid(), {
+    Trade::MeshAttributeData{Trade::MeshAttribute::Color, VertexFormat::Vector3, nullptr}
+});
+
+for(Color3& i: coloredCube.mutableAttribute<Color3>(Trade::MeshAttribute::Color))
+    i = DOXYGEN_ELLIPSIS({});
+/* [meshtools-interleave-insert-placeholder] */
+}
+
+{
+Trade::MeshData mesh{{}, 0};
+/* [meshtools-duplicate-insert] */
+Trade::MeshAttribute VertexIdAttribute = Trade::meshAttributeCustom(DOXYGEN_ELLIPSIS(0));
+
+Trade::MeshData vertexIdMesh = MeshTools::duplicate(mesh, {
+    Trade::MeshAttributeData{VertexIdAttribute, VertexFormat::UnsignedInt, nullptr}
+});
+
+UnsignedInt id = 0;
+for(UnsignedInt& i: vertexIdMesh.mutableAttribute<UnsignedInt>(VertexIdAttribute))
+    i = id++;
+/* [meshtools-duplicate-insert] */
+}
+
+{
+Trade::MeshData mesh{{}, 0};
+/* [meshtools-filter] */
+Trade::MeshData positionsNormals = MeshTools::filterOnlyAttributes(mesh, {
+    Trade::MeshAttribute::Position,
+    Trade::MeshAttribute::Normal
+});
+/* [meshtools-filter] */
+
+/* [meshtools-filter-unsparse] */
+positionsNormals = MeshTools::interleave(positionsNormals, {}, {});
+/* [meshtools-filter-unsparse] */
+}
+
+{
+Trade::MeshData mesh{{}, 0};
+/* [meshtools-removeduplicates] */
+Trade::MeshData deduplicated = MeshTools::removeDuplicatesFuzzy(mesh);
+/* [meshtools-removeduplicates] */
+}
+
+{
+Trade::MeshData mesh{{}, 0};
+/* [meshtools-meshoptimizer-simplify] */
+PluginManager::Manager<Trade::AbstractSceneConverter> manager;
+Containers::Pointer<Trade::AbstractSceneConverter> meshOptimizer =
+    manager.loadAndInstantiate("MeshOptimizerSceneConverter");
+meshOptimizer->configuration().setValue("simplify", true);
+meshOptimizer->configuration().setValue("simplifyTargetIndexCountThreshold", 0.1f);
+
+Containers::Optional<Trade::MeshData> simplified = meshOptimizer->convert(mesh);
+/* [meshtools-meshoptimizer-simplify] */
+}
+
+{
+Trade::MeshData mesh{{}, 0};
+void performSimulation(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
+/* [meshtools-removeduplicates-position-only] */
+Containers::Array<Vector3> positions = mesh.positions3DAsArray();
+
+/* Deduplicate the positions and create a mapping array */
+Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> out =
+    MeshTools::removeDuplicatesFuzzyInPlace(
+        Containers::arrayCast<2, Float>(stridedArrayView(positions)));
+Containers::Array<UnsignedInt> indexMapping = std::move(out.first());
+arrayResize(positions, out.second());
+
+/* Combine the original index buffer with the mapping array */
+Containers::Array<UnsignedInt> positionIndices = MeshTools::duplicate(
+    Containers::StridedArrayView1D<const UnsignedInt>{indexMapping},
+    Containers::StridedArrayView1D<const UnsignedInt>{mesh.indicesAsArray()});
+/* [meshtools-removeduplicates-position-only] */
+
+/* [meshtools-removeduplicates-position-only-copy] */
+performSimulation(positionIndices, positions);
+
+/* Copy updated positions back to the original locations in the mesh */
+MeshTools::duplicateInto(
+    Containers::StridedArrayView1D<const UnsignedInt>{indexMapping},
+    Containers::StridedArrayView1D<const Vector3>{positions},
+    mesh.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
+/* [meshtools-removeduplicates-position-only-copy] */
+}
+
+{
+/* [meshtools-copy] */
+Trade::MeshData skybox = MeshTools::copy(Primitives::cubeSolid());
+MeshTools::flipNormalsInPlace(skybox.mutableIndices<UnsignedInt>(),
+    skybox.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
+/* [meshtools-copy] */
+}
+
 {
 Trade::MeshData mesh{{}, 0};
 /* [combineFaceAttributes] */
