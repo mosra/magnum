@@ -48,9 +48,9 @@ namespace Magnum { namespace MeshTools {
 
 /**
 @brief Remove duplicate data from given array in-place
-@param[in,out] data Data array, duplicate items will be cut away with order
-    preserved
-@return The resulting index array and size of unique prefix in the cleaned up
+@param[in,out] data Data array. Unique items get moved to the front, preserving
+    their relative order.
+@return Resulting index array and size of the unique prefix in the processed
     @p data array
 @m_since{2020,06}
 
@@ -58,6 +58,23 @@ Removes duplicate data from given array by comparing the second dimension of
 each item. Usage example:
 
 @snippet MeshTools.cpp removeDuplicates
+
+For a visual example, assuming the following (two-dimensional) input, the
+function puts the four unique items at the front of the array, preserving their
+order. The returned index array then maps the unique back to the input
+locations, the second returned value is the count of unique items left in the
+input, thus four:
+
+@code{.cpp}
+// Original input
+{{172, 26}, {212, -183}, {172, 26}, {42, 13}, {112, 9}, {112, 9}, {212, -183}}
+
+// After processing, contents following the unique prefix are left unspecified
+{{172, 26}, {212, -183}, {42, 13}, {112, 9}, ...}
+
+// Matching index array and number of unique items
+{{0, 1, 0, 2, 3, 3, 1}, 4}
+@endcode
 
 The second dimension is expected to be contiguous. A plain bit-exact
 matching is used, if you need fuzzy comparison for floating-point data, use
@@ -101,6 +118,18 @@ this function doesn't modify the input data array in any way but instead
 returns an index array pointing to original data locations. Use
 @ref removeDuplicatesInto() to place the indices into existing memory instead
 of allocating a new array.
+
+Compared to
+@ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&) "removeDuplicatesInPlace()"
+the returned index buffer would look like this with the same input:
+
+@code{.cpp}
+// Input that doesn't get modified
+{{172, 26}, {212, -183}, {172, 26}, {42, 13}, {112, 9}, {112, 9}, {212, -183}}
+
+// Matching index array that points back to the input, number of unique items
+{{0, 1, 0, 3, 4, 4, 1}, 4}
+@endcode
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data);
 
@@ -157,12 +186,12 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Contain
 
 /**
 @brief Remove duplicate data from given array using fuzzy comparison in-place
-@param[in,out] data Data array, duplicate items will be cut away with order
-    preserved
+@param[in,out] data Data array to process. Unique items get moved to the front,
+    preserving their relative order.
 @param[in] epsilon  Epsilon value, data closer than this distance will be
-    melt together
-@return Size of unique prefix in the cleaned up @p data array and the resulting
-    index array
+    deduplicated
+@return Resulting index array and size of the unique prefix in the processed
+    @p data array
 @m_since{2020,06}
 
 Removes duplicate data from the array by collapsing them into buckets of size
@@ -170,6 +199,23 @@ Removes duplicate data from the array by collapsing them into buckets of size
 no interpolation is done. Usage example:
 
 @snippet MeshTools.cpp removeDuplicatesFuzzy
+
+Assuming the following input and an epsilon of @cpp 0.01f @ce, the function
+puts the five unique items at the front of the array, preserving their order.
+The returned index array then maps the unique back to the input locations, the
+second returned value is the count of unique items left in the input, thus
+five:
+
+@code{.cpp}
+// Original input
+{1.720f, 21.199f, 1.729f, 42.2f, 1.121f, 1.120f, 21.2f, 1.705f}
+
+// After processing, contents following the unique prefix are left unspecified
+{1.720f, 21.199f, 42.2f, 1.121f, 1.705f, ...}
+
+// Matching index array and number of unique items
+{{0, 1, 0, 2, 3, 3, 1, 4}, 5}
+@endcode
 
 Note that this function is meant to be used for floating-point data (or
 generally with non-zero @p epsilon), for data where bit-exact matching is
@@ -194,11 +240,11 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::si
 
 /**
 @brief Remove duplicate data from given array using fuzzy comparison in-place into given output index array
-@param[in,out] data Data array, duplicate items will be cut away with order
-    preserved
+@param[in,out] data Data array to process. Unique items get moved to the front,
+    preserving their relative order.
 @param[out] indices Where to put the resulting index array
 @param[in] epsilon  Epsilon value, data closer than this distance will be
-    melt together
+    deduplicated
 @return Size of unique prefix in the cleaned up @p data array
 @m_since{2020,06}
 
@@ -240,11 +286,11 @@ template<class Vector> CORRADE_DEPRECATED("use removeDuplicatesInPlace() instead
 @brief Remove duplicates from indexed data using fuzzy comparison in-place
 @param[in,out] indices  Index array, which will get remapped to list just
     unique vertices
-@param[in,out] data     Data array, duplicate items will be cut away with order
-    preserved
-@param[in] epsilon      Epsilon value, vertices closer than this distance will
-    be melt together
-@return Size of unique prefix in the cleaned up @p data array
+@param[in,out] data     Data array to process. Unique items get moved to the
+    front, preserving their relative order.
+@param[in] epsilon      Epsilon value, items closer than this distance will be
+    deduplicated
+@return Size of unique prefix in the processed up @p data array
 @m_since{2020,06}
 
 Compared to @ref removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>&, Float)
