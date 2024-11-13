@@ -49,6 +49,7 @@ for which the corresponding bit in @p fieldsToKeep was set. The size of
 This function only operates on the field metadata --- if you'd like to have
 the data repacked to contain just the remaining fields as well, pass
 the output to @ref combineFields(const Trade::SceneData&).
+@see @ref reference(), @ref filterOnlyFields(), @ref filterExceptFields()
 */
 MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterFields(const Trade::SceneData& scene, Containers::BitArrayView fieldsToKeep);
 
@@ -76,6 +77,7 @@ field was listed just once.
 This function only operates on the field metadata --- if you'd like to have
 the data repacked to contain just the remaining fields as well, pass
 the output to @ref combineFields(const Trade::SceneData&).
+@see @ref reference(), @ref filterFields(), @ref filterExceptFields()
 */
 MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterOnlyFields(const Trade::SceneData& scene, Containers::ArrayView<const Trade::SceneField> fields);
 
@@ -115,6 +117,7 @@ fields was listed just once.
 This function only operates on the field metadata --- if you'd like to have
 the data repacked to contain just the remaining fields as well, pass
 the output to @ref combineFields(const Trade::SceneData&).
+@see @ref reference(), @ref filterFields(), @ref filterOnlyFields()
 */
 MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterExceptFields(const Trade::SceneData& scene, Containers::ArrayView<const Trade::SceneField> fields);
 
