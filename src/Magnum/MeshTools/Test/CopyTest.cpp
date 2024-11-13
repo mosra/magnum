@@ -32,11 +32,11 @@
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/Copy.h"
+#include "Magnum/Primitives/Circle.h"
 #include "Magnum/Primitives/Cube.h"
 #include "Magnum/Primitives/Gradient.h"
 #include "Magnum/Primitives/Grid.h"
 #include "Magnum/Trade/MeshData.h"
-#include <Magnum/Primitives/Circle.h>
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
