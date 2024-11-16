@@ -34,6 +34,7 @@
 #include "Magnum/MeshTools/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <utility> /* std::pair */
 #include <Corrade/Utility/StlForwardVector.h>
 #include <Corrade/Utility/Macros.h>
 #endif
