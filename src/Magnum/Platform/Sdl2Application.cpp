@@ -318,6 +318,8 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     } else {
         #ifndef CORRADE_TARGET_APPLE
         dpiScalingPolicy = configurationDpiScalingPolicy;
+        #else
+        static_cast<void>(configurationDpiScalingPolicy);
         #endif
     }
 

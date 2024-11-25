@@ -184,6 +184,8 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
     } else {
         #ifndef CORRADE_TARGET_APPLE
         dpiScalingPolicy = configurationDpiScalingPolicy;
+        #else
+        static_cast<void>(configurationDpiScalingPolicy);
         #endif
     }
 
