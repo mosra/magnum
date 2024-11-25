@@ -173,9 +173,23 @@ Containers::Pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> Twe
         return {TweakableState::Error, {}};
     }
 
+    /* According to https://wg21.link/CWG2521, space between "" and literal
+       name is deprecated because _Uppercase or __double names could be treated
+       as reserved depending on whether the space was present or not, and
+       whitespace is not load-bearing in any other contexts. Clang 17+ adds an
+       off-by-default warning for this; GCC 4.8 however *requires* the space
+       there, so until GCC 4.8 support is dropped, we suppress this warning
+       instead of removing the space. */
+    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+    #endif
     return {TweakableState::Success,
-        isSrgb ? Magnum::Math::Literals::operator "" _srgb(result) :
-                 Magnum::Math::Literals::operator "" _rgb(result)};
+        isSrgb ? Magnum::Math::Literals::operator"" _srgb(result) :
+                 Magnum::Math::Literals::operator"" _rgb(result)};
+    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+    #pragma clang diagnostic pop
+    #endif
 }
 
 Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>>::parse(const Containers::StringView value) {
@@ -205,9 +219,23 @@ Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> Twe
         return {TweakableState::Error, {}};
     }
 
+    /* According to https://wg21.link/CWG2521, space between "" and literal
+       name is deprecated because _Uppercase or __double names could be treated
+       as reserved depending on whether the space was present or not, and
+       whitespace is not load-bearing in any other contexts. Clang 17+ adds an
+       off-by-default warning for this; GCC 4.8 however *requires* the space
+       there, so until GCC 4.8 support is dropped, we suppress this warning
+       instead of removing the space. */
+    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+    #endif
     return {TweakableState::Success,
-        isSrgb ? Magnum::Math::Literals::operator "" _srgba(result) :
-                 Magnum::Math::Literals::operator "" _rgba(result)};
+        isSrgb ? Magnum::Math::Literals::operator"" _srgba(result) :
+                 Magnum::Math::Literals::operator"" _rgba(result)};
+    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+    #pragma clang diagnostic pop
+    #endif
 }
 
 Containers::Pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<Magnum::Math::Color3<Magnum::Float>>::parse(const Containers::StringView value) {
@@ -237,9 +265,23 @@ Containers::Pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableP
         return {TweakableState::Error, {}};
     }
 
+    /* According to https://wg21.link/CWG2521, space between "" and literal
+       name is deprecated because _Uppercase or __double names could be treated
+       as reserved depending on whether the space was present or not, and
+       whitespace is not load-bearing in any other contexts. Clang 17+ adds an
+       off-by-default warning for this; GCC 4.8 however *requires* the space
+       there, so until GCC 4.8 support is dropped, we suppress this warning
+       instead of removing the space. */
+    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+    #endif
     return {TweakableState::Success,
-        isSrgb ? Magnum::Math::Literals::operator "" _srgbf(result) :
-                 Magnum::Math::Literals::operator "" _rgbf(result)};
+        isSrgb ? Magnum::Math::Literals::operator"" _srgbf(result) :
+                 Magnum::Math::Literals::operator"" _rgbf(result)};
+    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+    #pragma clang diagnostic pop
+    #endif
 }
 
 Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> TweakableParser<Magnum::Math::Color4<Magnum::Float>>::parse(const Containers::StringView value) {
@@ -269,9 +311,23 @@ Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> TweakableP
         return {TweakableState::Error, {}};
     }
 
+    /* According to https://wg21.link/CWG2521, space between "" and literal
+       name is deprecated because _Uppercase or __double names could be treated
+       as reserved depending on whether the space was present or not, and
+       whitespace is not load-bearing in any other contexts. Clang 17+ adds an
+       off-by-default warning for this; GCC 4.8 however *requires* the space
+       there, so until GCC 4.8 support is dropped, we suppress this warning
+       instead of removing the space. */
+    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+    #endif
     return {TweakableState::Success,
-        isSrgb ? Magnum::Math::Literals::operator "" _srgbaf(result) :
-                 Magnum::Math::Literals::operator "" _rgbaf(result)};
+        isSrgb ? Magnum::Math::Literals::operator"" _srgbaf(result) :
+                 Magnum::Math::Literals::operator"" _rgbaf(result)};
+    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
+    #pragma clang diagnostic pop
+    #endif
 }
 
 }}
