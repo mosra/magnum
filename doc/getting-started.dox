@@ -96,15 +96,15 @@ brew install sdl2               # on macOS (via Homebrew)
 
 If you are on Windows, by far the easiest is to bundle the prebuilt binaries
 into your project. Depending on whether you use Visual Studio or MinGW,
-download either [SDL2-devel-2.0.10-VC.zip](https://www.libsdl.org/release/SDL2-devel-2.0.10-VC.zip)
-or [SDL2-devel-2.0.10-mingw.tar.gz](https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz),
+download either [SDL2-devel-2.30.9-VC.zip](https://github.com/libsdl-org/SDL/releases/download/release-2.30.9/SDL2-devel-2.30.9-VC.zip)
+or [SDL2-devel-2.30.9-mingw.zip](https://github.com/libsdl-org/SDL/releases/download/release-2.30.9/SDL2-devel-2.30.9-mingw.zip),
 extract the archive to root of the project and tell CMake where it is by adding
-the `SDL2-2.0.10` directory to `CMAKE_PREFIX_PATH`:
+the `SDL2-2.30.9` directory to `CMAKE_PREFIX_PATH`:
 
 @code{.cmake}
 ...
 
-set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/SDL2-2.0.10 ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/SDL2-2.30.9 ${CMAKE_PREFIX_PATH})
 set(MAGNUM_WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
@@ -326,14 +326,14 @@ sudo apt install libglfw3-dev   # on Ubuntu / Debian
 brew install glfw               # on macOS (via Homebrew)
 @endcode
 
-On Windows download either [glfw-3.3.bin.WIN32.zip](https://github.com/glfw/glfw/releases/download/3.3/glfw-3.3.bin.WIN32.zip)
-or [glfw-3.3.bin.WIN64.zip](https://github.com/glfw/glfw/releases/download/3.3/glfw-3.3.bin.WIN64.zip), extract it to root of the bootstrap project and point
+On Windows download either [glfw-3.4.bin.WIN32.zip](https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN32.zip)
+or [glfw-3.4.bin.WIN64.zip](https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip), extract it to root of the bootstrap project and point
 `CMAKE_PREFIX_PATH` to it:
 
 @code{.cmake}
 ...
-                                       # or glfw-3.3.bin.WIN32 here
-set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/glfw-3.3.bin.WIN64 ${CMAKE_PREFIX_PATH})
+                                       # or glfw-3.4.bin.WIN32 here
+set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/glfw-3.4.bin.WIN64 ${CMAKE_PREFIX_PATH})
 set(MAGNUM_WITH_GLFWAPPLICATION ON)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
