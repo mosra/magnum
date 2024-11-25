@@ -68,7 +68,7 @@ you actually use are built (and excluding the subdirectory from the `install`
 target as well).
 
 @code{.cmake}
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...3.20)
 project(MyApplication)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
