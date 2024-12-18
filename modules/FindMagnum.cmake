@@ -412,6 +412,10 @@ set(_MAGNUM_LIBRARY_COMPONENTS
     Audio DebugTools GL MaterialTools MeshTools Primitives SceneGraph
     SceneTools Shaders ShaderTools Text TextureTools Trade
     WindowlessEglApplication EglContext OpenGLTester)
+# These libraries are excluded from DLL detection if Magnum is built as shared.
+# Additionally, all *Application and *Context libraries are excluded as well.
+set(_MAGNUM_LIBRARY_COMPONENTS_ALWAYS_STATIC
+    OpenGLTester)
 set(_MAGNUM_PLUGIN_COMPONENTS
     AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneConverter
     AnySceneImporter MagnumFont MagnumFontConverter ObjImporter
@@ -426,6 +430,7 @@ set(_MAGNUM_IMPLICITLY_ENABLED_COMPONENTS
     GL Primitives)
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
     list(APPEND _MAGNUM_LIBRARY_COMPONENTS Vk VulkanTester)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS_ALWAYS_STATIC VulkanTester)
     list(APPEND _MAGNUM_EXECUTABLE_COMPONENTS vk-info)
 endif()
 if(NOT CORRADE_TARGET_ANDROID)
@@ -631,6 +636,22 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             mark_as_advanced(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG
                 MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
 
+            # On Windows, if we have a dynamic build of given library, find the
+            # DLLs as well. Abuse find_program() since the DLLs should be
+            # alongside usual executables. On MinGW they however have a lib
+            # prefix.
+            if(CORRADE_TARGET_WINDOWS AND NOT MAGNUM_BUILD_STATIC AND NOT _component IN_LIST _MAGNUM_LIBRARY_COMPONENTS_ALWAYS_STATIC AND NOT _component MATCHES ".+Application" AND NOT _component MATCHES ".+Context")
+                find_program(MAGNUM_${_COMPONENT}_DLL_DEBUG ${CMAKE_SHARED_LIBRARY_PREFIX}Magnum${_component}-d.dll)
+                find_program(MAGNUM_${_COMPONENT}_DLL_RELEASE ${CMAKE_SHARED_LIBRARY_PREFIX}Magnum${_component}.dll)
+                mark_as_advanced(MAGNUM_${_COMPONENT}_DLL_DEBUG
+                    MAGNUM_${_COMPONENT}_DLL_RELEASE)
+            # If not on Windows or on a static build, unset the DLL variables
+            # to avoid leaks when switching shared and static builds
+            else()
+                unset(MAGNUM_${_COMPONENT}_DLL_DEBUG CACHE)
+                unset(MAGNUM_${_COMPONENT}_DLL_RELEASE CACHE)
+            endif()
+
         # Plugin components
         elseif(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             # AudioImporter plugin specific name suffixes
@@ -721,35 +742,102 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             mark_as_advanced(_MAGNUM_${_COMPONENT}_INCLUDE_DIR)
         endif()
 
+        # Determine if the plugin is static or dynamic by reading the
+        # per-plugin config file. Plugins use this for automatic import if
+        # static.
+        # TODO: add per-library configure.h as well, for consistency with
+        #   extras, plugins and integration
+        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
+            find_file(_MAGNUM_${_COMPONENT}_CONFIGURE_FILE configure.h
+                HINTS ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR})
+            mark_as_advanced(_MAGNUM_${_COMPONENT}_CONFIGURE_FILE)
+
+            # If the file wasn't found, skip this so it fails on the FPHSA
+            # below and not right here.
+            if(_MAGNUM_${_COMPONENT}_CONFIGURE_FILE)
+                file(READ ${_MAGNUM_${_COMPONENT}_CONFIGURE_FILE} _magnumPluginConfigure)
+                string(REGEX REPLACE ";" "\\\\;" _magnumPluginConfigure "${_magnumPluginConfigure}")
+                string(REGEX REPLACE "\n" ";" _magnumPluginConfigure "${_magnumPluginConfigure}")
+                list(FIND _magnumPluginConfigure "#define MAGNUM_${_COMPONENT}_BUILD_STATIC" _magnumPluginBuildStatic)
+                if(NOT _magnumPluginBuildStatic EQUAL -1)
+                    # The variable is inconsistently named between C++ and
+                    # CMake in extras, plugins and integration, keep it
+                    # underscored / private until that's resolved
+                    set(_MAGNUM_${_COMPONENT}_BUILD_STATIC ON)
+                endif()
+            endif()
+        endif()
+
         # Decide if the library was found. If not, skip the rest, which
         # populates the target properties and finds additional dependencies.
         # This means that the rest can also rely on that e.g. FindEGL.cmake is
         # present in _MAGNUM_DEPENDENCY_MODULE_DIR -- given that the library
         # needing EGL was found, it likely also installed FindEGL for itself.
-        if(((_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)) OR (_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS AND MAGNUM_${_COMPONENT}_EXECUTABLE))
+        if(
+            # If the component is a library, it should have the include dir
+           ((_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (
+                # And it should have a debug library, and a DLL found if
+                # expected
+                (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG AND (
+                    NOT DEFINED MAGNUM_${_COMPONENT}_DLL_DEBUG OR
+                    MAGNUM_${_COMPONENT}_DLL_DEBUG)) OR
+                # Or have a release library, and a DLL found if expected
+                (MAGNUM_${_COMPONENT}_LIBRARY_RELEASE AND (
+                    NOT DEFINED MAGNUM_${_COMPONENT}_DLL_RELEASE OR
+                    MAGNUM_${_COMPONENT}_DLL_RELEASE)))) OR
+            # If the component is an executable, it should have just the
+            # location
+            (_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS AND MAGNUM_${_COMPONENT}_EXECUTABLE)
+        )
             set(Magnum_${_component}_FOUND TRUE)
         else()
             set(Magnum_${_component}_FOUND FALSE)
             continue()
         endif()
 
-        # Target and location for libraries/plugins
-        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
+        # Target and location for libraries
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS)
+            if(MAGNUM_BUILD_STATIC OR _component IN_LIST _MAGNUM_LIBRARY_COMPONENTS_ALWAYS_STATIC OR _component MATCHES ".+Application" OR _component MATCHES ".+Context")
+                add_library(Magnum::${_component} STATIC IMPORTED)
+            else()
+                add_library(Magnum::${_component} SHARED IMPORTED)
+            endif()
+
+            foreach(_CONFIG DEBUG RELEASE)
+                if(NOT MAGNUM_${_COMPONENT}_LIBRARY_${_CONFIG})
+                    continue()
+                endif()
+
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    IMPORTED_CONFIGURATIONS ${_CONFIG})
+                # Unfortunately for a DLL the two properties are swapped out,
+                # *.lib goes to IMPLIB, so it's duplicated like this
+                if(DEFINED MAGNUM_${_COMPONENT}_DLL_${_CONFIG})
+                    # Quotes to "fix" KDE's higlighter
+                    set_target_properties("Magnum::${_component}" PROPERTIES
+                        IMPORTED_LOCATION_${_CONFIG} ${MAGNUM_${_COMPONENT}_DLL_${_CONFIG}}
+                        IMPORTED_IMPLIB_${_CONFIG} ${MAGNUM_${_COMPONENT}_LIBRARY_${_CONFIG}})
+                else()
+                    set_property(TARGET Magnum::${_component} PROPERTY
+                        IMPORTED_LOCATION_${_CONFIG} ${MAGNUM_${_COMPONENT}_LIBRARY_${_CONFIG}})
+                endif()
+            endforeach()
+
+        # Target and location for plugins. Not dealing with DLL locations for
+        # those.
+        elseif(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             add_library(Magnum::${_component} UNKNOWN IMPORTED)
 
-            if(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    IMPORTED_CONFIGURATIONS RELEASE)
-                set_property(TARGET Magnum::${_component} PROPERTY
-                    IMPORTED_LOCATION_RELEASE ${MAGNUM_${_COMPONENT}_LIBRARY_RELEASE})
-            endif()
+            foreach(_CONFIG DEBUG RELEASE)
+                if(NOT MAGNUM_${_COMPONENT}_LIBRARY_${_CONFIG})
+                    continue()
+                endif()
 
-            if(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    IMPORTED_CONFIGURATIONS DEBUG)
+                    IMPORTED_CONFIGURATIONS ${_CONFIG})
                 set_property(TARGET Magnum::${_component} PROPERTY
-                    IMPORTED_LOCATION_DEBUG ${MAGNUM_${_COMPONENT}_LIBRARY_DEBUG})
-            endif()
+                    IMPORTED_LOCATION_${_CONFIG} ${MAGNUM_${_COMPONENT}_LIBRARY_${_CONFIG}})
+            endforeach()
 
         # Target and location for executable components
         elseif(_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
@@ -1020,21 +1108,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # No special setup for TgaImporter plugin
         # No special setup for WavAudioImporter plugin
 
-        # Automatic import of static plugins. Skip in case the include dir was
-        # not found -- that'll fail later with a proper message. Skip it also
-        # if the include dir doesn't contain the generated configure.h, which
-        # is the case with Magnum as a subproject and given plugin not enabled
-        # -- there it finds just the sources, where's just configure.h.cmake,
-        # and that's not useful for anything. The assumption here is that it
-        # will fail later anyway on the binary not being found.
-        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND EXISTS ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/configure.h)
-            # Automatic import of static plugins
-            file(READ ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/configure.h _magnum${_component}Configure)
-            string(FIND "${_magnum${_component}Configure}" "#define MAGNUM_${_COMPONENT}_BUILD_STATIC" _magnum${_component}_BUILD_STATIC)
-            if(NOT _magnum${_component}_BUILD_STATIC EQUAL -1)
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_SOURCES ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/importStaticPlugin.cpp)
-            endif()
+        # Automatic import of static plugins
+        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS AND _MAGNUM_${_COMPONENT}_BUILD_STATIC)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_SOURCES ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/importStaticPlugin.cpp)
         endif()
 
         # Link to core Magnum library, add inter-library dependencies. If there
