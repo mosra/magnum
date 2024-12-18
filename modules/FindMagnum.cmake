@@ -610,8 +610,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
     else()
         # Library components
         if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS)
-            add_library(Magnum::${_component} UNKNOWN IMPORTED)
-
             # Include path names to find, unless specified above already.
             # Application and context libraries are a special case as well.
             if(_component MATCHES ".+Application")
@@ -635,8 +633,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Plugin components
         elseif(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
-            add_library(Magnum::${_component} UNKNOWN IMPORTED)
-
             # AudioImporter plugin specific name suffixes
             if(_component MATCHES ".+AudioImporter$")
                 set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX audioimporters)
@@ -709,15 +705,8 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Executables
         elseif(_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
-            add_executable(Magnum::${_component} IMPORTED)
-
             find_program(MAGNUM_${_COMPONENT}_EXECUTABLE magnum-${_component})
             mark_as_advanced(MAGNUM_${_COMPONENT}_EXECUTABLE)
-
-            if(MAGNUM_${_COMPONENT}_EXECUTABLE)
-                set_property(TARGET Magnum::${_component} PROPERTY
-                    IMPORTED_LOCATION ${MAGNUM_${_COMPONENT}_EXECUTABLE})
-            endif()
 
         # Something unknown, skip. FPHSA will take care of handling this below.
         else()
@@ -744,8 +733,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             continue()
         endif()
 
-        # Library location for libraries/plugins
+        # Target and location for libraries/plugins
         if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
+            add_library(Magnum::${_component} UNKNOWN IMPORTED)
+
             if(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     IMPORTED_CONFIGURATIONS RELEASE)
@@ -759,6 +750,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set_property(TARGET Magnum::${_component} PROPERTY
                     IMPORTED_LOCATION_DEBUG ${MAGNUM_${_COMPONENT}_LIBRARY_DEBUG})
             endif()
+
+        # Target and location for executable components
+        elseif(_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
+            add_executable(Magnum::${_component} IMPORTED)
+
+            set_property(TARGET Magnum::${_component} PROPERTY
+                IMPORTED_LOCATION ${MAGNUM_${_COMPONENT}_EXECUTABLE})
         endif()
 
         # Applications
