@@ -339,24 +339,31 @@ void QuaternionTest::convert() {
 }
 
 void QuaternionTest::data() {
-    constexpr Quaternion ca{{1.0f, 2.0f, 3.0f}, -4.0f};
-    constexpr Vector3 vector = ca.vector();
-    constexpr Float scalar = ca.scalar();
-    CORRADE_COMPARE(vector, (Vector3{1.0f, 2.0f, 3.0f}));
-    CORRADE_COMPARE(scalar, -4.0f);
-
     Quaternion a{{1.0f, 2.0f, 3.0f}, -4.0f};
+    CORRADE_COMPARE(a.vector(), (Vector3{1.0f, 2.0f, 3.0f}));
+    CORRADE_COMPARE(a.scalar(), -4.0f);
+    CORRADE_COMPARE(a.xyzw(), (Vector4{1.0f, 2.0f, 3.0f, -4.0f}));
+    CORRADE_COMPARE(a.wxyz(), (Vector4{-4.0f, 1.0f, 2.0f, 3.0f}));
+
     a.vector().y() = 4.3f;
     a.scalar() = 1.1f;
     CORRADE_COMPARE(a, (Quaternion{{1.0f, 4.3f, 3.0f}, 1.1f}));
+    CORRADE_COMPARE(a.data()[3], 1.1f);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 4);
+
+    constexpr Quaternion ca{{1.0f, 2.0f, 3.0f}, -4.0f};
+    constexpr Vector3 vector = ca.vector();
+    constexpr Float scalar = ca.scalar();
+    constexpr Vector4 xyzw = ca.xyzw();
+    constexpr Vector4 wxyz = ca.wxyz();
+    CORRADE_COMPARE(vector, (Vector3{1.0f, 2.0f, 3.0f}));
+    CORRADE_COMPARE(scalar, -4.0f);
+    CORRADE_COMPARE(xyzw, (Vector4{1.0f, 2.0f, 3.0f, -4.0f}));
+    CORRADE_COMPARE(wxyz, (Vector4{-4.0f, 1.0f, 2.0f, 3.0f}));
 
     /* Not constexpr anymore, as it has to reinterpret to return a
        correctly-sized array */
-    CORRADE_COMPARE(a.data()[3], 1.1f);
     CORRADE_COMPARE(ca.data()[1], 2.0f);
-
-    /* It actually returns an array */
-    CORRADE_COMPARE(Containers::arraySize(a.data()), 4);
     CORRADE_COMPARE(Containers::arraySize(ca.data()), 4);
 }
 

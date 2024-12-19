@@ -469,15 +469,49 @@ template<class T> class Quaternion {
             return Implementation::isNormalizedSquared(dot());
         }
 
-        /** @brief Vector part (@f$ \boldsymbol{q}_V @f$) */
+        /**
+         * @brief Vector part (@f$ \boldsymbol{q}_V @f$)
+         *
+         * @see @ref xyzw(), @ref wxyz()
+         */
         Vector3<T>& vector() { return _vector; }
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
         constexpr const Vector3<T> vector() const { return _vector; } /**< @overload */
 
-        /** @brief Scalar part (@f$ q_S @f$) */
+        /**
+         * @brief Scalar part (@f$ q_S @f$)
+         *
+         * @see @ref xyzw(), @ref wxyz()
+         */
         T& scalar() { return _scalar; }
         constexpr T scalar() const { return _scalar; } /**< @overload */
+
+        /**
+         * @brief Quaternion components in a XYZW order
+         * @m_since_latest
+         *
+         * Returns a four-component vector containing @ref vector() in the XYZ
+         * components and @ref scalar() in W: @f[
+         *      v = [q_{V_x}, q_{V_y}, q_{V_z}, s]
+         * @f]
+         * @see @ref Complex::operator Vector2<T>()
+         */
+        constexpr Vector4<T> xyzw() const { return {_vector, _scalar}; }
+
+        /**
+         * @brief Quaternion components in a WXYZ order
+         * @m_since_latest
+         *
+         * Returns a four-component vector containing @ref scalar() in the X
+         * component and @ref vector() in YZW: @f[
+         *      v = [s, q_{V_x}, q_{V_y}, q_{V_z}]
+         * @f]
+         * @see @ref Complex::operator Vector2<T>()
+         */
+        constexpr Vector4<T> wxyz() const {
+            return {_scalar, _vector.x(), _vector.y(), _vector.z()};
+        }
 
         /**
          * @brief Rotation angle of a unit quaternion

@@ -285,6 +285,8 @@ See also:
     @ref Math::Quaternion::reflectVector(), but mainly just for documentation
     purposes as reflections cannot be combined with rotations and thus are
     mostly useless in practice
+-   Added @ref Math::Quaternion::xyzw() and @ref Math::Quaternion::wxyz()
+    helpers for converting to a @ref Vector4 in chosen component order
 -   New @ref Magnum/Math/ColorBatch.h header with utilities for performing Y
     flip of various block-compressed formats
 -   New @ref Math::Nanoseconds and @ref Math::Seconds classes for strongly

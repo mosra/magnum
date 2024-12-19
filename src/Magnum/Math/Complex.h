@@ -257,7 +257,8 @@ template<class T> class Complex {
          * @f[
          *      \boldsymbol v = \begin{pmatrix} a \\ b \end{pmatrix}
          * @f]
-         * @see @ref Complex(const Vector2<T>&)
+         * @see @ref Complex(const Vector2<T>&), @ref Quaternion::xyzw(),
+         *      @ref Quaternion::wxyz()
          */
         constexpr explicit operator Vector2<T>() const {
             return {_real, _imaginary};
