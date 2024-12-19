@@ -3426,16 +3426,24 @@ class CORRADE_DEPRECATED("use ScrollEvent and scrollEvent() instead") Sdl2Applic
 class CORRADE_DEPRECATED("use TwoFingerGesture with pointerPressEvent(), pointerReleaseEvent() and pointerMoveEvent() instead") Sdl2Application::MultiGestureEvent {
     public:
         /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         MultiGestureEvent(const MultiGestureEvent&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Moving is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         MultiGestureEvent(MultiGestureEvent&&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         MultiGestureEvent& operator=(const MultiGestureEvent&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Moving is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         MultiGestureEvent& operator=(MultiGestureEvent&&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Whether the event is accepted */
         bool isAccepted() const { return _accepted; }
