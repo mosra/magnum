@@ -801,22 +801,51 @@ void Context::setupDriverWorkarounds() {
         /* Unlike other EM_ASM() macros, this one isn't put into a JS library
            as it neither has any dependencies nor has code that may benefit
            from settings-based preprocessing done for minification */
+
         #pragma GCC diagnostic push
-        /* Fun. It's either -Wdollar-in-identifier-extension if an argument is
-           used, or -Wgnu-zero-variadic-macro-arguments if not, OR
-           -Wc++20-extensions if it's a different Clang version. TRASH FIRE. */
-        #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+        /* The damn thing moved the warning to another group in some version.
+           Not sure if it happened in Clang 10 already, but -Wc++20-extensions
+           is new in Clang 10, so just ignore both. HOWEVER, Emscripten often
+           uses a prerelease Clang, so if it reports version 10, it's likely
+           version 9. So check for versions _above_ 10 instead. */
+        #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+        #if __clang_major__ > 10
+        #pragma GCC diagnostic ignored "-Wc++20-extensions"
+        #endif
+        #ifdef MAGNUM_TARGET_GLES2
         const UnsignedInt which = EM_ASM_INT({
-            /* If this feels like peeking into some undocumented Emscripten
-               internals that are likely going to change randomly at some point
-               in the future, it's because it's indeed peeking into some
-               undocumented Emscripten internals that are likely going to
-               change randomly at some point in the future. HAVE FUN. */
-            var supported = GL.contexts[$0].GLctx.getExtension('WEBGL_compressed_texture_astc').getSupportedProfiles();
+            /* Originally this was accessing GL.contexts[$0].GLctx where $0 was
+               an integer passed from emscripten_webgl_get_current_context(),
+               basically relying on some undocumented part of Emscripten
+               internals. Moreover it didn't work with closure compiler enabled
+               (which mangled even the GL variable, causing it to be impossible
+               to find). Accessing Module.canvas should work, and according to
+                https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
+               calling getContext() on it again (with a correct string,
+               matching what was created in the first place) should return the
+               existing context, not creating a new one.
+
+               In this case, the closure compiler *may* mangle the Module name,
+               but will do so in a way that sill matches it, fortunately, The
+               getSupportedProfiles it will however not, so it has to be
+               queried as a string. */
+            var supported = Module.canvas.getContext('webgl').getExtension('WEBGL_compressed_texture_astc')['getSupportedProfiles']();
             return
                 (supported.indexOf('ldr') >= 0 ? 1 : 0)|
                 (supported.indexOf('hdr') >= 0 ? 2 : 0);
-        }, emscripten_webgl_get_current_context());
+        });
+        #else
+        const UnsignedInt which = EM_ASM_INT({
+            /* Because yes of course there's no way to pass a compile-time
+               macro into EM_ASM_INT so I have to duplicate like a madman. I
+               could pass it as an argument, but that'd be allocating a
+               JavaScript string. Do I look like I want to deal with that? */
+            var supported = Module.canvas.getContext('webgl2').getExtension('WEBGL_compressed_texture_astc')['getSupportedProfiles']();
+            return
+                (supported.indexOf('ldr') >= 0 ? 1 : 0)|
+                (supported.indexOf('hdr') >= 0 ? 2 : 0);
+        });
+        #endif
         #pragma GCC diagnostic pop
         _extensionStatus.set(Extensions::MAGNUM::compressed_texture_astc_ldr::Index, which & 0x01);
         _extensionStatus.set(Extensions::MAGNUM::compressed_texture_astc_hdr::Index, which & 0x02);
