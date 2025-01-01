@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Audio/Buffer.h"
@@ -56,7 +57,7 @@ struct SourceALTest: TestSuite::Tester {
 
 SourceALTest::SourceALTest():
     TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
-    _context{arguments().first, arguments().second}
+    _context{arguments().first(), arguments().second()}
 {
     addTests({&SourceALTest::construct,
 

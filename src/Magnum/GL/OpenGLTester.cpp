@@ -26,6 +26,8 @@
 
 #include "OpenGLTester.h"
 
+#include <Corrade/Containers/Reference.h>
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #ifndef MAGNUM_TARGET_WEBGL
@@ -34,7 +36,7 @@
 
 namespace Magnum { namespace GL {
 
-OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{{arguments().first, arguments().second}} {}
+OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{{arguments().first(), arguments().second()}} {}
 
 OpenGLTester::~OpenGLTester() = default;
 

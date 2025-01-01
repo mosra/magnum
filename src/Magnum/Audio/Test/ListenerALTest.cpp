@@ -58,7 +58,7 @@ struct ListenerALTest: TestSuite::Tester {
 
 ListenerALTest::ListenerALTest():
     TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
-    _context{arguments().first, arguments().second}
+    _context{arguments().first(), arguments().second()}
 {
     addTests({&ListenerALTest::feature2D,
               &ListenerALTest::feature3D,

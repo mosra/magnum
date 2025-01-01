@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Audio/Context.h"
@@ -47,7 +48,7 @@ struct RendererALTest: TestSuite::Tester {
 
 RendererALTest::RendererALTest():
     TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
-    _context{arguments().first, arguments().second}
+    _context{arguments().first(), arguments().second()}
 {
     addTests({&RendererALTest::listenerOrientation,
               &RendererALTest::listenerPosition,

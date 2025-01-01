@@ -26,6 +26,7 @@
 
 #include "VulkanTester.h"
 
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StringView.h>
 
 #include "Magnum/Vk/DeviceCreateInfo.h"
@@ -43,7 +44,7 @@ VulkanTester::VulkanTester(): VulkanTester{NoCreate} {
 }
 
 VulkanTester::VulkanTester(NoCreateT): VulkanTester{NoCreate, NoCreate} {
-    _instance.create(Vk::InstanceCreateInfo{arguments().first, arguments().second}
+    _instance.create(Vk::InstanceCreateInfo{arguments().first(), arguments().second()}
         .setApplicationInfo(testName(), {})
     );
 }

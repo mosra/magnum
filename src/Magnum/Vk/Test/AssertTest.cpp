@@ -28,6 +28,8 @@
 #undef NDEBUG /* So we can test them */
 #endif
 
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Arguments.h>
 
@@ -59,7 +61,7 @@ AssertTest::AssertTest(): TestSuite::Tester{TesterConfiguration{}.setSkippedArgu
         .addOption("assert-success-or", "false").setHelp("assert-success-or", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR() with Vk::Result", "BOOL")
         .addOption("assert-vk-success", "false").setHelp("assert-vk-success", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS() with VkResult", "BOOL")
         .addOption("assert-vk-success-or", "false").setHelp("assert-vk-success-or", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR() with VkResult", "BOOL")
-        .parse(arguments().first, arguments().second);
+        .parse(arguments().first(), arguments().second());
 
     _failAssertSuccess = args.value<bool>("assert-success");
     _failAssertSuccessOr = args.value<bool>("assert-success-or");

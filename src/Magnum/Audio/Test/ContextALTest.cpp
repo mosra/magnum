@@ -27,6 +27,8 @@
 
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 
@@ -74,7 +76,7 @@ void ContextALTest::constructDefault() {
     CORRADE_VERIFY(!Context::hasCurrent());
 
     {
-        Context context{arguments().first, arguments().second};
+        Context context{arguments().first(), arguments().second()};
         CORRADE_VERIFY(Context::hasCurrent());
         CORRADE_COMPARE(&Context::current(), &context);
 
@@ -110,7 +112,7 @@ void ContextALTest::constructConfiguration() {
                 .setMonoSourceCount(5)
                 .setStereoSourceCount(4)
                 .setRefreshRate(25),
-            arguments().first, arguments().second
+            arguments().first(), arguments().second()
         };
         CORRADE_VERIFY(Context::hasCurrent());
         CORRADE_COMPARE(&Context::current(), &context);
@@ -151,7 +153,7 @@ void ContextALTest::constructDeviceNotFound() {
     CORRADE_VERIFY(!Context::hasCurrent());
 
     {
-        Context context{NoCreate, arguments().first, arguments().second};
+        Context context{NoCreate, arguments().first(), arguments().second()};
         {
             #ifdef CORRADE_TARGET_APPLE
             CORRADE_EXPECT_FAIL_IF(context.vendorString() == "Apple Computer Inc.",

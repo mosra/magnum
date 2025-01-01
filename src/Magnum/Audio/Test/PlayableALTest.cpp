@@ -25,6 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Audio/Context.h"
@@ -50,7 +51,7 @@ struct PlayableALTest: TestSuite::Tester {
 
 PlayableALTest::PlayableALTest():
     TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
-    _context{arguments().first, arguments().second}
+    _context{arguments().first(), arguments().second()}
 {
     addTests({&PlayableALTest::feature,
               &PlayableALTest::group});
