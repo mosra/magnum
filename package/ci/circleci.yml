@@ -290,7 +290,8 @@ commands:
     steps:
     - run:
         name: Collect code coverage
-        # Keep in sync with PKBUILD-coverage and appveyor-lcov.sh, please
+        # Keep in sync with PKBUILD-coverage and appveyor-desktop-{,mingw}.bat,
+        # please
         command: |
           lcov $LCOV_EXTRA_OPTS --directory . --capture --output-file coverage.info > /dev/null
           lcov $LCOV_EXTRA_OPTS --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null

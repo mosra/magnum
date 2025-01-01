@@ -72,13 +72,14 @@ rem Test install, after running the tests as for them it shouldn't be needed
 cmake --build . --target install || exit /b
 
 rem Coverage upload
-set PATH=C:\msys64\usr\bin;%PATH%
-bash %APPVEYOR_BUILD_FOLDER%\package\ci\appveyor-lcov.sh || exit /b
-rem The damn new codecov binary is apparently unable to work with
-rem subdirectories on Windows. Nobody cares.
-rem https://github.com/codecov/codecov-action/issues/862
 cd %APPVEYOR_BUILD_FOLDER%
-move build\coverage.info coverage.info || exit /b
+set GCOV=C:/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov.exe
+rem Keep in sync with circleci.yml, appveyor-desktop.bat and PKBUILD-coverage,
+rem please. The --source-dir needs to be present in order to circumvent
+rem     Warning: "../foo" cannot be normalized because of "..", so skip it.
+rem that happens with CMake before 3.21 that doesn't yet pass full paths to
+rem Ninja: https://github.com/mozilla/grcov/issues/1182
+grcov build -t lcov --source-dir %APPVEYOR_BUILD_FOLDER%/build --keep-only "*/src/Magnum*/*" --ignore "*/src/MagnumExternal/*" --ignore "*/Test/*" --ignore "*/build/src/*" -o coverage.info --excl-line LCOV_EXCL_LINE --excl-start LCOV_EXCL_START --excl-stop LCOV_EXCL_STOP  || exit /b
 rem Official docs say "not needed for public repos", in reality not using the
 rem token is "extremely flakey". What's best is that if the upload fails, the
 rem damn thing exits with a success error code, and nobody cares:

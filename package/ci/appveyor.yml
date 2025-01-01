@@ -123,8 +123,9 @@ install:
 - 7z x ninja-win.zip -oC:/tools
 - set PATH=C:/tools;%PATH%
 
-# Codecov uploader
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" appveyor DownloadFile https://uploader.codecov.io/latest/windows/codecov.exe -FileName C:/tools/codecov.exe
+# Codecov uploader and grcov. Used for MinGW and clang-cl.
+- IF "%TARGET%" == "desktop" IF NOT "%COMPILER%" == "msvc" appveyor DownloadFile https://github.com/mozilla/grcov/releases/download/v0.8.20/grcov-x86_64-pc-windows-msvc.zip && 7z x grcov-x86_64-pc-windows-msvc.zip -oC:/tools
+- IF "%TARGET%" == "desktop" IF NOT "%COMPILER%" == "msvc" appveyor DownloadFile https://uploader.codecov.io/latest/windows/codecov.exe -FileName C:/tools/codecov.exe
 
 - IF "%TARGET_GLES2%" == "ON" set TARGET_GLES3=OFF
 - IF "%TARGET_GLES2%" == "OFF" set TARGET_GLES3=ON
