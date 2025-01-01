@@ -30,6 +30,7 @@
  * @brief Class @ref Magnum::Trade::AbstractImageConverter, enum @ref Magnum::Trade::ImageConverterFeature, enum set @ref Magnum::Trade::ImageConverterFeatures
  */
 
+#include <initializer_list>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"

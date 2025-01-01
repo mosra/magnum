@@ -30,6 +30,7 @@
  * @brief Class @ref Magnum::Animation::Track, @ref Magnum::Animation::TrackViewStorage, @ref Magnum::Animation::TrackView
  */
 
+#include <utility> /** @todo remove usage of std::pair from here */
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/Animation/Animation.h"

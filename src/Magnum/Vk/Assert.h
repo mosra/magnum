@@ -31,6 +31,7 @@
  * @m_since_latest
  */
 
+#include <initializer_list> /* {} in for() loops, SIGH */
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Assert.h>
 

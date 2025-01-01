@@ -31,6 +31,7 @@
  * @m_since_latest
  */
 
+#include <initializer_list>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 #include <Corrade/Utility/StlForwardString.h> /** @todo remove once file callbacks are std::string-free */

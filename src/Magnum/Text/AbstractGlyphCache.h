@@ -31,6 +31,7 @@
  * @m_since{2019,10}
  */
 
+#include <initializer_list>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Pointer.h>
 

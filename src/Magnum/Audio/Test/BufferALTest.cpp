@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Buffer is std::pair-free */
 
 #include "Magnum/Audio/Buffer.h"
 #include "Magnum/Audio/BufferFormat.h"

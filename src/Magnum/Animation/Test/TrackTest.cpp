@@ -25,6 +25,7 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Track is std::pair-free */
 
 #include "Magnum/Animation/Track.h"
 #include "Magnum/Math/Half.h"

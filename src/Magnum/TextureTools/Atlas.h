@@ -30,6 +30,7 @@
  * @brief Class @ref Magnum::TextureTools::AtlasLandfill, enum @ref Magnum::TextureTools::AtlasLandfillFlag, enum set @ref Magnum::TextureTools::AtlasLandfillFlags, function @ref Magnum::TextureTools::atlas(), @ref Magnum::TextureTools::atlasArrayPowerOfTwo()
  */
 
+#include <initializer_list>
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"

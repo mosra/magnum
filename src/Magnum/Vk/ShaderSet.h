@@ -31,6 +31,7 @@
  * @m_since_latest
  */
 
+#include <initializer_list>
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Tags.h"

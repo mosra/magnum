@@ -31,6 +31,8 @@
  * @brief Class @ref Magnum::GL::Framebuffer
  */
 
+#include <initializer_list>
+
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractFramebuffer.h"
 

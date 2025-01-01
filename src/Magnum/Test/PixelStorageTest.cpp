@@ -25,6 +25,7 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo drop once std::pair isn't used (i.e., the whole PixelStorage crap ceases to exist) */
 
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"

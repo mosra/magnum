@@ -30,6 +30,8 @@
  * @brief Class @ref Magnum::GL::DefaultFramebuffer
  */
 
+#include <initializer_list>
+
 #include "Magnum/GL/AbstractFramebuffer.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
