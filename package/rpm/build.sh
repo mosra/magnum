@@ -4,7 +4,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021, 2022, 2023, 2024
+#               2020, 2021, 2022, 2023, 2024, 2025
 #             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2018, 2020, 2021, 2022, 2023, 2024
 #             Igal Alkon <igal.alkon@gmail.com>
