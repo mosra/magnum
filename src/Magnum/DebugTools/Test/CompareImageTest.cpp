@@ -25,7 +25,6 @@
 */
 
 #include <sstream>
-#include <numeric>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Optional.h>

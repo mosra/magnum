@@ -28,7 +28,6 @@
 
 #include <cstring>
 #include <limits>
-#include <numeric>
 #include <unordered_map>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pair.h>

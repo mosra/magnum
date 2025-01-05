@@ -26,7 +26,6 @@
 
 #include "Combine.h"
 
-#include <numeric>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Algorithms.h>
 

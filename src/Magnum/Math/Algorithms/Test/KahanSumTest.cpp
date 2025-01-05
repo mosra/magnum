@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <numeric>
+#include <numeric> /* std::accumulate() */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <numeric>
+#include <numeric> /* std::accumulate() */
 #include <vector>
 #include <Corrade/Containers/ArrayView.h>
 

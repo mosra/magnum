@@ -29,7 +29,7 @@
 #include "Profiler.h"
 
 #include <algorithm> /* std::sort() */
-#include <numeric>
+#include <numeric> /* std::iota() */
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/DebugStl.h>

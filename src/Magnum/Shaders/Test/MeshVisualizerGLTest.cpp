@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <numeric>
+#include <numeric> /* std::iota() */
 #include <sstream>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Pair.h>
