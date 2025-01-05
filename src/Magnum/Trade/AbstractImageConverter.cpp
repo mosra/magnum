@@ -30,6 +30,9 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/StringStl.h>
+#endif
 #include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Path.h>
