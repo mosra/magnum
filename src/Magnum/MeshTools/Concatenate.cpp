@@ -26,10 +26,10 @@
 
 #include "Concatenate.h"
 
-#include <numeric>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/MeshTools/Implementation/remapAttributeData.h"
 
 namespace Magnum { namespace MeshTools {
@@ -116,7 +116,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
         /* Otherwise, if we need an index buffer (meaning at least one of the
            meshes is indexed), generate a trivial index buffer */
         } else if(!indices.isEmpty()) {
-            std::iota(indices + indexOffset, indices + indexOffset + mesh.vertexCount(), UnsignedInt(vertexOffset));
+            MeshTools::generateTrivialIndicesInto(indices.sliceSize(indexOffset, mesh.vertexCount()), vertexOffset);
             indexOffset += mesh.vertexCount();
         }
 
