@@ -28,9 +28,10 @@
 #include <sstream>
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h> /* contains() on std::string */
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/TestSuite/Compare/String.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -280,11 +281,14 @@ void ContextGLTest::constructConfiguration() {
         };
     }
 
-    /** @todo TestSuite::Compare::StringContains / NotContains for proper diag */
     if(!data.logShouldContain.isEmpty())
-        CORRADE_VERIFY(Containers::StringView{out.str()}.contains(data.logShouldContain));
+        CORRADE_COMPARE_AS(out.str(),
+            data.logShouldContain,
+            TestSuite::Compare::StringContains);
     if(!data.logShouldNotContain.isEmpty())
-        CORRADE_VERIFY(!Containers::StringView{out.str()}.contains(data.logShouldNotContain));
+        CORRADE_COMPARE_AS(out.str(),
+            data.logShouldNotContain,
+            TestSuite::Compare::StringNotContains);
 }
 
 void ContextGLTest::constructMove() {
@@ -335,11 +339,14 @@ void ContextGLTest::constructMove() {
             #endif
             .addDisabledExtensions(data.disabledExtensions));
     }
-    /** @todo TestSuite::Compare::StringContains / NotContains for proper diag */
     if(!data.logShouldContain.isEmpty())
-        CORRADE_VERIFY(Containers::StringView{out.str()}.contains(data.logShouldContain));
+        CORRADE_COMPARE_AS(out.str(),
+            data.logShouldContain,
+            TestSuite::Compare::StringContains);
     if(!data.logShouldNotContain.isEmpty())
-        CORRADE_VERIFY(!Containers::StringView{out.str()}.contains(data.logShouldNotContain));
+        CORRADE_COMPARE_AS(out.str(),
+            data.logShouldNotContain,
+            TestSuite::Compare::StringNotContains);
 
     /* The context is created now */
     CORRADE_VERIFY(Context::hasCurrent());
