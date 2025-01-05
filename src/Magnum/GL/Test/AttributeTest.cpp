@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/VertexFormat.h"
 #include "Magnum/GL/Attribute.h"
@@ -1109,11 +1108,11 @@ void AttributeTest::attributeFromGenericFormatEnableNormalized() {
 void AttributeTest::attributeFromGenericFormatUnexpectedForNormalizedKind() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DynamicAttribute{DynamicAttribute::Kind::GenericNormalized, 3,
         VertexFormat::Int};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::DynamicAttribute: can't use VertexFormat::Int for a normalized attribute\n");
 }
 
@@ -1121,13 +1120,13 @@ void AttributeTest::attributeFromGenericFormatUnexpectedForNormalizedKind() {
 void AttributeTest::attributeFromGenericFormatUnexpectedForIntegralKind() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DynamicAttribute{DynamicAttribute::Kind::Integral, 3,
         VertexFormat::Vector2bNormalized};
     DynamicAttribute{DynamicAttribute::Kind::Integral, 3,
         VertexFormat::Vector3};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::DynamicAttribute: can't use VertexFormat::Vector2bNormalized for a GL::DynamicAttribute::Kind::Integral attribute\n"
         "GL::DynamicAttribute: can't use VertexFormat::Vector3 for an integral attribute\n");
 }
@@ -1137,11 +1136,11 @@ void AttributeTest::attributeFromGenericFormatUnexpectedForIntegralKind() {
 void AttributeTest::attributeFromGenericFormatUnexpectedForLongKind() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DynamicAttribute{DynamicAttribute::Kind::Long, 3,
         VertexFormat::UnsignedShortNormalized};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::DynamicAttribute: can't use VertexFormat::UnsignedShortNormalized for a GL::DynamicAttribute::Kind::Long attribute\n");
 }
 #endif
@@ -1149,20 +1148,20 @@ void AttributeTest::attributeFromGenericFormatUnexpectedForLongKind() {
 void AttributeTest::attributeFromGenericFormatTooManyVectors() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DynamicAttribute{Attribute<7, Vector2>{}, VertexFormat::Matrix2x2};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::DynamicAttribute: can't use VertexFormat::Matrix2x2 for a 1-vector attribute\n");
 }
 
 void AttributeTest::attributeFromGenericFormatTooManyComponents() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DynamicAttribute{Attribute<7, Vector2>{}, VertexFormat::Vector3};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::DynamicAttribute: can't use VertexFormat::Vector3 for a 2-component attribute\n");
 }
 
@@ -1170,10 +1169,10 @@ void AttributeTest::attributeFromGenericFormatNotAvailable() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_SKIP("All attribute formats available on desktop GL.");
     #else
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DynamicAttribute{Attribute<7, Vector2>{}, VertexFormat::Vector3d};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::DynamicAttribute: VertexFormat::Vector3d isn't available on this target\n");
     #endif
 }
@@ -1219,79 +1218,79 @@ void AttributeTest::hasVertexFormat() {
 void AttributeTest::debugComponents1() {
     typedef Attribute<3, Float> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::Components::One << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::One GL::Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::Components::One GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponents2() {
     typedef Attribute<3, Vector2> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponents3() {
     typedef Attribute<3, Vector3> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 void AttributeTest::debugComponents4() {
     typedef Attribute<3, Vector4i> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
 }
 #endif
 
 void AttributeTest::debugComponentsMatrix2() {
     typedef Attribute<3, Matrix2x2> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponentsMatrix3() {
     typedef Attribute<3, Matrix3> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponentsMatrix4() {
     typedef Attribute<3, Matrix4> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponentsVector4() {
     typedef Attribute<3, Vector4> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugDataTypeFloat() {
     typedef Attribute<3, Float> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     Debug{&out} << Attribute::DataType::Half << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Half GL::Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Half GL::Attribute::DataType(0xdead)\n");
     #else
     Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
     #endif
 }
 
@@ -1299,9 +1298,9 @@ void AttributeTest::debugDataTypeFloat() {
 void AttributeTest::debugDataTypeInt() {
     typedef Attribute<3, Int> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::DataType::Short << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Short GL::Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Short GL::Attribute::DataType(0xdead)\n");
 }
 #endif
 
@@ -1309,44 +1308,44 @@ void AttributeTest::debugDataTypeInt() {
 void AttributeTest::debugDataTypeDouble() {
     typedef Attribute<3, Double> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::DataType::Double << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Double GL::Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Double GL::Attribute::DataType(0xdead)\n");
 }
 #endif
 
 void AttributeTest::debugDataTypeVector3() {
     typedef Attribute<3, Vector3> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
 }
 
 void AttributeTest::debugDataTypeVector4() {
     typedef Attribute<3, Vector4> Attribute;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
 }
 
 void AttributeTest::debugDynamicKind() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << DynamicAttribute::Kind::GenericNormalized << DynamicAttribute::Kind(0xfe);
-    CORRADE_COMPARE(out.str(), "GL::DynamicAttribute::Kind::GenericNormalized GL::DynamicAttribute::Kind(0xfe)\n");
+    CORRADE_COMPARE(out, "GL::DynamicAttribute::Kind::GenericNormalized GL::DynamicAttribute::Kind(0xfe)\n");
 }
 
 void AttributeTest::debugDynamicComponents() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << DynamicAttribute::Components::Three << DynamicAttribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::DynamicAttribute::Components::Three GL::DynamicAttribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::DynamicAttribute::Components::Three GL::DynamicAttribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugDynamicDataType() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << DynamicAttribute::DataType::Float << DynamicAttribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::DynamicAttribute::DataType::Float GL::DynamicAttribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::DynamicAttribute::DataType::Float GL::DynamicAttribute::DataType(0xdead)\n");
 }
 
 }}}}

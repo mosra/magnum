@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/DeviceFeatures.h"
 
@@ -66,9 +65,9 @@ void DeviceFeaturesTest::mapping() {
         switch(feature) {
             #define _c(value, field) \
                 case DeviceFeature::value: { \
-                    std::ostringstream out; \
+                    Containers::String out; \
                     Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << DeviceFeature::value; \
-                    CORRADE_COMPARE(out.str(), "Vk::DeviceFeature::" #value); \
+                    CORRADE_COMPARE(out, "Vk::DeviceFeature::" #value); \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xff); \
                     ++nextHandled; \
@@ -95,15 +94,15 @@ void DeviceFeaturesTest::mapping() {
 }
 
 void DeviceFeaturesTest::debugFeature() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << DeviceFeature::FullDrawIndexUnsignedInt << DeviceFeature::VulkanMemoryModel << DeviceFeature(0xab);
-    CORRADE_COMPARE(out.str(), "Vk::DeviceFeature::FullDrawIndexUnsignedInt Vk::DeviceFeature::VulkanMemoryModel Vk::DeviceFeature(0xab)\n");
+    CORRADE_COMPARE(out, "Vk::DeviceFeature::FullDrawIndexUnsignedInt Vk::DeviceFeature::VulkanMemoryModel Vk::DeviceFeature(0xab)\n");
 }
 
 void DeviceFeaturesTest::debugFeatures() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (DeviceFeature::FullDrawIndexUnsignedInt|DeviceFeature::VulkanMemoryModel|DeviceFeature(0xab)|DeviceFeature(0xcc)) << DeviceFeatures{};
-    CORRADE_COMPARE(out.str(), "Vk::DeviceFeature::FullDrawIndexUnsignedInt|Vk::DeviceFeature::VulkanMemoryModel|Vk::DeviceFeature(0xab)|Vk::DeviceFeature(0xcc) Vk::DeviceFeatures{}\n");
+    CORRADE_COMPARE(out, "Vk::DeviceFeature::FullDrawIndexUnsignedInt|Vk::DeviceFeature::VulkanMemoryModel|Vk::DeviceFeature(0xab)|Vk::DeviceFeature(0xcc) Vk::DeviceFeatures{}\n");
 }
 
 }}}}

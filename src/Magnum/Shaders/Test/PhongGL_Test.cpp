@@ -24,10 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Shaders/PhongGL.h"
 
@@ -110,10 +110,10 @@ void PhongGL_Test::configurationSetLightCountInvalid() {
 
     PhongGL::Configuration configuration;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     configuration.setLightCount(data.count, data.perDrawCount);
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::PhongGL::Configuration::setLightCount(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::PhongGL::Configuration::setLightCount(): {}\n", data.message));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -125,10 +125,10 @@ void PhongGL_Test::configurationSetJointCountInvalid() {
 
     PhongGL::Configuration configuration;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::PhongGL::Configuration::setJointCount(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::PhongGL::Configuration::setJointCount(): {}\n", data.message));
 }
 #endif
 
@@ -149,17 +149,17 @@ void PhongGL_Test::constructCopy() {
 }
 
 void PhongGL_Test::debugFlag() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << PhongGL::Flag::AmbientTexture << PhongGL::Flag(0xcafedead);
-    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::AmbientTexture Shaders::PhongGL::Flag(0xcafedead)\n");
+    CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::AmbientTexture Shaders::PhongGL::Flag(0xcafedead)\n");
 }
 
 void PhongGL_Test::debugFlags() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture) << PhongGL::Flags{};
-    CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::DiffuseTexture|Shaders::PhongGL::Flag::SpecularTexture Shaders::PhongGL::Flags{}\n");
+    CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::DiffuseTexture|Shaders::PhongGL::Flag::SpecularTexture Shaders::PhongGL::Flags{}\n");
 }
 
 void PhongGL_Test::debugFlagsSupersets() {
@@ -167,45 +167,45 @@ void PhongGL_Test::debugFlagsSupersets() {
     /* InstancedObjectId and ObjectIdTexture are a superset of ObjectId so only
        one should be printed, but if there are both then both should be */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedObjectId);
-        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedObjectId\n");
+        CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::InstancedObjectId\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (PhongGL::Flag::ObjectId|PhongGL::Flag::ObjectIdTexture);
-        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::ObjectIdTexture\n");
+        CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::ObjectIdTexture\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture);
-        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedObjectId|Shaders::PhongGL::Flag::ObjectIdTexture\n");
+        CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::InstancedObjectId|Shaders::PhongGL::Flag::ObjectIdTexture\n");
     }
     #endif
 
     /* InstancedTextureOffset is a superset of TextureTransformation so only
        one should be printed */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::TextureTransformation);
-        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::InstancedTextureOffset\n");
+        CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::InstancedTextureOffset\n");
     }
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
        only one should be printed, but if there are both then both should be */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (PhongGL::Flag::MultiDraw|PhongGL::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::MultiDraw\n");
+        CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::MultiDraw\n");
     }
     #ifndef MAGNUM_TARGET_WEBGL
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::ShaderStorageBuffers\n");
+        CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::ShaderStorageBuffers\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (PhongGL::Flag::MultiDraw|PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::MultiDraw|Shaders::PhongGL::Flag::ShaderStorageBuffers\n");
+        CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::MultiDraw|Shaders::PhongGL::Flag::ShaderStorageBuffers\n");
     }
     #endif
     #endif

@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Shaders/FlatGL.h"
 
@@ -101,10 +100,10 @@ template<UnsignedInt dimensions> void FlatGL_Test::configurationSetJointCountInv
 
     typename FlatGL<dimensions>::Configuration configuration;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::FlatGL::Configuration::setJointCount(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::FlatGL::Configuration::setJointCount(): {}\n", data.message));
 }
 #endif
 
@@ -128,17 +127,17 @@ template<UnsignedInt dimensions> void FlatGL_Test::constructCopy() {
 }
 
 void FlatGL_Test::debugFlag() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << FlatGL3D::Flag::Textured << FlatGL3D::Flag(0xf00d);
-    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::Textured Shaders::FlatGL::Flag(0xf00d)\n");
+    CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::Textured Shaders::FlatGL::Flag(0xf00d)\n");
 }
 
 void FlatGL_Test::debugFlags() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (FlatGL3D::Flag::Textured|FlatGL3D::Flag::AlphaMask) << FlatGL3D::Flags{};
-    CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::Textured|Shaders::FlatGL::Flag::AlphaMask Shaders::FlatGL::Flags{}\n");
+    CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::Textured|Shaders::FlatGL::Flag::AlphaMask Shaders::FlatGL::Flags{}\n");
 }
 
 void FlatGL_Test::debugFlagsSupersets() {
@@ -146,45 +145,45 @@ void FlatGL_Test::debugFlagsSupersets() {
     /* InstancedObjectId and ObjectIdTexture are a superset of ObjectId so only
        one should be printed, but if there are both then both should be */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (FlatGL3D::Flag::ObjectId|FlatGL3D::Flag::InstancedObjectId);
-        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedObjectId\n");
+        CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::InstancedObjectId\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (FlatGL3D::Flag::ObjectId|FlatGL3D::Flag::ObjectIdTexture);
-        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::ObjectIdTexture\n");
+        CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::ObjectIdTexture\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (FlatGL3D::Flag::ObjectId|FlatGL3D::Flag::InstancedObjectId|FlatGL3D::Flag::ObjectIdTexture);
-        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedObjectId|Shaders::FlatGL::Flag::ObjectIdTexture\n");
+        CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::InstancedObjectId|Shaders::FlatGL::Flag::ObjectIdTexture\n");
     }
     #endif
 
     /* InstancedTextureOffset is a superset of TextureTransformation so only
        one should be printed */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (FlatGL3D::Flag::InstancedTextureOffset|FlatGL3D::Flag::TextureTransformation);
-        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::InstancedTextureOffset\n");
+        CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::InstancedTextureOffset\n");
     }
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
        only one should be printed, but if there are both then both should be */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (FlatGL3D::Flag::MultiDraw|FlatGL3D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::MultiDraw\n");
+        CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::MultiDraw\n");
     }
     #ifndef MAGNUM_TARGET_WEBGL
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::ShaderStorageBuffers\n");
+        CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::ShaderStorageBuffers\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (FlatGL3D::Flag::MultiDraw|FlatGL3D::Flag::ShaderStorageBuffers|FlatGL3D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::MultiDraw|Shaders::FlatGL::Flag::ShaderStorageBuffers\n");
+        CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::MultiDraw|Shaders::FlatGL::Flag::ShaderStorageBuffers\n");
     }
     #endif
     #endif

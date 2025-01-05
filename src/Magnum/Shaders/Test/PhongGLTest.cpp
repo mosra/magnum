@@ -25,7 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
@@ -34,8 +33,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/System.h>
 
@@ -1849,7 +1847,7 @@ void PhongGLTest::constructInvalid() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     PhongGL{PhongGL::Configuration{}
         .setFlags(data.flags)
@@ -1858,7 +1856,7 @@ void PhongGLTest::constructInvalid() {
         .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         #endif
     };
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Shaders::PhongGL: {}\n", data.message));
 }
 
@@ -1874,7 +1872,7 @@ void PhongGLTest::constructUniformBuffersInvalid() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     PhongGL{PhongGL::Configuration{}
         .setFlags(data.flags)
@@ -1882,7 +1880,7 @@ void PhongGLTest::constructUniformBuffersInvalid() {
         .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Shaders::PhongGL: {}\n", data.message));
 }
 #endif
@@ -1901,12 +1899,12 @@ void PhongGLTest::setPerVertexJointCountInvalid() {
         .setFlags(PhongGL::Flag::DynamicPerVertexJointCount)
         .setJointCount(16, 3, 2)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     a.setPerVertexJointCount(3, 2);
     b.setPerVertexJointCount(4);
     b.setPerVertexJointCount(3, 3);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled\n"
         "Shaders::PhongGL::setPerVertexJointCount(): expected at most 3 per-vertex joints, got 4\n"
         "Shaders::PhongGL::setPerVertexJointCount(): expected at most 2 secondary per-vertex joints, got 3\n");
@@ -1925,7 +1923,7 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader
         /* setPerVertexJointCount() works on both UBOs and classic */
@@ -1952,7 +1950,7 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
         .setJointMatrices({})
         .setJointMatrix(0, {})
         .setPerInstanceJointCount(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setAmbientColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setDiffuseColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setNormalTextureScale(): the shader was created with uniform buffers enabled\n"
@@ -1984,7 +1982,7 @@ void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
     GL::Buffer buffer;
     PhongGL shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindProjectionBuffer(buffer)
           .bindProjectionBuffer(buffer, 0, 16)
@@ -2001,7 +1999,7 @@ void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
           .bindJointBuffer(buffer)
           .bindJointBuffer(buffer, 0, 16)
           .setDrawOffset(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::PhongGL::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::PhongGL::bindTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -2035,7 +2033,7 @@ void PhongGLTest::bindTexturesInvalid() {
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(data.flags)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindAmbientTexture(texture)
           .bindDiffuseTexture(texture)
@@ -2046,7 +2044,7 @@ void PhongGLTest::bindTexturesInvalid() {
           #endif
           .bindTextures(&texture, &texture, &texture, &texture);
 
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -2065,14 +2063,14 @@ void PhongGLTest::bindTextureArraysInvalid() {
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(data.flags)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindAmbientTexture(textureArray)
           .bindDiffuseTexture(textureArray)
           .bindSpecularTexture(textureArray)
           .bindNormalTexture(textureArray)
           .bindObjectIdTexture(textureArray);
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 #endif
 
@@ -2081,10 +2079,10 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
 
     PhongGL shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setAlphaMask(0.75f);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
 
@@ -2095,14 +2093,14 @@ void PhongGLTest::setSpecularDisabled() {
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::NoSpecular)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setSpecularColor({})
         .setShininess({})
         /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
         .setLightSpecularColors({Color3{}})
         .setLightSpecularColor(0, {});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setSpecularColor(): the shader was created with specular disabled\n"
         "Shaders::PhongGL::setShininess(): the shader was created with specular disabled\n"
         "Shaders::PhongGL::setLightSpecularColors(): the shader was created with specular disabled\n"
@@ -2114,10 +2112,10 @@ void PhongGLTest::setTextureMatrixNotEnabled() {
 
     PhongGL shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTextureMatrix({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
@@ -2126,10 +2124,10 @@ void PhongGLTest::setNormalTextureScaleNotEnabled() {
 
     PhongGL shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setNormalTextureScale({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setNormalTextureScale(): the shader was not created with normal texture enabled\n");
 }
 
@@ -2139,10 +2137,10 @@ void PhongGLTest::setTextureLayerNotArray() {
 
     PhongGL shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTextureLayer(37);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
 }
 #endif
@@ -2160,11 +2158,11 @@ void PhongGLTest::bindTextureTransformBufferNotEnabled() {
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
         "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
 }
@@ -2176,10 +2174,10 @@ void PhongGLTest::setObjectIdNotEnabled() {
 
     PhongGL shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setObjectId(33376);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setObjectId(): the shader was not created with object ID enabled\n");
 }
 #endif
@@ -2190,7 +2188,7 @@ void PhongGLTest::setWrongLightCountOrId() {
     PhongGL shader{PhongGL::Configuration{}
         .setLightCount(5)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader
         .setLightColors({Color3{}})
@@ -2199,7 +2197,7 @@ void PhongGLTest::setWrongLightCountOrId() {
         .setLightColor(5, Color3{})
         .setLightPosition(5, Vector4{})
         .setLightRange(5, 0.0f);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setLightColors(): expected 5 items but got 1\n"
         "Shaders::PhongGL::setLightPositions(): expected 5 items but got 1\n"
         "Shaders::PhongGL::setLightRanges(): expected 5 items but got 1\n"
@@ -2215,13 +2213,13 @@ void PhongGLTest::setWrongJointCountOrId() {
     PhongGL shader{PhongGL::Configuration{}
         .setJointCount(5, 1)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Calling setJointMatrices() with less items is fine, tested in
        renderSkinning() */
     shader.setJointMatrices({{}, {}, {}, {}, {}, {}})
         .setJointMatrix(5, Matrix4{});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setJointMatrices(): expected at most 5 items but got 6\n"
         "Shaders::PhongGL::setJointMatrix(): joint ID 5 is out of range for 5 joints\n");
 }
@@ -2242,10 +2240,10 @@ void PhongGLTest::setWrongDrawOffset() {
         .setMaterialCount(2)
         .setDrawCount(5)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setDrawOffset(5);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::PhongGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif

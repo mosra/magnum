@@ -25,10 +25,9 @@
 */
 
 #include <new>
-#include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
@@ -352,10 +351,10 @@ void ImageTest::aspectsFor() {
 void ImageTest::aspectsForInvalidFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     imageAspectsFor(PixelFormat{});
-    CORRADE_COMPARE(out.str(), "Vk::imageAspectsFor(): can't get an aspect for Vk::PixelFormat(0)\n");
+    CORRADE_COMPARE(out, "Vk::imageAspectsFor(): can't get an aspect for Vk::PixelFormat(0)\n");
 }
 
 void ImageTest::aspectsForGenericFormat() {
@@ -384,10 +383,10 @@ void ImageTest::dedicatedMemoryNotDedicated() {
     Image image{NoCreate};
     CORRADE_VERIFY(!image.hasDedicatedMemory());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     image.dedicatedMemory();
-    CORRADE_COMPARE(out.str(), "Vk::Image::dedicatedMemory(): image doesn't have a dedicated memory\n");
+    CORRADE_COMPARE(out, "Vk::Image::dedicatedMemory(): image doesn't have a dedicated memory\n");
 }
 
 void ImageTest::imageCopyConstruct() {
@@ -473,10 +472,10 @@ void ImageTest::imageCopyConvertDisallowed() {
     ImageCopy copy{ImageAspect{}, 0, 0, 0, {}, 0, 0, 0, {}, {}};
     copy->pNext = &copy;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     copy.vkImageCopy();
-    CORRADE_COMPARE(out.str(), "Vk::ImageCopy: disallowing conversion to VkImageCopy with non-empty pNext to prevent information loss\n");
+    CORRADE_COMPARE(out, "Vk::ImageCopy: disallowing conversion to VkImageCopy with non-empty pNext to prevent information loss\n");
 }
 
 void ImageTest::copyImageInfoConstruct() {
@@ -708,10 +707,10 @@ void ImageTest::bufferImageCopyConvertDisallowed() {
     BufferImageCopy copy{0, 0, 0, ImageAspect{}, 0, 0, 0, {}};
     copy->pNext = &copy;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     copy.vkBufferImageCopy();
-    CORRADE_COMPARE(out.str(), "Vk::BufferImageCopy: disallowing conversion to VkBufferImageCopy with non-empty pNext to prevent information loss\n");
+    CORRADE_COMPARE(out, "Vk::BufferImageCopy: disallowing conversion to VkBufferImageCopy with non-empty pNext to prevent information loss\n");
 }
 
 void ImageTest::copyBufferToImageInfoConstruct() {
@@ -825,15 +824,15 @@ void ImageTest::copyImageToBufferInfoConvertToVk() {
 }
 
 void ImageTest::debugAspect() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << ImageAspect::Depth << ImageAspect(0xdeadcafe);
-    CORRADE_COMPARE(out.str(), "Vk::ImageAspect::Depth Vk::ImageAspect(0xdeadcafe)\n");
+    CORRADE_COMPARE(out, "Vk::ImageAspect::Depth Vk::ImageAspect(0xdeadcafe)\n");
 }
 
 void ImageTest::debugAspects() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (ImageAspect::Stencil|ImageAspect(0xf0)) << ImageAspects{};
-    CORRADE_COMPARE(out.str(), "Vk::ImageAspect::Stencil|Vk::ImageAspect(0xf0) Vk::ImageAspects{}\n");
+    CORRADE_COMPARE(out, "Vk::ImageAspect::Stencil|Vk::ImageAspect(0xf0) Vk::ImageAspects{}\n");
 }
 
 }}}}

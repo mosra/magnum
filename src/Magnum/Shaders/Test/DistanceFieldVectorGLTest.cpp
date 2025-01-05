@@ -25,14 +25,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/System.h>
@@ -66,7 +64,7 @@
 #include "Magnum/Trade/MeshData.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/MeshView.h"
@@ -611,13 +609,13 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DistanceFieldVectorGL<dimensions>{typename DistanceFieldVectorGL<dimensions>::Configuration{}
         .setFlags(data.flags)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Shaders::DistanceFieldVectorGL: {}\n", data.message));
 }
 #endif
@@ -636,7 +634,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setUniformUnifo
     DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
         .setFlags(DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
@@ -644,7 +642,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setUniformUnifo
         .setOutlineColor({})
         .setOutlineRange({}, {})
         .setSmoothness({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::DistanceFieldVectorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::setColor(): the shader was created with uniform buffers enabled\n"
@@ -661,7 +659,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindBufferUnifo
     GL::Buffer buffer;
     DistanceFieldVectorGL<dimensions> shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
@@ -672,7 +670,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindBufferUnifo
           .bindMaterialBuffer(buffer)
           .bindMaterialBuffer(buffer, 0, 16)
           .setDrawOffset(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::DistanceFieldVectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -692,10 +690,10 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureMatri
 
     DistanceFieldVectorGL<dimensions> shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTextureMatrix({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::DistanceFieldVectorGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
@@ -714,11 +712,11 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindTextureTran
     DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
         .setFlags(DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
         "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
 }
@@ -740,10 +738,10 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setWrongDrawOff
         .setMaterialCount(2)
         .setDrawCount(5)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setDrawOffset(5);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::DistanceFieldVectorGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif

@@ -24,12 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Configuration is std::string-free */
 #include <Corrade/Utility/System.h>
 
 #include "Magnum/DebugTools/FrameProfiler.h"
@@ -781,32 +780,32 @@ void FrameProfilerTest::move() {
 void FrameProfilerTest::delayZero() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     FrameProfiler::Measurement{"", FrameProfiler::Units::Count, 0,
         nullptr, nullptr, nullptr, nullptr};
-    CORRADE_COMPARE(out.str(), "DebugTools::FrameProfiler::Measurement: delay can't be zero\n");
+    CORRADE_COMPARE(out, "DebugTools::FrameProfiler::Measurement: delay can't be zero\n");
 }
 
 void FrameProfilerTest::frameCountZero() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     FrameProfiler{{}, 0};
-    CORRADE_COMPARE(out.str(), "DebugTools::FrameProfiler::setup(): max frame count can't be zero\n");
+    CORRADE_COMPARE(out, "DebugTools::FrameProfiler::setup(): max frame count can't be zero\n");
 }
 
 void FrameProfilerTest::delayTooLittleFrames() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     FrameProfiler profiler{{
         FrameProfiler::Measurement{"", FrameProfiler::Units::Count, 3,
             nullptr, nullptr, nullptr, nullptr}
     }, 2};
-    CORRADE_COMPARE(out.str(), "DebugTools::FrameProfiler::setup(): max delay 3 is larger than max frame count 2\n");
+    CORRADE_COMPARE(out, "DebugTools::FrameProfiler::setup(): max delay 3 is larger than max frame count 2\n");
 }
 
 void FrameProfilerTest::startStopFrameUnexpected() {
@@ -814,7 +813,7 @@ void FrameProfilerTest::startStopFrameUnexpected() {
 
     FrameProfiler profiler;
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Error redirectError{&out};
         profiler.endFrame();
@@ -824,7 +823,7 @@ void FrameProfilerTest::startStopFrameUnexpected() {
         Error redirectError{&out};
         profiler.beginFrame();
     }
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "DebugTools::FrameProfiler::endFrame(): expected begin of frame\n"
         "DebugTools::FrameProfiler::beginFrame(): expected end of frame\n");
 }
@@ -839,14 +838,14 @@ void FrameProfilerTest::measurementOutOfRange() {
             nullptr, nullptr, nullptr}
     }, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     profiler.measurementName(2);
     profiler.measurementUnits(2);
     profiler.measurementDelay(2);
     profiler.measurementData(2, 0);
     profiler.measurementMean(2);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "DebugTools::FrameProfiler::measurementName(): index 2 out of range for 2 measurements\n"
         "DebugTools::FrameProfiler::measurementUnits(): index 2 out of range for 2 measurements\n"
         "DebugTools::FrameProfiler::measurementDelay(): index 2 out of range for 2 measurements\n"
@@ -870,10 +869,10 @@ void FrameProfilerTest::frameOutOfRange() {
     profiler.beginFrame();
     profiler.endFrame();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     profiler.measurementData(0, 3);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "DebugTools::FrameProfiler::measurementData(): frame 3 out of range for max 3 frames\n");
 }
 
@@ -889,10 +888,10 @@ void FrameProfilerTest::dataNotAvailableYet() {
 
     /* Empty state */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         profiler.measurementData(0, 0);
-        CORRADE_COMPARE(out.str(),
+        CORRADE_COMPARE(out,
             "DebugTools::FrameProfiler::measurementData(): frame 0 of measurement 0 not available yet (delay 3, 0 frames measured so far)\n");
     }
 
@@ -910,12 +909,12 @@ void FrameProfilerTest::dataNotAvailableYet() {
         profiler.measurementData(0, 0);
         profiler.measurementData(0, 1);
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         profiler.measurementData(0, 2);
         profiler.measurementData(0, 3);
         profiler.measurementData(0, 4);
-        CORRADE_COMPARE(out.str(),
+        CORRADE_COMPARE(out,
             "DebugTools::FrameProfiler::measurementData(): frame 2 of measurement 0 not available yet (delay 3, 4 frames measured so far)\n"
             "DebugTools::FrameProfiler::measurementData(): frame 3 of measurement 0 not available yet (delay 3, 4 frames measured so far)\n"
             "DebugTools::FrameProfiler::measurementData(): frame 4 of measurement 0 not available yet (delay 3, 4 frames measured so far)\n");
@@ -933,10 +932,10 @@ void FrameProfilerTest::dataNotAvailableYet() {
         profiler.measurementData(0, 2);
         profiler.measurementData(0, 3);
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         profiler.measurementData(0, 4);
-        CORRADE_COMPARE(out.str(),
+        CORRADE_COMPARE(out,
             "DebugTools::FrameProfiler::measurementData(): frame 4 of measurement 0 not available yet (delay 3, 6 frames measured so far)\n");
     }
 }
@@ -957,10 +956,10 @@ void FrameProfilerTest::meanNotAvailableYet() {
     CORRADE_COMPARE(profiler.measuredFrameCount(), 1);
     CORRADE_VERIFY(!profiler.isMeasurementAvailable(0));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     profiler.measurementMean(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "DebugTools::FrameProfiler::measurementMean(): measurement data available after 2 more frames\n");
 }
 
@@ -1160,13 +1159,13 @@ void FrameProfilerTest::glNotEnabled() {
 
     FrameProfilerGL profiler{{}, 5};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     profiler.isMeasurementAvailable(FrameProfilerGL::Value::CpuDuration);
     profiler.frameTimeMean();
     profiler.cpuDurationMean();
     profiler.gpuDurationMean();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "DebugTools::FrameProfilerGL::isMeasurementAvailable(): DebugTools::FrameProfilerGL::Value::CpuDuration not enabled\n"
         "DebugTools::FrameProfilerGL::frameTimeMean(): not enabled\n"
         "DebugTools::FrameProfilerGL::cpuDurationMean(): not enabled\n"
@@ -1175,25 +1174,25 @@ void FrameProfilerTest::glNotEnabled() {
 #endif
 
 void FrameProfilerTest::debugUnits() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << FrameProfiler::Units::Nanoseconds << FrameProfiler::Units(0xf0);
-    CORRADE_COMPARE(out.str(), "DebugTools::FrameProfiler::Units::Nanoseconds DebugTools::FrameProfiler::Units(0xf0)\n");
+    CORRADE_COMPARE(out, "DebugTools::FrameProfiler::Units::Nanoseconds DebugTools::FrameProfiler::Units(0xf0)\n");
 }
 
 #ifdef MAGNUM_TARGET_GL
 void FrameProfilerTest::debugGLValue() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << FrameProfilerGL::Value::GpuDuration << FrameProfilerGL::Value(0xfff0);
-    CORRADE_COMPARE(out.str(), "DebugTools::FrameProfilerGL::Value::GpuDuration DebugTools::FrameProfilerGL::Value(0xfff0)\n");
+    CORRADE_COMPARE(out, "DebugTools::FrameProfilerGL::Value::GpuDuration DebugTools::FrameProfilerGL::Value(0xfff0)\n");
 }
 
 void FrameProfilerTest::debugGLValues() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::FrameTime) << FrameProfilerGL::Values{};
-    CORRADE_COMPARE(out.str(), "DebugTools::FrameProfilerGL::Value::FrameTime|DebugTools::FrameProfilerGL::Value::CpuDuration DebugTools::FrameProfilerGL::Values{}\n");
+    CORRADE_COMPARE(out, "DebugTools::FrameProfilerGL::Value::FrameTime|DebugTools::FrameProfilerGL::Value::CpuDuration DebugTools::FrameProfilerGL::Values{}\n");
 }
 
 void FrameProfilerTest::configurationGLValue() {

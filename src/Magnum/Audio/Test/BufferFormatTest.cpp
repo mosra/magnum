@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Audio/BufferFormat.h"
 
@@ -43,9 +42,9 @@ BufferFormatTest::BufferFormatTest() {
 }
 
 void BufferFormatTest::debugFormat() {
-    std::ostringstream out;
+    Containers::String out;
     Debug(&out) << BufferFormat::Stereo16 << BufferFormat(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::BufferFormat::Stereo16 Audio::BufferFormat(0xdead)\n");
+    CORRADE_COMPARE(out, "Audio::BufferFormat::Stereo16 Audio::BufferFormat(0xdead)\n");
 }
 
 }}}}

@@ -25,10 +25,9 @@
 */
 
 #include <new>
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/BufferCreateInfo.h"
 
@@ -156,10 +155,10 @@ void BufferTest::dedicatedMemoryNotDedicated() {
     Buffer buffer{NoCreate};
     CORRADE_VERIFY(!buffer.hasDedicatedMemory());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     buffer.dedicatedMemory();
-    CORRADE_COMPARE(out.str(), "Vk::Buffer::dedicatedMemory(): buffer doesn't have a dedicated memory\n");
+    CORRADE_COMPARE(out, "Vk::Buffer::dedicatedMemory(): buffer doesn't have a dedicated memory\n");
 }
 
 void BufferTest::bufferCopyConstruct() {
@@ -211,10 +210,10 @@ void BufferTest::bufferCopyConvertDisallowed() {
     BufferCopy copy{0, 0, 0};
     copy->pNext = &copy;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     copy.vkBufferCopy();
-    CORRADE_COMPARE(out.str(), "Vk::BufferCopy: disallowing conversion to VkBufferCopy with non-empty pNext to prevent information loss\n");
+    CORRADE_COMPARE(out, "Vk::BufferCopy: disallowing conversion to VkBufferCopy with non-empty pNext to prevent information loss\n");
 }
 
 void BufferTest::copyBufferInfoConstruct() {

@@ -24,16 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /** @todo drop once Debug is stream-free */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo drop once Debug is stream-free */
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Text/AbstractFont.h"
@@ -553,12 +550,12 @@ void RendererTest::lineGlyphPositionsInvalidViewSizes() {
     Vector2 dataInvalid[4];
     Vector2 cursor;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     renderLineGlyphPositionsInto(font, 10.0f, LayoutDirection::HorizontalTopToBottom, data, data, cursor, dataInvalid);
     renderLineGlyphPositionsInto(font, 10.0f, LayoutDirection::HorizontalTopToBottom, data, dataInvalid, cursor, data);
     renderLineGlyphPositionsInto(font, 10.0f, LayoutDirection::HorizontalTopToBottom, dataInvalid, data, cursor, data);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::renderLineGlyphPositionsInto(): expected glyphOffsets, glyphAdvances and output views to have the same size, got 5, 5 and 4\n"
         "Text::renderLineGlyphPositionsInto(): expected glyphOffsets, glyphAdvances and output views to have the same size, got 5, 4 and 5\n"
         "Text::renderLineGlyphPositionsInto(): expected glyphOffsets, glyphAdvances and output views to have the same size, got 4, 5 and 5\n");
@@ -570,10 +567,10 @@ void RendererTest::lineGlyphPositionsInvalidDirection() {
     TestFont font;
     Vector2 cursor;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     renderLineGlyphPositionsInto(font, 10.0f, LayoutDirection::VerticalLeftToRight, {}, {}, cursor, {});
-    CORRADE_COMPARE(out.str(), "Text::renderLineGlyphPositionsInto(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalLeftToRight\n");
+    CORRADE_COMPARE(out, "Text::renderLineGlyphPositionsInto(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalLeftToRight\n");
 }
 
 void RendererTest::lineGlyphPositionsNoFontOpened() {
@@ -582,10 +579,10 @@ void RendererTest::lineGlyphPositionsNoFontOpened() {
     TestFont font;
     Vector2 cursor;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     renderLineGlyphPositionsInto(font, 10.0f, LayoutDirection::HorizontalTopToBottom, {}, {}, cursor, {});
-    CORRADE_COMPARE(out.str(), "Text::renderLineGlyphPositionsInto(): no font opened\n");
+    CORRADE_COMPARE(out, "Text::renderLineGlyphPositionsInto(): no font opened\n");
 }
 
 void RendererTest::glyphQuads() {
@@ -747,7 +744,7 @@ void RendererTest::glyphQuadsInvalidViewSizes() {
     Vector3 textureCoordinates[16];
     Vector3 textureCoordinatesInvalid[17];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     renderGlyphQuadsInto(font, 10.0f, cache, glyphPositions, glyphIdsInvalid, positions, textureCoordinates);
     renderGlyphQuadsInto(cache, 2.0f, glyphPositions, glyphIdsInvalid, positions, textureCoordinates);
@@ -757,7 +754,7 @@ void RendererTest::glyphQuadsInvalidViewSizes() {
     renderGlyphQuadsInto(cache, 2.0f, glyphPositions, glyphIds, positions, textureCoordinatesInvalid);
     renderGlyphQuadsInto(font, 10.0f, cache, glyphPositions, glyphIds, positionsInvalid, textureCoordinates);
     renderGlyphQuadsInto(cache, 10.0f, glyphPositions, glyphIds, positionsInvalid, textureCoordinates);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::renderGlyphQuadsInto(): expected fontGlyphIds and glyphPositions views to have the same size, got 3 and 4\n"
         "Text::renderGlyphQuadsInto(): expected glyphIds and glyphPositions views to have the same size, got 3 and 4\n"
         "Text::renderGlyphQuadsInto(): expected fontGlyphIds and glyphPositions views to have the same size, got 4 and 5\n"
@@ -775,10 +772,10 @@ void RendererTest::glyphQuadsNoFontOpened() {
     TestFont font;
     DummyGlyphCache cache{PixelFormat::R8Unorm, {20, 20}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     renderGlyphQuadsInto(font, 10.0f, cache, nullptr, nullptr, nullptr, Containers::StridedArrayView1D<Vector3>{});
-    CORRADE_COMPARE(out.str(), "Text::renderGlyphQuadsInto(): no font opened\n");
+    CORRADE_COMPARE(out, "Text::renderGlyphQuadsInto(): no font opened\n");
 }
 
 void RendererTest::glyphQuadsFontNotFoundInCache() {
@@ -790,10 +787,10 @@ void RendererTest::glyphQuadsFontNotFoundInCache() {
     cache.addFont(56);
     cache.addFont(13);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     renderGlyphQuadsInto(font, 10.0f, cache, nullptr, nullptr, nullptr, Containers::StridedArrayView1D<Vector3>{});
-    CORRADE_COMPARE(out.str(), "Text::renderGlyphQuadsInto(): font not found among 2 fonts in passed glyph cache\n");
+    CORRADE_COMPARE(out, "Text::renderGlyphQuadsInto(): font not found among 2 fonts in passed glyph cache\n");
 }
 
 void RendererTest::glyphQuads2D() {
@@ -871,10 +868,10 @@ void RendererTest::glyphQuads2DArrayGlyphCache() {
         GlyphCacheFeatures doFeatures() const override { return {}; }
     } cache{PixelFormat::R8Unorm, {20, 20, 2}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     renderGlyphQuadsInto(font, 10.0f, cache, nullptr, nullptr, nullptr, Containers::StridedArrayView1D<Vector2>{});
-    CORRADE_COMPARE(out.str(), "Text::renderGlyphQuadsInto(): can't use this overload with an array glyph cache\n");
+    CORRADE_COMPARE(out, "Text::renderGlyphQuadsInto(): can't use this overload with an array glyph cache\n");
 }
 
 void RendererTest::alignLine() {
@@ -901,11 +898,11 @@ void RendererTest::alignLine() {
 void RendererTest::alignLineInvalidDirection() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     alignRenderedLine({}, LayoutDirection::VerticalRightToLeft, Alignment::LineLeft, nullptr);
     alignRenderedLine({}, LayoutDirection::HorizontalTopToBottom, Alignment::BottomEnd, nullptr);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::alignRenderedLine(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalRightToLeft\n"
         "Text::alignRenderedLine(): Text::Alignment::BottomEnd has to be resolved to *Left / *Right before being passed to this function\n",
         TestSuite::Compare::String);
@@ -935,11 +932,11 @@ void RendererTest::alignBlock() {
 void RendererTest::alignBlockInvalidDirection() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     alignRenderedBlock({}, LayoutDirection::VerticalRightToLeft, Alignment::LineLeft, nullptr);
     alignRenderedBlock({}, LayoutDirection::HorizontalTopToBottom, Alignment::LineStartGlyphBounds, nullptr);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::alignRenderedBlock(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalRightToLeft\n"
         "Text::alignRenderedBlock(): Text::Alignment::LineStartGlyphBounds has to be resolved to *Left / *Right before being passed to this function\n",
         TestSuite::Compare::String);
@@ -981,7 +978,7 @@ void RendererTest::glyphQuadIndicesTypeTooSmall() {
     renderGlyphQuadIndicesInto(65536/4, Containers::ArrayView<UnsignedShort>{});
     renderGlyphQuadIndicesInto(4294967296u/4, Containers::ArrayView<UnsignedInt>{});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     renderGlyphQuadIndicesInto(256/4 - 3 + 1, indices8);
     renderGlyphQuadIndicesInto(65536/4 - 3 + 1, indices16);
@@ -990,7 +987,7 @@ void RendererTest::glyphQuadIndicesTypeTooSmall() {
     renderGlyphQuadIndicesInto(256/4 + 1, Containers::ArrayView<UnsignedByte>{});
     renderGlyphQuadIndicesInto(65536/4 + 1, Containers::ArrayView<UnsignedShort>{});
     renderGlyphQuadIndicesInto(4294967296u/4 + 1, Containers::ArrayView<UnsignedInt>{});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::renderGlyphQuadIndicesInto(): max index value of 259 cannot fit into a 8-bit type\n"
         "Text::renderGlyphQuadIndicesInto(): max index value of 65539 cannot fit into a 16-bit type\n"
         "Text::renderGlyphQuadIndicesInto(): max index value of 4294967299 cannot fit into a 32-bit type\n"
@@ -1436,10 +1433,10 @@ void RendererTest::arrayGlyphCache() {
         GlyphCacheFeatures doFeatures() const override { return {}; }
     } cache{PixelFormat::R8Unorm, {100, 100, 3}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AbstractRenderer::render(font, cache, 0.25f, "abc");
-    CORRADE_COMPARE(out.str(), "Text::Renderer: array glyph caches are not supported\n");
+    CORRADE_COMPARE(out, "Text::Renderer: array glyph caches are not supported\n");
 }
 
 void RendererTest::fontNotFoundInCache() {
@@ -1452,10 +1449,10 @@ void RendererTest::fontNotFoundInCache() {
     cache.addFont(34);
     cache.addFont(25);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AbstractRenderer::render(font, cache, 0.25f, "abc");
-    CORRADE_COMPARE(out.str(), "Text::Renderer: font not found among 2 fonts in passed glyph cache\n");
+    CORRADE_COMPARE(out, "Text::Renderer: font not found among 2 fonts in passed glyph cache\n");
 }
 #endif
 

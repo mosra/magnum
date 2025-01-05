@@ -25,9 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Magnum.h"
 #include "MagnumPlugins/WavAudioImporter/WavHeader.h"
@@ -45,10 +44,10 @@ WavHeaderTest::WavHeaderTest() {
 }
 
 void WavHeaderTest::debugAudioFormat() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << Implementation::WavAudioFormat::IeeeFloat << Implementation::WavAudioFormat(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::WavAudioFormat::IeeeFloat Audio::WavAudioFormat(0xdead)\n");
+    CORRADE_COMPARE(out, "Audio::WavAudioFormat::IeeeFloat Audio::WavAudioFormat(0xdead)\n");
 }
 
 }}}}

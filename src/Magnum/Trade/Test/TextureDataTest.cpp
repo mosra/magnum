@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Trade/TextureData.h"
 
@@ -119,17 +118,17 @@ void TextureDataTest::constructMove() {
 }
 
 void TextureDataTest::debugType() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << TextureType::Texture3D << TextureType(0xbe);
-    CORRADE_COMPARE(out.str(), "Trade::TextureType::Texture3D Trade::TextureType(0xbe)\n");
+    CORRADE_COMPARE(out, "Trade::TextureType::Texture3D Trade::TextureType(0xbe)\n");
 }
 
 void TextureDataTest::debugTypePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug(&out) << Debug::packed << TextureType::Texture3D << Debug::packed << TextureType(0xbe) << TextureType::Texture2D;
-    CORRADE_COMPARE(out.str(), "Texture3D 0xbe Trade::TextureType::Texture2D\n");
+    CORRADE_COMPARE(out, "Texture3D 0xbe Trade::TextureType::Texture2D\n");
 }
 
 }}}}

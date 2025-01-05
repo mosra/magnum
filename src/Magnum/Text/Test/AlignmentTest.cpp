@@ -24,11 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Text/Alignment.h"
 #include "Magnum/Text/Direction.h"
@@ -52,9 +50,9 @@ AlignmentTest::AlignmentTest() {
 }
 
 void AlignmentTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Alignment::MiddleRightGlyphBounds << Alignment(0xab);
-    CORRADE_COMPARE(out.str(), "Text::Alignment::MiddleRightGlyphBounds Text::Alignment(0xab)\n");
+    CORRADE_COMPARE(out, "Text::Alignment::MiddleRightGlyphBounds Text::Alignment(0xab)\n");
 }
 
 void AlignmentTest::forDirection() {
@@ -114,14 +112,14 @@ void AlignmentTest::forDirection() {
 void AlignmentTest::forDirectionInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* It should blow up also for alignments that don't use Start or End, for
        consistency */
     alignmentForDirection(Alignment::BottomCenter, LayoutDirection::VerticalRightToLeft, ShapeDirection::Unspecified);
     alignmentForDirection(Alignment::MiddleCenterIntegral, LayoutDirection::HorizontalTopToBottom, ShapeDirection::TopToBottom);
     alignmentForDirection(Alignment::MiddleCenterIntegral, LayoutDirection::HorizontalTopToBottom, ShapeDirection::BottomToTop);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::alignmentForDirection(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalRightToLeft\n"
         "Text::alignmentForDirection(): Text::ShapeDirection::TopToBottom is not supported yet, sorry\n"
         "Text::alignmentForDirection(): Text::ShapeDirection::BottomToTop is not supported yet, sorry\n",

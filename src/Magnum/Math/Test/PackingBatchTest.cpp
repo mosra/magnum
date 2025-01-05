@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Packing.h"
@@ -674,7 +673,7 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
     auto dstNotContiguous = Containers::arrayCast<2, Float>(
         Containers::arrayView(resultNonContiguous)).every({1, 2});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     unpackInto(src, dstWrongCount);
     unpackInto(src, dstWrongVectorSize);
@@ -684,7 +683,7 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
     packInto(dstWrongVectorSize, src);
     packInto(dstNotContiguous, src);
     packInto(dst, srcNonContiguous);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::unpackInto(): wrong destination size, got {1, 2} but expected {2, 2}\n"
         "Math::unpackInto(): wrong destination size, got {2, 3} but expected {2, 2}\n"
         "Math::unpackInto(): second destination view dimension is not contiguous\n"
@@ -718,7 +717,7 @@ void PackingBatchTest::assertionsPackUnpackHalf() {
     auto dstNotContiguous = Containers::arrayCast<2, Float>(
         Containers::arrayView(resultNonContiguous)).every({1, 2});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     unpackHalfInto(src, dstWrongCount);
     unpackHalfInto(src, dstWrongVectorSize);
@@ -728,7 +727,7 @@ void PackingBatchTest::assertionsPackUnpackHalf() {
     packHalfInto(dstWrongVectorSize, src);
     packHalfInto(dstNotContiguous, src);
     packHalfInto(dst, srcNonContiguous);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::unpackHalfInto(): wrong destination size, got {1, 2} but expected {2, 2}\n"
         "Math::unpackHalfInto(): wrong destination size, got {2, 3} but expected {2, 2}\n"
         "Math::unpackHalfInto(): second destination view dimension is not contiguous\n"
@@ -758,7 +757,7 @@ template<class U, class T> void PackingBatchTest::assertionsCast() {
     auto dstNotContiguous = Containers::arrayCast<2, U>(
         Containers::arrayView(resultNonContiguous)).every({1, 2});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     castInto(src, dstWrongCount);
     castInto(src, dstWrongVectorSize);
@@ -766,7 +765,7 @@ template<class U, class T> void PackingBatchTest::assertionsCast() {
     castInto(dstWrongCount, src);
     castInto(dstWrongVectorSize, src);
     castInto(dstNotContiguous, src);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::castInto(): wrong destination size, got {1, 2} but expected {2, 2}\n"
         "Math::castInto(): wrong destination size, got {2, 3} but expected {2, 2}\n"
         "Math::castInto(): second destination view dimension is not contiguous\n"

@@ -24,14 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Vk/DeviceFeatures.h"
@@ -361,10 +359,10 @@ void DevicePropertiesVkTest::enumerateExtensionsWithKhronosValidationLayer() {
 void DevicePropertiesVkTest::enumerateExtensionsNonexistentLayer() {
     CORRADE_SKIP("Currently this hits an internal assert, which can't be tested.");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     enumerateInstanceExtensionProperties({"VK_LAYER_this_doesnt_exist"});
-    CORRADE_COMPARE(out.str(), "TODO");
+    CORRADE_COMPARE(out, "TODO");
 }
 
 void DevicePropertiesVkTest::extensionConstructMove() {
@@ -467,11 +465,11 @@ void DevicePropertiesVkTest::queueFamiliesOutOfRange() {
 
     const UnsignedInt count = devices[0].queueFamilyCount();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     devices[0].queueFamilySize(count);
     devices[0].queueFamilyFlags(count);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Vk::DeviceProperties::queueFamilySize(): index {0} out of range for {0} entries\n"
         "Vk::DeviceProperties::queueFamilyFlags(): index {0} out of range for {0} entries\n", count));
 }
@@ -495,10 +493,10 @@ void DevicePropertiesVkTest::queueFamiliesPickFailed() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.isEmpty());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!devices[0].tryPickQueueFamily(QueueFlag(0xc0ffeee0)));
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Vk::DeviceProperties::tryPickQueueFamily(): no Vk::QueueFlag(0xc0ffeee0) found among {} queue families\n", devices[0].queueFamilyCount()));
 }
 
@@ -536,11 +534,11 @@ void DevicePropertiesVkTest::memoryHeapOutOfRange() {
 
     const UnsignedInt count = devices[0].memoryHeapCount();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     devices[0].memoryHeapSize(count);
     devices[0].memoryHeapFlags(count);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Vk::DeviceProperties::memoryHeapSize(): index {0} out of range for {0} memory heaps\n"
         "Vk::DeviceProperties::memoryHeapFlags(): index {0} out of range for {0} memory heaps\n", count));
 }
@@ -578,11 +576,11 @@ void DevicePropertiesVkTest::memoryTypeOutOfRange() {
 
     const UnsignedInt count = devices[0].memoryCount();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     devices[0].memoryFlags(count);
     devices[0].memoryHeapIndex(count);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Vk::DeviceProperties::memoryFlags(): index {0} out of range for {0} memory types\n"
         "Vk::DeviceProperties::memoryHeapIndex(): index {0} out of range for {0} memory types\n", count));
 }
@@ -632,12 +630,12 @@ void DevicePropertiesVkTest::memoryTypesPickFailed() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.isEmpty());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!devices[0].tryPickMemory(MemoryFlag(0xc0ffeee0)));
     CORRADE_VERIFY(!devices[0].tryPickMemory({}, {}, 0));
     CORRADE_VERIFY(!devices[0].tryPickMemory({}, 0));
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Vk::DeviceProperties::tryPickMemory(): no Vk::MemoryFlag(0xc0ffeee0) found among {} considered memory types\n"
         "Vk::DeviceProperties::tryPickMemory(): no Vk::MemoryFlags{{}} found among 0 considered memory types\n"
         "Vk::DeviceProperties::tryPickMemory(): no Vk::MemoryFlags{{}} found among 0 considered memory types\n", devices[0].memoryCount()));
@@ -684,10 +682,10 @@ void DevicePropertiesVkTest::pickDeviceError() {
     /* Creating a dedicated instance so we can pass custom args */
     Instance instance2{InstanceCreateInfo{Int(data.args.size()), const_cast<const char**>(data.args.data())}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!tryPickDevice(instance2));
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.message, enumerateDevices(instance2).size()));
+    CORRADE_COMPARE(out, Utility::format(data.message, enumerateDevices(instance2).size()));
 }
 
 }}}}

@@ -24,10 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Vk/Buffer.h"
@@ -106,11 +106,11 @@ void MeshTest::mapIndexTypeImplementationSpecific() {
 void MeshTest::mapIndexTypeInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     meshIndexType(Magnum::MeshIndexType(0x0));
     meshIndexType(Magnum::MeshIndexType(0x12));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::meshIndexType(): invalid type MeshIndexType(0x0)\n"
         "Vk::meshIndexType(): invalid type MeshIndexType(0x12)\n");
 }
@@ -245,11 +245,11 @@ void MeshTest::addVertexBufferNoSuchBinding() {
         .addBinding(1, 2)
         .addInstancedBinding(5, 3)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     noBindings.addVertexBuffer(2, VkBuffer{}, 0);
     differentBindings.addVertexBuffer(3, Buffer{NoCreate}, 5);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::Mesh::addVertexBuffer(): binding 2 not present among 0 bindings in the layout\n"
         "Vk::Mesh::addVertexBuffer(): binding 3 not present among 2 bindings in the layout\n");
 }
@@ -292,21 +292,21 @@ void MeshTest::indexPropertiesNotIndexed() {
     Mesh mesh{MeshLayout{MeshPrimitive::Triangles}};
     CORRADE_VERIFY(!mesh.isIndexed());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     mesh.indexBuffer();
     mesh.indexBufferOffset();
     mesh.indexType();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::Mesh::indexBuffer(): the mesh is not indexed\n"
         "Vk::Mesh::indexBufferOffset(): the mesh is not indexed\n"
         "Vk::Mesh::indexType(): the mesh is not indexed\n");
 }
 
 void MeshTest::debugIndexType() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << MeshIndexType::UnsignedShort << MeshIndexType(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::MeshIndexType::UnsignedShort Vk::MeshIndexType(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::MeshIndexType::UnsignedShort Vk::MeshIndexType(-10007655)\n");
 }
 
 }}}}

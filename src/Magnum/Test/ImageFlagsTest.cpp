@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/ImageFlags.h"
 
@@ -75,85 +74,85 @@ void ImageFlagsTest::matchingValues() {
 }
 
 void ImageFlagsTest::debugFlag1D() {
-    std::ostringstream out;
+    Containers::String out;
     /** @todo use a real flag once it exists */
     Debug{&out} << ImageFlag1D(0xcafe);
-    CORRADE_COMPARE(out.str(), "ImageFlag1D(0xcafe)\n");
+    CORRADE_COMPARE(out, "ImageFlag1D(0xcafe)\n");
 }
 
 void ImageFlagsTest::debugFlag2D() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << ImageFlag2D::Array << ImageFlag2D(0xcafe);
-    CORRADE_COMPARE(out.str(), "ImageFlag2D::Array ImageFlag2D(0xcafe)\n");
+    CORRADE_COMPARE(out, "ImageFlag2D::Array ImageFlag2D(0xcafe)\n");
 }
 
 void ImageFlagsTest::debugFlag3D() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << ImageFlag3D::CubeMap << ImageFlag3D(0xcafe);
-    CORRADE_COMPARE(out.str(), "ImageFlag3D::CubeMap ImageFlag3D(0xcafe)\n");
+    CORRADE_COMPARE(out, "ImageFlag3D::CubeMap ImageFlag3D(0xcafe)\n");
 }
 
 void ImageFlagsTest::debugFlag1DPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     /** @todo use real flags once they exist */
     Debug{&out} << Debug::packed << ImageFlag1D(0xcafe) << ImageFlag1D(0xbeef);
-    CORRADE_COMPARE(out.str(), "0xcafe ImageFlag1D(0xbeef)\n");
+    CORRADE_COMPARE(out, "0xcafe ImageFlag1D(0xbeef)\n");
 }
 
 void ImageFlagsTest::debugFlag2DPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << ImageFlag2D::Array << Debug::packed << ImageFlag2D(0xcafe) << ImageFlag2D::Array;
-    CORRADE_COMPARE(out.str(), "Array 0xcafe ImageFlag2D::Array\n");
+    CORRADE_COMPARE(out, "Array 0xcafe ImageFlag2D::Array\n");
 }
 
 void ImageFlagsTest::debugFlag3DPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << ImageFlag3D::CubeMap << Debug::packed << ImageFlag3D(0xcafe) << ImageFlag3D::Array;
-    CORRADE_COMPARE(out.str(), "CubeMap 0xcafe ImageFlag3D::Array\n");
+    CORRADE_COMPARE(out, "CubeMap 0xcafe ImageFlag3D::Array\n");
 }
 
 void ImageFlagsTest::debugFlags1D() {
-    std::ostringstream out;
+    Containers::String out;
     /** @todo use real flags once they exist */
     Debug{&out} << (ImageFlag1D{}|ImageFlag1D(0xcafe)) << ImageFlags1D{};
-    CORRADE_COMPARE(out.str(), "ImageFlag1D(0xcafe) ImageFlags1D{}\n");
+    CORRADE_COMPARE(out, "ImageFlag1D(0xcafe) ImageFlags1D{}\n");
 }
 
 void ImageFlagsTest::debugFlags2D() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (ImageFlag2D::Array|ImageFlag2D(0xcafe)) << ImageFlags2D{};
-    CORRADE_COMPARE(out.str(), "ImageFlag2D::Array|ImageFlag2D(0xcafe) ImageFlags2D{}\n");
+    CORRADE_COMPARE(out, "ImageFlag2D::Array|ImageFlag2D(0xcafe) ImageFlags2D{}\n");
 }
 
 void ImageFlagsTest::debugFlags3D() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (ImageFlag3D::Array|ImageFlag3D::CubeMap|ImageFlag3D(0xcaf0)) << ImageFlags3D{};
-    CORRADE_COMPARE(out.str(), "ImageFlag3D::Array|ImageFlag3D::CubeMap|ImageFlag3D(0xcaf0) ImageFlags3D{}\n");
+    CORRADE_COMPARE(out, "ImageFlag3D::Array|ImageFlag3D::CubeMap|ImageFlag3D(0xcaf0) ImageFlags3D{}\n");
 }
 
 void ImageFlagsTest::debugFlags1DPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     /** @todo use real flags once they exist */
     Debug{&out} << Debug::packed << (ImageFlag1D{}|ImageFlag1D(0xcafe)) << Debug::packed << ImageFlags1D{} << ImageFlag1D(0xbeef);
-    CORRADE_COMPARE(out.str(), "0xcafe {} ImageFlag1D(0xbeef)\n");
+    CORRADE_COMPARE(out, "0xcafe {} ImageFlag1D(0xbeef)\n");
 }
 
 void ImageFlagsTest::debugFlags2DPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (ImageFlag2D::Array|ImageFlag2D(0xcaf0)) << Debug::packed << ImageFlags2D{} << ImageFlag2D::Array;
-    CORRADE_COMPARE(out.str(), "Array|0xcaf0 {} ImageFlag2D::Array\n");
+    CORRADE_COMPARE(out, "Array|0xcaf0 {} ImageFlag2D::Array\n");
 }
 
 void ImageFlagsTest::debugFlags3DPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (ImageFlag3D::Array|ImageFlag3D::CubeMap |ImageFlag3D(0xcaf0)) << Debug::packed << ImageFlags3D{} << ImageFlag3D::Array;
-    CORRADE_COMPARE(out.str(), "Array|CubeMap|0xcaf0 {} ImageFlag3D::Array\n");
+    CORRADE_COMPARE(out, "Array|CubeMap|0xcaf0 {} ImageFlag3D::Array\n");
 }
 
 }}}

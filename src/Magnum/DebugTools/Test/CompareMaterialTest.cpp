@@ -24,10 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/DebugTools/CompareMaterial.h"
 #include "Magnum/Math/Color.h"
@@ -353,12 +352,12 @@ void CompareMaterialTest::different() {
         compare.printMessage(flags, out, "a", "b");
     }
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Debug dc{&out, Debug::Flag::DisableColors};
         compare.printMessage(flags, dc, "a", "b");
     }
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 
 void CompareMaterialTest::differentReverse() {
@@ -375,12 +374,12 @@ void CompareMaterialTest::differentReverse() {
         compare.printMessage(flags, out, "b", "a");
     }
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Debug dc{&out, Debug::Flag::DisableColors};
         compare.printMessage(flags, dc, "b", "a");
     }
-    CORRADE_COMPARE(out.str(), data.messageReverse);
+    CORRADE_COMPARE(out, data.messageReverse);
 }
 
 }}}}

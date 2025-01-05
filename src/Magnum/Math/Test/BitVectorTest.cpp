@@ -24,9 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/BitVector.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -373,12 +374,12 @@ void BitVectorTest::strictWeakOrdering() {
 }
 
 void BitVectorTest::debug() {
-    std::ostringstream o;
+    Containers::String out;
 
     /* 0b00100101 0b01010011 0b010 */
-    Debug(&o) << BitVector19(0x25, 0x53, 0x02);
+    Debug{&out} << BitVector19(0x25, 0x53, 0x02);
 
-    CORRADE_COMPARE(o.str(), "BitVector(0b00100101, 0b01010011, 0b010)\n");
+    CORRADE_COMPARE(out, "BitVector(0b00100101, 0b01010011, 0b010)\n");
 }
 
 }}}}

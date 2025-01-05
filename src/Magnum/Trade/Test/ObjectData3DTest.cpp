@@ -27,9 +27,8 @@
 /* There's no better way to disable file deprecation warnings */
 #define _MAGNUM_NO_DEPRECATED_OBJECTDATA
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Trade/MeshObjectData3D.h"
 
@@ -249,7 +248,7 @@ void ObjectData3DTest::constructMoveMesh() {
 void ObjectData3DTest::accessInvalidTransformations() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectOutput{&out};
 
     const ObjectData3D data{{}, Matrix4{}};
@@ -257,28 +256,28 @@ void ObjectData3DTest::accessInvalidTransformations() {
     data.rotation();
     data.scaling();
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ObjectData3D::translation(): object has only a combined transformation\n"
         "Trade::ObjectData3D::rotation(): object has only a combined transformation\n"
         "Trade::ObjectData3D::scaling(): object has only a combined transformation\n");
 }
 
 void ObjectData3DTest::debugType() {
-    std::ostringstream o;
-    Debug(&o) << ObjectInstanceType3D::Light << ObjectInstanceType3D(0xbe);
-    CORRADE_COMPARE(o.str(), "Trade::ObjectInstanceType3D::Light Trade::ObjectInstanceType3D(0xbe)\n");
+    Containers::String out;
+    Debug{&out} << ObjectInstanceType3D::Light << ObjectInstanceType3D(0xbe);
+    CORRADE_COMPARE(out, "Trade::ObjectInstanceType3D::Light Trade::ObjectInstanceType3D(0xbe)\n");
 }
 
 void ObjectData3DTest::debugFlag() {
-    std::ostringstream o;
-    Debug(&o) << ObjectFlag3D::HasTranslationRotationScaling << ObjectFlag3D(0xbe);
-    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag3D::HasTranslationRotationScaling Trade::ObjectFlag3D(0xbe)\n");
+    Containers::String out;
+    Debug{&out} << ObjectFlag3D::HasTranslationRotationScaling << ObjectFlag3D(0xbe);
+    CORRADE_COMPARE(out, "Trade::ObjectFlag3D::HasTranslationRotationScaling Trade::ObjectFlag3D(0xbe)\n");
 }
 
 void ObjectData3DTest::debugFlags() {
-    std::ostringstream o;
-    Debug(&o) << (ObjectFlag3D::HasTranslationRotationScaling|ObjectFlags3D{}) << ObjectFlags3D{};
-    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag3D::HasTranslationRotationScaling Trade::ObjectFlags3D{}\n");
+    Containers::String out;
+    Debug{&out} << (ObjectFlag3D::HasTranslationRotationScaling|ObjectFlags3D{}) << ObjectFlags3D{};
+    CORRADE_COMPARE(out, "Trade::ObjectFlag3D::HasTranslationRotationScaling Trade::ObjectFlags3D{}\n");
 }
 
 CORRADE_IGNORE_DEPRECATED_POP

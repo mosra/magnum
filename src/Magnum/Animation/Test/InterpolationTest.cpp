@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Animation/Easing.h"
 #include "Magnum/Animation/Interpolation.h"
@@ -225,12 +224,12 @@ void InterpolationTest::interpolatorFor() {
 void InterpolationTest::interpolatorForInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<Float>(Interpolation::Spline);
     Animation::interpolatorFor<Float>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Spline\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -245,12 +244,12 @@ void InterpolationTest::interpolatorForBool() {
 void InterpolationTest::interpolatorForBoolInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<bool>(Interpolation::Custom);
     Animation::interpolatorFor<bool>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -265,12 +264,12 @@ void InterpolationTest::interpolatorForBitVector() {
 void InterpolationTest::interpolatorForBitVectorInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<Math::BitVector<4>>(Interpolation::Custom);
     Animation::interpolatorFor<Math::BitVector<4>>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -289,12 +288,12 @@ void InterpolationTest::interpolatorForComplex() {
 void InterpolationTest::interpolatorForComplexInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<Complex>(Interpolation::Custom);
     Animation::interpolatorFor<Complex>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -313,12 +312,12 @@ void InterpolationTest::interpolatorForQuaternion() {
 void InterpolationTest::interpolatorForQuaternionInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<Quaternion>(Interpolation::Spline);
     Animation::interpolatorFor<Quaternion>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Spline\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -337,12 +336,12 @@ void InterpolationTest::interpolatorForDualQuaternion() {
 void InterpolationTest::interpolatorForDualQuaternionInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<DualQuaternion>(Interpolation::Custom);
     Animation::interpolatorFor<DualQuaternion>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -358,12 +357,12 @@ void InterpolationTest::interpolatorForCubicHermiteScalar() {
 void InterpolationTest::interpolatorForCubicHermiteScalarInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<CubicHermite1D>(Interpolation::Custom);
     Animation::interpolatorFor<CubicHermite1D>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -379,12 +378,12 @@ void InterpolationTest::interpolatorForCubicHermiteVector() {
 void InterpolationTest::interpolatorForCubicHermiteVectorInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<CubicHermite2D>(Interpolation::Custom);
     Animation::interpolatorFor<CubicHermite2D>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -400,12 +399,12 @@ void InterpolationTest::interpolatorForCubicHermiteComplex() {
 void InterpolationTest::interpolatorForCubicHermiteComplexInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<CubicHermiteComplex>(Interpolation::Custom);
     Animation::interpolatorFor<CubicHermiteComplex>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -427,12 +426,12 @@ void InterpolationTest::interpolatorForCubicHermiteQuaternion() {
 void InterpolationTest::interpolatorForCubicHermiteQuaternionInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation::Custom);
     Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation(0xde));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
@@ -544,7 +543,7 @@ void InterpolationTest::interpolateStrictIntegerKey() {
 void InterpolationTest::interpolateError() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     {
@@ -552,14 +551,14 @@ void InterpolationTest::interpolateError() {
         Animation::interpolate<Float, Float>(Keys, nullptr, Extrapolation::Extrapolated, Extrapolation::Extrapolated, Math::lerp, 0.0f, hint);
     }
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolate(): keys and values don't have the same size\n");
 }
 
 void InterpolationTest::interpolateStrictError() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     {
@@ -575,7 +574,7 @@ void InterpolationTest::interpolateStrictError() {
             Math::lerp, 0.0f, hint);
     }
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Animation::interpolateStrict(): at least two keyframes required\n"
         "Animation::interpolateStrict(): keys and values don't have the same size\n");
 }
@@ -629,31 +628,31 @@ void InterpolationTest::unpackEaseClamped() {
 }
 
 void InterpolationTest::debugInterpolation() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << Interpolation::Custom << Interpolation(0xde);
-    CORRADE_COMPARE(out.str(), "Animation::Interpolation::Custom Animation::Interpolation(0xde)\n");
+    CORRADE_COMPARE(out, "Animation::Interpolation::Custom Animation::Interpolation(0xde)\n");
 }
 
 void InterpolationTest::debugInterpolationPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << Interpolation::Custom << Debug::packed << Interpolation(0xde) << Interpolation::Constant;
-    CORRADE_COMPARE(out.str(), "Custom 0xde Animation::Interpolation::Constant\n");
+    CORRADE_COMPARE(out, "Custom 0xde Animation::Interpolation::Constant\n");
 }
 
 void InterpolationTest::debugExtrapolation() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << Extrapolation::DefaultConstructed << Extrapolation(0xde);
-    CORRADE_COMPARE(out.str(), "Animation::Extrapolation::DefaultConstructed Animation::Extrapolation(0xde)\n");
+    CORRADE_COMPARE(out, "Animation::Extrapolation::DefaultConstructed Animation::Extrapolation(0xde)\n");
 }
 
 void InterpolationTest::debugExtrapolationPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << Extrapolation::DefaultConstructed << Debug::packed << Extrapolation(0xde) << Extrapolation::Constant;
-    CORRADE_COMPARE(out.str(), "DefaultConstructed 0xde Animation::Extrapolation::Constant\n");
+    CORRADE_COMPARE(out, "DefaultConstructed 0xde Animation::Extrapolation::Constant\n");
 }
 
 

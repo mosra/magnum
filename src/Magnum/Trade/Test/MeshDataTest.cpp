@@ -25,14 +25,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Half.h"
@@ -548,32 +546,32 @@ void MeshDataTest::customAttributeName() {
 void MeshDataTest::customAttributeNameTooLarge() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     meshAttributeCustom(32768);
-    CORRADE_COMPARE(out.str(), "Trade::meshAttributeCustom(): index 32768 too large\n");
+    CORRADE_COMPARE(out, "Trade::meshAttributeCustom(): index 32768 too large\n");
 }
 
 void MeshDataTest::customAttributeNameNotCustom() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     meshAttributeCustom(MeshAttribute::TextureCoordinates);
-    CORRADE_COMPARE(out.str(), "Trade::meshAttributeCustom(): Trade::MeshAttribute::TextureCoordinates is not custom\n");
+    CORRADE_COMPARE(out, "Trade::meshAttributeCustom(): Trade::MeshAttribute::TextureCoordinates is not custom\n");
 }
 
 void MeshDataTest::debugAttributeName() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << MeshAttribute::Position << meshAttributeCustom(73) << MeshAttribute(0x73);
-    CORRADE_COMPARE(out.str(), "Trade::MeshAttribute::Position Trade::MeshAttribute::Custom(73) Trade::MeshAttribute(0x73)\n");
+    CORRADE_COMPARE(out, "Trade::MeshAttribute::Position Trade::MeshAttribute::Custom(73) Trade::MeshAttribute(0x73)\n");
 }
 
 void MeshDataTest::debugAttributeNamePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << MeshAttribute::Position << Debug::packed << meshAttributeCustom(73) << Debug::packed << MeshAttribute(0x73) << MeshAttribute::Normal;
-    CORRADE_COMPARE(out.str(), "Position Custom(73) 0x73 Trade::MeshAttribute::Normal\n");
+    CORRADE_COMPARE(out, "Position Custom(73) 0x73 Trade::MeshAttribute::Normal\n");
 }
 
 using namespace Math::Literals;
@@ -703,11 +701,11 @@ void MeshDataTest::constructIndexStridedWrongStride() {
     MeshIndexData{Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32767}};
     MeshIndexData{Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32768}.flipped<0>()};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshIndexData{Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32768}};
     MeshIndexData{Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32769}.flipped<0>()};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshIndexData: expected stride to fit into 16 bits but got 32768\n"
         "Trade::MeshIndexData: expected stride to fit into 16 bits but got -32769\n");
 }
@@ -726,10 +724,10 @@ void MeshDataTest::constructIndexTypeErasedContiguousImplementationSpecificForma
 
     const char indexData[3*2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshIndexData{meshIndexTypeWrap(0xcaca), indexData};
-    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: can't create index data from a contiguous view and an implementation-specific type 0xcaca, pass a strided view instead\n");
+    CORRADE_COMPARE(out, "Trade::MeshIndexData: can't create index data from a contiguous view and an implementation-specific type 0xcaca, pass a strided view instead\n");
 }
 
 void MeshDataTest::constructIndexTypeErasedContiguousWrongSize() {
@@ -737,10 +735,10 @@ void MeshDataTest::constructIndexTypeErasedContiguousWrongSize() {
 
     const char indexData[3*2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshIndexData{MeshIndexType::UnsignedInt, indexData};
-    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: view size 6 does not correspond to MeshIndexType::UnsignedInt\n");
+    CORRADE_COMPARE(out, "Trade::MeshIndexData: view size 6 does not correspond to MeshIndexType::UnsignedInt\n");
 }
 
 constexpr const char IndexData[3*4]{};
@@ -781,11 +779,11 @@ void MeshDataTest::constructIndexTypeErasedStridedWrongStride() {
     MeshIndexData{MeshIndexType::UnsignedByte, Containers::StridedArrayView1D<const void>{toomuch, 2, 32767}};
     MeshIndexData{MeshIndexType::UnsignedByte, Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32768}.flipped<0>()};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshIndexData{MeshIndexType::UnsignedByte, Containers::StridedArrayView1D<const void>{toomuch, 2, 32768}};
     MeshIndexData{MeshIndexType::UnsignedByte, Containers::StridedArrayView1D<UnsignedByte>{Containers::arrayCast<UnsignedByte>(toomuch), 2, 32769}.flipped<0>()};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshIndexData: expected stride to fit into 16 bits but got 32768\n"
         "Trade::MeshIndexData: expected stride to fit into 16 bits but got -32769\n");
 }
@@ -830,10 +828,10 @@ void MeshDataTest::constructIndex2DWrongSize() {
 
     const char data[3*3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshIndexData{Containers::StridedArrayView2D<const char>{data, {3, 3}}};
-    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: expected index type size 1, 2 or 4 but got 3\n");
+    CORRADE_COMPARE(out, "Trade::MeshIndexData: expected index type size 1, 2 or 4 but got 3\n");
 }
 
 void MeshDataTest::constructIndex2DWrongStride() {
@@ -845,11 +843,11 @@ void MeshDataTest::constructIndex2DWrongStride() {
     MeshIndexData{Containers::StridedArrayView2D<char>{toomuch, {2, 1}, {32767, 1}}};
     MeshIndexData{Containers::StridedArrayView2D<char>{toomuch, {2, 1}, {32768, 1}}.flipped<0>()};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshIndexData{Containers::StridedArrayView2D<char>{toomuch, {2, 1}, {32768, 1}}};
     MeshIndexData{Containers::StridedArrayView2D<char>{toomuch, {2, 1}, {32769, 1}}.flipped<0>()};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshIndexData: expected stride to fit into 16 bits but got 32768\n"
         "Trade::MeshIndexData: expected stride to fit into 16 bits but got -32769\n");
 }
@@ -862,10 +860,10 @@ void MeshDataTest::constructIndex2DNonContiguous() {
     /* This should be fine */
     MeshIndexData{Containers::StridedArrayView2D<const char>{data, {3, 2}, {4, 1}}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshIndexData{Containers::StridedArrayView2D<const char>{data, {3, 2}, {4, 2}}};
-    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: second view dimension is not contiguous\n");
+    CORRADE_COMPARE(out, "Trade::MeshIndexData: second view dimension is not contiguous\n");
 }
 
 void MeshDataTest::constructIndexNullptr() {
@@ -1002,12 +1000,12 @@ void MeshDataTest::constructAttribute2DWrongSize() {
 
     char positionData[4*sizeof(Vector2)]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3,
         Containers::StridedArrayView2D<char>{positionData,
             {4, sizeof(Vector2)}}.every(2)};
-    CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: second view dimension size 8 doesn't match VertexFormat::Vector3\n");
+    CORRADE_COMPARE(out, "Trade::MeshAttributeData: second view dimension size 8 doesn't match VertexFormat::Vector3\n");
 }
 
 void MeshDataTest::constructAttribute2DNonContiguous() {
@@ -1015,12 +1013,12 @@ void MeshDataTest::constructAttribute2DNonContiguous() {
 
     char positionData[4*sizeof(Vector2)]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2,
         Containers::StridedArrayView2D<char>{positionData,
             {2, sizeof(Vector2)*2}}.every({1, 2})};
-    CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: second view dimension is not contiguous\n");
+    CORRADE_COMPARE(out, "Trade::MeshAttributeData: second view dimension is not contiguous\n");
 }
 
 void MeshDataTest::constructAttributeTypeErased() {
@@ -1169,11 +1167,11 @@ void MeshDataTest::constructAttributeWrongFormat() {
 
     Vector2 positionData[3];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Color, Containers::arrayView(positionData)};
     MeshAttributeData{MeshAttribute::Color, VertexFormat::Vector2, 0, 3, sizeof(Vector2)};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshAttributeData: VertexFormat::Vector2 is not a valid format for Trade::MeshAttribute::Color\n"
         "Trade::MeshAttributeData: VertexFormat::Vector2 is not a valid format for Trade::MeshAttribute::Color\n");
 }
@@ -1185,12 +1183,12 @@ void MeshDataTest::constructAttributeWrongSize() {
     /* This should be fine */
     MeshAttributeData{MeshAttribute::Position, Containers::ArrayView<Vector2>{nullptr, 0xffffffffu}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, Containers::ArrayView<Vector2>{nullptr, 0x100000000ull}};
     /* The offset-only constructors takes the count as an UnsignedInt already,
        nothing to check there */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshAttributeData: expected vertex count to fit into 32 bits but got 4294967296\n");
 }
 #endif
@@ -1208,7 +1206,7 @@ void MeshDataTest::constructAttributeWrongStride() {
     MeshAttributeData{32767};
     MeshAttributeData{-32768};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32768}};
     MeshAttributeData{MeshAttribute::Position, Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32769}.flipped<0>()};
@@ -1216,7 +1214,7 @@ void MeshDataTest::constructAttributeWrongStride() {
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 65536, 1, -32769};
     MeshAttributeData{32768};
     MeshAttributeData{-32769};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshAttributeData: expected stride to fit into 16 bits but got 32768\n"
         "Trade::MeshAttributeData: expected stride to fit into 16 bits but got -32769\n"
         "Trade::MeshAttributeData: expected stride to fit into 16 bits but got 32768\n"
@@ -1236,13 +1234,13 @@ void MeshDataTest::constructAttributeWrongMorphTargetId() {
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, sizeof(Vector2), 0, -1};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, sizeof(Vector2), 0, 127};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions), -56};
     MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions), 128};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, sizeof(Vector2), 0, -56};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, sizeof(Vector2), 0, 128};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got -56\n"
         "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got 128\n"
         "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got -56\n"
@@ -1260,13 +1258,13 @@ void MeshDataTest::constructAttributeMorphTargetNotAllowed() {
     MeshAttributeData{MeshAttribute::ObjectId, VertexFormat::UnsignedInt, 0, 4, sizeof(UnsignedInt), 0, -1};
     MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedInt, 0, 1, sizeof(UnsignedInt), 4, -1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayView(ids), 37};
     MeshAttributeData{MeshAttribute::JointIds, Containers::stridedArrayView(ids).expanded<0>(Containers::Size2D{1, 4}), 37};
     MeshAttributeData{MeshAttribute::ObjectId, VertexFormat::UnsignedInt, 0, 4, sizeof(UnsignedInt), 0, 37};
     MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedInt, 0, 1, sizeof(UnsignedInt), 4, 37};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshAttributeData: morph target not allowed for Trade::MeshAttribute::ObjectId\n"
         "Trade::MeshAttributeData: morph target not allowed for Trade::MeshAttribute::JointIds\n"
         "Trade::MeshAttributeData: morph target not allowed for Trade::MeshAttribute::ObjectId\n"
@@ -1283,10 +1281,10 @@ void MeshDataTest::constructAttributeOnlyArrayAllowed() {
     MeshAttributeData{meshAttributeCustom(25), VertexFormat::Vector2, data};
     MeshAttributeData{meshAttributeCustom(25), VertexFormat::Float, data, 2};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float, data};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshAttributeData: Trade::MeshAttribute::Weights has to be an array attribute\n");
 }
 
@@ -1301,10 +1299,10 @@ void MeshDataTest::constructAttributeWrongDataAccess() {
 
     a.data(positionData); /* This is fine, no asserts */
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     b.data();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshAttributeData::data(): the attribute is offset-only, supply a data array\n");
 }
 
@@ -1370,12 +1368,12 @@ void MeshDataTest::constructArrayAttributeNonContiguous() {
 
     Vector2 vertexData[4*3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{meshAttributeCustom(35),
         Containers::StridedArrayView2D<Vector2>{vertexData,
             {4, 3}}.every({1, 2})};
-    CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: second view dimension is not contiguous\n");
+    CORRADE_COMPARE(out, "Trade::MeshAttributeData: second view dimension is not contiguous\n");
 }
 
 void MeshDataTest::constructArrayAttribute2D() {
@@ -1409,12 +1407,12 @@ void MeshDataTest::constructArrayAttribute2DWrongSize() {
 
     char vertexData[3*4*sizeof(Vector2)]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2,
         Containers::StridedArrayView2D<char>{vertexData,
             {3, 4*sizeof(Vector2)}}, 3};
-    CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: second view dimension size 32 doesn't match VertexFormat::Vector2 and array size 3\n");
+    CORRADE_COMPARE(out, "Trade::MeshAttributeData: second view dimension size 32 doesn't match VertexFormat::Vector2 and array size 3\n");
 }
 
 void MeshDataTest::constructArrayAttribute2DNonContiguous() {
@@ -1422,12 +1420,12 @@ void MeshDataTest::constructArrayAttribute2DNonContiguous() {
 
     char vertexData[4*3*sizeof(Vector2)]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2,
         Containers::StridedArrayView2D<char>{vertexData,
             {3, sizeof(Vector2)*4}}.every({1, 2}), 2};
-    CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: second view dimension is not contiguous\n");
+    CORRADE_COMPARE(out, "Trade::MeshAttributeData: second view dimension is not contiguous\n");
 }
 
 void MeshDataTest::constructArrayAttributeTypeErased() {
@@ -1552,13 +1550,13 @@ void MeshDataTest::constructArrayAttributeNotAllowed() {
     MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), 0, 3, 6*sizeof(Vector2), 3};
 
     /* This is not */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2b, positions, 3};
     MeshAttributeData{MeshAttribute::Position, positions2D};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, positions2Dchar, 3};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 3, 6*sizeof(Vector2), 3};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshAttributeData: Trade::MeshAttribute::Position can't be an array attribute\n"
         "Trade::MeshAttributeData: Trade::MeshAttribute::Position can't be an array attribute\n"
         "Trade::MeshAttributeData: Trade::MeshAttribute::Position can't be an array attribute\n"
@@ -2809,19 +2807,19 @@ void MeshDataTest::constructIndexDataButNotIndexed() {
     Containers::Array<char> indexData{6};
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData{MeshPrimitive::Points, Utility::move(indexData), MeshIndexData{}, nullptr, {positions}};
-    CORRADE_COMPARE(out.str(), "Trade::MeshData: indexData passed for a non-indexed mesh\n");
+    CORRADE_COMPARE(out, "Trade::MeshData: indexData passed for a non-indexed mesh\n");
 }
 
 void MeshDataTest::constructAttributelessImplicitVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData{MeshPrimitive::Points, nullptr, {}};
-    CORRADE_COMPARE(out.str(), "Trade::MeshData: vertex count can't be implicit if there are no attributes\n");
+    CORRADE_COMPARE(out, "Trade::MeshData: vertex count can't be implicit if there are no attributes\n");
 }
 
 void MeshDataTest::constructIndicesNotContained() {
@@ -2842,7 +2840,7 @@ void MeshDataTest::constructIndicesNotContained() {
        ending at 0xbaddaf */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<UnsignedShort>{{reinterpret_cast<UnsignedShort*>(0xbaddaf), 1}, 1}.broadcasted<0>(3)}, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Basic "obviously wrong" case with owned index data */
     MeshData{MeshPrimitive::Triangles, Utility::move(sameIndexDataButMovable), MeshIndexData{indexDataOut}, 1};
@@ -2866,7 +2864,7 @@ void MeshDataTest::constructIndicesNotContained() {
        zero size, and the stride is zero as well, but since it starts one byte
        after, it's wrong */
     MeshData{MeshPrimitive::Triangles, {}, indexData, MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<UnsignedShort>{{reinterpret_cast<UnsignedShort*>(0xbaddaf + 1), 1}, 1}.broadcasted<0>(3)}, 1};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: indices [0xdead:0xdeb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         "Trade::MeshData: indices [0xbaddaa:0xbaddb0] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
         "Trade::MeshData: indices [0xbadda9:0xbaddb3] are not contained in passed indexData array [0xbadda9:0xbaddaf]\n"
@@ -2914,7 +2912,7 @@ void MeshDataTest::constructAttributeNotContained() {
         MeshAttributeData{MeshAttribute::Position, vertexFormatWrap(0xcaca), Containers::StridedArrayView1D<Vector2>{{reinterpret_cast<Vector2*>(0xbaddc1), 1}, 1}.broadcasted<0>(3)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Basic "obviously wrong" case with owned vertex data */
     MeshData{MeshPrimitive::Triangles, Utility::move(sameVertexDataButMovable), {
@@ -2972,7 +2970,7 @@ void MeshDataTest::constructAttributeNotContained() {
     MeshData{MeshPrimitive::Triangles, {}, vertexData, {
         MeshAttributeData{MeshAttribute::Position, vertexFormatWrap(0xcaca), Containers::StridedArrayView1D<Vector2>{{reinterpret_cast<Vector2*>(0xbaddc1 + 1), 1}, 1}.broadcasted<0>(3)}
     }};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: attribute 1 [0xdead:0xdec5] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbaddaa:0xbaddc2] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
         "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc9] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
@@ -2999,7 +2997,7 @@ void MeshDataTest::constructInconsitentVertexCount() {
     MeshAttributeData positions2{MeshAttribute::Position,
         Containers::arrayCast<Vector2>(vertexData).prefix(2)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* The explicit vertex count should be ignored for the assertion message,
        we only check that all passed attribute arrays have the same vertex
@@ -3007,7 +3005,7 @@ void MeshDataTest::constructInconsitentVertexCount() {
        checked with the explicit vertex count -- see the
        constructAttributeNotContained() test above. */
     MeshData{MeshPrimitive::Triangles, Utility::move(vertexData), {positions, positions2}, 17};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: attribute 1 has 2 vertices but 3 expected\n");
 }
 
@@ -3022,7 +3020,7 @@ void MeshDataTest::constructDifferentJointIdWeightCount() {
     } vertices[3]{};
     auto view = Containers::stridedArrayView(vertices);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData{MeshPrimitive::Points, {}, vertices, {
         /* Weights required to be here by the constructor */
@@ -3033,7 +3031,7 @@ void MeshDataTest::constructDifferentJointIdWeightCount() {
         MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedShort,
             view.slice(&Vertex::secondaryJointIds), 4}
     }};
-    CORRADE_COMPARE(out.str(), "Trade::MeshData: expected 2 weight attributes to match joint IDs but got 1\n");
+    CORRADE_COMPARE(out, "Trade::MeshData: expected 2 weight attributes to match joint IDs but got 1\n");
 }
 
 void MeshDataTest::constructInconsistentJointIdWeightArraySizes() {
@@ -3048,7 +3046,7 @@ void MeshDataTest::constructInconsistentJointIdWeightArraySizes() {
     } vertices[3]{};
     auto view = Containers::stridedArrayView(vertices);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData{MeshPrimitive::Points, {}, vertices, {
         /* Weights required to be here by the constructor */
@@ -3061,7 +3059,7 @@ void MeshDataTest::constructInconsistentJointIdWeightArraySizes() {
         MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedShort,
             view.slice(&Vertex::secondaryJointIds), 4}
     }};
-    CORRADE_COMPARE(out.str(), "Trade::MeshData: expected 4 array items for weight attribute 1 to match joint IDs but got 3\n");
+    CORRADE_COMPARE(out, "Trade::MeshData: expected 4 array items for weight attribute 1 to match joint IDs but got 3\n");
 }
 
 void MeshDataTest::constructNotOwnedIndexFlagOwned() {
@@ -3074,10 +3072,10 @@ void MeshDataTest::constructNotOwnedIndexFlagOwned() {
     MeshAttributeData positions{MeshAttribute::Position,
         Containers::arrayView(vertexData)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData data{MeshPrimitive::Triangles, DataFlag::Owned, indexData, indices, {}, vertexData, {positions}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: can't construct with non-owned index data but Trade::DataFlag::Owned\n");
 }
 
@@ -3091,10 +3089,10 @@ void MeshDataTest::constructNotOwnedVertexFlagOwned() {
     MeshAttributeData positions{MeshAttribute::Position,
         Containers::arrayView(vertexData)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData data{MeshPrimitive::Triangles, {}, indexData, indices, DataFlag::Owned, vertexData, {positions}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: can't construct with non-owned vertex data but Trade::DataFlag::Owned\n");
 }
 
@@ -3110,10 +3108,10 @@ void MeshDataTest::constructIndicesNotOwnedFlagOwned() {
     MeshIndexData indices{indexData};
     MeshAttributeData positions{MeshAttribute::Position, vertexView};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData data{MeshPrimitive::Triangles, DataFlag::Owned, indexData, indices, Utility::move(vertexData), {positions}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: can't construct with non-owned index data but Trade::DataFlag::Owned\n");
 }
 
@@ -3129,10 +3127,10 @@ void MeshDataTest::constructVerticesNotOwnedFlagOwned() {
     MeshAttributeData positions{MeshAttribute::Position,
         Containers::arrayView(vertexData)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData data{MeshPrimitive::Triangles, Utility::move(indexData), indices, DataFlag::Owned, vertexData, {positions}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: can't construct with non-owned vertex data but Trade::DataFlag::Owned\n");
 }
 
@@ -3143,10 +3141,10 @@ void MeshDataTest::constructIndexlessNotOwnedFlagOwned() {
     MeshAttributeData positions{MeshAttribute::Position,
         Containers::arrayView(vertexData)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData data{MeshPrimitive::Triangles, DataFlag::Owned, vertexData, {positions}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: can't construct with non-owned vertex data but Trade::DataFlag::Owned\n");
 }
 
@@ -3156,10 +3154,10 @@ void MeshDataTest::constructAttributelessNotOwnedFlagOwned() {
     const UnsignedShort indexData[]{0, 1, 0};
     MeshIndexData indices{indexData};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData data{MeshPrimitive::Triangles, DataFlag::Owned, indexData, indices, 2};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: can't construct with non-owned index data but Trade::DataFlag::Owned\n");
 }
 
@@ -3169,11 +3167,11 @@ void MeshDataTest::constructInvalidAttributeData() {
     MeshAttributeData a;
     MeshAttributeData b{3};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshData{MeshPrimitive::Triangles, nullptr, {a}};
     MeshData{MeshPrimitive::Triangles, nullptr, {b}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData: attribute 0 doesn't specify anything\n"
         "Trade::MeshData: attribute 0 doesn't specify anything\n");
 }
@@ -3304,11 +3302,11 @@ void MeshDataTest::indicesIntoArrayInvalidSize() {
     UnsignedInt indices[3]{};
     MeshData data{MeshPrimitive::Points, {}, indices, MeshIndexData{indices}, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt destination[2];
     data.indicesInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::indicesInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -3428,11 +3426,11 @@ void MeshDataTest::positions2DIntoArrayInvalidSize() {
             Containers::arrayView(positions)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Vector2 destination[2];
     data.positions2DInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::positions2DInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -3562,11 +3560,11 @@ void MeshDataTest::positions3DIntoArrayInvalidSize() {
             Containers::arrayView(positions)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Vector3 destination[2];
     data.positions3DInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::positions3DInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -3631,11 +3629,11 @@ void MeshDataTest::tangentsIntoArrayInvalidSize() {
             Containers::arrayView(tangents)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Vector3 destination[2];
     data.tangentsInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::tangentsInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -3698,11 +3696,11 @@ void MeshDataTest::bitangentSignsAsArrayNotFourComponent() {
             VertexFormat::Vector3sNormalized, Containers::arrayView(tangents)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Float destination[3];
     data.bitangentSignsInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::bitangentSignsInto(): expected four-component tangents, but got VertexFormat::Vector3sNormalized\n");
 }
 
@@ -3715,11 +3713,11 @@ void MeshDataTest::bitangentSignsIntoArrayInvalidSize() {
             Containers::arrayView(tangents)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Float destination[2];
     data.bitangentSignsInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::bitangentSignsInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -3784,11 +3782,11 @@ void MeshDataTest::bitangentsIntoArrayInvalidSize() {
             Containers::arrayView(bitangents)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Vector3 destination[2];
     data.bitangentsInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::bitangentsInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -3852,11 +3850,11 @@ void MeshDataTest::normalsIntoArrayInvalidSize() {
         MeshAttributeData{MeshAttribute::Normal, Containers::arrayView(normals)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Vector3 destination[2];
     data.normalsInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::normalsInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -3975,11 +3973,11 @@ void MeshDataTest::textureCoordinates2DIntoArrayInvalidSize() {
         MeshAttributeData{MeshAttribute::TextureCoordinates, Containers::arrayView(textureCoordinates)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Vector2 destination[2];
     data.textureCoordinates2DInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::textureCoordinates2DInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -4041,11 +4039,11 @@ void MeshDataTest::colorsIntoArrayInvalidSize() {
         MeshAttributeData{MeshAttribute::Color, Containers::arrayView(colors)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Color4 destination[2];
     data.colorsInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::colorsInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -4115,7 +4113,7 @@ void MeshDataTest::jointIdsIntoArrayInvalidSizeStride() {
             view.slice(&Vertex::jointIds), 2}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt jointIds1[3*3];
     UnsignedInt jointIds2[2*2];
@@ -4123,7 +4121,7 @@ void MeshDataTest::jointIdsIntoArrayInvalidSizeStride() {
     data.jointIdsInto(Containers::StridedArrayView2D<UnsignedInt>{jointIds1, {3, 3}});
     data.jointIdsInto(Containers::StridedArrayView2D<UnsignedInt>{jointIds2, {2, 2}});
     data.jointIdsInto(Containers::StridedArrayView2D<UnsignedInt>{jointIds3, {3, 4}}.every({1, 2}));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::jointIdsInto(): expected a view with {3, 2} elements but got {3, 3}\n"
         "Trade::MeshData::jointIdsInto(): expected a view with {3, 2} elements but got {2, 2}\n"
         "Trade::MeshData::jointIdsInto(): second view dimension is not contiguous\n");
@@ -4222,7 +4220,7 @@ void MeshDataTest::weightsIntoArrayInvalidSizeStride() {
             view.slice(&Vertex::weights), 2}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Float weights1[3*3];
     Float weights2[2*2];
@@ -4230,7 +4228,7 @@ void MeshDataTest::weightsIntoArrayInvalidSizeStride() {
     data.weightsInto(Containers::StridedArrayView2D<Float>{weights1, {3, 3}});
     data.weightsInto(Containers::StridedArrayView2D<Float>{weights2, {2, 2}});
     data.weightsInto(Containers::StridedArrayView2D<Float>{weights3, {3, 4}}.every({1, 2}));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::weightsInto(): expected a view with {3, 2} elements but got {3, 3}\n"
         "Trade::MeshData::weightsInto(): expected a view with {3, 2} elements but got {2, 2}\n"
         "Trade::MeshData::weightsInto(): second view dimension is not contiguous\n");
@@ -4273,11 +4271,11 @@ void MeshDataTest::objectIdsIntoArrayInvalidSize() {
             Containers::arrayView(objectIds)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt destination[2];
     data.objectIdsInto(destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::objectIdsInto(): expected a view with 3 elements but got 2\n");
 }
 
@@ -4291,12 +4289,12 @@ void MeshDataTest::implementationSpecificIndexTypeWrongAccess() {
     MeshData data{MeshPrimitive::Triangles, DataFlag::Mutable, indexData,
         MeshIndexData{meshIndexTypeWrap(0xcaca), indices}, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.indices<UnsignedInt>();
     data.mutableIndices<UnsignedInt>();
     data.indicesAsArray();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::indices(): can't cast data from an implementation-specific index type 0xcaca\n"
         "Trade::MeshData::mutableIndices(): can't cast data from an implementation-specific index type 0xcaca\n"
         "Trade::MeshData::indicesInto(): can't extract data out of an implementation-specific index type 0xcaca\n");
@@ -4329,7 +4327,7 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
         MeshAttributeData{MeshAttribute::ObjectId,
             vertexFormatWrap(0xdead9), attribute}}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attribute<Float>(MeshAttribute::Position);
     data.attribute<Float>(MeshAttribute::Normal);
@@ -4350,7 +4348,7 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     data.jointIdsAsArray();
     data.weightsAsArray();
     data.objectIdsAsArray();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead4\n"
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead5\n"
@@ -4386,7 +4384,7 @@ void MeshDataTest::mutableAccessNotAllowed() {
     CORRADE_COMPARE(data.indexDataFlags(), DataFlags{});
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlags{});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.mutableIndexData();
     data.mutableVertexData();
@@ -4398,7 +4396,7 @@ void MeshDataTest::mutableAccessNotAllowed() {
     data.mutableAttribute(MeshAttribute::Position);
     data.mutableAttribute<Vector2>(MeshAttribute::Position);
     data.mutableAttribute<Vector2[]>(MeshAttribute::Position);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::mutableIndexData(): index data not mutable\n"
         "Trade::MeshData::mutableVertexData(): vertex data not mutable\n"
         "Trade::MeshData::mutableIndices(): index data not mutable\n"
@@ -4416,7 +4414,7 @@ void MeshDataTest::indicesNotIndexed() {
 
     MeshData data{MeshPrimitive::Triangles, 37};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.indexCount();
     data.indexType();
@@ -4427,7 +4425,7 @@ void MeshDataTest::indicesNotIndexed() {
     data.indicesAsArray();
     UnsignedInt a[1];
     data.indicesInto(a);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::indexCount(): the mesh is not indexed\n"
         "Trade::MeshData::indexType(): the mesh is not indexed\n"
         "Trade::MeshData::indexOffset(): the mesh is not indexed\n"
@@ -4446,11 +4444,11 @@ void MeshDataTest::indicesWrongType() {
     indices[0] = 57616;
     MeshData data{MeshPrimitive::Points, Utility::move(indexData), MeshIndexData{indices}, 57617};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.indices<UnsignedByte>();
     data.mutableIndices<UnsignedByte>();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::indices(): indices are MeshIndexType::UnsignedShort but requested MeshIndexType::UnsignedByte\n"
         "Trade::MeshData::mutableIndices(): indices are MeshIndexType::UnsignedShort but requested MeshIndexType::UnsignedByte\n");
 }
@@ -4478,7 +4476,7 @@ void MeshDataTest::attributeNotFound() {
     CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Color, 2), Containers::NullOpt);
     CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Color, 3, 37), Containers::NullOpt);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attributeData(9);
     data.attributeName(9);
@@ -4554,7 +4552,7 @@ void MeshDataTest::attributeNotFound() {
     data.weightsInto(nullptr, 2);
     /* Object IDs have no morph targets either */
     data.objectIdsAsArray();
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Trade::MeshData::attributeData(): index 9 out of range for 9 attributes\n"
         "Trade::MeshData::attributeName(): index 9 out of range for 9 attributes\n"
         "Trade::MeshData::attributeId(): index 9 out of range for 9 attributes\n"
@@ -4635,13 +4633,13 @@ void MeshDataTest::attributeWrongType() {
         MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attribute<Vector4>(MeshAttribute::Position);
     data.attribute<Vector4[]>(MeshAttribute::Position);
     data.mutableAttribute<Vector4>(MeshAttribute::Position);
     data.mutableAttribute<Vector4[]>(MeshAttribute::Position);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
         "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
@@ -4665,13 +4663,13 @@ void MeshDataTest::attributeWrongArrayAccess() {
     /* Array access is allowed for non-array attributes (the second dimension
        is then always 1), tested directly in construct() */
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attribute<Vector2>(0);
     data.mutableAttribute<Vector2>(0);
     data.attribute<Vector2>(meshAttributeCustom(35));
     data.mutableAttribute<Vector2>(meshAttributeCustom(35));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
         "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"

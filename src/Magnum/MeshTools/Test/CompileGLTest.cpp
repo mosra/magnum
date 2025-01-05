@@ -25,15 +25,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -1355,12 +1353,12 @@ void CompileGLTest::skinning() {
     CORRADE_COMPARE(jointCount.second(), data.expectedSecondaryJointCount);
 
     GL::Mesh mesh{NoCreate};
-    std::ostringstream out;
+    Containers::String out;
     {
         Warning redirectWarning{&out};
         mesh = compile(meshData);
     }
-    CORRADE_COMPARE(out.str(), data.expectedMessage);
+    CORRADE_COMPARE(out, data.expectedMessage);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1499,13 +1497,13 @@ void CompileGLTest::conflictingAttributes() {
 
     GL::Mesh mesh{NoCreate};
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Warning redirectWarning{&out};
         mesh = compile(meshData);
     }
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(out.str(), Utility::formatString("MeshTools::compile(): {}\n", data.expectedMessage));
+    CORRADE_COMPARE(out, Utility::format("MeshTools::compile(): {}\n", data.expectedMessage));
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -1562,10 +1560,10 @@ void CompileGLTest::unsupportedIndexStride() {
         {}, indices, Trade::MeshIndexData{Containers::stridedArrayView(indices).every(2)},
         1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compile(data);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compile(): MeshIndexType::UnsignedShort with stride of 4 bytes isn't supported by OpenGL\n");
 }
 
@@ -1583,13 +1581,13 @@ void CompileGLTest::morphTargetAttributes() {
             Containers::arrayView(vertexData), 26},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectError{&out};
     if(instanceData.flags)
         compile(data, instanceData.flags);
     else
         compile(data);
-    CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
+    CORRADE_COMPARE(out, instanceData.flags ? "" :
         "MeshTools::compile(): ignoring 2 morph target attributes\n");
 }
 
@@ -1602,13 +1600,13 @@ void CompileGLTest::customAttribute() {
             VertexFormat::Short, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectError{&out};
     if(instanceData.flags)
         compile(data, instanceData.flags);
     else
         compile(data);
-    CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
+    CORRADE_COMPARE(out, instanceData.flags ? "" :
         "MeshTools::compile(): ignoring unknown/unsupported attribute Trade::MeshAttribute::Custom(115)\n");
 }
 
@@ -1624,14 +1622,14 @@ void CompileGLTest::unsupportedAttribute() {
             VertexFormat::UnsignedByte, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectError{&out};
     if(instanceData.flags)
         compile(data, instanceData.flags);
     else
         compile(data);
     /* Warns always, regardless of the flag */
-    CORRADE_COMPARE(out.str(), "MeshTools::compile(): ignoring unknown/unsupported attribute Trade::MeshAttribute::ObjectId\n");
+    CORRADE_COMPARE(out, "MeshTools::compile(): ignoring unknown/unsupported attribute Trade::MeshAttribute::ObjectId\n");
     #endif
 }
 
@@ -1648,11 +1646,11 @@ void CompileGLTest::unsupportedAttributeStride() {
             Containers::stridedArrayView(data).flipped<0>()}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compile(zero);
     compile(negative);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compile(): Trade::MeshAttribute::Position stride of 0 bytes isn't supported by OpenGL\n"
         "MeshTools::compile(): Trade::MeshAttribute::Normal stride of -12 bytes isn't supported by OpenGL\n");
 }
@@ -1666,13 +1664,13 @@ void CompileGLTest::implementationSpecificAttributeFormat() {
             vertexFormatWrap(0xdead), nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectError{&out};
     if(instanceData.flags)
         compile(data, instanceData.flags);
     else
         compile(data);
-    CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
+    CORRADE_COMPARE(out, instanceData.flags ? "" :
         "MeshTools::compile(): ignoring attribute Trade::MeshAttribute::Position with an implementation-specific format 0xdead\n");
 }
 
@@ -1681,10 +1679,10 @@ void CompileGLTest::generateNormalsNoPosition() {
 
     Trade::MeshData data{MeshPrimitive::Triangles, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compile(data, CompileFlag::GenerateFlatNormals);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compile(): the mesh has no positions, can't generate normals\n");
 }
 
@@ -1696,10 +1694,10 @@ void CompileGLTest::generateNormals2DPosition() {
             VertexFormat::Vector2, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compile(data, CompileFlag::GenerateFlatNormals);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compile(): can't generate normals for VertexFormat::Vector2 positions\n");
 }
 
@@ -1713,10 +1711,10 @@ void CompileGLTest::generateNormalsNoFloats() {
             VertexFormat::Vector3h, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compile(data, CompileFlag::GenerateFlatNormals);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compile(): can't generate normals into VertexFormat::Vector3h\n");
 }
 
@@ -1815,11 +1813,11 @@ void CompileGLTest::externalBuffersInvalid() {
 
     compile(data, GL::Buffer{NoCreate}, GL::Buffer{}); /* this is okay */
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compile(data, GL::Buffer{NoCreate}, GL::Buffer{NoCreate});
     compile(indexedData, GL::Buffer{NoCreate}, GL::Buffer{});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compile(): invalid external buffer(s)\n"
         "MeshTools::compile(): invalid external buffer(s)\n");
 }

@@ -24,14 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-
 #if !defined(CORRADE_STANDARD_ASSERT) && !defined(CORRADE_NO_ASSERT)
 #define CORRADE_NO_ASSERT
 #endif
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Result.h"
@@ -59,7 +57,7 @@ AssertDisabledTest::AssertDisabledTest() {
 }
 
 void AssertDisabledTest::success() {
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Result a = Result::ErrorUnknown;
@@ -67,11 +65,11 @@ void AssertDisabledTest::success() {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(a = r);
     CORRADE_COMPARE(a, Result::ErrorFragmentedPool);
 
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AssertDisabledTest::successOr() {
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Result a = Result::ErrorUnknown;
@@ -80,7 +78,7 @@ void AssertDisabledTest::successOr() {
     CORRADE_COMPARE(a, Result::ErrorExtensionNotPresent);
     CORRADE_COMPARE(a2, a);
 
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 
     /* Test also that a standalone macro won't cause warnings about unused
        expression results */
@@ -88,7 +86,7 @@ void AssertDisabledTest::successOr() {
 }
 
 void AssertDisabledTest::vkSuccess() {
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     VkResult a = VK_ERROR_UNKNOWN;
@@ -96,11 +94,11 @@ void AssertDisabledTest::vkSuccess() {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(a = r);
     CORRADE_COMPARE(Result(a), Result::ErrorFragmentedPool);
 
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AssertDisabledTest::vkSuccessOr() {
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     VkResult b = VK_ERROR_UNKNOWN;
@@ -109,7 +107,7 @@ void AssertDisabledTest::vkSuccessOr() {
     CORRADE_COMPARE(Result(b), Result::ErrorExtensionNotPresent);
     CORRADE_COMPARE(b2, Result(b));
 
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 
     /* Test also that a standalone macro won't cause warnings about unused
        expression results */

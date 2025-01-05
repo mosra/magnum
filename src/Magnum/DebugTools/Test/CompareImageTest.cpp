@@ -24,19 +24,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo drop once Debug is stream-free */
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/File.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h> /* replaceFirst() */
 
@@ -294,37 +291,37 @@ const ImageView2D ExpectedRed{PixelFormat::R32F, {3, 3}, ExpectedRedData};
 void CompareImageTest::formatUnknown() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     ImageView2D image{PixelStorage{}, PixelFormat(0xdead), 0, 0, {}};
     Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
-    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: unknown format PixelFormat(0xdead)\n");
+    CORRADE_COMPARE(out, "DebugTools::CompareImage: unknown format PixelFormat(0xdead)\n");
 }
 
 void CompareImageTest::formatPackedDepthStencil() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     ImageView2D image{PixelFormat::Depth24UnormStencil8UI, {}};
     Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
-    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: packed depth/stencil formats are not supported yet\n");
+    CORRADE_COMPARE(out, "DebugTools::CompareImage: packed depth/stencil formats are not supported yet\n");
 }
 
 void CompareImageTest::formatImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     ImageView2D image{PixelStorage{}, pixelFormatWrap(0xdead), 0, 0, {}};
     Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
-    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: can't compare implementation-specific pixel formats\n");
+    CORRADE_COMPARE(out, "DebugTools::CompareImage: can't compare implementation-specific pixel formats\n");
 }
 
 void CompareImageTest::calculateDelta() {
@@ -459,17 +456,20 @@ void CompareImageTest::calculateDeltaSpecials3() {
 }
 
 void CompareImageTest::deltaImage() {
-    std::ostringstream out;
-    Debug d{&out, Debug::Flag::DisableColors};
-
     Containers::Array<Float> delta{32*32};
 
     for(std::int_fast32_t x = 0; x != 32; ++x)
         for(std::int_fast32_t y = 0; y != 32; ++y)
             delta[y*32 + x] = Vector2{Float(x), Float(y)}.length()/Vector2{32.0f}.length();
 
-    Implementation::printDeltaImage(d, delta, {32, 32}, 1.0f, 0.0f, 0.0f);
-    CORRADE_COMPARE(out.str(),
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug d{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printDeltaImage(d, delta, {32, 32}, 1.0f, 0.0f, 0.0f);
+    }
+    CORRADE_COMPARE(out,
         "          |$$$$$$$$$$0000000888888DDDDNNNNM|\n"
         "          |ZZZZZZZ$$$$$$$$0000008888DDDDNNN|\n"
         "          |ZZZZZZZZZZZZZ$$$$$$00008888DDDDN|\n"
@@ -489,16 +489,19 @@ void CompareImageTest::deltaImage() {
 }
 
 void CompareImageTest::deltaImageScaling() {
-    std::ostringstream out;
-    Debug d{&out, Debug::Flag::DisableColors};
-
     Containers::Array<Float> delta{65*40};
     for(std::int_fast32_t x = 0; x != 65; ++x)
         for(std::int_fast32_t y = 0; y != 40; ++y)
             delta[y*65 + x] = Vector2{Float(x), Float(y)}.length()/Vector2{65.0f, 40.0f}.length();
 
-    Implementation::printDeltaImage(d, delta, {65, 40}, 1.0f, 0.0f, 0.0f);
-    CORRADE_COMPARE(out.str(),
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug d{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printDeltaImage(d, delta, {65, 40}, 1.0f, 0.0f, 0.0f);
+    }
+    CORRADE_COMPARE(out,
         "          |777777IIIIIIZZZZ$$$0000888DDDNNMM|\n"
         "          |????777777IIIIZZZZ$$$000888DDDNNN|\n"
         "          |?????????7777IIIIZZZ$$$00888DDDNN|\n"
@@ -520,12 +523,16 @@ void CompareImageTest::deltaImageColors() {
         Implementation::printDeltaImage(out, DeltaRed, {3, 3}, 2.0f, 0.5f, 0.2f);
     }
 
-    std::ostringstream out;
-    Debug dc{&out, Debug::Flag::DisableColors};
-    Implementation::printDeltaImage(dc, DeltaRed, {3, 3}, 2.0f, 0.5f, 0.2f);
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug dc{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printDeltaImage(dc, DeltaRed, {3, 3}, 2.0f, 0.5f, 0.2f);
+    }
     /* Yes, there is half of the rows (2 instead of 3) in order to roughly
        preserve image ratio */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "          |.7 |\n"
         "          |: ,|");
 }
@@ -539,12 +546,16 @@ void CompareImageTest::deltaImageSpecials() {
                          nan,  inf, 0.0f,
                          nan,  inf, 0.0f};
 
-    std::ostringstream out;
-    Debug dc{&out, Debug::Flag::DisableColors};
-    Implementation::printDeltaImage(dc, delta, {3, 4}, 3.0f, 0.0f, 0.0f);
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug dc{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printDeltaImage(dc, delta, {3, 4}, 3.0f, 0.0f, 0.0f);
+    }
     /* Should show the max value for NaN and infs and the usual things
        otherwise */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "          |MM |\n"
         "          |~M8|");
 }
@@ -556,11 +567,14 @@ void CompareImageTest::pixelDelta() {
         Implementation::printPixelDeltas(out, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 10);
     }
 
-    std::ostringstream out;
-    Debug d{&out, Debug::Flag::DisableColors};
-    Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 10);
-
-    CORRADE_COMPARE(out.str(), "\n"
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug d{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 10);
+    }
+    CORRADE_COMPARE(out, "\n"
         "        Pixels above max/mean threshold:\n"
         "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
         "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
@@ -569,19 +583,25 @@ void CompareImageTest::pixelDelta() {
 }
 
 void CompareImageTest::pixelDeltaEmpty() {
-    std::ostringstream out;
-    Debug d{&out, Debug::Flag::DisableColors};
-    Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 1.0f, 1.0f, 10);
-
-    CORRADE_COMPARE(out.str(), "");
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug d{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 1.0f, 1.0f, 10);
+    }
+    CORRADE_COMPARE(out, "");
 }
 
 void CompareImageTest::pixelDeltaOverflow() {
-    std::ostringstream out;
-    Debug d{&out, Debug::Flag::DisableColors};
-    Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 3);
-
-    CORRADE_COMPARE(out.str(), "\n"
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug d{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 3);
+    }
+    CORRADE_COMPARE(out, "\n"
         "        Top 3 out of 4 pixels above max/mean threshold:\n"
         "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
         "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
@@ -607,11 +627,14 @@ const ImageView2D ActualHalf{PixelFormat::RG16F, {2, 2}, ActualHalfData};
 const ImageView2D ExpectedHalf{PixelFormat::RG16F, {2, 2}, ExpectedHalfData};
 
 void CompareImageTest::pixelDeltaHalf() {
-    std::ostringstream out;
-    Debug d{&out, Debug::Flag::DisableColors};
-    Implementation::printPixelDeltas(d, DeltaHalf, ActualHalf.format(), ActualHalf.pixels(), ExpectedHalf.pixels(), 0.5f, 0.1f, 10);
-
-    CORRADE_COMPARE(out.str(), "\n"
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug d{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printPixelDeltas(d, DeltaHalf, ActualHalf.format(), ActualHalf.pixels(), ExpectedHalf.pixels(), 0.5f, 0.1f, 10);
+    }
+    CORRADE_COMPARE(out, "\n"
         "        Pixels above max/mean threshold:\n"
         "          [0,0] Vector(0.3, 1), expected Vector(0.6499, 1) (Δ = 0.175)\n"
         "          [1,0] Vector(0.8999, 0.8999), expected Vector(0.6001, 0.9102) (Δ = 0.155)\n"
@@ -619,14 +642,17 @@ void CompareImageTest::pixelDeltaHalf() {
 }
 
 void CompareImageTest::pixelDeltaSpecials() {
-    std::ostringstream out;
-    Debug d{&out, Debug::Flag::DisableColors};
-    Implementation::printPixelDeltas(d, DeltaSpecials, ActualSpecials.format(), ActualSpecials.pixels(), ExpectedSpecials.pixels(), 1.5f, 0.5f, 10);
-
+    /* The string gets fully written only on destruction or with a newline at
+       the end */
+    Containers::String out;
+    {
+        Debug d{&out, Debug::Flag::DisableColors|Debug::Flag::NoNewlineAtTheEnd};
+        Implementation::printPixelDeltas(d, DeltaSpecials, ActualSpecials.format(), ActualSpecials.pixels(), ExpectedSpecials.pixels(), 1.5f, 0.5f, 10);
+    }
     /* MSVC before version 2019 16.10(11?) prints -nan(ind) instead of ±nan.
        But only sometimes. */
     #if defined(CORRADE_TARGET_MSVC) && _MSC_VER < 1929 && !defined(CORRADE_TARGET_CLANG_CL)
-    CORRADE_COMPARE(out.str(), "\n"
+    CORRADE_COMPARE(out, "\n"
         "        Pixels above max/mean threshold:\n"
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
         "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = -nan(ind))\n"
@@ -635,7 +661,7 @@ void CompareImageTest::pixelDeltaSpecials() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)");
     #else
-    CORRADE_COMPARE(out.str(), "\n"
+    CORRADE_COMPARE(out, "\n"
         "        Pixels above max/mean threshold:\n"
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
         "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
@@ -647,7 +673,7 @@ void CompareImageTest::pixelDeltaSpecials() {
 }
 
 void CompareImageTest::compareDifferentSize() {
-    std::stringstream out;
+    Containers::String out;
 
     char data[8*5];
     ImageView2D a{PixelFormat::RG8UI, {3, 4}, data};
@@ -662,11 +688,11 @@ void CompareImageTest::compareDifferentSize() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Images a and b have different size, actual Vector(3, 4) but Vector(3, 5) expected.\n");
+    CORRADE_COMPARE(out, "Images a and b have different size, actual Vector(3, 4) but Vector(3, 5) expected.\n");
 }
 
 void CompareImageTest::compareDifferentFormat() {
-    std::stringstream out;
+    Containers::String out;
 
     char data[16*12];
     ImageView2D a{PixelFormat::RGBA32F, {3, 4}, data};
@@ -681,7 +707,7 @@ void CompareImageTest::compareDifferentFormat() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGBA32F but PixelFormat::RGB32F expected.\n");
+    CORRADE_COMPARE(out, "Images a and b have different format, actual PixelFormat::RGBA32F but PixelFormat::RGB32F expected.\n");
 }
 
 void CompareImageTest::compareSameZeroThreshold() {
@@ -697,7 +723,7 @@ void CompareImageTest::compareSameZeroThreshold() {
 }
 
 void CompareImageTest::compareAboveThresholds() {
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{20.0f, 10.0f};
@@ -708,7 +734,7 @@ void CompareImageTest::compareAboveThresholds() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have both max and mean delta above threshold, actual 39/18.5 but at most 20/10 expected. Delta image:\n"
         "          |?M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -718,7 +744,7 @@ void CompareImageTest::compareAboveThresholds() {
 }
 
 void CompareImageTest::compareAboveMaxThreshold() {
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{30.0f, 20.0f};
@@ -729,7 +755,7 @@ void CompareImageTest::compareAboveMaxThreshold() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have max delta above threshold, actual 39 but at most 30 expected. Mean delta 18.5 is within threshold 20. Delta image:\n"
         "          |?M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -737,7 +763,7 @@ void CompareImageTest::compareAboveMaxThreshold() {
 }
 
 void CompareImageTest::compareAboveMeanThreshold() {
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{50.0f, 18.0f};
@@ -748,7 +774,7 @@ void CompareImageTest::compareAboveMeanThreshold() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have mean delta above threshold, actual 18.5 but at most 18 expected. Max delta 39 is within threshold 50. Delta image:\n"
         "          |?M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -757,7 +783,7 @@ void CompareImageTest::compareAboveMeanThreshold() {
 }
 
 void CompareImageTest::compareNonZeroThreshold() {
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{40.0f, 20.0f};
@@ -768,7 +794,7 @@ void CompareImageTest::compareNonZeroThreshold() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have deltas 39/18.5 below threshold 40/20. Delta image:\n"
         "          |?M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -776,7 +802,7 @@ void CompareImageTest::compareNonZeroThreshold() {
 }
 
 void CompareImageTest::compareSpecials() {
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{1.5f, 0.5f};
@@ -789,7 +815,7 @@ void CompareImageTest::compareSpecials() {
 
     /* clang-cl prints -nan(ind) instead of ±nan, but differently than MSVC */
     #ifdef CORRADE_TARGET_CLANG_CL
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have both max and mean delta above threshold, actual 3.1/-nan(ind) but at most 1.5/0.5 expected. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -806,7 +832,7 @@ void CompareImageTest::compareSpecials() {
     #elif defined(CORRADE_TARGET_MSVC)
     #if _MSC_VER < 1929
     #ifdef _M_X64
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have both max and mean delta above threshold, actual 3.1/-nan(ind) but at most 1.5/0.5 expected. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -817,7 +843,7 @@ void CompareImageTest::compareSpecials() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
     #else
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have both max and mean delta above threshold, actual 3.1/nan but at most 1.5/0.5 expected. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -829,7 +855,7 @@ void CompareImageTest::compareSpecials() {
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
     #endif
     #else
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have both max and mean delta above threshold, actual 3.1/-nan(ind) but at most 1.5/0.5 expected. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -857,9 +883,9 @@ void CompareImageTest::compareSpecials() {
         "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n";
-    if(out.str() == expectedPositive)
-        CORRADE_COMPARE(out.str(), expectedPositive);
-    else CORRADE_COMPARE(out.str(),
+    if(out == expectedPositive)
+        CORRADE_COMPARE(out, expectedPositive);
+    else CORRADE_COMPARE(out,
         "Images a and b have both max and mean delta above threshold, actual 3.1/-nan but at most 1.5/0.5 expected. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -873,7 +899,7 @@ void CompareImageTest::compareSpecials() {
 }
 
 void CompareImageTest::compareSpecialsMeanOnly() {
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{15.0f, 0.5f};
@@ -886,7 +912,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
 
     /* clang-cl prints -nan(ind) instead of ±nan, but differently than MSVC */
     #ifdef CORRADE_TARGET_CLANG_CL
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -903,7 +929,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
     #elif defined(CORRADE_TARGET_MSVC)
     #if _MSC_VER < 1929
     #ifdef _M_X64
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -914,7 +940,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
     #else
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have mean delta above threshold, actual nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -926,7 +952,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
     #endif
     #else
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -954,9 +980,9 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n";
-    if(out.str() == expectedPositive)
-        CORRADE_COMPARE(out.str(), expectedPositive);
-    else CORRADE_COMPARE(out.str(),
+    if(out == expectedPositive)
+        CORRADE_COMPARE(out, expectedPositive);
+    else CORRADE_COMPARE(out,
         "Images a and b have mean delta above threshold, actual -nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -972,7 +998,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
 void CompareImageTest::compareSpecialsDisallowedThreshold() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         Error redirectError{&out};
@@ -980,7 +1006,7 @@ void CompareImageTest::compareSpecialsDisallowedThreshold() {
         TestSuite::Comparator<CompareImage> b{0.3f, Constants::nan()};
     }
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "DebugTools::CompareImage: thresholds can't be NaN or infinity\n"
         "DebugTools::CompareImage: thresholds can't be NaN or infinity\n");
 }
@@ -1035,7 +1061,7 @@ void CompareImageTest::imageNonZeroDelta() {
     /* This will produce output if --verbose is specified */
     CORRADE_COMPARE_WITH(ActualRgb, ExpectedRgb, (CompareImage{40.0f, 20.0f}));
 
-    std::ostringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{40.0f, 20.0f};
@@ -1046,14 +1072,14 @@ void CompareImageTest::imageNonZeroDelta() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareVerbose);
+    CORRADE_COMPARE(out, ImageCompareVerbose);
 }
 
 void CompareImageTest::imageNonZeroDeltaNoPixels() {
     /* This will produce output if --verbose is specified */
     CORRADE_COMPARE_WITH(ActualRgb, ExpectedRgb, (CompareImage{40.0f, 40.0f}));
 
-    std::ostringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{40.0f, 40.0f};
@@ -1066,13 +1092,13 @@ void CompareImageTest::imageNonZeroDeltaNoPixels() {
 
     /* No pixel list written as there are no outliers. Testing this just once
        since all other combinations (image/file/pixels) use the same codepath. */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Images a and b have deltas 39/18.5 below threshold 40/40. Delta image:\n"
         "          |?M|\n");
 }
 
 void CompareImageTest::imageError() {
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{20.0f, 10.0f};
@@ -1083,7 +1109,7 @@ void CompareImageTest::imageError() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareError);
+    CORRADE_COMPARE(out, ImageCompareError);
 }
 
 void CompareImageTest::imageFileZeroDelta() {
@@ -1120,7 +1146,7 @@ void CompareImageTest::imageFileNonZeroDelta() {
     CORRADE_COMPARE_WITH(actualFilename, expectedFilename,
         (CompareImageFile{*_importerManager, 40.0f, 20.0f}));
 
-    std::ostringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
@@ -1131,7 +1157,7 @@ void CompareImageTest::imageFileNonZeroDelta() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareVerbose);
+    CORRADE_COMPARE(out, ImageCompareVerbose);
 }
 
 void CompareImageTest::imageFileError() {
@@ -1139,7 +1165,7 @@ void CompareImageTest::imageFileError() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    std::stringstream out;
+    Containers::String out;
 
     TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
     /* The filenames are referenced as string views as the assumption is that
@@ -1158,7 +1184,7 @@ void CompareImageTest::imageFileError() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareError);
+    CORRADE_COMPARE(out, ImageCompareError);
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
@@ -1172,7 +1198,7 @@ void CompareImageTest::imageFileError() {
         CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
-        out.str({});
+        out = {};
         Debug redirectOutput(&out);
         compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
     }
@@ -1180,7 +1206,7 @@ void CompareImageTest::imageFileError() {
     /* We expect the *actual* contents, but under the *expected* filename.
        Comparing file contents, expecting the converter makes exactly the same
        file. */
-    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE(out, Utility::format("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
         Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
@@ -1190,7 +1216,7 @@ void CompareImageTest::imageFilePluginLoadFailed() {
     if(manager.loadState("AnyImageImporter") != PluginManager::LoadState::NotFound)
         CORRADE_SKIP("AnyImageImporter plugin found, can't test.");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
@@ -1208,7 +1234,7 @@ void CompareImageTest::imageFilePluginLoadFailed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "AnyImageImporter plugin could not be loaded.\n");
+    CORRADE_COMPARE(out, "AnyImageImporter plugin could not be loaded.\n");
 }
 
 void CompareImageTest::imageFileActualLoadFailed() {
@@ -1216,7 +1242,7 @@ void CompareImageTest::imageFileActualLoadFailed() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, nullptr, 20.0f, 10.0f};
@@ -1233,7 +1259,7 @@ void CompareImageTest::imageFileActualLoadFailed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Actual image a (nonexistent.tga) could not be loaded.\n");
+    CORRADE_COMPARE(out, "Actual image a (nonexistent.tga) could not be loaded.\n");
 }
 
 void CompareImageTest::imageFileExpectedLoadFailed() {
@@ -1241,7 +1267,7 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    std::stringstream out;
+    Containers::String out;
 
     TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
     /* The filenames are referenced as string views as the assumption is that
@@ -1258,7 +1284,7 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Expected image b (nonexistent.tga) could not be loaded.\n");
+    CORRADE_COMPARE(out, "Expected image b (nonexistent.tga) could not be loaded.\n");
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
@@ -1272,7 +1298,7 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
         CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
-        out.str({});
+        out = {};
         Debug redirectOutput(&out);
         compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
     }
@@ -1280,7 +1306,7 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
     /* We expect the *actual* contents, but under the *expected* filename.
        Comparing file contents, expecting the converter makes exactly the same
        file. */
-    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE(out, Utility::format("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
         Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
@@ -1291,7 +1317,7 @@ void CompareImageTest::imageFileActualIsCompressed() {
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
         CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
@@ -1309,7 +1335,7 @@ void CompareImageTest::imageFileActualIsCompressed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."), "Actual image a (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
+    CORRADE_COMPARE(Utility::String::replaceFirst(out, DEBUGTOOLS_TEST_DIR, "..."), "Actual image a (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
 }
 
 void CompareImageTest::imageFileExpectedIsCompressed() {
@@ -1318,7 +1344,7 @@ void CompareImageTest::imageFileExpectedIsCompressed() {
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
         CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
 
-    std::stringstream out;
+    Containers::String out;
 
     TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
     /* The filenames are referenced as string views as the assumption is that
@@ -1385,7 +1411,7 @@ void CompareImageTest::imageToFileNonZeroDelta() {
     CORRADE_COMPARE_WITH(ActualRgb, expectedFilename,
         (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
 
-    std::ostringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
@@ -1396,7 +1422,7 @@ void CompareImageTest::imageToFileNonZeroDelta() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareVerbose);
+    CORRADE_COMPARE(out, ImageCompareVerbose);
 }
 
 void CompareImageTest::imageToFileError() {
@@ -1404,7 +1430,7 @@ void CompareImageTest::imageToFileError() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    std::stringstream out;
+    Containers::String out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
     /* The filenames are referenced as string views as the assumption is that
@@ -1422,7 +1448,7 @@ void CompareImageTest::imageToFileError() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareError);
+    CORRADE_COMPARE(out, ImageCompareError);
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
@@ -1436,7 +1462,7 @@ void CompareImageTest::imageToFileError() {
         CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
-        out.str({});
+        out = {};
         Debug redirectOutput(&out);
         compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
     }
@@ -1444,7 +1470,7 @@ void CompareImageTest::imageToFileError() {
     /* We expect the *actual* contents, but under the *expected* filename.
        Comparing file contents, expecting the converter makes exactly the same
        file. */
-    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE(out, Utility::format("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
         Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
@@ -1454,7 +1480,7 @@ void CompareImageTest::imageToFilePluginLoadFailed() {
     if(manager.loadState("AnyImageImporter") != PluginManager::LoadState::NotFound)
         CORRADE_SKIP("AnyImageImporter plugin found, can't test.");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImageToFile> compare{&manager, nullptr, 20.0f, 10.0f};
@@ -1471,7 +1497,7 @@ void CompareImageTest::imageToFilePluginLoadFailed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "AnyImageImporter plugin could not be loaded.\n");
+    CORRADE_COMPARE(out, "AnyImageImporter plugin could not be loaded.\n");
 }
 
 void CompareImageTest::imageToFileExpectedLoadFailed() {
@@ -1479,7 +1505,7 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    std::stringstream out;
+    Containers::String out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
     TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, "nonexistent.tga");
@@ -1491,7 +1517,7 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Expected image b (nonexistent.tga) could not be loaded.\n");
+    CORRADE_COMPARE(out, "Expected image b (nonexistent.tga) could not be loaded.\n");
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
@@ -1505,7 +1531,7 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
         CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
-        out.str({});
+        out = {};
         Debug redirectOutput(&out);
         compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
     }
@@ -1513,7 +1539,7 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
     /* We expect the *actual* contents, but under the *expected* filename.
        Comparing file contents, expecting the converter makes exactly the same
        file. */
-    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE(out, Utility::format("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
         Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
@@ -1524,7 +1550,7 @@ void CompareImageTest::imageToFileExpectedIsCompressed() {
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
             CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
 
-    std::stringstream out;
+    Containers::String out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&manager, nullptr, 20.0f, 10.0f};
     /* The filenames are referenced as string views as the assumption is that
@@ -1541,7 +1567,7 @@ void CompareImageTest::imageToFileExpectedIsCompressed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."),
+    CORRADE_COMPARE(Utility::String::replaceFirst(out, DEBUGTOOLS_TEST_DIR, "..."),
         "Expected image b (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
@@ -1592,7 +1618,7 @@ void CompareImageTest::fileToImageNonZeroDelta() {
     CORRADE_COMPARE_WITH(actualFilename, ExpectedRgb,
         (CompareFileToImage{*_importerManager, 40.0f, 20.0f}));
 
-    std::ostringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 40.0f, 20.0f};
@@ -1603,7 +1629,7 @@ void CompareImageTest::fileToImageNonZeroDelta() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareVerbose);
+    CORRADE_COMPARE(out, ImageCompareVerbose);
 }
 
 void CompareImageTest::fileToImageError() {
@@ -1611,7 +1637,7 @@ void CompareImageTest::fileToImageError() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 20.0f, 10.0f};
@@ -1627,7 +1653,7 @@ void CompareImageTest::fileToImageError() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareError);
+    CORRADE_COMPARE(out, ImageCompareError);
 }
 
 void CompareImageTest::fileToImagePluginLoadFailed() {
@@ -1635,7 +1661,7 @@ void CompareImageTest::fileToImagePluginLoadFailed() {
     if(manager.loadState("AnyImageImporter") != PluginManager::LoadState::NotFound)
         CORRADE_SKIP("AnyImageImporter plugin found, can't test.");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&manager, 20.0f, 10.0f};
@@ -1651,7 +1677,7 @@ void CompareImageTest::fileToImagePluginLoadFailed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "AnyImageImporter plugin could not be loaded.\n");
+    CORRADE_COMPARE(out, "AnyImageImporter plugin could not be loaded.\n");
 }
 
 void CompareImageTest::fileToImageActualLoadFailed() {
@@ -1659,7 +1685,7 @@ void CompareImageTest::fileToImageActualLoadFailed() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 20.0f, 10.0f};
@@ -1670,7 +1696,7 @@ void CompareImageTest::fileToImageActualLoadFailed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Actual image a (nonexistent.tga) could not be loaded.\n");
+    CORRADE_COMPARE(out, "Actual image a (nonexistent.tga) could not be loaded.\n");
 }
 
 void CompareImageTest::fileToImageActualIsCompressed() {
@@ -1679,7 +1705,7 @@ void CompareImageTest::fileToImageActualIsCompressed() {
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
             CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&manager, 20.0f, 10.0f};
@@ -1695,7 +1721,7 @@ void CompareImageTest::fileToImageActualIsCompressed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."),
+    CORRADE_COMPARE(Utility::String::replaceFirst(out, DEBUGTOOLS_TEST_DIR, "..."),
         "Actual image a (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
 }
 
@@ -1906,7 +1932,7 @@ void CompareImageTest::pixelsToImageNonZeroDelta() {
     CORRADE_COMPARE_WITH(ActualRgb.pixels<Color3ub>(),
         ExpectedRgb, (CompareImage{40.0f, 20.0f}));
 
-    std::ostringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{40.0f, 20.0f};
@@ -1917,11 +1943,11 @@ void CompareImageTest::pixelsToImageNonZeroDelta() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareVerbose);
+    CORRADE_COMPARE(out, ImageCompareVerbose);
 }
 
 void CompareImageTest::pixelsToImageDifferentFormat() {
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{{}, {}};
@@ -1933,13 +1959,13 @@ void CompareImageTest::pixelsToImageDifferentFormat() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGB8I but PixelFormat::RGB8Unorm expected.\n");
+    CORRADE_COMPARE(out, "Images a and b have different format, actual PixelFormat::RGB8I but PixelFormat::RGB8Unorm expected.\n");
 }
 
 void CompareImageTest::pixelsToImageError() {
     /* Same as imageError(), but taking pixels instead */
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImage> compare{20.0f, 10.0f};
@@ -1951,7 +1977,7 @@ void CompareImageTest::pixelsToImageError() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareError);
+    CORRADE_COMPARE(out, ImageCompareError);
 }
 
 template<class T> void CompareImageTest::pixelsToFileZeroDelta() {
@@ -2006,7 +2032,7 @@ void CompareImageTest::pixelsToFileNonZeroDelta() {
         expectedFilename,
         (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
 
-    std::ostringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
@@ -2017,7 +2043,7 @@ void CompareImageTest::pixelsToFileNonZeroDelta() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareVerbose);
+    CORRADE_COMPARE(out, ImageCompareVerbose);
 }
 
 void CompareImageTest::pixelsToFileDifferentFormat() {
@@ -2031,7 +2057,7 @@ void CompareImageTest::pixelsToFileDifferentFormat() {
        views. */
     Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
 
-    std::stringstream out;
+    Containers::String out;
 
     {
         TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, {}, {}};
@@ -2044,7 +2070,7 @@ void CompareImageTest::pixelsToFileDifferentFormat() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGB8Snorm but PixelFormat::RGB8Unorm expected.\n");
+    CORRADE_COMPARE(out, "Images a and b have different format, actual PixelFormat::RGB8Snorm but PixelFormat::RGB8Unorm expected.\n");
 }
 
 void CompareImageTest::pixelsToFileError() {
@@ -2060,7 +2086,7 @@ void CompareImageTest::pixelsToFileError() {
        views. */
     Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
 
-    std::stringstream out;
+    Containers::String out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
     /* Vector3ub gets matched to PixelFormat::R8UI initially, but once the
@@ -2076,7 +2102,7 @@ void CompareImageTest::pixelsToFileError() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), ImageCompareError);
+    CORRADE_COMPARE(out, ImageCompareError);
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
@@ -2090,7 +2116,7 @@ void CompareImageTest::pixelsToFileError() {
         CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
-        out.str({});
+        out = {};
         Debug redirectOutput(&out);
         compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
     }
@@ -2098,7 +2124,7 @@ void CompareImageTest::pixelsToFileError() {
     /* We expect the *actual* contents, but under the *expected* filename.
        Comparing file contents, expecting the converter makes exactly the same
        file. */
-    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE(out, Utility::format("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
         Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
@@ -2110,7 +2136,7 @@ void CompareImageTest::pixelsToFileExpectedLoadFailed() {
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    std::stringstream out;
+    Containers::String out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
     TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Color3ub>(), "nonexistent.tga");
@@ -2122,7 +2148,7 @@ void CompareImageTest::pixelsToFileExpectedLoadFailed() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Expected image b (nonexistent.tga) could not be loaded.\n");
+    CORRADE_COMPARE(out, "Expected image b (nonexistent.tga) could not be loaded.\n");
 
     /* Create the output dir if it doesn't exist, but avoid stale files making
        false positives */
@@ -2136,7 +2162,7 @@ void CompareImageTest::pixelsToFileExpectedLoadFailed() {
         CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
 
     {
-        out.str({});
+        out = {};
         Debug redirectOutput(&out);
         compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
     }
@@ -2144,7 +2170,7 @@ void CompareImageTest::pixelsToFileExpectedLoadFailed() {
     /* We expect the *actual* contents, but under the *expected* filename.
        Comparing file contents, expecting the converter makes exactly the same
        file. */
-    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE(out, Utility::format("-> {}\n", filename));
     CORRADE_COMPARE_AS(filename,
         Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }

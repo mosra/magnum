@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/Copy.h"
@@ -497,10 +496,10 @@ void CopyTest::mutableReferenceNotMutable() {
     CORRADE_COMPARE(cube.indexDataFlags(), Trade::DataFlag::Global);
     CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlag::Global);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::mutableReference(cube);
-    CORRADE_COMPARE(out.str(), "MeshTools::mutableReference(): data not mutable\n");
+    CORRADE_COMPARE(out, "MeshTools::mutableReference(): data not mutable\n");
 }
 
 }}}}

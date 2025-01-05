@@ -24,10 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Vk/PixelFormat.h"
@@ -99,9 +98,9 @@ void PixelFormatTest::map() {
                     CORRADE_COMPARE(genericPixelFormat(PixelFormat::format), Magnum::PixelFormat::format); \
                     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), PixelFormat::format); \
                     { \
-                        std::ostringstream out; \
+                        Containers::String out; \
                         Debug{&out} << pixelFormat(Magnum::PixelFormat::format); \
-                        CORRADE_COMPARE(out.str(), "Vk::PixelFormat::" #format "\n"); \
+                        CORRADE_COMPARE(out, "Vk::PixelFormat::" #format "\n"); \
                     } \
                     ++nextHandled; \
                     continue;
@@ -110,12 +109,12 @@ void PixelFormatTest::map() {
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasPixelFormat(Magnum::PixelFormat::format)); \
-                    std::ostringstream out; \
+                    Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
                         Error redirectError{&out}; \
                         pixelFormat(Magnum::PixelFormat::format); \
                     } \
-                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out; \
                     ++nextHandled; \
                     continue; \
                 }
@@ -148,25 +147,25 @@ void PixelFormatTest::mapUnsupported() {
     #if 1
     CORRADE_SKIP("All pixel formats are supported.");
     #else
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     pixelFormat(Magnum::PixelFormat::RGB16UI);
-    CORRADE_COMPARE(out.str(), "Vk::pixelFormat(): unsupported format PixelFormat::RGB16UI\n");
+    CORRADE_COMPARE(out, "Vk::pixelFormat(): unsupported format PixelFormat::RGB16UI\n");
     #endif
 }
 
 void PixelFormatTest::mapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     hasPixelFormat(Magnum::PixelFormat{});
     hasPixelFormat(Magnum::PixelFormat(0x123));
     pixelFormat(Magnum::PixelFormat{});
     pixelFormat(Magnum::PixelFormat(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::hasPixelFormat(): invalid format PixelFormat(0x0)\n"
         "Vk::hasPixelFormat(): invalid format PixelFormat(0x123)\n"
         "Vk::pixelFormat(): invalid format PixelFormat(0x0)\n"
@@ -216,9 +215,9 @@ void PixelFormatTest::mapCompressed() {
                     CORRADE_COMPARE(genericCompressedPixelFormat(PixelFormat::Compressed ## expectedFormat), Magnum::CompressedPixelFormat::format); \
                     CORRADE_COMPARE(pixelFormat(Magnum::CompressedPixelFormat::format), PixelFormat::Compressed ## expectedFormat); \
                     { \
-                        std::ostringstream out; \
+                        Containers::String out; \
                         Debug{&out} << pixelFormat(Magnum::CompressedPixelFormat::format); \
-                        CORRADE_COMPARE(out.str(), "Vk::PixelFormat::Compressed" #expectedFormat "\n"); \
+                        CORRADE_COMPARE(out, "Vk::PixelFormat::Compressed" #expectedFormat "\n"); \
                     } \
                     ++nextHandled; \
                     continue;
@@ -232,9 +231,9 @@ void PixelFormatTest::mapCompressed() {
                     CORRADE_VERIFY(hasPixelFormat(Magnum::CompressedPixelFormat::format)); \
                     CORRADE_COMPARE(pixelFormat(Magnum::CompressedPixelFormat::format), PixelFormat::Compressed ## expectedFormat); \
                     { \
-                        std::ostringstream out; \
+                        Containers::String out; \
                         Debug{&out} << pixelFormat(Magnum::CompressedPixelFormat::format); \
-                        CORRADE_COMPARE(out.str(), "Vk::PixelFormat::Compressed" #expectedFormat "\n"); \
+                        CORRADE_COMPARE(out, "Vk::PixelFormat::Compressed" #expectedFormat "\n"); \
                     } \
                     ++nextHandled; \
                     continue;
@@ -243,12 +242,12 @@ void PixelFormatTest::mapCompressed() {
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasPixelFormat(Magnum::CompressedPixelFormat::format)); \
-                    std::ostringstream out; \
+                    Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
                         Error redirectError{&out}; \
                         pixelFormat(Magnum::CompressedPixelFormat::format); \
                     } \
-                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out; \
                     ++nextHandled; \
                     continue; \
                 }
@@ -280,23 +279,23 @@ void PixelFormatTest::mapCompressedUnsupported() {
 
     CORRADE_VERIFY(!hasPixelFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     pixelFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm);
-    CORRADE_COMPARE(out.str(), "Vk::pixelFormat(): unsupported format CompressedPixelFormat::Astc3x3x3RGBAUnorm\n");
+    CORRADE_COMPARE(out, "Vk::pixelFormat(): unsupported format CompressedPixelFormat::Astc3x3x3RGBAUnorm\n");
 }
 
 void PixelFormatTest::mapCompressedInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     hasPixelFormat(Magnum::CompressedPixelFormat{});
     hasPixelFormat(Magnum::CompressedPixelFormat(0x123));
     pixelFormat(Magnum::CompressedPixelFormat{});
     pixelFormat(Magnum::CompressedPixelFormat(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::hasPixelFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "Vk::hasPixelFormat(): invalid format CompressedPixelFormat(0x123)\n"
         "Vk::pixelFormat(): invalid format CompressedPixelFormat(0x0)\n"
@@ -312,9 +311,9 @@ void PixelFormatTest::mapGenericCompressedUnsupported() {
 }
 
 void PixelFormatTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << PixelFormat::RGB16UI << PixelFormat(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::PixelFormat::RGB16UI Vk::PixelFormat(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::PixelFormat::RGB16UI Vk::PixelFormat(-10007655)\n");
 }
 
 }}}}

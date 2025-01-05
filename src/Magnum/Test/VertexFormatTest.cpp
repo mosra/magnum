@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Configuration.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Configuration is std::string-free */
 
 #include "Magnum/VertexFormat.h"
 #include "Magnum/Math/Half.h"
@@ -234,12 +233,12 @@ void VertexFormatTest::wrap() {
 void VertexFormatTest::wrapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     vertexFormatWrap(0xdeadbeef);
 
-    CORRADE_COMPARE(out.str(), "vertexFormatWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
+    CORRADE_COMPARE(out, "vertexFormatWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
 }
 
 void VertexFormatTest::unwrap() {
@@ -250,12 +249,12 @@ void VertexFormatTest::unwrap() {
 void VertexFormatTest::unwrapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     vertexFormatUnwrap(VertexFormat::Float);
 
-    CORRADE_COMPARE(out.str(), "vertexFormatUnwrap(): VertexFormat::Float isn't a wrapped implementation-specific value\n");
+    CORRADE_COMPARE(out, "vertexFormatUnwrap(): VertexFormat::Float isn't a wrapped implementation-specific value\n");
 }
 
 void VertexFormatTest::size() {
@@ -274,13 +273,13 @@ void VertexFormatTest::size() {
 void VertexFormatTest::sizeInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     vertexFormatSize(VertexFormat{});
     vertexFormatSize(VertexFormat(0xdead));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatSize(): invalid format VertexFormat(0x0)\n"
         "vertexFormatSize(): invalid format VertexFormat(0xdead)\n");
 }
@@ -288,10 +287,10 @@ void VertexFormatTest::sizeInvalid() {
 void VertexFormatTest::sizeImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormatSize(vertexFormatWrap(0xdead));
-    CORRADE_COMPARE(out.str(), "vertexFormatSize(): can't determine size of an implementation-specific format 0xdead\n");
+    CORRADE_COMPARE(out, "vertexFormatSize(): can't determine size of an implementation-specific format 0xdead\n");
 }
 
 void VertexFormatTest::componentCount() {
@@ -311,13 +310,13 @@ void VertexFormatTest::componentCount() {
 void VertexFormatTest::componentCountInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     vertexFormatComponentCount(VertexFormat{});
     vertexFormatComponentCount(VertexFormat(0xdead));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatComponentCount(): invalid format VertexFormat(0x0)\n"
         "vertexFormatComponentCount(): invalid format VertexFormat(0xdead)\n");
 }
@@ -325,10 +324,10 @@ void VertexFormatTest::componentCountInvalid() {
 void VertexFormatTest::componentCountImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormatComponentCount(vertexFormatWrap(0xdead));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatComponentCount(): can't determine component count of an implementation-specific format 0xdead\n");
 }
 
@@ -356,13 +355,13 @@ void VertexFormatTest::componentFormat() {
 void VertexFormatTest::componentFormatInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     vertexFormatComponentFormat(VertexFormat{});
     vertexFormatComponentFormat(VertexFormat(0xdead));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatComponentType(): invalid format VertexFormat(0x0)\n"
         "vertexFormatComponentType(): invalid format VertexFormat(0xdead)\n");
 }
@@ -370,10 +369,10 @@ void VertexFormatTest::componentFormatInvalid() {
 void VertexFormatTest::componentFormatImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormatComponentFormat(vertexFormatWrap(0xdead));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatComponentFormat(): can't determine component format of an implementation-specific format 0xdead\n");
 }
 
@@ -392,13 +391,13 @@ void VertexFormatTest::vectorCount() {
 void VertexFormatTest::vectorCountInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     vertexFormatVectorCount(VertexFormat{});
     vertexFormatVectorCount(VertexFormat(0xdead));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatVectorCount(): invalid format VertexFormat(0x0)\n"
         "vertexFormatVectorCount(): invalid format VertexFormat(0xdead)\n");
 }
@@ -406,10 +405,10 @@ void VertexFormatTest::vectorCountInvalid() {
 void VertexFormatTest::vectorCountImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormatVectorCount(vertexFormatWrap(0xdead));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatVectorCount(): can't determine vector count of an implementation-specific format 0xdead\n");
 }
 
@@ -430,13 +429,13 @@ void VertexFormatTest::vectorStride() {
 void VertexFormatTest::vectorStrideInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     vertexFormatVectorStride(VertexFormat{});
     vertexFormatVectorStride(VertexFormat(0xdead));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatVectorStride(): invalid format VertexFormat(0x0)\n"
         "vertexFormatVectorStride(): invalid format VertexFormat(0xdead)\n");
 }
@@ -444,10 +443,10 @@ void VertexFormatTest::vectorStrideInvalid() {
 void VertexFormatTest::vectorStrideImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormatVectorStride(vertexFormatWrap(0xdead));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormatVectorStride(): can't determine vector count of an implementation-specific format 0xdead\n");
 }
 
@@ -464,13 +463,13 @@ void VertexFormatTest::isNormalized() {
 void VertexFormatTest::isNormalizedInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     isVertexFormatNormalized(VertexFormat{});
     isVertexFormatNormalized(VertexFormat(0xdead));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "isVertexFormatNormalized(): invalid format VertexFormat(0x0)\n"
         "isVertexFormatNormalized(): invalid format VertexFormat(0xdead)\n");
 }
@@ -478,10 +477,10 @@ void VertexFormatTest::isNormalizedInvalid() {
 void VertexFormatTest::isNormalizedImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     isVertexFormatNormalized(vertexFormatWrap(0xdead));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "isVertexFormatNormalized(): can't determine normalization of an implementation-specific format 0xdead\n");
 }
 
@@ -506,13 +505,13 @@ void VertexFormatTest::assemble() {
 void VertexFormatTest::assembleRoundtrip() {
     auto&& data = AssembleRoundtripData[testCaseInstanceId()];
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Debug d{&out, Debug::Flag::NoNewlineAtTheEnd};
         d << data.componentType;
         if(data.normalized) d << Debug::nospace << ", normalized";
     }
-    setTestCaseDescription(out.str());
+    setTestCaseDescription(out);
 
     VertexFormat result = vertexFormat(data.componentType, testCaseRepeatId() + 1, data.normalized);
     CORRADE_COMPARE(vertexFormat(result, testCaseRepeatId() + 1, data.normalized), result);
@@ -526,21 +525,21 @@ void VertexFormatTest::assembleRoundtrip() {
 void VertexFormatTest::assembleCantNormalize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormat(VertexFormat::Vector2, 1, true);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormat(): VertexFormat::Vector2 can't be made normalized\n");
 }
 
 void VertexFormatTest::assembleInvalidComponentCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormat(VertexFormat::Vector3, 0, false);
     vertexFormat(VertexFormat::Vector3, 5, false);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormat(): invalid component count 0\n"
         "vertexFormat(): invalid component count 5\n");
 }
@@ -548,10 +547,10 @@ void VertexFormatTest::assembleInvalidComponentCount() {
 void VertexFormatTest::assembleImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormat(vertexFormatWrap(0xdead), 1, true);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormat(): can't assemble a format out of an implementation-specific format 0xdead\n");
 }
 
@@ -578,13 +577,13 @@ void VertexFormatTest::assembleMatrix() {
 void VertexFormatTest::assembleMatrixRoundtrip() {
     auto&& data = AssembleMatrixRoundtripData[testCaseInstanceId()];
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Debug d{&out, Debug::Flag::NoNewlineAtTheEnd};
         d << data.componentType << Debug::nospace << "," << data.componentCount;
         if(data.aligned) d << Debug::nospace << ", aligned";
     }
-    setTestCaseDescription(out.str());
+    setTestCaseDescription(out);
 
     VertexFormat result = vertexFormat(data.componentType, testCaseRepeatId() + 2, data.componentCount, data.aligned);
     CORRADE_COMPARE(vertexFormat(result, testCaseRepeatId() + 2, data.componentCount, data.aligned), result);
@@ -599,13 +598,13 @@ void VertexFormatTest::assembleMatrixRoundtrip() {
 void VertexFormatTest::assembleMatrixInvalidType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormat(VertexFormat::UnsignedByte, 3, 2, false);
     vertexFormat(VertexFormat::UnsignedShort, 3, 2, false);
     vertexFormat(VertexFormat::UnsignedInt, 2, 3, false);
     vertexFormat(VertexFormat::Int, 2, 3, false);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormat(): invalid matrix component type VertexFormat::UnsignedByte, only floating-point or 8-/16-bit signed integer types are supported\n"
         "vertexFormat(): invalid matrix component type VertexFormat::UnsignedShort, only floating-point or 8-/16-bit signed integer types are supported\n"
         "vertexFormat(): invalid matrix component type VertexFormat::UnsignedInt, only floating-point or 8-/16-bit signed integer types are supported\n"
@@ -615,13 +614,13 @@ void VertexFormatTest::assembleMatrixInvalidType() {
 void VertexFormatTest::assembleMatrixInvalidCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormat(VertexFormat::Vector3, 2, 1, false);
     vertexFormat(VertexFormat::Vector3, 2, 5, false);
     vertexFormat(VertexFormat::Vector3, 5, 2, false);
     vertexFormat(VertexFormat::Vector3, 1, 2, false);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormat(): invalid component count 1\n"
         "vertexFormat(): invalid component count 5\n"
         "vertexFormat(): invalid vector count 5\n"
@@ -631,37 +630,37 @@ void VertexFormatTest::assembleMatrixInvalidCount() {
 void VertexFormatTest::assembleMatrixImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vertexFormat(vertexFormatWrap(0xdead), 2, 2, true);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "vertexFormat(): can't assemble a format out of an implementation-specific format 0xdead\n");
 }
 
 void VertexFormatTest::debug() {
-    std::ostringstream o;
-    Debug(&o) << VertexFormat::Vector4 << VertexFormat(0xdead);
-    CORRADE_COMPARE(o.str(), "VertexFormat::Vector4 VertexFormat(0xdead)\n");
+    Containers::String out;
+    Debug{&out} << VertexFormat::Vector4 << VertexFormat(0xdead);
+    CORRADE_COMPARE(out, "VertexFormat::Vector4 VertexFormat(0xdead)\n");
 }
 
 void VertexFormatTest::debugPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << VertexFormat::Vector4 << Debug::packed << VertexFormat(0xdead) << VertexFormat::Float;
-    CORRADE_COMPARE(out.str(), "Vector4 0xdead VertexFormat::Float\n");
+    CORRADE_COMPARE(out, "Vector4 0xdead VertexFormat::Float\n");
 }
 
 void VertexFormatTest::debugImplementationSpecific() {
-    std::ostringstream o;
-    Debug(&o) << Magnum::vertexFormatWrap(0xdead);
-    CORRADE_COMPARE(o.str(), "VertexFormat::ImplementationSpecific(0xdead)\n");
+    Containers::String out;
+    Debug{&out} << Magnum::vertexFormatWrap(0xdead);
+    CORRADE_COMPARE(out, "VertexFormat::ImplementationSpecific(0xdead)\n");
 }
 
 void VertexFormatTest::debugImplementationSpecificPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << Magnum::vertexFormatWrap(0xdead) << VertexFormat::Float;
-    CORRADE_COMPARE(out.str(), "ImplementationSpecific(0xdead) VertexFormat::Float\n");
+    CORRADE_COMPARE(out, "ImplementationSpecific(0xdead) VertexFormat::Float\n");
 }
 
 void VertexFormatTest::configuration() {

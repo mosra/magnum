@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Vector3.h" /* Vector3 used in Vector2Test::cross() */
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -363,9 +363,9 @@ void Vector2Test::swizzleType() {
 }
 
 void Vector2Test::debug() {
-    std::ostringstream o;
-    Debug(&o) << Vector2(0.5f, 15.0f);
-    CORRADE_COMPARE(o.str(), "Vector(0.5, 15)\n");
+    Containers::String out;
+    Debug{&out} << Vector2(0.5f, 15.0f);
+    CORRADE_COMPARE(out, "Vector(0.5, 15)\n");
 }
 
 }}}}

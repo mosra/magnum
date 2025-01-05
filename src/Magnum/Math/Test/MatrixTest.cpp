@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -536,14 +536,14 @@ void MatrixTest::invertedOrthogonal() {
 void MatrixTest::invertedOrthogonalNotOrthogonal() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream o;
-    Error redirectError{&o};
+    Containers::String out;
+    Error redirectError{&out};
 
     Matrix3x3 a(Vector3(Constants::sqrt3()/2.0f, 0.5f, 0.0f),
                 Vector3(-0.5f, Constants::sqrt3()/2.0f, 0.0f),
                 Vector3(0.0f, 0.0f, 1.0f));
     (a*2).invertedOrthogonal();
-    CORRADE_COMPARE(o.str(),
+    CORRADE_COMPARE(out,
         "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal:\n"
         "Matrix(1.73205, -1, 0,\n"
         "       1, 1.73205, 0,\n"
@@ -631,16 +631,16 @@ void MatrixTest::debug() {
                 Vector4(7.0f, -1.0f, 8.0f, 0.0f),
                 Vector4(9.0f,  4.0f, 5.0f, 9.0f));
 
-    std::ostringstream o;
-    Debug(&o) << m;
-    CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7, 9,\n"
+    Containers::String out;
+    Debug{&out} << m;
+    CORRADE_COMPARE(out, "Matrix(3, 4, 7, 9,\n"
                              "       5, 4, -1, 4,\n"
                              "       8, 7, 8, 5,\n"
                              "       4, 3, 0, 9)\n");
 
-    o.str({});
-    Debug(&o) << "a" << Matrix4x4() << "b" << Matrix4x4();
-    CORRADE_COMPARE(o.str(), "a Matrix(1, 0, 0, 0,\n"
+    out = {};
+    Debug{&out} << "a" << Matrix4x4() << "b" << Matrix4x4();
+    CORRADE_COMPARE(out, "a Matrix(1, 0, 0, 0,\n"
                              "       0, 1, 0, 0,\n"
                              "       0, 0, 1, 0,\n"
                              "       0, 0, 0, 1) b Matrix(1, 0, 0, 0,\n"

@@ -29,10 +29,10 @@
    arrayCast() template, which is forward-declared. */
 #include "Magnum/Trade/ImageData.h"
 
-#include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once dataProperties() std::pair is gone */
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -598,11 +598,11 @@ void ImageDataTest::constructGenericNotOwnedFlagOwned() {
 
     char data[4*4];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageData2D{PixelFormat::RGBA8Unorm, {1, 3}, DataFlag::Owned, data};
     ImageData2D{PixelStorage{}.setAlignment(1), PixelFormat::R16UI, {1, 3}, DataFlag::Owned, data};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ImageData: can't construct a non-owned instance with Trade::DataFlag::Owned\n"
         "Trade::ImageData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
 }
@@ -612,11 +612,11 @@ void ImageDataTest::constructImplementationSpecificNotOwnedFlagOwned() {
 
     char data[3*12];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageData2D{PixelStorage{}.setAlignment(1), Vk::PixelFormat::R32G32B32F, {1, 3}, DataFlag::Owned, data};
     ImageData2D{PixelStorage{}.setAlignment(1), GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, DataFlag::Owned, data};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ImageData: can't construct a non-owned instance with Trade::DataFlag::Owned\n"
         "Trade::ImageData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
 }
@@ -626,12 +626,12 @@ void ImageDataTest::constructCompressedGenericNotOwnedFlagOwned() {
 
     char data[8];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageData2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, DataFlag::Owned, data};
     ImageData2D{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, DataFlag::Owned, data};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ImageData: can't construct a non-owned instance with Trade::DataFlag::Owned\n"
         "Trade::ImageData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
 }
@@ -641,35 +641,35 @@ void ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned()
 
     char data[8];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageData2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, DataFlag::Owned, data};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ImageData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
 }
 
 void ImageDataTest::constructInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     /* Doesn't consider alignment */
     ImageData2D{PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{3*3}};
-    CORRADE_COMPARE(out.str(), "Trade::ImageData: data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "Trade::ImageData: data too small, got 9 but expected at least 12 bytes\n");
 }
 
 void ImageDataTest::constructInvalidCubeMap() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageData3D{PixelFormat::RGBA8Unorm, {3, 3, 5}, Containers::Array<char>{3*3*5*4}, ImageFlag3D::CubeMap};
     ImageData3D{PixelFormat::RGBA8Unorm, {3, 4, 6}, Containers::Array<char>{3*4*6*4}, ImageFlag3D::CubeMap};
     ImageData3D{PixelFormat::RGBA8Unorm, {3, 3, 17}, Containers::Array<char>{3*3*17*4}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
     ImageData3D{PixelFormat::RGBA8Unorm, {4, 3, 18}, Containers::Array<char>{4*3*18*4}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ImageData: expected exactly 6 faces for a cube map, got 5\n"
         "Trade::ImageData: expected square faces for a cube map, got {3, 4}\n"
         "Trade::ImageData: expected a multiple of 6 faces for a cube map array, got 17\n"
@@ -681,30 +681,30 @@ void ImageDataTest::constructCompressedInvalidSize() {
 
     /* Too small for given format */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{2}};
-        CORRADE_COMPARE(out.str(), "Trade::ImageData::ImageData(): data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "Trade::ImageData::ImageData(): data too small, got 2 but expected at least 4 bytes\n");
 
     /* Size should be rounded up even if the image size is not full block */
     } {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{2}};
-        CORRADE_COMPARE(out.str(), "Trade::ImageData::ImageData(): data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "Trade::ImageData::ImageData(): data too small, got 2 but expected at least 4 bytes\n");
     }
 }
 
 void ImageDataTest::constructCompressedInvalidCubeMap() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageData3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 3, 5}, Containers::Array<char>{8*5}, ImageFlag3D::CubeMap};
     ImageData3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 4, 6}, Containers::Array<char>{8*6}, ImageFlag3D::CubeMap};
     ImageData3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 3, 17}, Containers::Array<char>{8*17}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
     ImageData3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 3, 18}, Containers::Array<char>{8*18}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ImageData: expected exactly 6 faces for a cube map, got 5\n"
         "Trade::ImageData: expected square faces for a cube map, got {3, 4}\n"
         "Trade::ImageData: expected a multiple of 6 faces for a cube map array, got 17\n"
@@ -1018,7 +1018,7 @@ void ImageDataTest::mutableAccessNotAllowed() {
     const char data[4*4]{};
     ImageData2D a{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     a.mutableData();
     a.mutablePixels();
@@ -1032,7 +1032,7 @@ void ImageDataTest::mutableAccessNotAllowed() {
     /* a.mutablePixels<T>() calls non-templated mutablePixels(), so assume
        there it will blow up correctly as well (can't test because it asserts
        inside arrayCast() due to zero stride) */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ImageData::mutableData(): the image is not mutable\n"
         "Trade::ImageData::mutablePixels(): the image is not mutable\n"
         "Trade::ImageData: the image is not mutable\n"
@@ -1150,14 +1150,14 @@ void ImageDataTest::pixelsCompressed() {
 
     Trade::ImageData2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, Containers::Array<char>{8}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     a.pixels();
     /* a.pixels<T>() calls non-templated pixels(), so assume there it will
        blow up correctly as well (can't test because it asserts inside
        arrayCast() due to zero stride) */
-    CORRADE_COMPARE(out.str(), "Trade::ImageData::pixels(): the image is compressed\n");
+    CORRADE_COMPARE(out, "Trade::ImageData::pixels(): the image is compressed\n");
 }
 
 }}}}

@@ -25,15 +25,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/System.h>
 
@@ -606,13 +604,13 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersInval
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     VectorGL<dimensions>{typename VectorGL<dimensions>::Configuration{}
         .setFlags(data.flags)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Shaders::VectorGL: {}\n", data.message));
 }
 #endif
@@ -631,13 +629,13 @@ template<UnsignedInt dimensions> void VectorGLTest::setUniformUniformBuffersEnab
     VectorGL<dimensions> shader{typename VectorGL<dimensions>::Configuration{}
         .setFlags(VectorGL<dimensions>::Flag::UniformBuffers)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setBackgroundColor({})
         .setColor({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VectorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::VectorGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::VectorGL::setBackgroundColor(): the shader was created with uniform buffers enabled\n"
@@ -652,7 +650,7 @@ template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotE
     GL::Buffer buffer;
     VectorGL<dimensions> shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
@@ -663,7 +661,7 @@ template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotE
           .bindMaterialBuffer(buffer)
           .bindMaterialBuffer(buffer, 0, 16)
           .setDrawOffset(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::VectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::VectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -683,10 +681,10 @@ template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled()
 
     VectorGL<dimensions> shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTextureMatrix({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VectorGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
@@ -705,11 +703,11 @@ template<UnsignedInt dimensions> void VectorGLTest::bindTextureTransformBufferNo
     VectorGL<dimensions> shader{typename VectorGL<dimensions>::Configuration{}
         .setFlags(VectorGL<dimensions>::Flag::UniformBuffers)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
         "Shaders::VectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
 }
@@ -731,10 +729,10 @@ template<UnsignedInt dimensions> void VectorGLTest::setWrongDrawOffset() {
         .setMaterialCount(2)
         .setDrawCount(5)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setDrawOffset(5);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VectorGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif

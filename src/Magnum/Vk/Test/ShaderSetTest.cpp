@@ -24,12 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Shader.h"
@@ -376,10 +374,10 @@ void ShaderSetTest::addShaderTooManyStages() {
        .addShader({}, {}, {})
        .addShader({}, {}, {});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     set.addShader({}, {}, {});
-    CORRADE_COMPARE(out.str(), "Vk::ShaderSet::addShader(): too many stages, expected at most 6\n");
+    CORRADE_COMPARE(out, "Vk::ShaderSet::addShader(): too many stages, expected at most 6\n");
 }
 
 }}}}

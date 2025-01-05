@@ -24,12 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -301,7 +299,7 @@ void CompileLinesGLTest::conflictingAttributes() {
         Trade::MeshAttributeData{data.attribute, data.format, vertices.slice(&Vertex::extra)},
     }});
 
-    std::ostringstream out;
+    Containers::String out;
     GL::Mesh mesh{NoCreate};
     {
         Warning redirectWarning{&out};
@@ -319,7 +317,7 @@ void CompileLinesGLTest::conflictingAttributes() {
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileLinesTestFiles/miter.tga"),
         (DebugTools::CompareImageToFile{_manager}));
-    CORRADE_COMPARE(out.str(), data.expected);
+    CORRADE_COMPARE(out, data.expected);
 }
 
 void CompileLinesGLTest::emptyMesh() {
@@ -337,7 +335,7 @@ void CompileLinesGLTest::notGeneratedLineMesh() {
 
     Vector3 positions[3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compileLines(Trade::MeshData{MeshPrimitive::Lines, {}, positions, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positions)}
@@ -345,7 +343,7 @@ void CompileLinesGLTest::notGeneratedLineMesh() {
     compileLines(Trade::MeshData{MeshPrimitive::Triangles, {}, positions, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positions)}
     }});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compileLines(): the mesh wasn't produced with generateLines()\n"
         "MeshTools::compileLines(): the mesh wasn't produced with generateLines()\n");
 }

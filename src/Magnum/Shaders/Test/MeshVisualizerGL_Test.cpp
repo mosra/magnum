@@ -24,10 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Shaders/MeshVisualizerGL.h"
 
@@ -119,10 +119,10 @@ void MeshVisualizerGL_Test::configurationSetJointCountInvalid2D() {
 
     MeshVisualizerGL2D::Configuration configuration;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): {}\n", data.message));
 }
 
 void MeshVisualizerGL_Test::configurationSetJointCountInvalid3D() {
@@ -133,10 +133,10 @@ void MeshVisualizerGL_Test::configurationSetJointCountInvalid3D() {
 
     MeshVisualizerGL3D::Configuration configuration;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): {}\n", data.message));
 }
 #endif
 
@@ -180,38 +180,38 @@ void MeshVisualizerGL_Test::vertexIndexSameAsObjectId() {
 }
 
 void MeshVisualizerGL_Test::debugFlag2D() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << MeshVisualizerGL2D::Flag::Wireframe << MeshVisualizerGL2D::Flag(0xbad00000);
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::Wireframe Shaders::MeshVisualizerGL2D::Flag(0xbad00000)\n");
+    CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::Wireframe Shaders::MeshVisualizerGL2D::Flag(0xbad00000)\n");
 }
 
 void MeshVisualizerGL_Test::debugFlag3D() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << MeshVisualizerGL3D::Flag::Wireframe << MeshVisualizerGL3D::Flag(0xbad00000);
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::Wireframe Shaders::MeshVisualizerGL3D::Flag(0xbad00000)\n");
+    CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::Wireframe Shaders::MeshVisualizerGL3D::Flag(0xbad00000)\n");
 }
 
 void MeshVisualizerGL_Test::debugFlags2D() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader) << MeshVisualizerGL2D::Flags{};
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::Wireframe|Shaders::MeshVisualizerGL2D::Flag::NoGeometryShader Shaders::MeshVisualizerGL2D::Flags{}\n");
+    CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::Wireframe|Shaders::MeshVisualizerGL2D::Flag::NoGeometryShader Shaders::MeshVisualizerGL2D::Flags{}\n");
     #else
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::Wireframe Shaders::MeshVisualizerGL2D::Flags{}\n");
+    CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::Wireframe Shaders::MeshVisualizerGL2D::Flags{}\n");
     #endif
 }
 
 void MeshVisualizerGL_Test::debugFlags3D() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader) << MeshVisualizerGL3D::Flags{};
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::Wireframe|Shaders::MeshVisualizerGL3D::Flag::NoGeometryShader Shaders::MeshVisualizerGL3D::Flags{}\n");
+    CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::Wireframe|Shaders::MeshVisualizerGL3D::Flag::NoGeometryShader Shaders::MeshVisualizerGL3D::Flags{}\n");
     #else
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::Wireframe Shaders::MeshVisualizerGL3D::Flags{}\n");
+    CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::Wireframe Shaders::MeshVisualizerGL3D::Flags{}\n");
     #endif
 }
 
@@ -220,43 +220,43 @@ void MeshVisualizerGL_Test::debugFlagsSupersets2D() {
     /* InstancedObjectId and ObjectIdTexture are a superset of ObjectId so only
        one should be printed, but if there are both then both should be */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::InstancedObjectId);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::InstancedObjectId\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::InstancedObjectId\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::ObjectIdTexture\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::ObjectIdTexture\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::InstancedObjectId|Shaders::MeshVisualizerGL2D::Flag::ObjectIdTexture\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::InstancedObjectId|Shaders::MeshVisualizerGL2D::Flag::ObjectIdTexture\n");
     }
 
     /* InstancedTextureOffset is a superset of TextureTransformation so only
        one should be printed */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL2D::Flag::InstancedTextureOffset|MeshVisualizerGL2D::Flag::TextureTransformation);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::InstancedTextureOffset\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::InstancedTextureOffset\n");
     }
 
     /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
        only one should be printed, but if there are both then both should be */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::MultiDraw\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::MultiDraw\n");
     }
     #ifndef MAGNUM_TARGET_WEBGL
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::ShaderStorageBuffers\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::ShaderStorageBuffers\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::MultiDraw|Shaders::MeshVisualizerGL2D::Flag::ShaderStorageBuffers\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::MultiDraw|Shaders::MeshVisualizerGL2D::Flag::ShaderStorageBuffers\n");
     }
     #endif
 }
@@ -265,43 +265,43 @@ void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
     /* InstancedObjectId and ObjectIdTexture are a superset of ObjectId so only
        one should be printed, but if there are both then both should be */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::InstancedObjectId);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::ObjectIdTexture\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::ObjectIdTexture\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId|Shaders::MeshVisualizerGL3D::Flag::ObjectIdTexture\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId|Shaders::MeshVisualizerGL3D::Flag::ObjectIdTexture\n");
     }
 
     /* InstancedTextureOffset is a superset of TextureTransformation so only
        one should be printed */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::InstancedTextureOffset|MeshVisualizerGL3D::Flag::TextureTransformation);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::InstancedTextureOffset\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::InstancedTextureOffset\n");
     }
 
     /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
        only one should be printed, but if there are both then both should be */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::MultiDraw\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::MultiDraw\n");
     }
     #ifndef MAGNUM_TARGET_WEBGL
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::ShaderStorageBuffers\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::ShaderStorageBuffers\n");
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::MultiDraw|Shaders::MeshVisualizerGL3D::Flag::ShaderStorageBuffers\n");
+        CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::MultiDraw|Shaders::MeshVisualizerGL3D::Flag::ShaderStorageBuffers\n");
     }
     #endif
 }

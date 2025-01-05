@@ -24,11 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/Range.h"
@@ -170,10 +168,10 @@ void PipelineVkTest::constructRasterizationViewportNotSet() {
     };
     CORRADE_VERIFY(!info->pViewportState);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Pipeline pipeline{device(), info};
-    CORRADE_COMPARE(out.str(), "Vk::Pipeline: if rasterization discard is not enabled, the viewport has to be either dynamic or set via setViewport()\n");
+    CORRADE_COMPARE(out, "Vk::Pipeline: if rasterization discard is not enabled, the viewport has to be either dynamic or set via setViewport()\n");
 }
 
 void PipelineVkTest::constructRasterizationViewportNotSetDiscardEnabled() {
@@ -441,10 +439,10 @@ void PipelineVkTest::dynamicRasterizationStatesNotRasterization() {
         shaderSet, pipelineLayout
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     pipeline.dynamicRasterizationStates();
-    CORRADE_COMPARE(out.str(), "Vk::Pipeline::dynamicRasterizationStates(): not a rasterization pipeline\n");
+    CORRADE_COMPARE(out, "Vk::Pipeline::dynamicRasterizationStates(): not a rasterization pipeline\n");
 }
 
 void PipelineVkTest::cmdBindRasterization() {

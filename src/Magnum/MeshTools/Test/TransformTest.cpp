@@ -24,15 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/StaticArray.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Matrix3.h"
@@ -552,13 +551,13 @@ void TransformTest::meshData2DNoPosition() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform2D(mesh, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): the mesh has no positions with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transform2D(): the mesh has no positions with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): the mesh has no positions with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transform2D(): the mesh has no positions with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshData2DNot2D() {
@@ -568,10 +567,10 @@ void TransformTest::meshData2DNot2D() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform2D(mesh, {});
-    CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): expected 2D positions but got VertexFormat::Vector3\n");
+    CORRADE_COMPARE(out, "MeshTools::transform2D(): expected 2D positions but got VertexFormat::Vector3\n");
 }
 
 void TransformTest::meshData2DImplementationSpecificIndexType() {
@@ -605,10 +604,10 @@ void TransformTest::meshData2DImplementationSpecificVertexFormat() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertexFormatWrap(0xcaca), nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform2D(mesh, {}, 1);
-    CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): positions have an implementation-specific format 0xcaca\n");
+    CORRADE_COMPARE(out, "MeshTools::transform2D(): positions have an implementation-specific format 0xcaca\n");
 }
 
 void TransformTest::meshData2DRvaluePassthrough() {
@@ -774,15 +773,15 @@ void TransformTest::meshData2DRvaluePassthroughNoPosition() {
     /* Mainly to verify there's no other accidental assertion from checking
        vertex format and that the ID + morph target ID gets correctly passed
        through, this message comes from the l-value overload */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform2D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
     }}, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): the mesh has no positions with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transform2D(): the mesh has no positions with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transform2D(): the mesh has no positions with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transform2D(): the mesh has no positions with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshData2DRvaluePassthroughWrongFormat() {
@@ -824,10 +823,10 @@ void TransformTest::meshData2DInPlaceNotMutable() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform2DInPlace(mesh, {});
-    CORRADE_COMPARE(out.str(), "MeshTools::transform2DInPlace(): vertex data not mutable\n");
+    CORRADE_COMPARE(out, "MeshTools::transform2DInPlace(): vertex data not mutable\n");
 }
 
 void TransformTest::meshData2DInPlaceNoPosition() {
@@ -840,13 +839,13 @@ void TransformTest::meshData2DInPlaceNoPosition() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform2DInPlace(mesh, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transform2DInPlace(): the mesh has no positions with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transform2DInPlace(): the mesh has no positions with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transform2DInPlace(): the mesh has no positions with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transform2DInPlace(): the mesh has no positions with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshData2DInPlaceWrongFormat() {
@@ -857,10 +856,10 @@ void TransformTest::meshData2DInPlaceWrongFormat() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2us, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform2DInPlace(mesh, {}, 1);
-    CORRADE_COMPARE(out.str(), "MeshTools::transform2DInPlace(): expected VertexFormat::Vector2 positions but got VertexFormat::Vector2us\n");
+    CORRADE_COMPARE(out, "MeshTools::transform2DInPlace(): expected VertexFormat::Vector2 positions but got VertexFormat::Vector2us\n");
 }
 
 template<class T, class U, class V, class W> void TransformTest::meshData3D() {
@@ -1002,13 +1001,13 @@ void TransformTest::meshData3DNoPosition() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform3D(mesh, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): the mesh has no positions with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transform3D(): the mesh has no positions with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): the mesh has no positions with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transform3D(): the mesh has no positions with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshData3DNot3D() {
@@ -1018,10 +1017,10 @@ void TransformTest::meshData3DNot3D() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform3D(mesh, {});
-    CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): expected 3D positions but got VertexFormat::Vector2\n");
+    CORRADE_COMPARE(out, "MeshTools::transform3D(): expected 3D positions but got VertexFormat::Vector2\n");
 }
 
 void TransformTest::meshData3DImplementationSpecificIndexType() {
@@ -1060,10 +1059,10 @@ void TransformTest::meshData3DImplementationSpecificVertexFormat() {
         Trade::MeshAttributeData{data.otherAttribute, data.otherAttributeFormat, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform3D(mesh, {}, 1);
-    CORRADE_COMPARE(out.str(), Utility::formatString("MeshTools::transform3D(): {} have an implementation-specific format 0xcaca\n", data.name));
+    CORRADE_COMPARE(out, Utility::format("MeshTools::transform3D(): {} have an implementation-specific format 0xcaca\n", data.name));
 }
 
 void TransformTest::meshData3DRvaluePassthrough() {
@@ -1287,15 +1286,15 @@ void TransformTest::meshData3DRvaluePassthroughNoPosition() {
     /* Mainly to verify there's no other accidental assertion from checking
        vertex format and that the ID + morph target ID gets correctly passed
        through, this message comes from the l-value overload */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform3D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
     }}, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): the mesh has no positions with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transform3D(): the mesh has no positions with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transform3D(): the mesh has no positions with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transform3D(): the mesh has no positions with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
@@ -1392,10 +1391,10 @@ void TransformTest::meshData3DInPlaceNotMutable() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform3DInPlace(mesh, {});
-    CORRADE_COMPARE(out.str(), "MeshTools::transform3DInPlace(): vertex data not mutable\n");
+    CORRADE_COMPARE(out, "MeshTools::transform3DInPlace(): vertex data not mutable\n");
 }
 
 void TransformTest::meshData3DInPlaceNoPosition() {
@@ -1408,13 +1407,13 @@ void TransformTest::meshData3DInPlaceNoPosition() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform3DInPlace(mesh, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transform3DInPlace(): the mesh has no positions with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transform3DInPlace(): the mesh has no positions with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transform3DInPlace(): the mesh has no positions with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transform3DInPlace(): the mesh has no positions with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshData3DInPlaceWrongFormat() {
@@ -1439,10 +1438,10 @@ void TransformTest::meshData3DInPlaceWrongFormat() {
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, Utility::move(attributes)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transform3DInPlace(mesh, {}, 1);
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 
 template<class T> void TransformTest::meshDataTextureCoordinates2D() {
@@ -1518,13 +1517,13 @@ void TransformTest::meshDataTextureCoordinates2DNoCoordinates() {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transformTextureCoordinates2D(mesh, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType() {
@@ -1558,10 +1557,10 @@ void TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexForm
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertexFormatWrap(0xcaca), nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transformTextureCoordinates2D(mesh, {}, 1);
-    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): texture coordinates have an implementation-specific format 0xcaca\n");
+    CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2D(): texture coordinates have an implementation-specific format 0xcaca\n");
 }
 
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthrough() {
@@ -1727,15 +1726,15 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughNoCoordinates()
     /* Mainly to verify there's no other accidental assertion from checking
        vertex format and that the ID + morph target ID gets correctly passed
        through, this message comes from the l-value overload */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transformTextureCoordinates2D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
     }}, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughWrongFormat() {
@@ -1777,10 +1776,10 @@ void TransformTest::meshDataTextureCoordinates2DInPlaceNotMutable() {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transformTextureCoordinates2DInPlace(mesh, {});
-    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2DInPlace(): vertex data not mutable\n");
+    CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2DInPlace(): vertex data not mutable\n");
 }
 
 void TransformTest::meshDataTextureCoordinates2DInPlaceNoCoordinates() {
@@ -1793,13 +1792,13 @@ void TransformTest::meshDataTextureCoordinates2DInPlaceNoCoordinates() {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transformTextureCoordinates2DInPlace(mesh, {}, data.id, data.morphTargetId);
     if(data.morphTargetId == -1)
-        CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2DInPlace(): the mesh has no texture coordinates with index 1\n");
+        CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2DInPlace(): the mesh has no texture coordinates with index 1\n");
     else
-        CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2DInPlace(): the mesh has no texture coordinates with index 0 in morph target 37\n");
+        CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2DInPlace(): the mesh has no texture coordinates with index 0 in morph target 37\n");
 }
 
 void TransformTest::meshDataTextureCoordinates2DInPlaceWrongFormat() {
@@ -1810,10 +1809,10 @@ void TransformTest::meshDataTextureCoordinates2DInPlaceWrongFormat() {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2us, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     transformTextureCoordinates2DInPlace(mesh, {}, 1);
-    CORRADE_COMPARE(out.str(), "MeshTools::transformTextureCoordinates2DInPlace(): expected VertexFormat::Vector2 texture coordinates but got VertexFormat::Vector2us\n");
+    CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2DInPlace(): expected VertexFormat::Vector2 texture coordinates but got VertexFormat::Vector2us\n");
 }
 
 }}}}

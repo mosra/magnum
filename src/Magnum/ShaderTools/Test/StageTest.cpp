@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/ShaderTools/Stage.h"
 
@@ -43,10 +42,10 @@ StageTest::StageTest() {
 }
 
 void StageTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << Stage::RayMiss << Stage(0xf0);
-    CORRADE_COMPARE(out.str(), "ShaderTools::Stage::RayMiss ShaderTools::Stage(0xf0)\n");
+    CORRADE_COMPARE(out, "ShaderTools::Stage::RayMiss ShaderTools::Stage(0xf0)\n");
 }
 
 }}}}

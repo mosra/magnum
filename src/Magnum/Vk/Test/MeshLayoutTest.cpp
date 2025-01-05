@@ -25,10 +25,9 @@
 */
 
 #include <new>
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/VertexFormat.h"
@@ -157,26 +156,26 @@ void MeshLayoutTest::mapMeshPrimitiveUnsupported() {
 
     CORRADE_VERIFY(!hasMeshPrimitive(Magnum::MeshPrimitive::LineLoop));
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Error redirectError{&out};
         meshPrimitive(Magnum::MeshPrimitive::LineLoop);
     }
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::meshPrimitive(): unsupported primitive MeshPrimitive::LineLoop\n");
 }
 
 void MeshLayoutTest::mapMeshPrimitiveInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     hasMeshPrimitive(Magnum::MeshPrimitive{});
     hasMeshPrimitive(Magnum::MeshPrimitive(0x12));
     meshPrimitive(Magnum::MeshPrimitive{});
     meshPrimitive(Magnum::MeshPrimitive(0x12));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::hasMeshPrimitive(): invalid primitive MeshPrimitive(0x0)\n"
         "Vk::hasMeshPrimitive(): invalid primitive MeshPrimitive(0x12)\n"
         "Vk::meshPrimitive(): invalid primitive MeshPrimitive(0x0)\n"
@@ -339,11 +338,11 @@ void MeshLayoutTest::addBindingWrongOrder() {
     MeshLayout layout{MeshPrimitive::Triangles};
     layout.addBinding(15, 23);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     layout.addBinding(15, 27)
         .addInstancedBinding(15, 27);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::MeshLayout::addBinding(): binding 15 can't be ordered after 15\n"
         "Vk::MeshLayout::addInstancedBinding(): binding 15 can't be ordered after 15\n");
 }
@@ -373,10 +372,10 @@ void MeshLayoutTest::addAttributeWrongOrder() {
     MeshLayout layout{MeshPrimitive::Triangles};
     layout.addAttribute(5, 17, VertexFormat{}, 0);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     layout.addAttribute(5, 25, VertexFormat{}, 1);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::MeshLayout::addAttribute(): location 5 can't be ordered after 5\n");
 }
 
@@ -515,11 +514,11 @@ void MeshLayoutTest::compareExternalPointers() {
 
         /* Test both comparison directions to verify the check is done for
            both */
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(empty); /* to avoid unused expression warnings */
         empty.operator==(layout);
-        CORRADE_COMPARE(out.str(),
+        CORRADE_COMPARE(out,
             "Vk::MeshLayout: can't compare structures with external pointers\n"
             "Vk::MeshLayout: can't compare structures with external pointers\n");
 
@@ -528,10 +527,10 @@ void MeshLayoutTest::compareExternalPointers() {
         MeshLayout layout{MeshPrimitive::Lines};
         layout.vkPipelineInputAssemblyStateCreateInfo().pNext = &layout;
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(layout); /* to avoid unused expression warnings */
-        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+        CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
 
     /* Disallowed pNext inside the divisor struct */
     } {
@@ -542,10 +541,10 @@ void MeshLayoutTest::compareExternalPointers() {
         CORRADE_VERIFY(layout.vkPipelineVertexInputStateCreateInfo().pNext);
         static_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(const_cast<void*>(layout.vkPipelineVertexInputStateCreateInfo().pNext))->pNext = &layout;
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(layout); /* to avoid unused expression warnings */
-        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+        CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
 
     /* External vertex bindings */
     } {
@@ -553,20 +552,20 @@ void MeshLayoutTest::compareExternalPointers() {
         MeshLayout layout{MeshPrimitive::Lines};
         layout.vkPipelineVertexInputStateCreateInfo().pVertexBindingDescriptions = &bindingData;
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(layout); /* to avoid unused expression warnings */
-        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+        CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
 
     /* Null vertex bindings but non-zero size */
     } {
         MeshLayout layout{MeshPrimitive::Lines};
         layout.vkPipelineVertexInputStateCreateInfo().vertexAttributeDescriptionCount = 3;
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(layout); /* to avoid unused expression warnings */
-        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+        CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
 
     /* External vertex divisors */
     } {
@@ -578,10 +577,10 @@ void MeshLayoutTest::compareExternalPointers() {
         CORRADE_VERIFY(layout.vkPipelineVertexInputStateCreateInfo().pNext);
         static_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(const_cast<void*>(layout.vkPipelineVertexInputStateCreateInfo().pNext))->pVertexBindingDivisors = &bindingDivisorData;
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(layout); /* to avoid unused expression warnings */
-        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+        CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
 
     /* Null vertex divisors but non-zero size */
     } {
@@ -592,10 +591,10 @@ void MeshLayoutTest::compareExternalPointers() {
         CORRADE_VERIFY(layout.vkPipelineVertexInputStateCreateInfo().pNext);
         static_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(const_cast<void*>(layout.vkPipelineVertexInputStateCreateInfo().pNext))->pVertexBindingDivisors = nullptr;
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(layout); /* to avoid unused expression warnings */
-        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+        CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
 
     /* External attributes */
     } {
@@ -603,27 +602,27 @@ void MeshLayoutTest::compareExternalPointers() {
         MeshLayout layout{MeshPrimitive::Lines};
         layout.vkPipelineVertexInputStateCreateInfo().pVertexAttributeDescriptions = &attributeData;
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(layout); /* to avoid unused warnings */
-        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+        CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
 
     /* Null attributes but non-zero size */
     } {
         MeshLayout layout{MeshPrimitive::Lines};
         layout.vkPipelineVertexInputStateCreateInfo().vertexAttributeDescriptionCount = 3;
 
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         layout.operator==(layout); /* to avoid unused warnings */
-        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+        CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
     }
 }
 
 void MeshLayoutTest::debugMeshPrimitive() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << MeshPrimitive::TriangleFan << MeshPrimitive(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::MeshPrimitive::TriangleFan Vk::MeshPrimitive(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::MeshPrimitive::TriangleFan Vk::MeshPrimitive(-10007655)\n");
 }
 
 }}}}

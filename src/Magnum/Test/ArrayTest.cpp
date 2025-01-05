@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Array.h"
 
@@ -118,10 +117,10 @@ void ArrayTest::access() {
 }
 
 void ArrayTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << Array<4, Int>{5, 6, 7, 8} << Array1D{13} << Array2D{71, 2} << Array3D{1, 2, 3};
-    CORRADE_COMPARE(out.str(), "Array(5, 6, 7, 8) Array(13) Array(71, 2) Array(1, 2, 3)\n");
+    CORRADE_COMPARE(out, "Array(5, 6, 7, 8) Array(13) Array(71, 2) Array(1, 2, 3)\n");
 }
 CORRADE_IGNORE_DEPRECATED_POP
 

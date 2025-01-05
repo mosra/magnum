@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/SceneGraph/AbstractFeature.hpp"
 #include "Magnum/SceneGraph/MatrixTransformation3D.hpp"
@@ -280,11 +279,11 @@ template<class T> void ObjectTest::setParentKeepTransformationInvalid() {
     Object3D<T>* child = new Object3D<T>(&root);
 
     /* Old parent and new parent must share the same scene */
-    std::ostringstream o;
-    Error redirectError{&o};
+    Containers::String out;
+    Error redirectError{&out};
     Scene3D<T> scene;
     child->setParentKeepTransformation(&scene);
-    CORRADE_COMPARE(o.str(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene\n");
+    CORRADE_COMPARE(out, "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene\n");
 }
 
 template<class T> void ObjectTest::absoluteTransformation() {
@@ -389,14 +388,14 @@ template<class T> void ObjectTest::transformationsOrphan() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream o;
-    Error redirectError{&o};
+    Containers::String out;
+    Error redirectError{&out};
 
     /* Transformation of objects not part of the same scene */
     Scene3D<T> s;
     Object3D<T> orphan;
     CORRADE_COMPARE(s.transformations({orphan}), std::vector<Math::Matrix4<T>>{});
-    CORRADE_COMPARE(o.str(), "SceneGraph::Object::transformations(): the objects are not part of the same tree\n");
+    CORRADE_COMPARE(out, "SceneGraph::Object::transformations(): the objects are not part of the same tree\n");
 }
 
 template<class T> void ObjectTest::transformationsDuplicate() {
@@ -662,7 +661,7 @@ void ObjectTest::treeDestructionOrder() {
         int id;
     };
 
-    std::stringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     {
         struct Scene: Scene3D<Float> {
@@ -689,7 +688,7 @@ void ObjectTest::treeDestructionOrder() {
         AccessingParent{5, nullptr};
         AccessingObject{b, 4};
 
-        CORRADE_COMPARE(out.str(),
+        CORRADE_COMPARE(out,
             "Destructing an object 5 with 0 parents and no scene\n"
             "Destructing a feature 4 attached to an object 1\n");
     }
@@ -701,7 +700,7 @@ void ObjectTest::treeDestructionOrder() {
         "a scene" /* See below. */
         #endif
         ;
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Destructing an object 5 with 0 parents and no scene\n"
         "Destructing a feature 4 attached to an object 1\n"
 

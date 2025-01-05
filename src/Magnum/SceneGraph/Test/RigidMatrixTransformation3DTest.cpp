@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/SceneGraph/Object.hpp"
@@ -105,10 +104,10 @@ template<class T> void RigidMatrixTransformation3DTest::fromMatrixInvalid() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream o;
-    Error redirectError{&o};
+    Containers::String out;
+    Error redirectError{&out};
     Implementation::Transformation<BasicRigidMatrixTransformation3D<T>>::fromMatrix(Math::Matrix4<T>::scaling(Math::Vector3<T>(T(4.0))));
-    CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation3D: the matrix doesn't represent rigid transformation\n");
+    CORRADE_COMPARE(out, "SceneGraph::RigidMatrixTransformation3D: the matrix doesn't represent rigid transformation\n");
 }
 
 template<class T> void RigidMatrixTransformation3DTest::toMatrix() {
@@ -162,10 +161,10 @@ template<class T> void RigidMatrixTransformation3DTest::setTransformationInvalid
     Object3D<T> o;
 
     /* Can't transform with non-rigid transformation */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     o.setTransformation(Math::Matrix4<T>::scaling(Math::Vector3<T>(T(3.0))));
-    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation\n");
+    CORRADE_COMPARE(out, "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation\n");
 }
 
 template<class T> void RigidMatrixTransformation3DTest::resetTransformation() {
@@ -201,10 +200,10 @@ template<class T> void RigidMatrixTransformation3DTest::transformInvalid() {
 
     /* Can't transform with non-rigid transformation */
     Object3D<T> o;
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     o.transform(Math::Matrix4<T>::scaling(Math::Vector3<T>(T(3.0))));
-    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation\n");
+    CORRADE_COMPARE(out, "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation\n");
 }
 
 template<class T> void RigidMatrixTransformation3DTest::translate() {

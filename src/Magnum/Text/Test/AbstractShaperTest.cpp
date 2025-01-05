@@ -24,13 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Text/AbstractShaper.h"
@@ -491,7 +488,7 @@ void AbstractShaperTest::shapeBeginEndOutOfRange() {
     /* Capture correct function name */
     CORRADE_VERIFY(true);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Begin out of range, end unbounded */
     shaper.shape("hello", 6, ~UnsignedInt{});
@@ -517,7 +514,7 @@ void AbstractShaperTest::shapeBeginEndOutOfRange() {
         Feature::AccessAllAlternates,
         {Feature::Kerning, 4, 3},
     });
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::AbstractShaper::shape(): begin 6 and end 4294967295 out of range for a text of 5 bytes\n"
         "Text::AbstractShaper::shape(): feature 1 begin 6 and end 4294967295 out of range for a text of 5 bytes\n"
         "Text::AbstractShaper::shape(): begin 6 and end 7 out of range for a text of 5 bytes\n"
@@ -587,13 +584,13 @@ void AbstractShaperTest::glyphsIntoInvalidViewSizes() {
     Vector2 advancesWrong[6];
     UnsignedInt clustersWrong[6];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shaper.glyphIdsInto(idsWrong);
     shaper.glyphOffsetsAdvancesInto(offsetsWrong, advances);
     shaper.glyphOffsetsAdvancesInto(offsets, advancesWrong);
     shaper.glyphClustersInto(clustersWrong);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractShaper::glyphIdsInto(): expected the ids view to have a size of 5 but got 6\n"
         "Text::AbstractShaper::glyphOffsetsAdvancesInto(): expected the offsets and advanced views to have a size of 5 but got 6 and 5\n"
         "Text::AbstractShaper::glyphOffsetsAdvancesInto(): expected the offsets and advanced views to have a size of 5 but got 5 and 6\n"

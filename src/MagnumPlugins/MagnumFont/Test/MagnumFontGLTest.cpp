@@ -24,10 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Path.h>
 

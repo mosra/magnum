@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/DebugTools/CompareMaterial.h"
 #include "Magnum/MaterialTools/PhongToPbrMetallicRoughness.h"
@@ -278,35 +277,35 @@ void PhongToPbrMetallicRoughnessTest::convert() {
     auto&& data = ConvertData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Warning redirectWarning{&out};
     Containers::Optional<Trade::MaterialData> actual = phongToPbrMetallicRoughness(data.material, data.flags);
     CORRADE_VERIFY(actual);
     CORRADE_COMPARE_AS(*actual, data.expected, DebugTools::CompareMaterial);
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void PhongToPbrMetallicRoughnessTest::warning() {
     auto&& data = WarningData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Containers::Optional<Trade::MaterialData> actual = phongToPbrMetallicRoughness(data.material, data.flags);
     CORRADE_VERIFY(actual);
     CORRADE_COMPARE_AS(*actual, data.expected, DebugTools::CompareMaterial);
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 
 void PhongToPbrMetallicRoughnessTest::fail() {
     auto&& data = FailData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!phongToPbrMetallicRoughness(data.material, data.flags));
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 
 }}}}

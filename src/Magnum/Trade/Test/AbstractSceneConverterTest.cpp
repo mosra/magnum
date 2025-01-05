@@ -24,18 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Iterable.h>
-#include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
-#include <Corrade/Utility/FormatStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -945,10 +941,10 @@ void AbstractSceneConverterTest::sceneContentsForImporterNotOpened() {
         void doClose() override {}
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     sceneContentsFor(importer);
-    CORRADE_COMPARE(out.str(), "Trade::sceneContentsFor(): the importer is not opened\n");
+    CORRADE_COMPARE(out, "Trade::sceneContentsFor(): the importer is not opened\n");
 }
 
 void AbstractSceneConverterTest::sceneContentsForConverterNone() {
@@ -1017,10 +1013,10 @@ void AbstractSceneConverterTest::featuresNone() {
         SceneConverterFeatures doFeatures() const override { return {}; }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.features();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::features(): implementation reported no features\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::features(): implementation reported no features\n");
 }
 
 void AbstractSceneConverterTest::setFlags() {
@@ -1086,7 +1082,7 @@ void AbstractSceneConverterTest::thingNotSupported() {
     ImageData3D image3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData};
     ImageData3D compressedImage3D{CompressedPixelFormat::Astc4x4RGBAF, {1, 1, 1}, DataFlags{}, imageData};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convert(mesh);
     converter.convertInPlace(mesh);
@@ -1132,7 +1128,7 @@ void AbstractSceneConverterTest::thingNotSupported() {
     converter.add({image3D, image3D});
     converter.add({compressedImage3D, compressedImage3D});
 
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Trade::AbstractSceneConverter::convert(): mesh conversion not supported\n"
         "Trade::AbstractSceneConverter::convertInPlace(): mesh conversion not supported\n"
         "Trade::AbstractSceneConverter::convertToData(): mesh conversion not supported\n"
@@ -1205,7 +1201,7 @@ void AbstractSceneConverterTest::thingLevelsNotSupported() {
     ImageData3D image3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData};
     ImageData3D compressedImage3D{CompressedPixelFormat::Astc4x4RGBAF, {1, 1, 1}, DataFlags{}, imageData};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({mesh, mesh});
     converter.add({image1D, image1D});
@@ -1214,7 +1210,7 @@ void AbstractSceneConverterTest::thingLevelsNotSupported() {
     converter.add({compressedImage2D, compressedImage2D});
     converter.add({image3D, image3D});
     converter.add({compressedImage3D, compressedImage3D});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::add(): multi-level mesh conversion not supported\n"
         "Trade::AbstractSceneConverter::add(): multi-level 1D image conversion not supported\n"
         "Trade::AbstractSceneConverter::add(): multi-level compressed 1D image conversion not supported\n"
@@ -1254,10 +1250,10 @@ void AbstractSceneConverterTest::convertMeshFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convert(MeshData{MeshPrimitive::Triangles, 0}));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshNotImplemented() {
@@ -1267,10 +1263,10 @@ void AbstractSceneConverterTest::convertMeshNotImplemented() {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMesh; }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convert(MeshData{MeshPrimitive::Triangles, 6});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::convert(): mesh conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::convert(): mesh conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::convertMeshNonOwningDeleters() {
@@ -1337,10 +1333,10 @@ void AbstractSceneConverterTest::convertMeshCustomIndexDataDeleter() {
         char data[1];
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convert(MeshData{MeshPrimitive::Triangles, 6});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::convert(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1357,10 +1353,10 @@ void AbstractSceneConverterTest::convertMeshCustomVertexDataDeleter() {
         char data[1];
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convert(MeshData{MeshPrimitive::Triangles, 6});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::convert(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1377,10 +1373,10 @@ void AbstractSceneConverterTest::convertMeshCustomAttributeDataDeleter() {
         char data[1];
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convert(MeshData{MeshPrimitive::Triangles, 6});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::convert(): implementation is not allowed to use a custom Array deleter\n");
 }
 
@@ -1419,10 +1415,10 @@ void AbstractSceneConverterTest::convertMeshInPlaceFailed() {
     MeshData mesh{MeshPrimitive::Triangles, 0};
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertInPlace(mesh));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshInPlaceNotImplemented() {
@@ -1434,10 +1430,10 @@ void AbstractSceneConverterTest::convertMeshInPlaceNotImplemented() {
 
     MeshData mesh{MeshPrimitive::Triangles, 3};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertInPlace(mesh);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::convertInPlace(): mesh conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::convertInPlace(): mesh conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::convertMeshToData() {
@@ -1466,10 +1462,10 @@ void AbstractSceneConverterTest::convertMeshToDataFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 0}));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshToDataThroughBatch() {
@@ -1529,11 +1525,11 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchAddFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 6}));
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshToDataThroughBatchEndFailed() {
@@ -1555,11 +1551,11 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchEndFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 6}));
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshToDataNotImplemented() {
@@ -1569,10 +1565,10 @@ void AbstractSceneConverterTest::convertMeshToDataNotImplemented() {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::convertToData(): mesh conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::convertToData(): mesh conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::convertMeshToDataNonOwningDeleter() {
@@ -1626,10 +1622,10 @@ void AbstractSceneConverterTest::convertMeshToDataCustomDeleter() {
         char data[1];
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertToData(MeshData{MeshPrimitive::Triangles, 6});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::convertToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractSceneConverterTest::convertMeshToFile() {
@@ -1663,10 +1659,10 @@ void AbstractSceneConverterTest::convertMeshToFileFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshToFileThroughData() {
@@ -1705,11 +1701,11 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataFailed() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {
@@ -1721,11 +1717,11 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, "/some/path/that/does/not/exist"));
     /* There's an error from Path::write() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nTrade::AbstractSceneConverter::convertToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -1794,11 +1790,11 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchAddFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xfc}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshToFileThroughBatchEndFailed() {
@@ -1820,11 +1816,11 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchEndFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xfc}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::convertMeshToFileNotImplemented() {
@@ -1834,10 +1830,10 @@ void AbstractSceneConverterTest::convertMeshToFileNotImplemented() {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToFile; }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertToFile(MeshData{MeshPrimitive::Triangles, 6}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::convertToFile(): mesh conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::convertToFile(): mesh conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::beginEnd() {
@@ -1895,10 +1891,10 @@ void AbstractSceneConverterTest::beginFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.begin());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
 }
@@ -1919,10 +1915,10 @@ void AbstractSceneConverterTest::endFailed() {
     CORRADE_VERIFY(converter.begin());
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.end());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
 }
@@ -1936,10 +1932,10 @@ void AbstractSceneConverterTest::beginNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.begin();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::begin(): feature advertised but not implemented\n");
 }
 
@@ -1956,10 +1952,10 @@ void AbstractSceneConverterTest::endNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.end();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::end(): feature advertised but not implemented\n");
 }
 
@@ -2009,10 +2005,10 @@ void AbstractSceneConverterTest::beginDataFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.beginData());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
 }
@@ -2033,10 +2029,10 @@ void AbstractSceneConverterTest::endDataFailed() {
     CORRADE_VERIFY(converter.beginData());
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endData());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
 }
@@ -2050,10 +2046,10 @@ void AbstractSceneConverterTest::beginDataNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.beginData();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::beginData(): feature advertised but not implemented\n");
 }
 
@@ -2070,10 +2066,10 @@ void AbstractSceneConverterTest::endDataNotImplemented() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.endData();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::endData(): feature advertised but not implemented\n");
 }
 
@@ -2096,10 +2092,10 @@ void AbstractSceneConverterTest::beginEndDataCustomDeleter() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.endData();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::endData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractSceneConverterTest::beginEndFile() {
@@ -2151,10 +2147,10 @@ void AbstractSceneConverterTest::beginFileFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.beginFile("file.gltf"));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
 }
@@ -2173,10 +2169,10 @@ void AbstractSceneConverterTest::endFileFailed() {
     CORRADE_VERIFY(converter.beginFile("file.gltf"));
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endFile());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
 }
@@ -2229,12 +2225,12 @@ void AbstractSceneConverterTest::beginEndFileThroughDataFailed() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endFile());
     CORRADE_VERIFY(!converter.isConverting());
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractSceneConverterTest::beginEndFileThroughDataNotWritable() {
@@ -2254,12 +2250,12 @@ void AbstractSceneConverterTest::beginEndFileThroughDataNotWritable() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endFile());
     CORRADE_VERIFY(!converter.isConverting());
     /* There's an error from Path::write() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nTrade::AbstractSceneConverter::endFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -2273,10 +2269,10 @@ void AbstractSceneConverterTest::beginFileNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.beginFile("file.gltf");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::beginFile(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::beginFile(): feature advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::endFileNotImplemented() {
@@ -2292,10 +2288,10 @@ void AbstractSceneConverterTest::endFileNotImplemented() {
 
     CORRADE_VERIFY(converter.beginFile("file.gltf"));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.endFile();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endFile(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::endFile(): feature advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::abort() {
@@ -2596,7 +2592,7 @@ void AbstractSceneConverterTest::thingNoBegin() {
         bool doBeginData() override { return true; }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.end();
     converter.endData();
@@ -2653,7 +2649,7 @@ void AbstractSceneConverterTest::thingNoBegin() {
     converter.add({ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData},
                    ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData}});
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::end(): no conversion in progress\n"
         "Trade::AbstractSceneConverter::endData(): no data conversion in progress\n"
         "Trade::AbstractSceneConverter::endFile(): no file conversion in progress\n"
@@ -2717,10 +2713,10 @@ void AbstractSceneConverterTest::endMismatchedBegin() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.end();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::end(): no conversion in progress\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::end(): no conversion in progress\n");
 }
 
 void AbstractSceneConverterTest::endDataMismatchedBegin() {
@@ -2736,10 +2732,10 @@ void AbstractSceneConverterTest::endDataMismatchedBegin() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.endData();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endData(): no data conversion in progress\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::endData(): no data conversion in progress\n");
 }
 
 void AbstractSceneConverterTest::endFileMismatchedBegin() {
@@ -2755,10 +2751,10 @@ void AbstractSceneConverterTest::endFileMismatchedBegin() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.endFile();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endFile(): no file conversion in progress\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::endFile(): no file conversion in progress\n");
 }
 
 void AbstractSceneConverterTest::addScene() {
@@ -2813,10 +2809,10 @@ void AbstractSceneConverterTest::addSceneFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -2838,10 +2834,10 @@ void AbstractSceneConverterTest::addSceneNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): scene conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): scene conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::setSceneFieldName() {
@@ -2899,10 +2895,10 @@ void AbstractSceneConverterTest::setSceneFieldNameNotCustom() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setSceneFieldName(SceneField::Transformation, "hello!");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::setSceneFieldName(): Trade::SceneField::Transformation is not custom\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::setSceneFieldName(): Trade::SceneField::Transformation is not custom\n");
 }
 
 void AbstractSceneConverterTest::setObjectName() {
@@ -3021,10 +3017,10 @@ void AbstractSceneConverterTest::setDefaultSceneOutOfRange() {
     CORRADE_VERIFY(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}));
     CORRADE_COMPARE(converter.sceneCount(), 2);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setDefaultScene(2);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::setDefaultScene(): index 2 out of range for 2 scenes\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::setDefaultScene(): index 2 out of range for 2 scenes\n");
 }
 
 void AbstractSceneConverterTest::addAnimation() {
@@ -3079,10 +3075,10 @@ void AbstractSceneConverterTest::addAnimationFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(AnimationData{nullptr, nullptr}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -3104,10 +3100,10 @@ void AbstractSceneConverterTest::addAnimationNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(AnimationData{nullptr, nullptr});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): animation conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): animation conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::setAnimationTrackTargetName() {
@@ -3165,10 +3161,10 @@ void AbstractSceneConverterTest::setAnimationTrackTargetNameNotCustom() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setAnimationTrackTargetName(AnimationTrackTarget::Scaling2D, "hello!");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::setAnimationTrackTargetName(): Trade::AnimationTrackTarget::Scaling2D is not custom\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::setAnimationTrackTargetName(): Trade::AnimationTrackTarget::Scaling2D is not custom\n");
 }
 
 void AbstractSceneConverterTest::addLight() {
@@ -3223,10 +3219,10 @@ void AbstractSceneConverterTest::addLightFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(LightData{LightType::Point, {}, 0.0f}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -3248,10 +3244,10 @@ void AbstractSceneConverterTest::addLightNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(LightData{LightType::Point, {}, 0.0f});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): light conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): light conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addCamera() {
@@ -3306,10 +3302,10 @@ void AbstractSceneConverterTest::addCameraFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -3331,10 +3327,10 @@ void AbstractSceneConverterTest::addCameraNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): camera conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): camera conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addSkin2D() {
@@ -3389,10 +3385,10 @@ void AbstractSceneConverterTest::addSkin2DFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(SkinData2D{nullptr, nullptr}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -3414,10 +3410,10 @@ void AbstractSceneConverterTest::addSkin2DNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(SkinData2D{nullptr, nullptr});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): 2D skin conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): 2D skin conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addSkin3D() {
@@ -3472,10 +3468,10 @@ void AbstractSceneConverterTest::addSkin3DFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(SkinData3D{nullptr, nullptr}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -3497,10 +3493,10 @@ void AbstractSceneConverterTest::addSkin3DNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(SkinData3D{nullptr, nullptr});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): 3D skin conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): 3D skin conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addMesh() {
@@ -3555,10 +3551,10 @@ void AbstractSceneConverterTest::addMeshFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Triangles, 0}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -3615,10 +3611,10 @@ void AbstractSceneConverterTest::addMeshThroughConvertMesh() {
     /* The mesh is returned only once, second time it will fail (but just an
        error, not an assert */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!importer->mesh(0));
-        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::end(): mesh can be retrieved only once from a converter with just Trade::SceneConverterFeature::ConvertMesh\n");
+        CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::end(): mesh can be retrieved only once from a converter with just Trade::SceneConverterFeature::ConvertMesh\n");
     }
 
     /* Verify that it's also possible to close the importer without hitting
@@ -3646,11 +3642,11 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshFailed() {
     CORRADE_COMPARE(converter.meshCount(), 0);
 
     /* But the observable behavior is as if no mesh was added */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.end());
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh, got 0\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshZeroMeshes() {
@@ -3662,11 +3658,11 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshZeroMeshes() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.end());
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh, got 0\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshTwoMeshes() {
@@ -3687,13 +3683,13 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshTwoMeshes() {
     CORRADE_COMPARE(converter.meshCount(), 1);
 
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Triangles, 7}));
         /* It shouldn't abort the whole process */
         CORRADE_VERIFY(converter.isConverting());
         CORRADE_COMPARE(converter.meshCount(), 1);
-        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
+        CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
     }
 
     /* Getting the result should still work */
@@ -3765,11 +3761,11 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataFailed() {
     CORRADE_COMPARE(converter.meshCount(), 0);
 
     /* But the observable behavior is as if no mesh was added */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endData());
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh, got 0\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataZeroMeshes() {
@@ -3781,11 +3777,11 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataZeroMeshes() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endData());
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh, got 0\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataTwoMeshes() {
@@ -3806,13 +3802,13 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataTwoMeshes() {
     CORRADE_COMPARE(converter.meshCount(), 1);
 
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Triangles, 7}));
         /* It shouldn't abort the whole process */
         CORRADE_VERIFY(converter.isConverting());
         CORRADE_COMPARE(converter.meshCount(), 1);
-        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
+        CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
     }
 
     /* Getting the result should still work */
@@ -3957,12 +3953,12 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileFailed() {
     CORRADE_COMPARE(converter.meshCount(), 0);
 
     /* But the observable behavior is as if no mesh was added */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endFile());
     CORRADE_VERIFY(!converter.isConverting());
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh, got 0\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileZeroMeshes() {
@@ -3980,12 +3976,12 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileZeroMeshes() {
     CORRADE_VERIFY(converter.beginFile(filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endFile());
     CORRADE_VERIFY(!converter.isConverting());
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh, got 0\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileTwoMeshes() {
@@ -4017,13 +4013,13 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileTwoMeshes() {
     CORRADE_VERIFY(Utility::Path::exists(filename));
 
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Triangles, 0xb0}));
         /* It shouldn't abort the whole process */
         CORRADE_VERIFY(converter.isConverting());
         CORRADE_COMPARE(converter.meshCount(), 1);
-        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
+        CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
     }
 
     /* Getting the result should still work */
@@ -4048,10 +4044,10 @@ void AbstractSceneConverterTest::addMeshNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(MeshData{MeshPrimitive::Triangles, 0});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): mesh conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): mesh conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addMeshLevels() {
@@ -4117,13 +4113,13 @@ void AbstractSceneConverterTest::addMeshLevelsFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add({
             MeshData{MeshPrimitive::Triangles, 0},
             MeshData{MeshPrimitive::Triangles, 0}
         }));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -4146,10 +4142,10 @@ void AbstractSceneConverterTest::addMeshLevelsNoLevels() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(Containers::Iterable<const MeshData>{});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): at least one mesh level has to be specified\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): at least one mesh level has to be specified\n");
 }
 
 void AbstractSceneConverterTest::addMeshLevelsNotImplemented() {
@@ -4167,13 +4163,13 @@ void AbstractSceneConverterTest::addMeshLevelsNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         MeshData{MeshPrimitive::Triangles, 0},
         MeshData{MeshPrimitive::Triangles, 0}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): multi-level mesh conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): multi-level mesh conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughLevels() {
@@ -4267,10 +4263,10 @@ void AbstractSceneConverterTest::setMeshAttributeNameNotCustom() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setMeshAttributeName(MeshAttribute::ObjectId, "hello!");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::setMeshAttributeName(): Trade::MeshAttribute::ObjectId is not custom\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::setMeshAttributeName(): Trade::MeshAttribute::ObjectId is not custom\n");
 }
 
 void AbstractSceneConverterTest::addMaterial() {
@@ -4325,10 +4321,10 @@ void AbstractSceneConverterTest::addMaterialFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(MaterialData{{}, nullptr}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -4350,10 +4346,10 @@ void AbstractSceneConverterTest::addMaterialNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(MaterialData{{}, nullptr});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): material conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): material conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addTexture() {
@@ -4408,10 +4404,10 @@ void AbstractSceneConverterTest::addTextureFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(TextureData{{}, {}, {}, {}, {}, 0}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -4433,10 +4429,10 @@ void AbstractSceneConverterTest::addTextureNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(TextureData{{}, {}, {}, {}, {}, 0});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): texture conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): texture conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addImage1D() {
@@ -4568,14 +4564,14 @@ void AbstractSceneConverterTest::addImage1DFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         /* Testing all three variants to "fake" coverage for the name-less
            overloads as well */
         CORRADE_VERIFY(!converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, imageData}));
         CORRADE_VERIFY(!converter.add(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}));
         CORRADE_VERIFY(!converter.add(CompressedImageView1D{CompressedPixelFormat::Astc4x4RGBAUnorm, 1, imageData}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -4597,10 +4593,10 @@ void AbstractSceneConverterTest::addImage1DInvalidImage() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(ImageData1D{PixelFormat::RGBA8Unorm, {}, nullptr});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): can't add image with a zero size: Vector(0)\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): can't add image with a zero size: Vector(0)\n");
 }
 
 void AbstractSceneConverterTest::addImage1DNotImplemented() {
@@ -4619,10 +4615,10 @@ void AbstractSceneConverterTest::addImage1DNotImplemented() {
 
     const char imageData[4]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, imageData});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): 1D image conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): 1D image conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addImage2D() {
@@ -4756,14 +4752,14 @@ void AbstractSceneConverterTest::addImage2DFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         /* Testing all three variants to "fake" coverage for the name-less
            overloads as well */
         CORRADE_VERIFY(!converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, imageData}));
         CORRADE_VERIFY(!converter.add(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
         CORRADE_VERIFY(!converter.add(CompressedImageView2D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1}, imageData}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -4787,10 +4783,10 @@ void AbstractSceneConverterTest::addImage2DZeroSize() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {4, 0}, DataFlags{}, imageData});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): can't add image with a zero size: Vector(4, 0)\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): can't add image with a zero size: Vector(4, 0)\n");
 }
 
 void AbstractSceneConverterTest::addImage2DNullptr() {
@@ -4807,10 +4803,10 @@ void AbstractSceneConverterTest::addImage2DNullptr() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, {nullptr, 4}});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): can't add image with a nullptr view\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): can't add image with a nullptr view\n");
 }
 
 void AbstractSceneConverterTest::addImage2DNotImplemented() {
@@ -4829,10 +4825,10 @@ void AbstractSceneConverterTest::addImage2DNotImplemented() {
 
     const char imageData[4]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, imageData});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): 2D image conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): 2D image conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addImage3D() {
@@ -4966,14 +4962,14 @@ void AbstractSceneConverterTest::addImage3DFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         /* Testing all three variants to "fake" coverage for the name-less
            overloads as well */
         CORRADE_VERIFY(!converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData}));
         CORRADE_VERIFY(!converter.add(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}));
         CORRADE_VERIFY(!converter.add(CompressedImageView3D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1, 1}, imageData}));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -4995,10 +4991,10 @@ void AbstractSceneConverterTest::addImage3DInvalidImage() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {}, nullptr});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): can't add image with a zero size: Vector(0, 0, 0)\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): can't add image with a zero size: Vector(0, 0, 0)\n");
 }
 
 void AbstractSceneConverterTest::addImage3DNotImplemented() {
@@ -5017,10 +5013,10 @@ void AbstractSceneConverterTest::addImage3DNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): 3D image conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): 3D image conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels1D() {
@@ -5170,7 +5166,7 @@ void AbstractSceneConverterTest::addImageLevels1DFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         /* Testing all three variants to "fake" coverage for the name-less
            overloads as well */
@@ -5186,7 +5182,7 @@ void AbstractSceneConverterTest::addImageLevels1DFailed() {
             CompressedImageView1D{CompressedPixelFormat::Astc4x4RGBAUnorm, 1, imageData},
             CompressedImageView1D{CompressedPixelFormat::Astc4x4RGBAUnorm, 1, imageData},
         }));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -5209,10 +5205,10 @@ void AbstractSceneConverterTest::addImageLevels1DInvalidImage() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(std::initializer_list<Containers::AnyReference<const ImageData1D>>{});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): at least one image level has to be specified\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): at least one image level has to be specified\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels1DNotImplemented() {
@@ -5232,13 +5228,13 @@ void AbstractSceneConverterTest::addImageLevels1DNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, imageData},
         ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, imageData}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): multi-level 1D image conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): multi-level 1D image conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels2D() {
@@ -5388,7 +5384,7 @@ void AbstractSceneConverterTest::addImageLevels2DFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         /* Testing all three variants to "fake" coverage for the name-less
            overloads as well */
@@ -5404,7 +5400,7 @@ void AbstractSceneConverterTest::addImageLevels2DFailed() {
             CompressedImageView2D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1}, imageData},
             CompressedImageView2D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1}, imageData}
         }));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -5427,10 +5423,10 @@ void AbstractSceneConverterTest::addImageLevels2DNoLevels() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(std::initializer_list<Containers::AnyReference<const ImageData2D>>{});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): at least one image level has to be specified\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): at least one image level has to be specified\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels2DZeroSize() {
@@ -5450,13 +5446,13 @@ void AbstractSceneConverterTest::addImageLevels2DZeroSize() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData2D{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData},
         ImageData2D{PixelFormat::RGBA8Unorm, {4, 0}, DataFlags{}, imageData}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): can't add image level 1 with a zero size: Vector(4, 0)\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): can't add image level 1 with a zero size: Vector(4, 0)\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels2DNullptr() {
@@ -5476,13 +5472,13 @@ void AbstractSceneConverterTest::addImageLevels2DNullptr() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData2D{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData},
         ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, {nullptr, 4}}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): can't add image level 1 with a nullptr view\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): can't add image level 1 with a nullptr view\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels2DInconsistentCompressed() {
@@ -5505,11 +5501,11 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentCompressed() {
     ImageData2D a{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData};
     ImageData2D b{CompressedPixelFormat::Astc10x10RGBAF, {1, 1}, DataFlags{}, imageData};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({a, b});
     converter.add({b, b, a});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::add(): image level 1 is compressed but previous aren't\n"
         "Trade::AbstractSceneConverter::add(): image level 2 is not compressed but previous are\n");
 }
@@ -5531,14 +5527,14 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentFormat() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData2D{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData},
         ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, imageData},
         ImageData2D{PixelFormat::RGBA8Srgb, {4, 1}, DataFlags{}, imageData}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): image levels don't have the same format, expected PixelFormat::RGBA8Unorm but got PixelFormat::RGBA8Srgb for level 2\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): image levels don't have the same format, expected PixelFormat::RGBA8Unorm but got PixelFormat::RGBA8Srgb for level 2\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels2DInconsistentFormatExtra() {
@@ -5558,14 +5554,14 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentFormatExtra() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData2D{PixelStorage{}, 252, 1037, 4, {2, 2}, DataFlags{}, imageData},
         ImageData2D{PixelStorage{}, 252, 1037, 4, {1, 1}, DataFlags{}, imageData},
         ImageData2D{PixelStorage{}, 252, 4467, 4, {4, 1}, DataFlags{}, imageData}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): image levels don't have the same extra format field, expected 1037 but got 4467 for level 2\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): image levels don't have the same extra format field, expected 1037 but got 4467 for level 2\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels2DInconsistentCompressedFormat() {
@@ -5585,14 +5581,14 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentCompressedFormat() 
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData2D{CompressedPixelFormat::Bc1RGBAUnorm, {2, 2}, DataFlags{}, imageData},
         ImageData2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, DataFlags{}, imageData},
         ImageData2D{CompressedPixelFormat::Bc1RGBASrgb, {4, 1}, DataFlags{}, imageData}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): image levels don't have the same format, expected CompressedPixelFormat::Bc1RGBAUnorm but got CompressedPixelFormat::Bc1RGBASrgb for level 2\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): image levels don't have the same format, expected CompressedPixelFormat::Bc1RGBAUnorm but got CompressedPixelFormat::Bc1RGBASrgb for level 2\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels2DInconsistentFlags() {
@@ -5612,14 +5608,14 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentFlags() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData2D{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData, ImageFlag2D::Array},
         ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, imageData, ImageFlag2D::Array},
         ImageData2D{PixelFormat::RGBA8Unorm, {4, 1}, DataFlags{}, imageData}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): image levels don't have the same flags, expected ImageFlag2D::Array but got ImageFlags2D{} for level 2\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): image levels don't have the same flags, expected ImageFlag2D::Array but got ImageFlags2D{} for level 2\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels2DNotImplemented() {
@@ -5639,13 +5635,13 @@ void AbstractSceneConverterTest::addImageLevels2DNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, imageData},
         ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, imageData}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): multi-level 2D image conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): multi-level 2D image conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels3D() {
@@ -5795,7 +5791,7 @@ void AbstractSceneConverterTest::addImageLevels3DFailed() {
 
     /* The implementation is expected to print an error message on its own */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         /* Testing all three variants to "fake" coverage for the name-less
            overloads as well */
@@ -5811,7 +5807,7 @@ void AbstractSceneConverterTest::addImageLevels3DFailed() {
             CompressedImageView3D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1, 1}, imageData},
             CompressedImageView3D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1, 1}, imageData}
         }));
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     }
 
     /* It shouldn't abort the whole process */
@@ -5834,10 +5830,10 @@ void AbstractSceneConverterTest::addImageLevels3DInvalidImage() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add(std::initializer_list<Containers::AnyReference<const ImageData3D>>{});
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): at least one image level has to be specified\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): at least one image level has to be specified\n");
 }
 
 void AbstractSceneConverterTest::addImageLevels3DNotImplemented() {
@@ -5857,13 +5853,13 @@ void AbstractSceneConverterTest::addImageLevels3DNotImplemented() {
 
     CORRADE_VERIFY(converter.begin());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.add({
         ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData},
         ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData}
     });
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): multi-level 3D image conversion advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::add(): multi-level 3D image conversion advertised but not implemented\n");
 }
 
 void AbstractSceneConverterTest::addImage1DThroughLevels() {
@@ -6289,10 +6285,10 @@ void AbstractSceneConverterTest::addImporterContents() {
     converter.addFlags(data.flags);
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     CORRADE_VERIFY(converter.addImporterContents(importer, data.contents));
-    CORRADE_COMPARE(out.str(), data.expected);
+    CORRADE_COMPARE(out, data.expected);
 }
 
 void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
@@ -6342,11 +6338,11 @@ void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     CORRADE_VERIFY(converter.addImporterContents(importer));
     /* No error message, the importer is expected to print that on its own */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Adding scene\n"
         /** @todo cache the names to avoid querying repeatedly */
         "Setting field 34977 name to offsetSmall\n"
@@ -6408,11 +6404,11 @@ void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     CORRADE_VERIFY(converter.addImporterContents(importer));
     /* No error message, the importer is expected to print that on its own */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Adding mesh levels\n"
         /** @todo cache the names to avoid querying repeatedly */
         "Setting attribute 31977 name to offsetSmall\n"
@@ -6659,12 +6655,12 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addImporterContents(importer, data.contents));
     /* No error message, the importer is expected to print that on its own */
-    CORRADE_COMPARE(out.str(), Utility::format(
+    CORRADE_COMPARE(out, Utility::format(
         "Adding {0}\n"
         "Adding {0}\n", data.name));
 }
@@ -6902,12 +6898,12 @@ void AbstractSceneConverterTest::addImporterContentsConversionFail() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addImporterContents(importer, data.contents));
     /* No error message, the importer is expected to print that on its own */
-    CORRADE_COMPARE(out.str(), Utility::format(
+    CORRADE_COMPARE(out, Utility::format(
         "Adding {0}\n"
         "Adding {0}\n", data.name));
 }
@@ -6927,10 +6923,10 @@ void AbstractSceneConverterTest::addImporterContentsNotConverting() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addImporterContents(importer, {}));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::addImporterContents(): no conversion in progress\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::addImporterContents(): no conversion in progress\n");
 }
 
 void AbstractSceneConverterTest::addImporterContentsNotOpened() {
@@ -6951,10 +6947,10 @@ void AbstractSceneConverterTest::addImporterContentsNotOpened() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addImporterContents(importer));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::addImporterContents(): the importer is not opened\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::addImporterContents(): the importer is not opened\n");
 }
 
 void AbstractSceneConverterTest::addImporterContentsNotSupported() {
@@ -6982,13 +6978,13 @@ void AbstractSceneConverterTest::addImporterContentsNotSupported() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Scenes (which are not present in the input) should not be part of the
        error, materials are in the input and supported, meshes and lights are
        in the input but not supported so these should be printed */
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Scenes|SceneContent::Cameras|SceneContent::Meshes|SceneContent::Lights));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::addImporterContents(): unsupported contents Lights|Meshes\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::addImporterContents(): unsupported contents Lights|Meshes\n");
 }
 
 void AbstractSceneConverterTest::addImporterContentsNotSupportedLevels() {
@@ -7060,14 +7056,14 @@ void AbstractSceneConverterTest::addImporterContentsNotSupportedLevels() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Meshes|SceneContent::MeshLevels));
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images1D|SceneContent::ImageLevels));
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images2D|SceneContent::ImageLevels));
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images3D|SceneContent::ImageLevels));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Adding mesh\n"
         "Adding mesh\n"
         "Trade::AbstractSceneConverter::addImporterContents(): mesh 2 contains 5 levels but the converter doesn't support Trade::SceneConverterFeature::MeshLevels\n"
@@ -7139,13 +7135,13 @@ void AbstractSceneConverterTest::addImporterContentsNotSupportedUncompressedImag
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images1D|SceneContent::ImageLevels));
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images2D|SceneContent::ImageLevels));
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images3D|SceneContent::ImageLevels));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Added 1D image\n"
         "Added 1D image\n"
         "Trade::AbstractSceneConverter::addImporterContents(): 1D image 2 level 1 is uncompressed but the converter doesn't support Trade::SceneConverterFeature::AddImages1D\n"
@@ -7217,13 +7213,13 @@ void AbstractSceneConverterTest::addImporterContentsNotSupportedCompressedImage(
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images1D|SceneContent::ImageLevels));
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images2D|SceneContent::ImageLevels));
     CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images3D|SceneContent::ImageLevels));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Added 1D image\n"
         "Added 1D image\n"
         "Trade::AbstractSceneConverter::addImporterContents(): 1D image 2 level 1 is compressed but the converter doesn't support Trade::SceneConverterFeature::AddCompressedImages1D\n"
@@ -7387,10 +7383,10 @@ void AbstractSceneConverterTest::addSupportedImporterContents() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter.addSupportedImporterContents(importer, ~data.wantExceptContents));
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring {} not supported by the converter\n", data.except));
 
     /* All data except the one unsupported should be added */
@@ -7492,10 +7488,10 @@ void AbstractSceneConverterTest::addSupportedImporterContentsLevels() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter.addSupportedImporterContents(importer));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra 4 levels of mesh 2 not supported by the converter\n"
         "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra 5 levels of 1D image 3 not supported by the converter\n"
         "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra 6 levels of 2D image 4 not supported by the converter\n"
@@ -7526,97 +7522,97 @@ void AbstractSceneConverterTest::addSupportedImporterContentsNotOpened() {
 
     CORRADE_VERIFY(converter.beginData());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addSupportedImporterContents(importer));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::addSupportedImporterContents(): the importer is not opened\n");
+    CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::addSupportedImporterContents(): the importer is not opened\n");
 }
 
 void AbstractSceneConverterTest::debugFeature() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << SceneConverterFeature::ConvertMeshInPlace << SceneConverterFeature(0xdeaddead);
-    CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xdeaddead)\n");
+    CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xdeaddead)\n");
 }
 
 void AbstractSceneConverterTest::debugFeaturePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << SceneConverterFeature::ConvertMeshInPlace << Debug::packed << SceneConverterFeature(0xdeaddead) << SceneConverterFeature::AddCameras;
-    CORRADE_COMPARE(out.str(), "ConvertMeshInPlace 0xdeaddead Trade::SceneConverterFeature::AddCameras\n");
+    CORRADE_COMPARE(out, "ConvertMeshInPlace 0xdeaddead Trade::SceneConverterFeature::AddCameras\n");
 }
 
 void AbstractSceneConverterTest::debugFeatures() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << SceneConverterFeatures{};
-    CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMeshToFile Trade::SceneConverterFeatures{}\n");
+    CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMeshToFile Trade::SceneConverterFeatures{}\n");
 }
 
 void AbstractSceneConverterTest::debugFeaturesPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << Debug::packed << SceneConverterFeatures{} << SceneConverterFeature::AddLights;
-    CORRADE_COMPARE(out.str(), "ConvertMesh|ConvertMeshToFile {} Trade::SceneConverterFeature::AddLights\n");
+    CORRADE_COMPARE(out, "ConvertMesh|ConvertMeshToFile {} Trade::SceneConverterFeature::AddLights\n");
 }
 
 void AbstractSceneConverterTest::debugFeaturesSupersets() {
     /* ConvertMeshToData is a superset of ConvertMeshToFile, so only one should
        be printed */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (SceneConverterFeature::ConvertMeshToData|SceneConverterFeature::ConvertMeshToFile);
-        CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshToData\n");
+        CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMeshToData\n");
 
     /* ConvertMultipleToData is a superset of ConvertMultipleToFile, so only
        one should be printed */
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (SceneConverterFeature::ConvertMultipleToData|SceneConverterFeature::ConvertMultipleToFile);
-        CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMultipleToData\n");
+        CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMultipleToData\n");
     }
 }
 
 void AbstractSceneConverterTest::debugFlag() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << SceneConverterFlag::Verbose << SceneConverterFlag(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::SceneConverterFlag::Verbose Trade::SceneConverterFlag(0xf0)\n");
+    CORRADE_COMPARE(out, "Trade::SceneConverterFlag::Verbose Trade::SceneConverterFlag(0xf0)\n");
 }
 
 void AbstractSceneConverterTest::debugFlags() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (SceneConverterFlag::Verbose|SceneConverterFlag(0xf0)) << SceneConverterFlags{};
-    CORRADE_COMPARE(out.str(), "Trade::SceneConverterFlag::Verbose|Trade::SceneConverterFlag(0xf0) Trade::SceneConverterFlags{}\n");
+    CORRADE_COMPARE(out, "Trade::SceneConverterFlag::Verbose|Trade::SceneConverterFlag(0xf0) Trade::SceneConverterFlags{}\n");
 }
 
 void AbstractSceneConverterTest::debugContent() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << SceneContent::Skins3D << SceneContent(0xdeaddead);
-    CORRADE_COMPARE(out.str(), "Trade::SceneContent::Skins3D Trade::SceneContent(0xdeaddead)\n");
+    CORRADE_COMPARE(out, "Trade::SceneContent::Skins3D Trade::SceneContent(0xdeaddead)\n");
 }
 
 void AbstractSceneConverterTest::debugContentPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << SceneContent::Animations << Debug::packed << SceneContent(0xdeaddead) << SceneContent::Cameras;
-    CORRADE_COMPARE(out.str(), "Animations 0xdeaddead Trade::SceneContent::Cameras\n");
+    CORRADE_COMPARE(out, "Animations 0xdeaddead Trade::SceneContent::Cameras\n");
 }
 
 void AbstractSceneConverterTest::debugContents() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (SceneContent::Animations|SceneContent::MeshLevels) << SceneConverterFeatures{};
-    CORRADE_COMPARE(out.str(), "Trade::SceneContent::Animations|Trade::SceneContent::MeshLevels Trade::SceneConverterFeatures{}\n");
+    CORRADE_COMPARE(out, "Trade::SceneContent::Animations|Trade::SceneContent::MeshLevels Trade::SceneConverterFeatures{}\n");
 }
 
 void AbstractSceneConverterTest::debugContentsPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (SceneContent::Animations|SceneContent::MeshLevels) << Debug::packed << SceneConverterFeatures{} << SceneContent::Lights;
-    CORRADE_COMPARE(out.str(), "Animations|MeshLevels {} Trade::SceneContent::Lights\n");
+    CORRADE_COMPARE(out, "Animations|MeshLevels {} Trade::SceneContent::Lights\n");
 }
 
 }}}}

@@ -24,13 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
@@ -119,16 +117,16 @@ void AnyImporterTest::detect() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->openFile(data.filename));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
         "Audio::AnyImporter::openFile(): cannot load the {0} plugin\n",
         data.plugin));
     #else
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "PluginManager::Manager::load(): plugin {0} was not found\n"
         "Audio::AnyImporter::openFile(): cannot load the {0} plugin\n",
         data.plugin));
@@ -138,10 +136,10 @@ void AnyImporterTest::detect() {
 void AnyImporterTest::unknown() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->openFile("sound.mid"));
-    CORRADE_COMPARE(out.str(), "Audio::AnyImporter::openFile(): cannot determine the format of sound.mid\n");
+    CORRADE_COMPARE(out, "Audio::AnyImporter::openFile(): cannot determine the format of sound.mid\n");
 }
 
 void AnyImporterTest::propagateConfiguration() {
@@ -155,10 +153,10 @@ void AnyImporterTest::propagateConfigurationUnknown() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
     importer->configuration().setValue("noSuchOption", "isHere");
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo8.wav")));
-    CORRADE_COMPARE(out.str(), "Audio::AnyImporter::openFile(): option noSuchOption not recognized by WavAudioImporter\n");
+    CORRADE_COMPARE(out, "Audio::AnyImporter::openFile(): option noSuchOption not recognized by WavAudioImporter\n");
 }
 
 }}}}

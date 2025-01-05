@@ -24,10 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Configuration is std::string-free */
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector4.h"
@@ -151,12 +150,12 @@ void MeshTest::primitiveWrap() {
 void MeshTest::primitiveWrapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     meshPrimitiveWrap(0xdeadbeef);
 
-    CORRADE_COMPARE(out.str(), "meshPrimitiveWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
+    CORRADE_COMPARE(out, "meshPrimitiveWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
 }
 
 void MeshTest::primitiveUnwrap() {
@@ -167,12 +166,12 @@ void MeshTest::primitiveUnwrap() {
 void MeshTest::primitiveUnwrapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     meshPrimitiveUnwrap(MeshPrimitive::Triangles);
 
-    CORRADE_COMPARE(out.str(), "meshPrimitiveUnwrap(): MeshPrimitive::Triangles isn't a wrapped implementation-specific value\n");
+    CORRADE_COMPARE(out, "meshPrimitiveUnwrap(): MeshPrimitive::Triangles isn't a wrapped implementation-specific value\n");
 }
 
 void MeshTest::indexTypeMapping() {
@@ -228,10 +227,10 @@ void MeshTest::indexTypeWrap() {
 void MeshTest::indexTypeWrapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     meshIndexTypeWrap(0xdeadbeef);
-    CORRADE_COMPARE(out.str(), "meshIndexTypeWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
+    CORRADE_COMPARE(out, "meshIndexTypeWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
 }
 
 void MeshTest::indexTypeUnwrap() {
@@ -242,12 +241,12 @@ void MeshTest::indexTypeUnwrap() {
 void MeshTest::indexTypeUnwrapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     meshIndexTypeUnwrap(MeshIndexType::UnsignedInt);
 
-    CORRADE_COMPARE(out.str(), "meshIndexTypeUnwrap(): MeshIndexType::UnsignedInt isn't a wrapped implementation-specific value\n");
+    CORRADE_COMPARE(out, "meshIndexTypeUnwrap(): MeshIndexType::UnsignedInt isn't a wrapped implementation-specific value\n");
 }
 
 void MeshTest::indexTypeSize() {
@@ -259,13 +258,13 @@ void MeshTest::indexTypeSize() {
 void MeshTest::indexTypeSizeInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     meshIndexTypeSize(MeshIndexType{});
     meshIndexTypeSize(MeshIndexType(0xbadcafe));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "meshIndexTypeSize(): invalid type MeshIndexType(0x0)\n"
         "meshIndexTypeSize(): invalid type MeshIndexType(0xbadcafe)\n");
 }
@@ -273,64 +272,64 @@ void MeshTest::indexTypeSizeInvalid() {
 void MeshTest::indexTypeSizeImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     meshIndexTypeSize(meshIndexTypeWrap(0xdead));
-    CORRADE_COMPARE(out.str(), "meshIndexTypeSize(): can't determine size of an implementation-specific type 0xdead\n");
+    CORRADE_COMPARE(out, "meshIndexTypeSize(): can't determine size of an implementation-specific type 0xdead\n");
 }
 
 void MeshTest::debugPrimitive() {
-    std::ostringstream o;
-    Debug(&o) << MeshPrimitive::TriangleFan << MeshPrimitive(0x70fe);
-    CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan MeshPrimitive(0x70fe)\n");
+    Containers::String out;
+    Debug{&out} << MeshPrimitive::TriangleFan << MeshPrimitive(0x70fe);
+    CORRADE_COMPARE(out, "MeshPrimitive::TriangleFan MeshPrimitive(0x70fe)\n");
 }
 
 void MeshTest::debugPrimitivePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << MeshPrimitive::TriangleFan << Debug::packed << MeshPrimitive(0x70fe) << MeshPrimitive::Triangles;
-    CORRADE_COMPARE(out.str(), "TriangleFan 0x70fe MeshPrimitive::Triangles\n");
+    CORRADE_COMPARE(out, "TriangleFan 0x70fe MeshPrimitive::Triangles\n");
 }
 
 void MeshTest::debugPrimitiveImplementationSpecific() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << meshPrimitiveWrap(0xdead);
 
-    CORRADE_COMPARE(out.str(), "MeshPrimitive::ImplementationSpecific(0xdead)\n");
+    CORRADE_COMPARE(out, "MeshPrimitive::ImplementationSpecific(0xdead)\n");
 }
 
 void MeshTest::debugPrimitiveImplementationSpecificPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << meshPrimitiveWrap(0xdead) << MeshPrimitive::Triangles;
-    CORRADE_COMPARE(out.str(), "ImplementationSpecific(0xdead) MeshPrimitive::Triangles\n");
+    CORRADE_COMPARE(out, "ImplementationSpecific(0xdead) MeshPrimitive::Triangles\n");
 }
 
 void MeshTest::debugIndexType() {
-    std::ostringstream o;
-    Debug(&o) << MeshIndexType::UnsignedShort << MeshIndexType(0x70fe);
-    CORRADE_COMPARE(o.str(), "MeshIndexType::UnsignedShort MeshIndexType(0x70fe)\n");
+    Containers::String out;
+    Debug{&out} << MeshIndexType::UnsignedShort << MeshIndexType(0x70fe);
+    CORRADE_COMPARE(out, "MeshIndexType::UnsignedShort MeshIndexType(0x70fe)\n");
 }
 
 void MeshTest::debugIndexTypePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug(&out) << Debug::packed << MeshIndexType::UnsignedShort << Debug::packed << MeshIndexType(0x70fe) << MeshIndexType::UnsignedInt;
-    CORRADE_COMPARE(out.str(), "UnsignedShort 0x70fe MeshIndexType::UnsignedInt\n");
+    CORRADE_COMPARE(out, "UnsignedShort 0x70fe MeshIndexType::UnsignedInt\n");
 }
 
 void MeshTest::debugIndexTypeImplementationSpecific() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << meshIndexTypeWrap(0xdead);
 
-    CORRADE_COMPARE(out.str(), "MeshIndexType::ImplementationSpecific(0xdead)\n");
+    CORRADE_COMPARE(out, "MeshIndexType::ImplementationSpecific(0xdead)\n");
 }
 
 void MeshTest::debugIndexTypeImplementationSpecificPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << meshIndexTypeWrap(0xdead) << MeshIndexType::UnsignedInt;
-    CORRADE_COMPARE(out.str(), "ImplementationSpecific(0xdead) MeshIndexType::UnsignedInt\n");
+    CORRADE_COMPARE(out, "ImplementationSpecific(0xdead) MeshIndexType::UnsignedInt\n");
 }
 
 void MeshTest::configurationPrimitive() {

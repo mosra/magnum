@@ -24,10 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
@@ -801,7 +799,7 @@ void PbrMetallicRoughnessMaterialDataTest::invalidTextures() {
 
     PbrMetallicRoughnessMaterialData data{{}, {}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.baseColorTexture();
     data.baseColorTextureMatrix();
@@ -833,7 +831,7 @@ void PbrMetallicRoughnessMaterialDataTest::invalidTextures() {
     data.emissiveTextureMatrix();
     data.emissiveTextureCoordinates();
     data.emissiveTextureLayer();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attribute(): attribute BaseColorTexture not found in layer 0\n"
         "Trade::PbrMetallicRoughnessMaterialData::baseColorTextureMatrix(): the material doesn't have a base color texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates(): the material doesn't have a base color texture\n"
@@ -979,12 +977,12 @@ void PbrMetallicRoughnessMaterialDataTest::noCommonTransformationCoordinatesLaye
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
     CORRADE_VERIFY(!data.hasCommonTextureLayer());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.commonTextureMatrix();
     data.commonTextureCoordinates();
     data.commonTextureLayer();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::PbrMetallicRoughnessMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation\n"
         "Trade::PbrMetallicRoughnessMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set\n"
         "Trade::PbrMetallicRoughnessMaterialData::commonTextureLayer(): the material doesn't have a common array texture layer\n");

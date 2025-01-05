@@ -24,7 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove when AbstractFontConverter is <string>-free */
@@ -32,8 +31,8 @@
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove when AbstractFontConverter is <string>-free */
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Vector3.h"
@@ -204,7 +203,7 @@ void AbstractFontConverterTest::thingNotSupported() {
         FontConverterFeatures doFeatures() const override { return {}; }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportFontToSingleData(dummyFont, dummyGlyphCache, {});
     converter.exportFontToData(dummyFont, dummyGlyphCache, "font.out", {});
@@ -215,7 +214,7 @@ void AbstractFontConverterTest::thingNotSupported() {
     converter.importGlyphCacheFromSingleData({});
     converter.importGlyphCacheFromData({{}});
     converter.importGlyphCacheFromFile({});
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::AbstractFontConverter::exportFontToSingleData(): feature not supported\n"
         "Text::AbstractFontConverter::exportFontToData(): feature not supported\n"
         "Text::AbstractFontConverter::exportFontToFile(): feature not supported\n"
@@ -253,10 +252,10 @@ void AbstractFontConverterTest::exportFontToSingleDataNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportFontToSingleData(dummyFont, dummyGlyphCache, {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToSingleData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportFontToSingleData(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::exportFontToSingleDataCustomDeleter() {
@@ -272,10 +271,10 @@ void AbstractFontConverterTest::exportFontToSingleDataCustomDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportFontToSingleData(dummyFont, dummyGlyphCache, {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToSingleData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportFontToSingleData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractFontConverterTest::exportFontToSingleDataNotSingleFile() {
@@ -287,10 +286,10 @@ void AbstractFontConverterTest::exportFontToSingleDataNotSingleFile() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportFontToSingleData(dummyFont, dummyGlyphCache, {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToSingleData(): the format is not single-file\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportFontToSingleData(): the format is not single-file\n");
 }
 
 void AbstractFontConverterTest::exportFontToData() {
@@ -331,10 +330,10 @@ void AbstractFontConverterTest::exportFontToDataNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportFontToData(dummyFont, dummyGlyphCache, "font.out", {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportFontToData(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::exportFontToDataCustomDeleter() {
@@ -353,10 +352,10 @@ void AbstractFontConverterTest::exportFontToDataCustomDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportFontToData(dummyFont, dummyGlyphCache, "font.out", {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportFontToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractFontConverterTest::exportFontToDataThroughSingleData() {
@@ -433,10 +432,10 @@ void AbstractFontConverterTest::exportFontToFileNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportFontToFile(dummyFont, dummyGlyphCache, "file.out", {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToFile(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportFontToFile(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::exportFontToFileThroughData() {
@@ -487,11 +486,11 @@ void AbstractFontConverterTest::exportFontToFileThroughDataFailed() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportFontToFile(dummyFont, dummyGlyphCache, filename, {}));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::exportFontToFileThroughDataNotWritable() {
@@ -507,10 +506,10 @@ void AbstractFontConverterTest::exportFontToFileThroughDataNotWritable() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportFontToFile(dummyFont, dummyGlyphCache, "/some/path/that/does/not/exist", {}));
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::AbstractFontConverter::exportFontToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -539,10 +538,10 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportGlyphCacheToSingleData(dummyGlyphCache);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToSingleDataCustomDeleter() {
@@ -558,10 +557,10 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleDataCustomDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportGlyphCacheToSingleData(dummyGlyphCache);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSingleFile() {
@@ -573,10 +572,10 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSingleFile() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportGlyphCacheToSingleData(dummyGlyphCache);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): the format is not single-file\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): the format is not single-file\n");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToData() {
@@ -616,10 +615,10 @@ void AbstractFontConverterTest::exportGlyphCacheToDataNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportGlyphCacheToData(dummyGlyphCache, "cache.out");
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportGlyphCacheToData(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToDataCustomDeleter() {
@@ -638,10 +637,10 @@ void AbstractFontConverterTest::exportGlyphCacheToDataCustomDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportGlyphCacheToData(dummyGlyphCache, "cache.out");
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportGlyphCacheToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToDataThroughSingleData() {
@@ -719,10 +718,10 @@ void AbstractFontConverterTest::exportGlyphCacheToFileNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.exportGlyphCacheToFile(dummyGlyphCache, "cache.out");
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToFile(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::exportGlyphCacheToFile(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFileThroughData() {
@@ -770,11 +769,11 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughDataFailed() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportGlyphCacheToFile(dummyGlyphCache, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFileThroughDataNotWritable() {
@@ -788,10 +787,10 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughDataNotWritable() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportGlyphCacheToFile(dummyGlyphCache, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::AbstractFontConverter::exportGlyphCacheToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -824,10 +823,10 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.importGlyphCacheFromSingleData({});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSingleFile() {
@@ -839,10 +838,10 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSingleFile() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.importGlyphCacheFromSingleData({});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): the format is not single-file\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): the format is not single-file\n");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromData() {
@@ -873,10 +872,10 @@ void AbstractFontConverterTest::importGlyphCacheFromDataNoData() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.importGlyphCacheFromData({});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromData(): no data passed\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::importGlyphCacheFromData(): no data passed\n");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromDataNotImplemented() {
@@ -890,10 +889,10 @@ void AbstractFontConverterTest::importGlyphCacheFromDataNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.importGlyphCacheFromData({{}});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::importGlyphCacheFromData(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromDataAsSingleData() {
@@ -945,10 +944,10 @@ void AbstractFontConverterTest::importGlyphCacheFromFileNotImplemented() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.importGlyphCacheFromFile({});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromFile(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFontConverter::importGlyphCacheFromFile(): feature advertised but not implemented\n");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleData() {
@@ -982,41 +981,41 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.importGlyphCacheFromFile("nonexistent.bin"));
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nText::AbstractFontConverter::importGlyphCacheFromFile(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractFontConverterTest::debugFeature() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << FontConverterFeature::ExportFont << FontConverterFeature(0xf0);
-    CORRADE_COMPARE(out.str(), "Text::FontConverterFeature::ExportFont Text::FontConverterFeature(0xf0)\n");
+    CORRADE_COMPARE(out, "Text::FontConverterFeature::ExportFont Text::FontConverterFeature(0xf0)\n");
 }
 
 void AbstractFontConverterTest::debugFeaturePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << FontConverterFeature::ExportFont << Debug::packed << FontConverterFeature(0xf0) << FontConverterFeature::ImportGlyphCache;
-    CORRADE_COMPARE(out.str(), "ExportFont 0xf0 Text::FontConverterFeature::ImportGlyphCache\n");
+    CORRADE_COMPARE(out, "ExportFont 0xf0 Text::FontConverterFeature::ImportGlyphCache\n");
 }
 
 void AbstractFontConverterTest::debugFeatures() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << FontConverterFeatures{};
-    CORRADE_COMPARE(out.str(), "Text::FontConverterFeature::ExportFont|Text::FontConverterFeature::ImportGlyphCache Text::FontConverterFeatures{}\n");
+    CORRADE_COMPARE(out, "Text::FontConverterFeature::ExportFont|Text::FontConverterFeature::ImportGlyphCache Text::FontConverterFeatures{}\n");
 }
 
 void AbstractFontConverterTest::debugFeaturesPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << Debug::packed << FontConverterFeatures{} << FontConverterFeature::ExportGlyphCache;
-    CORRADE_COMPARE(out.str(), "ExportFont|ImportGlyphCache {} Text::FontConverterFeature::ExportGlyphCache\n");
+    CORRADE_COMPARE(out, "ExportFont|ImportGlyphCache {} Text::FontConverterFeature::ExportGlyphCache\n");
 }
 
 }}}}

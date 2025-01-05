@@ -24,17 +24,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <unordered_map>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove file callbacks are std::string-free */
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/PixelFormat.h"
@@ -103,11 +102,11 @@ MagnumFontTest::MagnumFontTest() {
 void MagnumFontTest::nonexistent() {
     Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!font->openFile("nonexistent.conf", 0.0f));
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nText::AbstractFont::openFile(): cannot open file nonexistent.conf\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -328,12 +327,12 @@ void MagnumFontTest::fileCallbackImageNotFound() {
             return Containers::Optional<Containers::ArrayView<const char>>{};
         });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Containers::Optional<Containers::Array<char>> conf = Utility::Path::read(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.conf"));
     CORRADE_VERIFY(conf);
     CORRADE_VERIFY(!font->openData(*conf, 13.0f));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::openFile(): cannot open file font.tga\n");
+    CORRADE_COMPARE(out, "Trade::AbstractImporter::openFile(): cannot open file font.tga\n");
 }
 
 }}}}

@@ -24,14 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/StridedBitArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/SceneTools/Copy.h"
 #include "Magnum/Trade/SceneData.h"
@@ -424,10 +422,10 @@ void CopyTest::mutableReferenceNotMutable() {
     }};
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Global);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::mutableReference(scene);
-    CORRADE_COMPARE(out.str(), "SceneTools::mutableReference(): data not mutable\n");
+    CORRADE_COMPARE(out, "SceneTools::mutableReference(): data not mutable\n");
 }
 
 }}}}

@@ -24,10 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <sstream> /** @todo remove once the DebugOutput internals are stream-free */
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/ScopeGuard.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once the DebugOutput internals are stream-free */
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/DebugOutput.h"
@@ -137,7 +137,7 @@ void DebugOutputGLTest::setCallbackDeprecated() {
         DebugOutput::setDefaultCallback();
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     CORRADE_IGNORE_DEPRECATED_PUSH
     DebugOutput::setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, const void* userPtr) {
         Implementation::defaultDebugCallback(source, type, id, severity, string, static_cast<std::ostringstream*>(const_cast<void*>(userPtr)));
@@ -148,7 +148,7 @@ void DebugOutputGLTest::setCallbackDeprecated() {
         1337, DebugOutput::Severity::High, "Hello from OpenGL command stream!");
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Debug output: high severity application marker (1337): Hello from OpenGL command stream!\n");
 }
 #endif

@@ -24,10 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
@@ -245,7 +243,7 @@ void PhongMaterialDataTest::constructDeprecatedTexturedCoordinates() {
 void PhongMaterialDataTest::constructDeprecatedTextureTransformNoTextures() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     PhongMaterialData a{PhongMaterialData::Flag::TextureTransformation,
@@ -254,14 +252,14 @@ void PhongMaterialDataTest::constructDeprecatedTextureTransformNoTextures() {
         {}, {}, {}, {},
         {}, 0.5f, 80.0f};
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::PhongMaterialData: texture transformation enabled but the material has no textures\n");
 }
 
 void PhongMaterialDataTest::constructDeprecatedNoTextureTransformationFlag() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     PhongMaterialData a{{},
@@ -270,14 +268,14 @@ void PhongMaterialDataTest::constructDeprecatedNoTextureTransformationFlag() {
         {}, {}, {}, Matrix3::rotation(90.0_degf),
         {}, 0.5f, 80.0f};
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "PhongMaterialData::PhongMaterialData: non-default texture matrix requires Flag::TextureTransformation to be enabled\n");
 }
 
 void PhongMaterialDataTest::constructDeprecatedNoTextureCoordinatesFlag() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     PhongMaterialData a{{},
@@ -286,7 +284,7 @@ void PhongMaterialDataTest::constructDeprecatedNoTextureCoordinatesFlag() {
         {}, {}, 3, {}, 4, {},
         {}, 0.5f, 80.0f};
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "PhongMaterialData::PhongMaterialData: non-zero texture coordinate sets require Flag::TextureCoordinates to be enabled\n");
 }
 #endif
@@ -477,7 +475,7 @@ void PhongMaterialDataTest::invalidTextures() {
 
     PhongMaterialData data{{}, {}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.ambientTexture();
     data.ambientTextureMatrix();
@@ -498,7 +496,7 @@ void PhongMaterialDataTest::invalidTextures() {
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
     data.normalTextureLayer();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attribute(): attribute AmbientTexture not found in layer 0\n"
         "Trade::PhongMaterialData::ambientTextureMatrix(): the material doesn't have an ambient texture\n"
         "Trade::PhongMaterialData::ambientTextureCoordinates(): the material doesn't have an ambient texture\n"
@@ -663,12 +661,12 @@ void PhongMaterialDataTest::noCommonTransformationCoordinatesLayer() {
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
     CORRADE_VERIFY(!data.hasCommonTextureLayer());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.commonTextureMatrix();
     data.commonTextureCoordinates();
     data.commonTextureLayer();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::PhongMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation\n"
         "Trade::PhongMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set\n"
         "Trade::PhongMaterialData::commonTextureLayer(): the material doesn't have a common array texture layer\n");
@@ -677,17 +675,17 @@ void PhongMaterialDataTest::noCommonTransformationCoordinatesLayer() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
 void PhongMaterialDataTest::debugFlag() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << PhongMaterialData::Flag::AmbientTexture << PhongMaterialData::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::PhongMaterialData::Flag::AmbientTexture Trade::PhongMaterialData::Flag(0xf0)\n");
+    CORRADE_COMPARE(out, "Trade::PhongMaterialData::Flag::AmbientTexture Trade::PhongMaterialData::Flag(0xf0)\n");
 }
 
 void PhongMaterialDataTest::debugFlags() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture) << PhongMaterialData::Flags{};
-    CORRADE_COMPARE(out.str(), "Trade::PhongMaterialData::Flag::DiffuseTexture|Trade::PhongMaterialData::Flag::SpecularTexture Trade::PhongMaterialData::Flags{}\n");
+    CORRADE_COMPARE(out, "Trade::PhongMaterialData::Flag::DiffuseTexture|Trade::PhongMaterialData::Flag::SpecularTexture Trade::PhongMaterialData::Flags{}\n");
 }
 CORRADE_IGNORE_DEPRECATED_POP
 #endif

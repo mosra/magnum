@@ -24,12 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/DebugTools/CompareMaterial.h"
 #include "Magnum/Math/Color.h"
@@ -648,11 +647,11 @@ void RemoveDuplicatesTest::invalidSize() {
     };
     UnsignedInt mapping[3];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     removeDuplicatesInto(data, mapping);
     removeDuplicatesInPlaceInto(data, mapping);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MaterialTools::removeDuplicatesInto(): bad output size, expected 2 but got 3\n"
         "MaterialTools::removeDuplicatesInPlaceInto(): bad output size, expected 2 but got 3\n");
 }

@@ -25,9 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Distance.h"
@@ -237,12 +236,12 @@ void DistanceTest::pointPlaneNormalized() {
 void DistanceTest::pointPlaneNormalizedNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Vector4 invalidPlane{2.0f, 2.0f, 2.0f, 0.0f};
     Distance::pointPlaneNormalized({}, invalidPlane);
-    CORRADE_COMPARE(out.str(), "Math::Distance::pointPlaneNormalized(): plane normal Vector(2, 2, 2) is not normalized\n");
+    CORRADE_COMPARE(out, "Math::Distance::pointPlaneNormalized(): plane normal Vector(2, 2, 2) is not normalized\n");
 }
 
 }}}}

@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once TrackView is std::pair-free */
 
 #include "Magnum/Animation/Track.h"
 #include "Magnum/Math/Half.h"
@@ -571,10 +571,10 @@ void TrackViewTest::constructInconsistentViewSize() {
     Float keys[2]{};
     Vector3 values[3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     TrackView<Float, Vector3>{keys, values, Math::select};
-    CORRADE_COMPARE(out.str(), "Animation::TrackView: expected key and value view to have the same size but got 2 and 3\n");
+    CORRADE_COMPARE(out, "Animation::TrackView: expected key and value view to have the same size but got 2 and 3\n");
 }
 
 void TrackViewTest::constructCopyStorage() {

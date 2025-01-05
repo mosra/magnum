@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
@@ -312,13 +311,13 @@ void FlatMaterialDataTest::invalidTextures() {
 
     FlatMaterialData data{{}, {}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.texture();
     data.textureMatrix();
     data.textureCoordinates();
     data.textureLayer();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::FlatMaterialData::texture(): the material doesn't have a texture\n"
         "Trade::FlatMaterialData::textureMatrix(): the material doesn't have a texture\n"
         "Trade::FlatMaterialData::textureCoordinates(): the material doesn't have a texture\n"

@@ -24,17 +24,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Vector2.h"
@@ -996,7 +994,7 @@ void CombineTest::fieldsSharedMappingExpected() {
     UnsignedInt meshes[3]{};
     Int materials[3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFields(Trade::SceneMappingType::UnsignedInt, 3, {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
@@ -1014,7 +1012,7 @@ void CombineTest::fieldsSharedMappingExpected() {
             Containers::ArrayView<UnsignedInt>{nullptr, 3},
             Containers::arrayView(materials)},
     });
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::combineFields(): Trade::SceneField::MeshMaterial mapping data {0xbeef, 2, 4} is different from Trade::SceneField::Mesh mapping data {0xdead, 3, 4}\n"
         /* Placeholder mapping is also disallowed right now -- it has to be
            either all placeholders or none */
@@ -1030,7 +1028,7 @@ void CombineTest::fieldsStringPlaceholder() {
     } data[3]{};
     auto view = Containers::stridedArrayView(data);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* A null string data pointer could work in this case (because it doesn't
        need to be accessed), but disallowing it always for consistency */
@@ -1060,7 +1058,7 @@ void CombineTest::fieldsStringPlaceholder() {
             reinterpret_cast<char*>(0xfece5), Trade::SceneFieldType::StringRangeNullTerminated16,
             Containers::StridedArrayView1D<const UnsignedShort>{{nullptr, 6}, 3}},
     });
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::combineFields(): string field 1 has a placeholder string data\n"
         "SceneTools::combineFields(): string field 0 has a placeholder data\n");
 }
@@ -1078,7 +1076,7 @@ void CombineTest::fieldsOffsetOnly() {
     };
     auto view = Containers::stridedArrayView(data);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFields(Trade::SceneMappingType::UnsignedInt, 173, {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
@@ -1088,7 +1086,7 @@ void CombineTest::fieldsOffsetOnly() {
             Trade::SceneMappingType::UnsignedInt, offsetof(Field, mapping), sizeof(Field),
             Trade::SceneFieldType::UnsignedShort, offsetof(Field, light), sizeof(Field)}
     });
-    CORRADE_COMPARE(out.str(), "SceneTools::combineFields(): field 1 is offset-only\n");
+    CORRADE_COMPARE(out, "SceneTools::combineFields(): field 1 is offset-only\n");
 }
 
 void CombineTest::fieldsFromDataOffsetOnly() {

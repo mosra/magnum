@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/SceneGraph/DualQuaternionTransformation.h"
 #include "Magnum/SceneGraph/Object.hpp"
@@ -102,10 +101,10 @@ template<class T> void DualQuaternionTransformationTest::fromMatrixInvalid() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Implementation::Transformation<BasicDualQuaternionTransformation<T>>::fromMatrix(Math::Matrix4<T>::scaling(Math::Vector3<T>{T(4.0)}));
-    CORRADE_COMPARE(out.str(), "SceneGraph::DualQuaternionTransformation: the matrix doesn't represent rigid transformation\n");
+    CORRADE_COMPARE(out, "SceneGraph::DualQuaternionTransformation: the matrix doesn't represent rigid transformation\n");
 }
 
 template<class T> void DualQuaternionTransformationTest::toMatrix() {
@@ -160,10 +159,10 @@ template<class T> void DualQuaternionTransformationTest::setTransformationInvali
     Object3D<T> o;
 
     /* Can't transform with non-rigid transformation */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     o.setTransformation(Math::DualQuaternion<T>({{T(1.0), T(2.0), T(3.0)}, T(4.0)}, {}));
-    CORRADE_COMPARE(out.str(), "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized\n");
+    CORRADE_COMPARE(out, "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized\n");
 }
 
 template<class T> void DualQuaternionTransformationTest::resetTransformation() {
@@ -199,10 +198,10 @@ template<class T> void DualQuaternionTransformationTest::transformInvalid() {
 
     /* Can't transform with non-rigid transformation */
     Object3D<T> o;
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     o.transform(Math::DualQuaternion<T>({{T(1.0), T(2.0), T(3.0)}, T(4.0)}, {}));
-    CORRADE_COMPARE(out.str(), "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized\n");
+    CORRADE_COMPARE(out, "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized\n");
 }
 
 template<class T> void DualQuaternionTransformationTest::translate() {

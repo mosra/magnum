@@ -24,7 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StringView.h>
@@ -34,8 +33,7 @@
 #include <Corrade/TestSuite/Compare/File.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -265,16 +263,16 @@ void AnySceneConverterTest::detectConvert() {
 
     Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, data.filename));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
         "Trade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n",
         data.plugin));
     #else
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "PluginManager::Manager::load(): plugin {0} was not found\n"
         "Trade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n",
         data.plugin));
@@ -287,16 +285,16 @@ void AnySceneConverterTest::detectBeginEnd() {
 
     Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->beginFile(data.filename));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
         "Trade::AnySceneConverter::beginFile(): cannot load the {0} plugin\n",
         data.plugin));
     #else
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "PluginManager::Manager::load(): plugin {0} was not found\n"
         "Trade::AnySceneConverter::beginFile(): cannot load the {0} plugin\n", data.plugin));
     #endif
@@ -305,19 +303,19 @@ void AnySceneConverterTest::detectBeginEnd() {
 void AnySceneConverterTest::unknownConvert() {
     Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, "mesh.obj"));
-    CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::convertToFile(): cannot determine the format of mesh.obj\n");
+    CORRADE_COMPARE(out, "Trade::AnySceneConverter::convertToFile(): cannot determine the format of mesh.obj\n");
 }
 
 void AnySceneConverterTest::unknownBeginEnd() {
     Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->beginFile("mesh.obj"));
-    CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::beginFile(): cannot determine the format of mesh.obj\n");
+    CORRADE_COMPARE(out, "Trade::AnySceneConverter::beginFile(): cannot determine the format of mesh.obj\n");
 }
 
 void AnySceneConverterTest::propagateFlagsConvert() {
@@ -346,13 +344,13 @@ void AnySceneConverterTest::propagateFlagsConvert() {
     Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
     converter->setFlags(SceneConverterFlag::Verbose);
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Debug redirectOutput{&out};
         CORRADE_VERIFY(converter->convertToFile(mesh, filename));
         CORRADE_VERIFY(Utility::Path::exists(filename));
     }
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnySceneConverter::convertToFile(): using StanfordSceneConverter\n");
 
     /* We tested AnySceneConverter's verbose output, but can't actually test
@@ -386,7 +384,7 @@ void AnySceneConverterTest::propagateFlagsBeginEnd() {
     Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
     converter->setFlags(SceneConverterFlag::Verbose);
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Debug redirectOutput{&out};
         CORRADE_VERIFY(converter->beginFile(filename));
@@ -394,7 +392,7 @@ void AnySceneConverterTest::propagateFlagsBeginEnd() {
     CORRADE_VERIFY(converter->add(mesh));
     CORRADE_VERIFY(converter->endFile());
     CORRADE_VERIFY(Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnySceneConverter::beginFile(): using StanfordSceneConverter\n");
 
     /* We tested AnySceneConverter's verbose output, but can't actually test
@@ -500,13 +498,13 @@ void AnySceneConverterTest::propagateConfigurationUnknownConvert() {
     converter->configuration().setValue("noSuchOption", "isHere");
     converter->setFlags(data.flags);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(mesh, Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply")));
     if(data.quiet)
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     else
-        CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::convertToFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
+        CORRADE_COMPARE(out, "Trade::AnySceneConverter::convertToFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
 }
 
 void AnySceneConverterTest::propagateConfigurationUnknownBeginEnd() {
@@ -535,7 +533,7 @@ void AnySceneConverterTest::propagateConfigurationUnknownBeginEnd() {
     converter->configuration().setValue("noSuchOption", "isHere");
     converter->setFlags(data.flags);
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Warning redirectWarning{&out};
         CORRADE_VERIFY(converter->beginFile(Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply")));
@@ -543,9 +541,9 @@ void AnySceneConverterTest::propagateConfigurationUnknownBeginEnd() {
     CORRADE_VERIFY(converter->add(mesh));
     CORRADE_VERIFY(converter->endFile());
     if(data.quiet)
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     else
-        CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::beginFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
+        CORRADE_COMPARE(out, "Trade::AnySceneConverter::beginFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
 }
 
 void AnySceneConverterTest::animations() {

@@ -27,9 +27,8 @@
 /* There's no better way to disable file deprecation warnings */
 #define _MAGNUM_NO_DEPRECATED_OBJECTDATA
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Trade/MeshObjectData2D.h"
 
@@ -235,7 +234,7 @@ void ObjectData2DTest::constructMoveMesh() {
 void ObjectData2DTest::accessInvalidTransformations() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectOutput{&out};
 
     const ObjectData2D data{{}, Matrix3{}};
@@ -243,28 +242,28 @@ void ObjectData2DTest::accessInvalidTransformations() {
     data.rotation();
     data.scaling();
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::ObjectData2D::translation(): object has only a combined transformation\n"
         "Trade::ObjectData2D::rotation(): object has only a combined transformation\n"
         "Trade::ObjectData2D::scaling(): object has only a combined transformation\n");
 }
 
 void ObjectData2DTest::debugType() {
-    std::ostringstream o;
-    Debug(&o) << ObjectInstanceType2D::Empty << ObjectInstanceType2D(0xbe);
-    CORRADE_COMPARE(o.str(), "Trade::ObjectInstanceType2D::Empty Trade::ObjectInstanceType2D(0xbe)\n");
+    Containers::String out;
+    Debug{&out} << ObjectInstanceType2D::Empty << ObjectInstanceType2D(0xbe);
+    CORRADE_COMPARE(out, "Trade::ObjectInstanceType2D::Empty Trade::ObjectInstanceType2D(0xbe)\n");
 }
 
 void ObjectData2DTest::debugFlag() {
-    std::ostringstream o;
-    Debug(&o) << ObjectFlag2D::HasTranslationRotationScaling << ObjectFlag2D(0xbe);
-    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag2D::HasTranslationRotationScaling Trade::ObjectFlag2D(0xbe)\n");
+    Containers::String out;
+    Debug{&out} << ObjectFlag2D::HasTranslationRotationScaling << ObjectFlag2D(0xbe);
+    CORRADE_COMPARE(out, "Trade::ObjectFlag2D::HasTranslationRotationScaling Trade::ObjectFlag2D(0xbe)\n");
 }
 
 void ObjectData2DTest::debugFlags() {
-    std::ostringstream o;
-    Debug(&o) << (ObjectFlag2D::HasTranslationRotationScaling|ObjectFlags2D{}) << ObjectFlags2D{};
-    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag2D::HasTranslationRotationScaling Trade::ObjectFlags2D{}\n");
+    Containers::String out;
+    Debug{&out} << (ObjectFlag2D::HasTranslationRotationScaling|ObjectFlags2D{}) << ObjectFlags2D{};
+    CORRADE_COMPARE(out, "Trade::ObjectFlag2D::HasTranslationRotationScaling Trade::ObjectFlags2D{}\n");
 }
 
 CORRADE_IGNORE_DEPRECATED_POP

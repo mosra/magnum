@@ -24,12 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
@@ -112,13 +111,13 @@ void SubdivideTest::subdivideStl() {
 void SubdivideTest::subdivideWrongIndexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Containers::Array<Vector1> positions;
     Containers::Array<UnsignedInt> indices{2};
     MeshTools::subdivide(indices, positions, interpolator1);
-    CORRADE_COMPARE(out.str(), "MeshTools::subdivide(): index count is not divisible by 3\n");
+    CORRADE_COMPARE(out, "MeshTools::subdivide(): index count is not divisible by 3\n");
 }
 
 template<class T> void SubdivideTest::subdivideInPlace() {
@@ -140,27 +139,27 @@ template<class T> void SubdivideTest::subdivideInPlace() {
 void SubdivideTest::subdivideInPlaceWrongIndexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     UnsignedInt indices[6*4 + 1]{0, 1, 2, 1, 2, 3, /* and 18+1 more */};
     Vector1 positions[]{0};
     MeshTools::subdivideInPlace(Containers::stridedArrayView(indices),
         Containers::stridedArrayView(positions), interpolator1);
-    CORRADE_COMPARE(out.str(), "MeshTools::subdivideInPlace(): can't divide 25 indices to four parts with each having triangle faces\n");
+    CORRADE_COMPARE(out, "MeshTools::subdivideInPlace(): can't divide 25 indices to four parts with each having triangle faces\n");
 }
 
 void SubdivideTest::subdivideInPlaceSmallIndexType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     UnsignedByte indices[6*4]{0, 1, 2, 1, 2, 3, /* and 18 more */};
     Vector1 positions[256]{};
     MeshTools::subdivideInPlace(Containers::stridedArrayView(indices),
         Containers::stridedArrayView(positions), interpolator1);
-    CORRADE_COMPARE(out.str(), "MeshTools::subdivideInPlace(): a 1-byte index type is too small for 256 vertices\n");
+    CORRADE_COMPARE(out, "MeshTools::subdivideInPlace(): a 1-byte index type is too small for 256 vertices\n");
 }
 
 void SubdivideTest::benchmark() {

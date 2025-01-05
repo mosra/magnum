@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Range.h"
@@ -1009,17 +1009,17 @@ void RangeTest::subclass() {
 }
 
 void RangeTest::debug() {
-    std::ostringstream o;
-    Debug(&o) << Range2Di({34, 23}, {47, 30});
+    Containers::String out;
+    Debug{&out} << Range2Di({34, 23}, {47, 30});
 
-    CORRADE_COMPARE(o.str(), "Range({34, 23}, {47, 30})\n");
+    CORRADE_COMPARE(out, "Range({34, 23}, {47, 30})\n");
 }
 
 void RangeTest::debugPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << Range2Di{{34, 23}, {47, 30}} << Range2Di{};
-    CORRADE_COMPARE(out.str(), "{{34, 23}, {47, 30}} Range({0, 0}, {0, 0})\n");
+    CORRADE_COMPARE(out, "{{34, 23}, {47, 30}} Range({0, 0}, {0, 0})\n");
 }
 
 }}}}

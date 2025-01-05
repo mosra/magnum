@@ -25,9 +25,8 @@
 */
 
 #include <new>
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Image.h"
@@ -149,10 +148,10 @@ void ImageViewTest::createInfoConstructFromImageFormatUknown() {
     Device device{NoCreate};
     Image image = Image::wrap(device, imageHandle, PixelFormat{});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D, image};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::ImageViewCreateInfo: the image has unknown format, you have to specify it explicitly\n"
         /* The second assert won't appear for the user, it's here only because
            the graceful assert can't do an early exist in a delegeated

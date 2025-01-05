@@ -24,16 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/Interleave.h"
@@ -227,13 +225,13 @@ void InterleaveTest::attributeCountGaps() {
 void InterleaveTest::attributeCountInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream ss;
-    Error redirectError{&ss};
+    Containers::String out;
+    Error redirectError{&out};
     CORRADE_COMPARE(Implementation::AttributeCount{}(
         Containers::arrayView<Byte>({0, 1, 2}),
         Containers::arrayView<Byte>({0, 1, 2, 3, 4, 5})
     ), std::size_t(0));
-    CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, expected 3 but got 6\n");
+    CORRADE_COMPARE(out, "MeshTools::interleave(): attribute arrays don't have the same length, expected 3 but got 6\n");
 }
 
 void InterleaveTest::stride() {
@@ -370,10 +368,10 @@ void InterleaveTest::interleaveIntoInvalid() {
 
     Containers::Array<char> data{NoInit, 23};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleaveInto(data, 2, Containers::arrayView({1, 2, 3, 4}));
-    CORRADE_COMPARE(out.str(), "MeshTools::interleaveInto(): expected a buffer of at least 24 bytes but got 23\n");
+    CORRADE_COMPARE(out, "MeshTools::interleaveInto(): expected a buffer of at least 24 bytes but got 23\n");
 }
 
 void InterleaveTest::interleavedData() {
@@ -614,10 +612,10 @@ void InterleaveTest::interleavedDataNotInterleaved() {
     }};
     CORRADE_VERIFY(!MeshTools::isInterleaved(data));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleavedData(data);
-    CORRADE_COMPARE(out.str(), "MeshTools::interleavedData(): the mesh is not interleaved\n");
+    CORRADE_COMPARE(out, "MeshTools::interleavedData(): the mesh is not interleaved\n");
 }
 
 void InterleaveTest::interleavedDataAttributeAcrossStride() {
@@ -697,10 +695,10 @@ void InterleaveTest::interleavedMutableDataNotMutable() {
     Trade::MeshData data{MeshPrimitive::Lines, {}, a, {}, 15};
     CORRADE_VERIFY(MeshTools::isInterleaved(data));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleavedMutableData(data);
-    CORRADE_COMPARE(out.str(), "MeshTools::interleavedMutableData(): vertex data is not mutable\n");
+    CORRADE_COMPARE(out, "MeshTools::interleavedMutableData(): vertex data is not mutable\n");
 }
 
 void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
@@ -870,10 +868,10 @@ void InterleaveTest::interleavedLayoutImplementationSpecificVertexFormat() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleavedLayout(data, 5);
-    CORRADE_COMPARE(out.str(), "MeshTools::interleavedLayout(): attribute 1 has an implementation-specific format 0xcaca\n");
+    CORRADE_COMPARE(out, "MeshTools::interleavedLayout(): attribute 1 has an implementation-specific format 0xcaca\n");
 }
 
 void InterleaveTest::interleavedLayoutExtra() {
@@ -972,14 +970,14 @@ void InterleaveTest::interleavedLayoutExtraTooNegativePadding() {
     Trade::MeshData data{MeshPrimitive::Triangles,
         Utility::move(vertexData), {positions}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleavedLayout(data, 100, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
             VertexFormat::Vector3, positions.data()},
         Trade::MeshAttributeData{-25}
     });
-    CORRADE_COMPARE(out.str(), "MeshTools::interleavedLayout(): negative padding -25 in extra attribute 1 too large for stride 24\n");
+    CORRADE_COMPARE(out, "MeshTools::interleavedLayout(): negative padding -25 in extra attribute 1 too large for stride 24\n");
 }
 
 void InterleaveTest::interleavedLayoutExtraOnly() {
@@ -1013,13 +1011,13 @@ void InterleaveTest::interleavedLayoutExtraImplementationSpecificVertexFormat() 
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleavedLayout(data, 5, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr},
     });
-    CORRADE_COMPARE(out.str(), "MeshTools::interleavedLayout(): extra attribute 1 has an implementation-specific format 0xcaca\n");
+    CORRADE_COMPARE(out, "MeshTools::interleavedLayout(): extra attribute 1 has an implementation-specific format 0xcaca\n");
 }
 
 void InterleaveTest::interleavedLayoutAlreadyInterleaved() {
@@ -1329,10 +1327,10 @@ void InterleaveTest::interleaveMeshDataImplementationSpecificIndexType() {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr}
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleave(data);
-    CORRADE_COMPARE(out.str(), "MeshTools::interleave(): mesh has an implementation-specific index type 0xcaca, enable MeshTools::InterleaveFlag::PreserveStridedIndices to pass the array through unchanged\n");
+    CORRADE_COMPARE(out, "MeshTools::interleave(): mesh has an implementation-specific index type 0xcaca, enable MeshTools::InterleaveFlag::PreserveStridedIndices to pass the array through unchanged\n");
 }
 
 void InterleaveTest::interleaveMeshDataImplementationSpecificVertexFormat() {
@@ -1343,11 +1341,11 @@ void InterleaveTest::interleaveMeshDataImplementationSpecificVertexFormat() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleave(data);
     /* Assert is coming from interleavedLayout() because... that's easier */
-    CORRADE_COMPARE(out.str(), "MeshTools::interleavedLayout(): attribute 1 has an implementation-specific format 0xcaca\n");
+    CORRADE_COMPARE(out, "MeshTools::interleavedLayout(): attribute 1 has an implementation-specific format 0xcaca\n");
 }
 
 void InterleaveTest::interleaveMeshDataExtra() {
@@ -1432,13 +1430,13 @@ void InterleaveTest::interleaveMeshDataExtraWrongCount() {
         }};
     const Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis()};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleave(data, {
         Trade::MeshAttributeData{10},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, Containers::arrayView(normals)}
     });
-    CORRADE_COMPARE(out.str(), "MeshTools::interleave(): extra attribute 1 expected to have 3 items but got 2\n");
+    CORRADE_COMPARE(out, "MeshTools::interleave(): extra attribute 1 expected to have 3 items but got 2\n");
 }
 
 void InterleaveTest::interleaveMeshDataExtraOffsetOnly() {
@@ -1446,13 +1444,13 @@ void InterleaveTest::interleaveMeshDataExtraOffsetOnly() {
 
     Trade::MeshData data{MeshPrimitive::TriangleFan, 5};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleave(data, {
         Trade::MeshAttributeData{10},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, 3, 5, 14}
     });
-    CORRADE_COMPARE(out.str(), "MeshTools::interleave(): extra attribute 1 is offset-only\n");
+    CORRADE_COMPARE(out, "MeshTools::interleave(): extra attribute 1 is offset-only\n");
 }
 
 void InterleaveTest::interleaveMeshDataExtraImplementationSpecificVertexFormat() {
@@ -1462,14 +1460,14 @@ void InterleaveTest::interleaveMeshDataExtraImplementationSpecificVertexFormat()
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleave(data, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr},
     });
     /* Assert is coming from interleavedLayout() because... that's easier */
-    CORRADE_COMPARE(out.str(), "MeshTools::interleavedLayout(): extra attribute 1 has an implementation-specific format 0xcaca\n");
+    CORRADE_COMPARE(out, "MeshTools::interleavedLayout(): extra attribute 1 has an implementation-specific format 0xcaca\n");
 }
 
 void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {
@@ -1687,7 +1685,7 @@ void InterleaveTest::interleaveMeshDataLooseAttributesInvalid() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::ArrayView<Vector3>{nullptr, 0}}
     }).vertexCount(), 0);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::interleave(MeshPrimitive::Triangles,
         Trade::MeshIndexData{indices}, {
@@ -1701,7 +1699,7 @@ void InterleaveTest::interleaveMeshDataLooseAttributesInvalid() {
         Trade::MeshIndexData{meshIndexTypeWrap(0xcece), Containers::stridedArrayView(indices)}, {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::ArrayView<Vector3>{nullptr, 3}}
         });
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "MeshTools::interleave(): only padding found among 1 attributes, can't infer vertex count\n"
         "MeshTools::interleave(): only padding found among 2 attributes, can't infer vertex count\n"
         "MeshTools::interleave(): implementation-specific index type 0xcece\n",

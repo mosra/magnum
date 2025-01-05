@@ -24,10 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once dataProperties() std::pair is gone */
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/BufferImage.h"
@@ -333,12 +333,12 @@ void BufferImageGLTest::constructBufferCompressedGeneric() {
 void BufferImageGLTest::constructInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     /* Doesn't consider alignment */
     BufferImage2D{Magnum::PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{3*3}, BufferUsage::StaticDraw};
-    CORRADE_COMPARE(out.str(), "GL::BufferImage::BufferImage(): data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "GL::BufferImage::BufferImage(): data too small, got 9 but expected at least 12 bytes\n");
 }
 
 void BufferImageGLTest::constructCompressedInvalidSize() {
@@ -346,17 +346,17 @@ void BufferImageGLTest::constructCompressedInvalidSize() {
 
     /* Too small for given format */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
-        CORRADE_COMPARE(out.str(), "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
 
     /* Size should be rounded up even if the image size is not full block */
     } {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
-        CORRADE_COMPARE(out.str(), "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
     }
 }
 

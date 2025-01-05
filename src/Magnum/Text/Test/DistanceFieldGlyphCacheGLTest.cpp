@@ -24,14 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringStl.h> /**< @todo remove once Debug is stream-free */
+#include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/AbstractManager.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h> /**< @todo remove once Debug is stream-free */
-#include <Corrade/Utility/FormatStl.h> /**< @todo remove once Debug is stream-free */
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -179,7 +177,7 @@ void DistanceFieldGlyphCacheGLTest::constructSizeRatioNotMultipleOfTwo() {
     DistanceFieldGlyphCacheGL{Vector2i{23*14}, Vector2i{23}, 4};
 
     /* It's the same assert as in TextureTools::DistanceFieldGL */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DistanceFieldGlyphCacheGL{Vector2i{23*14}, Vector2i{23*2}, 4};
     /* Verify also just one axis wrong */
@@ -188,7 +186,7 @@ void DistanceFieldGlyphCacheGLTest::constructSizeRatioNotMultipleOfTwo() {
     /* Almost correct except that it's not an integer multiply */
     DistanceFieldGlyphCacheGL{Vector2i{23*14}, {22, 23}, 4};
     DistanceFieldGlyphCacheGL{Vector2i{23*14}, {23, 22}, 4};
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
         "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
         "Text::DistanceFieldGlyphCacheGL: expected source and processed size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"
@@ -371,7 +369,7 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageUnsupportedGLFormat() {
 
     DistanceFieldGlyphCacheGL cache{{4, 4}, {1, 1}, 4};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     /* Format that is convertible back to the generic format but isn't
@@ -380,7 +378,7 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageUnsupportedGLFormat() {
     /* Format that doesn't have a generic equivalent gets passed as-is */
     cache.setDistanceFieldImage({}, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedShort5551, {1, 1}, "hello!!"});
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE_AS(out.str(), Utility::formatString(
+    CORRADE_COMPARE_AS(out, Utility::format(
         "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::{0} but got PixelFormat::RGBA32F\n"
         "Text::AbstractGlyphCache::setProcessedImage(): expected PixelFormat::{0} but got PixelFormat::ImplementationSpecific(0x1908)\n",
         cache.processedFormat() == PixelFormat::RGBA8Unorm ? "RGBA8Unorm" : "R8Unorm"),

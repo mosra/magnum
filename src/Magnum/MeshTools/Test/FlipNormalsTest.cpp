@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/FlipNormals.h"
@@ -74,13 +73,13 @@ FlipNormalsTest::FlipNormalsTest() {
 void FlipNormalsTest::wrongIndexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream ss;
-    Error redirectError{&ss};
+    Containers::String out;
+    Error redirectError{&out};
 
     UnsignedByte indices[2];
     flipFaceWindingInPlace(Containers::stridedArrayView(indices));
 
-    CORRADE_COMPARE(ss.str(), "MeshTools::flipNormals(): index count is not divisible by 3!\n");
+    CORRADE_COMPARE(out, "MeshTools::flipNormals(): index count is not divisible by 3!\n");
 }
 
 template<class T> void FlipNormalsTest::flipFaceWinding() {
@@ -110,10 +109,10 @@ void FlipNormalsTest::flipFaceWindingErasedNonContiguous() {
 
     char indices[6*4]{};
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
     flipFaceWindingInPlace(Containers::StridedArrayView2D<char>{indices, {6, 2}, {4, 2}});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::flipFaceWindingInPlace(): second index view dimension is not contiguous\n");
 }
 
@@ -122,10 +121,10 @@ void FlipNormalsTest::flipFaceWindingErasedWrongIndexSize() {
 
     char indices[6*3]{};
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
     flipFaceWindingInPlace(Containers::StridedArrayView2D<char>{indices, {6, 3}});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::flipFaceWindingInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }
 

@@ -26,7 +26,6 @@
 */
 
 #include <numeric> /* std::iota() */
-#include <sstream>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
@@ -34,8 +33,7 @@
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/System.h>
 
@@ -2431,7 +2429,7 @@ void MeshVisualizerGLTest::constructInvalid2D() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshVisualizerGL2D{MeshVisualizerGL2D::Configuration{}
         .setFlags(data.flags)
@@ -2439,7 +2437,7 @@ void MeshVisualizerGLTest::constructInvalid2D() {
         .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         #endif
     };
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
 void MeshVisualizerGLTest::constructInvalid3D() {
@@ -2448,7 +2446,7 @@ void MeshVisualizerGLTest::constructInvalid3D() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshVisualizerGL3D{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags)
@@ -2456,7 +2454,7 @@ void MeshVisualizerGLTest::constructInvalid3D() {
         .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         #endif
     };
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -2471,14 +2469,14 @@ void MeshVisualizerGLTest::constructUniformBuffersInvalid2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshVisualizerGL2D{MeshVisualizerGL2D::Configuration{}
         .setFlags(data.flags)
         .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL2D: {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL2D: {}\n", data.message));
 }
 
 void MeshVisualizerGLTest::constructUniformBuffersInvalid3D() {
@@ -2492,14 +2490,14 @@ void MeshVisualizerGLTest::constructUniformBuffersInvalid3D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshVisualizerGL3D{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags)
         .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL3D: {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL3D: {}\n", data.message));
 }
 #endif
 
@@ -2520,12 +2518,12 @@ void MeshVisualizerGLTest::setPerVertexJointCountInvalid2D() {
         .setFlags(MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
         .setJointCount(16, 3, 2)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     a.setPerVertexJointCount(3, 2);
     b.setPerVertexJointCount(4);
     b.setPerVertexJointCount(3, 3);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled\n"
         "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most 3 per-vertex joints, got 4\n"
         "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most 2 secondary per-vertex joints, got 3\n");
@@ -2547,12 +2545,12 @@ void MeshVisualizerGLTest::setPerVertexJointCountInvalid3D() {
         .setFlags(MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
         .setJointCount(16, 3, 2)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     a.setPerVertexJointCount(3, 2);
     b.setPerVertexJointCount(4);
     b.setPerVertexJointCount(3, 3);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled\n"
         "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most 3 per-vertex joints, got 4\n"
         "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most 2 secondary per-vertex joints, got 3\n");
@@ -2574,7 +2572,7 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
     /* This should work fine */
     shader.setViewportSize({});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader
         /* setPerVertexJointCount() works on both UBOs and classic */
@@ -2590,7 +2588,7 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
         .setJointMatrices({})
         .setJointMatrix(0, {})
         .setPerInstanceJointCount(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL2D::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was created with uniform buffers enabled\n"
@@ -2619,7 +2617,7 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
     /* This should work fine */
     shader.setViewportSize({});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader
         /* setPerVertexJointCount() works on both UBOs and classic */
@@ -2636,7 +2634,7 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
         .setJointMatrices({})
         .setJointMatrix(0, {})
         .setPerInstanceJointCount(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL3D::setProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::setTransformationMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
@@ -2651,14 +2649,14 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
         "Shaders::MeshVisualizerGL3D::setJointMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setPerInstanceJointCount(): the shader was created with uniform buffers enabled\n");
 
-    out.str({});
+    out = {};
 
     #ifndef MAGNUM_TARGET_WEBGL
     shader
         .setNormalMatrix({})
         .setLineWidth({})
         .setLineLength({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL3D::setNormalMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::setLineWidth(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::setLineLength(): the shader was created with uniform buffers enabled\n");
@@ -2672,7 +2670,7 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
@@ -2685,7 +2683,7 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
           .bindJointBuffer(buffer)
           .bindJointBuffer(buffer, 0, 16)
           .setDrawOffset(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL2D::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -2706,7 +2704,7 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindProjectionBuffer(buffer)
           .bindProjectionBuffer(buffer, 0, 16)
@@ -2721,7 +2719,7 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
           .bindJointBuffer(buffer)
           .bindJointBuffer(buffer, 0, 16)
           .setDrawOffset(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL3D::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::bindTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -2754,10 +2752,10 @@ void MeshVisualizerGLTest::bindObjectIdTextureInvalid2D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(data.flags2D)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindObjectIdTexture(texture);
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 
 void MeshVisualizerGLTest::bindObjectIdTextureInvalid3D() {
@@ -2775,10 +2773,10 @@ void MeshVisualizerGLTest::bindObjectIdTextureInvalid3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags3D)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindObjectIdTexture(texture);
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 
 void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid2D() {
@@ -2796,10 +2794,10 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid2D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(data.flags2D)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindObjectIdTexture(textureArray);
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 
 void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid3D() {
@@ -2817,17 +2815,17 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags3D)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindObjectIdTexture(textureArray);
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 }
 #endif
 
 void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     /* The constructor asserts for at least some feature being enabled (which
@@ -2837,20 +2835,20 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
         .setColor({});
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled\n");
     #else
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setColor(): the shader was not created with wireframe enabled\n");
     #endif
 
-    out.str({});
+    out = {};
     shader
         .setWireframeColor({})
         .setWireframeWidth({})
         .setSmoothness({});
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizerGL2D::setSmoothness(): the shader was not created with wireframe enabled\n");
@@ -2859,7 +2857,7 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
 void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     /* The constructor asserts for at least some feature being enabled (which
@@ -2870,20 +2868,20 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
         .setColor({});
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled\n");
     #else
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setColor(): the shader was not created with wireframe enabled\n");
     #endif
 
-    out.str({});
+    out = {};
     shader
         .setWireframeColor({})
         .setWireframeWidth({})
         .setSmoothness({});
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizerGL3D::setSmoothness(): the shader was not created with wireframe or TBN direction enabled\n");
@@ -2896,10 +2894,10 @@ void MeshVisualizerGLTest::setTextureMatrixNotEnabled2D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::ObjectIdTexture)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTextureMatrix({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
@@ -2909,10 +2907,10 @@ void MeshVisualizerGLTest::setTextureMatrixNotEnabled3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::ObjectIdTexture)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTextureMatrix({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
@@ -2922,10 +2920,10 @@ void MeshVisualizerGLTest::setTextureLayerNotArray2D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::ObjectIdTexture)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTextureLayer(37);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
 }
 
@@ -2935,10 +2933,10 @@ void MeshVisualizerGLTest::setTextureLayerNotArray3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::ObjectIdTexture)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTextureLayer(37);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
 }
 
@@ -2954,11 +2952,11 @@ void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled2D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
 }
@@ -2975,11 +2973,11 @@ void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled3D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n"
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled\n");
 }
@@ -2991,10 +2989,10 @@ void MeshVisualizerGLTest::setObjectIdNotEnabled2D() {
 
     MeshVisualizerGL2D shader{NoCreate};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setObjectId({});
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL::setObjectId(): the shader was not created with object ID enabled\n");
+    CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL::setObjectId(): the shader was not created with object ID enabled\n");
 }
 
 void MeshVisualizerGLTest::setObjectIdNotEnabled3D() {
@@ -3002,10 +3000,10 @@ void MeshVisualizerGLTest::setObjectIdNotEnabled3D() {
 
     MeshVisualizerGL3D shader{NoCreate};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setObjectId({});
-    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL::setObjectId(): the shader was not created with object ID enabled\n");
+    CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL::setObjectId(): the shader was not created with object ID enabled\n");
 }
 
 void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
@@ -3014,11 +3012,11 @@ void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
     GL::Texture2D texture;
     MeshVisualizerGL2D shader{NoCreate};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setColorMapTransformation({}, {})
         .bindColorMapTexture(texture);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
         "Shaders::MeshVisualizerGL::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
 }
@@ -3029,11 +3027,11 @@ void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
     GL::Texture2D texture;
     MeshVisualizerGL3D shader{NoCreate};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setColorMapTransformation({}, {})
         .bindColorMapTexture(texture);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
         "Shaders::MeshVisualizerGL::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
 }
@@ -3054,12 +3052,12 @@ void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::Wireframe)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setNormalMatrix({})
         .setLineWidth({})
         .setLineLength({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL3D::setNormalMatrix(): the shader was not created with TBN direction enabled\n"
         "Shaders::MeshVisualizerGL3D::setLineWidth(): the shader was not created with TBN direction enabled\n"
         "Shaders::MeshVisualizerGL3D::setLineLength(): the shader was not created with TBN direction enabled\n");
@@ -3081,13 +3079,13 @@ void MeshVisualizerGLTest::setWrongJointCountOrId2D() {
         .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
         .setJointCount(5, 1)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Calling setJointMatrices() with less items is fine, tested in
        renderSkinningWireframe2D() */
     shader.setJointMatrices({{}, {}, {}, {}, {}, {}})
         .setJointMatrix(5, Matrix3{});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected at most 5 items but got 6\n"
         "Shaders::MeshVisualizerGL2D::setJointMatrix(): joint ID 5 is out of range for 5 joints\n");
 }
@@ -3106,13 +3104,13 @@ void MeshVisualizerGLTest::setWrongJointCountOrId3D() {
         .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
         .setJointCount(5, 1)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Calling setJointMatrices() with less items is fine, tested in
        renderSkinningWireframe3D() */
     shader.setJointMatrices({{}, {}, {}, {}, {}, {}})
         .setJointMatrix(5, Matrix4{});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected at most 5 items but got 6\n"
         "Shaders::MeshVisualizerGL3D::setJointMatrix(): joint ID 5 is out of range for 5 joints\n");
 }
@@ -3132,10 +3130,10 @@ void MeshVisualizerGLTest::setWrongDrawOffset2D() {
         .setMaterialCount(2)
         .setDrawCount(5)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setDrawOffset(5);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 
@@ -3152,10 +3150,10 @@ void MeshVisualizerGLTest::setWrongDrawOffset3D() {
         .setMaterialCount(2)
         .setDrawCount(5)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setDrawOffset(5);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif

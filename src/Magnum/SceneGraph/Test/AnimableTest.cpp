@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/SceneGraph/AbstractFeature.hpp"
 #include "Magnum/SceneGraph/Animable.hpp"
@@ -82,15 +81,15 @@ template<class T> void AnimableTest::state() {
                 this->setDuration(1.0f);
             }
 
-            std::string trackedState;
+            Containers::String trackedState;
 
         protected:
             void animationStep(Float, Float) override {}
 
-            void animationStarted() override { trackedState += "started"; }
-            void animationPaused() override { trackedState += "paused"; }
-            void animationResumed() override { trackedState += "resumed"; }
-            void animationStopped() override { trackedState += "stopped"; }
+            void animationStarted() override { trackedState = trackedState + "started"; }
+            void animationPaused() override { trackedState = trackedState + "paused"; }
+            void animationResumed() override { trackedState = trackedState + "resumed"; }
+            void animationStopped() override { trackedState = trackedState + "stopped"; }
     };
 
     Object3D<T> object;
@@ -100,9 +99,9 @@ template<class T> void AnimableTest::state() {
     /* Verify initial state */
     StateTrackingAnimable animable(object, &group);
     CORRADE_COMPARE(animable.state(), AnimationState::Stopped);
-    CORRADE_VERIFY(animable.trackedState.empty());
+    CORRADE_COMPARE(animable.trackedState, "");
     group.step(1.0f, 1.0f);
-    CORRADE_VERIFY(animable.trackedState.empty());
+    CORRADE_COMPARE(animable.trackedState, "");
     CORRADE_COMPARE(group.runningCount(), 0);
 
     /* Stopped -> paused is not supported */
@@ -112,36 +111,36 @@ template<class T> void AnimableTest::state() {
 
     /* Stopped -> running */
     CORRADE_COMPARE(animable.state(), AnimationState::Stopped);
-    animable.trackedState.clear();
+    animable.trackedState = {};
     animable.setState(AnimationState::Running);
-    CORRADE_VERIFY(animable.trackedState.empty());
+    CORRADE_COMPARE(animable.trackedState, "");
     group.step(1.0f, 1.0f);
     CORRADE_COMPARE(animable.trackedState, "started");
     CORRADE_COMPARE(group.runningCount(), 1);
 
     /* Running -> paused */
     CORRADE_COMPARE(animable.state(), AnimationState::Running);
-    animable.trackedState.clear();
+    animable.trackedState = {};
     animable.setState(AnimationState::Paused);
-    CORRADE_VERIFY(animable.trackedState.empty());
+    CORRADE_COMPARE(animable.trackedState, "");
     group.step(1.0f, 1.0f);
     CORRADE_COMPARE(animable.trackedState, "paused");
     CORRADE_COMPARE(group.runningCount(), 0);
 
     /* Paused -> running */
     CORRADE_COMPARE(animable.state(), AnimationState::Paused);
-    animable.trackedState.clear();
+    animable.trackedState = {};
     animable.setState(AnimationState::Running);
-    CORRADE_VERIFY(animable.trackedState.empty());
+    CORRADE_COMPARE(animable.trackedState, "");
     group.step(1.0f, 1.0f);
     CORRADE_COMPARE(animable.trackedState, "resumed");
     CORRADE_COMPARE(group.runningCount(), 1);
 
     /* Running -> stopped */
     CORRADE_COMPARE(animable.state(), AnimationState::Running);
-    animable.trackedState.clear();
+    animable.trackedState = {};
     animable.setState(AnimationState::Stopped);
-    CORRADE_VERIFY(animable.trackedState.empty());
+    CORRADE_COMPARE(animable.trackedState, "");
     group.step(1.0f, 1.0f);
     CORRADE_COMPARE(animable.trackedState, "stopped");
     CORRADE_COMPARE(group.runningCount(), 0);
@@ -152,9 +151,9 @@ template<class T> void AnimableTest::state() {
 
     /* Paused -> stopped */
     CORRADE_COMPARE(animable.state(), AnimationState::Paused);
-    animable.trackedState.clear();
+    animable.trackedState = {};
     animable.setState(AnimationState::Stopped);
-    CORRADE_VERIFY(animable.trackedState.empty());
+    CORRADE_COMPARE(animable.trackedState, "");
     group.step(1.0f, 1.0f);
     CORRADE_COMPARE(animable.trackedState, "stopped");
     CORRADE_COMPARE(group.runningCount(), 0);
@@ -177,7 +176,7 @@ template<class T> class OneShotAnimable: public SceneGraph::BasicAnimable3D<T> {
         }
 
         Float time;
-        std::string stateChanges;
+        Containers::String stateChanges;
 
     protected:
         void animationStep(Float t, Float) override {
@@ -185,11 +184,11 @@ template<class T> class OneShotAnimable: public SceneGraph::BasicAnimable3D<T> {
         }
 
         void animationStarted() override {
-            stateChanges += "started;";
+            stateChanges = stateChanges + "started;";
         }
 
         void animationStopped() override {
-            stateChanges += "stopped;";
+            stateChanges = stateChanges + "stopped;";
         }
 };
 
@@ -401,9 +400,9 @@ void AnimableTest::deleteWhileRunning() {
 }
 
 void AnimableTest::debug() {
-    std::ostringstream o;
-    Debug(&o) << AnimationState::Running << AnimationState(0xbe);
-    CORRADE_COMPARE(o.str(), "SceneGraph::AnimationState::Running SceneGraph::AnimationState(0xbe)\n");
+    Containers::String out;
+    Debug{&out} << AnimationState::Running << AnimationState(0xbe);
+    CORRADE_COMPARE(out, "SceneGraph::AnimationState::Running SceneGraph::AnimationState(0xbe)\n");
 }
 
 }}}}

@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/DefaultFramebuffer.h"
 
@@ -43,10 +42,10 @@ DefaultFramebufferTest::DefaultFramebufferTest() {
 }
 
 void DefaultFramebufferTest::debugStatus() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << DefaultFramebuffer::Status::Complete << DefaultFramebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::DefaultFramebuffer::Status::Complete GL::DefaultFramebuffer::Status(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::DefaultFramebuffer::Status::Complete GL::DefaultFramebuffer::Status(0xdead)\n");
 }
 
 }}}}

@@ -25,14 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h> /* StringHasPrefix / StringHasSuffix */
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
 
@@ -399,11 +396,11 @@ void ShaderGLTest::addFileNonexistent() {
     Shader shader(Version::GLES200, Shader::Type::Fragment);
     #endif
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.addFile("nonexistent");
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nGL::Shader::addFile(): can't read nonexistent\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -467,7 +464,7 @@ void ShaderGLTest::compileFailure() {
     /* First line is 1, so 175 newlines means the error is on line 176 */
     shader.addSource("void main() {" + "\n"_s*175 + "someOutputVariable = ERROR_ERROR();\n}\n");
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Error redirectError{&out};
         CORRADE_VERIFY(!shader.compile());
@@ -475,33 +472,33 @@ void ShaderGLTest::compileFailure() {
     CORRADE_VERIFY(shader.isCompileFinished());
 
     /* There's a driver-specific message after */
-    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of vertex shader failed with the following message:",
+    CORRADE_COMPARE_AS(out, "GL::Shader::compile(): compilation of vertex shader failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
 
     /* The error message should contain the correct source number */
-    CORRADE_COMPARE_AS(out.str(), "11", TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(out, "11", TestSuite::Compare::StringNotContains);
     {
         #ifndef MAGNUM_TARGET_WEBGL
         /* Fixed in 23.1.4, https://gitlab.freedesktop.org/mesa/mesa/-/commit/d5ff432d7d08c8bb644594ccf28b83be4b521ffe
            Since I don't have any builtin way to compare version strings yet,
            XFAILing only optionally, if it actually doesn't contain the
            string. */
-        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa && !Containers::StringView{out.str()}.contains("12"),
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa && !out.contains("12"),
             "Mesa reports source number only in some cases.");
         #endif
-        CORRADE_COMPARE_AS(out.str(), "12", TestSuite::Compare::StringContains);
+        CORRADE_COMPARE_AS(out, "12", TestSuite::Compare::StringContains);
     }
-    CORRADE_COMPARE_AS(out.str(), "13", TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(out, "13", TestSuite::Compare::StringNotContains);
 
     /* The error message should contain the correct line number */
-    CORRADE_COMPARE_AS(out.str(), "175", TestSuite::Compare::StringNotContains);
-    CORRADE_COMPARE_AS(out.str(), "176", TestSuite::Compare::StringContains);
-    CORRADE_COMPARE_AS(out.str(), "177", TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(out, "175", TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(out, "176", TestSuite::Compare::StringContains);
+    CORRADE_COMPARE_AS(out, "177", TestSuite::Compare::StringNotContains);
 
     /* No stray \0 should be anywhere */
-    CORRADE_COMPARE_AS(out.str(), "\0"_s, TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(out, "\0"_s, TestSuite::Compare::StringNotContains);
     /* The message should end with a newline */
-    CORRADE_COMPARE_AS(out.str(), "\n"_s, TestSuite::Compare::StringHasSuffix);
+    CORRADE_COMPARE_AS(out, "\n"_s, TestSuite::Compare::StringHasSuffix);
 }
 
 void ShaderGLTest::compileFailureAsync() {
@@ -521,7 +518,7 @@ void ShaderGLTest::compileFailureAsync() {
     shader.addSource("[fu] bleh error #:! stuff\n");
 
     /* The compile submission should not print anything ... */
-    std::ostringstream out;
+    Containers::String out;
     {
         Error redirectError{&out};
         shader.submitCompile();
@@ -530,7 +527,7 @@ void ShaderGLTest::compileFailureAsync() {
     while(!shader.isCompileFinished())
         Utility::System::sleep(100);
 
-    CORRADE_VERIFY(out.str().empty());
+    CORRADE_COMPARE(out, "");
 
     /* ... only the final check should */
     {
@@ -538,7 +535,7 @@ void ShaderGLTest::compileFailureAsync() {
         CORRADE_VERIFY(!shader.checkCompile());
     }
     CORRADE_VERIFY(shader.isCompileFinished());
-    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
+    CORRADE_COMPARE_AS(out, "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
 
     /* Not testing presence of \0 etc., as that's tested well enough in

@@ -24,12 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -268,11 +267,11 @@ void HierarchyTest::parentsBreadthFirstChildrenDepthFirstNoParentField() {
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedByte, 0, nullptr, {}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
     SceneTools::childrenDepthFirst(scene);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::parentsBreadthFirst(): the scene has no hierarchy\n"
         "SceneTools::childrenDepthFirst(): the scene has no hierarchy\n");
 }
@@ -295,11 +294,11 @@ void HierarchyTest::parentsBreadthFirstChildrenDepthFirstIntoNoParentField() {
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedByte, 0, nullptr, {}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     parentsBreadthFirstInto(scene, nullptr, nullptr);
     childrenDepthFirstInto(scene, nullptr, nullptr);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::parentsBreadthFirstInto(): the scene has no hierarchy\n"
         "SceneTools::childrenDepthFirstInto(): the scene has no hierarchy\n");
 }
@@ -340,13 +339,13 @@ void HierarchyTest::parentsBreadthFirstChildrenDepthFirstIntoWrongDestinationSiz
     UnsignedInt childCountCorrect[3];
     UnsignedInt childCount[2];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     parentsBreadthFirstInto(scene, mappingCorrect, parentOffset);
     parentsBreadthFirstInto(scene, mapping, parentOffsetCorrect);
     childrenDepthFirstInto(scene, mappingCorrect, childCount);
     childrenDepthFirstInto(scene, mapping, childCountCorrect);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::parentsBreadthFirstInto(): expected parent destination view with 3 elements but got 2\n"
         "SceneTools::parentsBreadthFirstInto(): expected mapping destination view with 3 elements but got 2\n"
         "SceneTools::childrenDepthFirstInto(): expected child count destination view with 3 elements but got 2\n"
@@ -376,11 +375,11 @@ void HierarchyTest::parentsBreadthFirstChildrenDepthFirstSparse() {
             view.slice(&Field::parent)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
     SceneTools::childrenDepthFirst(scene);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::parentsBreadthFirst(): hierarchy is sparse\n"
         "SceneTools::childrenDepthFirst(): hierarchy is sparse\n");
 }
@@ -406,11 +405,11 @@ void HierarchyTest::parentsBreadthFirstChildrenDepthFirstCyclic() {
             view.slice(&Field::parent)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
     SceneTools::childrenDepthFirst(scene);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::parentsBreadthFirst(): hierarchy is sparse\n"
         "SceneTools::childrenDepthFirst(): hierarchy is sparse\n");
 }
@@ -438,11 +437,11 @@ void HierarchyTest::parentsBreadthFirstChildrenDepthFirstCyclicDeep() {
             view.slice(&Field::parent)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
     SceneTools::childrenDepthFirst(scene);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::parentsBreadthFirst(): hierarchy is cyclic\n"
         "SceneTools::childrenDepthFirst(): hierarchy is cyclic\n");
 }
@@ -472,12 +471,12 @@ void HierarchyTest::parentsBreadthFirstChildrenDepthFirstSparseAndCyclic() {
             view.slice(&Field::parent)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
     SceneTools::childrenDepthFirst(scene);
     CORRADE_EXPECT_FAIL("The implementation needs to track already visited objects with a BitArray to detect this, it'd also provide a much better diagnostic.");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::parentsBreadthFirst(): hierarchy is cyclic\n"
         "SceneTools::childrenDepthFirst(): hierarchy is cyclic\n");
 }
@@ -688,13 +687,13 @@ void HierarchyTest::absoluteFieldTransformationsFieldNotFound() {
         Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix3x3, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Mesh);
     SceneTools::absoluteFieldTransformations3D(scene, Trade::SceneField::Mesh);
     SceneTools::absoluteFieldTransformations2D(scene, 2);
     SceneTools::absoluteFieldTransformations3D(scene, 2);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::absoluteFieldTransformations(): field Trade::SceneField::Mesh not found\n"
         "SceneTools::absoluteFieldTransformations(): field Trade::SceneField::Mesh not found\n"
         "SceneTools::absoluteFieldTransformations(): index 2 out of range for 2 fields\n"
@@ -708,13 +707,13 @@ void HierarchyTest::absoluteFieldTransformationsNot2DNot3D() {
         Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Parent);
     SceneTools::absoluteFieldTransformations2D(scene, 0);
     SceneTools::absoluteFieldTransformations3D(scene, Trade::SceneField::Parent);
     SceneTools::absoluteFieldTransformations3D(scene, 0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::absoluteFieldTransformations(): the scene is not 2D\n"
         "SceneTools::absoluteFieldTransformations(): the scene is not 2D\n"
         "SceneTools::absoluteFieldTransformations(): the scene is not 3D\n"
@@ -728,11 +727,11 @@ void HierarchyTest::absoluteFieldTransformationsNoParentField() {
         Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix3x3, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Transformation);
     SceneTools::absoluteFieldTransformations2D(scene, 0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::absoluteFieldTransformations(): the scene has no hierarchy\n"
         "SceneTools::absoluteFieldTransformations(): the scene has no hierarchy\n");
 }
@@ -877,13 +876,13 @@ void HierarchyTest::absoluteFieldTransformationsIntoInvalidSize() {
     Matrix3 transformations2D[6];
     Matrix4 transformations3D[4];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     absoluteFieldTransformations2DInto(scene2D, Trade::SceneField::Mesh, transformations2D);
     absoluteFieldTransformations2DInto(scene2D, 1, transformations2D);
     absoluteFieldTransformations3DInto(scene3D, Trade::SceneField::Mesh, transformations3D);
     absoluteFieldTransformations3DInto(scene3D, 1, transformations3D);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 6\n"
         "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 6\n"
         "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 4\n"

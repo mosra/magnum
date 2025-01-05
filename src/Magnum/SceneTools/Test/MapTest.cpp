@@ -24,16 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/StridedBitArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Math/TypeTraits.h"
 #include "Magnum/SceneTools/Map.h"
@@ -362,13 +359,13 @@ void MapTest::indexFieldFieldNotFound() {
 
     UnsignedInt mapping[5]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     mapIndexField(scene, 2, mapping);
     mapIndexFieldInPlace(scene, 2, mapping);
     mapIndexField(scene, Trade::SceneField::MeshMaterial, mapping);
     mapIndexFieldInPlace(scene, Trade::SceneField::MeshMaterial, mapping);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "SceneTools::mapIndexField(): index 2 out of range for 2 fields\n"
         "SceneTools::mapIndexFieldInPlace(): index 2 out of range for 2 fields\n"
         "SceneTools::mapIndexField(): field Trade::SceneField::MeshMaterial not found\n"
@@ -390,11 +387,11 @@ void MapTest::indexFieldInvalidType() {
 
     UnsignedInt mapping[5]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     mapIndexField(scene, 1, mapping);
     mapIndexFieldInPlace(scene, 1, mapping);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "SceneTools::mapIndexField(): unsupported field type Trade::SceneFieldType::Long\n"
         "SceneTools::mapIndexFieldInPlace(): unsupported field type Trade::SceneFieldType::Long\n",
         TestSuite::Compare::String);
@@ -414,11 +411,11 @@ void MapTest::indexFieldArrayField() {
 
     UnsignedInt mapping[5]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     mapIndexField(scene, 1, mapping);
     mapIndexFieldInPlace(scene, 1, mapping);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "SceneTools::mapIndexField(): array field mapping isn't supported\n"
         "SceneTools::mapIndexFieldInPlace(): array field mapping isn't supported\n",
         TestSuite::Compare::String);
@@ -448,12 +445,12 @@ void MapTest::indexFieldIndexOutOfBounds() {
     const UnsignedInt mapping9[9]{};
     const UnsignedInt mapping10[10]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     mapIndexField(scene, Trade::SceneField::MeshMaterial, mapping10);
     mapIndexField(scene, Trade::SceneField::MeshMaterial, mapping9);
     mapIndexField(scene, Trade::SceneField::Mesh, mapping10);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "SceneTools::mapIndexFieldInPlace(): index -2 out of range for 10 mapping values\n"
         "SceneTools::mapIndexFieldInPlace(): index 9 out of range for 9 mapping values\n"
         "SceneTools::mapIndexFieldInPlace(): index 10 out of range for 10 mapping values\n",
@@ -513,7 +510,7 @@ void MapTest::indexFieldMappingNotRepresentable() {
     mapIndexField(scene, Trade::sceneFieldCustom(2), mappingSigned);
     mapIndexField(scene, Trade::SceneField::MeshMaterial, mappingSigned);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     mapIndexFieldInPlace(scene, Trade::SceneField::Mesh, mappingUnsigned);
     mapIndexFieldInPlace(scene, Trade::SceneField::Light, mappingUnsigned);
@@ -522,7 +519,7 @@ void MapTest::indexFieldMappingNotRepresentable() {
     mapIndexFieldInPlace(scene, Trade::sceneFieldCustom(1), mappingSigned);
     mapIndexFieldInPlace(scene, Trade::sceneFieldCustom(2), mappingSigned);
     mapIndexFieldInPlace(scene, Trade::SceneField::MeshMaterial, mappingSigned);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "SceneTools::mapIndexFieldInPlace(): mapping value 65536 not representable in Trade::SceneFieldType::UnsignedShort\n"
         "SceneTools::mapIndexFieldInPlace(): mapping value 65536 not representable in Trade::SceneFieldType::UnsignedByte\n"
         "SceneTools::mapIndexFieldInPlace(): mapping value 2147483648 not representable in Trade::SceneFieldType::Int\n"

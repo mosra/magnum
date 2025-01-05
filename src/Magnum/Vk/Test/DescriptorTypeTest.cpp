@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/DescriptorType.h"
 
@@ -43,9 +42,9 @@ DescriptorTypeTest::DescriptorTypeTest() {
 }
 
 void DescriptorTypeTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << DescriptorType::InputAttachment << DescriptorType(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::DescriptorType::InputAttachment Vk::DescriptorType(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::DescriptorType::InputAttachment Vk::DescriptorType(-10007655)\n");
 }
 
 }}}}

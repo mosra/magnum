@@ -24,10 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringStl.h> /**< @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
 
@@ -383,11 +381,11 @@ void GlyphCacheGLTest::flushImageSubclassProcessedFormatSize() {
     Cache differentFormat{PixelFormat::R8Unorm, {32, 32}, PixelFormat::RGBA8Unorm, {32, 32}};
     Cache differentSize{PixelFormat::R8Unorm, {32, 32}, PixelFormat::R8Unorm, {16, 32}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     differentFormat.flushImage({{}, {32, 32}});
     differentSize.flushImage({{}, {32, 32}});
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Text::GlyphCacheGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size\n"
         "Text::GlyphCacheGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size\n",
         TestSuite::Compare::String);

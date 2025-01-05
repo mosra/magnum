@@ -24,14 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/BitArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Vector2.h"
@@ -259,10 +258,10 @@ void FilterTest::fieldsWrongBitCount() {
             Containers::arrayView(data)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     filterFields(scene, Containers::BitArray{ValueInit, 3});
-    CORRADE_COMPARE(out.str(), "SceneTools::filterFields(): expected 2 bits but got 3\n");
+    CORRADE_COMPARE(out, "SceneTools::filterFields(): expected 2 bits but got 3\n");
 }
 
 void FilterTest::onlyFields() {
@@ -632,7 +631,7 @@ void FilterTest::fieldEntriesFieldNotFound() {
             Containers::arrayView(data->light)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     filterFieldEntries(scene, {
         {Trade::SceneField::Light, Containers::BitArray{ValueInit, 4}},
@@ -642,7 +641,7 @@ void FilterTest::fieldEntriesFieldNotFound() {
         {1, Containers::BitArray{ValueInit, 4}},
         {2, {}}
     });
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::filterFieldEntries(): field Trade::SceneField::Parent not found\n"
         "SceneTools::filterFieldEntries(): index 2 out of range for 2 fields\n");
 }
@@ -666,7 +665,7 @@ void FilterTest::fieldEntriesDuplicated() {
             Containers::arrayView(data->light)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* The name-based variant just delegates to this one, no need to test it
        as well */
@@ -675,7 +674,7 @@ void FilterTest::fieldEntriesDuplicated() {
         {0, Containers::BitArray{ValueInit, 5}},
         {1, Containers::BitArray{ValueInit, 4}},
     });
-    CORRADE_COMPARE(out.str(), "SceneTools::filterFieldEntries(): field Trade::SceneField::Light listed more than once\n");
+    CORRADE_COMPARE(out, "SceneTools::filterFieldEntries(): field Trade::SceneField::Light listed more than once\n");
 }
 
 void FilterTest::fieldEntriesWrongBitCount() {
@@ -697,7 +696,7 @@ void FilterTest::fieldEntriesWrongBitCount() {
             Containers::arrayView(data->light)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* The name-based variant just delegates to this one, no need to test it
        as well */
@@ -705,7 +704,7 @@ void FilterTest::fieldEntriesWrongBitCount() {
         {1, Containers::BitArray{ValueInit, 4}},
         {0, Containers::BitArray{ValueInit, 6}}
     });
-    CORRADE_COMPARE(out.str(), "SceneTools::filterFieldEntries(): expected 5 bits for Trade::SceneField::Mesh but got 6\n");
+    CORRADE_COMPARE(out, "SceneTools::filterFieldEntries(): expected 5 bits for Trade::SceneField::Mesh but got 6\n");
 }
 
 void FilterTest::fieldEntriesBitField() {
@@ -727,7 +726,7 @@ void FilterTest::fieldEntriesBitField() {
             Containers::stridedArrayView(data->visible).sliceBit(0)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* The name-based variant just delegates to this one, no need to test it
        as well */
@@ -735,7 +734,7 @@ void FilterTest::fieldEntriesBitField() {
         {0, Containers::BitArray{ValueInit, 5}},
         {1, Containers::BitArray{ValueInit, 2}}
     });
-    CORRADE_COMPARE(out.str(), "SceneTools::filterFieldEntries(): filtering bit fields is not implemented yet, sorry\n");
+    CORRADE_COMPARE(out, "SceneTools::filterFieldEntries(): filtering bit fields is not implemented yet, sorry\n");
 }
 
 void FilterTest::fieldEntriesStringField() {
@@ -759,7 +758,7 @@ void FilterTest::fieldEntriesStringField() {
             Containers::arrayView(data->nameRangeNullTerminated)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* The name-based variant just delegates to this one, no need to test it
        as well */
@@ -767,7 +766,7 @@ void FilterTest::fieldEntriesStringField() {
         {0, Containers::BitArray{ValueInit, 5}},
         {1, Containers::BitArray{ValueInit, 2}}
     });
-    CORRADE_COMPARE(out.str(), "SceneTools::filterFieldEntries(): filtering string fields is not implemented yet, sorry\n");
+    CORRADE_COMPARE(out, "SceneTools::filterFieldEntries(): filtering string fields is not implemented yet, sorry\n");
 }
 
 void FilterTest::fieldEntriesSharedMapping() {
@@ -936,7 +935,7 @@ void FilterTest::fieldEntriesSharedMappingInvalid() {
     Containers::BitArray meshesToKeep{ValueInit, 5};
     Containers::BitArray meshesToKeepDifferent{DirectInit, 5, true};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     filterFieldEntries(scene, {
         {Trade::SceneField::MeshMaterial, meshesToKeep},
@@ -951,7 +950,7 @@ void FilterTest::fieldEntriesSharedMappingInvalid() {
         {Trade::sceneFieldCustom(1), meshesToKeep},
         {Trade::SceneField::MeshMaterial, meshesToKeep},
     });
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::filterFieldEntries(): field Trade::SceneField::Custom(1) shares mapping with Trade::SceneField::MeshMaterial but was passed a different mask view\n"
         "SceneTools::filterFieldEntries(): field Trade::SceneField::Mesh shares mapping with 3 fields but only 2 are filtered\n"
         "SceneTools::filterFieldEntries(): field Trade::SceneField::Custom(1) shares mapping with 3 fields but only 2 are filtered\n");
@@ -1258,10 +1257,10 @@ void FilterTest::objectsWrongBitCount() {
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 176, nullptr, {}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     filterObjects(scene, Containers::BitArray{ValueInit, 177});
-    CORRADE_COMPARE(out.str(), "SceneTools::filterObjects(): expected 176 bits but got 177\n");
+    CORRADE_COMPARE(out, "SceneTools::filterObjects(): expected 176 bits but got 177\n");
 }
 
 }}}}

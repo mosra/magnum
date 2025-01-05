@@ -25,9 +25,8 @@
 */
 
 #include <functional>
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #define _MAGNUM_NO_DEPRECATED_COMBINEINDEXEDARRAYS
 
@@ -54,13 +53,13 @@ CORRADE_IGNORE_DEPRECATED_PUSH
 void CombineIndexedArraysTest::wrongIndexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream ss;
-    Error redirectError{&ss};
+    Containers::String out;
+    Error redirectError{&out};
     std::vector<UnsignedInt> a{0, 1, 0};
     std::vector<UnsignedInt> b{3, 4};
     std::vector<UnsignedInt> result = combineIndexArrays({a, b});
 
-    CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexArrays(): the arrays don't have the same size\n");
+    CORRADE_COMPARE(out, "MeshTools::combineIndexArrays(): the arrays don't have the same size\n");
 }
 
 void CombineIndexedArraysTest::indexArrays() {

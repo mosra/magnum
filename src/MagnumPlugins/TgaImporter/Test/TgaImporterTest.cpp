@@ -24,15 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/PixelFormat.h"
@@ -314,12 +312,12 @@ TgaImporterTest::TgaImporterTest() {
 void TgaImporterTest::invalidEmpty() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     char a{};
     /* Explicitly checking non-null but empty view */
     CORRADE_VERIFY(!importer->openData({&a, 0}));
-    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::openData(): the file is empty\n");
+    CORRADE_COMPARE(out, "Trade::TgaImporter::openData(): the file is empty\n");
 }
 
 void TgaImporterTest::invalidShort() {
@@ -330,10 +328,10 @@ void TgaImporterTest::invalidShort() {
 
     CORRADE_VERIFY(importer->openData(data.data));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImporter::image2D(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Trade::TgaImporter::image2D(): {}\n", data.message));
 }
 
 void TgaImporterTest::invalid() {
@@ -344,10 +342,10 @@ void TgaImporterTest::invalid() {
 
     CORRADE_VERIFY(importer->openData(data.data));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImporter::image2D(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Trade::TgaImporter::image2D(): {}\n", data.message));
 }
 
 void TgaImporterTest::invalidBits() {
@@ -360,10 +358,10 @@ void TgaImporterTest::invalidBits() {
     };
     CORRADE_VERIFY(importer->openData(imageData));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImporter::image2D(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Trade::TgaImporter::image2D(): {}\n", data.message));
 }
 
 void TgaImporterTest::color24() {
@@ -374,7 +372,7 @@ void TgaImporterTest::color24() {
     importer->setFlags(data.flags);
     CORRADE_VERIFY(importer->openData(Color24));
 
-    std::ostringstream out;
+    Containers::String out;
     Containers::Optional<Trade::ImageData2D> image;
     {
         Debug redirectOutput{&out};
@@ -390,7 +388,7 @@ void TgaImporterTest::color24() {
         5, 4, 3, 6, 5, 4,
         7, 6, 5, 8, 7, 6
     }), TestSuite::Compare::Container);
-    CORRADE_COMPARE(out.str(), data.message24);
+    CORRADE_COMPARE(out, data.message24);
 }
 
 void TgaImporterTest::color24Rle() {
@@ -401,7 +399,7 @@ void TgaImporterTest::color24Rle() {
     importer->setFlags(data.flags);
     CORRADE_VERIFY(importer->openData(Color24Rle));
 
-    std::ostringstream out;
+    Containers::String out;
     Containers::Optional<Trade::ImageData2D> image;
     {
         Debug redirectOutput{&out};
@@ -417,7 +415,7 @@ void TgaImporterTest::color24Rle() {
         5, 4, 3, 6, 5, 4,
         6, 5, 4, 6, 5, 4
     }), TestSuite::Compare::Container);
-    CORRADE_COMPARE(out.str(), data.message24);
+    CORRADE_COMPARE(out, data.message24);
 }
 
 void TgaImporterTest::color32() {
@@ -434,7 +432,7 @@ void TgaImporterTest::color32() {
     };
     CORRADE_VERIFY(importer->openData(input));
 
-    std::ostringstream out;
+    Containers::String out;
     Containers::Optional<Trade::ImageData2D> image;
     {
         Debug redirectOutput{&out};
@@ -450,7 +448,7 @@ void TgaImporterTest::color32() {
         5, 4, 3, 6, 6, 5, 4, 7,
         7, 6, 5, 8, 8, 7, 6, 9
     }), TestSuite::Compare::Container);
-    CORRADE_COMPARE(out.str(), data.message32);
+    CORRADE_COMPARE(out, data.message32);
 }
 
 void TgaImporterTest::color32Rle() {
@@ -471,7 +469,7 @@ void TgaImporterTest::color32Rle() {
     };
     CORRADE_VERIFY(importer->openData(input));
 
-    std::ostringstream out;
+    Containers::String out;
     Containers::Optional<Trade::ImageData2D> image;
     {
         Debug redirectOutput{&out};
@@ -487,7 +485,7 @@ void TgaImporterTest::color32Rle() {
         5, 4, 3, 6, 6, 5, 4, 7,
         7, 6, 5, 8, 8, 7, 6, 9
     }), TestSuite::Compare::Container);
-    CORRADE_COMPARE(out.str(), data.message32);
+    CORRADE_COMPARE(out, data.message32);
 }
 
 void TgaImporterTest::grayscale8() {
@@ -561,7 +559,7 @@ void TgaImporterTest::fileTooLong() {
         Containers::StringView{data.extra}));
 
     Containers::Optional<Trade::ImageData2D> image;
-    std::ostringstream out;
+    Containers::String out;
     {
         Warning redirectWarning{&out};
         image = importer->image2D(0);
@@ -577,9 +575,9 @@ void TgaImporterTest::fileTooLong() {
         5, 6
     }), TestSuite::Compare::Container);
     if(data.quiet)
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     else
-        CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): ignoring 5 extra bytes at the end of image data\n");
+        CORRADE_COMPARE(out, "Trade::TgaImporter::image2D(): ignoring 5 extra bytes at the end of image data\n");
 }
 
 void TgaImporterTest::openMemory() {

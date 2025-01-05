@@ -24,9 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/RectangularMatrix.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -988,16 +989,16 @@ void RectangularMatrixTest::debug() {
                 Vector4(4.0f,  4.0f, 7.0f, 3.0f),
                 Vector4(7.0f, -1.0f, 8.0f, 0.0f));
 
-    std::ostringstream o;
-    Debug(&o) << m;
-    CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7,\n"
+    Containers::String out;
+    Debug{&out} << m;
+    CORRADE_COMPARE(out, "Matrix(3, 4, 7,\n"
                              "       5, 4, -1,\n"
                              "       8, 7, 8,\n"
                              "       4, 3, 0)\n");
 
-    o.str({});
-    Debug(&o) << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, Byte>();
-    CORRADE_COMPARE(o.str(), "a Matrix(0, 0, 0,\n"
+    out = {};
+    Debug{&out} << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, Byte>();
+    CORRADE_COMPARE(out, "a Matrix(0, 0, 0,\n"
                              "       0, 0, 0,\n"
                              "       0, 0, 0,\n"
                              "       0, 0, 0) b Matrix(0, 0, 0, 0,\n"
@@ -1010,10 +1011,10 @@ void RectangularMatrixTest::debugPacked() {
                 Vector4(4.0f,  4.0f, 7.0f, 3.0f),
                 Vector4(7.0f, -1.0f, 8.0f, 0.0f));
 
-    std::ostringstream out;
+    Containers::String out;
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << m << Matrix2x2{};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "{3, 4, 7,\n"
         " 5, 4, -1,\n"
         " 8, 7, 8,\n"

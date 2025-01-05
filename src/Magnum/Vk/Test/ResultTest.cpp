@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Result.h"
 
@@ -46,9 +45,9 @@ ResultTest::ResultTest() {
 }
 
 void ResultTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Result::ErrorExtensionNotPresent << Result(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::Result::ErrorExtensionNotPresent Vk::Result(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::Result::ErrorExtensionNotPresent Vk::Result(-10007655)\n");
 }
 
 }}}}

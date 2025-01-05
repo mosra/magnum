@@ -26,11 +26,9 @@
 */
 
 #include <set>
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Audio/Context.h"
 
@@ -103,9 +101,9 @@ void ContextTest::extensions() {
 }
 
 void ContextTest::debugHrtfStatus() {
-    std::ostringstream out;
+    Containers::String out;
     Debug(&out) << Context::HrtfStatus::Denied << Context::HrtfStatus(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::Context::HrtfStatus::Denied Audio::Context::HrtfStatus(0xdead)\n");
+    CORRADE_COMPARE(out, "Audio::Context::HrtfStatus::Denied Audio::Context::HrtfStatus(0xdead)\n");
 }
 
 }}}}

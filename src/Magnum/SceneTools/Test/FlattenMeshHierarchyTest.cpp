@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 /* There's no better way to disable file deprecation warnings */
 #define _MAGNUM_NO_DEPRECATED_FLATTENMESHHIERARCHY
@@ -318,13 +317,13 @@ void FlattenMeshHierarchyTest::not2DNot3D() {
         Trade::SceneFieldData{Trade::SceneField::Mesh, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     flattenMeshHierarchy2D(scene);
     flattenMeshHierarchy3D(scene);
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::absoluteFieldTransformations(): the scene is not 2D\n"
         "SceneTools::absoluteFieldTransformations(): the scene is not 3D\n");
 }
@@ -340,12 +339,12 @@ void FlattenMeshHierarchyTest::noParentField() {
         Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix3x3, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     flattenMeshHierarchy2D(scene);
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::absoluteFieldTransformations(): the scene has no hierarchy\n");
 }
 
@@ -493,13 +492,13 @@ void FlattenMeshHierarchyTest::intoInvalidSize() {
     Matrix3 transformations2D[6];
     Matrix4 transformations3D[4];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     flattenMeshHierarchy2DInto(scene2D, transformations2D);
     flattenMeshHierarchy3DInto(scene3D, transformations3D);
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 6\n"
         "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 4\n");
 }

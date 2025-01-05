@@ -24,13 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -668,10 +666,10 @@ void MeshVkTest::cmdDrawNoCountSet() {
         )
        .bindPipeline(pipeline);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     cmd.draw(mesh);
-    CORRADE_COMPARE(out.str(), "Vk::CommandBuffer::draw(): Mesh::setCount() was never called, probably a mistake?\n");
+    CORRADE_COMPARE(out, "Vk::CommandBuffer::draw(): Mesh::setCount() was never called, probably a mistake?\n");
 }
 
 void MeshVkTest::cmdDrawDynamicPrimitive() {
@@ -877,10 +875,10 @@ void MeshVkTest::cmdDrawDynamicStrideInsufficientImplementation() {
         )
        .bindPipeline(fakeDynamicStatePipeline);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     cmd.draw(mesh);
-    CORRADE_COMPARE(out.str(), "Vk::CommandBuffer::draw(): dynamic strides supplied for an implementation without extended dynamic state\n");
+    CORRADE_COMPARE(out, "Vk::CommandBuffer::draw(): dynamic strides supplied for an implementation without extended dynamic state\n");
 }
 
 }}}}

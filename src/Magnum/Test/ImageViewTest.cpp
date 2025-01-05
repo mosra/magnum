@@ -29,10 +29,10 @@
    arrayCast() template, which is forward-declared. */
 #include "Magnum/ImageView.h"
 
-#include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once dataProperties() std::pair is gone */
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
@@ -662,23 +662,23 @@ void ImageViewTest::constructNullptr() {
     #elif defined(CORRADE_NO_ASSERT)
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #else
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageView2D{PixelFormat::RGB8Unorm, {1, 3},  nullptr};
-    CORRADE_COMPARE(out.str(), "ImageView: data too small, got 0 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "ImageView: data too small, got 0 but expected at least 12 bytes\n");
     #endif
 }
 
 void ImageViewTest::constructInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     /* Doesn't consider alignment */
     const char data[3*3]{};
     ImageView2D{PixelFormat::RGB8Unorm, {1, 3}, data};
-    CORRADE_COMPARE(out.str(), "ImageView: data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "ImageView: data too small, got 9 but expected at least 12 bytes\n");
 }
 
 void ImageViewTest::constructInvalidCubeMap() {
@@ -686,7 +686,7 @@ void ImageViewTest::constructInvalidCubeMap() {
 
     const char data[4*3*18*4]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ImageView3D{PixelFormat::RGBA8Unorm, {3, 3, 5}, data, ImageFlag3D::CubeMap};
     ImageView3D{PixelFormat::RGBA8Unorm, {3, 4, 6}, data, ImageFlag3D::CubeMap};
@@ -694,7 +694,7 @@ void ImageViewTest::constructInvalidCubeMap() {
     ImageView3D{PixelFormat::RGBA8Unorm, {4, 3, 18}, data, ImageFlag3D::CubeMap |ImageFlag3D::Array};
     /* The data-less variant should call into the same assertion helper */
     ImageView3D{PixelFormat::RGBA8Unorm, {3, 3, 5}, ImageFlag3D::CubeMap};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "ImageView: expected exactly 6 faces for a cube map, got 5\n"
         "ImageView: expected square faces for a cube map, got {3, 4}\n"
         "ImageView: expected a multiple of 6 faces for a cube map array, got 17\n"
@@ -709,17 +709,17 @@ void ImageViewTest::constructCompressedInvalidSize() {
 
     /* Too small for given format */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, data};
-        CORRADE_COMPARE(out.str(), "CompressedImageView: data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "CompressedImageView: data too small, got 2 but expected at least 4 bytes\n");
 
     /* Size should be rounded up even if the image size is not full block */
     } {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, data};
-        CORRADE_COMPARE(out.str(), "CompressedImageView: data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "CompressedImageView: data too small, got 2 but expected at least 4 bytes\n");
     }
 }
 
@@ -728,7 +728,7 @@ void ImageViewTest::constructCompressedInvalidCubeMap() {
 
     const char data[8*18]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 3, 5}, data, ImageFlag3D::CubeMap};
     CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 4, 6}, data, ImageFlag3D::CubeMap};
@@ -736,7 +736,7 @@ void ImageViewTest::constructCompressedInvalidCubeMap() {
     CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 3, 18}, data, ImageFlag3D::CubeMap |ImageFlag3D::Array};
     /* The data-less variant should call into the same assertion helper */
     CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 3, 5}, ImageFlag3D::CubeMap};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "CompressedImageView: expected exactly 6 faces for a cube map, got 5\n"
         "CompressedImageView: expected square faces for a cube map, got {3, 4}\n"
         "CompressedImageView: expected a multiple of 6 faces for a cube map array, got 17\n"
@@ -804,7 +804,7 @@ template<class T> void ImageViewTest::setDataCompressed() {
 void ImageViewTest::setDataInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     ImageView2D image{PixelFormat::RGB8Unorm, {1, 3}};
@@ -812,7 +812,7 @@ void ImageViewTest::setDataInvalidSize() {
 
     /* Doesn't consider alignment */
     image.setData(data);
-    CORRADE_COMPARE(out.str(), "ImageView::setData(): data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "ImageView::setData(): data too small, got 9 but expected at least 12 bytes\n");
 }
 
 void ImageViewTest::setDataCompressedInvalidSize() {
@@ -822,17 +822,17 @@ void ImageViewTest::setDataCompressedInvalidSize() {
 
     /* Too small for given format */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, data};
-        CORRADE_COMPARE(out.str(), "CompressedImageView::setData(): data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "CompressedImageView::setData(): data too small, got 2 but expected at least 4 bytes\n");
 
     /* Size should be rounded up even if the image size is not that big */
     } {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, data};
-        CORRADE_COMPARE(out.str(), "CompressedImageView::setData(): data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "CompressedImageView::setData(): data too small, got 2 but expected at least 4 bytes\n");
     }
 }
 

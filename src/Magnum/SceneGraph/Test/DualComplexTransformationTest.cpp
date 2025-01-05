@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/SceneGraph/DualComplexTransformation.h"
 #include "Magnum/SceneGraph/Object.hpp"
@@ -145,10 +144,10 @@ template<class T> void DualComplexTransformationTest::setTransformationInvalid()
     Object2D<T> o;
 
     /* Can't transform with non-rigid transformation */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     o.setTransformation(Math::DualComplex<T>({T(1.0), T(2.0)}, {}));
-    CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized\n");
+    CORRADE_COMPARE(out, "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized\n");
 }
 
 template<class T> void DualComplexTransformationTest::resetTransformation() {
@@ -184,10 +183,10 @@ template<class T> void DualComplexTransformationTest::transformInvalid() {
 
     /* Can't transform with non-rigid transformation */
     Object2D<T> o;
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     o.transform(Math::DualComplex<T>{{T(1.0), T(2.0)}, {}});
-    CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized\n");
+    CORRADE_COMPARE(out, "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized\n");
 }
 
 template<class T> void DualComplexTransformationTest::translate() {

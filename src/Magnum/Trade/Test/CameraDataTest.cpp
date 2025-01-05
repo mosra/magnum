@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Trade/CameraData.h"
 
@@ -110,23 +109,23 @@ void CameraDataTest::construct2D() {
 void CameraDataTest::construct2DFoV() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CameraData{CameraType::Orthographic2D, 25.0_degf, 1.0f, 0.001f, 1000.0f};
 
-    CORRADE_COMPARE(out.str(), "Trade::CameraData: only perspective cameras can have FoV specified\n");
+    CORRADE_COMPARE(out, "Trade::CameraData: only perspective cameras can have FoV specified\n");
 }
 
 void CameraDataTest::construct2DNearFar() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CameraData{CameraType::Orthographic2D, {3.0f, 4.0f}, 0.001f, 1000.0f};
 
-    CORRADE_COMPARE(out.str(), "Trade::CameraData: 2D cameras can't be specified with near and far clipping planes\n");
+    CORRADE_COMPARE(out, "Trade::CameraData: 2D cameras can't be specified with near and far clipping planes\n");
 }
 
 void CameraDataTest::constructCopy() {
@@ -165,27 +164,27 @@ void CameraDataTest::constructMove() {
 void CameraDataTest::fovNonPerspective() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CameraData a{CameraType::Orthographic2D, {3.0f, 4.0f}, {}, {}};
     a.fov();
 
-    CORRADE_COMPARE(out.str(), "Trade::CameraData::fov(): the camera is not perspective\n");
+    CORRADE_COMPARE(out, "Trade::CameraData::fov(): the camera is not perspective\n");
 }
 
 void CameraDataTest::debugType() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << CameraType::Orthographic3D << CameraType(0xde);
-    CORRADE_COMPARE(out.str(), "Trade::CameraType::Orthographic3D Trade::CameraType(0xde)\n");
+    CORRADE_COMPARE(out, "Trade::CameraType::Orthographic3D Trade::CameraType(0xde)\n");
 }
 
 void CameraDataTest::debugTypePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << CameraType::Orthographic3D << Debug::packed << CameraType(0xde) << CameraType::Perspective3D;
-    CORRADE_COMPARE(out.str(), "Orthographic3D 0xde Trade::CameraType::Perspective3D\n");
+    CORRADE_COMPARE(out, "Orthographic3D 0xde Trade::CameraType::Perspective3D\n");
 }
 
 }}}}

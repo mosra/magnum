@@ -26,9 +26,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Intersection.h"
 
@@ -460,11 +459,11 @@ void IntersectionTest::sphereConeView() {
 void IntersectionTest::sphereConeViewNotRigid() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!Intersection::sphereConeView({}, 1.0f, Matrix4{ZeroInit}, {}));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::Intersection::sphereConeView(): coneView does not represent a rigid transformation:\n"
         "Matrix(0, 0, 0, 0,\n"
         "       0, 0, 0, 0,\n"

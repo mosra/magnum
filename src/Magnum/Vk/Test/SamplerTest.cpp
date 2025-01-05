@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Sampler.h"
 #include "Magnum/Math/Vector3.h"
@@ -122,11 +122,11 @@ void SamplerTest::mapFilter() {
 void SamplerTest::mapFilterInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     samplerFilter(Magnum::SamplerFilter(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::samplerFilter(): invalid filter SamplerFilter(0x123)\n");
 }
 
@@ -139,11 +139,11 @@ void SamplerTest::mapMipmap() {
 void SamplerTest::mapMipmapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     samplerMipmap(Magnum::SamplerMipmap(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::samplerMipmap(): invalid mode SamplerMipmap(0x123)\n");
 }
 
@@ -164,11 +164,11 @@ void SamplerTest::mapWrappingVector() {
 void SamplerTest::mapWrappingInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     samplerWrapping(Magnum::SamplerWrapping(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::samplerWrapping(): invalid wrapping SamplerWrapping(0x123)\n");
 }
 
@@ -262,21 +262,21 @@ void SamplerTest::constructCopy() {
 }
 
 void SamplerTest::debugFilter() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << SamplerFilter::Linear << SamplerFilter(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::SamplerFilter::Linear Vk::SamplerFilter(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::SamplerFilter::Linear Vk::SamplerFilter(-10007655)\n");
 }
 
 void SamplerTest::debugMipmap() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << SamplerMipmap::Linear << SamplerMipmap(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::SamplerMipmap::Linear Vk::SamplerMipmap(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::SamplerMipmap::Linear Vk::SamplerMipmap(-10007655)\n");
 }
 
 void SamplerTest::debugWrapping() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << SamplerWrapping::MirrorClampToEdge << SamplerWrapping(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::SamplerWrapping::MirrorClampToEdge Vk::SamplerWrapping(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::SamplerWrapping::MirrorClampToEdge Vk::SamplerWrapping(-10007655)\n");
 }
 
 }}}}

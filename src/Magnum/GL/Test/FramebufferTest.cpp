@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Framebuffer.h"
 
@@ -64,10 +63,10 @@ void FramebufferTest::constructCopy() {
 }
 
 void FramebufferTest::debugStatus() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Framebuffer::Status::IncompleteMissingAttachment GL::Framebuffer::Status(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Framebuffer::Status::IncompleteMissingAttachment GL::Framebuffer::Status(0xdead)\n");
 }
 
 }}}}

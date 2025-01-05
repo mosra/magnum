@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -483,11 +483,11 @@ void Matrix3Test::reflection() {
 void Matrix3Test::reflectionNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Matrix3::reflection({-1.0f, 2.0f});
-    CORRADE_COMPARE(out.str(), "Math::Matrix3::reflection(): normal Vector(-1, 2) is not normalized\n");
+    CORRADE_COMPARE(out, "Math::Matrix3::reflection(): normal Vector(-1, 2) is not normalized\n");
 }
 
 void Matrix3Test::reflectionIsScaling() {
@@ -611,7 +611,7 @@ void Matrix3Test::rotationPart() {
 void Matrix3Test::rotationPartNotOrthogonal() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     /* Test both non-orthogonality and "unnormalizable" scaling */
@@ -619,7 +619,7 @@ void Matrix3Test::rotationPartNotOrthogonal() {
     Matrix3::scaling(Vector2::yScale(0.0f)).rotation();
 
     #ifdef CORRADE_TARGET_MSVC
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
         "Matrix(1, 0.83205,\n"
         "       0, 0.5547)\n"
@@ -639,9 +639,9 @@ void Matrix3Test::rotationPartNotOrthogonal() {
         "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
         "Matrix(1, nan,\n"
         "       0, nan)\n";
-    if(out.str() == expectedPositive)
-        CORRADE_COMPARE(out.str(), expectedPositive);
-    else CORRADE_COMPARE(out.str(),
+    if(out == expectedPositive)
+        CORRADE_COMPARE(out, expectedPositive);
+    else CORRADE_COMPARE(out,
         "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
         "Matrix(1, 0.83205,\n"
         "       0, 0.5547)\n"
@@ -663,7 +663,7 @@ void Matrix3Test::rotationNormalizedPart() {
 void Matrix3Test::rotationNormalizedPartNotOrthogonal() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Matrix3 a({1.0f,  0.0f, 8.0f},
@@ -671,7 +671,7 @@ void Matrix3Test::rotationNormalizedPartNotOrthogonal() {
               {7.0f, -1.0f, 8.0f});
     a.rotationNormalized();
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::Matrix3::rotationNormalized(): the rotation part is not orthogonal:\n"
         "Matrix(1, 1,\n"
         "       0, 0.1)\n");
@@ -725,10 +725,10 @@ void Matrix3Test::uniformScalingPart() {
 void Matrix3Test::uniformScalingPartNotUniform() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Matrix3::scaling(Vector2::yScale(3.0f)).uniformScaling();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling:\n"
         "Matrix(1, 0,\n"
         "       0, 3)\n");
@@ -771,11 +771,11 @@ void Matrix3Test::invertedRigid() {
 void Matrix3Test::invertedRigidNotRigid() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     (Matrix3::rotation(60.0_degf)*2.0f).invertedRigid();
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::Matrix3::invertedRigid(): the matrix doesn't represent a rigid transformation:\n"
         "Matrix(1, -1.73205, 0,\n"
         "       1.73205, 1, 0,\n"
@@ -811,9 +811,9 @@ void Matrix3Test::debug() {
               {4.0f,  4.0f, 7.0f},
               {7.0f, -1.0f, 8.0f});
 
-    std::ostringstream o;
-    Debug(&o) << m;
-    CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7,\n"
+    Containers::String out;
+    Debug{&out} << m;
+    CORRADE_COMPARE(out, "Matrix(3, 4, 7,\n"
                              "       5, 4, -1,\n"
                              "       8, 7, 8)\n");
 }

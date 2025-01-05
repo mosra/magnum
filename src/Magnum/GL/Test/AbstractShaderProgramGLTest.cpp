@@ -25,16 +25,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringStl.h> /* StringHasPrefix / StringHasSuffix */
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Corrade/Utility/System.h>
 
@@ -630,7 +627,7 @@ void AbstractShaderProgramGLTest::linkFailure() {
 
     /* And thus linking as well, saying something like "error: linking with
        uncompiled/unspecialized shader" */
-    std::ostringstream out;
+    Containers::String out;
     {
         Error redirectError{&out};
         CORRADE_VERIFY(!program.link());
@@ -640,12 +637,12 @@ void AbstractShaderProgramGLTest::linkFailure() {
     CORRADE_VERIFY(program.isLinkFinished());
 
     /* There's a driver-specific message after */
-    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+    CORRADE_COMPARE_AS(out, "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
     /* No stray \0 should be anywhere */
-    CORRADE_COMPARE_AS(out.str(), "\0"_s, TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(out, "\0"_s, TestSuite::Compare::StringNotContains);
     /* The message should end with a newline */
-    CORRADE_COMPARE_AS(out.str(), "\n"_s, TestSuite::Compare::StringHasSuffix);
+    CORRADE_COMPARE_AS(out, "\n"_s, TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractShaderProgramGLTest::linkFailureAsync() {
@@ -672,7 +669,7 @@ void AbstractShaderProgramGLTest::linkFailureAsync() {
     program.attachShaders({shader});
 
     /* The link submission should not print anything ... */
-    std::ostringstream out;
+    Containers::String out;
     {
         Error redirectError{&out};
         program.submitLink();
@@ -681,7 +678,7 @@ void AbstractShaderProgramGLTest::linkFailureAsync() {
     while(!program.isLinkFinished())
         Utility::System::sleep(100);
 
-    CORRADE_VERIFY(out.str().empty());
+    CORRADE_COMPARE(out, "");
 
     /* ... only the final check should. In this case it's "error: linking with
        uncompiled/unspecialized shader" as well, but if the shaders would be
@@ -692,7 +689,7 @@ void AbstractShaderProgramGLTest::linkFailureAsync() {
         CORRADE_VERIFY(!program.checkLink({}));
     }
     CORRADE_VERIFY(program.isLinkFinished());
-    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+    CORRADE_COMPARE_AS(out, "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
 
     /* Not testing presence of \0 etc., as that's tested well enough in
@@ -735,26 +732,26 @@ void AbstractShaderProgramGLTest::linkFailureAsyncShaderList() {
 
     /* The link submission should not print anything ... */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         program.submitLink();
-        CORRADE_VERIFY(out.str().empty());
+        CORRADE_COMPARE(out, "");
     }
 
     /* ... only the final check should. Vertex shader should be fine, but
        fragment should fail. */
-    std::ostringstream out;
+    Containers::String out;
     {
         Error redirectError{&out};
         CORRADE_VERIFY(!program.checkLink({vert, frag}));
     }
-    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
+    CORRADE_COMPARE_AS(out, "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
 
     /* The linker error (which would most probably say something like "error:
        linking with uncompiled/unspecialized shader") should not be even
        printed */
-    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+    CORRADE_COMPARE_AS(out, "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringNotContains);
 }
 
@@ -876,10 +873,10 @@ void AbstractShaderProgramGLTest::uniformNotFound() {
     program.attachShaders({vert, frag});
     CORRADE_VERIFY(program.link());
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     program.uniformLocation("nonexistent");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved\n");
 }
 
@@ -1174,10 +1171,10 @@ void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
     program.attachShaders({vert, frag});
     CORRADE_VERIFY(program.link());
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     program.uniformBlockIndex("nonexistent");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram: index of uniform block 'nonexistent' cannot be retrieved\n");
 }
 

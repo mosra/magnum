@@ -24,13 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Player is std::pair-free */
 
 #include "Magnum/Animation/Player.h"
 
@@ -329,7 +329,7 @@ void PlayerTest::setDurationReplace() {
 void PlayerTest::trackInvalidIndex() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Float value;
@@ -340,7 +340,7 @@ void PlayerTest::trackInvalidIndex() {
 
     player.track(1);
 
-    CORRADE_COMPARE(out.str(), "Animation::Player::track(): index out of range\n");
+    CORRADE_COMPARE(out, "Animation::Player::track(): index out of range\n");
 }
 
 void PlayerTest::advanceNotRunning() {
@@ -1400,10 +1400,10 @@ void PlayerTest::runFor100YearsChrono() {
 }
 
 void PlayerTest::debugState() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << State::Playing << State(0xde);
-    CORRADE_COMPARE(out.str(), "Animation::State::Playing Animation::State(0xde)\n");
+    CORRADE_COMPARE(out, "Animation::State::Playing Animation::State(0xde)\n");
 }
 
 }}}}

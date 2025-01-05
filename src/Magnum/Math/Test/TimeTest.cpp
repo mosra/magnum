@@ -25,9 +25,8 @@
 */
 
 #include <new>
-#include <sstream> /** @todo remove once Debug is STL-free */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is STL-free */
 
 #include "Magnum/Math/Time.h"
 
@@ -405,37 +404,37 @@ void TimeTest::nanosecondFloatScaling() {
 }
 
 void TimeTest::debugNanoseconds() {
-    std::ostringstream out;
+    Containers::String out;
 
     /* Also verify that the second expression compiles (it's the Unit type,
        not Nanoseconds) */
     Debug{&out} << 987654321987654321_nsec << 15.0_sec - 7.5_sec;
-    CORRADE_COMPARE(out.str(), "Nanoseconds(987654321987654321) Nanoseconds(7500000000)\n");
+    CORRADE_COMPARE(out, "Nanoseconds(987654321987654321) Nanoseconds(7500000000)\n");
 }
 
 void TimeTest::debugNanosecondsPacked() {
-    std::ostringstream out;
+    Containers::String out;
 
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << 15.0_sec << 45.0_sec;
-    CORRADE_COMPARE(out.str(), "15000000000 Nanoseconds(45000000000)\n");
+    CORRADE_COMPARE(out, "15000000000 Nanoseconds(45000000000)\n");
 }
 
 void TimeTest::debugSeconds() {
-    std::ostringstream out;
+    Containers::String out;
 
     /* Also verify that the second expression compiles (it's the Unit type,
        not Nanoseconds) */
     Debug{&out} << Seconds{123.45_sec} << Seconds{15.0_sec} - Seconds{7.5_sec};
-    CORRADE_COMPARE(out.str(), "Seconds(123.45) Seconds(7.5)\n");
+    CORRADE_COMPARE(out, "Seconds(123.45) Seconds(7.5)\n");
 }
 
 void TimeTest::debugSecondsPacked() {
-    std::ostringstream out;
+    Containers::String out;
 
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << Seconds{123.45_sec} << Seconds{45.0_sec};
-    CORRADE_COMPARE(out.str(), "123.45 Seconds(45)\n");
+    CORRADE_COMPARE(out, "123.45 Seconds(45)\n");
 }
 
 }}}}

@@ -24,9 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Dual.h"
 #include "Magnum/Math/Quaternion.h"
@@ -385,10 +386,10 @@ void DualTest::subclass() {
 }
 
 void DualTest::debug() {
-    std::ostringstream o;
+    Containers::String out;
 
-    Debug(&o) << Dual(2.5f, -0.3f);
-    CORRADE_COMPARE(o.str(), "Dual(2.5, -0.3)\n");
+    Debug{&out} << Dual(2.5f, -0.3f);
+    CORRADE_COMPARE(out, "Dual(2.5, -0.3)\n");
 }
 
 }}}}

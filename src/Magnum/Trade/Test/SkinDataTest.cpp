@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -89,10 +88,10 @@ void SkinDataTest::constructNonOwned() {
 void SkinDataTest::constructDifferentSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SkinData3D data{{0, 2}, {{}, {}, {}}};
-    CORRADE_COMPARE(out.str(), "Trade::SkinData: joint and inverse bind matrix arrays have different size, got 2 and 3\n");
+    CORRADE_COMPARE(out, "Trade::SkinData: joint and inverse bind matrix arrays have different size, got 2 and 3\n");
 }
 
 void SkinDataTest::constructCopy() {

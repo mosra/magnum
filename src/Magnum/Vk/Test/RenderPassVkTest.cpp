@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Containers/String.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
@@ -96,10 +95,10 @@ void RenderPassVkTest::construct() {
 void RenderPassVkTest::constructNoSubpasses() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     RenderPass{device(), RenderPassCreateInfo{}};
-    CORRADE_COMPARE(out.str(), "Vk::RenderPass: needs to be created with at least one subpass\n");
+    CORRADE_COMPARE(out, "Vk::RenderPass: needs to be created with at least one subpass\n");
 }
 
 void RenderPassVkTest::constructSubpassNoAttachments() {
@@ -245,13 +244,13 @@ void RenderPassVkTest::cmdBeginEndDisallowedConversion() {
 
     /* The commands shouldn't do anything, so it should be fine to just call
        them without any render pass set up */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     cmd.beginRenderPass(RenderPassBeginInfo{NoInit}, beginInfo)
        .nextSubpass(beginInfo)
        .nextSubpass(endInfo)
        .endRenderPass(endInfo);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::CommandBuffer::beginRenderPass(): disallowing conversion of SubpassBeginInfo to VkSubpassContents with non-empty pNext to prevent information loss\n"
         "Vk::CommandBuffer::nextRenderPass(): disallowing conversion of SubpassBeginInfo to VkSubpassContents with non-empty pNext to prevent information loss\n"
         "Vk::CommandBuffer::nextRenderPass(): disallowing omission of SubpassEndInfo with non-empty pNext to prevent information loss\n"

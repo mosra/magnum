@@ -24,13 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -870,10 +868,10 @@ void ImageVkTest::cmdCopyImageDisallowedConversion() {
 
     /* The commands shouldn't do anything, so it should be fine to just call
        them without any render pass set up */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     cmd.copyImage(a);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::CommandBuffer::copyImage(): disallowing extraction of CopyImageInfo with non-empty pNext to prevent information loss\n");
 }
 
@@ -1412,11 +1410,11 @@ void ImageVkTest::cmdCopyBufferImageDisallowedConversion() {
 
     /* The commands shouldn't do anything, so it should be fine to just call
        them without any render pass set up */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     cmd.copyBufferToImage(a)
        .copyImageToBuffer(b);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::CommandBuffer::copyBufferToImage(): disallowing extraction of CopyBufferToImageInfo with non-empty pNext to prevent information loss\n"
         "Vk::CommandBuffer::copyImageToBuffer(): disallowing extraction of CopyImageToBufferInfo with non-empty pNext to prevent information loss\n");
 }

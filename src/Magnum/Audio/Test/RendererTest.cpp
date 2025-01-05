@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/Renderer.h"
@@ -46,15 +45,15 @@ RendererTest::RendererTest() {
 }
 
 void RendererTest::debugError() {
-    std::ostringstream out;
+    Containers::String out;
     Debug(&out) << Renderer::Error::InvalidOperation << Renderer::Error(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::Renderer::Error::InvalidOperation Audio::Renderer::Error(0xdead)\n");
+    CORRADE_COMPARE(out, "Audio::Renderer::Error::InvalidOperation Audio::Renderer::Error(0xdead)\n");
 }
 
 void RendererTest::debugDistanceModel() {
-    std::ostringstream out;
+    Containers::String out;
     Debug(&out) << Renderer::DistanceModel::Inverse << Renderer::DistanceModel(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::Renderer::DistanceModel::Inverse Audio::Renderer::DistanceModel(0xdead)\n");
+    CORRADE_COMPARE(out, "Audio::Renderer::DistanceModel::Inverse Audio::Renderer::DistanceModel(0xdead)\n");
 }
 
 }}}}

@@ -24,15 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <cstdlib> /* std::getenv() */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h> /* StringHasPrefix */
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Vk/DeviceCreateInfo.h"
 #include "Magnum/Vk/DeviceFeatures.h"
@@ -492,20 +491,20 @@ void DeviceVkTest::createInfoFeaturesEnableAllResetAll() {
 void DeviceVkTest::createInfoNoQueuePriorities() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DeviceCreateInfo{pickDevice(instance())}.addQueues(0, {}, {});
-    CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified\n");
+    CORRADE_COMPARE(out, "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified\n");
 }
 
 void DeviceVkTest::createInfoWrongQueueOutputCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Queue a{NoCreate}, b{NoCreate};
     DeviceCreateInfo{pickDevice(instance())}.addQueues(0, {0.0f, 1.0f, 0.3f}, {a, b});
-    CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): expected 3 outuput queue references but got 2\n");
+    CORRADE_COMPARE(out, "Vk::DeviceCreateInfo::addQueues(): expected 3 outuput queue references but got 2\n");
 }
 
 void DeviceVkTest::createInfoConstructCopy() {
@@ -769,7 +768,7 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
     if(!extensions.isSupported<Extensions::KHR::maintenance1>())
         CORRADE_SKIP("VK_KHR_maintenance1 not supported, can't test");
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Queue queue{NoCreate};
     Device device{instance2, DeviceCreateInfo{deviceProperties, DeviceCreateInfo::Flag::NoImplicitExtensions}
@@ -789,7 +788,7 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
     UnsignedInt patch = versionPatch(deviceProperties.version());
     /* The output might contain a device workaround list, cut that away.
        That's tested thoroughly in constructWorkaroundsCommandLineDisable(). */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         Utility::format(data.log, deviceProperties.name(), major, minor,
         /* SwiftShader reports just 1.1 with no patch version, special-case
            that */
@@ -831,7 +830,7 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     if(!extensions.isSupported<Extensions::KHR::maintenance1>())
         CORRADE_SKIP("VK_KHR_maintenance1 not supported, can't test");
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Queue queue{NoCreate};
     Device device{instance2, DeviceCreateInfo{pickDevice(instance2), DeviceCreateInfo::Flag::NoImplicitExtensions}
@@ -849,7 +848,7 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     UnsignedInt patch = versionPatch(deviceProperties.version());
     /* The output might contain a device workaround list, cut that away.
        That's tested thoroughly in constructWorkaroundsCommandLineDisable(). */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         Utility::format(data.log, deviceProperties.name(), major, minor,
         /* SwiftShader reports just 1.1 with no patch version, special-case
            that */
@@ -877,7 +876,7 @@ void DeviceVkTest::constructWorkaroundsCommandLineDisable() {
     if(!deviceProperties.name().hasPrefix("SwiftShader"_s) && !data.shouldPassAlways)
         CORRADE_SKIP("Workarounds only available on SwiftShader, can't test.");
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Queue queue{NoCreate};
     Device device{instance2, DeviceCreateInfo{deviceProperties, DeviceCreateInfo::Flag::NoImplicitExtensions}
@@ -885,7 +884,7 @@ void DeviceVkTest::constructWorkaroundsCommandLineDisable() {
     };
 
     CORRADE_VERIFY(device.handle());
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), deviceProperties.driverName(), deviceProperties.driverInfo()));
+    CORRADE_COMPARE(out, Utility::format(data.log, deviceProperties.name(), deviceProperties.driverName(), deviceProperties.driverInfo()));
 }
 
 void DeviceVkTest::constructMultipleQueues() {
@@ -977,13 +976,13 @@ void DeviceVkTest::constructFeatureNotSupported() {
     if(properties.features() & DeviceFeature::SparseResidency16Samples)
         CORRADE_SKIP("The SparseResidency16Samples feature is supported, can't test");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Queue queue{NoCreate};
     Device device{instance(), DeviceCreateInfo{properties}
         .addQueues(0, {0.0f}, {queue})
         .setEnabledFeatures(DeviceFeature::SparseBinding|DeviceFeature::SparseResidency16Samples)};
-    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): some enabled features are not supported: Vk::DeviceFeature::SparseBinding|Vk::DeviceFeature::SparseResidency16Samples\n");
+    CORRADE_COMPARE(out, "Vk::Device::tryCreate(): some enabled features are not supported: Vk::DeviceFeature::SparseBinding|Vk::DeviceFeature::SparseResidency16Samples\n");
 }
 
 void DeviceVkTest::constructFeatureWithoutExtension() {
@@ -998,19 +997,19 @@ void DeviceVkTest::constructFeatureWithoutExtension() {
     info.addQueues(0, {0.0f}, {queue})
         .setEnabledFeatures(DeviceFeature::SamplerYcbcrConversion);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Device device{instance(), info};
-    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): some enabled features need VK_KHR_sampler_ycbcr_conversion enabled\n");
+    CORRADE_COMPARE(out, "Vk::Device::tryCreate(): some enabled features need VK_KHR_sampler_ycbcr_conversion enabled\n");
 }
 
 void DeviceVkTest::constructNoQueue() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Device device{instance(), DeviceCreateInfo{pickDevice(instance())}};
-    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): needs at least one queue\n");
+    CORRADE_COMPARE(out, "Vk::Device::tryCreate(): needs at least one queue\n");
 }
 
 void DeviceVkTest::constructNoPortability() {
@@ -1089,22 +1088,22 @@ void DeviceVkTest::tryCreateAlreadyCreated() {
     };
     CORRADE_VERIFY(device.handle());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     device.tryCreate(instance(), DeviceCreateInfo{pickDevice(instance())});
-    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): device already created\n");
+    CORRADE_COMPARE(out, "Vk::Device::tryCreate(): device already created\n");
 }
 
 void DeviceVkTest::tryCreateUnknownExtension() {
     Queue queue{NoCreate};
     Device device{NoCreate};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_COMPARE(device.tryCreate(instance(), DeviceCreateInfo{pickDevice(instance())}
         .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions({"VK_this_doesnt_exist"_s})), Result::ErrorExtensionNotPresent);
-    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): device creation failed: Vk::Result::ErrorExtensionNotPresent\n");
+    CORRADE_COMPARE(out, "Vk::Device::tryCreate(): device creation failed: Vk::Result::ErrorExtensionNotPresent\n");
 }
 
 void DeviceVkTest::wrap() {
@@ -1199,10 +1198,10 @@ void DeviceVkTest::wrapAlreadyCreated() {
     };
     CORRADE_VERIFY(device.handle());
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     device.wrap(instance(), {}, {}, {}, {}, {});
-    CORRADE_COMPARE(out.str(), "Vk::Device::wrap(): device already created\n");
+    CORRADE_COMPARE(out, "Vk::Device::wrap(): device already created\n");
 }
 
 void DeviceVkTest::populateGlobalFunctionPointers() {

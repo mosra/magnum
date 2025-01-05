@@ -24,9 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Matrix3.h"
@@ -439,11 +440,11 @@ void ComplexTest::invertedNormalized() {
 void ComplexTest::invertedNormalizedNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     (Complex(-0.6f, 0.8f)*2).invertedNormalized();
-    CORRADE_COMPARE(out.str(), "Math::Complex::invertedNormalized(): Complex(-1.2, 1.6) is not normalized\n");
+    CORRADE_COMPARE(out, "Math::Complex::invertedNormalized(): Complex(-1.2, 1.6) is not normalized\n");
 }
 
 void ComplexTest::angle() {
@@ -478,11 +479,11 @@ void ComplexTest::angleNormalizedButOver1() {
 void ComplexTest::angleNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Math::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
     Math::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::angle(): complex numbers Complex(0.6, -0.8) and Complex(-4, 3.5) are not normalized\n"
         "Math::angle(): complex numbers Complex(1.5, -2) and Complex(-0.752577, 0.658505) are not normalized\n");
 }
@@ -518,7 +519,7 @@ void ComplexTest::matrix() {
 void ComplexTest::matrixNotRotation() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Shear, using rotationShear() instead of rotationScaling() as that isn't
        supposed to "fix" the shear */
@@ -528,7 +529,7 @@ void ComplexTest::matrixNotRotation() {
        supposed to "fix" the reflection either */
     Complex::fromMatrix((Matrix3::scaling({-1.0f, 1.0f})*
                          Matrix3::rotation(45.0_degf)).rotation());
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::Complex::fromMatrix(): the matrix is not a rotation:\n"
         "Matrix(0.894427, -0.894427,\n"
         "       0.447214, 0.447214)\n"
@@ -553,13 +554,13 @@ void ComplexTest::lerp() {
 void ComplexTest::lerpNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Complex a;
     Math::lerp(a*3.0f, a, 0.35f);
     Math::lerp(a, a*-3.0f, 0.35f);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::lerp(): complex numbers Complex(3, 0) and Complex(1, 0) are not normalized\n"
         "Math::lerp(): complex numbers Complex(1, 0) and Complex(-3, -0) are not normalized\n");
 }
@@ -581,13 +582,13 @@ void ComplexTest::slerp() {
 void ComplexTest::slerpNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Complex a;
     Math::slerp(a*3.0f, a, 0.35f);
     Math::slerp(a, a*-3.0f, 0.35f);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::slerp(): complex numbers Complex(3, 0) and Complex(1, 0) are not normalized\n"
         "Math::slerp(): complex numbers Complex(1, 0) and Complex(-3, -0) are not normalized\n");
 }
@@ -618,10 +619,10 @@ void ComplexTest::strictWeakOrdering() {
 }
 
 void ComplexTest::debug() {
-    std::ostringstream o;
+    Containers::String out;
 
-    Debug(&o) << Complex(2.5f, -7.5f);
-    CORRADE_COMPARE(o.str(), "Complex(2.5, -7.5)\n");
+    Debug{&out} << Complex(2.5f, -7.5f);
+    CORRADE_COMPARE(out, "Complex(2.5, -7.5)\n");
 }
 
 }}}}

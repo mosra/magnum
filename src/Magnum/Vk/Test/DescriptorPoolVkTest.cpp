@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Containers/String.h>
 
 #include "Magnum/Vk/DescriptorPoolCreateInfo.h"
 #include "Magnum/Vk/DescriptorSet.h"
@@ -185,7 +184,7 @@ void DescriptorPoolVkTest::allocateFail() {
 
     {
         /* tryAllocate() should not assert, and should not print anything */
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         {
             CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
@@ -194,19 +193,19 @@ void DescriptorPoolVkTest::allocateFail() {
                 "NVidia never fails an allocation.");
             CORRADE_VERIFY(!pool.tryAllocate(layout));
         }
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     } {
         CORRADE_SKIP_IF_NO_ASSERT();
 
         /* allocate() should assert with ErrorOutOfPoolMemory */
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         pool.allocate(layout);
         CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
             "Mesa llvmpipe never fails an allocation.");
         CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("NVIDIA"),
             "NVidia never fails an allocation.");
-        CORRADE_COMPARE(out.str(), "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
+        CORRADE_COMPARE(out, "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
     }
 }
 
@@ -287,7 +286,7 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
 
     {
         /* tryAllocate() should not assert, and should not print anything */
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         {
             CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
@@ -296,12 +295,12 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
                 "NVidia never fails an allocation.");
             CORRADE_VERIFY(!pool.tryAllocate(layout, 80));
         }
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     } {
         CORRADE_SKIP_IF_NO_ASSERT();
 
         /* allocate() should assert with ErrorOutOfPoolMemory */
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         pool.allocate(layout, 80);
         {
@@ -309,7 +308,7 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
                 "Mesa llvmpipe never fails an allocation.");
             CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("NVIDIA"),
                 "NVidia never fails an allocation.");
-            CORRADE_COMPARE(out.str(), "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
+            CORRADE_COMPARE(out, "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
         }
     }
 }

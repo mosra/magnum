@@ -24,14 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Pair.h>
-#include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
-#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Containers/String.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/TestSuite/Tester.h>
+#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/TweakableParser.h>
 #endif
 
@@ -341,43 +340,43 @@ void AngleTest::conversion() {
 }
 
 void AngleTest::debugDeg() {
-    std::ostringstream o;
+    Containers::String out;
 
-    Debug(&o) << 90.0_degf;
-    CORRADE_COMPARE(o.str(), "Deg(90)\n");
+    Debug{&out} << 90.0_degf;
+    CORRADE_COMPARE(out, "Deg(90)\n");
 
     /* Verify that this compiles */
-    o.str({});
-    Debug(&o) << 56.0_degf - 34.0_degf;
-    CORRADE_COMPARE(o.str(), "Deg(22)\n");
+    out = {};
+    Debug{&out} << 56.0_degf - 34.0_degf;
+    CORRADE_COMPARE(out, "Deg(22)\n");
 }
 
 void AngleTest::debugDegPacked() {
-    std::ostringstream out;
+    Containers::String out;
 
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << 90.0_degf << 45.0_degf;
-    CORRADE_COMPARE(out.str(), "90 Deg(45)\n");
+    CORRADE_COMPARE(out, "90 Deg(45)\n");
 }
 
 void AngleTest::debugRad() {
-    std::ostringstream o;
+    Containers::String out;
 
-    Debug(&o) << 1.5708_radf;
-    CORRADE_COMPARE(o.str(), "Rad(1.5708)\n");
+    Debug{&out} << 1.5708_radf;
+    CORRADE_COMPARE(out, "Rad(1.5708)\n");
 
     /* Verify that this compiles */
-    o.str({});
-    Debug(&o) << 1.5708_radf - 3.1416_radf;
-    CORRADE_COMPARE(o.str(), "Rad(-1.5708)\n");
+    out = {};
+    Debug{&out} << 1.5708_radf - 3.1416_radf;
+    CORRADE_COMPARE(out, "Rad(-1.5708)\n");
 }
 
 void AngleTest::debugRadPacked() {
-    std::ostringstream out;
+    Containers::String out;
 
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << 1.5708_radf << 3.1416_radf;
-    CORRADE_COMPARE(out.str(), "1.5708 Rad(3.1416)\n");
+    CORRADE_COMPARE(out, "1.5708 Rad(3.1416)\n");
 }
 
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -395,11 +394,11 @@ template<class T> void AngleTest::tweakableError() {
     setTestCaseTemplateName(TweakableTraits<T>::name());
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<T>::parse(Utility::format(data.data, TweakableTraits<T>::literal())).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, TweakableTraits<T>::literal()));
+    CORRADE_COMPARE(out, Utility::format(data.error, TweakableTraits<T>::literal()));
     CORRADE_COMPARE(state, data.state);
 }
 #endif

@@ -26,12 +26,11 @@
 
 #include <algorithm> /* std::shuffle() */
 #include <random> /* random device for std::shuffle() */
-#include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
@@ -290,11 +289,11 @@ void RemoveDuplicatesTest::removeDuplicatesNonContiguous() {
 
     Int data[8]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicates(Containers::arrayCast<2, const char>(Containers::arrayView(data)).every({1, 2}));
     MeshTools::removeDuplicatesInPlace(Containers::arrayCast<2, char>(Containers::arrayView(data)).every({1, 2}));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesInto(): second data view dimension is not contiguous\n"
         "MeshTools::removeDuplicatesInPlaceInto(): second data view dimension is not contiguous\n");
 }
@@ -305,7 +304,7 @@ void RemoveDuplicatesTest::removeDuplicatesIntoWrongOutputSize() {
     Int data[8]{};
     UnsignedInt output[7];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesInto(
         Containers::arrayCast<2, const char>(Containers::arrayView(data)),
@@ -313,7 +312,7 @@ void RemoveDuplicatesTest::removeDuplicatesIntoWrongOutputSize() {
     MeshTools::removeDuplicatesInPlaceInto(
         Containers::arrayCast<2, char>(Containers::arrayView(data)),
         output);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesInto(): output index array has 7 elements but expected 8\n"
         "MeshTools::removeDuplicatesInPlaceInto(): output index array has 7 elements but expected 8\n");
 }
@@ -337,7 +336,7 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesIndexedInPlace() {
 void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceSmallType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     UnsignedByte indices[1];
@@ -345,7 +344,7 @@ void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceSmallType() {
     MeshTools::removeDuplicatesIndexedInPlace(
         Containers::stridedArrayView(indices),
         Containers::arrayCast<2, char>(Containers::arrayView(data)));
-    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesIndexedInPlace(): a 1-byte index type is too small for 256 vertices\n");
+    CORRADE_COMPARE(out, "MeshTools::removeDuplicatesIndexedInPlace(): a 1-byte index type is too small for 256 vertices\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceEmptyIndices() {
@@ -387,12 +386,12 @@ void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedNonContiguous() {
     char indices[6*4]{};
     Int data[1]{};
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesIndexedInPlace(
         Containers::StridedArrayView2D<char>{indices, {6, 2}, {4, 2}},
         Containers::arrayCast<2, char>(Containers::arrayView(data)));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesIndexedInPlace(): second index view dimension is not contiguous\n");
 }
 
@@ -402,12 +401,12 @@ void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedWrongIndexSize() 
     char indices[6*3]{};
     Int data[1]{};
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesIndexedInPlace(
         Containers::StridedArrayView2D<char>{indices, {6, 3}},
         Containers::arrayCast<2, char>(Containers::arrayView(data)));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
@@ -490,12 +489,12 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceIntoWrongOutputSize() {
     Vector2 data[8]{};
     UnsignedInt output[7];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzyInPlaceInto(
         Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)),
         output);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesFuzzyInPlaceInto(): output index array has 7 elements but expected 8\n");
 }
 
@@ -547,7 +546,7 @@ template<class IndexType, class T> void RemoveDuplicatesTest::removeDuplicatesFu
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceSmallType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     UnsignedByte indices[1];
@@ -555,7 +554,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceSmallType() {
     MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::stridedArrayView(indices),
         Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)));
-    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): a 1-byte index type is too small for 256 vertices\n");
+    CORRADE_COMPARE(out, "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): a 1-byte index type is too small for 256 vertices\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndices() {
@@ -609,12 +608,12 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedNonContiguou
     char indices[6*4]{};
     Vector2 data[1];
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::StridedArrayView2D<char>{indices, {6, 2}, {4, 2}},
         Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): second index view dimension is not contiguous\n");
 }
 
@@ -624,12 +623,12 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSi
     char indices[6*3]{};
     Vector2 data[1];
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::StridedArrayView2D<char>{indices, {6, 3}},
         Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
@@ -831,37 +830,37 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataPaddedAttributes() {
 void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points, 10});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificIndexType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points,
         nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
         nullptr, {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}
         }});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicates(): mesh has an implementation-specific index type 0xcaca\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificVertexFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr}
     }});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicates(): attribute 1 has an implementation-specific format 0xcaca\n");
 }
 
@@ -1174,37 +1173,37 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyDouble() {
 void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points, 10});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an attributeless mesh\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificIndexType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points,
         nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
         nullptr, {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}
         }});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesFuzzy(): mesh has an implementation-specific index type 0xcaca\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificVertexFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xcaca), nullptr}
     }});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::removeDuplicatesFuzzy(): attribute 1 has an implementation-specific format 0xcaca\n");
 }
 

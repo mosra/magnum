@@ -24,12 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/BufferCreateInfo.h"
 #include "Magnum/Vk/CommandBuffer.h"
@@ -264,10 +262,10 @@ void BufferVkTest::cmdCopyBufferDisallowedConversion() {
 
     /* The commands shouldn't do anything, so it should be fine to just call
        them without any render pass set up */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     cmd.copyBuffer(a);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::CommandBuffer::copyBuffer(): disallowing extraction of CopyBufferInfo with non-empty pNext to prevent information loss\n");
 }
 

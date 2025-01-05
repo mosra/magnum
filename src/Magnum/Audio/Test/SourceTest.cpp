@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Audio/Source.h"
 
@@ -45,15 +44,15 @@ SourceTest::SourceTest() {
 }
 
 void SourceTest::debugState() {
-    std::ostringstream out;
+    Containers::String out;
     Debug(&out) << Source::State::Playing << Source::State(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::Source::State::Playing Audio::Source::State(0xdead)\n");
+    CORRADE_COMPARE(out, "Audio::Source::State::Playing Audio::Source::State(0xdead)\n");
 }
 
 void SourceTest::debugType() {
-    std::ostringstream out;
+    Containers::String out;
     Debug(&out) << Source::Type::Streaming << Source::Type(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::Source::Type::Streaming Audio::Source::Type(0xdead)\n");
+    CORRADE_COMPARE(out, "Audio::Source::Type::Streaming Audio::Source::Type(0xdead)\n");
 }
 
 }}}}

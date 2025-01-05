@@ -24,13 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Containers/String.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Tweakable.h>
 #endif
 
@@ -1246,28 +1245,28 @@ void ColorTest::swizzleType() {
 }
 
 void ColorTest::debug() {
-    std::ostringstream o;
-    Debug(&o) << Color3(0.5f, 0.75f, 1.0f);
-    CORRADE_COMPARE(o.str(), "Vector(0.5, 0.75, 1)\n");
+    Containers::String out;
+    Debug{&out} << Color3(0.5f, 0.75f, 1.0f);
+    CORRADE_COMPARE(out, "Vector(0.5, 0.75, 1)\n");
 
-    o.str({});
-    Debug(&o) << Color4(0.5f, 0.75f, 0.0f, 1.0f);
-    CORRADE_COMPARE(o.str(), "Vector(0.5, 0.75, 0, 1)\n");
+    out = {};
+    Debug{&out} << Color4(0.5f, 0.75f, 0.0f, 1.0f);
+    CORRADE_COMPARE(out, "Vector(0.5, 0.75, 0, 1)\n");
 }
 
 void ColorTest::debugUb() {
-    std::ostringstream o;
-    Debug(&o) << 0x123456_rgb << 0x789abc_rgb;
-    CORRADE_COMPARE(o.str(), "#123456 #789abc\n");
+    Containers::String out;
+    Debug{&out} << 0x123456_rgb << 0x789abc_rgb;
+    CORRADE_COMPARE(out, "#123456 #789abc\n");
 
-    o.str({});
-    Debug(&o) << 0x12345678_rgba << 0x90abcdef_rgba;
-    CORRADE_COMPARE(o.str(), "#12345678 #90abcdef\n");
+    out = {};
+    Debug{&out} << 0x12345678_rgba << 0x90abcdef_rgba;
+    CORRADE_COMPARE(out, "#12345678 #90abcdef\n");
 
     /* The Hex flag shouldn't affect this at all */
-    o.str({});
-    Debug{&o, Debug::Flag::Hex} << 0x789abc_rgb << 0x12345678_rgba;
-    CORRADE_COMPARE(o.str(), "#789abc #12345678\n");
+    out = {};
+    Debug{&out, Debug::Flag::Hex} << 0x789abc_rgb << 0x12345678_rgba;
+    CORRADE_COMPARE(out, "#789abc #12345678\n");
 }
 
 void ColorTest::debugUbColor() {
@@ -1284,12 +1283,12 @@ void ColorTest::debugUbColor() {
         << 0x3bd26799_rgba << 0x3bd267cc_rgba << 0x3bd267ff_rgba;
 
     /* It should work just for the immediately following value */
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out}
         << Debug::color << 0x3bd267_rgb
         << Debug::color << 0x2f83cc99_rgba
         << 0x3bd267_rgb << 0x2f83cc99_rgba;
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "\033[38;2;59;210;103m\033[48;2;59;210;103m██\033[0m "
         "\033[38;2;47;131;204m▒▒\033[0m #3bd267 #2f83cc99\n");
 }
@@ -1308,18 +1307,18 @@ void ColorTest::debugUbColorColorsDisabled() {
         << 0x3bd26799_rgba << 0x3bd267cc_rgba << 0x3bd267ff_rgba;
 
     /* It should work just for the immediately following value */
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out, Debug::Flag::DisableColors}
         << Debug::color << 0x2f83cc_rgb
         << Debug::color << 0x2f83cc99_rgba
         << 0x2f83cc_rgb << 0x2f83cc99_rgba;
-    CORRADE_COMPARE(out.str(), "▓▓ ▒▒ #2f83cc #2f83cc99\n");
+    CORRADE_COMPARE(out, "▓▓ ▒▒ #2f83cc #2f83cc99\n");
 }
 
 void ColorTest::debugHsv() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << ColorHsv(135.0_degf, 0.75f, 0.3f);
-    CORRADE_COMPARE(out.str(), "ColorHsv(Deg(135), 0.75, 0.3)\n");
+    CORRADE_COMPARE(out, "ColorHsv(Deg(135), 0.75, 0.3)\n");
 }
 
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -1399,11 +1398,11 @@ void ColorTest::tweakableErrorRgb() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Color3ub>::parse(Utility::format(data.data, "ff3366", "rgb")).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, "ff3366", "rgb", ""));
+    CORRADE_COMPARE(out, Utility::format(data.error, "ff3366", "rgb", ""));
     CORRADE_COMPARE(state, data.state);
 }
 
@@ -1411,11 +1410,11 @@ void ColorTest::tweakableErrorSrgb() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Vector3ub>::parse(Utility::format(data.data, "ff3366", "srgb")).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, "ff3366", "rgb", "s"));
+    CORRADE_COMPARE(out, Utility::format(data.error, "ff3366", "rgb", "s"));
     CORRADE_COMPARE(state, data.state);
 }
 
@@ -1423,11 +1422,11 @@ void ColorTest::tweakableErrorRgba() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Color4ub>::parse(Utility::format(data.data, "ff3366aa", "rgba")).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, "ff3366aa", "rgba", ""));
+    CORRADE_COMPARE(out, Utility::format(data.error, "ff3366aa", "rgba", ""));
     CORRADE_COMPARE(state, data.state);
 }
 
@@ -1435,11 +1434,11 @@ void ColorTest::tweakableErrorSrgba() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Vector4ub>::parse(Utility::format(data.data, "ff3366aa", "srgba")).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, "ff3366aa", "rgba", "s"));
+    CORRADE_COMPARE(out, Utility::format(data.error, "ff3366aa", "rgba", "s"));
     CORRADE_COMPARE(state, data.state);
 }
 
@@ -1447,11 +1446,11 @@ void ColorTest::tweakableErrorRgbf() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Color3>::parse(Utility::format(data.data, "ff3366", "rgbf")).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, "ff3366", "rgbf", ""));
+    CORRADE_COMPARE(out, Utility::format(data.error, "ff3366", "rgbf", ""));
     CORRADE_COMPARE(state, data.state);
 }
 
@@ -1459,11 +1458,11 @@ void ColorTest::tweakableErrorSrgbf() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Color3>::parse(Utility::format(data.data, "ff3366", "srgbf")).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, "ff3366", "rgbf", "s"));
+    CORRADE_COMPARE(out, Utility::format(data.error, "ff3366", "rgbf", "s"));
     CORRADE_COMPARE(state, data.state);
 }
 
@@ -1471,11 +1470,11 @@ void ColorTest::tweakableErrorRgbaf() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Color4>::parse(Utility::format(data.data, "ff3366aa", "rgbaf")).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, "ff3366aa", "rgbaf", ""));
+    CORRADE_COMPARE(out, Utility::format(data.error, "ff3366aa", "rgbaf", ""));
     CORRADE_COMPARE(state, data.state);
 }
 
@@ -1483,11 +1482,11 @@ void ColorTest::tweakableErrorSrgbaf() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Color4>::parse(Utility::format(data.data, "ff3366aa", "srgbaf")).first();
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, "ff3366aa", "rgbaf", "s"));
+    CORRADE_COMPARE(out, Utility::format(data.error, "ff3366aa", "rgbaf", "s"));
     CORRADE_COMPARE(state, data.state);
 }
 #endif

@@ -25,14 +25,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/Mesh.h"
@@ -2278,12 +2276,12 @@ void MeshGLTest::addVertexBufferMovedOutInstance() {
     Buffer buffer{NoCreate};
     Mesh mesh;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     mesh.addVertexBuffer(buffer, 0, Attribute<0, Float>{});
 
-    CORRADE_COMPARE(out.str(), "GL::Mesh::addVertexBuffer(): empty or moved-out Buffer instance was passed\n");
+    CORRADE_COMPARE(out, "GL::Mesh::addVertexBuffer(): empty or moved-out Buffer instance was passed\n");
 }
 
 void MeshGLTest::addVertexBufferTransferOwnwership() {
@@ -2599,12 +2597,12 @@ void MeshGLTest::setIndexBufferMovedOutInstance() {
     Buffer buffer{NoCreate};
     Mesh mesh;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     mesh.setIndexBuffer(buffer, 0, MeshIndexType::UnsignedByte);
 
-    CORRADE_COMPARE(out.str(), "GL::Mesh::setIndexBuffer(): empty or moved-out Buffer instance was passed\n");
+    CORRADE_COMPARE(out, "GL::Mesh::setIndexBuffer(): empty or moved-out Buffer instance was passed\n");
 }
 
 template<class T> void MeshGLTest::setIndexBufferTransferOwnership() {
@@ -2721,12 +2719,12 @@ void MeshGLTest::indexTypeSetIndexOffsetNotIndexed() {
     Mesh mesh;
     MeshView view{mesh};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     mesh.indexType();
     mesh.setIndexOffset(3);
     view.setIndexOffset(3);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::Mesh::indexType(): mesh is not indexed\n"
         "GL::Mesh::setIndexOffset(): mesh is not indexed\n"
         "GL::MeshView::setIndexOffset(): mesh is not indexed\n");
@@ -3086,13 +3084,13 @@ void MeshGLTest::setBaseVertexNoExtensionAvailable() {
         .setBaseVertex(1)
         .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultipleShader{}.draw(mesh);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh draw with base vertex specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh draw with base vertex specification\n");
     #else
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): indexed mesh draw with base vertex specification possible only since WebGL 2.0\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): indexed mesh draw with base vertex specification possible only since WebGL 2.0\n");
     #endif
 }
 
@@ -3122,13 +3120,13 @@ void MeshGLTest::setBaseVertexRangeNoExtensionAvailable() {
         .setBaseVertex(1)
         .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort, 0, 2);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultipleShader{}.draw(mesh);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh draw with base vertex specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh draw with base vertex specification\n");
     #else
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): indexed mesh draw with base vertex specification possible only since WebGL 2.0\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): indexed mesh draw with base vertex specification possible only since WebGL 2.0\n");
     #endif
 }
 #endif
@@ -3242,10 +3240,10 @@ void MeshGLTest::setInstanceCountBaseInstanceNoExtensionAvailable() {
         .setInstanceCount(2)
         .setBaseInstance(1);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultipleShader{}.draw(mesh);
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced mesh draw with base instance specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for instanced mesh draw with base instance specification\n");
 }
 #endif
 #endif
@@ -3367,10 +3365,10 @@ void MeshGLTest::setInstanceCountIndexedBaseInstanceNoExtensionAvailable() {
         .setBaseInstance(1)
         .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultipleShader{}.draw(mesh);
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base instance specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base instance specification\n");
 }
 #endif
 #endif
@@ -3457,13 +3455,13 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexNoExtensionAvailable() {
         .setBaseVertex(1)
         .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultipleShader{}.draw(mesh);
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex specification\n");
     #else
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): instanced indexed mesh draw with base vertex specification possible only since OpenGL ES 3.0\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): instanced indexed mesh draw with base vertex specification possible only since OpenGL ES 3.0\n");
     #endif
 }
 #endif
@@ -3535,13 +3533,13 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstanceNoExtensionAvailab
         .setBaseInstance(1)
         .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultipleShader{}.draw(mesh);
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex and base instance specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex and base instance specification\n");
     #else
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): instanced indexed mesh draw with base vertex specification possible only since OpenGL 3.0\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): instanced indexed mesh draw with base vertex specification possible only since OpenGL 3.0\n");
     #endif
 }
 #endif
@@ -4474,11 +4472,11 @@ void MeshGLTest::multiDrawWrongVertexOffsetSize() {
     UnsignedInt counts[3]{};
     UnsignedInt vertexOffsets[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, vertexOffsets, nullptr);
     shader.draw(mesh, counts, nullptr, nullptr);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n"
         "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 0\n");
 }
@@ -4493,11 +4491,11 @@ void MeshGLTest::multiDrawIndexedWrongVertexOffsetSize() {
     UnsignedInt vertexOffsets[2]{};
     UnsignedInt indexOffsets[3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, vertexOffsets, indexOffsets);
     /* Omitting vertex offsets altogether is okay */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n");
 }
 
@@ -4510,11 +4508,11 @@ void MeshGLTest::multiDrawIndexedWrongIndexOffsetSize() {
     UnsignedInt counts[3]{};
     UnsignedInt indexOffsets[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, nullptr, indexOffsets);
     shader.draw(mesh, counts, nullptr, nullptr);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): expected 3 index offset items but got 2\n"
         "GL::AbstractShaderProgram::draw(): expected 3 index offset items but got 0\n");
 }
@@ -4555,13 +4553,13 @@ void MeshGLTest::multiDrawIndexedBaseVertexNoExtensionAvailable() {
     UnsignedInt vertexOffsets[]{0};
     UnsignedInt indexOffsets[]{0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultiDrawShader{}.draw(mesh, counts, vertexOffsets, indexOffsets);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh multi-draw with base vertex specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh multi-draw with base vertex specification\n");
     #else
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): indexed mesh multi-draw with base vertex specification possible only since WebGL 2.0\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): indexed mesh multi-draw with base vertex specification possible only since WebGL 2.0\n");
     #endif
 }
 
@@ -4600,13 +4598,13 @@ void MeshGLTest::multiDrawIndexedViewsBaseVertexNoExtensionAvailable() {
     UnsignedInt vertexOffsets[]{1};
     UnsignedInt indexOffsets[]{0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultiDrawShader{}.draw(mesh, counts, vertexOffsets, indexOffsets);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh multi-draw with base vertex specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh multi-draw with base vertex specification\n");
     #else
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): indexed mesh multi-draw with base vertex specification possible only since WebGL 2.0\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): indexed mesh multi-draw with base vertex specification possible only since WebGL 2.0\n");
     #endif
 }
 #endif
@@ -4619,10 +4617,10 @@ void MeshGLTest::multiDrawViewsInstanced() {
     view.setCount(3)
         .setInstanceCount(2);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultiDrawShader{}.draw({view, view});
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes\n");
 }
 
 void MeshGLTest::multiDrawViewsDifferentMeshes() {
@@ -4631,10 +4629,10 @@ void MeshGLTest::multiDrawViewsDifferentMeshes() {
     Mesh a, b;
     MeshView viewA{a}, viewB{b};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultiDrawShader{}.draw({viewA, viewB});
-    CORRADE_COMPARE(out.str(), Utility::formatString("GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected 0x{:x} but got 0x{:x} at index 1\n", reinterpret_cast<std::uintptr_t>(&a), reinterpret_cast<std::uintptr_t>(&b)));
+    CORRADE_COMPARE(out, Utility::format("GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected 0x{:x} but got 0x{:x} at index 1\n", reinterpret_cast<std::uintptr_t>(&a), reinterpret_cast<std::uintptr_t>(&b)));
 }
 
 #ifdef MAGNUM_TARGET_GLES
@@ -5125,11 +5123,11 @@ void MeshGLTest::multiDrawInstancedWrongInstanceCountSize() {
     UnsignedInt counts[3]{};
     UnsignedInt instanceCounts[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, instanceCounts, nullptr, nullptr);
     shader.draw(mesh, counts, nullptr, nullptr, nullptr);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): expected 3 instance count items but got 2\n"
         "GL::AbstractShaderProgram::draw(): expected 3 instance count items but got 0\n");
 }
@@ -5143,11 +5141,11 @@ void MeshGLTest::multiDrawInstancedWrongVertexOffsetSize() {
     UnsignedInt instanceCounts[3]{};
     UnsignedInt vertexOffsets[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, instanceCounts, vertexOffsets, nullptr);
     shader.draw(mesh, counts, instanceCounts, nullptr, nullptr);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n"
         "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 0\n");
 }
@@ -5163,11 +5161,11 @@ void MeshGLTest::multiDrawInstancedWrongInstanceOffsetSize() {
     UnsignedInt vertexOffsets[3]{};
     UnsignedInt instanceOffsets[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, instanceCounts, vertexOffsets, nullptr, instanceOffsets);
     /* Omitting vertex offsets altogether is okay */
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): expected 3 instance offset items but got 2\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): expected 3 instance offset items but got 2\n");
 }
 #endif
 
@@ -5180,11 +5178,11 @@ void MeshGLTest::multiDrawInstancedIndexedWrongInstanceCountSize() {
     UnsignedInt counts[3]{};
     UnsignedInt instanceCounts[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, instanceCounts, nullptr, nullptr);
     shader.draw(mesh, counts, nullptr, nullptr, nullptr);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): expected 3 instance count items but got 2\n"
         "GL::AbstractShaderProgram::draw(): expected 3 instance count items but got 0\n");
 }
@@ -5200,11 +5198,11 @@ void MeshGLTest::multiDrawInstancedIndexedWrongVertexOffsetSize() {
     UnsignedInt vertexOffsets[2]{};
     UnsignedInt indexOffsets[3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets);
     /* Omitting vertex offsets altogether is okay */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): expected 3 vertex offset items but got 2\n");
 }
 
@@ -5218,11 +5216,11 @@ void MeshGLTest::multiDrawInstancedIndexedWrongIndexOffsetSize() {
     UnsignedInt instanceCounts[3]{};
     UnsignedInt indexOffsets[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, instanceCounts, nullptr, indexOffsets);
     shader.draw(mesh, counts, instanceCounts, nullptr, nullptr);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): expected 3 index offset items but got 2\n"
         "GL::AbstractShaderProgram::draw(): expected 3 index offset items but got 0\n");
 }
@@ -5239,11 +5237,11 @@ void MeshGLTest::multiDrawInstancedIndexedWrongInstanceOffsetSize() {
     UnsignedInt indexOffsets[3]{};
     UnsignedInt instanceOffsets[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.draw(mesh, counts, instanceCounts, nullptr, indexOffsets, instanceOffsets);
     /* Omitting instance offsets altogether is okay */
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): expected 3 instance offset items but got 2\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): expected 3 instance offset items but got 2\n");
 }
 
 void MeshGLTest::multiDrawInstancedBaseVertexNoExtensionAvailable() {
@@ -5269,13 +5267,13 @@ void MeshGLTest::multiDrawInstancedBaseVertexNoExtensionAvailable() {
     UnsignedInt vertexOffsets[]{0};
     UnsignedInt indexOffsets[]{0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultiDrawInstancedShader{}.draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets);
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh multi-draw with base vertex and base instance specification\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh multi-draw with base vertex and base instance specification\n");
     #else
-    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): instanced indexed mesh multi-draw with base vertex specification possible only since OpenGL ES 3.0 and WebGL 2.0\n");
+    CORRADE_COMPARE(out, "GL::AbstractShaderProgram::draw(): instanced indexed mesh multi-draw with base vertex specification possible only since OpenGL ES 3.0 and WebGL 2.0\n");
     #endif
 }
 
@@ -5304,11 +5302,11 @@ void MeshGLTest::multiDrawInstancedBaseInstanceNoExtensionAvailable() {
     UnsignedInt indexOffsets[]{0};
     UnsignedInt instanceOffsets[]{0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MultiDrawInstancedShader{}.draw(nonIndexed, counts, instanceCounts, vertexOffsets, nullptr, instanceOffsets);
     MultiDrawInstancedShader{}.draw(indexed, counts, instanceCounts, nullptr, indexOffsets, instanceOffsets);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::AbstractShaderProgram::draw(): no extension available for instanced mesh multi-draw with base instance specification\n"
         "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh multi-draw with base vertex and base instance specification\n");
 }

@@ -24,9 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -1051,10 +1049,10 @@ void CubeMapTextureGLTest::imageQueryViewNullptr() {
     MutableImageView2D image{PixelFormat::RGBA, PixelType::UnsignedByte,
         Vector2i{2}, {nullptr, 2*2*4}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.image(CubeMapCoordinate::PositiveY, 0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::image(): image view is nullptr\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::image(): image view is nullptr\n");
 }
 
 void CubeMapTextureGLTest::imageQueryViewBadSize() {
@@ -1069,10 +1067,10 @@ void CubeMapTextureGLTest::imageQueryViewBadSize() {
     MutableImageView2D image{PixelFormat::RGBA, PixelType::UnsignedByte,
         {2, 1}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.image(CubeMapCoordinate::PositiveY, 0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::image(): expected image view size Vector(2, 2) but got Vector(2, 1)\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::image(): expected image view size Vector(2, 2) but got Vector(2, 1)\n");
 }
 #endif
 
@@ -1413,10 +1411,10 @@ void CubeMapTextureGLTest::compressedImageQueryViewNullptr() {
 
     MutableCompressedImageView2D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, {nullptr, 16}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedImage(CubeMapCoordinate::PositiveX, 0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedImage(): image view is nullptr\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): image view is nullptr\n");
 }
 
 void CubeMapTextureGLTest::compressedImageQueryViewBadSize() {
@@ -1433,10 +1431,10 @@ void CubeMapTextureGLTest::compressedImageQueryViewBadSize() {
     char data[2*16];
     MutableCompressedImageView2D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4, 8}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedImage(CubeMapCoordinate::PositiveX, 0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedImage(): expected image view size Vector(4, 4) but got Vector(4, 8)\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view size Vector(4, 4) but got Vector(4, 8)\n");
 }
 
 void CubeMapTextureGLTest::compressedImageQueryViewBadDataSize() {
@@ -1453,10 +1451,10 @@ void CubeMapTextureGLTest::compressedImageQueryViewBadDataSize() {
     char data[16 - 1];
     MutableCompressedImageView2D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedImage(CubeMapCoordinate::PositiveX, 0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedImage(): expected image view data size 16 bytes but got 15\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view data size 16 bytes but got 15\n");
 }
 
 void CubeMapTextureGLTest::compressedImageQueryViewBadFormat() {
@@ -1473,10 +1471,10 @@ void CubeMapTextureGLTest::compressedImageQueryViewBadFormat() {
     char data[16];
     MutableCompressedImageView2D image{CompressedPixelFormat::RGBAS3tcDxt1, Vector2i{4}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedImage(CubeMapCoordinate::PositiveX, 0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedImage(): expected image view format GL::CompressedPixelFormat::RGBAS3tcDxt3 but got GL::CompressedPixelFormat::RGBAS3tcDxt1\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view format GL::CompressedPixelFormat::RGBAS3tcDxt3 but got GL::CompressedPixelFormat::RGBAS3tcDxt1\n");
 }
 #endif
 
@@ -1770,10 +1768,10 @@ void CubeMapTextureGLTest::compressedSubImageQueryViewNullptr() {
 
     MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4, 4, 1}, {nullptr, 16}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedSubImage(): image view is nullptr\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedSubImage(): image view is nullptr\n");
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryViewBadSize() {
@@ -1790,10 +1788,10 @@ void CubeMapTextureGLTest::compressedSubImageQueryViewBadSize() {
     char data[2*16];
     MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4, 4, 2}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedSubImage(): expected image view size Vector(4, 4, 1) but got Vector(4, 4, 2)\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedSubImage(): expected image view size Vector(4, 4, 1) but got Vector(4, 4, 2)\n");
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryViewBadDataSize() {
@@ -1810,10 +1808,10 @@ void CubeMapTextureGLTest::compressedSubImageQueryViewBadDataSize() {
     char data[16 - 1];
     MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4, 4, 1}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedSubImage(): expected image view data size 16 bytes but got 15\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedSubImage(): expected image view data size 16 bytes but got 15\n");
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryViewBadFormat() {
@@ -1830,10 +1828,10 @@ void CubeMapTextureGLTest::compressedSubImageQueryViewBadFormat() {
     char data[16];
     MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt1, Vector3i{4, 4, 1}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedSubImage(): expected image view format GL::CompressedPixelFormat::RGBAS3tcDxt3 but got GL::CompressedPixelFormat::RGBAS3tcDxt1\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedSubImage(): expected image view format GL::CompressedPixelFormat::RGBAS3tcDxt3 but got GL::CompressedPixelFormat::RGBAS3tcDxt1\n");
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryBuffer() {
@@ -1979,10 +1977,10 @@ void CubeMapTextureGLTest::image3DQueryViewNullptr() {
     MutableImageView3D image{PixelFormat::RGBA, PixelType::UnsignedByte,
         {2, 2, 6}, {nullptr, 2*2*6*4}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.image(0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::image(): image view is nullptr\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::image(): image view is nullptr\n");
 }
 
 void CubeMapTextureGLTest::image3DQueryViewBadSize() {
@@ -1997,10 +1995,10 @@ void CubeMapTextureGLTest::image3DQueryViewBadSize() {
     MutableImageView3D image{PixelFormat::RGBA, PixelType::UnsignedByte,
         {2, 1, 6}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.image(0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::image(): expected image view size Vector(2, 2, 6) but got Vector(2, 1, 6)\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::image(): expected image view size Vector(2, 2, 6) but got Vector(2, 1, 6)\n");
 }
 #endif
 
@@ -2178,10 +2176,10 @@ void CubeMapTextureGLTest::compressedImage3DQueryViewNullptr() {
 
     MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4, 4, 6}, {nullptr, 16*6}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedImage(0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedImage(): image view is nullptr\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): image view is nullptr\n");
 }
 
 void CubeMapTextureGLTest::compressedImage3DQueryViewBadSize() {
@@ -2198,10 +2196,10 @@ void CubeMapTextureGLTest::compressedImage3DQueryViewBadSize() {
     char data[2*6*16];
     MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4, 8, 6}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedImage(0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedImage(): expected image view size Vector(4, 4, 6) but got Vector(4, 8, 6)\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view size Vector(4, 4, 6) but got Vector(4, 8, 6)\n");
 }
 
 void CubeMapTextureGLTest::compressedImage3DQueryViewBadDataSize() {
@@ -2218,10 +2216,10 @@ void CubeMapTextureGLTest::compressedImage3DQueryViewBadDataSize() {
     char data[16*6 - 1];
     MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4, 4, 6}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedImage(0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedImage(): expected image view data size 96 bytes but got 95\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view data size 96 bytes but got 95\n");
 }
 
 void CubeMapTextureGLTest::compressedImage3DQueryViewBadFormat() {
@@ -2238,10 +2236,10 @@ void CubeMapTextureGLTest::compressedImage3DQueryViewBadFormat() {
     char data[6*16];
     MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt1, Vector3i{4, 4, 6}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     texture.compressedImage(0, image);
-    CORRADE_COMPARE(out.str(), "GL::CubeMapTexture::compressedImage(): expected image view format GL::CompressedPixelFormat::RGBAS3tcDxt3 but got GL::CompressedPixelFormat::RGBAS3tcDxt1\n");
+    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view format GL::CompressedPixelFormat::RGBAS3tcDxt3 but got GL::CompressedPixelFormat::RGBAS3tcDxt1\n");
 }
 #endif
 

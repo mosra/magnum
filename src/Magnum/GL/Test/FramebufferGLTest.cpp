@@ -25,9 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -1715,10 +1713,10 @@ void FramebufferGLTest::readViewNullptr() {
 
     MutableImageView2D view{DataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, {8, 16}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     framebuffer.read({{}, {8, 16}}, view);
-    CORRADE_COMPARE(out.str(), "GL::AbstractFramebuffer::read(): image view is nullptr\n");
+    CORRADE_COMPARE(out, "GL::AbstractFramebuffer::read(): image view is nullptr\n");
 }
 
 void FramebufferGLTest::readViewBadSize() {
@@ -1742,10 +1740,10 @@ void FramebufferGLTest::readViewBadSize() {
     char data[(DataOffset + 8*15)*sizeof(Color4ub)]{};
     MutableImageView2D view{DataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, {8, 15}, data};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     framebuffer.read({{}, {8, 16}}, view);
-    CORRADE_COMPARE(out.str(), "GL::AbstractFramebuffer::read(): expected image view size Vector(8, 16) but got Vector(8, 15)\n");
+    CORRADE_COMPARE(out, "GL::AbstractFramebuffer::read(): expected image view size Vector(8, 16) but got Vector(8, 15)\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2

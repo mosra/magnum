@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Sampler.h"
 
@@ -53,45 +52,45 @@ SamplerTest::SamplerTest() {
 }
 
 void SamplerTest::debugFilter() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << SamplerFilter::Linear << SamplerFilter(0xdead);
-    CORRADE_COMPARE(out.str(), "SamplerFilter::Linear SamplerFilter(0xdead)\n");
+    CORRADE_COMPARE(out, "SamplerFilter::Linear SamplerFilter(0xdead)\n");
 }
 
 void SamplerTest::debugFilterPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug(&out) << Debug::packed << SamplerFilter::Linear << Debug::packed << SamplerFilter(0xdead) << SamplerFilter::Nearest;
-    CORRADE_COMPARE(out.str(), "Linear 0xdead SamplerFilter::Nearest\n");
+    CORRADE_COMPARE(out, "Linear 0xdead SamplerFilter::Nearest\n");
 }
 
 void SamplerTest::debugMipmap() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << SamplerMipmap::Base << SamplerMipmap(0xdead);
-    CORRADE_COMPARE(out.str(), "SamplerMipmap::Base SamplerMipmap(0xdead)\n");
+    CORRADE_COMPARE(out, "SamplerMipmap::Base SamplerMipmap(0xdead)\n");
 }
 
 void SamplerTest::debugMipmapPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug(&out) << Debug::packed << SamplerMipmap::Base << Debug::packed << SamplerMipmap(0xdead) << SamplerMipmap::Nearest;
-    CORRADE_COMPARE(out.str(), "Base 0xdead SamplerMipmap::Nearest\n");
+    CORRADE_COMPARE(out, "Base 0xdead SamplerMipmap::Nearest\n");
 }
 
 void SamplerTest::debugWrapping() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << SamplerWrapping::ClampToEdge << SamplerWrapping(0xdead);
-    CORRADE_COMPARE(out.str(), "SamplerWrapping::ClampToEdge SamplerWrapping(0xdead)\n");
+    CORRADE_COMPARE(out, "SamplerWrapping::ClampToEdge SamplerWrapping(0xdead)\n");
 }
 
 void SamplerTest::debugWrappingPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug(&out) << Debug::packed << SamplerWrapping::ClampToEdge << Debug::packed << SamplerWrapping(0xdead) << SamplerWrapping::Repeat;
-    CORRADE_COMPARE(out.str(), "ClampToEdge 0xdead SamplerWrapping::Repeat\n");
+    CORRADE_COMPARE(out, "ClampToEdge 0xdead SamplerWrapping::Repeat\n");
 }
 
 }}}

@@ -23,9 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/VertexFormat.h"
 #include "Magnum/Vk/VertexFormat.h"
@@ -83,9 +82,9 @@ void VertexFormatTest::map() {
                     CORRADE_VERIFY(hasVertexFormat(Magnum::VertexFormat::input)); \
                     CORRADE_COMPARE(vertexFormat(Magnum::VertexFormat::input), VertexFormat::output); \
                     { \
-                        std::ostringstream out; \
+                        Containers::String out; \
                         Debug{&out} << vertexFormat(Magnum::VertexFormat::input); \
-                        CORRADE_COMPARE(out.str(), "Vk::VertexFormat::" #output "\n"); \
+                        CORRADE_COMPARE(out, "Vk::VertexFormat::" #output "\n"); \
                     } \
                     ++nextHandled; \
                     continue;
@@ -94,7 +93,7 @@ void VertexFormatTest::map() {
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasVertexFormat(Magnum::VertexFormat::format)); \
-                    std::ostringstream out; \
+                    Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
                         Error redirectError{&out}; \
                         vertexFormat(Magnum::VertexFormat::format); \
@@ -132,25 +131,25 @@ void VertexFormatTest::mapUnsupported() {
     #if 1
     CORRADE_SKIP("All vertex formats are supported.");
     #else
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     vertexFormat(Magnum::VertexFormat::Vector3d);
-    CORRADE_COMPARE(out.str(), "Vk::vertexFormat(): unsupported format VertexFormat::Vector3d\n");
+    CORRADE_COMPARE(out, "Vk::vertexFormat(): unsupported format VertexFormat::Vector3d\n");
     #endif
 }
 
 void VertexFormatTest::mapInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     hasVertexFormat(Magnum::VertexFormat{});
     hasVertexFormat(Magnum::VertexFormat(0x123));
     vertexFormat(Magnum::VertexFormat{});
     vertexFormat(Magnum::VertexFormat(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::hasVertexFormat(): invalid format VertexFormat(0x0)\n"
         "Vk::hasVertexFormat(): invalid format VertexFormat(0x123)\n"
         "Vk::vertexFormat(): invalid format VertexFormat(0x0)\n"
@@ -158,9 +157,9 @@ void VertexFormatTest::mapInvalid() {
 }
 
 void VertexFormatTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << VertexFormat::Vector2usNormalized << VertexFormat(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::VertexFormat::Vector2usNormalized Vk::VertexFormat(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::VertexFormat::Vector2usNormalized Vk::VertexFormat(-10007655)\n");
 }
 
 }}}}

@@ -24,13 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/AbstractManager.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -498,7 +496,7 @@ void DistanceFieldGLTest::formatNotDrawable() {
 
     DistanceFieldGL distanceField{4};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     distanceField(input, output, {{}, Vector2i{4}}
         #ifdef MAGNUM_TARGET_GLES
@@ -509,11 +507,11 @@ void DistanceFieldGLTest::formatNotDrawable() {
     #ifndef MAGNUM_TARGET_GLES
     /* NV drivers print the same error on both desktop and ES */
     if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::NVidia)
-        CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
+        CORRADE_COMPARE(out, "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
     else
-        CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::Unsupported\n");
+        CORRADE_COMPARE(out, "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::Unsupported\n");
     #else
-    CORRADE_COMPARE(out.str(), "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    CORRADE_COMPARE(out, "TextureTools::DistanceFieldGL: output texture format not framebuffer-drawable: GL::Framebuffer::Status::IncompleteAttachment\n");
     #endif
 }
 
@@ -556,7 +554,7 @@ void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
         #endif
         );
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     distanceField(input, output, {{}, Vector2i{23*2}}
         #ifdef MAGNUM_TARGET_GLES
@@ -586,7 +584,7 @@ void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
         #endif
         );
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 46}\n"
         "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {46, 23}\n"
         "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got {322, 322} and {23, 46}\n"

@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <cstring>
-#include <sstream>
+#include <new>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Utility/Tweakable.h>
 #endif
@@ -624,14 +623,14 @@ void HalfTest::literal() {
 }
 
 void HalfTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << -36.41_h << Half{Constants::inf()}
         << Math::Vector3<Half>{3.14159_h, -1.4142_h, 1.618_h};
     #ifdef CORRADE_TARGET_MSVC
-    CORRADE_COMPARE(out.str(), "-36.41 inf Vector(3.141, -1.414, 1.618)\n");
+    CORRADE_COMPARE(out, "-36.41 inf Vector(3.141, -1.414, 1.618)\n");
     #else
-    CORRADE_COMPARE(out.str(), "-36.41 inf Vector(3.141, -1.414, 1.618)\n");
+    CORRADE_COMPARE(out, "-36.41 inf Vector(3.141, -1.414, 1.618)\n");
     #endif
 }
 
@@ -648,11 +647,11 @@ void HalfTest::tweakableError() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
     Utility::TweakableState state = Utility::TweakableParser<Half>::parse(data.data).first();
-    CORRADE_COMPARE(out.str(), data.error);
+    CORRADE_COMPARE(out, data.error);
     CORRADE_COMPARE(state, data.state);
 }
 #endif

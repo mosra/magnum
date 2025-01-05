@@ -27,20 +27,18 @@
 /* Including first to verify the StridedBitArrayView include is not needed */
 #include "Magnum/Trade/SceneData.h"
 
-#include <sstream>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h> /** @todo drop once Debug is stream-free */
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Half.h"
@@ -695,7 +693,7 @@ void SceneDataTest::mappingTypeSizeAlignment() {
 void SceneDataTest::mappingTypeSizeAlignmentInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     sceneMappingTypeSize(SceneMappingType{});
@@ -703,7 +701,7 @@ void SceneDataTest::mappingTypeSizeAlignmentInvalid() {
     sceneMappingTypeSize(SceneMappingType(0x73));
     sceneMappingTypeAlignment(SceneMappingType(0x73));
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::sceneMappingTypeSize(): invalid type Trade::SceneMappingType(0x0)\n"
         "Trade::sceneMappingTypeAlignment(): invalid type Trade::SceneMappingType(0x0)\n"
         "Trade::sceneMappingTypeSize(): invalid type Trade::SceneMappingType(0x73)\n"
@@ -711,16 +709,16 @@ void SceneDataTest::mappingTypeSizeAlignmentInvalid() {
 }
 
 void SceneDataTest::debugMappingType() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << SceneMappingType::UnsignedLong << SceneMappingType(0x73);
-    CORRADE_COMPARE(out.str(), "Trade::SceneMappingType::UnsignedLong Trade::SceneMappingType(0x73)\n");
+    CORRADE_COMPARE(out, "Trade::SceneMappingType::UnsignedLong Trade::SceneMappingType(0x73)\n");
 }
 
 void SceneDataTest::debugMappingTypePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << SceneMappingType::UnsignedLong << Debug::packed << SceneMappingType(0x73) << SceneMappingType::UnsignedInt;
-    CORRADE_COMPARE(out.str(), "UnsignedLong 0x73 Trade::SceneMappingType::UnsignedInt\n");
+    CORRADE_COMPARE(out, "UnsignedLong 0x73 Trade::SceneMappingType::UnsignedInt\n");
 }
 
 void SceneDataTest::customFieldName() {
@@ -748,32 +746,32 @@ void SceneDataTest::customFieldName() {
 void SceneDataTest::customFieldNameTooLarge() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     sceneFieldCustom(1u << 31);
-    CORRADE_COMPARE(out.str(), "Trade::sceneFieldCustom(): index 2147483648 too large\n");
+    CORRADE_COMPARE(out, "Trade::sceneFieldCustom(): index 2147483648 too large\n");
 }
 
 void SceneDataTest::customFieldNameNotCustom() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     sceneFieldCustom(SceneField::Transformation);
-    CORRADE_COMPARE(out.str(), "Trade::sceneFieldCustom(): Trade::SceneField::Transformation is not custom\n");
+    CORRADE_COMPARE(out, "Trade::sceneFieldCustom(): Trade::SceneField::Transformation is not custom\n");
 }
 
 void SceneDataTest::debugFieldName() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << SceneField::Transformation << sceneFieldCustom(73) << SceneField(0xdeadda7);
-    CORRADE_COMPARE(out.str(), "Trade::SceneField::Transformation Trade::SceneField::Custom(73) Trade::SceneField(0xdeadda7)\n");
+    CORRADE_COMPARE(out, "Trade::SceneField::Transformation Trade::SceneField::Custom(73) Trade::SceneField(0xdeadda7)\n");
 }
 
 void SceneDataTest::debugFieldNamePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << SceneField::Transformation << Debug::packed << sceneFieldCustom(73) << Debug::packed << SceneField(0xdeadda7) << SceneField::Parent;
-    CORRADE_COMPARE(out.str(), "Transformation Custom(73) 0xdeadda7 Trade::SceneField::Parent\n");
+    CORRADE_COMPARE(out, "Transformation Custom(73) 0xdeadda7 Trade::SceneField::Parent\n");
 }
 
 void SceneDataTest::fieldTypeSizeAlignment() {
@@ -809,7 +807,7 @@ void SceneDataTest::fieldTypeSizeAlignment() {
 void SceneDataTest::fieldTypeSizeAlignmentInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     sceneFieldTypeSize(SceneFieldType{});
@@ -819,7 +817,7 @@ void SceneDataTest::fieldTypeSizeAlignmentInvalid() {
     sceneFieldTypeSize(SceneFieldType::Bit);
     sceneFieldTypeAlignment(SceneFieldType::Bit);
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::sceneFieldTypeSize(): invalid type Trade::SceneFieldType(0x0)\n"
         "Trade::sceneFieldTypeAlignment(): invalid type Trade::SceneFieldType(0x0)\n"
         "Trade::sceneFieldTypeSize(): invalid type Trade::SceneFieldType(0xdead)\n"
@@ -829,51 +827,51 @@ void SceneDataTest::fieldTypeSizeAlignmentInvalid() {
 }
 
 void SceneDataTest::debugFieldType() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << SceneFieldType::Matrix3x4h << SceneFieldType(0xdead);
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldType::Matrix3x4h Trade::SceneFieldType(0xdead)\n");
+    CORRADE_COMPARE(out, "Trade::SceneFieldType::Matrix3x4h Trade::SceneFieldType(0xdead)\n");
 }
 
 void SceneDataTest::debugFieldTypePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << SceneFieldType::Matrix3x4h << Debug::packed << SceneFieldType(0xdead) << SceneFieldType::Float;
-    CORRADE_COMPARE(out.str(), "Matrix3x4h 0xdead Trade::SceneFieldType::Float\n");
+    CORRADE_COMPARE(out, "Matrix3x4h 0xdead Trade::SceneFieldType::Float\n");
 }
 
 void SceneDataTest::debugFieldFlag() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << SceneFieldFlag::OffsetOnly << SceneFieldFlag(0xbe);
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::OffsetOnly Trade::SceneFieldFlag(0xbe)\n");
+    CORRADE_COMPARE(out, "Trade::SceneFieldFlag::OffsetOnly Trade::SceneFieldFlag(0xbe)\n");
 }
 
 void SceneDataTest::debugFieldFlagPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << SceneFieldFlag::OffsetOnly << Debug::packed << SceneFieldFlag(0xbe) << SceneFieldFlag::ImplicitMapping;
-    CORRADE_COMPARE(out.str(), "OffsetOnly 0xbe Trade::SceneFieldFlag::ImplicitMapping\n");
+    CORRADE_COMPARE(out, "OffsetOnly 0xbe Trade::SceneFieldFlag::ImplicitMapping\n");
 }
 
 void SceneDataTest::debugFieldFlags() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (SceneFieldFlag::OffsetOnly|SceneFieldFlag(0xe0)) << SceneFieldFlags{};
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag(0xe0) Trade::SceneFieldFlags{}\n");
+    CORRADE_COMPARE(out, "Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag(0xe0) Trade::SceneFieldFlags{}\n");
 }
 
 void SceneDataTest::debugFieldFlagsPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (SceneFieldFlag::OffsetOnly|SceneFieldFlag(0xe0)) << Debug::packed << SceneFieldFlags{} << (SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping);
-    CORRADE_COMPARE(out.str(), "OffsetOnly|0xe0 {} Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::ImplicitMapping\n");
+    CORRADE_COMPARE(out, "OffsetOnly|0xe0 {} Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::ImplicitMapping\n");
 }
 
 void SceneDataTest::debugFieldFlagsSupersets() {
     /* ImplicitMapping is a superset of OrderedMapping, so only one should be
        printed */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (SceneFieldFlag::ImplicitMapping|SceneFieldFlag::OrderedMapping);
-        CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::ImplicitMapping\n");
+        CORRADE_COMPARE(out, "Trade::SceneFieldFlag::ImplicitMapping\n");
     }
 }
 
@@ -1892,12 +1890,12 @@ void SceneDataTest::constructFieldInconsistentViewSize() {
     const char helloStringData[5]{};
     const UnsignedLong helloOffsetsData[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData)};
     SceneFieldData{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 2}};
     SceneFieldData{sceneFieldCustom(32), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset64, Containers::arrayView(helloOffsetsData)};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: expected Trade::SceneField::Rotation mapping and field view to have the same size but got 3 and 2\n"
         "Trade::SceneFieldData: expected Trade::SceneField::Custom(773) mapping and field view to have the same size but got 3 and 2\n"
         "Trade::SceneFieldData: expected Trade::SceneField::Custom(32) mapping and field view to have the same size but got 3 and 2\n");
@@ -1909,13 +1907,13 @@ void SceneDataTest::constructFieldWrongType() {
     const UnsignedShort rotationMappingData[3]{};
     const Quaternion rotationFieldData[3];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Transformation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
     SceneFieldData{SceneField::Transformation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion)};
     /** @todo test also builtin bit and string fields with non-string types
         once there are any */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: Trade::SceneFieldType::Quaternion is not a valid type for Trade::SceneField::Transformation\n"
         "Trade::SceneFieldData: Trade::SceneFieldType::Quaternion is not a valid type for Trade::SceneField::Transformation\n");
 }
@@ -1926,7 +1924,7 @@ void SceneDataTest::constructFieldWrongTypeBit() {
     const UnsignedShort hiddenMappingData[3]{};
     const bool hiddenFieldData[3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Non-bit constructors with SceneFieldType::Bit. Only type-erased, 2D and
        offset-only construction, the regular and array constructor from typed
@@ -1934,7 +1932,7 @@ void SceneDataTest::constructFieldWrongTypeBit() {
     SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedShort, Containers::arrayView(hiddenMappingData), SceneFieldType::Bit, Containers::arrayView(hiddenFieldData)};
     SceneFieldData{sceneFieldCustom(773), Containers::arrayCast<2, const char>(Containers::arrayView(hiddenMappingData)), SceneFieldType::Bit, Containers::arrayCast<2, const char>(Containers::arrayView(hiddenFieldData))};
     SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, 2, SceneFieldType::Bit, 0, 1};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: use a bit constructor for Trade::SceneFieldType::Bit\n"
         "Trade::SceneFieldData: use a bit constructor for Trade::SceneFieldType::Bit\n"
         "Trade::SceneFieldData: use a bit constructor for Trade::SceneFieldType::Bit\n");
@@ -1948,7 +1946,7 @@ void SceneDataTest::constructFieldWrongTypeString() {
     const char helloStringData[5]{};
     const UnsignedLong helloFieldData[3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Non-string constructors with a string SceneFieldType. Only type-erased,
        2D and offset-only construction, the regular and array constructor from
@@ -1962,7 +1960,7 @@ void SceneDataTest::constructFieldWrongTypeString() {
     SceneFieldData{SceneField::Rotation, Containers::arrayCast<2, const char>(Containers::arrayView(mappingData)), helloStringData, SceneFieldType::Complexd, Containers::arrayCast<2, const char>(Containers::arrayView(rotationFieldData))};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), helloStringData, SceneFieldType::Complexd, Containers::arrayView(rotationFieldData)};
     SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedLong, 0, 8, 0, SceneFieldType::Quaternion, 0, 16};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: use a string constructor for Trade::SceneFieldType::StringOffset64\n"
         "Trade::SceneFieldData: use a string constructor for Trade::SceneFieldType::StringOffset64\n"
         "Trade::SceneFieldData: use a string constructor for Trade::SceneFieldType::StringRange16\n"
@@ -1996,7 +1994,7 @@ void SceneDataTest::constructFieldTooLargeMappingStride() {
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 32767, 0, SceneFieldType::StringOffset32, 0, 4};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 65536, -32768, 0, SceneFieldType::StringOffset32, 0, 4};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}, SceneFieldType::UnsignedInt, enough};
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>(), SceneFieldType::UnsignedInt, enough};
@@ -2012,7 +2010,7 @@ void SceneDataTest::constructFieldTooLargeMappingStride() {
     SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>(), helloStringData, SceneFieldType::StringOffset32, enough};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 32768, 0, SceneFieldType::StringOffset32, 0, 4};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 65538, -32769, 0, SceneFieldType::StringOffset32, 0, 4};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n"
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
@@ -2052,7 +2050,7 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 0, 32767};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 65536, -32768};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, enough, SceneFieldType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}};
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, enough, SceneFieldType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>()};
@@ -2068,7 +2066,7 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
     SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>()};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 0, 32768};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 65538, -32769};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n"
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
@@ -2102,7 +2100,7 @@ void SceneDataTest::constructFieldFlagNotAllowed() {
     SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::NullTerminatedString|SceneFieldFlag::MultiEntry};
     SceneFieldData{sceneFieldCustom(24), 3, SceneMappingType::UnsignedShort, 0, 2, 0, SceneFieldType::StringOffset32, 0, 4, SceneFieldFlag::NullTerminatedString|SceneFieldFlag::MultiEntry};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::MultiEntry};
@@ -2118,7 +2116,7 @@ void SceneDataTest::constructFieldFlagNotAllowed() {
     SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, 2, 0, 0, 16, SceneFieldFlag::NullTerminatedString};
 
     SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::OffsetOnly};
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a Trade::SceneField::Rotation view of Trade::SceneFieldType::Quaternion\n"
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::MultiEntry for a Trade::SceneField::Rotation view of Trade::SceneFieldType::Quaternion\n"
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for a Trade::SceneField::Rotation view of Trade::SceneFieldType::Quaternion\n"
@@ -2157,13 +2155,13 @@ void SceneDataTest::constructFieldWrongOffsetOnlyDataAccess() {
     c.fieldBitData(hello);
     d.stringData(hello);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     b.mappingData();
     b.fieldData();
     d.fieldBitData();
     d.stringData();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData::mappingData(): the field is offset-only, supply a data array\n"
         "Trade::SceneFieldData::fieldData(): the field is offset-only, supply a data array\n"
         "Trade::SceneFieldData::fieldBitData(): the field is offset-only, supply a data array\n"
@@ -2180,13 +2178,13 @@ void SceneDataTest::constructFieldWrongBitDataAccess() {
     SceneFieldData a{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 3}};
     SceneFieldData b{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     a.fieldData();
     a.fieldData(hiddenFieldData);
     b.fieldBitData();
     b.fieldBitData(rotationFieldData);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData::fieldData(): the field is Trade::SceneFieldType::Bit, use fieldBitData() instead\n"
         "Trade::SceneFieldData::fieldData(): the field is Trade::SceneFieldType::Bit, use fieldBitData() instead\n"
         "Trade::SceneFieldData::fieldBitData(): the field is Trade::SceneFieldType::Quaternion, not a bit\n"
@@ -2201,11 +2199,11 @@ void SceneDataTest::constructFieldWrongStringDataAccess() {
 
     SceneFieldData a{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     a.stringData();
     a.stringData(rotationFieldData);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData::stringData(): the field is Trade::SceneFieldType::Quaternion, not a string\n"
         "Trade::SceneFieldData::stringData(): the field is Trade::SceneFieldType::Quaternion, not a string\n");
 }
@@ -2219,7 +2217,7 @@ void SceneDataTest::constructFieldTypeErased2DWrongSize() {
     char helloStringData[3]{};
     char helloFieldData[4*sizeof(UnsignedShort)]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation,
         Containers::StridedArrayView2D<char>{mappingData, {4, 5}}.every(2),
@@ -2246,7 +2244,7 @@ void SceneDataTest::constructFieldTypeErased2DWrongSize() {
         helloStringData,
         SceneFieldType::StringRange16,
         Containers::StridedArrayView2D<char>{helloFieldData, {4, sizeof(UnsignedShort)}}.every(2)};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
         "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
         "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
@@ -2264,7 +2262,7 @@ void SceneDataTest::constructFieldTypeErased2DNonContiguous() {
     char helloStringData[3]{};
     char helloFieldData[8*sizeof(UnsignedShort)]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation,
         Containers::StridedArrayView2D<char>{mappingData, {4, 2*sizeof(UnsignedInt)}}.every({1, 2}),
@@ -2291,7 +2289,7 @@ void SceneDataTest::constructFieldTypeErased2DNonContiguous() {
         helloStringData,
         SceneFieldType::StringOffset8,
         Containers::StridedArrayView2D<char>{helloFieldData, {4, 2*sizeof(UnsignedByte)}}.every({1, 2})};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
@@ -2306,13 +2304,13 @@ void SceneDataTest::constructFieldArrayNonContiguous() {
     Int offsetFieldData[3*4];
     char hiddenFieldData[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData data{sceneFieldCustom(34), Containers::arrayView(mappingData), Containers::StridedArrayView2D<Int>{offsetFieldData, {3, 4}}.every({1, 2})};
     SceneFieldData{sceneFieldCustom(773),
         Containers::arrayView(mappingData),
         Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData}, {3, 4}}.every({1, 2})};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: second field view dimension is not contiguous\n"
         "Trade::SceneFieldData: second field view dimension is not contiguous\n");
 }
@@ -2348,7 +2346,7 @@ void SceneDataTest::constructFieldArrayNotAllowed() {
         SceneFieldType::Quaternion, 0, sizeof(Quaternion), 3};
 
     /* This is not */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation,
         SceneMappingType::UnsignedShort, rotationMapping,
@@ -2365,7 +2363,7 @@ void SceneDataTest::constructFieldArrayNotAllowed() {
     /* String fields can't be arrays, but for those the constructor doesn't
        even offer the array size; and constructing them with the regular
        constructor will fail as tested in constructFieldWrongTypeString() */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: Trade::SceneField::Rotation can't be an array field\n"
         "Trade::SceneFieldData: Trade::SceneField::Rotation can't be an array field\n"
         "Trade::SceneFieldData: Trade::SceneField::Rotation can't be an array field\n"
@@ -2378,13 +2376,13 @@ void SceneDataTest::constructFieldArrayTypeErased2DWrongSize() {
     char rotationMappingData[4*sizeof(UnsignedInt)];
     char rotationFieldData[4*sizeof(Complex)];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{sceneFieldCustom(37),
         Containers::StridedArrayView2D<char>{rotationMappingData, {4, sizeof(UnsignedInt)}}.every(2),
         SceneFieldType::Int,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, sizeof(Complex)}}.every(2), 3};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: second field view dimension size 8 doesn't match Trade::SceneFieldType::Int and field array size 3\n");
 }
 
@@ -2395,7 +2393,7 @@ void SceneDataTest::constructFieldArrayTypeErased2DNonContiguous() {
     char offsetFieldData[18*sizeof(Int)];
     char hiddenFieldData[2]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{sceneFieldCustom(37),
         Containers::StridedArrayView2D<char>{mappingData, {3, 2*sizeof(UnsignedInt)}}.every({1, 2}),
@@ -2411,7 +2409,7 @@ void SceneDataTest::constructFieldArrayTypeErased2DNonContiguous() {
     SceneFieldData{sceneFieldCustom(773),
         Containers::StridedArrayView2D<char>{mappingData, {3, sizeof(UnsignedInt)}},
         Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData}, {3, 4}}.every({1, 2})};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
         "Trade::SceneFieldData: second field view dimension is not contiguous\n"
@@ -2425,10 +2423,10 @@ void SceneDataTest::constructFieldBitTooLargeBitOffset() {
        checks this on its own already. There it's a debug-only assert, be
        consistent and have it debug-only here as well. */
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedInt, 0, sizeof(UnsignedInt), 0, 8, 1};
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: bit offset expected to be smaller than 8, got 8\n");
+    CORRADE_COMPARE(out, "Trade::SceneFieldData: bit offset expected to be smaller than 8, got 8\n");
 }
 
 void SceneDataTest::constructFieldBitTooLargeSize() {
@@ -2438,13 +2436,13 @@ void SceneDataTest::constructFieldBitTooLargeSize() {
        checks this on its own already. There it's a debug-only assert, be
        consistent and have it debug-only here as well. */
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{sceneFieldCustom(773), std::size_t{1} << (sizeof(std::size_t)*8 - 3), SceneMappingType::UnsignedInt, 0, sizeof(UnsignedInt), 0, 0, 1};
     #ifndef CORRADE_TARGET_32BIT
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: size expected to be smaller than 2^61 bits, got 2305843009213693952\n");
+    CORRADE_COMPARE(out, "Trade::SceneFieldData: size expected to be smaller than 2^61 bits, got 2305843009213693952\n");
     #else
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: size expected to be smaller than 2^29 bits, got 536870912\n");
+    CORRADE_COMPARE(out, "Trade::SceneFieldData: size expected to be smaller than 2^29 bits, got 536870912\n");
     #endif
 }
 
@@ -2454,7 +2452,7 @@ void SceneDataTest::constructFieldStringDataTooFarApart() {
 
     UnsignedShort mappingData[3]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneFieldData{sceneFieldCustom(166),
         Containers::arrayView(mappingData),
@@ -2467,7 +2465,7 @@ void SceneDataTest::constructFieldStringDataTooFarApart() {
     SceneFieldData{sceneFieldCustom(661), 3,
         SceneMappingType::UnsignedShort, 1725676, 2,
         0x800000000000ull, SceneFieldType::StringOffset8, 72567654, 8};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneFieldData: (signed) distance between string data and field data expected to fit into 48 bits but got 0xfeedbeef and 0x8000feedbeef\n"
         "Trade::SceneFieldData: (signed) distance between string data and field data expected to fit into 48 bits but got 0x8000feedbeef and 0xfeedbeef\n"
         "Trade::SceneFieldData: expected string data offset to fit into 48 bits but got 140737488355328\n");
@@ -3576,12 +3574,12 @@ void SceneDataTest::constructDeprecated() {
 void SceneDataTest::constructDeprecatedBoth2DAnd3D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     SceneData scene{{5, 17}, {36, 22}};
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(), "Trade::SceneData: it's no longer possible to have a scene with both 2D and 3D objects\n");
+    CORRADE_COMPARE(out, "Trade::SceneData: it's no longer possible to have a scene with both 2D and 3D objects\n");
 }
 #endif
 
@@ -3618,10 +3616,10 @@ void SceneDataTest::constructDuplicateField() {
     SceneFieldData materials{SceneField::MeshMaterial, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr};
     SceneFieldData meshesAgain{SceneField::Mesh, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::UnsignedInt, nullptr};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData scene{SceneMappingType::UnsignedInt, 0, nullptr, {meshes, materials, meshesAgain}};
-    CORRADE_COMPARE(out.str(), "Trade::SceneData: duplicate field Trade::SceneField::Mesh\n");
+    CORRADE_COMPARE(out, "Trade::SceneData: duplicate field Trade::SceneField::Mesh\n");
 }
 
 void SceneDataTest::constructDuplicateCustomField() {
@@ -3633,10 +3631,10 @@ void SceneDataTest::constructDuplicateCustomField() {
     SceneFieldData customB{sceneFieldCustom(1038576154), SceneMappingType::UnsignedInt, nullptr, SceneFieldType::UnsignedInt, nullptr};
     SceneFieldData customAAgain{sceneFieldCustom(37), SceneMappingType::UnsignedInt, nullptr, SceneFieldType::UnsignedInt, nullptr};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData scene{SceneMappingType::UnsignedInt, 0, nullptr, {customA, customB, customAAgain}};
-    CORRADE_COMPARE(out.str(), "Trade::SceneData: duplicate field Trade::SceneField::Custom(37)\n");
+    CORRADE_COMPARE(out, "Trade::SceneData: duplicate field Trade::SceneField::Custom(37)\n");
 }
 
 void SceneDataTest::constructInconsistentMappingType() {
@@ -3645,10 +3643,10 @@ void SceneDataTest::constructInconsistentMappingType() {
     SceneFieldData meshes{SceneField::Mesh, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::UnsignedShort, nullptr};
     SceneFieldData materials{SceneField::MeshMaterial, SceneMappingType::UnsignedShort, nullptr, SceneFieldType::Int, nullptr};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData scene{SceneMappingType::UnsignedInt, 0, nullptr, {meshes, materials}};
-    CORRADE_COMPARE(out.str(), "Trade::SceneData: inconsistent mapping type, got Trade::SceneMappingType::UnsignedShort for field 1 but expected Trade::SceneMappingType::UnsignedInt\n");
+    CORRADE_COMPARE(out, "Trade::SceneData: inconsistent mapping type, got Trade::SceneMappingType::UnsignedShort for field 1 but expected Trade::SceneMappingType::UnsignedInt\n");
 }
 
 void SceneDataTest::constructMappingDataNotContained() {
@@ -3660,7 +3658,7 @@ void SceneDataTest::constructMappingDataNotContained() {
     Containers::ArrayView<UnsignedShort> dataSlightlyOut{reinterpret_cast<UnsignedShort*>(0xbaddaa), 5};
     Containers::ArrayView<UnsignedShort> dataOut{reinterpret_cast<UnsignedShort*>(0xdead), 5};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Basic "obviously wrong" case with owned data */
     SceneData{SceneMappingType::UnsignedShort, 5, Utility::move(sameDataButMovable), {
@@ -3690,7 +3688,7 @@ void SceneDataTest::constructMappingDataNotContained() {
     SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{24}, {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 24, -4, SceneFieldType::UnsignedByte, 0, 4}
     }};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData: mapping data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: mapping data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: mapping data [0xdead:0xdeb7] of field 0 are not contained in passed data array [0x0:0x0]\n"
@@ -3715,7 +3713,7 @@ void SceneDataTest::constructFieldDataNotContained() {
     Containers::ArrayView<UnsignedShort> dataSlightlyOut{reinterpret_cast<UnsignedShort*>(0xbaddaa), 5};
     Containers::ArrayView<UnsignedShort> dataOut{reinterpret_cast<UnsignedShort*>(0xdead), 5};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Basic "obviously wrong" case with owned data */
     SceneData{SceneMappingType::UnsignedShort, 5, Utility::move(sameDataButMovable), {
@@ -3752,7 +3750,7 @@ void SceneDataTest::constructFieldDataNotContained() {
     SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{24}, {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 0, 4, SceneFieldType::UnsignedByte, 24, -4}
     }};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData: field data [0xdead:0xdeb7] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: field data [0xbadda9:0xbaddb5] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
@@ -3780,7 +3778,7 @@ void SceneDataTest::constructBitFieldDataNotContained() {
     Containers::StridedBitArrayView1D dataOneBitOffsetBeforeOut{Containers::BitArrayView{reinterpret_cast<void*>(std::size_t{0xbadda8}), 7, 80}, 10, 8};
     Containers::BitArrayView dataOut{reinterpret_cast<void*>(std::size_t{0xdead}), 7, 10};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Basic "obviously wrong" case with owned data */
     SceneData{SceneMappingType::UnsignedByte, 10, Utility::move(sameDataButMovable), {
@@ -3842,7 +3840,7 @@ void SceneDataTest::constructBitFieldDataNotContained() {
     SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
         SceneFieldData{sceneFieldCustom(773), 9, SceneMappingType::UnsignedByte, 0, 1, 10, 0, -9}
     }};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData: field data [0xdead:0xdeb0] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
 
         "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
@@ -3879,7 +3877,7 @@ void SceneDataTest::constructStringDataNotContained() {
             dataIn}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Data too early */
     SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
@@ -3896,7 +3894,7 @@ void SceneDataTest::constructStringDataNotContained() {
             reinterpret_cast<char*>(0xbaddaa9 + 11), SceneFieldType::StringRange8,
             dataIn}
     }};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData: field string data 0xbadda8 of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: field string data 0xbaddab4 of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n");
 }
@@ -3909,12 +3907,12 @@ void SceneDataTest::constructMappingTypeTooSmall() {
     SceneData{SceneMappingType::UnsignedShort, 0xffff, nullptr, {}};
     SceneData{SceneMappingType::UnsignedInt, 0xffffffffu, nullptr, {}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData{SceneMappingType::UnsignedByte, 0x100, nullptr, {}};
     SceneData{SceneMappingType::UnsignedShort, 0x10000, nullptr, {}};
     SceneData{SceneMappingType::UnsignedInt, 0x100000000ull, nullptr, {}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData: Trade::SceneMappingType::UnsignedByte is too small for 256 objects\n"
         "Trade::SceneData: Trade::SceneMappingType::UnsignedShort is too small for 65536 objects\n"
         "Trade::SceneData: Trade::SceneMappingType::UnsignedInt is too small for 4294967296 objects\n");
@@ -3925,10 +3923,10 @@ void SceneDataTest::constructNotOwnedFlagOwned() {
 
     const char data[32]{};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData{SceneMappingType::UnsignedByte, 5, DataFlag::Owned, Containers::arrayView(data), {}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData: can't construct with non-owned data but Trade::DataFlag::Owned\n");
 }
 
@@ -3985,7 +3983,7 @@ void SceneDataTest::constructMismatchedTRSViews() {
     SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotationsOffsetOnly, scalings}};
 
     /* Test that all pairs get checked */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsDifferentPointer}};
     SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsDifferentPointerOffsetOnly}};
@@ -4004,7 +4002,7 @@ void SceneDataTest::constructMismatchedTRSViews() {
     SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotationsOffsetOnly, scalingsDifferentPointer}};
     SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotations, scalingsDifferentSize}};
     SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotations, scalingsDifferentStride}};
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         /* Different pointer, three variants with offset-only */
         "Trade::SceneData: Trade::SceneField::Rotation mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
         "Trade::SceneData: Trade::SceneField::Rotation mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
@@ -4095,7 +4093,7 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
     SceneFieldData scalings3D{SceneField::Scaling, SceneMappingType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Vector3<T>>::type(), nullptr};
 
     /* Test that all pairs get checked */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {transformationMatrices2D, translations3D}};
     SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {transformationMatrices2D, rotations3D}};
@@ -4124,7 +4122,7 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
     SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {translations3D, rotations2D}};
     SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {translations3D, scalings2D}};
     SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {rotations3D, scalings2D}};
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Trade::SceneData: expected a 2D translation field but got Trade::SceneFieldType::{0}\n"
         "Trade::SceneData: expected a 2D rotation field but got Trade::SceneFieldType::{1}\n"
         "Trade::SceneData: expected a 2D scaling field but got Trade::SceneFieldType::{0}\n"
@@ -4178,22 +4176,22 @@ void SceneDataTest::constructMismatchedMeshMaterialView() {
     SceneFieldData meshes{SceneField::Mesh, mappingData, meshFieldData};
     SceneFieldData meshMaterialsDifferent{SceneField::MeshMaterial, mappingDifferentPointerData, meshMaterialFieldData};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {meshes, meshMaterialsDifferent}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData: Trade::SceneField::MeshMaterial mapping data {0xcafe0018, 3, 4} is different from Trade::SceneField::Mesh mapping data {0xcafe001c, 3, 4}\n");
 }
 
 void SceneDataTest::constructAmbiguousSkinDimensions() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {
         SceneFieldData{SceneField::Skin, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::UnsignedInt, nullptr}
     }};
-    CORRADE_COMPARE(out.str(), "Trade::SceneData: a skin field requires some transformation field to be present in order to disambiguate between 2D and 3D\n");
+    CORRADE_COMPARE(out, "Trade::SceneData: a skin field requires some transformation field to be present in order to disambiguate between 2D and 3D\n");
 }
 
 void SceneDataTest::constructCopy() {
@@ -4330,13 +4328,13 @@ void SceneDataTest::findFieldObjectOffsetInvalidOffset() {
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.findFieldObjectOffset(0, 1, 4);
     scene.findFieldObjectOffset(SceneField::Mesh, 1, 4);
     scene.fieldObjectOffset(0, 1, 4);
     scene.fieldObjectOffset(SceneField::Mesh, 1, 4);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::findFieldObjectOffset(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::findFieldObjectOffset(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::fieldObjectOffset(): offset 4 out of range for a field of size 3\n"
@@ -4364,13 +4362,13 @@ void SceneDataTest::fieldObjectOffsetNotFound() {
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.fieldObjectOffset(0, 4);
     scene.fieldObjectOffset(SceneField::Parent, 4);
     scene.fieldObjectOffset(1, 1, 2);
     scene.fieldObjectOffset(SceneField::Mesh, 1, 2);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::fieldObjectOffset(): object 4 not found in field Trade::SceneField::Parent starting at offset 0\n"
         "Trade::SceneData::fieldObjectOffset(): object 4 not found in field Trade::SceneField::Parent starting at offset 0\n"
         "Trade::SceneData::fieldObjectOffset(): object 1 not found in field Trade::SceneField::Mesh starting at offset 2\n"
@@ -4533,14 +4531,14 @@ void SceneDataTest::mappingIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt destination[2];
     scene.mappingInto(0, destination);
     scene.mappingInto(SceneField::Mesh, destination);
     scene.mappingInto(0, 4, destination);
     scene.mappingInto(SceneField::Mesh, 4, destination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::mappingInto(): expected a view with 3 elements but got 2\n"
         "Trade::SceneData::mappingInto(): expected a view with 3 elements but got 2\n"
         "Trade::SceneData::mappingInto(): offset 4 out of range for a field of size 3\n"
@@ -4649,7 +4647,7 @@ void SceneDataTest::parentsIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -4659,7 +4657,7 @@ void SceneDataTest::parentsIntoArrayInvalidSizeOrOffset() {
     scene.parentsInto(mappingDestinationCorrect, fieldDestination);
     scene.parentsInto(4, mappingDestination, fieldDestination);
     scene.parentsInto(0, mappingDestinationCorrect, fieldDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::parentsInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::parentsInto(): expected field destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::parentsInto(): offset 4 out of range for a field of size 3\n"
@@ -4955,11 +4953,11 @@ void SceneDataTest::transformations2DAsArrayBut3DType() {
         SceneFieldData{SceneField::Rotation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Quaternion, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.transformations2DAsArray();
     scene.translationsRotationsScalings2DAsArray();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::transformations2DInto(): scene has a 3D transformation type\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): scene has a 3D transformation type\n");
 }
@@ -5203,7 +5201,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::Transformation, view.slice(&Field::object), view.slice(&Field::transformation)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -5213,7 +5211,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset() {
     scene.transformations2DInto(mappingDestinationCorrect, fieldDestination);
     scene.transformations2DInto(4, mappingDestination, fieldDestination);
     scene.transformations2DInto(0, mappingDestinationCorrect, fieldDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::transformations2DInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::transformations2DInto(): expected field destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::transformations2DInto(): offset 4 out of range for a field of size 3\n"
@@ -5234,7 +5232,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS() {
         SceneFieldData{SceneField::Translation, view.slice(&Field::object), view.slice(&Field::translation)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -5255,7 +5253,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS() {
     scene.translationsRotationsScalings2DInto(0, nullptr, translationDestinationCorrect, rotationDestination, nullptr);
     scene.translationsRotationsScalings2DInto(0, nullptr, translationDestinationCorrect, nullptr, scalingDestination);
     scene.translationsRotationsScalings2DInto(0, nullptr, nullptr, rotationDestinationCorrect, scalingDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected translation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected rotation destination view either empty or with 3 elements but got 2\n"
@@ -5551,11 +5549,11 @@ void SceneDataTest::transformations3DAsArrayBut2DType() {
         SceneFieldData{SceneField::Rotation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Complex, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.transformations3DAsArray();
     scene.translationsRotationsScalings3DAsArray();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::transformations3DInto(): scene has a 2D transformation type\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): scene has a 2D transformation type\n");
 }
@@ -5799,7 +5797,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::Transformation, view.slice(&Field::object), view.slice(&Field::transformation)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -5809,7 +5807,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
     scene.transformations3DInto(mappingDestinationCorrect, fieldDestination);
     scene.transformations3DInto(4, mappingDestination, fieldDestination);
     scene.transformations3DInto(0, mappingDestinationCorrect, fieldDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::transformations3DInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::transformations3DInto(): expected field destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::transformations3DInto(): offset 4 out of range for a field of size 3\n"
@@ -5830,7 +5828,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffsetTRS() {
         SceneFieldData{SceneField::Translation, view.slice(&Field::object), view.slice(&Field::translation)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -5851,7 +5849,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffsetTRS() {
     scene.translationsRotationsScalings3DInto(0, nullptr, translationDestinationCorrect, rotationDestination, nullptr);
     scene.translationsRotationsScalings3DInto(0, nullptr, translationDestinationCorrect, nullptr, scalingDestination);
     scene.translationsRotationsScalings3DInto(0, nullptr, nullptr, rotationDestinationCorrect, scalingDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected translation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected rotation destination view either empty or with 3 elements but got 2\n"
@@ -6006,7 +6004,7 @@ void SceneDataTest::meshesMaterialsIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -6021,7 +6019,7 @@ void SceneDataTest::meshesMaterialsIntoArrayInvalidSizeOrOffset() {
     scene.meshesMaterialsInto(0, mappingDestinationCorrect, meshDestination, nullptr);
     scene.meshesMaterialsInto(0, mappingDestinationCorrect, nullptr, meshMaterialDestination);
     scene.meshesMaterialsInto(0, nullptr, meshDestinationCorrect, meshMaterialDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::meshesMaterialsInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::meshesMaterialsInto(): expected mesh destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::meshesMaterialsInto(): expected mesh material destination view either empty or with 3 elements but got 2\n"
@@ -6133,7 +6131,7 @@ void SceneDataTest::lightsIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::Light, view.slice(&Field::object), view.slice(&Field::light)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -6143,7 +6141,7 @@ void SceneDataTest::lightsIntoArrayInvalidSizeOrOffset() {
     scene.lightsInto(mappingDestinationCorrect, fieldDestination);
     scene.lightsInto(4, mappingDestination, fieldDestination);
     scene.lightsInto(0, mappingDestinationCorrect, fieldDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::lightsInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::lightsInto(): expected field destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::lightsInto(): offset 4 out of range for a field of size 3\n"
@@ -6252,7 +6250,7 @@ void SceneDataTest::camerasIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::Camera, view.slice(&Field::object), view.slice(&Field::camera)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -6262,7 +6260,7 @@ void SceneDataTest::camerasIntoArrayInvalidSizeOrOffset() {
     scene.camerasInto(mappingDestinationCorrect, fieldDestination);
     scene.camerasInto(4, mappingDestination, fieldDestination);
     scene.camerasInto(0, mappingDestinationCorrect, fieldDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::camerasInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::camerasInto(): expected field destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::camerasInto(): offset 4 out of range for a field of size 3\n"
@@ -6378,7 +6376,7 @@ void SceneDataTest::skinsIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::Skin, view.slice(&Field::object), view.slice(&Field::skin)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -6388,7 +6386,7 @@ void SceneDataTest::skinsIntoArrayInvalidSizeOrOffset() {
     scene.skinsInto(mappingDestinationCorrect, fieldDestination);
     scene.skinsInto(4, mappingDestination, fieldDestination);
     scene.skinsInto(0, mappingDestinationCorrect, fieldDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::skinsInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::skinsInto(): expected field destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::skinsInto(): offset 4 out of range for a field of size 3\n"
@@ -6501,7 +6499,7 @@ void SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset() {
         SceneFieldData{SceneField::ImporterState, view.slice(&Field::object), view.slice(&Field::importerState)}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     UnsignedInt mappingDestinationCorrect[3];
     UnsignedInt mappingDestination[2];
@@ -6511,7 +6509,7 @@ void SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset() {
     scene.importerStateInto(mappingDestinationCorrect, fieldDestination);
     scene.importerStateInto(4, mappingDestination, fieldDestination);
     scene.importerStateInto(0, mappingDestinationCorrect, fieldDestination);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::importerStateInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::importerStateInto(): expected field destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::importerStateInto(): offset 4 out of range for a field of size 3\n"
@@ -6538,7 +6536,7 @@ void SceneDataTest::mutableAccessNotAllowed() {
             view.slice(&Field::mesh)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.mutableData();
     scene.mutableMapping(0);
@@ -6551,7 +6549,7 @@ void SceneDataTest::mutableAccessNotAllowed() {
     scene.mutableField(SceneField::Mesh);
     scene.mutableField<UnsignedInt>(SceneField::Mesh);
     scene.mutableField<UnsignedInt[]>(sceneFieldCustom(35));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::mutableData(): data not mutable\n"
         "Trade::SceneData::mutableMapping(): data not mutable\n"
         "Trade::SceneData::mutableMapping(): data not mutable\n"
@@ -6581,7 +6579,7 @@ void SceneDataTest::mappingNotFound() {
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.mapping(2);
     scene.mapping<UnsignedInt>(2);
@@ -6594,7 +6592,7 @@ void SceneDataTest::mappingNotFound() {
 
     scene.mappingAsArray(2);
     scene.mappingAsArray(sceneFieldCustom(666));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::mapping(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::mapping(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::mutableMapping(): index 2 out of range for 2 fields\n"
@@ -6624,13 +6622,13 @@ void SceneDataTest::mappingWrongType() {
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.mapping<UnsignedByte>(1);
     scene.mutableMapping<UnsignedByte>(1);
     scene.mapping<UnsignedByte>(SceneField::Mesh);
     scene.mutableMapping<UnsignedByte>(SceneField::Mesh);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::mapping(): mapping is Trade::SceneMappingType::UnsignedShort but requested Trade::SceneMappingType::UnsignedByte\n"
         "Trade::SceneData::mutableMapping(): mapping is Trade::SceneMappingType::UnsignedShort but requested Trade::SceneMappingType::UnsignedByte\n"
         "Trade::SceneData::mapping(): mapping is Trade::SceneMappingType::UnsignedShort but requested Trade::SceneMappingType::UnsignedByte\n"
@@ -6652,7 +6650,7 @@ void SceneDataTest::fieldNotFound() {
         SceneFieldData{sceneFieldCustom(35), view.slice(&Field::object), view.slice(&Field::bar)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.findFieldObjectOffset(2, 0);
     scene.fieldObjectOffset(2, 0);
@@ -6732,7 +6730,7 @@ void SceneDataTest::fieldNotFound() {
     scene.importerStateAsArray();
     scene.importerStateInto(nullptr, nullptr);
     scene.importerStateInto(0, nullptr, nullptr);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Trade::SceneData::findFieldObjectOffset(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldObjectOffset(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::hasFieldObject(): index 2 out of range for 2 fields\n"
@@ -6835,7 +6833,7 @@ void SceneDataTest::fieldWrongType() {
         SceneFieldData{sceneFieldCustom(773), view.slice(&Field::object), view.slice(&Field::yes).sliceBit(0)},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.field(2);
     scene.mutableField(2);
@@ -6875,7 +6873,7 @@ void SceneDataTest::fieldWrongType() {
     scene.fieldStringData(SceneField::Mesh);
     scene.fieldStrings(SceneField::Mesh);
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::field(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use fieldBits() or fieldBitArrays() to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use mutableFieldBits() or mutableFieldBitArrays() to access it\n"
 
@@ -6934,7 +6932,7 @@ void SceneDataTest::fieldWrongPointerType() {
     scene.mutableField<Float*[]>(sceneFieldCustom(35));
     scene.mutableField<const Float*>(SceneField::ImporterState);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.field<Int>(0);
     scene.field<const Int*>(0);
@@ -6956,7 +6954,7 @@ void SceneDataTest::fieldWrongPointerType() {
     scene.mutableField<const Int*[]>(sceneFieldCustom(35));
     scene.mutableField<Int*>(SceneField::ImporterState);
     scene.mutableField<Int*[]>(SceneField::ImporterState);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Int\n"
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is Trade::SceneFieldType::MutablePointer but requested a type equivalent to Trade::SceneFieldType::Pointer\n"
@@ -6998,7 +6996,7 @@ void SceneDataTest::fieldWrongArrayAccess() {
     /* Array access is allowed for non-array fields (the second dimension is
        then always 1), tested directly in construct() and constructBit() */
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.field<UnsignedInt>(0);
     scene.mutableField<UnsignedInt>(0);
@@ -7008,7 +7006,7 @@ void SceneDataTest::fieldWrongArrayAccess() {
     scene.mutableFieldBits(1);
     scene.fieldBits(sceneFieldCustom(773));
     scene.mutableFieldBits(sceneFieldCustom(773));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
@@ -7226,11 +7224,11 @@ void SceneDataTest::transformation2DForBut3DType() {
         SceneFieldData{SceneField::Translation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector3, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.transformation2DFor(0);
     scene.translationRotationScaling2DFor(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::transformation2DFor(): scene has a 3D transformation type\n"
         "Trade::SceneData::translationRotationScaling2DFor(): scene has a 3D transformation type\n");
 }
@@ -7316,11 +7314,11 @@ void SceneDataTest::transformation3DForBut2DType() {
         SceneFieldData{SceneField::Translation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector2, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.transformation3DFor(0);
     scene.translationRotationScaling3DFor(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::transformation3DFor(): scene has a 2D transformation type\n"
         "Trade::SceneData::translationRotationScaling3DFor(): scene has a 2D transformation type\n");
 }
@@ -7543,18 +7541,18 @@ void SceneDataTest::childrenDeprecated() {
             TestSuite::Compare::Container);
         CORRADE_IGNORE_DEPRECATED_POP
     } else {
-        std::ostringstream out;
+        Containers::String out;
         Warning redirectWarning{&out};
         CORRADE_IGNORE_DEPRECATED_PUSH
         CORRADE_VERIFY(scene.children2D().empty());
         CORRADE_VERIFY(scene.children3D().empty());
         CORRADE_IGNORE_DEPRECATED_POP
         if(data.is2D)
-            CORRADE_COMPARE(out.str(), "Trade::SceneData::children2D(): no parent field present, returned array will be empty\n");
+            CORRADE_COMPARE(out, "Trade::SceneData::children2D(): no parent field present, returned array will be empty\n");
         else if(data.is3D)
-            CORRADE_COMPARE(out.str(), "Trade::SceneData::children3D(): no parent field present, returned array will be empty\n");
+            CORRADE_COMPARE(out, "Trade::SceneData::children3D(): no parent field present, returned array will be empty\n");
         else
-            CORRADE_COMPARE(out.str(), "");
+            CORRADE_COMPARE(out, "");
     }
 }
 #endif
@@ -7591,7 +7589,7 @@ void SceneDataTest::findFieldObjectOffsetInvalidObject() {
         SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     scene.findFieldObjectOffset(0, 7);
     scene.findFieldObjectOffset(SceneField::Parent, 7);
@@ -7610,7 +7608,7 @@ void SceneDataTest::findFieldObjectOffsetInvalidObject() {
     scene.lightsFor(7);
     scene.camerasFor(7);
     scene.skinsFor(7);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::SceneData::findFieldObjectOffset(): object 7 out of range for 7 objects\n"
         "Trade::SceneData::findFieldObjectOffset(): object 7 out of range for 7 objects\n"
         "Trade::SceneData::fieldObjectOffset(): object 7 out of range for 7 objects\n"

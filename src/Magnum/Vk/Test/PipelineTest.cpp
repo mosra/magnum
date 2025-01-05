@@ -25,11 +25,9 @@
 */
 
 #include <new>
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Range.h"
 #include "Magnum/Vk/ComputePipelineCreateInfo.h"
@@ -572,10 +570,10 @@ void PipelineTest::computeCreateInfoConstructNotSingleShader() {
 
     ShaderSet shaderSet;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     ComputePipelineCreateInfo info{shaderSet, {}};
-    CORRADE_COMPARE(out.str(), "Vk::ComputePipelineCreateInfo: the shader set has to contain exactly one shader, got 0\n");
+    CORRADE_COMPARE(out, "Vk::ComputePipelineCreateInfo: the shader set has to contain exactly one shader, got 0\n");
 }
 
 void PipelineTest::computeCreateInfoConstructNoInit() {
@@ -729,21 +727,21 @@ void PipelineTest::imageMemoryBarrierConstructFromVk() {
 }
 
 void PipelineTest::debugBindPoint() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << PipelineBindPoint::Compute << PipelineBindPoint(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::PipelineBindPoint::Compute Vk::PipelineBindPoint(-10007655)\n");
+    CORRADE_COMPARE(out, "Vk::PipelineBindPoint::Compute Vk::PipelineBindPoint(-10007655)\n");
 }
 
 void PipelineTest::debugDynamicRasterizationState() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << DynamicRasterizationState::VertexInputBindingStride << DynamicRasterizationState(0xab);
-    CORRADE_COMPARE(out.str(), "Vk::DynamicRasterizationState::VertexInputBindingStride Vk::DynamicRasterizationState(0xab)\n");
+    CORRADE_COMPARE(out, "Vk::DynamicRasterizationState::VertexInputBindingStride Vk::DynamicRasterizationState(0xab)\n");
 }
 
 void PipelineTest::debugDynamicRasterizationStates() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (DynamicRasterizationState::Viewport|DynamicRasterizationState::Scissor|DynamicRasterizationState(0x2a)|DynamicRasterizationState(0x3f)) << DynamicRasterizationStates{};
-    CORRADE_COMPARE(out.str(), "Vk::DynamicRasterizationState::Viewport|Vk::DynamicRasterizationState::Scissor|Vk::DynamicRasterizationState(0x2a)|Vk::DynamicRasterizationState(0x3f) Vk::DynamicRasterizationStates{}\n");
+    CORRADE_COMPARE(out, "Vk::DynamicRasterizationState::Viewport|Vk::DynamicRasterizationState::Scissor|Vk::DynamicRasterizationState(0x2a)|Vk::DynamicRasterizationState(0x3f) Vk::DynamicRasterizationStates{}\n");
 }
 
 }}}}

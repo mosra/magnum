@@ -25,13 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/System.h>
@@ -540,12 +538,12 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
     #endif
 
     /* This fails for UBOs but not SSBOs */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     VertexColorGL<dimensions>{typename VertexColorGL<dimensions>::Configuration{}
         .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)
         .setDrawCount(0)};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VertexColorGL: draw count can't be zero\n");
 }
 #endif
@@ -564,10 +562,10 @@ template<UnsignedInt dimensions> void VertexColorGLTest::setUniformUniformBuffer
     VertexColorGL<dimensions> shader{typename VertexColorGL<dimensions>::Configuration{}
         .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTransformationProjectionMatrix({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VertexColorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n");
 }
 
@@ -579,12 +577,12 @@ template<UnsignedInt dimensions> void VertexColorGLTest::bindBufferUniformBuffer
     GL::Buffer buffer;
     VertexColorGL<dimensions> shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
           .setDrawOffset(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VertexColorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::VertexColorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::VertexColorGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
@@ -604,10 +602,10 @@ template<UnsignedInt dimensions> void VertexColorGLTest::setWrongDrawOffset() {
         .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)
         .setDrawCount(5)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setDrawOffset(5);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::VertexColorGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif

@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/SceneGraph/Object.hpp"
 #include "Magnum/SceneGraph/TranslationTransformation.h"
@@ -92,10 +91,10 @@ template<class T> void TranslationTransformationTest::fromMatrixInvalid() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream o;
-    Error redirectError{&o};
+    Containers::String out;
+    Error redirectError{&out};
     Implementation::Transformation<BasicTranslationTransformation2D<T>>::fromMatrix(Math::Matrix3<T>::scaling(Math::Vector2<T>{T(4.0)}));
-    CORRADE_COMPARE(o.str(), "SceneGraph::TranslationTransformation: the matrix doesn't represent pure translation\n");
+    CORRADE_COMPARE(out, "SceneGraph::TranslationTransformation: the matrix doesn't represent pure translation\n");
 }
 
 template<class T> void TranslationTransformationTest::toMatrix() {

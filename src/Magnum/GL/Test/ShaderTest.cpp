@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Shader.h"
 
@@ -62,10 +61,10 @@ void ShaderTest::constructCopy() {
 }
 
 void ShaderTest::debugType() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << Shader::Type::Fragment << Shader::Type(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Shader::Type::Fragment GL::Shader::Type(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::Shader::Type::Fragment GL::Shader::Type(0xdead)\n");
 }
 
 }}}}

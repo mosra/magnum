@@ -24,7 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StridedArrayView.h>
@@ -32,7 +31,6 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stram-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -369,11 +367,11 @@ void ColorBatchTest::yFlipInvalidLastDimension() {
        it's enough to test just some */
     char data[32];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     yFlipBc3InPlace(Containers::stridedArrayView(data).expanded<0>(Containers::Size3D{1, 4, 8}));
     yFlipBc1InPlace(Containers::stridedArrayView(data).expanded<0>(Containers::Size3D{1, 2, 16}).every({1, 1, 2}));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::yFlipBc3InPlace(): expected last dimension to be 16 bytes but got 8\n"
         "Math::yFlipBc1InPlace(): last dimension is not contiguous\n");
 }

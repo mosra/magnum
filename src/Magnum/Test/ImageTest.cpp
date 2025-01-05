@@ -29,10 +29,10 @@
    arrayCast() template, which is forward-declared. */
 #include "Magnum/Image.h"
 
-#include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once dataProperties() std::pair is gone */
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -449,24 +449,24 @@ void ImageTest::constructCompressedImplementationSpecific() {
 void ImageTest::constructInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     /* Doesn't consider alignment */
     Image2D{PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{3*3}};
-    CORRADE_COMPARE(out.str(), "Image: data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "Image: data too small, got 9 but expected at least 12 bytes\n");
 }
 
 void ImageTest::constructInvalidCubeMap() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Image3D{PixelFormat::RGBA8Unorm, {3, 3, 5}, Containers::Array<char>{3*3*5*4}, ImageFlag3D::CubeMap};
     Image3D{PixelFormat::RGBA8Unorm, {3, 4, 6}, Containers::Array<char>{3*4*6*4}, ImageFlag3D::CubeMap};
     Image3D{PixelFormat::RGBA8Unorm, {3, 3, 17}, Containers::Array<char>{3*3*17*4}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
     Image3D{PixelFormat::RGBA8Unorm, {4, 3, 18}, Containers::Array<char>{4*3*18*4}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Image: expected exactly 6 faces for a cube map, got 5\n"
         "Image: expected square faces for a cube map, got {3, 4}\n"
         "Image: expected a multiple of 6 faces for a cube map array, got 17\n"
@@ -478,30 +478,30 @@ void ImageTest::constructCompressedInvalidSize() {
 
     /* Too small for given format */
     {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CompressedImage2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{2}};
-        CORRADE_COMPARE(out.str(), "CompressedImage: data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "CompressedImage: data too small, got 2 but expected at least 4 bytes\n");
 
     /* Size should be rounded up even if the image size is not full block */
     } {
-        std::ostringstream out;
+        Containers::String out;
         Error redirectError{&out};
         CompressedImage2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{2}};
-        CORRADE_COMPARE(out.str(), "CompressedImage: data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "CompressedImage: data too small, got 2 but expected at least 4 bytes\n");
     }
 }
 
 void ImageTest::constructCompressedInvalidCubeMap() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CompressedImage3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 3, 5}, Containers::Array<char>{8*5}, ImageFlag3D::CubeMap};
     CompressedImage3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 4, 6}, Containers::Array<char>{8*6}, ImageFlag3D::CubeMap};
     CompressedImage3D{CompressedPixelFormat::Bc1RGBAUnorm, {3, 3, 17}, Containers::Array<char>{8*17}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
     CompressedImage3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 3, 18}, Containers::Array<char>{8*18}, ImageFlag3D::CubeMap |ImageFlag3D::Array};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "CompressedImage: expected exactly 6 faces for a cube map, got 5\n"
         "CompressedImage: expected square faces for a cube map, got {3, 4}\n"
         "CompressedImage: expected a multiple of 6 faces for a cube map array, got 17\n"

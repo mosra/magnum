@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/FileCallback.h"
 
@@ -43,10 +42,10 @@ FileCallbackTest::FileCallbackTest() {
 }
 
 void FileCallbackTest::debugInputFileCallbackPolicy() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << InputFileCallbackPolicy::Close << InputFileCallbackPolicy(0xf0);
-    CORRADE_COMPARE(out.str(), "InputFileCallbackPolicy::Close InputFileCallbackPolicy(0xf0)\n");
+    CORRADE_COMPARE(out, "InputFileCallbackPolicy::Close InputFileCallbackPolicy(0xf0)\n");
 }
 
 }}}

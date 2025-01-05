@@ -24,7 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringIterable.h>
@@ -32,8 +31,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/Vector3.h"
@@ -49,6 +47,8 @@
 #include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/DebugStl.h>
+
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
 #define _MAGNUM_NO_DEPRECATED_OBJECTDATA
 
@@ -230,16 +230,16 @@ void AnySceneImporterTest::detect() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->openFile(data.filename));
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
         "Trade::AnySceneImporter::openFile(): cannot load the {0} plugin\n",
         data.plugin));
     #else
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "PluginManager::Manager::load(): plugin {0} was not found\n"
         "Trade::AnySceneImporter::openFile(): cannot load the {0} plugin\n",
         data.plugin));
@@ -249,10 +249,10 @@ void AnySceneImporterTest::detect() {
 void AnySceneImporterTest::unknown() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->openFile("mesh.wtf"));
-    CORRADE_COMPARE(out.str(), "Trade::AnySceneImporter::openFile(): cannot determine the format of mesh.wtf\n");
+    CORRADE_COMPARE(out, "Trade::AnySceneImporter::openFile(): cannot determine the format of mesh.wtf\n");
 }
 
 void AnySceneImporterTest::propagateFlags() {
@@ -271,14 +271,14 @@ void AnySceneImporterTest::propagateFlags() {
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
     importer->setFlags(ImporterFlag::Verbose);
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Debug redirectOutput{&out};
         CORRADE_VERIFY(importer->openFile(filename));
         CORRADE_VERIFY(importer->mesh(0));
     }
 
-    CORRADE_COMPARE_AS(out.str(), Utility::formatString(
+    CORRADE_COMPARE_AS(out, Utility::format(
         "Trade::AnySceneImporter::openFile(): using StanfordImporter (provided by AssimpImporter)\n"
         "Trade::AssimpImporter: Info,  T0: Load {}\n", filename),
         TestSuite::Compare::StringHasPrefix);
@@ -338,13 +338,13 @@ void AnySceneImporterTest::propagateConfigurationUnknown() {
     importer->configuration().group("postprocess")->addGroup("feh")->setValue("noHereNotEither", false);
     importer->setFlags(data.flags);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "per-face-colors-be.ply")));
     if(data.quiet)
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     else
-        CORRADE_COMPARE(out.str(),
+        CORRADE_COMPARE(out,
         "Trade::AnySceneImporter::openFile(): option noSuchOption not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/notHere not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/feh/noHereNotEither not recognized by AssimpImporter\n");
@@ -365,10 +365,10 @@ void AnySceneImporterTest::propagateConfigurationUnknownInEmptySubgroup() {
     importer->configuration().group("customSceneFieldTypes")->setValue("another", "Int");
     importer->configuration().group("customSceneFieldTypes")->addGroup("notFound")->setValue("noHereNotEither", false);
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "scenes.gltf")));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         /* Should not warn for values added to the empty customSceneFieldTypes
            group, but should warn if a subgroup is added there. This is
            consistent with how the magnum-*converter -i / -c options are

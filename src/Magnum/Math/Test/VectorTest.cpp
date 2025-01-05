@@ -24,10 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector.h"
@@ -839,10 +840,10 @@ void VectorTest::projectedOntoNormalizedNotNormalized() {
     Vector3 vector(1.0f, 2.0f, 3.0f);
     Vector3 line(1.0f, -1.0f, 0.5f);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     vector.projectedOntoNormalized(line);
-    CORRADE_COMPARE(out.str(), "Math::Vector::projectedOntoNormalized(): line Vector(1, -1, 0.5) is not normalized\n");
+    CORRADE_COMPARE(out, "Math::Vector::projectedOntoNormalized(): line Vector(1, -1, 0.5) is not normalized\n");
 }
 
 void VectorTest::flipped() {
@@ -881,12 +882,12 @@ void VectorTest::angleNormalizedButOver1() {
 void VectorTest::angleNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Math::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
     Math::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::angle(): vectors Vector(0.371391, 0.557086, 0.742781) and Vector(1, -2, 3) are not normalized\n"
         "Math::angle(): vectors Vector(2, 3, 4) and Vector(0.267261, -0.534522, 0.801784) are not normalized\n");
 }
@@ -1382,28 +1383,28 @@ void VectorTest::strictWeakOrdering() {
 }
 
 void VectorTest::debug() {
-    std::ostringstream o;
-    Debug(&o) << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
-    CORRADE_COMPARE(o.str(), "Vector(0.5, 15, 1, 1)\n");
+    Containers::String out;
+    Debug{&out} << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
+    CORRADE_COMPARE(out, "Vector(0.5, 15, 1, 1)\n");
 
-    o.str({});
-    Debug(&o) << "a" << Vector4() << "b" << Vector4();
-    CORRADE_COMPARE(o.str(), "a Vector(0, 0, 0, 0) b Vector(0, 0, 0, 0)\n");
+    out = {};
+    Debug{&out} << "a" << Vector4() << "b" << Vector4();
+    CORRADE_COMPARE(out, "a Vector(0, 0, 0, 0) b Vector(0, 0, 0, 0)\n");
 }
 
 void VectorTest::debugPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << Vector4(0.5f, 15.0f, 1.0f, 1.0f) << Vector4();
-    CORRADE_COMPARE(out.str(), "{0.5, 15, 1, 1} Vector(0, 0, 0, 0)\n");
+    CORRADE_COMPARE(out, "{0.5, 15, 1, 1} Vector(0, 0, 0, 0)\n");
 }
 
 void VectorTest::debugPropagateFlags() {
-    std::ostringstream out;
+    Containers::String out;
     /* The modifier shouldn't become persistent for values after. The nospace
        modifier shouldn't get propagated. */
     Debug{&out} << ">" << Debug::nospace  << Debug::hex << Vector2i(0xab, 0xcd) << Vector2i(12, 13);
-    CORRADE_COMPARE(out.str(), ">Vector(0xab, 0xcd) Vector(12, 13)\n");
+    CORRADE_COMPARE(out, ">Vector(0xab, 0xcd) Vector(12, 13)\n");
 }
 
 }}}}

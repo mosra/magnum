@@ -25,10 +25,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 
@@ -194,11 +194,11 @@ void ContextALTest::quietLog() {
 
     const char* argv[] = { "", "--magnum-log", testCaseInstanceId() ? "quiet" : "default" };
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     /* MSVC 2015 and 2017 needs the int cast otherwise C2398 */
     Context context{int(Containers::arraySize(argv)), argv};
-    CORRADE_COMPARE(out.str().empty(), bool(testCaseInstanceId()));
+    CORRADE_COMPARE(!out, bool(testCaseInstanceId()));
 }
 
 void ContextALTest::ignoreUnrelatedOptions() {

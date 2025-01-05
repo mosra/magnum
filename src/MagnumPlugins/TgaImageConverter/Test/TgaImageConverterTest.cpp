@@ -24,7 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
@@ -32,8 +31,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -327,10 +325,10 @@ void TgaImageConverterTest::wrongFormat() {
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
 
     const char data[4]{};
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertToData(ImageView2D{PixelFormat::RG8Unorm, {1, 1}, data}));
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported pixel format PixelFormat::RG8Unorm\n");
+    CORRADE_COMPARE(out, "Trade::TgaImageConverter::convertToData(): unsupported pixel format PixelFormat::RG8Unorm\n");
 }
 
 /* Padded to four byte alignment (the resulting file is *not* padded) */
@@ -364,14 +362,14 @@ void TgaImageConverterTest::uncompressedRgb() {
     /* Disable RLE, that's tested in rle*() instead */
     converter->configuration().setValue("rle", false);
 
-    std::ostringstream out;
+    Containers::String out;
     Containers::Optional<Containers::Array<char>> array;
     {
         Debug redirectOutput{&out};
         array = converter->convertToData(OriginalRGB);
     }
     CORRADE_VERIFY(array);
-    CORRADE_COMPARE(out.str(), data.message24);
+    CORRADE_COMPARE(out, data.message24);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
@@ -406,14 +404,14 @@ void TgaImageConverterTest::uncompressedRgba() {
     /* Disable RLE, that's tested in rle*() instead */
     converter->configuration().setValue("rle", false);
 
-    std::ostringstream out;
+    Containers::String out;
     Containers::Optional<Containers::Array<char>> array;
     {
         Debug redirectOutput{&out};
         array = converter->convertToData(OriginalRGBA);
     }
     CORRADE_VERIFY(array);
-    CORRADE_COMPARE(out.str(), data.message32);
+    CORRADE_COMPARE(out, data.message32);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
@@ -620,7 +618,7 @@ void TgaImageConverterTest::rleFallbackIfLarger() {
     if(data.rleFallbackIfLarger)
         converter->configuration().setValue("rleFallbackIfLarger", *data.rleFallbackIfLarger);
 
-    std::ostringstream out;
+    Containers::String out;
     Containers::Optional<Containers::Array<char>> array;
     {
         Debug redirectOutput{&out};
@@ -632,7 +630,7 @@ void TgaImageConverterTest::rleFallbackIfLarger() {
             .exceptPrefix(sizeof(Implementation::TgaHeader)),
         data.expected,
         TestSuite::Compare::Container);
-    CORRADE_COMPARE(out.str(), data.message);
+    CORRADE_COMPARE(out, data.message);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
@@ -659,13 +657,13 @@ void TgaImageConverterTest::unsupportedMetadata() {
     const char imageData[4]{};
     ImageView2D image{PixelFormat::RGBA8Unorm, {1, 1}, imageData, data.imageFlags};
 
-    std::ostringstream out;
+    Containers::String out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToData(image));
     if(!data.message)
-        CORRADE_COMPARE(out.str(), "");
+        CORRADE_COMPARE(out, "");
     else
-        CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImageConverter::convertToData(): {}\n", data.message));
+        CORRADE_COMPARE(out, Utility::format("Trade::TgaImageConverter::convertToData(): {}\n", data.message));
 }
 
 }}}}

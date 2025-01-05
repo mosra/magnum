@@ -25,9 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Time.h"
@@ -345,19 +344,19 @@ void FunctionsTest::binomialCoefficient() {
 void FunctionsTest::binomialCoefficientInvalidInput() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Math::binomialCoefficient(15, 16);
-    CORRADE_COMPARE(out.str(), "Math::binomialCoefficient(): k can't be greater than n in (15 choose 16)\n");
+    CORRADE_COMPARE(out, "Math::binomialCoefficient(): k can't be greater than n in (15 choose 16)\n");
 }
 
 void FunctionsTest::binomialCoefficientOverflow() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Math::binomialCoefficient(63, 31);
-    CORRADE_COMPARE(out.str(), "Math::binomialCoefficient(): overflow for (63 choose 31)\n");
+    CORRADE_COMPARE(out, "Math::binomialCoefficient(): overflow for (63 choose 31)\n");
 }
 
 void FunctionsTest::fmod() {
@@ -590,10 +589,10 @@ void FunctionsTest::reflect() {
 void FunctionsTest::reflectNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Math::reflect(Vector3{}, Vector3{1.0f});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::reflect(): normal Vector(1, 1, 1) is not normalized\n");
 }
 
@@ -617,10 +616,10 @@ void FunctionsTest::refract() {
 void FunctionsTest::refractNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Math::refract(Vector3{}, Vector3{1.0f}, 0.0f);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::refract(): vectors Vector(0, 0, 0) and Vector(1, 1, 1) are not normalized\n");
 }
 

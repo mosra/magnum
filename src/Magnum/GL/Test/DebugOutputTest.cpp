@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/DebugOutput.h"
 
@@ -57,39 +56,39 @@ DebugOutputTest::DebugOutputTest() {
 }
 
 void DebugOutputTest::debugSource() {
-    std::ostringstream o;
-    Debug(&o) << DebugOutput::Source::ShaderCompiler << DebugOutput::Source(0xdead);
-    CORRADE_COMPARE(o.str(), "GL::DebugOutput::Source::ShaderCompiler GL::DebugOutput::Source(0xdead)\n");
+    Containers::String out;
+    Debug{&out} << DebugOutput::Source::ShaderCompiler << DebugOutput::Source(0xdead);
+    CORRADE_COMPARE(out, "GL::DebugOutput::Source::ShaderCompiler GL::DebugOutput::Source(0xdead)\n");
 }
 
 void DebugOutputTest::debugType() {
-    std::ostringstream o;
-    Debug(&o) << DebugOutput::Type::PushGroup << DebugOutput::Type(0xdead);
-    CORRADE_COMPARE(o.str(), "GL::DebugOutput::Type::PushGroup GL::DebugOutput::Type(0xdead)\n");
+    Containers::String out;
+    Debug{&out} << DebugOutput::Type::PushGroup << DebugOutput::Type(0xdead);
+    CORRADE_COMPARE(out, "GL::DebugOutput::Type::PushGroup GL::DebugOutput::Type(0xdead)\n");
 }
 
 void DebugOutputTest::debugSeverity() {
-    std::ostringstream o;
-    Debug(&o) << DebugOutput::Severity::Notification << DebugOutput::Severity(0xdead);
-    CORRADE_COMPARE(o.str(), "GL::DebugOutput::Severity::Notification GL::DebugOutput::Severity(0xdead)\n");
+    Containers::String out;
+    Debug{&out} << DebugOutput::Severity::Notification << DebugOutput::Severity(0xdead);
+    CORRADE_COMPARE(out, "GL::DebugOutput::Severity::Notification GL::DebugOutput::Severity(0xdead)\n");
 }
 
 void DebugOutputTest::debugMessageSource() {
-    std::ostringstream o;
-    Debug(&o) << DebugMessage::Source::Application << DebugMessage::Source(0xdead);
-    CORRADE_COMPARE(o.str(), "GL::DebugMessage::Source::Application GL::DebugMessage::Source(0xdead)\n");
+    Containers::String out;
+    Debug{&out} << DebugMessage::Source::Application << DebugMessage::Source(0xdead);
+    CORRADE_COMPARE(out, "GL::DebugMessage::Source::Application GL::DebugMessage::Source(0xdead)\n");
 }
 
 void DebugOutputTest::debugMessageType() {
-    std::ostringstream o;
-    Debug(&o) << DebugMessage::Type::DeprecatedBehavior << DebugMessage::Type(0xdead);
-    CORRADE_COMPARE(o.str(), "GL::DebugMessage::Type::DeprecatedBehavior GL::DebugMessage::Type(0xdead)\n");
+    Containers::String out;
+    Debug{&out} << DebugMessage::Type::DeprecatedBehavior << DebugMessage::Type(0xdead);
+    CORRADE_COMPARE(out, "GL::DebugMessage::Type::DeprecatedBehavior GL::DebugMessage::Type(0xdead)\n");
 }
 
 void DebugOutputTest::debugGroupSource() {
-    std::ostringstream o;
-    Debug(&o) << DebugGroup::Source::ThirdParty << DebugGroup::Source(0xdead);
-    CORRADE_COMPARE(o.str(), "GL::DebugGroup::Source::ThirdParty GL::DebugGroup::Source(0xdead)\n");
+    Containers::String out;
+    Debug{&out} << DebugGroup::Source::ThirdParty << DebugGroup::Source(0xdead);
+    CORRADE_COMPARE(out, "GL::DebugGroup::Source::ThirdParty GL::DebugGroup::Source(0xdead)\n");
 }
 
 }}}}

@@ -25,11 +25,9 @@
 */
 
 #include <new>
-#include <sstream>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
@@ -356,10 +354,10 @@ void RenderPassTest::attachmentDescriptionConvertDisallowed() {
     AttachmentDescription description{PixelFormat{}, AttachmentLoadOperation{}, AttachmentStoreOperation{}, ImageLayout{}, ImageLayout{}};
     description->pNext = &description;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     description.vkAttachmentDescription();
-    CORRADE_COMPARE(out.str(), "Vk::AttachmentDescription: disallowing conversion to VkAttachmentDescription with non-empty pNext to prevent information loss\n");
+    CORRADE_COMPARE(out, "Vk::AttachmentDescription: disallowing conversion to VkAttachmentDescription with non-empty pNext to prevent information loss\n");
 }
 
 void RenderPassTest::attachmentReferenceConstruct() {
@@ -414,10 +412,10 @@ void RenderPassTest::attachmentReferenceConvertDisallowed() {
     AttachmentReference reference{0, ImageLayout{}};
     reference->pNext = &reference;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     reference.vkAttachmentReference();
-    CORRADE_COMPARE(out.str(), "Vk::AttachmentReference: disallowing conversion to VkAttachmentReference with non-empty pNext to prevent information loss\n");
+    CORRADE_COMPARE(out, "Vk::AttachmentReference: disallowing conversion to VkAttachmentReference with non-empty pNext to prevent information loss\n");
 }
 
 void RenderPassTest::subpassDescriptionConstruct() {
@@ -498,10 +496,10 @@ void RenderPassTest::subpassDescriptionConstructColorResolveAttachmentsWrongCoun
 
     SubpassDescription description;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     description.setColorAttachments({{}, {}}, {{}, {}, {}});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::SubpassDescription::setColorAttachments(): resolve attachments expected to be either empty or have a size of 2 but got 3\n");
 }
 
@@ -740,10 +738,10 @@ void RenderPassTest::subpassDescriptionConvertDisallowed() {
     SubpassDescription description;
     description->pNext = &description;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     description.vkSubpassDescription();
-    CORRADE_COMPARE(out.str(), "Vk::SubpassDescription: disallowing conversion to VkSubpassDescription with non-empty pNext to prevent information loss\n");
+    CORRADE_COMPARE(out, "Vk::SubpassDescription: disallowing conversion to VkSubpassDescription with non-empty pNext to prevent information loss\n");
 }
 
 void RenderPassTest::subpassDescriptionRvalue() {
@@ -843,10 +841,10 @@ void RenderPassTest::subpassDependencyConvertDisallowed() {
     SubpassDependency dependency{0, 1, PipelineStages{}, PipelineStages{}, Accesses{}, Accesses{}};
     dependency->pNext = &dependency;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     dependency.vkSubpassDependency();
-    CORRADE_COMPARE(out.str(), "Vk::SubpassDependency: disallowing conversion to VkSubpassDependency with non-empty pNext to prevent information loss\n");
+    CORRADE_COMPARE(out, "Vk::SubpassDependency: disallowing conversion to VkSubpassDependency with non-empty pNext to prevent information loss\n");
 }
 
 void RenderPassTest::createInfoConstruct() {
@@ -1154,10 +1152,10 @@ void RenderPassTest::beginInfoConstructImplicitSizeUnknown() {
 
     Framebuffer framebuffer{NoCreate};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     RenderPassBeginInfo{VkRenderPass{}, framebuffer};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Vk::RenderPassBeginInfo: the framebuffer has unknown size, you have to specify the render area explicitly\n");
 }
 

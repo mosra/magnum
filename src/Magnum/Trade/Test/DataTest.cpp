@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Trade/Data.h"
 
@@ -49,31 +48,31 @@ DataTest::DataTest() {
 }
 
 void DataTest::debugDataFlag() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << DataFlag::Owned << DataFlag(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::DataFlag::Owned Trade::DataFlag(0xf0)\n");
+    CORRADE_COMPARE(out, "Trade::DataFlag::Owned Trade::DataFlag(0xf0)\n");
 }
 
 void DataTest::debugDataFlagPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << DataFlag::Owned << Debug::packed << DataFlag(0xf0) << DataFlag::Mutable;
-    CORRADE_COMPARE(out.str(), "Owned 0xf0 Trade::DataFlag::Mutable\n");
+    CORRADE_COMPARE(out, "Owned 0xf0 Trade::DataFlag::Mutable\n");
 }
 
 void DataTest::debugDataFlags() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (DataFlag::Owned|DataFlag::Mutable) << DataFlags{};
-    CORRADE_COMPARE(out.str(), "Trade::DataFlag::Owned|Trade::DataFlag::Mutable Trade::DataFlags{}\n");
+    CORRADE_COMPARE(out, "Trade::DataFlag::Owned|Trade::DataFlag::Mutable Trade::DataFlags{}\n");
 }
 
 void DataTest::debugDataFlagsPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (DataFlag::Owned|DataFlag::Mutable) << Debug::packed << DataFlags{} << (DataFlag::ExternallyOwned|DataFlag::Mutable);
-    CORRADE_COMPARE(out.str(), "Owned|Mutable {} Trade::DataFlag::ExternallyOwned|Trade::DataFlag::Mutable\n");
+    CORRADE_COMPARE(out, "Owned|Mutable {} Trade::DataFlag::ExternallyOwned|Trade::DataFlag::Mutable\n");
 }
 
 }}}}

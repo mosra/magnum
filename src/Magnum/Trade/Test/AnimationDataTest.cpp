@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/DualQuaternion.h"
@@ -181,13 +180,13 @@ void AnimationDataTest::trackTypeSizeAlignment() {
 void AnimationDataTest::trackTypeSizeAlignmentInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     animationTrackTypeSize(AnimationTrackType{});
     animationTrackTypeAlignment(AnimationTrackType{});
     animationTrackTypeSize(AnimationTrackType(0x73));
     animationTrackTypeAlignment(AnimationTrackType(0x73));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::animationTrackTypeSize(): invalid type Trade::AnimationTrackType(0x0)\n"
         "Trade::animationTrackTypeAlignment(): invalid type Trade::AnimationTrackType(0x0)\n"
         "Trade::animationTrackTypeSize(): invalid type Trade::AnimationTrackType(0x73)\n"
@@ -195,17 +194,17 @@ void AnimationDataTest::trackTypeSizeAlignmentInvalid() {
 }
 
 void AnimationDataTest::debugTrackType() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << AnimationTrackType::DualQuaternion << AnimationTrackType(0xde);
-    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackType::DualQuaternion Trade::AnimationTrackType(0xde)\n");
+    CORRADE_COMPARE(out, "Trade::AnimationTrackType::DualQuaternion Trade::AnimationTrackType(0xde)\n");
 }
 
 void AnimationDataTest::debugTrackTypePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Second is not packed, the first should not make any flags persistent */
     Debug{&out} << Debug::packed << AnimationTrackType::DualQuaternion << Debug::packed << AnimationTrackType(0xde) << AnimationTrackType::Float;
-    CORRADE_COMPARE(out.str(), "DualQuaternion 0xde Trade::AnimationTrackType::Float\n");
+    CORRADE_COMPARE(out, "DualQuaternion 0xde Trade::AnimationTrackType::Float\n");
 }
 
 void AnimationDataTest::customTrackTarget() {
@@ -233,33 +232,33 @@ void AnimationDataTest::customTrackTarget() {
 void AnimationDataTest::customTrackTargetTooLarge() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     animationTrackTargetCustom(32768);
-    CORRADE_COMPARE(out.str(), "Trade::animationTrackTargetCustom(): index 32768 too large\n");
+    CORRADE_COMPARE(out, "Trade::animationTrackTargetCustom(): index 32768 too large\n");
 }
 
 void AnimationDataTest::customTrackTargetNotCustom() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     animationTrackTargetCustom(AnimationTrackTarget::Translation2D);
-    CORRADE_COMPARE(out.str(), "Trade::animationTrackTargetCustom(): Trade::AnimationTrackTarget::Translation2D is not custom\n");
+    CORRADE_COMPARE(out, "Trade::animationTrackTargetCustom(): Trade::AnimationTrackTarget::Translation2D is not custom\n");
 }
 
 void AnimationDataTest::debugTrackTarget() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << AnimationTrackTarget::Rotation3D << animationTrackTargetCustom(9) << AnimationTrackTarget(0x4242);
-    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTarget::Rotation3D Trade::AnimationTrackTarget::Custom(9) Trade::AnimationTrackTarget(0x4242)\n");
+    CORRADE_COMPARE(out, "Trade::AnimationTrackTarget::Rotation3D Trade::AnimationTrackTarget::Custom(9) Trade::AnimationTrackTarget(0x4242)\n");
 }
 
 void AnimationDataTest::debugTrackTargetPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << AnimationTrackTarget::Rotation3D << Debug::packed << animationTrackTargetCustom(120) << Debug::packed << AnimationTrackTarget(0x4242) << AnimationTrackType::Float;
-    CORRADE_COMPARE(out.str(), "Rotation3D Custom(120) 0x4242 Trade::AnimationTrackType::Float\n");
+    CORRADE_COMPARE(out, "Rotation3D Custom(120) 0x4242 Trade::AnimationTrackType::Float\n");
 }
 
 void AnimationDataTest::constructTrackDefault() {
@@ -570,20 +569,20 @@ void AnimationDataTest::constructTrackInconsitentViewSize() {
 
     Float time[2];
     Vector2 value[3];
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AnimationTrackData{
          AnimationTrackTarget::Rotation3D, 42,
          Containers::stridedArrayView(time),
          Containers::stridedArrayView(value),
          Animation::Interpolation::Linear};
-    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackData: expected key and value view to have the same size but got 2 and 3\n");
+    CORRADE_COMPARE(out, "Trade::AnimationTrackData: expected key and value view to have the same size but got 2 and 3\n");
 }
 
 void AnimationDataTest::constructTrackUnknownInterpolator() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AnimationTrackData{
          AnimationTrackTarget::Rotation3D, 42,
@@ -598,7 +597,7 @@ void AnimationDataTest::constructTrackUnknownInterpolator() {
          nullptr,
          nullptr,
          Animation::Interpolation::Spline};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnimationTrackData: can't deduce interpolator function for Trade::AnimationTrackType::CubicHermite1D, Trade::AnimationTrackType::Vector2 and Animation::Interpolation::Linear\n"
         /* This assertion is from the delegated-to interpolationFor(), which
            unfortunately doesn't print the types */
@@ -616,14 +615,14 @@ void AnimationDataTest::constructTrackWrongSize() {
         Animation::Interpolation::Constant
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AnimationTrackData{AnimationTrackTarget::Rotation3D, 16, Animation::TrackView<const Float, const Quaternion>{
         {nullptr, 0x100000000ull},
         {nullptr, 0x100000000ull},
         Animation::Interpolation::Constant
     }};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnimationTrackData: expected keyframe count to fit into 32 bits but got 4294967296\n");
 }
 #endif
@@ -645,7 +644,7 @@ void AnimationDataTest::constructTrackWrongStride() {
         Animation::Interpolation::Constant
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AnimationTrackData{AnimationTrackTarget::Scaling2D, 1, Animation::TrackView<const Float, const Vector2>{
         Containers::StridedArrayView1D<Float>{Containers::arrayCast<Float>(toomuch), 2, 32768},
@@ -667,7 +666,7 @@ void AnimationDataTest::constructTrackWrongStride() {
         Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32769}.flipped<0>(),
         Animation::Interpolation::Constant
     }};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnimationTrackData: expected key stride to fit into 16 bits but got 32768\n"
         "Trade::AnimationTrackData: expected key stride to fit into 16 bits but got -32769\n"
         "Trade::AnimationTrackData: expected value stride to fit into 16 bits but got 32768\n"
@@ -911,20 +910,20 @@ void AnimationDataTest::constructImplicitDurationNotOwned() {
 void AnimationDataTest::constructNotOwnedFlagOwned() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AnimationData data{DataFlag::Owned, nullptr, {}, {-1.0f, 7.0f}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnimationData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
 }
 
 void AnimationDataTest::constructImplicitDurationNotOwnedFlagOwned() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AnimationData data{DataFlag::Owned, nullptr, {}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnimationData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
 }
 
@@ -1044,12 +1043,12 @@ void AnimationDataTest::mutableAccessNotAllowed() {
         }};
     CORRADE_COMPARE(data.dataFlags(), DataFlags{});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.mutableData();
     data.mutableTrack(0);
     data.mutableTrack<bool>(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnimationData::mutableData(): the animation is not mutable\n"
         "Trade::AnimationData::mutableTrack(): the animation is not mutable\n"
         "Trade::AnimationData::mutableTrack(): the animation is not mutable\n");
@@ -1083,7 +1082,7 @@ void AnimationDataTest::trackCustomResultType() {
 void AnimationDataTest::trackWrongIndex() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     AnimationData data{nullptr, {
@@ -1096,7 +1095,7 @@ void AnimationDataTest::trackWrongIndex() {
     data.track(1);
     data.mutableTrack(1);
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::AnimationData::trackType(): index 1 out of range for 1 tracks\n"
         "Trade::AnimationData::trackResultType(): index 1 out of range for 1 tracks\n"
         "Trade::AnimationData::trackTargetName(): index 1 out of range for 1 tracks\n"
@@ -1108,7 +1107,7 @@ void AnimationDataTest::trackWrongIndex() {
 void AnimationDataTest::trackWrongType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     AnimationData data{nullptr, {
@@ -1117,13 +1116,13 @@ void AnimationDataTest::trackWrongType() {
 
     data.track<Vector3>(0);
 
-    CORRADE_COMPARE(out.str(), "Trade::AnimationData::track(): improper type requested for Trade::AnimationTrackType::Vector3i\n");
+    CORRADE_COMPARE(out, "Trade::AnimationData::track(): improper type requested for Trade::AnimationTrackType::Vector3i\n");
 }
 
 void AnimationDataTest::trackWrongResultType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     AnimationData data{nullptr, {
@@ -1132,7 +1131,7 @@ void AnimationDataTest::trackWrongResultType() {
 
     data.track<Vector3i, Vector2>(0);
 
-    CORRADE_COMPARE(out.str(), "Trade::AnimationData::track(): improper result type requested for Trade::AnimationTrackType::Vector3\n");
+    CORRADE_COMPARE(out, "Trade::AnimationData::track(): improper result type requested for Trade::AnimationTrackType::Vector3\n");
 }
 
 void AnimationDataTest::release() {

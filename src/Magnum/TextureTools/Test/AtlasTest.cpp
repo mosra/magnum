@@ -24,17 +24,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Containers/Pair.h>
-#include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/TextureTools/Atlas.h"
@@ -561,15 +559,15 @@ AtlasTest::AtlasTest() {
 }
 
 void AtlasTest::debugLandfillFlag() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << AtlasLandfillFlag::RotatePortrait << AtlasLandfillFlag(0xcafedead);
-    CORRADE_COMPARE(out.str(), "TextureTools::AtlasLandfillFlag::RotatePortrait TextureTools::AtlasLandfillFlag(0xcafedead)\n");
+    CORRADE_COMPARE(out, "TextureTools::AtlasLandfillFlag::RotatePortrait TextureTools::AtlasLandfillFlag(0xcafedead)\n");
 }
 
 void AtlasTest::debugLandfillFlags() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::NarrowestFirst|AtlasLandfillFlag(0xdead0000)) << AtlasLandfillFlags{};
-    CORRADE_COMPARE(out.str(), "TextureTools::AtlasLandfillFlag::RotateLandscape|TextureTools::AtlasLandfillFlag::NarrowestFirst|TextureTools::AtlasLandfillFlag(0xdead0000) TextureTools::AtlasLandfillFlags{}\n");
+    CORRADE_COMPARE(out, "TextureTools::AtlasLandfillFlag::RotateLandscape|TextureTools::AtlasLandfillFlag::NarrowestFirst|TextureTools::AtlasLandfillFlag(0xdead0000) TextureTools::AtlasLandfillFlags{}\n");
 }
 
 void AtlasTest::landfillFullFit() {
@@ -1026,14 +1024,14 @@ void AtlasTest::landfillInvalidSize() {
     AtlasLandfill{{16, 16, 0}};
     AtlasLandfill{{16, 65536, 16}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     AtlasLandfill{{0, 16}};
     AtlasLandfill{{16, 65537}};
     AtlasLandfill{{0, 16, 16}};
     AtlasLandfill{{16, 0, 16}};
     AtlasLandfill{{16, 65537, 16}};
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "TextureTools::AtlasLandfill: expected non-zero width, got {0, 16, 1}\n"
         "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got {16, 65537, 1}\n"
         "TextureTools::AtlasLandfill: expected non-zero width, got {0, 16, 16}\n"
@@ -1047,11 +1045,11 @@ void AtlasTest::landfillSetFlagsInvalid() {
 
     AtlasLandfill atlas{{16, 16}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     atlas.setFlags(AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape);
     atlas.setFlags(AtlasLandfillFlag::WidestFirst|AtlasLandfillFlag::NarrowestFirst);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "TextureTools::AtlasLandfill::setFlags(): only one of RotatePortrait and RotateLandscape can be set\n"
         "TextureTools::AtlasLandfill::setFlags(): only one of WidestFirst and NarrowestFirst can be set\n",
         TestSuite::Compare::String);
@@ -1068,14 +1066,14 @@ void AtlasTest::landfillAddMissingRotations() {
     Vector2i offsets[2];
     Vector3i offsets3[2];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     portrait.add(sizes, offsets);
     portrait.add(sizes, offsets3);
     /* "Testing" the rotation-less init list variants too */
     landscape.add({{}, {}}, offsets);
     landscape.add({{}, {}}, offsets3);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "TextureTools::AtlasLandfill::add(): TextureTools::AtlasLandfillFlag::RotatePortrait set, expected a rotations view\n"
         "TextureTools::AtlasLandfill::add(): TextureTools::AtlasLandfillFlag::RotatePortrait set, expected a rotations view\n"
         "TextureTools::AtlasLandfill::add(): TextureTools::AtlasLandfillFlag::RotateLandscape set, expected a rotations view\n"
@@ -1093,11 +1091,11 @@ void AtlasTest::landfillAddInvalidViewSizes() {
     Containers::MutableBitArrayView rotations{rotationsData, 0, 2};
     Containers::MutableBitArrayView rotationsInvalid{rotationsData, 0, 3};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     atlas.add(sizes, offsetsInvalid, rotations);
     atlas.add(sizes, offsets, rotationsInvalid);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "TextureTools::AtlasLandfill::add(): expected sizes and offsets views to have the same size, got 2 and 3\n"
         "TextureTools::AtlasLandfill::add(): expected sizes and rotations views to have the same size, got 2 and 3\n");
 }
@@ -1112,13 +1110,13 @@ void AtlasTest::landfillAddTwoComponentForArray() {
     UnsignedByte rotationsData[1];
     Containers::MutableBitArrayView rotations{rotationsData, 0, 2};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     atlas.add(sizes, offsets, rotations);
     atlas.add(sizes, offsets);
     atlas.add({}, offsets, rotations);
     atlas.add({}, offsets);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "TextureTools::AtlasLandfill::add(): use the three-component overload for an array atlas\n"
         "TextureTools::AtlasLandfill::add(): use the three-component overload for an array atlas\n"
         "TextureTools::AtlasLandfill::add(): use the three-component overload for an array atlas\n"
@@ -1139,7 +1137,7 @@ void AtlasTest::landfillAddTooLargeElement() {
     UnsignedByte rotationsData[1];
     Containers::MutableBitArrayView rotations{rotationsData, 0, 2};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Zero-size elements should still be checked against bounds in the other
        dimension */
@@ -1150,7 +1148,7 @@ void AtlasTest::landfillAddTooLargeElement() {
     /* Sizes that fit but don't after a flip */
     portrait2.add({{13, 13}, {15, 13}}, offsets, rotations);
     landscape2.add({{13, 13}, {13, 15}}, offsets3, rotations);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "TextureTools::AtlasLandfill::add(): expected size 1 to be not larger than {16, 23} but got {0, 24}\n"
         "TextureTools::AtlasLandfill::add(): expected size 1 to be not larger than {23, 16} but got {24, 0}\n"
         "TextureTools::AtlasLandfill::add(): expected size 1 to be not larger than {16, 23} but got {17, 23}\n"
@@ -1180,7 +1178,7 @@ void AtlasTest::landfillAddTooLargeElementPadded() {
     UnsignedByte rotationsData[1];
     Containers::MutableBitArrayView rotations{rotationsData, 0, 2};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Zero-size elements should still be checked against bounds in the other
        dimension */
@@ -1191,7 +1189,7 @@ void AtlasTest::landfillAddTooLargeElementPadded() {
     /* Sizes that fit but don't after a flip */
     portrait2.add({{9, 11}, {12, 11}}, offsets, rotations);
     landscape2.add({{11, 9}, {11, 12}}, offsets3, rotations);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "TextureTools::AtlasLandfill::add(): expected size 1 to be not larger than {16, 23} but got {0, 22} and padding {2, 1}\n"
         "TextureTools::AtlasLandfill::add(): expected size 1 to be not larger than {23, 16} but got {22, 0} and padding {1, 2}\n"
         "TextureTools::AtlasLandfill::add(): expected size 1 to be not larger than {16, 23} but got {13, 21} and padding {2, 1}\n"
@@ -1242,8 +1240,8 @@ void AtlasTest::deprecatedEmpty() {
 }
 
 void AtlasTest::deprecatedTooSmall() {
-    std::ostringstream o;
-    Error redirectError{&o};
+    Containers::String out;
+    Error redirectError{&out};
 
     CORRADE_IGNORE_DEPRECATED_PUSH
     std::vector<Range2Di> atlas = TextureTools::atlas({64, 32}, {
@@ -1253,7 +1251,7 @@ void AtlasTest::deprecatedTooSmall() {
     }, {2, 1});
     CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_VERIFY(atlas.empty());
-    CORRADE_COMPARE(o.str(), "TextureTools::atlas(): requested atlas size Vector(64, 32) is too small to fit 3 Vector(25, 31) textures. Generated atlas will be empty.\n");
+    CORRADE_COMPARE(out, "TextureTools::atlas(): requested atlas size Vector(64, 32) is too small to fit 3 Vector(25, 31) textures. Generated atlas will be empty.\n");
 }
 #endif
 
@@ -1388,10 +1386,10 @@ void AtlasTest::arrayPowerOfTwoInvalidViewSizes() {
     Vector2i sizes[2];
     Vector3i offsetsInvalid[3];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     atlasArrayPowerOfTwo({}, sizes, offsetsInvalid);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "TextureTools::atlasArrayPowerOfTwo(): expected sizes and offsets views to have the same size, got 2 and 3\n");
 }
 
@@ -1401,10 +1399,10 @@ void AtlasTest::arrayPowerOfTwoWrongLayerSize() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     atlasArrayPowerOfTwo(data.size, {}, {});
-    CORRADE_COMPARE(out.str(), Utility::formatString("TextureTools::atlasArrayPowerOfTwo(): expected layer size to be a non-zero power-of-two square, got {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("TextureTools::atlasArrayPowerOfTwo(): expected layer size to be a non-zero power-of-two square, got {}\n", data.message));
 }
 
 void AtlasTest::arrayPowerOfTwoWrongSize() {
@@ -1415,14 +1413,14 @@ void AtlasTest::arrayPowerOfTwoWrongSize() {
 
     Vector3i offsets[3];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     atlasArrayPowerOfTwo({256, 256}, {
         {64, 64},
         {128, 128},
         data.size
     }, offsets);
-    CORRADE_COMPARE(out.str(), Utility::formatString("TextureTools::atlasArrayPowerOfTwo(): expected size 2 to be a non-zero power-of-two square not larger than {{256, 256}} but got {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("TextureTools::atlasArrayPowerOfTwo(): expected size 2 to be a non-zero power-of-two square not larger than {{256, 256}} but got {}\n", data.message));
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -1572,7 +1570,7 @@ void AtlasTest::textureCoordinateTransformationOutOfBounds() {
     atlasTextureCoordinateTransformationRotatedCounterClockwise({5, 4}, {1, 3}, {2, 3});
     atlasTextureCoordinateTransformationRotatedClockwise({5, 4}, {1, 3}, {2, 3});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* Size too large in either dimension */
     atlasTextureCoordinateTransformation({5, 4}, {3, 5}, {});
@@ -1588,7 +1586,7 @@ void AtlasTest::textureCoordinateTransformationOutOfBounds() {
     atlasTextureCoordinateTransformationRotatedCounterClockwise({4, 5}, {1, 2}, {3, 2});
     atlasTextureCoordinateTransformationRotatedClockwise({5, 4}, {2, 1}, {2, 3});
     atlasTextureCoordinateTransformationRotatedClockwise({4, 5}, {1, 2}, {3, 2});
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
        "TextureTools::atlasTextureCoordinateTransformation(): size {3, 5} and offset {0, 0} doesn't fit into {5, 4}\n"
        "TextureTools::atlasTextureCoordinateTransformation(): size {5, 3} and offset {0, 0} doesn't fit into {4, 5}\n"
        "TextureTools::atlasTextureCoordinateTransformationRotatedCounterClockwise(): (rotated) size {3, 5} and offset {0, 0} doesn't fit into {5, 4}\n"

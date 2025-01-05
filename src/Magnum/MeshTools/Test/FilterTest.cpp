@@ -24,12 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/BitArray.h>
 #include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/MeshTools/Filter.h"
@@ -305,10 +304,10 @@ void FilterTest::attributesWrongBitCount() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::stridedArrayView(vertices).slice(&Vertex::textureCoordinates1)}
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     filterAttributes(mesh, Containers::BitArray{ValueInit, 3});
-    CORRADE_COMPARE(out.str(), "MeshTools::filterAttributes(): expected 2 bits but got 3\n");
+    CORRADE_COMPARE(out, "MeshTools::filterAttributes(): expected 2 bits but got 3\n");
 }
 
 void FilterTest::onlyAttributes() {
@@ -526,12 +525,12 @@ void FilterTest::onlyAttributeIdsOutOfRange() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::stridedArrayView(vertices).slice(&Vertex::textureCoordinates1)}
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     filterOnlyAttributes(mesh, {0, 0, 2});
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(), "MeshTools::filterOnlyAttributes(): index 2 out of range for 2 attributes\n");
+    CORRADE_COMPARE(out, "MeshTools::filterOnlyAttributes(): index 2 out of range for 2 attributes\n");
 }
 
 void FilterTest::onlyAttributeIdsNoIndexData() {
@@ -810,12 +809,12 @@ void FilterTest::exceptAttributeIdsOutOfRange() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::stridedArrayView(vertices).slice(&Vertex::textureCoordinates1)}
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     filterExceptAttributes(mesh, {0, 0, 2});
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(), "MeshTools::filterExceptAttributes(): index 2 out of range for 2 attributes\n");
+    CORRADE_COMPARE(out, "MeshTools::filterExceptAttributes(): index 2 out of range for 2 attributes\n");
 }
 
 void FilterTest::exceptAttributeIdsNoIndexData() {

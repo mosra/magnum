@@ -24,13 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Endianness.h>
 
 #include "Magnum/Math/Vector3.h"
@@ -38,6 +37,7 @@
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <tuple>
 #include <vector>
 #endif
 
@@ -218,10 +218,10 @@ void CompressIndicesTest::compressErasedNonContiguous() {
 
     const char indices[6*4]{};
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compressIndices(Containers::StridedArrayView2D<const char>{indices, {6, 2}, {4, 2}});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compressIndices(): second view dimension is not contiguous\n");
 }
 
@@ -230,10 +230,10 @@ void CompressIndicesTest::compressErasedWrongIndexSize() {
 
     const char indices[6*3]{};
 
-    std::stringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compressIndices(Containers::StridedArrayView2D<const char>{indices, {6, 3}});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compressIndices(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
@@ -346,11 +346,11 @@ void CompressIndicesTest::compressMeshDataNonIndexed() {
     Trade::MeshData mesh{MeshPrimitive::TriangleFan, 5};
 
     /* Test both r-value and l-value overload */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compressIndices(mesh);
     compressIndices(Utility::move(mesh));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compressIndices(): mesh data not indexed\n"
         "MeshTools::compressIndices(): mesh data not indexed\n");
 }
@@ -362,11 +362,11 @@ void CompressIndicesTest::compressMeshDataImplementationSpecificIndexType() {
         nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}}, 1};
 
     /* Test both r-value and l-value overload */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compressIndices(mesh);
     compressIndices(Utility::move(mesh));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compressIndices(): mesh has an implementation-specific index type 0xcaca\n"
         "MeshTools::compressIndices(): mesh has an implementation-specific index type 0xcaca\n");
 }
@@ -378,10 +378,10 @@ void CompressIndicesTest::compressMeshDataImplementationSpecificAtLeastIndexType
     Trade::MeshData mesh{MeshPrimitive::Points,
         {}, indices, Trade::MeshIndexData{indices}, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compressIndices(mesh, meshIndexTypeWrap(0xcaca));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::compressIndices(): can't compress to an implementation-specific index type 0xcaca\n");
 }
 
@@ -394,10 +394,10 @@ void CompressIndicesTest::compressAsShort() {
         Containers::arrayView<UnsignedShort>({123, 456}),
         TestSuite::Compare::Container);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compressIndicesAs<UnsignedShort>({65536});
-    CORRADE_COMPARE(out.str(), "MeshTools::compressIndicesAs(): type too small to represent value 65536\n");
+    CORRADE_COMPARE(out, "MeshTools::compressIndicesAs(): type too small to represent value 65536\n");
     CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif

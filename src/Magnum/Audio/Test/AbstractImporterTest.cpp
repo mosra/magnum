@@ -24,14 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <string> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
@@ -187,13 +186,13 @@ void AbstractImporterTest::openFileAsDataNotFound() {
         bool _opened = false;
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!importer.openFile("nonexistent.bin"));
     CORRADE_VERIFY(!importer.isOpened());
     /* There's an error from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nAudio::AbstractImporter::openFile(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -211,11 +210,11 @@ void AbstractImporterTest::openFileNotImplemented() {
         Containers::Array<char> doData() override { return nullptr; }
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!importer.openFile("file.dat"));
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::openFile(): not implemented\n");
+    CORRADE_COMPARE(out, "Audio::AbstractImporter::openFile(): not implemented\n");
 }
 
 void AbstractImporterTest::openDataNotSupported() {
@@ -231,11 +230,11 @@ void AbstractImporterTest::openDataNotSupported() {
         Containers::Array<char> doData() override { return nullptr; }
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!importer.openData(nullptr));
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::openData(): feature not supported\n");
+    CORRADE_COMPARE(out, "Audio::AbstractImporter::openData(): feature not supported\n");
 }
 
 void AbstractImporterTest::openDataNotImplemented() {
@@ -251,11 +250,11 @@ void AbstractImporterTest::openDataNotImplemented() {
         Containers::Array<char> doData() override { return nullptr; }
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!importer.openData(nullptr));
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::openData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Audio::AbstractImporter::openData(): feature advertised but not implemented\n");
 }
 
 void AbstractImporterTest::format() {
@@ -285,11 +284,11 @@ void AbstractImporterTest::formatNoFile() {
         Containers::Array<char> doData() override { return nullptr; }
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     importer.format();
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::format(): no file opened\n");
+    CORRADE_COMPARE(out, "Audio::AbstractImporter::format(): no file opened\n");
 }
 
 void AbstractImporterTest::frequency() {
@@ -319,11 +318,11 @@ void AbstractImporterTest::frequencyNoFile() {
         Containers::Array<char> doData() override { return nullptr; }
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     importer.frequency();
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::frequency(): no file opened\n");
+    CORRADE_COMPARE(out, "Audio::AbstractImporter::frequency(): no file opened\n");
 }
 
 void AbstractImporterTest::data() {
@@ -357,11 +356,11 @@ void AbstractImporterTest::dataNoFile() {
         Containers::Array<char> doData() override { return nullptr; }
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     importer.data();
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::data(): no file opened\n");
+    CORRADE_COMPARE(out, "Audio::AbstractImporter::data(): no file opened\n");
 }
 
 void AbstractImporterTest::dataCustomDeleter() {
@@ -379,39 +378,39 @@ void AbstractImporterTest::dataCustomDeleter() {
         }
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     importer.data();
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::data(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "Audio::AbstractImporter::data(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::debugFeature() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xf0);
-    CORRADE_COMPARE(out.str(), "Audio::ImporterFeature::OpenData Audio::ImporterFeature(0xf0)\n");
+    CORRADE_COMPARE(out, "Audio::ImporterFeature::OpenData Audio::ImporterFeature(0xf0)\n");
 }
 
 void AbstractImporterTest::debugFeaturePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << ImporterFeature::OpenData << Debug::packed << ImporterFeature(0xf0) << ImporterFeature::OpenData;
-    CORRADE_COMPARE(out.str(), "OpenData 0xf0 Audio::ImporterFeature::OpenData\n");
+    CORRADE_COMPARE(out, "OpenData 0xf0 Audio::ImporterFeature::OpenData\n");
 }
 
 void AbstractImporterTest::debugFeatures() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << ImporterFeatures{};
-    CORRADE_COMPARE(out.str(), "Audio::ImporterFeature::OpenData|Audio::ImporterFeature(0xf0) Audio::ImporterFeatures{}\n");
+    CORRADE_COMPARE(out, "Audio::ImporterFeature::OpenData|Audio::ImporterFeature(0xf0) Audio::ImporterFeatures{}\n");
 }
 
 void AbstractImporterTest::debugFeaturesPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << Debug::packed << ImporterFeatures{} << ImporterFeature::OpenData;
-    CORRADE_COMPARE(out.str(), "OpenData|0xf0 {} Audio::ImporterFeature::OpenData\n");
+    CORRADE_COMPARE(out, "OpenData|0xf0 {} Audio::ImporterFeature::OpenData\n");
 }
 
 }}}}

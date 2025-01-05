@@ -24,15 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/System.h>
 
@@ -798,13 +796,13 @@ template<UnsignedInt dimensions> void LineGLTest::constructUniformBuffersInvalid
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     LineGL<dimensions>{typename LineGL<dimensions>::Configuration{}
         .setFlags(data.flags)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Shaders::LineGL: {}\n", data.message));
 }
 
@@ -826,7 +824,7 @@ template<UnsignedInt dimensions> void LineGLTest::setUniformUniformBuffersEnable
     /* This should work fine */
     shader.setViewportSize({});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setTransformationProjectionMatrix({})
         .setBackgroundColor({})
@@ -836,7 +834,7 @@ template<UnsignedInt dimensions> void LineGLTest::setUniformUniformBuffersEnable
         .setMiterLengthLimit({})
         .setMiterAngleLimit({})
         .setObjectId({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::LineGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::LineGL::setBackgroundColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::LineGL::setColor(): the shader was created with uniform buffers enabled\n"
@@ -860,7 +858,7 @@ template<UnsignedInt dimensions> void LineGLTest::bindBufferUniformBuffersNotEna
     GL::Buffer buffer;
     LineGL<dimensions> shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
@@ -869,7 +867,7 @@ template<UnsignedInt dimensions> void LineGLTest::bindBufferUniformBuffersNotEna
           .bindMaterialBuffer(buffer)
           .bindMaterialBuffer(buffer, 0, 16)
           .setDrawOffset(0);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::LineGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::LineGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::LineGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -896,10 +894,10 @@ template<UnsignedInt dimensions> void LineGLTest::setMiterLengthLimitInvalid() {
         .setJoinStyle(data.joinStyle)
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setMiterLengthLimit(data.limit);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Shaders::LineGL::setMiterLengthLimit(): {}\n", data.message));
 }
 
@@ -920,10 +918,10 @@ template<UnsignedInt dimensions> void LineGLTest::setMiterAngleLimitInvalid() {
         .setJoinStyle(data.joinStyle)
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setMiterAngleLimit(data.limit);
-    CORRADE_COMPARE(out.str(), Utility::formatString(
+    CORRADE_COMPARE(out, Utility::format(
         "Shaders::LineGL::setMiterAngleLimit(): {}\n", data.message));
 }
 
@@ -939,10 +937,10 @@ template<UnsignedInt dimensions> void LineGLTest::setObjectIdNotEnabled() {
 
     LineGL<dimensions> shader;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setObjectId(33376);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::LineGL::setObjectId(): the shader was not created with object ID enabled\n");
 }
 
@@ -963,10 +961,10 @@ template<UnsignedInt dimensions> void LineGLTest::setWrongDrawOffset() {
         .setMaterialCount(2)
         .setDrawCount(5)};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     shader.setDrawOffset(5);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Shaders::LineGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 

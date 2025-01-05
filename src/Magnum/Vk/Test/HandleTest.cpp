@@ -24,9 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Handle.h"
 
@@ -45,15 +44,15 @@ HandleTest::HandleTest() {
 }
 
 void HandleTest::debugHandleFlag() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << HandleFlag::DestroyOnDestruction << HandleFlag(0xf0);
-    CORRADE_COMPARE(out.str(), "Vk::HandleFlag::DestroyOnDestruction Vk::HandleFlag(0xf0)\n");
+    CORRADE_COMPARE(out, "Vk::HandleFlag::DestroyOnDestruction Vk::HandleFlag(0xf0)\n");
 }
 
 void HandleTest::debugHandleFlags() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (HandleFlag::DestroyOnDestruction|HandleFlag(0xf0)) << HandleFlags{};
-    CORRADE_COMPARE(out.str(), "Vk::HandleFlag::DestroyOnDestruction|Vk::HandleFlag(0xf0) Vk::HandleFlags{}\n");
+    CORRADE_COMPARE(out, "Vk::HandleFlag::DestroyOnDestruction|Vk::HandleFlag(0xf0) Vk::HandleFlags{}\n");
 }
 
 }}}}

@@ -25,10 +25,10 @@
 */
 
 #include <new>
-#include <sstream>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Shaders/Line.h"
 #include "Magnum/Shaders/Implementation/lineMiterLimit.h"
@@ -278,10 +278,10 @@ void LineTest::materialUniformSetMiterLengthLimitInvalid() {
 
     LineMaterialUniform a;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     a.setMiterLengthLimit(data.limit);
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::LineMaterialUniform::setMiterLengthLimit(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::LineMaterialUniform::setMiterLengthLimit(): {}\n", data.message));
 }
 
 void LineTest::materialUniformSetMiterAngleLimitInvalid() {
@@ -292,22 +292,22 @@ void LineTest::materialUniformSetMiterAngleLimitInvalid() {
 
     LineMaterialUniform a;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     a.setMiterAngleLimit(data.limit);
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::LineMaterialUniform::setMiterAngleLimit(): {}\n", data.message));
+    CORRADE_COMPARE(out, Utility::format("Shaders::LineMaterialUniform::setMiterAngleLimit(): {}\n", data.message));
 }
 
 void LineTest::debugCapStyle() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << LineCapStyle::Square << LineCapStyle(0xb0);
-    CORRADE_COMPARE(out.str(), "Shaders::LineCapStyle::Square Shaders::LineCapStyle(0xb0)\n");
+    CORRADE_COMPARE(out, "Shaders::LineCapStyle::Square Shaders::LineCapStyle(0xb0)\n");
 }
 
 void LineTest::debugJoinStyle() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << LineJoinStyle::Bevel << LineJoinStyle(0xb0);
-    CORRADE_COMPARE(out.str(), "Shaders::LineJoinStyle::Bevel Shaders::LineJoinStyle(0xb0)\n");
+    CORRADE_COMPARE(out, "Shaders::LineJoinStyle::Bevel Shaders::LineJoinStyle(0xb0)\n");
 }
 
 void LineTest::debugVertexAnnotation() {
@@ -315,29 +315,29 @@ void LineTest::debugVertexAnnotation() {
        32bit to avoid surprises when passing it to the default-constructed
        LineGL::Annotation attribute (which defaults to 32bit), so it should
        also print the whole 32bit value. */
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << LineVertexAnnotation::Join << LineVertexAnnotation(0xcafecafe);
-    CORRADE_COMPARE(out.str(), "Shaders::LineVertexAnnotation::Join Shaders::LineVertexAnnotation(0xcafecafe)\n");
+    CORRADE_COMPARE(out, "Shaders::LineVertexAnnotation::Join Shaders::LineVertexAnnotation(0xcafecafe)\n");
 }
 
 void LineTest::debugVertexAnnotationPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << LineVertexAnnotation::Join << Debug::packed << LineVertexAnnotation(0xcafecafe) << LineVertexAnnotation::Begin;
-    CORRADE_COMPARE(out.str(), "Join 0xcafecafe Shaders::LineVertexAnnotation::Begin\n");
+    CORRADE_COMPARE(out, "Join 0xcafecafe Shaders::LineVertexAnnotation::Begin\n");
 }
 
 void LineTest::debugVertexAnnotations() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << (LineVertexAnnotation::Up|LineVertexAnnotation::Join|LineVertexAnnotation(0xb00)) << LineVertexAnnotations{};
-    CORRADE_COMPARE(out.str(), "Shaders::LineVertexAnnotation::Up|Shaders::LineVertexAnnotation::Join|Shaders::LineVertexAnnotation(0xb00) Shaders::LineVertexAnnotations{}\n");
+    CORRADE_COMPARE(out, "Shaders::LineVertexAnnotation::Up|Shaders::LineVertexAnnotation::Join|Shaders::LineVertexAnnotation(0xb00) Shaders::LineVertexAnnotations{}\n");
 }
 
 void LineTest::debugVertexAnnotationsPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (LineVertexAnnotation::Up|LineVertexAnnotation::Join|LineVertexAnnotation(0xb00)) << Debug::packed << LineVertexAnnotations{} << LineVertexAnnotation::Begin;
-    CORRADE_COMPARE(out.str(), "Up|Join|0xb00 {} Shaders::LineVertexAnnotation::Begin\n");
+    CORRADE_COMPARE(out, "Up|Join|0xb00 {} Shaders::LineVertexAnnotation::Begin\n");
 }
 
 }}}}

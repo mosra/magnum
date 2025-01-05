@@ -24,13 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
+#include <sstream> /** @todo remove once Configuration is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/StringToFile.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Configuration.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Trade/Implementation/converterUtilities.h"
@@ -102,10 +100,10 @@ void ImageConverterImplementationTest::pluginInfo() {
         Debug{} << "======================== visual color verification end =========================";
     }
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printPluginInfo(Debug::Flag::DisableColors, *converter);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Plugin name: AnyImageConverter\n"
         "Features:\n"
         "  Convert1DToFile\n"
@@ -138,10 +136,10 @@ void ImageConverterImplementationTest::pluginInfoAliases() {
         Debug{} << "======================== visual color verification end =========================";
     }
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printPluginInfo(Debug::Flag::DisableColors, *importer);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Plugin name: StbImageImporter\n"
         "Aliases:\n"
         "  BmpImporter\n"
@@ -168,10 +166,10 @@ void ImageConverterImplementationTest::pluginConfigurationInfoEmpty() {
         void doClose() override {}
     } importer;
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printPluginConfigurationInfo(Debug::Flag::DisableColors, importer);
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void ImageConverterImplementationTest::pluginConfigurationInfo() {
@@ -215,10 +213,10 @@ true=false
         Debug{} << "======================== visual color verification end =========================";
     }
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printPluginConfigurationInfo(Debug::Flag::DisableColors, importer);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Configuration:\n"
         "  # A comment\n"
         "  ; Another\n"
@@ -250,6 +248,7 @@ void ImageConverterImplementationTest::pluginConfigurationInfoDoxygenDelimiter()
         void doClose() override {}
     } importer;
 
+    /** @todo UGH, fix the insane Configuration API already */
     std::stringstream in;
     in << R"(# [configuration_]
 [configuration]
@@ -263,10 +262,10 @@ newlyAddedValue=42
 
     importer.configuration() = Utility::ConfigurationGroup{*conf.group("configuration")};
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printPluginConfigurationInfo(Debug::Flag::DisableColors, importer);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Configuration:\n"
         "  # A comment\n"
         "  value=yes\n"
@@ -291,10 +290,10 @@ void ImageConverterImplementationTest::importerInfo() {
         Debug{} << "======================== visual color verification end =========================";
     }
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printImporterInfo(Debug::Flag::DisableColors, *importer);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Plugin name: AnyImageImporter\n"
         "Features:\n"
         "  OpenData\n"
@@ -320,10 +319,10 @@ void ImageConverterImplementationTest::converterInfo() {
         Debug{} << "======================== visual color verification end =========================";
     }
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printImageConverterInfo(Debug::Flag::DisableColors, *converter);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Plugin name: AnyImageConverter\n"
         "Features:\n"
         "  Convert1DToFile\n"
@@ -353,10 +352,10 @@ void ImageConverterImplementationTest::converterInfoExtensionMimeType() {
         Debug{} << "======================== visual color verification end =========================";
     }
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printImageConverterInfo(Debug::Flag::DisableColors, *converter);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Plugin name: TgaImageConverter\n"
         "Features:\n"
         "  Convert2DToData\n"
@@ -385,10 +384,10 @@ void ImageConverterImplementationTest::converterInfoExtensionMimeTypeNoFileConve
         Debug{} << "======================== visual color verification end =========================";
     }
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printImageConverterInfo(Debug::Flag::DisableColors, *converter);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "Plugin name: StbResizeImageConverter\n"
         "Features:\n"
         "  Convert2D\n"
@@ -485,10 +484,10 @@ void ImageConverterImplementationTest::info() {
         Debug{} << "======================== visual color verification end =========================";
     }
 
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Implementation::printImageInfo(Debug::Flag::DisableColors, infos, nullptr, nullptr, nullptr);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         Utility::Path::join(TRADE_TEST_DIR, "ImageConverterImplementationTestFiles/info.txt"),
         TestSuite::Compare::StringToFile);
 }
@@ -520,7 +519,7 @@ void ImageConverterImplementationTest::infoError() {
 
     bool error = false;
     std::chrono::high_resolution_clock::duration time;
-    std::ostringstream out;
+    Containers::String out;
     Debug redirectOutput{&out};
     Error redirectError{&out};
     Containers::Array<Implementation::ImageInfo> infos = Implementation::imageInfo(importer, error, time);
@@ -528,7 +527,7 @@ void ImageConverterImplementationTest::infoError() {
     CORRADE_VERIFY(error);
     CORRADE_VERIFY(infos.isEmpty());
     /* But it should not exit after first error */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "1D image 0 error!\n"
         "Can't import 1D image 0 level 0\n"
         "1D image 1 error!\n"

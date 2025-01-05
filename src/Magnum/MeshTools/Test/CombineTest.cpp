@@ -24,12 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/Combine.h"
@@ -191,10 +190,10 @@ void CombineTest::indexedAttributesSingleMesh() {
 void CombineTest::indexedAttributesNoMeshes() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineIndexedAttributes({});
-    CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): no meshes passed\n");
+    CORRADE_COMPARE(out, "MeshTools::combineIndexedAttributes(): no meshes passed\n");
 }
 
 void CombineTest::indexedAttributesNotIndexed() {
@@ -207,10 +206,10 @@ void CombineTest::indexedAttributesNotIndexed() {
         {}, indices, Trade::MeshIndexData{indices}, 1};
     Trade::MeshData c{MeshPrimitive::Lines, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineIndexedAttributes({a, b, c});
-    CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 2 is not indexed\n");
+    CORRADE_COMPARE(out, "MeshTools::combineIndexedAttributes(): data 2 is not indexed\n");
 }
 
 void CombineTest::indexedAttributesDifferentPrimitive() {
@@ -222,10 +221,10 @@ void CombineTest::indexedAttributesDifferentPrimitive() {
     Trade::MeshData b{MeshPrimitive::Points,
         {}, indices, Trade::MeshIndexData{indices}, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineIndexedAttributes({a, b});
-    CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 1 is MeshPrimitive::Points but expected MeshPrimitive::Lines\n");
+    CORRADE_COMPARE(out, "MeshTools::combineIndexedAttributes(): data 1 is MeshPrimitive::Points but expected MeshPrimitive::Lines\n");
 }
 
 void CombineTest::indexedAttributesDifferentIndexCount() {
@@ -240,10 +239,10 @@ void CombineTest::indexedAttributesDifferentIndexCount() {
         {}, indices,
         Trade::MeshIndexData{Containers::arrayView(indices).prefix(4)}, 1};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineIndexedAttributes({a, b, c});
-    CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 2 has 4 indices but expected 5\n");
+    CORRADE_COMPARE(out, "MeshTools::combineIndexedAttributes(): data 2 has 4 indices but expected 5\n");
 }
 
 void CombineTest::indexedAttributesImplementationSpecificIndexType() {
@@ -260,10 +259,10 @@ void CombineTest::indexedAttributesImplementationSpecificIndexType() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineIndexedAttributes({a, b});
-    CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 1 has an implementation-specific index type 0xcaca\n");
+    CORRADE_COMPARE(out, "MeshTools::combineIndexedAttributes(): data 1 has an implementation-specific index type 0xcaca\n");
 }
 
 void CombineTest::indexedAttributesImplementationSpecificVertexFormat() {
@@ -283,10 +282,10 @@ void CombineTest::indexedAttributesImplementationSpecificVertexFormat() {
             Trade::MeshAttributeData{Trade::meshAttributeCustom(3), vertexFormatWrap(0xcaca), nullptr}
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineIndexedAttributes({a, b});
-    CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): attribute 2 of mesh 1 has an implementation-specific format 0xcaca\n");
+    CORRADE_COMPARE(out, "MeshTools::combineIndexedAttributes(): attribute 2 of mesh 1 has an implementation-specific format 0xcaca\n");
 }
 
 void CombineTest::faceAttributes() {
@@ -416,10 +415,10 @@ void CombineTest::faceAttributesMeshNotIndexed() {
     const Trade::MeshData mesh{MeshPrimitive::Triangles, 3};
     const Trade::MeshData faceAttributes{MeshPrimitive::Faces, 0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFaceAttributes(mesh, faceAttributes);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::combineFaceAttributes(): vertex mesh is not indexed\n");
 }
 
@@ -434,11 +433,11 @@ void CombineTest::faceAttributesUnexpectedPrimitive() {
     const Trade::MeshData faceA{MeshPrimitive::Instances, 0};
     const Trade::MeshData faceB{MeshPrimitive::Faces, 0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFaceAttributes(a, faceA);
     combineFaceAttributes(b, faceB);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::combineFaceAttributes(): expected a MeshPrimitive::Triangles mesh and a MeshPrimitive::Faces mesh but got MeshPrimitive::Triangles and MeshPrimitive::Instances\n"
         "MeshTools::combineFaceAttributes(): expected a MeshPrimitive::Triangles mesh and a MeshPrimitive::Faces mesh but got MeshPrimitive::Lines and MeshPrimitive::Faces\n");
 }
@@ -451,10 +450,10 @@ void CombineTest::faceAttributesUnexpectedFaceCount() {
         {}, indices, Trade::MeshIndexData{indices}, 1};
     const Trade::MeshData faceAttributes{MeshPrimitive::Faces, 2};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFaceAttributes(mesh, faceAttributes);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::combineFaceAttributes(): expected 1 face entries for 3 indices but got 2\n");
 }
 
@@ -483,11 +482,11 @@ void CombineTest::faceAttributesImplementationSpecificIndexType() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFaceAttributes(triangles, facesImplementationSpecific);
     combineFaceAttributes(trianglesImplementationSpecific, faces);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::combineFaceAttributes(): face mesh has an implementation-specific index type 0xcaca\n"
         "MeshTools::combineFaceAttributes(): vertex mesh has an implementation-specific index type 0xcaca\n");
 }
@@ -523,11 +522,11 @@ void CombineTest::faceAttributesImplementationSpecificVertexFormat() {
             Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertexFormatWrap(0xcaca), nullptr}
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFaceAttributes(triangles, facesImplementationSpecific);
     combineFaceAttributes(trianglesImplementationSpecific, faces);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::combineFaceAttributes(): attribute 2 of mesh 1 has an implementation-specific format 0xcaca\n"
         "MeshTools::combineFaceAttributes(): attribute 2 of mesh 0 has an implementation-specific format 0xcaca\n");
 }
@@ -555,17 +554,17 @@ void CombineTest::faceAttributesFacesNotInterleaved() {
                 Containers::arrayView(faceData[0].id)}
         }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFaceAttributes(mesh, faceAttributes);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::combineFaceAttributes(): face attributes are not interleaved\n");
 }
 
 void CombineTest::faceAttributesFaceAttributeOffsetOnly() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     combineFaceAttributes(Trade::MeshData{MeshPrimitive::Triangles, 0}, {
         Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
@@ -573,7 +572,7 @@ void CombineTest::faceAttributesFaceAttributeOffsetOnly() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Color,
             VertexFormat::Vector4, 0, 5, 16}
     });
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::combineFaceAttributes(): face attribute 1 is offset-only\n");
 }
 

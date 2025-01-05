@@ -25,9 +25,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -443,11 +444,11 @@ void DualQuaternionTest::invertedNormalized() {
 void DualQuaternionTest::invertedNormalizedNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     DualQuaternion({{ 1.0f,  2.0f,  3.0f}, -4.0f}, {{ 2.5f, -3.1f,  3.3f}, 2.0f}).invertedNormalized();
-    CORRADE_COMPARE(out.str(), "Math::DualQuaternion::invertedNormalized(): DualQuaternion({{1, 2, 3}, -4}, {{2.5, -3.1, 3.3}, 2}) is not normalized\n");
+    CORRADE_COMPARE(out, "Math::DualQuaternion::invertedNormalized(): DualQuaternion({{1, 2, 3}, -4}, {{2.5, -3.1, 3.3}, 2}) is not normalized\n");
 }
 
 void DualQuaternionTest::rotation() {
@@ -471,11 +472,11 @@ void DualQuaternionTest::rotation() {
 void DualQuaternionTest::rotationNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     DualQuaternion::rotation(120.0_degf, Vector3(2.0f));
-    CORRADE_COMPARE(out.str(), "Math::Quaternion::rotation(): axis Vector(2, 2, 2) is not normalized\n");
+    CORRADE_COMPARE(out, "Math::Quaternion::rotation(): axis Vector(2, 2, 2) is not normalized\n");
 }
 
 void DualQuaternionTest::translation() {
@@ -525,11 +526,11 @@ void DualQuaternionTest::matrix() {
 void DualQuaternionTest::matrixNotOrthogonal() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     DualQuaternion::fromMatrix(Matrix4::rotationX(23.0_degf)*Matrix4::translation({-1.0f, 2.0f, 3.0f})*2);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent a rigid transformation:\n"
         "Matrix(2, 0, 0, -2,\n"
         "       0, 1.84101, -0.781462, 1.33763,\n"
@@ -562,13 +563,13 @@ void DualQuaternionTest::transformVectorNormalized() {
 void DualQuaternionTest::transformVectorNormalizedNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     Quaternion a = Quaternion::rotation(23.0_degf, Vector3::xAxis());
     (a*2).transformVectorNormalized({});
     /* Delegates to quaternion, so the assert prints Quaternion */
-    CORRADE_COMPARE(out.str(), "Math::Quaternion::transformVectorNormalized(): Quaternion({0.398736, 0, 0}, 1.95985) is not normalized\n");
+    CORRADE_COMPARE(out, "Math::Quaternion::transformVectorNormalized(): Quaternion({0.398736, 0, 0}, 1.95985) is not normalized\n");
 }
 
 void DualQuaternionTest::transformPoint() {
@@ -606,12 +607,12 @@ void DualQuaternionTest::transformPointNormalized() {
 void DualQuaternionTest::transformPointNormalizedNotNormalized() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     DualQuaternion a = DualQuaternion::translation({-1.0f, 2.0f, 3.0f})*DualQuaternion::rotation(23.0_degf, Vector3::xAxis());
     (a*Dual(2)).transformPointNormalized({});
-    CORRADE_COMPARE(out.str(), "Math::DualQuaternion::transformPointNormalized(): DualQuaternion({{0.398736, 0, 0}, 1.95985}, {{-0.979925, 2.55795, 2.54104}, 0.199368}) is not normalized\n");
+    CORRADE_COMPARE(out, "Math::DualQuaternion::transformPointNormalized(): DualQuaternion({{0.398736, 0, 0}, 1.95985}, {{-0.979925, 2.55795, 2.54104}, 0.199368}) is not normalized\n");
 }
 
 void DualQuaternionTest::sclerp() {
@@ -726,10 +727,10 @@ void DualQuaternionTest::strictWeakOrdering() {
 }
 
 void DualQuaternionTest::debug() {
-    std::ostringstream o;
+    Containers::String out;
 
-    Debug(&o) << DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
-    CORRADE_COMPARE(o.str(), "DualQuaternion({{1, 2, 3}, -4}, {{0.5, -3.1, 3.3}, 2})\n");
+    Debug{&out} << DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
+    CORRADE_COMPARE(out, "DualQuaternion({{1, 2, 3}, -4}, {{0.5, -3.1, 3.3}, 2})\n");
 }
 
 }}}}

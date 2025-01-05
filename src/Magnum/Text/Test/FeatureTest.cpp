@@ -24,10 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Text/Feature.h"
 
@@ -134,9 +132,9 @@ void FeatureTest::rangeConstructBeginEnd() {
 }
 
 void FeatureTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out} << Feature::StandardLigatures << Text::feature('m', 'a', '\xab', 'g');
-    CORRADE_COMPARE(out.str(), "Text::Feature::StandardLigatures Text::Feature('m', 'a', 0xab, 'g')\n");
+    CORRADE_COMPARE(out, "Text::Feature::StandardLigatures Text::Feature('m', 'a', 0xab, 'g')\n");
 }
 
 void FeatureTest::fromFourCC() {
@@ -155,13 +153,13 @@ void FeatureTest::fromString() {
 void FeatureTest::fromStringInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Text::feature("");
     Text::feature("hahah");
     /* Non-ASCII values are allowed, as the constexpr feature() allows them
        too */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::feature(): expected a four-character code, got \n"
         "Text::feature(): expected a four-character code, got hahah\n");
 }

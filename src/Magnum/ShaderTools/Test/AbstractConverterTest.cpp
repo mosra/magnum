@@ -24,17 +24,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <string> /** @todo remove once file callbacks are std::string-free */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once file callbacks are std::string-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
@@ -366,10 +365,10 @@ void AbstractConverterTest::featuresNone() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.features();
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::features(): implementation reported no features\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::features(): implementation reported no features\n");
 }
 
 void AbstractConverterTest::setFlags() {
@@ -414,10 +413,10 @@ void AbstractConverterTest::setFlagsBothQuietAndVerbose() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setFlags(ConverterFlag::Quiet|ConverterFlag::Verbose);
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setFlags(): can't have both Quiet and Verbose set\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setFlags(): can't have both Quiet and Verbose set\n");
 }
 
 void AbstractConverterTest::setFlagsPreprocessNotSupported() {
@@ -431,10 +430,10 @@ void AbstractConverterTest::setFlagsPreprocessNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setFlags(ConverterFlag::PreprocessOnly);
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setFlags(): PreprocessOnly not supported by the implementation\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setFlags(): PreprocessOnly not supported by the implementation\n");
 }
 
 void AbstractConverterTest::setFlagsPreprocessOnlyNotAllowed() {
@@ -452,13 +451,13 @@ void AbstractConverterTest::setFlagsPreprocessOnlyNotAllowed() {
 
     converter.setFlags(ConverterFlag::PreprocessOnly);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkDataToData({});
     converter.linkDataToFile({}, {});
     converter.linkFilesToFile({}, {});
     converter.linkFilesToData({});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "ShaderTools::AbstractConverter::linkDataToData(): PreprocessOnly is not allowed in combination with linking\n"
         "ShaderTools::AbstractConverter::linkDataToFile(): PreprocessOnly is not allowed in combination with linking\n"
         "ShaderTools::AbstractConverter::linkFilesToFile(): PreprocessOnly is not allowed in combination with linking\n"
@@ -548,10 +547,10 @@ void AbstractConverterTest::setDefinitionsNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setDefinitions({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDefinitions(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setDefinitions(): feature not supported\n");
 }
 
 void AbstractConverterTest::setDefinitionsNotImplemented() {
@@ -565,10 +564,10 @@ void AbstractConverterTest::setDefinitionsNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setDefinitions({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDefinitions(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setDefinitions(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::setOptimizationLevel() {
@@ -601,10 +600,10 @@ void AbstractConverterTest::setOptimizationLevelNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setOptimizationLevel({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setOptimizationLevel(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setOptimizationLevel(): feature not supported\n");
 }
 
 void AbstractConverterTest::setOptimizationLevelNotImplemented() {
@@ -618,10 +617,10 @@ void AbstractConverterTest::setOptimizationLevelNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setOptimizationLevel({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setOptimizationLevel(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setOptimizationLevel(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::setDebugInfoLevel() {
@@ -654,10 +653,10 @@ void AbstractConverterTest::setDebugInfoLevelNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setDebugInfoLevel({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDebugInfoLevel(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setDebugInfoLevel(): feature not supported\n");
 }
 
 void AbstractConverterTest::setDebugInfoLevelNotImplemented() {
@@ -671,10 +670,10 @@ void AbstractConverterTest::setDebugInfoLevelNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setDebugInfoLevel({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDebugInfoLevel(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setDebugInfoLevel(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::validateData() {
@@ -709,10 +708,10 @@ void AbstractConverterTest::validateDataFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.validateData(Stage::MeshTask, nullptr).first());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::validateDataNotSupported() {
@@ -726,10 +725,10 @@ void AbstractConverterTest::validateDataNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.validateData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateData(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateData(): feature not supported\n");
 }
 
 void AbstractConverterTest::validateDataNotImplemented() {
@@ -743,10 +742,10 @@ void AbstractConverterTest::validateDataNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.validateData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateData(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::validateDataPreprocessOnly() {
@@ -760,11 +759,11 @@ void AbstractConverterTest::validateDataPreprocessOnly() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setFlags(ConverterFlag::PreprocessOnly);
     converter.validateData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateData(): PreprocessOnly is not allowed in combination with validation\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateData(): PreprocessOnly is not allowed in combination with validation\n");
 }
 
 void AbstractConverterTest::validateDataCustomStringDeleter() {
@@ -782,10 +781,10 @@ void AbstractConverterTest::validateDataCustomStringDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.validateData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateData(): implementation is not allowed to use a custom String deleter\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateData(): implementation is not allowed to use a custom String deleter\n");
 }
 
 void AbstractConverterTest::validateFile() {
@@ -820,10 +819,10 @@ void AbstractConverterTest::validateFileFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.validateFile(Stage::MeshTask, {}).first());
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::validateFileAsData() {
@@ -858,13 +857,13 @@ void AbstractConverterTest::validateFileAsDataNotFound() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     Containers::Pair<bool, Containers::String> out2 = converter.validateFile({}, "nonexistent.bin");
     CORRADE_VERIFY(!out2.first());
     CORRADE_COMPARE(out2.second(), "");
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nShaderTools::AbstractConverter::validateFile(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -880,10 +879,10 @@ void AbstractConverterTest::validateFileNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.validateFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateFile(): feature not supported\n");
 }
 
 void AbstractConverterTest::validateFileNotImplemented() {
@@ -897,10 +896,10 @@ void AbstractConverterTest::validateFileNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.validateFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateFile(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::validateFilePreprocessOnly() {
@@ -914,11 +913,11 @@ void AbstractConverterTest::validateFilePreprocessOnly() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setFlags(ConverterFlag::PreprocessOnly);
     converter.validateFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): PreprocessOnly is not allowed in combination with validation\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateFile(): PreprocessOnly is not allowed in combination with validation\n");
 }
 
 void AbstractConverterTest::validateFileCustomStringDeleter() {
@@ -936,10 +935,10 @@ void AbstractConverterTest::validateFileCustomStringDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.validateFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): implementation is not allowed to use a custom String deleter\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateFile(): implementation is not allowed to use a custom String deleter\n");
 }
 
 void AbstractConverterTest::convertDataToData() {
@@ -976,10 +975,10 @@ void AbstractConverterTest::convertDataToDataFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertDataToData({}, nullptr));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::convertDataToDataNotSupported() {
@@ -993,10 +992,10 @@ void AbstractConverterTest::convertDataToDataNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertDataToData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertDataToData(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertDataToData(): feature not supported\n");
 }
 
 void AbstractConverterTest::convertDataToDataNotImplemented() {
@@ -1011,10 +1010,10 @@ void AbstractConverterTest::convertDataToDataNotImplemented() {
 
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertDataToData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::convertDataToDataCustomDeleter() {
@@ -1032,10 +1031,10 @@ void AbstractConverterTest::convertDataToDataCustomDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertDataToData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertDataToData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertDataToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractConverterTest::convertDataToFileThroughData() {
@@ -1082,11 +1081,11 @@ void AbstractConverterTest::convertDataToFileThroughDataFailed() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertDataToFile({}, {}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::convertDataToFileThroughDataNotWritable() {
@@ -1102,10 +1101,10 @@ void AbstractConverterTest::convertDataToFileThroughDataNotWritable() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertDataToFile({}, nullptr, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "ShaderTools::AbstractConverter::convertDataToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -1121,10 +1120,10 @@ void AbstractConverterTest::convertDataToFileNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertDataToFile({}, {}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertDataToFile(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertDataToFile(): feature not supported\n");
 }
 
 void AbstractConverterTest::convertDataToFileNotImplemented() {
@@ -1138,10 +1137,10 @@ void AbstractConverterTest::convertDataToFileNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertDataToFile({}, {}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::convertFileToFile() {
@@ -1185,10 +1184,10 @@ void AbstractConverterTest::convertFileToFileFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat")));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::convertFileToFileThroughData() {
@@ -1228,11 +1227,11 @@ void AbstractConverterTest::convertFileToFileThroughDataNotFound() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, "nonexistent.bin", "file.dat"));
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nShaderTools::AbstractConverter::convertFileToFile(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -1257,11 +1256,11 @@ void AbstractConverterTest::convertFileToFileThroughDataFailed() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::convertFileToFileThroughDataNotWritable() {
@@ -1277,10 +1276,10 @@ void AbstractConverterTest::convertFileToFileThroughDataNotWritable() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -1296,10 +1295,10 @@ void AbstractConverterTest::convertFileToFileNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertFileToFile({}, {}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToFile(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertFileToFile(): feature not supported\n");
 }
 
 void AbstractConverterTest::convertFileToFileNotImplemented() {
@@ -1313,10 +1312,10 @@ void AbstractConverterTest::convertFileToFileNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertFileToFile({}, {}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToFile(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertFileToFile(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::convertFileToData() {
@@ -1356,10 +1355,10 @@ void AbstractConverterTest::convertFileToDataFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::convertFileToDataAsData() {
@@ -1395,11 +1394,11 @@ void AbstractConverterTest::convertFileToDataAsDataNotFound() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToData({}, "nonexistent.bin"));
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nShaderTools::AbstractConverter::convertFileToData(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -1416,10 +1415,10 @@ void AbstractConverterTest::convertFileToDataNotSupported() {
 
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertFileToData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToData(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertFileToData(): feature not supported\n");
 }
 
 void AbstractConverterTest::convertFileToDataNotImplemented() {
@@ -1433,10 +1432,10 @@ void AbstractConverterTest::convertFileToDataNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertDataToData(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::convertFileToDataCustomDeleter() {
@@ -1454,10 +1453,10 @@ void AbstractConverterTest::convertFileToDataCustomDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.convertFileToData({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertFileToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractConverterTest::linkDataToData() {
@@ -1502,11 +1501,11 @@ void AbstractConverterTest::linkDataToDataFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     converter.linkDataToData({Containers::Pair<Stage, Containers::ArrayView<const void>>{}});
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::linkDataToDataNotSupported() {
@@ -1520,10 +1519,10 @@ void AbstractConverterTest::linkDataToDataNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkDataToData({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToData(): feature not supported\n");
 }
 
 void AbstractConverterTest::linkDataToDataNotImplemented() {
@@ -1537,11 +1536,11 @@ void AbstractConverterTest::linkDataToDataNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     converter.linkDataToData({Containers::Pair<Stage, Containers::ArrayView<const void>>{}});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::linkDataToDataPreprocessOnly() {
@@ -1555,11 +1554,11 @@ void AbstractConverterTest::linkDataToDataPreprocessOnly() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setFlags(ConverterFlag::PreprocessOnly);
     converter.linkDataToData({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): PreprocessOnly is not allowed in combination with linking\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToData(): PreprocessOnly is not allowed in combination with linking\n");
 }
 
 void AbstractConverterTest::linkDataToDataNoData() {
@@ -1573,10 +1572,10 @@ void AbstractConverterTest::linkDataToDataNoData() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkDataToData({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): no data passed\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToData(): no data passed\n");
 }
 
 void AbstractConverterTest::linkDataToDataCustomDeleter() {
@@ -1594,11 +1593,11 @@ void AbstractConverterTest::linkDataToDataCustomDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     converter.linkDataToData({Containers::Pair<Stage, Containers::ArrayView<const void>>{}});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractConverterTest::linkDataToFileThroughData() {
@@ -1651,12 +1650,12 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     CORRADE_VERIFY(!converter.linkDataToFile({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
@@ -1672,11 +1671,11 @@ void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     CORRADE_VERIFY(!converter.linkDataToFile({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -1692,10 +1691,10 @@ void AbstractConverterTest::linkDataToFileNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkDataToFile({}, "file.dat");
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToFile(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToFile(): feature not supported\n");
 }
 
 void AbstractConverterTest::linkDataToFileNotImplemented() {
@@ -1709,11 +1708,11 @@ void AbstractConverterTest::linkDataToFileNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     converter.linkDataToFile({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}, "file.dat");
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::linkDataToFilePreprocessOnly() {
@@ -1727,11 +1726,11 @@ void AbstractConverterTest::linkDataToFilePreprocessOnly() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setFlags(ConverterFlag::PreprocessOnly);
     converter.linkDataToFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToFile(): PreprocessOnly is not allowed in combination with linking\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToFile(): PreprocessOnly is not allowed in combination with linking\n");
 }
 
 void AbstractConverterTest::linkDataToFileNoData() {
@@ -1745,10 +1744,10 @@ void AbstractConverterTest::linkDataToFileNoData() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkDataToFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToFile(): no data passed\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToFile(): no data passed\n");
 }
 
 void AbstractConverterTest::linkFilesToFile() {
@@ -1801,12 +1800,12 @@ void AbstractConverterTest::linkFilesToFileFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToFile({
         {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")}
     }, Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat")));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::linkFilesToFileThroughData() {
@@ -1853,14 +1852,14 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotFound() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToFile({
         {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")},
         {{}, "nonexistent.bin"}
     }, "file.dat"));
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nShaderTools::AbstractConverter::linkFilesToFile(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -1885,13 +1884,13 @@ void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToFile({
         {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     }, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
@@ -1907,12 +1906,12 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToFile({
         {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     }, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -1928,10 +1927,10 @@ void AbstractConverterTest::linkFilesToFileNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkFilesToFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToFile(): feature not supported\n");
 }
 
 void AbstractConverterTest::linkFilesToFileNotImplemented() {
@@ -1945,11 +1944,11 @@ void AbstractConverterTest::linkFilesToFileNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     converter.linkFilesToFile({Containers::Pair<Stage, Containers::StringView>{}}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToFile(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::linkFilesToFilePreprocessOnly() {
@@ -1963,11 +1962,11 @@ void AbstractConverterTest::linkFilesToFilePreprocessOnly() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setFlags(ConverterFlag::PreprocessOnly);
     converter.linkFilesToFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): PreprocessOnly is not allowed in combination with linking\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToFile(): PreprocessOnly is not allowed in combination with linking\n");
 }
 
 void AbstractConverterTest::linkFilesToFileNoFile() {
@@ -1981,10 +1980,10 @@ void AbstractConverterTest::linkFilesToFileNoFile() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkFilesToFile({}, {});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): no files passed\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToFile(): no files passed\n");
 }
 
 void AbstractConverterTest::linkFilesToData() {
@@ -2033,12 +2032,12 @@ void AbstractConverterTest::linkFilesToDataFailed() {
     } converter;
 
     /* The implementation is expected to print an error message on its own */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToData({
         {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")}
     }));
-    CORRADE_COMPARE(out.str(), "");
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::linkFilesToDataAsData() {
@@ -2085,13 +2084,13 @@ void AbstractConverterTest::linkFilesToDataAsDataNotFound() {
 
     CORRADE_VERIFY(true); /* Capture correct function name first */
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToData({
         {{}, "nonexistent.bin"}
     }));
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nShaderTools::AbstractConverter::linkFilesToData(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -2107,10 +2106,10 @@ void AbstractConverterTest::linkFilesToDataNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkFilesToData({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): feature not supported\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToData(): feature not supported\n");
 }
 
 void AbstractConverterTest::linkFilesToDataNotImplemented() {
@@ -2124,12 +2123,12 @@ void AbstractConverterTest::linkFilesToDataNotImplemented() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkFilesToData({
         {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     });
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::linkFilesToDataPreprocessOnly() {
@@ -2143,11 +2142,11 @@ void AbstractConverterTest::linkFilesToDataPreprocessOnly() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.setFlags(ConverterFlag::PreprocessOnly);
     converter.linkFilesToData({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): PreprocessOnly is not allowed in combination with linking\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToData(): PreprocessOnly is not allowed in combination with linking\n");
 }
 
 void AbstractConverterTest::linkFilesToDataNoFile() {
@@ -2161,10 +2160,10 @@ void AbstractConverterTest::linkFilesToDataNoFile() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkFilesToData({});
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): no files passed\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToData(): no files passed\n");
 }
 
 void AbstractConverterTest::linkFilesToDataCustomDeleter() {
@@ -2182,12 +2181,12 @@ void AbstractConverterTest::linkFilesToDataCustomDeleter() {
         }
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter.linkFilesToData({
         {{}, "file.dat"}
     });
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): implementation is not allowed to use a custom Array deleter\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractConverterTest::setInputFileCallback() {
@@ -2320,14 +2319,14 @@ void AbstractConverterTest::setInputFileCallbackNotSupported() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     int a;
     converter.setInputFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setInputFileCallback(): converter supports neither loading from data nor via callbacks, callbacks can't be used\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::setInputFileCallback(): converter supports neither loading from data nor via callbacks, callbacks can't be used\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackValidateFileDirectly() {
@@ -2428,12 +2427,12 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_COMPARE(converter.validateFile({}, "file.dat"), Containers::pair(false, Containers::String{}));
     CORRADE_VERIFY(converter.validateFileCalled);
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateFile(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackValidateFileAsData() {
@@ -2498,11 +2497,11 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsDataFailed() {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_COMPARE(converter.validateFile({}, "file.dat"), Containers::pair(false, Containers::String{}));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::validateFile(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackConvertFileToFileDirectly() {
@@ -2611,12 +2610,12 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileThroughBaseImpl
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!converter.convertFileToFile({}, "file.dat", "/some/path/that/does/not/exist"));
     CORRADE_VERIFY(converter.convertFileToFileCalled);
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToFile(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertFileToFile(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsData() {
@@ -2689,11 +2688,11 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataFailed() 
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!converter.convertFileToFile({}, "file.dat", "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToFile(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertFileToFile(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataNotWritable() {
@@ -2735,12 +2734,12 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataNotWritab
         return {};
     }, state);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, "file.dat", "/some/path/that/does/not/exist"));
     CORRADE_VERIFY(state.loaded);
     CORRADE_VERIFY(state.closed);
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -2855,12 +2854,12 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataThroughBaseImpl
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!converter.convertFileToData({}, "file.dat"));
     CORRADE_VERIFY(converter.convertFileToDataCalled);
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToData(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertFileToData(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackConvertFileToDataAsData() {
@@ -2931,11 +2930,11 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataAsDataFailed() 
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!converter.convertFileToData({}, "file.dat"));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToData(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::convertFileToData(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackLinkFilesToFileDirectly() {
@@ -3082,7 +3081,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
         return {};
     }, state);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!converter.linkFilesToFile({
@@ -3094,7 +3093,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
         "loaded another.dat\n"
         "loaded file.dat\n" /* this fails */
         "closed another.dat\n");
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData() {
@@ -3197,14 +3196,14 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataFailed() {
         return {};
     }, state);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!converter.linkFilesToFile({
         {Stage::Vertex, "another.dat"},
         {Stage::Fragment, "file.dat"}
     }, "/some/path/that/does/not/exist"));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable() {
@@ -3249,7 +3248,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable
         return {};
     }, state);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.linkFilesToFile({
         {Stage::Vertex, "another.dat"},
@@ -3260,7 +3259,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable
         "loaded file.dat\n"
         "closed another.dat\n"
         "closed file.dat\n");
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -3408,7 +3407,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
         return {};
     }, state);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!converter.linkFilesToData({
@@ -3420,7 +3419,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
         "loaded another.dat\n"
         "loaded file.dat\n" /* this fails */
         "closed another.dat\n");
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsData() {
@@ -3521,86 +3520,86 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed() {
         return {};
     }, state);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!converter.linkFilesToData({
         {Stage::Vertex, "another.dat"},
         {Stage::Fragment, "file.dat"}
     }));
-    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::debugFeature() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << ConverterFeature::ConvertData << ConverterFeature(0xf0);
-    CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ConvertData ShaderTools::ConverterFeature(0xf0)\n");
+    CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ConvertData ShaderTools::ConverterFeature(0xf0)\n");
 }
 
 void AbstractConverterTest::debugFeaturePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << ConverterFeature::ConvertData << Debug::packed << ConverterFeature(0xf0) << ConverterFeature::ValidateFile;
-    CORRADE_COMPARE(out.str(), "ConvertData 0xf0 ShaderTools::ConverterFeature::ValidateFile\n");
+    CORRADE_COMPARE(out, "ConvertData 0xf0 ShaderTools::ConverterFeature::ValidateFile\n");
 }
 
 void AbstractConverterTest::debugFeatures() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << ConverterFeatures{};
-    CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ValidateData|ShaderTools::ConverterFeature::ConvertFile ShaderTools::ConverterFeatures{}\n");
+    CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ValidateData|ShaderTools::ConverterFeature::ConvertFile ShaderTools::ConverterFeatures{}\n");
 }
 
 void AbstractConverterTest::debugFeaturesPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << Debug::packed << ConverterFeatures{} << ConverterFeature::InputFileCallback;
-    CORRADE_COMPARE(out.str(), "ValidateData|ConvertFile {} ShaderTools::ConverterFeature::InputFileCallback\n");
+    CORRADE_COMPARE(out, "ValidateData|ConvertFile {} ShaderTools::ConverterFeature::InputFileCallback\n");
 }
 
 void AbstractConverterTest::debugFeaturesSupersets() {
     /* ValidateData is a superset of ValidateFile, so only one should be
        printed */
     {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ValidateFile);
-        CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ValidateData\n");
+        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ValidateData\n");
 
     /* ConvertData is a superset of ConvertFile, so only one should be
        printed */
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (ConverterFeature::ConvertData|ConverterFeature::ConvertFile);
-        CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ConvertData\n");
+        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ConvertData\n");
 
     /* LinkData is a superset of LinkFile, so only one should be printed */
     } {
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out} << (ConverterFeature::LinkData|ConverterFeature::LinkFile);
-        CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::LinkData\n");
+        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::LinkData\n");
     }
 }
 
 void AbstractConverterTest::debugFlag() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << ConverterFlag::Verbose << ConverterFlag(0xf0);
-    CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFlag::Verbose ShaderTools::ConverterFlag(0xf0)\n");
+    CORRADE_COMPARE(out, "ShaderTools::ConverterFlag::Verbose ShaderTools::ConverterFlag(0xf0)\n");
 }
 
 void AbstractConverterTest::debugFlags() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (ConverterFlag::Verbose|ConverterFlag(0xf0)) << ConverterFlags{};
-    CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFlag::Verbose|ShaderTools::ConverterFlag(0xf0) ShaderTools::ConverterFlags{}\n");
+    CORRADE_COMPARE(out, "ShaderTools::ConverterFlag::Verbose|ShaderTools::ConverterFlag(0xf0) ShaderTools::ConverterFlags{}\n");
 }
 
 void AbstractConverterTest::debugFormat() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << Format::Glsl << Format(0xf0);
-    CORRADE_COMPARE(out.str(), "ShaderTools::Format::Glsl ShaderTools::Format(0xf0)\n");
+    CORRADE_COMPARE(out, "ShaderTools::Format::Glsl ShaderTools::Format(0xf0)\n");
 }
 
 }}}}

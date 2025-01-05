@@ -24,13 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove when Debug is stream-free */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/Concatenate.h"
@@ -462,10 +460,10 @@ void ConcatenateTest::concatenateOne() {
 void ConcatenateTest::concatenateNone() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenate({});
-    CORRADE_COMPARE(out.str(), "MeshTools::concatenate(): expected at least one mesh\n");
+    CORRADE_COMPARE(out, "MeshTools::concatenate(): expected at least one mesh\n");
 }
 
 void ConcatenateTest::concatenateInto() {
@@ -641,11 +639,11 @@ void ConcatenateTest::concatenateUnsupportedPrimitive() {
 
     Trade::MeshData a{MeshPrimitive::TriangleStrip, 0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenate({a});
     MeshTools::concatenateInto(a, {a});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::concatenate(): MeshPrimitive::TriangleStrip is not supported, turn it into a plain indexed mesh first\n"
         "MeshTools::concatenateInto(): MeshPrimitive::TriangleStrip is not supported, turn it into a plain indexed mesh first\n");
 }
@@ -657,11 +655,11 @@ void ConcatenateTest::concatenateInconsistentPrimitive() {
     Trade::MeshData a{MeshPrimitive::Triangles, 0};
     Trade::MeshData b{MeshPrimitive::Lines, 0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenate({a, a, b});
     MeshTools::concatenateInto(a, {a, b});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::concatenate(): expected MeshPrimitive::Triangles but got MeshPrimitive::Lines in mesh 2\n"
         "MeshTools::concatenateInto(): expected MeshPrimitive::Triangles but got MeshPrimitive::Lines in mesh 1\n");
 }
@@ -685,11 +683,11 @@ void ConcatenateTest::concatenateInconsistentAttributeFormat() {
             VertexFormat::Vector3usNormalized, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenate({a, a, a, a, b});
     MeshTools::concatenateInto(a, {a, a, a, b});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::concatenate(): expected VertexFormat::Vector3ubNormalized for attribute 2 (Trade::MeshAttribute::Color) but got VertexFormat::Vector3usNormalized in mesh 4 attribute 1\n"
         "MeshTools::concatenateInto(): expected VertexFormat::Vector3ubNormalized for attribute 2 (Trade::MeshAttribute::Color) but got VertexFormat::Vector3usNormalized in mesh 3 attribute 1\n");
 }
@@ -723,13 +721,13 @@ void ConcatenateTest::concatenateInconsistentArrayAttribute() {
             VertexFormat::ByteNormalized, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenate({a, a, a, a, b});
     MeshTools::concatenate({b, b, b, b, a});
     MeshTools::concatenateInto(a2, {a, a, a, b});
     MeshTools::concatenateInto(b, {b, b, b, a});
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "MeshTools::concatenate(): attribute 2 (Trade::MeshAttribute::Custom(42)) is an array but attribute 1 in mesh 4 isn't\n"
         "MeshTools::concatenate(): attribute 1 (Trade::MeshAttribute::Custom(42)) isn't an array but attribute 2 in mesh 4 is\n"
         "MeshTools::concatenateInto(): attribute 2 (Trade::MeshAttribute::Custom(42)) is an array but attribute 1 in mesh 3 isn't\n"
@@ -760,11 +758,11 @@ void ConcatenateTest::concatenateTooLargeAttributeArraySize() {
        concatenate() above) */
     MeshTools::concatenate({b, a});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenate({a, a, a, a, b});
     MeshTools::concatenateInto(a, {a, a, a, b});
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "MeshTools::concatenate(): expected array size 4 or less for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 5 in mesh 4 attribute 1\n"
         "MeshTools::concatenateInto(): expected array size 4 or less for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 5 in mesh 3 attribute 1\n",
         TestSuite::Compare::String);
@@ -795,11 +793,11 @@ void ConcatenateTest::concatenateImplementationSpecificIndexType() {
        a tightly-packed 32bit buffer */
     MeshTools::concatenateInto(bDestination, {a});
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenate({a, b});
     MeshTools::concatenateInto(a, {b});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::concatenate(): mesh 1 has an implementation-specific index type 0xcaca\n"
         "MeshTools::concatenateInto(): mesh 0 has an implementation-specific index type 0xcaca\n");
 }
@@ -823,11 +821,11 @@ void ConcatenateTest::concatenateImplementationSpecificVertexFormat() {
             VertexFormat::Vector3, nullptr}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenate({a, b});
     MeshTools::concatenateInto(a, {b});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "MeshTools::concatenate(): attribute 2 of the first mesh has an implementation-specific format 0xcaca\n"
         "MeshTools::concatenateInto(): attribute 2 of the destination mesh has an implementation-specific format 0xcaca\n");
 }
@@ -837,10 +835,10 @@ void ConcatenateTest::concatenateIntoNoMeshes() {
 
     Trade::MeshData destination{MeshPrimitive::Triangles, 0};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MeshTools::concatenateInto(destination, {});
-    CORRADE_COMPARE(out.str(), "MeshTools::concatenateInto(): no meshes passed\n");
+    CORRADE_COMPARE(out, "MeshTools::concatenateInto(): no meshes passed\n");
 }
 
 }}}}

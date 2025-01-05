@@ -25,9 +25,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <new>
+#include <Corrade/Containers/ArrayView.h> /* arraySize() */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"
@@ -337,9 +338,9 @@ void BezierTest::strictWeakOrdering() {
 }
 
 void BezierTest::debug() {
-    std::ostringstream out;
+    Containers::String out;
     Debug(&out) << CubicBezier2D{Vector2{0.0f, 1.0f}, Vector2{1.5f, -0.3f}, Vector2{2.1f, 0.5f}, Vector2{0.0f, 2.0f}};
-    CORRADE_COMPARE(out.str(), "Bezier({0, 1}, {1.5, -0.3}, {2.1, 0.5}, {0, 2})\n");
+    CORRADE_COMPARE(out, "Bezier({0, 1}, {1.5, -0.3}, {2.1, 0.5}, {0, 2})\n");
 }
 
 }}}}

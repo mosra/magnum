@@ -25,9 +25,8 @@
 */
 
 #include <new>
-#include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/DescriptorPoolCreateInfo.h"
 #include "Magnum/Vk/DescriptorType.h"
@@ -82,31 +81,31 @@ void DescriptorPoolTest::createInfoConstruct() {
 void DescriptorPoolTest::createInfoConstructNoSets() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DescriptorPoolCreateInfo{0, {}};
-    CORRADE_COMPARE(out.str(), "Vk::DescriptorPoolCreateInfo: there has to be at least one set\n");
+    CORRADE_COMPARE(out, "Vk::DescriptorPoolCreateInfo: there has to be at least one set\n");
 }
 
 void DescriptorPoolTest::createInfoConstructNoPools() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DescriptorPoolCreateInfo{5, {}};
-    CORRADE_COMPARE(out.str(), "Vk::DescriptorPoolCreateInfo: there has to be at least one pool\n");
+    CORRADE_COMPARE(out, "Vk::DescriptorPoolCreateInfo: there has to be at least one pool\n");
 }
 
 void DescriptorPoolTest::createInfoConstructEmptyPool() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DescriptorPoolCreateInfo{5, {
         {DescriptorType::InputAttachment, 2},
         {DescriptorType::UniformBuffer, 0},
     }};
-    CORRADE_COMPARE(out.str(), "Vk::DescriptorPoolCreateInfo: pool 1 of Vk::DescriptorType::UniformBuffer has no descriptors\n");
+    CORRADE_COMPARE(out, "Vk::DescriptorPoolCreateInfo: pool 1 of Vk::DescriptorType::UniformBuffer has no descriptors\n");
 }
 
 void DescriptorPoolTest::createInfoConstructNoInit() {

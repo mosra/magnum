@@ -24,17 +24,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <string> /** @todo remove once file callbacks are std::string-free */
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
@@ -296,11 +294,11 @@ void AbstractFontTest::openFileAsDataNotFound() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!font.openFile("nonexistent.foo", 12.0f));
     /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out.str(),
+    CORRADE_COMPARE_AS(out,
         "\nText::AbstractFont::openFile(): cannot open file nonexistent.foo\n",
         TestSuite::Compare::StringHasSuffix);
 }
@@ -320,10 +318,10 @@ void AbstractFontTest::openFileNotImplemented() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.openFile("file.foo", 34.0f);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openFile(): not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): not implemented\n");
 }
 
 void AbstractFontTest::openDataNotSupported() {
@@ -341,10 +339,10 @@ void AbstractFontTest::openDataNotSupported() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.openData(nullptr, 34.0f);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openData(): feature not supported\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::openData(): feature not supported\n");
 }
 
 void AbstractFontTest::openDataNotImplemented() {
@@ -361,10 +359,10 @@ void AbstractFontTest::openDataNotImplemented() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.openData(nullptr, 34.0f);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openData(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::openData(): feature advertised but not implemented\n");
 }
 
 void AbstractFontTest::setFileCallback() {
@@ -488,13 +486,13 @@ void AbstractFontTest::setFileCallbackFileOpened() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::setFileCallback(): can't be set while a font is opened\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::setFileCallback(): can't be set while a font is opened\n");
 }
 
 void AbstractFontTest::setFileCallbackNotImplemented() {
@@ -533,14 +531,14 @@ void AbstractFontTest::setFileCallbackNotSupported() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     int a;
     font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::setFileCallback(): font plugin supports neither loading from data nor via callbacks, callbacks can't be used\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::setFileCallback(): font plugin supports neither loading from data nor via callbacks, callbacks can't be used\n");
 }
 
 void AbstractFontTest::setFileCallbackOpenFileDirectly() {
@@ -667,12 +665,12 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() 
         return {};
     });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!font.openFile("file.dat", 42.0f));
     CORRADE_VERIFY(font.openFileCalled);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openFile(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): cannot open file file.dat\n");
 }
 
 void AbstractFontTest::setFileCallbackOpenFileAsData() {
@@ -757,12 +755,12 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!font.openFile("file.dat", 132.0f));
     CORRADE_VERIFY(!font.openFileCalled);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openFile(): cannot open file file.dat\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): cannot open file file.dat\n");
 }
 
 void AbstractFontTest::properties() {
@@ -806,14 +804,14 @@ void AbstractFontTest::propertiesNoFont() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.size();
     font.ascent();
     font.descent();
     font.lineHeight();
     font.glyphCount();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::size(): no font opened\n"
         "Text::AbstractFont::ascent(): no font opened\n"
         "Text::AbstractFont::descent(): no font opened\n"
@@ -875,11 +873,11 @@ void AbstractFontTest::glyphIdNoFont() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.glyphIdsInto({}, {});
     font.glyphId('a');
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::glyphIdsInto(): no font opened\n"
         /* Both delegate to the same function so the assert is the same */
         "Text::AbstractFont::glyphIdsInto(): no font opened\n");
@@ -902,10 +900,10 @@ void AbstractFontTest::glyphIdInvalidSize() {
     char32_t characters[3];
     UnsignedInt glyphs[4];
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.glyphIdsInto(characters, glyphs);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::glyphIdsInto(): expected the characters and glyphs views to have the same size but got 3 and 4\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::glyphIdsInto(): expected the characters and glyphs views to have the same size but got 3 and 4\n");
 }
 
 void AbstractFontTest::glyphIdOutOfRange() {
@@ -943,10 +941,10 @@ void AbstractFontTest::glyphIdOutOfRange() {
     /* Have to explicitly open in order to make glyphCount() non-zero */
     CORRADE_VERIFY(font.openData(nullptr, 0.0f));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.glyphIdsInto(characters, glyphs);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::glyphIdsInto(): implementation-returned index 4 for character U+2345 out of range for 4 glyphs\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::glyphIdsInto(): implementation-returned index 4 for character U+2345 out of range for 4 glyphs\n");
 }
 
 void AbstractFontTest::glyphName() {
@@ -1027,11 +1025,11 @@ void AbstractFontTest::glyphNameNoFont() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.glyphName(0);
     font.glyphForName("");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::glyphName(): no font opened\n"
         "Text::AbstractFont::glyphForName(): no font opened\n");
 }
@@ -1064,11 +1062,11 @@ void AbstractFontTest::glyphNameOutOfRange() {
     /* Have to explicitly open in order to make glyphCount() non-zero */
     CORRADE_VERIFY(font.openData(nullptr, 0.0f));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.glyphName(4);
     font.glyphForName("");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::glyphName(): index 4 out of range for 4 glyphs\n"
         "Text::AbstractFont::glyphForName(): implementation-returned index 4 out of range for 4 glyphs\n");
 }
@@ -1111,11 +1109,11 @@ void AbstractFontTest::glyphSizeAdvanceNoFont() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.glyphSize(33);
     font.glyphAdvance(97);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::glyphSize(): no font opened\n"
         "Text::AbstractFont::glyphAdvance(): no font opened\n");
 }
@@ -1143,11 +1141,11 @@ void AbstractFontTest::glyphSizeAdvanceOutOfRange() {
     /* Have to explicitly open in order to make glyphCount() non-zero */
     CORRADE_VERIFY(font.openData(nullptr, 0.0f));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.glyphSize(3);
     font.glyphAdvance(3);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::glyphSize(): index 3 out of range for 3 glyphs\n"
         "Text::AbstractFont::glyphAdvance(): index 3 out of range for 3 glyphs\n");
 }
@@ -1232,11 +1230,11 @@ void AbstractFontTest::fillGlyphCacheOutOfRange() {
     /* Have to explicitly open in order to make glyphCount() non-zero */
     CORRADE_VERIFY(font.openData(nullptr, 0.0f));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u, 15u, 3u, 16u, 80u}));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::fillGlyphCache(): index 16 out of range for 16 glyphs\n");
 }
 
@@ -1267,11 +1265,11 @@ void AbstractFontTest::fillGlyphCacheNotUnique() {
     /* Have to explicitly open in order to make glyphCount() non-zero */
     CORRADE_VERIFY(font.openData(nullptr, 0.0f));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u, 15u, 3u, 15u, 80u}));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::fillGlyphCache(): duplicate glyph 15\n");
 }
 
@@ -1402,12 +1400,12 @@ void AbstractFontTest::fillGlyphCacheNotSupported() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u, 15u}));
     font.fillGlyphCache(cache, "hello");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::fillGlyphCache(): feature not supported\n"
         "Text::AbstractFont::fillGlyphCache(): feature not supported\n");
 }
@@ -1439,12 +1437,12 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
     /* Have to explicitly open in order to make glyphCount() non-zero */
     CORRADE_VERIFY(font.openData(nullptr, 0.0f));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u}));
     font.fillGlyphCache(cache, "hello");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented\n"
         "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented\n");
 }
@@ -1463,12 +1461,12 @@ void AbstractFontTest::fillGlyphCacheNoFont() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u, 15u}));
     font.fillGlyphCache(cache, "hello");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Text::AbstractFont::fillGlyphCache(): no font opened\n"
         "Text::AbstractFont::fillGlyphCache(): no font opened\n");
 }
@@ -1487,11 +1485,11 @@ void AbstractFontTest::fillGlyphCacheInvalidUtf8() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, "he\xffo");
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string: he\xffo\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string: he\xffo\n");
 }
 
 void AbstractFontTest::createGlyphCache() {
@@ -1530,10 +1528,10 @@ void AbstractFontTest::createGlyphCacheNotSupported() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.createGlyphCache();
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::createGlyphCache(): feature not supported\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::createGlyphCache(): feature not supported\n");
 }
 
 void AbstractFontTest::createGlyphCacheNotImplemented() {
@@ -1550,10 +1548,10 @@ void AbstractFontTest::createGlyphCacheNotImplemented() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.createGlyphCache();
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented\n");
 }
 
 void AbstractFontTest::createGlyphCacheNoFont() {
@@ -1570,10 +1568,10 @@ void AbstractFontTest::createGlyphCacheNoFont() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.createGlyphCache();
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::createGlyphCache(): no font opened\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::createGlyphCache(): no font opened\n");
 }
 
 void AbstractFontTest::createShaper() {
@@ -1618,10 +1616,10 @@ void AbstractFontTest::createShaperNoFont() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.createShaper();
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::createShaper(): no font opened\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::createShaper(): no font opened\n");
 }
 
 void AbstractFontTest::createShaperNullptr() {
@@ -1638,10 +1636,10 @@ void AbstractFontTest::createShaperNullptr() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return nullptr; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     font.createShaper();
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::createShaper(): implementation returned nullptr\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::createShaper(): implementation returned nullptr\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -1768,12 +1766,12 @@ void AbstractFontTest::layoutArrayGlyphCache() {
 
     DummyGlyphCache cache{PixelFormat::R8Unorm, {1, 2, 3}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     font.layout(cache, 0.25f, "hello");
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::layout(): array glyph caches are not supported\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::layout(): array glyph caches are not supported\n");
 }
 
 void AbstractFontTest::layoutGlyphCacheFontNotFound() {
@@ -1793,13 +1791,13 @@ void AbstractFontTest::layoutGlyphCacheFontNotFound() {
     cache.addFont(3);
     cache.addFont(17);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH
     Containers::Pointer<AbstractLayouter> layouter = font.layout(cache, 0.25f, "hello");
     CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_VERIFY(!layouter);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::layout(): font not found among 2 fonts in passed glyph cache\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::layout(): font not found among 2 fonts in passed glyph cache\n");
 }
 
 void AbstractFontTest::layoutGlyphOutOfRange() {
@@ -1849,12 +1847,12 @@ void AbstractFontTest::layoutGlyphOutOfRange() {
     Range2D rectangle;
     Vector2 cursorPosition;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here too */
     layouter->renderGlyph(3, cursorPosition, rectangle);
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(), "Text::AbstractLayouter::renderGlyph(): index 3 out of range for 3 glyphs\n");
+    CORRADE_COMPARE(out, "Text::AbstractLayouter::renderGlyph(): index 3 out of range for 3 glyphs\n");
 }
 
 void AbstractFontTest::layoutNoFont() {
@@ -1871,42 +1869,42 @@ void AbstractFontTest::layoutNoFont() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
     } font;
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 200}};
     CORRADE_IGNORE_DEPRECATED_PUSH
     font.layout(cache, 0.25f, "hello");
     CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::layout(): no font opened\n");
+    CORRADE_COMPARE(out, "Text::AbstractFont::layout(): no font opened\n");
 }
 #endif
 
 void AbstractFontTest::debugFeature() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << FontFeature::OpenData << FontFeature(0xf0);
-    CORRADE_COMPARE(out.str(), "Text::FontFeature::OpenData Text::FontFeature(0xf0)\n");
+    CORRADE_COMPARE(out, "Text::FontFeature::OpenData Text::FontFeature(0xf0)\n");
 }
 
 void AbstractFontTest::debugFeaturePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << FontFeature::OpenData << Debug::packed << FontFeature(0xf0) << FontFeature::FileCallback;
-    CORRADE_COMPARE(out.str(), "OpenData 0xf0 Text::FontFeature::FileCallback\n");
+    CORRADE_COMPARE(out, "OpenData 0xf0 Text::FontFeature::FileCallback\n");
 }
 
 void AbstractFontTest::debugFeatures() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << FontFeatures{};
-    CORRADE_COMPARE(out.str(), "Text::FontFeature::OpenData|Text::FontFeature::PreparedGlyphCache Text::FontFeatures{}\n");
+    CORRADE_COMPARE(out, "Text::FontFeature::OpenData|Text::FontFeature::PreparedGlyphCache Text::FontFeatures{}\n");
 }
 
 void AbstractFontTest::debugFeaturesPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << Debug::packed << FontFeatures{} << FontFeature::FileCallback;
-    CORRADE_COMPARE(out.str(), "OpenData|PreparedGlyphCache {} Text::FontFeature::FileCallback\n");
+    CORRADE_COMPARE(out, "OpenData|PreparedGlyphCache {} Text::FontFeature::FileCallback\n");
 }
 
 }}}}

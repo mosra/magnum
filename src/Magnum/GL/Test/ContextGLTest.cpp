@@ -25,7 +25,6 @@
 */
 
 #include <algorithm> /* std::find() */
-#include <sstream>
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
@@ -267,7 +266,7 @@ void ContextGLTest::constructConfiguration() {
     if(data.needsExtensionMissing && Context::current().isExtensionSupported(*data.needsExtensionMissing))
         CORRADE_SKIP(data.needsExtensionMissing->string() << "is supported.");
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Context* current = &Context::current();
         Context::makeCurrent(nullptr);
@@ -282,11 +281,11 @@ void ContextGLTest::constructConfiguration() {
     }
 
     if(!data.logShouldContain.isEmpty())
-        CORRADE_COMPARE_AS(out.str(),
+        CORRADE_COMPARE_AS(out,
             data.logShouldContain,
             TestSuite::Compare::StringContains);
     if(!data.logShouldNotContain.isEmpty())
-        CORRADE_COMPARE_AS(out.str(),
+        CORRADE_COMPARE_AS(out,
             data.logShouldNotContain,
             TestSuite::Compare::StringNotContains);
 }
@@ -329,7 +328,7 @@ void ContextGLTest::constructMove() {
     /* The context is still not created here either */
     CORRADE_VERIFY(!Context::hasCurrent());
 
-    std::ostringstream out;
+    Containers::String out;
     {
         Debug redirectOut{&out};
         b.create(Context::Configuration{}
@@ -340,11 +339,11 @@ void ContextGLTest::constructMove() {
             .addDisabledExtensions(data.disabledExtensions));
     }
     if(!data.logShouldContain.isEmpty())
-        CORRADE_COMPARE_AS(out.str(),
+        CORRADE_COMPARE_AS(out,
             data.logShouldContain,
             TestSuite::Compare::StringContains);
     if(!data.logShouldNotContain.isEmpty())
-        CORRADE_COMPARE_AS(out.str(),
+        CORRADE_COMPARE_AS(out,
             data.logShouldNotContain,
             TestSuite::Compare::StringNotContains);
 

@@ -24,10 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/PixelFormat.h"
@@ -217,12 +216,12 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     CORRADE_COMPARE(pixelType(Magnum::PixelFormat::format), Magnum::GL::PixelType::expectedType); \
                     CORRADE_COMPARE(genericPixelFormat(Magnum::GL::PixelFormat::expectedFormat, Magnum::GL::PixelType::expectedType), Magnum::PixelFormat::format); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::format)); \
-                    std::ostringstream out; \
+                    Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
                         Error redirectError{&out}; \
                         textureFormat(Magnum::PixelFormat::format); \
                     } \
-                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out; \
                     ++nextHandled; \
                     continue; \
                 }
@@ -238,12 +237,12 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), Magnum::GL::PixelFormat::expectedFormat); \
                     CORRADE_COMPARE(pixelType(Magnum::PixelFormat::format), Magnum::GL::PixelType::expectedType); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::format)); \
-                    std::ostringstream out; \
+                    Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
                         Error redirectError{&out}; \
                         textureFormat(Magnum::PixelFormat::format); \
                     } \
-                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out; \
                     ++nextHandled; \
                     continue; \
                 }
@@ -253,14 +252,14 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasPixelFormat(Magnum::PixelFormat::format)); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::format)); \
-                    std::ostringstream out; \
+                    Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
                         Error redirectError{&out}; \
                         pixelFormat(Magnum::PixelFormat::format); \
                         pixelType(Magnum::PixelFormat::format); \
                         textureFormat(Magnum::PixelFormat::format); \
                     } \
-                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out; \
                     ++nextHandled; \
                     continue; \
                 }
@@ -295,26 +294,26 @@ void PixelFormatTest::mapFormatUnsupported() {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_SKIP("All pixel formats are supported on ES3+.");
     #else
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     CORRADE_VERIFY(!hasPixelFormat(Magnum::PixelFormat::RGB16UI));
     pixelFormat(Magnum::PixelFormat::RGB16UI);
-    CORRADE_COMPARE(out.str(), "GL::pixelFormat(): format PixelFormat::RGB16UI is not supported on this target\n");
+    CORRADE_COMPARE(out, "GL::pixelFormat(): format PixelFormat::RGB16UI is not supported on this target\n");
     #endif
 }
 
 void PixelFormatTest::mapFormatInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     hasPixelFormat(Magnum::PixelFormat{});
     hasPixelFormat(Magnum::PixelFormat(0x123));
     pixelFormat(Magnum::PixelFormat{});
     pixelFormat(Magnum::PixelFormat(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::hasPixelFormat(): invalid format PixelFormat(0x0)\n"
         "GL::hasPixelFormat(): invalid format PixelFormat(0x123)\n"
         "GL::pixelFormat(): invalid format PixelFormat(0x0)\n"
@@ -329,11 +328,11 @@ void PixelFormatTest::mapTypeImplementationSpecific() {
 void PixelFormatTest::mapTypeImplementationSpecificZero() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     pixelType(Magnum::pixelFormatWrap(PixelFormat::RGBA));
-    CORRADE_COMPARE(out.str(), "GL::pixelType(): format is implementation-specific, but no additional type specifier was passed\n");
+    CORRADE_COMPARE(out, "GL::pixelType(): format is implementation-specific, but no additional type specifier was passed\n");
 }
 
 void PixelFormatTest::mapTypeUnsupported() {
@@ -344,21 +343,21 @@ void PixelFormatTest::mapTypeUnsupported() {
     #else
     CORRADE_VERIFY(!hasPixelFormat(Magnum::PixelFormat::RGBA16UI));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     pixelType(Magnum::PixelFormat::RGB16UI);
-    CORRADE_COMPARE(out.str(), "GL::pixelType(): format PixelFormat::RGB16UI is not supported on this target\n");
+    CORRADE_COMPARE(out, "GL::pixelType(): format PixelFormat::RGB16UI is not supported on this target\n");
     #endif
 }
 
 void PixelFormatTest::mapTypeInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     pixelType(Magnum::PixelFormat{});
     pixelType(Magnum::PixelFormat(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::pixelType(): invalid format PixelFormat(0x0)\n"
         "GL::pixelType(): invalid format PixelFormat(0x123)\n");
 }
@@ -366,11 +365,11 @@ void PixelFormatTest::mapTypeInvalid() {
 void PixelFormatTest::mapTextureFormatImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     hasTextureFormat(Magnum::pixelFormatWrap(PixelFormat::RGBA));
     textureFormat(Magnum::pixelFormatWrap(PixelFormat::RGBA));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::hasTextureFormat(): cannot map an implementation-specific pixel format to an OpenGL texture format\n"
         "GL::textureFormat(): cannot map an implementation-specific pixel format to an OpenGL texture format\n");
 }
@@ -381,31 +380,31 @@ void PixelFormatTest::mapTextureFormatUnsupported() {
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
     CORRADE_SKIP("All pixel formats are supported on ES3+.");
     #elif defined(MAGNUM_TARGET_GLES2)
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     textureFormat(Magnum::PixelFormat::Depth32F);
-    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format PixelFormat::Depth32F is not supported on this target\n");
+    CORRADE_COMPARE(out, "GL::textureFormat(): format PixelFormat::Depth32F is not supported on this target\n");
     #else
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     textureFormat(Magnum::PixelFormat::Depth16UnormStencil8UI);
-    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format PixelFormat::Depth16UnormStencil8UI is not supported on this target\n");
+    CORRADE_COMPARE(out, "GL::textureFormat(): format PixelFormat::Depth16UnormStencil8UI is not supported on this target\n");
     #endif
 }
 
 void PixelFormatTest::mapTextureFormatInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     hasTextureFormat(Magnum::PixelFormat{});
     hasTextureFormat(Magnum::PixelFormat(0x123));
     textureFormat(Magnum::PixelFormat{});
     textureFormat(Magnum::PixelFormat(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::hasTextureFormat(): invalid format PixelFormat(0x0)\n"
         "GL::hasTextureFormat(): invalid format PixelFormat(0x123)\n"
         "GL::textureFormat(): invalid format PixelFormat(0x0)\n"
@@ -443,10 +442,10 @@ void PixelFormatTest::size() {
 void PixelFormatTest::sizeInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     pixelFormatSize(PixelFormat::DepthStencil, PixelType::Float);
-    CORRADE_COMPARE(out.str(), "GL::pixelFormatSize(): invalid GL::PixelType::Float specified for GL::PixelFormat::DepthStencil\n");
+    CORRADE_COMPARE(out, "GL::pixelFormatSize(): invalid GL::PixelType::Float specified for GL::PixelFormat::DepthStencil\n");
 }
 
 void PixelFormatTest::mapCompressedFormatTextureFormat() {
@@ -507,13 +506,13 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::format)); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::CompressedPixelFormat::format)); \
-                    std::ostringstream out; \
+                    Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
                         Error redirectError{&out}; \
                         compressedPixelFormat(Magnum::CompressedPixelFormat::format); \
                         textureFormat(Magnum::CompressedPixelFormat::format); \
                     } \
-                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out; \
                     ++nextHandled; \
                     continue; \
                 }
@@ -547,17 +546,17 @@ void PixelFormatTest::mapCompressedFormatUnsupported() {
     #ifdef MAGNUM_TARGET_GLES2
     CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compressedPixelFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm);
-    CORRADE_COMPARE(out.str(), "GL::compressedPixelFormat(): format CompressedPixelFormat::Astc3x3x3RGBAUnorm is not supported on this target\n");
+    CORRADE_COMPARE(out, "GL::compressedPixelFormat(): format CompressedPixelFormat::Astc3x3x3RGBAUnorm is not supported on this target\n");
     #elif !defined(MAGNUM_TARGET_GLES)
     CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::PvrtcRGB2bppUnorm));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     compressedPixelFormat(Magnum::CompressedPixelFormat::PvrtcRGB2bppUnorm);
-    CORRADE_COMPARE(out.str(), "GL::compressedPixelFormat(): format CompressedPixelFormat::PvrtcRGB2bppUnorm is not supported on this target\n");
+    CORRADE_COMPARE(out, "GL::compressedPixelFormat(): format CompressedPixelFormat::PvrtcRGB2bppUnorm is not supported on this target\n");
     #else
     CORRADE_SKIP("All compressed pixel formats are supported on ES3.");
     #endif
@@ -566,14 +565,14 @@ void PixelFormatTest::mapCompressedFormatUnsupported() {
 void PixelFormatTest::mapCompressedFormatInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     hasCompressedPixelFormat(Magnum::CompressedPixelFormat{});
     hasCompressedPixelFormat(Magnum::CompressedPixelFormat(0x123));
     compressedPixelFormat(Magnum::CompressedPixelFormat{});
     compressedPixelFormat(Magnum::CompressedPixelFormat(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::hasCompressedPixelFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "GL::hasCompressedPixelFormat(): invalid format CompressedPixelFormat(0x123)\n"
         "GL::compressedPixelFormat(): invalid format CompressedPixelFormat(0x0)\n"
@@ -592,17 +591,17 @@ void PixelFormatTest::mapCompressedTextureFormatUnsupported() {
     #ifdef MAGNUM_TARGET_GLES2
     CORRADE_VERIFY(!hasTextureFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     textureFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm);
-    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format CompressedPixelFormat::Astc3x3x3RGBAUnorm is not supported on this target\n");
+    CORRADE_COMPARE(out, "GL::textureFormat(): format CompressedPixelFormat::Astc3x3x3RGBAUnorm is not supported on this target\n");
     #elif !defined(MAGNUM_TARGET_GLES)
     CORRADE_VERIFY(!hasTextureFormat(Magnum::CompressedPixelFormat::PvrtcRGB2bppUnorm));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     textureFormat(Magnum::CompressedPixelFormat::PvrtcRGB2bppUnorm);
-    CORRADE_COMPARE(out.str(), "GL::textureFormat(): format CompressedPixelFormat::PvrtcRGB2bppUnorm is not supported on this target\n");
+    CORRADE_COMPARE(out, "GL::textureFormat(): format CompressedPixelFormat::PvrtcRGB2bppUnorm is not supported on this target\n");
     #else
     CORRADE_SKIP("All compressed pixel formats are supported on ES3.");
     #endif
@@ -611,14 +610,14 @@ void PixelFormatTest::mapCompressedTextureFormatUnsupported() {
 void PixelFormatTest::mapCompressedTextureFormatInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
 
     hasTextureFormat(Magnum::CompressedPixelFormat{});
     hasTextureFormat(Magnum::CompressedPixelFormat(0x123));
     textureFormat(Magnum::CompressedPixelFormat{});
     textureFormat(Magnum::CompressedPixelFormat(0x123));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "GL::hasTextureFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "GL::hasTextureFormat(): invalid format CompressedPixelFormat(0x123)\n"
         "GL::textureFormat(): invalid format CompressedPixelFormat(0x0)\n"
@@ -637,31 +636,31 @@ void PixelFormatTest::mapGenericCompressedFormatUnsupported() {
 }
 
 void PixelFormatTest::debugPixelFormat() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << PixelFormat::RGBA << PixelFormat(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::PixelFormat::RGBA GL::PixelFormat(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::PixelFormat::RGBA GL::PixelFormat(0xdead)\n");
 }
 
 void PixelFormatTest::debugPixelType() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << PixelType::UnsignedByte << PixelType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::PixelType::UnsignedByte GL::PixelType(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::PixelType::UnsignedByte GL::PixelType(0xdead)\n");
 }
 
 void PixelFormatTest::debugCompressedPixelFormat() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << CompressedPixelFormat::RGBS3tcDxt1 << CompressedPixelFormat(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::CompressedPixelFormat::RGBS3tcDxt1 GL::CompressedPixelFormat(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::CompressedPixelFormat::RGBS3tcDxt1 GL::CompressedPixelFormat(0xdead)\n");
 }
 
 void PixelFormatTest::debugTextureFormat() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << TextureFormat::DepthComponent << TextureFormat(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::TextureFormat::DepthComponent GL::TextureFormat(0xdead)\n");
+    CORRADE_COMPARE(out, "GL::TextureFormat::DepthComponent GL::TextureFormat(0xdead)\n");
 }
 
 }}}}

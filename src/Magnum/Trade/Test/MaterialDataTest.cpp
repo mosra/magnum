@@ -25,13 +25,11 @@
 */
 
 #include <algorithm> /* std::next_permutation() */
-#include <sstream>
 #include <Corrade/Containers/StaticArray.h>
-#include <Corrade/Containers/StringStl.h> /* partition() on a std::string */
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
@@ -363,11 +361,11 @@ void MaterialDataTest::layerName() {
 void MaterialDataTest::layerNameInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     materialLayerName(MaterialLayer(0x0));
     materialLayerName(MaterialLayer(0xdeadbeef));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::materialLayerName(): invalid layer Trade::MaterialLayer(0x0)\n"
         "Trade::materialLayerName(): invalid layer Trade::MaterialLayer(0xdeadbeef)\n");
 }
@@ -379,11 +377,11 @@ void MaterialDataTest::attributeName() {
 void MaterialDataTest::attributeNameInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     materialAttributeName(MaterialAttribute(0x0));
     materialAttributeName(MaterialAttribute(0xdeadbeef));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::materialAttributeName(): invalid attribute Trade::MaterialAttribute(0x0)\n"
         "Trade::materialAttributeName(): invalid attribute Trade::MaterialAttribute(0xdeadbeef)\n");
 }
@@ -411,13 +409,13 @@ void MaterialDataTest::attributeTypeSize() {
 void MaterialDataTest::attributeTypeSizeInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     materialAttributeTypeSize(MaterialAttributeType(0x0));
     materialAttributeTypeSize(MaterialAttributeType(0xfe));
     materialAttributeTypeSize(MaterialAttributeType::String);
     materialAttributeTypeSize(MaterialAttributeType::Buffer);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0x0)\n"
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0xfe)\n"
         "Trade::materialAttributeTypeSize(): string and buffer size is unknown\n"
@@ -774,11 +772,11 @@ void MaterialDataTest::constructAttributeLayer() {
 void MaterialDataTest::constructAttributeInvalidName() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{MaterialAttribute(0x0), 5};
     MaterialAttributeData{MaterialAttribute(0xfefe), 5};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialAttributeData: invalid name Trade::MaterialAttribute(0xfefe)\n");
 }
@@ -786,11 +784,11 @@ void MaterialDataTest::constructAttributeInvalidName() {
 void MaterialDataTest::constructAttributeInvalidLayerName() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{MaterialLayer(0x0)};
     MaterialAttributeData{MaterialLayer(0xfefe)};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: invalid name Trade::MaterialLayer(0x0)\n"
         "Trade::MaterialAttributeData: invalid name Trade::MaterialLayer(0xfefe)\n");
 }
@@ -798,21 +796,21 @@ void MaterialDataTest::constructAttributeInvalidLayerName() {
 void MaterialDataTest::constructAttributeWrongTypeForName() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{MaterialAttribute::DiffuseColor, Vector3ui{255, 16, 24}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: expected Trade::MaterialAttributeType::Vector4 for Trade::MaterialAttribute::DiffuseColor but got Trade::MaterialAttributeType::Vector3ui\n");
 }
 
 void MaterialDataTest::constructAttributeInvalidType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"bla", MaterialAttributeType(0x0), nullptr};
     MaterialAttributeData{"bla", MaterialAttributeType(0xfe),  nullptr};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0x0)\n"
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0xfe)\n");
 }
@@ -820,13 +818,13 @@ void MaterialDataTest::constructAttributeInvalidType() {
 void MaterialDataTest::constructAttributeEmptyName() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"", Int{}};
     /* Constexpr variant has the same assert, but in the header. It should have
        the same output. */
     /*constexpr*/ MaterialAttributeData{""_s, Int{}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: name is not allowed to be empty\n"
         "Trade::MaterialAttributeData: name is not allowed to be empty\n");
 }
@@ -838,13 +836,13 @@ void MaterialDataTest::constructAttributeEmptyNameString() {
     MaterialAttributeData{"hello this string is empty", ""};
     MaterialAttributeData{"hello this string is empty"_s, ""_s};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"", "hello"};
     /* Constexpr variant has the same assert, but in the header. It should have
        the same output. */
     /*constexpr*/ MaterialAttributeData{""_s, "hello"_s};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: name is not allowed to be empty\n"
         "Trade::MaterialAttributeData: name is not allowed to be empty\n");
 }
@@ -855,17 +853,17 @@ void MaterialDataTest::constructAttributeEmptyNameBuffer() {
     /* This has no reason to not be allowed */
     MaterialAttributeData{"hello this buffer is empty", Containers::ArrayView<const void>{}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"", Containers::ArrayView<const void>{"E", 2}};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: name is not allowed to be empty\n");
 }
 
 void MaterialDataTest::constructAttributeTooLarge() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"attributeIsLong", Matrix3x4{}};
     /* Constexpr variant has the same assert, but in the header. It should have
@@ -873,11 +871,11 @@ void MaterialDataTest::constructAttributeTooLarge() {
        lost when encountering T in there, so the assert is less useful. */
     /*constexpr*/ MaterialAttributeData{"attributeIsLong"_s, Matrix3x4{}};
     #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: name attributeIsLong too long, expected at most 14 bytes for Trade::MaterialAttributeType::Matrix3x4 but got 15\n"
         "Trade::MaterialAttributeData: name attributeIsLong too long, expected at most 14 bytes for Trade::MaterialAttributeType::Matrix3x4 but got 15\n");
     #else
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: name attributeIsLong too long, expected at most 14 bytes for Trade::MaterialAttributeType::Matrix3x4 but got 15\n"
         "Trade::MaterialAttributeData: name attributeIsLong too long, got 15 bytes\n");
     #endif
@@ -886,13 +884,13 @@ void MaterialDataTest::constructAttributeTooLarge() {
 void MaterialDataTest::constructAttributeTooLargeString() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"attribute is long", "This is a problem, got a long piece of text!"};
     /* Constexpr variant has the same assert, but in the header. It should have
        the same output. */
     /*constexpr*/ MaterialAttributeData{"attribute is long"_s, "This is a problem, got a long piece of text!"_s};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: name attribute is long and value This is a problem, got a long piece of text! too long, expected at most 60 bytes in total but got 61\n"
         "Trade::MaterialAttributeData: name attribute is long and value This is a problem, got a long piece of text! too long, expected at most 60 bytes in total but got 61\n");
 }
@@ -902,20 +900,20 @@ void MaterialDataTest::constructAttributeTooLargeBuffer() {
 
     int data[10]; /* 40 bytes */
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"attribute is very long", data};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: name attribute is very long and a 40-byte value too long, expected at most 61 bytes in total but got 62\n");
 }
 
 void MaterialDataTest::constructAttributeTooLargeNameString() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{MaterialAttribute::LayerName, "This is a problem, got a huge, yuuge value to store"};
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData: name  LayerName and value This is a problem, got a huge, yuuge value to store too long, expected at most 60 bytes in total but got 61\n");
 }
 
@@ -926,10 +924,10 @@ void MaterialDataTest::constructAttributeTooLargeNameBuffer() {
 void MaterialDataTest::constructAttributeWrongAccessType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"thing3", Matrix4x3{}}.value<Int>();
-    CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): thing3 is Trade::MaterialAttributeType::Matrix4x3 but requested a type equivalent to Trade::MaterialAttributeType::Int\n");
+    CORRADE_COMPARE(out, "Trade::MaterialAttributeData::value(): thing3 is Trade::MaterialAttributeType::Matrix4x3 but requested a type equivalent to Trade::MaterialAttributeType::Int\n");
 }
 
 void MaterialDataTest::constructAttributeWrongAccessPointerType() {
@@ -945,12 +943,12 @@ void MaterialDataTest::constructAttributeWrongAccessPointerType() {
     thing3.value<Float*>();
     boom.value<const Int*>();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     thing3.value<Int>();
     thing3.value<const Int*>();
     boom.value<Float*>();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialAttributeData::value(): thing3 is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Int\n"
         "Trade::MaterialAttributeData::value(): thing3 is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Pointer\n"
         "Trade::MaterialAttributeData::value(): boom is Trade::MaterialAttributeType::Pointer but requested a type equivalent to Trade::MaterialAttributeType::MutablePointer\n");
@@ -959,19 +957,19 @@ void MaterialDataTest::constructAttributeWrongAccessPointerType() {
 void MaterialDataTest::constructAttributeWrongAccessTypeString() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"thing3", Matrix4x3{}}.value<Containers::StringView>();
-    CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): thing3 of Trade::MaterialAttributeType::Matrix4x3 can't be retrieved as a string\n");
+    CORRADE_COMPARE(out, "Trade::MaterialAttributeData::value(): thing3 of Trade::MaterialAttributeType::Matrix4x3 can't be retrieved as a string\n");
 }
 
 void MaterialDataTest::constructAttributeWrongAccessTypeBuffer() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialAttributeData{"thing3", Matrix4x3{}}.value<Containers::ArrayView<const void>>();
-    CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): thing3 of Trade::MaterialAttributeType::Matrix4x3 can't be retrieved as a buffer\n");
+    CORRADE_COMPARE(out, "Trade::MaterialAttributeData::value(): thing3 of Trade::MaterialAttributeType::Matrix4x3 can't be retrieved as a buffer\n");
 }
 
 void MaterialDataTest::construct() {
@@ -1111,13 +1109,13 @@ void MaterialDataTest::construct() {
 void MaterialDataTest::constructEmptyAttribute() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData{{}, {
         {"DiffuseTexture"_s, 12u},
         MaterialAttributeData{}
     }};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: attribute 1 doesn't specify anything\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: attribute 1 doesn't specify anything\n");
 }
 
 void MaterialDataTest::constructDuplicateAttribute() {
@@ -1142,12 +1140,12 @@ void MaterialDataTest::constructDuplicateAttribute() {
             return a.name() < b.name();
         });
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{{}, Utility::move(attributes), Containers::array<UnsignedInt>({1, 1, 6})};
     /* Because with graceful asserts it doesn't exit on error, the assertion
        might get printed multiple times */
-    CORRADE_COMPARE(Containers::StringView{out.str()}.partition('\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates in layer 2");
+    CORRADE_COMPARE(out.partition('\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates in layer 2"_s);
 }
 
 void MaterialDataTest::constructFromImmutableSortedArray() {
@@ -1488,7 +1486,7 @@ void MaterialDataTest::constructLayers() {
 void MaterialDataTest::constructLayersNotMonotonic() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{MaterialType::Phong, {
         {MaterialAttribute::DoubleSided, true},
@@ -1497,13 +1495,13 @@ void MaterialDataTest::constructLayersNotMonotonic() {
         {MaterialAttribute::LayerName, "ClearCoat"},
         {MaterialAttribute::NormalTexture, 3u}
     }, {2, 5, 4, 5}};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (5, 4) for layer 2 with 5 attributes in total\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: invalid range (5, 4) for layer 2 with 5 attributes in total\n");
 }
 
 void MaterialDataTest::constructLayersOffsetOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{MaterialType::Phong, {
         {MaterialAttribute::DoubleSided, true},
@@ -1512,13 +1510,13 @@ void MaterialDataTest::constructLayersOffsetOutOfRange() {
         {MaterialAttribute::LayerName, "ClearCoat"},
         {MaterialAttribute::NormalTexture, 3u}
     }, {2, 6}};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
 }
 
 void MaterialDataTest::constructLayersLastOffsetTooShort() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{MaterialType::Phong, {
         {MaterialAttribute::DoubleSided, true},
@@ -1526,7 +1524,7 @@ void MaterialDataTest::constructLayersLastOffsetTooShort() {
         {MaterialAttribute::LayerFactor, 0.5f},
         {MaterialAttribute::NormalTexture, 3u}
     }, {1, 3}};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: last layer offset 3 too short for 4 attributes in total\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: last layer offset 3 too short for 4 attributes in total\n");
 }
 
 void MaterialDataTest::constructNonOwned() {
@@ -1634,11 +1632,11 @@ void MaterialDataTest::constructNonOwnedEmptyAttribute() {
         MaterialAttributeData{}
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* nullptr to avoid attributes interpreted as importerState */
     MaterialData{{}, {}, attributes, nullptr};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: attribute 1 doesn't specify anything\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: attribute 1 doesn't specify anything\n");
 }
 
 void MaterialDataTest::constructNonOwnedNotSorted() {
@@ -1649,11 +1647,11 @@ void MaterialDataTest::constructNonOwnedNotSorted() {
         {"DiffuseTexture"_s, 12u}
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* nullptr to avoid attributes interpreted as importerState */
     MaterialData{{}, {}, attributes, nullptr};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: DiffuseTexture has to be sorted before DiffuseTextureCoordinates if passing non-owned data\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: DiffuseTexture has to be sorted before DiffuseTextureCoordinates if passing non-owned data\n");
 }
 
 void MaterialDataTest::constructNonOwnedDuplicateAttribute() {
@@ -1665,11 +1663,11 @@ void MaterialDataTest::constructNonOwnedDuplicateAttribute() {
         {"DiffuseTextureCoordinates"_s, 12u}
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     /* nullptr to avoid attributes interpreted as importerState */
     MaterialData{{}, {}, attributes, nullptr};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates\n");
 }
 
 void MaterialDataTest::constructNonOwnedLayersNotMonotonic() {
@@ -1687,12 +1685,12 @@ void MaterialDataTest::constructNonOwnedLayersNotMonotonic() {
         2, 5, 4, 5
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{MaterialType::Phong,
         {}, attributes,
         {}, layers};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (5, 4) for layer 2 with 5 attributes in total\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: invalid range (5, 4) for layer 2 with 5 attributes in total\n");
 }
 
 void MaterialDataTest::constructNonOwnedLayersOffsetOutOfRange() {
@@ -1710,12 +1708,12 @@ void MaterialDataTest::constructNonOwnedLayersOffsetOutOfRange() {
         2, 6
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{MaterialType::Phong,
         {}, attributes,
         {}, layers};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
 }
 
 void MaterialDataTest::constructNonOwnedLayersLastOffsetTooShort() {
@@ -1732,12 +1730,12 @@ void MaterialDataTest::constructNonOwnedLayersLastOffsetTooShort() {
         1, 3
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{MaterialType::Phong,
         {}, attributes,
         {}, layers};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: last layer offset 3 too short for 4 attributes in total\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: last layer offset 3 too short for 4 attributes in total\n");
 }
 
 void MaterialDataTest::constructNonOwnedAttributeFlagOwned() {
@@ -1747,10 +1745,10 @@ void MaterialDataTest::constructNonOwnedAttributeFlagOwned() {
         {MaterialAttribute::DoubleSided, true}
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{{}, DataFlag::Owned, attributes};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: can't construct with non-owned attribute data but Trade::DataFlag::Owned\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: can't construct with non-owned attribute data but Trade::DataFlag::Owned\n");
 }
 
 void MaterialDataTest::constructNonOwnedLayerFlagOwned() {
@@ -1764,10 +1762,10 @@ void MaterialDataTest::constructNonOwnedLayerFlagOwned() {
         0, 1
     };
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     MaterialData data{{}, {}, attributes, DataFlag::Owned, layers};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData: can't construct with non-owned layer data but Trade::DataFlag::Owned\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData: can't construct with non-owned layer data but Trade::DataFlag::Owned\n");
 }
 
 void MaterialDataTest::constructCopy() {
@@ -2015,7 +2013,7 @@ void MaterialDataTest::accessOutOfRange() {
         {MaterialAttribute::SpecularTexture, 3u}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attributeName(2);
     data.attributeType(2);
@@ -2025,7 +2023,7 @@ void MaterialDataTest::accessOutOfRange() {
     data.mutableAttribute(2);
     data.mutableAttribute<Int>(2);
     data.mutableAttribute<Containers::MutableStringView>(2);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer 0\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer 0\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 0\n"
@@ -2047,7 +2045,7 @@ void MaterialDataTest::accessNotFound() {
     CORRADE_VERIFY(!data.hasAttribute("DiffuseColour"));
     CORRADE_VERIFY(!data.findAttributeId("DiffuseColour"));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attributeId("DiffuseColour");
     data.attributeType("DiffuseColour");
@@ -2055,7 +2053,7 @@ void MaterialDataTest::accessNotFound() {
     data.attribute<Color4>("DiffuseColour");
     data.mutableAttribute("DiffuseColour");
     data.mutableAttribute<Color4>("DiffuseColour");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer 0\n"
         "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer 0\n"
         "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 0\n"
@@ -2071,7 +2069,7 @@ void MaterialDataTest::accessWrongType() {
         {"DiffuseColor", 0xff3366aa_rgbaf}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attribute<Color3>(0);
     data.attribute<Color3>(MaterialAttribute::DiffuseColor);
@@ -2083,7 +2081,7 @@ void MaterialDataTest::accessWrongType() {
     data.findAttribute<Color3>("DiffuseColor");
     data.attributeOr(MaterialAttribute::DiffuseColor, Color3{1.0f});
     data.attributeOr("DiffuseColor", Color3{1.0f});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
@@ -2115,7 +2113,7 @@ void MaterialDataTest::accessWrongPointerType() {
     data.mutableAttribute<Byte*>("mutablePointer");
     data.mutableAttribute<const Float*>("pointer");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attribute<Int>("mutablePointer");
     data.attribute<const Int*>("mutablePointer");
@@ -2123,7 +2121,7 @@ void MaterialDataTest::accessWrongPointerType() {
     data.mutableAttribute<Int>("mutablePointer");
     data.mutableAttribute<const Int*>("mutablePointer");
     data.mutableAttribute<Double*>("pointer");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attribute(): mutablePointer is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Int\n"
         "Trade::MaterialData::attribute(): mutablePointer is Trade::MaterialAttributeType::MutablePointer but requested a type equivalent to Trade::MaterialAttributeType::Pointer\n"
         "Trade::MaterialData::attribute(): pointer is Trade::MaterialAttributeType::Pointer but requested a type equivalent to Trade::MaterialAttributeType::MutablePointer\n"
@@ -2139,7 +2137,7 @@ void MaterialDataTest::accessWrongTypeString() {
         {"Shininess", 0.0f}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attribute<Containers::StringView>(0);
     data.attribute<Containers::StringView>(MaterialAttribute::Shininess);
@@ -2151,7 +2149,7 @@ void MaterialDataTest::accessWrongTypeString() {
     data.findAttribute<Containers::StringView>("Shininess");
     data.attributeOr(MaterialAttribute::Shininess, Containers::StringView{});
     data.attributeOr("Shininess", Containers::StringView{});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
@@ -2173,7 +2171,7 @@ void MaterialDataTest::accessWrongTypeBuffer() {
         {"Shininess", 0.0f}
     }};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attribute<Containers::ArrayView<const void>>(0);
     data.attribute<Containers::ArrayView<const void>>(MaterialAttribute::Shininess);
@@ -2185,7 +2183,7 @@ void MaterialDataTest::accessWrongTypeBuffer() {
     data.findAttribute<Containers::ArrayView<const void>>("Shininess");
     data.attributeOr(MaterialAttribute::Shininess, Containers::ArrayView<const void>{});
     data.attributeOr("Shininess", Containers::ArrayView<const void>{});
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
@@ -2366,7 +2364,7 @@ void MaterialDataTest::accessLayersInvalidTextures() {
         {MaterialAttribute::LayerName, "ClearCoat"},
     }, {0, 1}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.layerFactorTexture(1);
     data.layerFactorTexture("ClearCoat");
@@ -2383,7 +2381,7 @@ void MaterialDataTest::accessLayersInvalidTextures() {
     data.layerFactorTextureLayer(1);
     data.layerFactorTextureLayer("ClearCoat");
     data.layerFactorTextureLayer(MaterialLayer::ClearCoat);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attribute(): attribute LayerFactorTexture not found in layer 1\n"
         "Trade::MaterialData::attribute(): attribute LayerFactorTexture not found in layer ClearCoat\n"
         "Trade::MaterialData::attribute(): attribute LayerFactorTexture not found in layer ClearCoat\n"
@@ -2632,7 +2630,7 @@ void MaterialDataTest::accessLayerOutOfRange() {
     /* This is fine */
     data.attributeDataOffset(2);
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attributeDataOffset(3);
     data.layerName(2);
@@ -2674,7 +2672,7 @@ void MaterialDataTest::accessLayerOutOfRange() {
     data.findAttribute<bool>(2, MaterialAttribute::AlphaMask);
     data.attributeOr(2, "AlphaMask", false);
     data.attributeOr(2, MaterialAttribute::AlphaMask, false);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attributeDataOffset(): index 3 out of range for 2 layers\n"
         "Trade::MaterialData::layerName(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::layerFactor(): index 2 out of range for 2 layers\n"
@@ -2728,7 +2726,7 @@ void MaterialDataTest::accessLayerNotFound() {
     /* This is fine */
     CORRADE_VERIFY(!data.findLayerId("ClearCoat"));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.layerId("ClearCoat");
     data.layerFactor("ClearCoat");
@@ -2768,7 +2766,7 @@ void MaterialDataTest::accessLayerNotFound() {
     data.findAttribute<bool>("ClearCoat", MaterialAttribute::AlphaMask);
     data.attributeOr("ClearCoat", "AlphaMask", false);
     data.attributeOr("ClearCoat", MaterialAttribute::AlphaMask, false);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::layerId(): layer ClearCoat not found\n"
         "Trade::MaterialData::layerFactor(): layer ClearCoat not found\n"
         "Trade::MaterialData::layerFactorTexture(): layer ClearCoat not found\n"
@@ -2814,7 +2812,7 @@ void MaterialDataTest::accessInvalidLayerName() {
 
     MaterialData data{{}, {}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.findLayerId(MaterialLayer(0x0));
     data.findLayerId(MaterialLayer(0xfefe));
@@ -2856,7 +2854,7 @@ void MaterialDataTest::accessInvalidLayerName() {
     data.findAttribute<bool>(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
     data.attributeOr(MaterialLayer(0xfefe), "AlphaMask", false);
     data.attributeOr(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask, false);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::findLayerId(): invalid name Trade::MaterialLayer(0x0)\n"
         "Trade::MaterialData::findLayerId(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::layerId(): invalid name Trade::MaterialLayer(0xfefe)\n"
@@ -2907,7 +2905,7 @@ void MaterialDataTest::accessOutOfRangeInLayerIndex() {
         {MaterialAttribute::SpecularTexture, 3u}
     }, {0, 2}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attributeData(1, 2);
     data.attributeName(1, 2);
@@ -2918,7 +2916,7 @@ void MaterialDataTest::accessOutOfRangeInLayerIndex() {
     data.mutableAttribute(1, 2);
     data.mutableAttribute<Int>(1, 2);
     data.mutableAttribute<Containers::MutableStringView>(1, 2);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attributeData(): index 2 out of range for 2 attributes in layer 1\n"
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer 1\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer 1\n"
@@ -2938,7 +2936,7 @@ void MaterialDataTest::accessOutOfRangeInLayerString() {
         {MaterialAttribute::AlphaMask, 0.5f}
     }, {0, 2}};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attributeName("ClearCoat", 2);
     data.attributeType("ClearCoat", 2);
@@ -2948,7 +2946,7 @@ void MaterialDataTest::accessOutOfRangeInLayerString() {
     data.mutableAttribute("ClearCoat", 2);
     data.mutableAttribute<Int>("ClearCoat", 2);
     data.mutableAttribute<Containers::MutableStringView>("ClearCoat", 2);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer ClearCoat\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer ClearCoat\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer ClearCoat\n"
@@ -2970,7 +2968,7 @@ void MaterialDataTest::accessNotFoundInLayerIndex() {
     CORRADE_VERIFY(!data.hasAttribute(1, "DiffuseColour"));
     CORRADE_VERIFY(!data.findAttributeId(1, "DiffuseColour"));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attributeId(1, "DiffuseColour");
     data.attributeType(1, "DiffuseColour");
@@ -2978,7 +2976,7 @@ void MaterialDataTest::accessNotFoundInLayerIndex() {
     data.attribute<Color4>(1, "DiffuseColour");
     data.mutableAttribute(1, "DiffuseColour");
     data.mutableAttribute<Color4>(1, "DiffuseColour");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer 1\n"
         "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer 1\n"
         "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 1\n"
@@ -2999,7 +2997,7 @@ void MaterialDataTest::accessNotFoundInLayerString() {
     CORRADE_VERIFY(!data.hasAttribute("ClearCoat", "DiffuseColour"));
     CORRADE_VERIFY(!data.findAttributeId("ClearCoat", "DiffuseColour"));
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.attributeId("ClearCoat", "DiffuseColour");
     data.attributeType("ClearCoat", "DiffuseColour");
@@ -3007,7 +3005,7 @@ void MaterialDataTest::accessNotFoundInLayerString() {
     data.attribute<Color4>("ClearCoat", "DiffuseColour");
     data.mutableAttribute("ClearCoat", "DiffuseColour");
     data.mutableAttribute<Color4>("ClearCoat", "DiffuseColour");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer ClearCoat\n"
         "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer ClearCoat\n"
         "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer ClearCoat\n"
@@ -3024,7 +3022,7 @@ void MaterialDataTest::accessInvalidAttributeName() {
     /* The name should be converted to a string first and foremost and only
        then delegated to another overload. Which means all asserts should
        print the leaf function name. */
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.hasAttribute(0, MaterialAttribute(0x0));
     data.hasAttribute("Layer", MaterialAttribute(0xfefe));
@@ -3048,7 +3046,7 @@ void MaterialDataTest::accessInvalidAttributeName() {
     data.findAttribute<Int>("Layer", MaterialAttribute(0xfefe));
     data.attributeOr(0, MaterialAttribute(0x0), 42);
     data.attributeOr("Layer", MaterialAttribute(0xfefe), 42);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::findAttributeId(): invalid name Trade::MaterialAttribute(0x0)\n"
@@ -3090,7 +3088,7 @@ void MaterialDataTest::accessMutableNotAllowed() {
 
     MaterialData data{{}, {}, attributes, {}, layers};
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     data.mutableAttribute(0);
     data.mutableAttribute("DiffuseColor");
@@ -3137,7 +3135,7 @@ void MaterialDataTest::accessMutableNotAllowed() {
     data.mutableAttribute<Containers::ArrayView<void>>(MaterialLayer::ClearCoat, 2);
     data.mutableAttribute<Containers::ArrayView<void>>(MaterialLayer::ClearCoat, "data");
     /** @todo test also builtin buffer attribute access once it exists */
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
@@ -3341,108 +3339,108 @@ void MaterialDataTest::templateLayerAccessMutable() {
 }
 
 void MaterialDataTest::debugLayer() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << MaterialLayer::ClearCoat << MaterialLayer(0xfefe) << MaterialLayer{};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialLayer::ClearCoat Trade::MaterialLayer(0xfefe) Trade::MaterialLayer(0x0)\n");
+    CORRADE_COMPARE(out, "Trade::MaterialLayer::ClearCoat Trade::MaterialLayer(0xfefe) Trade::MaterialLayer(0x0)\n");
 }
 
 void MaterialDataTest::debugAttribute() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << MaterialAttribute::DiffuseTextureCoordinates << MaterialAttribute::LayerName << MaterialAttribute(0xfefe) << MaterialAttribute{};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialAttribute::DiffuseTextureCoordinates Trade::MaterialAttribute::LayerName Trade::MaterialAttribute(0xfefe) Trade::MaterialAttribute(0x0)\n");
+    CORRADE_COMPARE(out, "Trade::MaterialAttribute::DiffuseTextureCoordinates Trade::MaterialAttribute::LayerName Trade::MaterialAttribute(0xfefe) Trade::MaterialAttribute(0x0)\n");
 }
 
 void MaterialDataTest::debugTextureSwizzle() {
-    std::ostringstream out;
+    Containers::String out;
 
     /* The swizzle is encoded as a fourCC, so it just prints the numerical
        value as a char. Worst case this will print nothing or four garbage
        letters. Sorry in that case. */
     Debug{&out} << MaterialTextureSwizzle::BA << MaterialTextureSwizzle{};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialTextureSwizzle::BA Trade::MaterialTextureSwizzle::\n");
+    CORRADE_COMPARE(out, "Trade::MaterialTextureSwizzle::BA Trade::MaterialTextureSwizzle::\n");
 }
 
 void MaterialDataTest::debugTextureSwizzlePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << MaterialTextureSwizzle::BA << Debug::packed << MaterialTextureSwizzle{} << MaterialTextureSwizzle::RG;
-    CORRADE_COMPARE(out.str(), "BA  Trade::MaterialTextureSwizzle::RG\n");
+    CORRADE_COMPARE(out, "BA  Trade::MaterialTextureSwizzle::RG\n");
 }
 
 void MaterialDataTest::debugAttributeType() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << MaterialAttributeType::Matrix3x2 << MaterialAttributeType(0xfe);
-    CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeType::Matrix3x2 Trade::MaterialAttributeType(0xfe)\n");
+    CORRADE_COMPARE(out, "Trade::MaterialAttributeType::Matrix3x2 Trade::MaterialAttributeType(0xfe)\n");
 }
 
 void MaterialDataTest::debugAttributeTypePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << MaterialAttributeType::Matrix3x2 << Debug::packed << MaterialAttributeType(0xfe) << MaterialAttributeType::Float;
-    CORRADE_COMPARE(out.str(), "Matrix3x2 0xfe Trade::MaterialAttributeType::Float\n");
+    CORRADE_COMPARE(out, "Matrix3x2 0xfe Trade::MaterialAttributeType::Float\n");
 }
 
 void MaterialDataTest::debugType() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug(&out) << MaterialType::Phong << MaterialType(0xbe);
-    CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong Trade::MaterialType(0xbe)\n");
+    CORRADE_COMPARE(out, "Trade::MaterialType::Phong Trade::MaterialType(0xbe)\n");
 }
 
 void MaterialDataTest::debugTypePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << MaterialType::Phong << Debug::packed << MaterialType(0xbe) << MaterialType::Flat;
-    CORRADE_COMPARE(out.str(), "Phong 0xbe Trade::MaterialType::Flat\n");
+    CORRADE_COMPARE(out, "Phong 0xbe Trade::MaterialType::Flat\n");
 }
 
 void MaterialDataTest::debugTypes() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << (MaterialType::Phong|MaterialType(0xe0)) << MaterialTypes{};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong|Trade::MaterialType(0xe0) Trade::MaterialTypes{}\n");
+    CORRADE_COMPARE(out, "Trade::MaterialType::Phong|Trade::MaterialType(0xe0) Trade::MaterialTypes{}\n");
 }
 
 void MaterialDataTest::debugTypesPacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (MaterialType::Phong|MaterialType(0xe0)) << Debug::packed << MaterialTypes{} << MaterialType::Flat;
-    CORRADE_COMPARE(out.str(), "Phong|0xe0 {} Trade::MaterialType::Flat\n");
+    CORRADE_COMPARE(out, "Phong|0xe0 {} Trade::MaterialType::Flat\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
 void MaterialDataTest::debugFlag() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << MaterialData::Flag::DoubleSided << MaterialData::Flag(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData::Flag::DoubleSided Trade::MaterialData::Flag(0xf0)\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData::Flag::DoubleSided Trade::MaterialData::Flag(0xf0)\n");
 }
 
 void MaterialDataTest::debugFlags() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << MaterialData::Flag::DoubleSided << MaterialData::Flags{};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialData::Flag::DoubleSided Trade::MaterialData::Flags{}\n");
+    CORRADE_COMPARE(out, "Trade::MaterialData::Flag::DoubleSided Trade::MaterialData::Flags{}\n");
 }
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 void MaterialDataTest::debugAlphaMode() {
-    std::ostringstream out;
+    Containers::String out;
 
     Debug{&out} << MaterialAlphaMode::Opaque << MaterialAlphaMode(0xee);
-    CORRADE_COMPARE(out.str(), "Trade::MaterialAlphaMode::Opaque Trade::MaterialAlphaMode(0xee)\n");
+    CORRADE_COMPARE(out, "Trade::MaterialAlphaMode::Opaque Trade::MaterialAlphaMode(0xee)\n");
 }
 
 void MaterialDataTest::debugAlphaModePacked() {
-    std::ostringstream out;
+    Containers::String out;
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << MaterialAlphaMode::Opaque << Debug::packed << MaterialAlphaMode(0xee) << MaterialAlphaMode::Blend;
-    CORRADE_COMPARE(out.str(), "Opaque 0xee Trade::MaterialAlphaMode::Blend\n");
+    CORRADE_COMPARE(out, "Opaque 0xee Trade::MaterialAlphaMode::Blend\n");
 }
 
 }}}}

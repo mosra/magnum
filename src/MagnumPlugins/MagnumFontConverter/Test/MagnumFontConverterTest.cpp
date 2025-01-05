@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <string> /** @todo remove once AbstractFontConverter is STL-free */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
@@ -32,7 +32,6 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -447,10 +446,10 @@ void MagnumFontConverterTest::exportFontImageProcessingGlyphCacheNoDownload() {
 
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
-    CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): glyph cache has image processing but doesn't support image download\n");
+    CORRADE_COMPARE(out, "Text::MagnumFontConverter::exportFontToData(): glyph cache has image processing but doesn't support image download\n");
 }
 
 void MagnumFontConverterTest::exportFontArrayCache() {
@@ -477,10 +476,10 @@ void MagnumFontConverterTest::exportFontArrayCache() {
 
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
-    CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): exporting array glyph caches is not supported\n");
+    CORRADE_COMPARE(out, "Text::MagnumFontConverter::exportFontToData(): exporting array glyph caches is not supported\n");
 }
 
 void MagnumFontConverterTest::exportFontNotFoundInCache() {
@@ -508,10 +507,10 @@ void MagnumFontConverterTest::exportFontNotFoundInCache() {
 
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter->exportFontToFile(font1, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
-    CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): font not found among 2 fonts in passed glyph cache\n");
+    CORRADE_COMPARE(out, "Text::MagnumFontConverter::exportFontToData(): font not found among 2 fonts in passed glyph cache\n");
 }
 
 void MagnumFontConverterTest::exportFontImageConversionFailed() {
@@ -549,10 +548,10 @@ void MagnumFontConverterTest::exportFontImageConversionFailed() {
 
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
 
-    std::ostringstream out;
+    Containers::String out;
     Error redirectError{&out};
     converter->exportFontToFile(font, cache, Utility::Path::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out,
         "Trade::TgaImageConverter::convertToData(): unsupported pixel format PixelFormat::R32F\n"
         "Text::MagnumFontConverter::exportFontToData(): cannot create a TGA image\n");
 }

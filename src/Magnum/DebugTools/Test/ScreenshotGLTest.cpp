@@ -24,12 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -130,7 +128,7 @@ void ScreenshotGLTest::rgba8() {
     else
         CORRADE_VERIFY(Utility::Path::make(SCREENSHOTTEST_SAVE_DIR));
 
-    std::ostringstream out;
+    Containers::String out;
     bool succeeded;
     {
         #ifndef MAGNUM_TARGET_WEBGL
@@ -145,8 +143,8 @@ void ScreenshotGLTest::rgba8() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(succeeded);
-    CORRADE_COMPARE(out.str(),
-        Utility::formatString("DebugTools::screenshot(): saved a PixelFormat::RGBA8Unorm image of size Vector(4, 3) to {}\n", file));
+    CORRADE_COMPARE(out,
+        Utility::format("DebugTools::screenshot(): saved a PixelFormat::RGBA8Unorm image of size Vector(4, 3) to {}\n", file));
 
     if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -187,7 +185,7 @@ void ScreenshotGLTest::r8() {
     else
         CORRADE_VERIFY(Utility::Path::make(SCREENSHOTTEST_SAVE_DIR));
 
-    std::ostringstream out;
+    Containers::String out;
     bool succeeded;
     {
         #ifndef MAGNUM_TARGET_WEBGL
@@ -207,8 +205,8 @@ void ScreenshotGLTest::r8() {
         CORRADE_EXPECT_FAIL_IF(framebuffer.implementationColorReadFormat() != GL::PixelFormat::Red,
             "Implementation-defined color read format is not single-channel.");
 
-        CORRADE_COMPARE(out.str(),
-            Utility::formatString("DebugTools::screenshot(): saved a PixelFormat::R8Unorm image of size Vector(4, 3) to {}\n", file));
+        CORRADE_COMPARE(out,
+            Utility::format("DebugTools::screenshot(): saved a PixelFormat::R8Unorm image of size Vector(4, 3) to {}\n", file));
 
         if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
         !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -234,7 +232,7 @@ void ScreenshotGLTest::unknownFormat() {
        framebuffer.implementationColorReadType() == GL::PixelType::UnsignedByte)
         CORRADE_SKIP("The framebuffer read format is RGBA8, can't test.");
 
-    std::ostringstream out;
+    Containers::String out;
     bool succeeded;
     {
         Error redirectOutput{&out};
@@ -245,9 +243,9 @@ void ScreenshotGLTest::unknownFormat() {
     CORRADE_VERIFY(!succeeded);
 
     if(framebuffer.implementationColorReadFormat() == GL::PixelFormat::RGBA)
-        CORRADE_COMPARE(out.str(), "DebugTools::screenshot(): can't map {GL::PixelFormat::RGBA, GL::PixelType::UnsignedShort565} to a generic pixel format\n");
+        CORRADE_COMPARE(out, "DebugTools::screenshot(): can't map {GL::PixelFormat::RGBA, GL::PixelType::UnsignedShort565} to a generic pixel format\n");
     else
-        CORRADE_COMPARE(out.str(), "DebugTools::screenshot(): can't map {GL::PixelFormat::RGB, GL::PixelType::UnsignedShort565} to a generic pixel format\n");
+        CORRADE_COMPARE(out, "DebugTools::screenshot(): can't map {GL::PixelFormat::RGB, GL::PixelType::UnsignedShort565} to a generic pixel format\n");
 }
 
 void ScreenshotGLTest::pluginLoadFailed() {
@@ -271,7 +269,7 @@ void ScreenshotGLTest::pluginLoadFailed() {
 
     CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
 
-    std::ostringstream out;
+    Containers::String out;
     bool succeeded;
     {
         Error redirectOutput{&out};
@@ -281,9 +279,9 @@ void ScreenshotGLTest::pluginLoadFailed() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!succeeded);
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-    CORRADE_COMPARE(out.str(), "PluginManager::Manager::load(): plugin AnyImageConverter is not static and was not found in nowhere\n");
+    CORRADE_COMPARE(out, "PluginManager::Manager::load(): plugin AnyImageConverter is not static and was not found in nowhere\n");
     #else
-    CORRADE_COMPARE(out.str(), "PluginManager::Manager::load(): plugin AnyImageConverter was not found\n");
+    CORRADE_COMPARE(out, "PluginManager::Manager::load(): plugin AnyImageConverter was not found\n");
     #endif
 }
 
@@ -307,7 +305,7 @@ void ScreenshotGLTest::saveFailed() {
 
     CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
 
-    std::ostringstream out;
+    Containers::String out;
     bool succeeded;
     {
         Error redirectOutput{&out};
@@ -316,7 +314,7 @@ void ScreenshotGLTest::saveFailed() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!succeeded);
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.poo for a 2D image\n");
+    CORRADE_COMPARE(out, "Trade::AnyImageConverter::convertToFile(): cannot determine the format of image.poo for a 2D image\n");
 }
 
 }}}}
