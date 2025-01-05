@@ -73,14 +73,14 @@ void ContextTest::constructCopyMove() {
 void ContextTest::extensions() {
     const char* used[Implementation::ExtensionCount]{};
 
-    std::set<std::string> unique;
+    std::set<Containers::StringView> unique;
 
     /* Check that all extension indices are unique, are listed just once etc. */
-    std::string previous;
+    Containers::StringView previous;
     for(const Extension& e: Extension::extensions()) {
         CORRADE_ITERATION(e.string());
 
-        CORRADE_FAIL_IF(!previous.empty() && previous >= e.string(),
+        CORRADE_FAIL_IF(previous && previous >= e.string(),
             "Extension not sorted after" << previous);
 
         CORRADE_FAIL_IF(e.index() >= Implementation::ExtensionCount,
