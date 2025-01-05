@@ -24,10 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <array>
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/StaticArray.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Algorithms.h>
@@ -413,32 +413,32 @@ TransformTest::TransformTest() {
     addTests({&TransformTest::meshDataTextureCoordinates2DInPlaceWrongFormat});
 }
 
-constexpr static std::array<Vector2, 2> points2D{{
+constexpr Containers::Array2<Vector2> points2D{{
     {-3.0f,   4.0f},
     { 2.5f, -15.0f}
 }};
 
-constexpr static std::array<Vector2, 2> points2DRotated{{
+constexpr Containers::Array2<Vector2> points2DRotated{{
     {-4.0f, -3.0f},
     {15.0f,  2.5f}
 }};
 
-constexpr static std::array<Vector2, 2> points2DRotatedTranslated{{
+constexpr Containers::Array2<Vector2> points2DRotatedTranslated{{
     {-4.0f, -4.0f},
     {15.0f,  1.5f}
 }};
 
-constexpr static std::array<Vector3, 2> points3D{{
+constexpr Containers::Array2<Vector3> points3D{{
     {-3.0f,   4.0f, 34.0f},
     { 2.5f, -15.0f,  1.5f}
 }};
 
-constexpr static std::array<Vector3, 2> points3DRotated{{
+constexpr Containers::Array2<Vector3> points3DRotated{{
     {-4.0f, -3.0f, 34.0f},
     {15.0f,  2.5f,  1.5f}
 }};
 
-constexpr static std::array<Vector3, 2> points3DRotatedTranslated{{
+constexpr Containers::Array2<Vector3> points3DRotatedTranslated{{
     {-4.0f, -4.0f, 34.0f},
     {15.0f,  1.5f,  1.5f}
 }};
@@ -447,16 +447,16 @@ void TransformTest::transformVectors2D() {
     auto matrix = transformVectors(Matrix3::rotation(Deg(90.0f)), points2D);
     auto complex = transformVectors(Complex::rotation(Deg(90.0f)), points2D);
 
-    CORRADE_COMPARE(matrix, points2DRotated);
-    CORRADE_COMPARE(complex, points2DRotated);
+    CORRADE_COMPARE_AS(matrix, points2DRotated, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(complex, points2DRotated, TestSuite::Compare::Container);
 }
 
 void TransformTest::transformVectors3D() {
     auto matrix = transformVectors(Matrix4::rotationZ(Deg(90.0f)), points3D);
     auto quaternion = transformVectors(Quaternion::rotation(Deg(90.0f), Vector3::zAxis()), points3D);
 
-    CORRADE_COMPARE(matrix, points3DRotated);
-    CORRADE_COMPARE(quaternion, points3DRotated);
+    CORRADE_COMPARE_AS(matrix, points3DRotated, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(quaternion, points3DRotated, TestSuite::Compare::Container);
 }
 
 void TransformTest::transformPoints2D() {
@@ -465,8 +465,8 @@ void TransformTest::transformPoints2D() {
     auto complex = transformPoints(
         DualComplex::translation(Vector2::yAxis(-1.0f))*DualComplex::rotation(Deg(90.0f)), points2D);
 
-    CORRADE_COMPARE(matrix, points2DRotatedTranslated);
-    CORRADE_COMPARE(complex, points2DRotatedTranslated);
+    CORRADE_COMPARE_AS(matrix, points2DRotatedTranslated, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(complex, points2DRotatedTranslated, TestSuite::Compare::Container);
 }
 
 void TransformTest::transformPoints3D() {
@@ -475,8 +475,8 @@ void TransformTest::transformPoints3D() {
     auto quaternion = transformPoints(
         DualQuaternion::translation(Vector3::yAxis(-1.0f))*DualQuaternion::rotation(Deg(90.0f), Vector3::zAxis()), points3D);
 
-    CORRADE_COMPARE(matrix, points3DRotatedTranslated);
-    CORRADE_COMPARE(quaternion, points3DRotatedTranslated);
+    CORRADE_COMPARE_AS(matrix, points3DRotatedTranslated, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(quaternion, points3DRotatedTranslated, TestSuite::Compare::Container);
 }
 
 template<class T> void TransformTest::meshData2D() {

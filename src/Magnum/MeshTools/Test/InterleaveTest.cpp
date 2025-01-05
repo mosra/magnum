@@ -25,7 +25,6 @@
 */
 
 #include <sstream>
-#include <vector>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
@@ -209,13 +208,17 @@ InterleaveTest::InterleaveTest() {
 }
 
 void InterleaveTest::attributeCount() {
-    CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2},
-        std::vector<Byte>{3, 4, 5})), std::size_t(3));
+    CORRADE_COMPARE(Implementation::AttributeCount{}(
+        Containers::arrayView<Byte>({0, 1, 2}),
+        Containers::arrayView<Byte>({3, 4, 5})
+    ), std::size_t(3));
 }
 
 void InterleaveTest::attributeCountGaps() {
-    CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2}, 3,
-        std::vector<Byte>{3, 4, 5}, 5)), std::size_t(3));
+    CORRADE_COMPARE(Implementation::AttributeCount{}(
+        Containers::arrayView<Byte>({0, 1, 2}), 3,
+        Containers::arrayView<Byte>({3, 4, 5}), 5
+    ), std::size_t(3));
 
     /* No arrays from which to get size */
     CORRADE_COMPARE(Implementation::AttributeCount{}(3, 5), ~std::size_t(0));
@@ -226,67 +229,77 @@ void InterleaveTest::attributeCountInvalid() {
 
     std::stringstream ss;
     Error redirectError{&ss};
-    CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2},
-        std::vector<Byte>{0, 1, 2, 3, 4, 5})), std::size_t(0));
+    CORRADE_COMPARE(Implementation::AttributeCount{}(
+        Containers::arrayView<Byte>({0, 1, 2}),
+        Containers::arrayView<Byte>({0, 1, 2, 3, 4, 5})
+    ), std::size_t(0));
     CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, expected 3 but got 6\n");
 }
 
 void InterleaveTest::stride() {
-    CORRADE_COMPARE(Implementation::Stride{}(std::vector<Byte>()), std::size_t(1));
-    CORRADE_COMPARE(Implementation::Stride{}(std::vector<Int>()), std::size_t(4));
-    CORRADE_COMPARE((Implementation::Stride{}(std::vector<Byte>(), std::vector<Int>())), std::size_t(5));
+    CORRADE_COMPARE(Implementation::Stride{}(Containers::ArrayView<Byte>{}), std::size_t(1));
+    CORRADE_COMPARE(Implementation::Stride{}(Containers::ArrayView<Int>{}), std::size_t(4));
+    CORRADE_COMPARE(Implementation::Stride{}(
+        Containers::ArrayView<Byte>{},
+        Containers::ArrayView<Int>{}
+    ), std::size_t(5));
 }
 
 void InterleaveTest::strideGaps() {
-    CORRADE_COMPARE((Implementation::Stride{}(2, std::vector<Byte>(), 1, std::vector<Int>(), 12)), std::size_t(20));
+    CORRADE_COMPARE(Implementation::Stride{}(
+        2, Containers::ArrayView<Byte>{},
+        1, Containers::ArrayView<Int>{}, 12
+    ), std::size_t(20));
 }
 
 void InterleaveTest::interleave() {
     const Containers::Array<char> data = MeshTools::interleave(
-        std::vector<Byte>{0, 1, 2},
-        std::vector<Int>{3, 4, 5},
-        std::vector<Short>{6, 7, 8});
+        Containers::arrayView<Byte>({0, 1, 2}),
+        Containers::arrayView<Int>({3, 4, 5}),
+        Containers::arrayView<Short>({6, 7, 8})
+    );
 
     if(!Utility::Endianness::isBigEndian()) {
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+        CORRADE_COMPARE_AS(data, Containers::arrayView<char>({
             0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00,
             0x01, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00,
             0x02, 0x05, 0x00, 0x00, 0x00, 0x08, 0x00
-        }));
+        }), TestSuite::Compare::Container);
     } else {
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+        CORRADE_COMPARE_AS(data, Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x06,
             0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x07,
             0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08
-        }));
+        }), TestSuite::Compare::Container);
     }
 }
 
 void InterleaveTest::interleaveGaps() {
     const Containers::Array<char> data = MeshTools::interleave(
-        std::vector<Byte>{0, 1, 2}, 3,
-        std::vector<Int>{3, 4, 5},
-        std::vector<Short>{6, 7, 8}, 2);
+        Containers::arrayView<Byte>({0, 1, 2}), 3,
+        Containers::arrayView<Int>({3, 4, 5}),
+        Containers::arrayView<Short>({6, 7, 8}), 2
+    );
 
     if(!Utility::Endianness::isBigEndian()) {
         /*  byte, _____________gap, int___________________, short_____, _______gap */
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+        CORRADE_COMPARE_AS(data, Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
             0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00,
             0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00
-        }));
+        }), TestSuite::Compare::Container);
     } else {
         /*  byte, _____________gap, ___________________int, _____short, _______gap */
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+        CORRADE_COMPARE_AS(data, Containers::arrayView<char>({
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x06, 0x00, 0x00,
             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x07, 0x00, 0x00,
             0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08, 0x00, 0x00
-        }));
+        }), TestSuite::Compare::Container);
     }
 }
 
 void InterleaveTest::interleaveEmpty() {
-    const Containers::Array<char> data = MeshTools::interleave(std::vector<Byte>{}, 2);
+    const Containers::Array<char> data = MeshTools::interleave(Containers::ArrayView<Byte>{}, 2);
     CORRADE_COMPARE(data.size(), 0);
 }
 
@@ -298,24 +311,24 @@ void InterleaveTest::interleaveInto() {
         0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77}};
 
     CORRADE_COMPARE(data.size(), 48);
-    CORRADE_COMPARE(MeshTools::interleaveInto(data, 2, std::vector<Int>{4, 5, 6, 7}, 1, std::vector<Short>{0, 1, 2, 3}, 3), 48);
+    CORRADE_COMPARE(MeshTools::interleaveInto(data, 2, Containers::arrayView<Int>({4, 5, 6, 7}), 1, Containers::arrayView<Short>({0, 1, 2, 3}), 3), 48);
 
     if(!Utility::Endianness::isBigEndian()) {
         /*  _______gap, int___________________, _gap, short_____, _____________gap */
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+        CORRADE_COMPARE_AS(data, Containers::arrayView<char>({
             0x11, 0x33, 0x04, 0x00, 0x00, 0x00, 0x55, 0x00, 0x00, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x05, 0x00, 0x00, 0x00, 0x55, 0x01, 0x00, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x06, 0x00, 0x00, 0x00, 0x55, 0x02, 0x00, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x07, 0x00, 0x00, 0x00, 0x55, 0x03, 0x00, 0x33, 0x55, 0x77
-        }));
+        }), TestSuite::Compare::Container);
     } else {
         /*  _______gap, ___________________int, _gap, _____short, _____________gap */
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+        CORRADE_COMPARE_AS(data, Containers::arrayView<char>({
             0x11, 0x33, 0x00, 0x00, 0x00, 0x04, 0x55, 0x00, 0x00, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x00, 0x00, 0x00, 0x05, 0x55, 0x00, 0x01, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x00, 0x00, 0x00, 0x06, 0x55, 0x00, 0x02, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x00, 0x00, 0x00, 0x07, 0x55, 0x00, 0x03, 0x33, 0x55, 0x77
-        }));
+        }), TestSuite::Compare::Container);
     }
 }
 
@@ -329,26 +342,26 @@ void InterleaveTest::interleaveIntoLarger() {
         0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11}};
 
     CORRADE_COMPARE(data.size(), 49);
-    CORRADE_COMPARE(MeshTools::interleaveInto(data, 2, std::vector<Int>{4, 5, 6, 7}, 1, std::vector<Short>{0, 1, 2, 3}, 3), 48);
+    CORRADE_COMPARE(MeshTools::interleaveInto(data, 2, Containers::arrayView<Int>({4, 5, 6, 7}), 1, Containers::arrayView<Short>({0, 1, 2, 3}), 3), 48);
 
     if(!Utility::Endianness::isBigEndian()) {
         /*  _______gap, int___________________, _gap, short_____, _____________gap */
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+        CORRADE_COMPARE_AS(data, Containers::arrayView<char>({
             0x11, 0x33, 0x04, 0x00, 0x00, 0x00, 0x55, 0x00, 0x00, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x05, 0x00, 0x00, 0x00, 0x55, 0x01, 0x00, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x06, 0x00, 0x00, 0x00, 0x55, 0x02, 0x00, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x07, 0x00, 0x00, 0x00, 0x55, 0x03, 0x00, 0x33, 0x55, 0x77,
             0x11
-        }));
+        }), TestSuite::Compare::Container);
     } else {
         /*  _______gap, ___________________int, _gap, _____short, _____________gap */
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
+        CORRADE_COMPARE_AS(data, Containers::arrayView<char>({
             0x11, 0x33, 0x00, 0x00, 0x00, 0x04, 0x55, 0x00, 0x00, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x00, 0x00, 0x00, 0x05, 0x55, 0x00, 0x01, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x00, 0x00, 0x00, 0x06, 0x55, 0x00, 0x02, 0x33, 0x55, 0x77,
             0x11, 0x33, 0x00, 0x00, 0x00, 0x07, 0x55, 0x00, 0x03, 0x33, 0x55, 0x77,
             0x11
-        }));
+        }), TestSuite::Compare::Container);
     }
 }
 
