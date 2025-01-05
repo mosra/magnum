@@ -100,59 +100,67 @@ using namespace Math::Literals;
 
 const struct {
     const char* name;
+    UnsignedInt offset;
     Matrix4 transformation;
     UnsignedInt remap[4];
     UnsignedInt expected[6*5];
 } QuadData[] {
-    {"", {}, {0, 1, 2, 3}, {
+    {"", 0, {}, {0, 1, 2, 3}, {
         0, 2, 3, 0, 3, 4,           // ABC ACD
         9, 5, 6, 9, 6, 7,           // DAB DBC
         10, 11, 14, 10, 14, 15,     // ABC ACD
         19, 16, 17, 19, 17, 18,     // DAB DBC
         20, 21, 22, 20, 22, 23      // ABC ACD
     }},
-    {"rotated indices 1", {}, {1, 2, 3, 0}, {
+    {"rotated indices 1", 0, {}, {1, 2, 3, 0}, {
         2, 3, 4, 2, 4, 0,           // BCD BDA (both splits are fine)
         6, 7, 9, 6, 9, 5,           // BCD BDA
         10, 11, 14, 10, 14, 15,     // ABC ACD
         17, 18, 19, 17, 19, 16,     // BCD BDA
         20, 21, 22, 20, 22, 23      // ABC ACD
     }},
-    {"rotated indices 2", {}, {2, 3, 0, 1}, {
+    {"rotated indices 2", 0, {}, {2, 3, 0, 1}, {
         3, 4, 0, 3, 0, 2,           // CDA CAB
         6, 7, 9, 6, 9, 5,           // BCD BDA
         14, 15, 10, 14, 10, 11,     // CDA CAB
         17, 18, 19, 17, 19, 16,     // BCD BDA
         22, 23, 20, 22, 20, 21      // CDA CAB
     }},
-    {"rotated indices 3", {}, {3, 0, 1, 2}, {
+    {"rotated indices 3", 0, {}, {3, 0, 1, 2}, {
         4, 0, 2, 4, 2, 3,           // DAB DBC (both splits are fine)
         9, 5, 6, 9, 6, 7,           // DAB DBC
         14, 15, 10, 14, 10, 11,     // CDA CAB
         19, 16, 17, 19, 17, 18,     // DAB DBC
         22, 23, 20, 22, 20, 21      // CDA CAB
     }},
-    {"reversed indices", {}, {3, 2, 1, 0}, {
+    {"reversed indices", 0, {}, {3, 2, 1, 0}, {
         4, 3, 2, 4, 2, 0,           // DCB DBA (both splits are fine)
         9, 7, 6, 9, 6, 5,           // DCB DBA
         10, 15, 14, 10, 14, 11,     // ADC ACB
         19, 18, 17, 19, 17, 16,     // DCB DBA
         20, 23, 22, 20, 22, 21      // ADC ACB
     }},
-    {"rotated positions", Matrix4::rotation(130.0_degf, Vector3{1.0f/Constants::sqrt3()}), {0, 1, 2, 3}, {
+    {"rotated positions", 0, Matrix4::rotation(130.0_degf, Vector3{1.0f/Constants::sqrt3()}), {0, 1, 2, 3}, {
         0, 2, 3, 0, 3, 4,           // ABC ACD
         9, 5, 6, 9, 6, 7,           // DAB DBC
         10, 11, 14, 10, 14, 15,     // ABC ACD
         19, 16, 17, 19, 17, 18,     // DAB DBC
         20, 21, 22, 20, 22, 23      // ABC ACD
     }},
-    {"mirrored positions", Matrix4::scaling(Vector3::xScale(-1.0f)), {0, 1, 2, 3}, {
+    {"mirrored positions", 0, Matrix4::scaling(Vector3::xScale(-1.0f)), {0, 1, 2, 3}, {
         0, 2, 3, 0, 3, 4,           // ABC ACD
         9, 5, 6, 9, 6, 7,           // DAB DBC
         10, 11, 14, 10, 14, 15,     // ABC ACD
         19, 16, 17, 19, 17, 18,     // DAB DBC
         20, 21, 22, 20, 22, 23      // ABC ACD
-    }}
+    }},
+    {"additional offset", 100, {}, {0, 1, 2, 3}, {
+        100, 102, 103, 100, 103, 104, // ABC ACD
+        109, 105, 106, 109, 106, 107, // DAB DBC
+        110, 111, 114, 110, 114, 115, // ABC ACD
+        119, 116, 117, 119, 117, 118, // DAB DBC
+        120, 121, 122, 120, 122, 123  // ABC ACD
+    }},
 };
 
 const struct {
@@ -366,6 +374,12 @@ void GenerateIndicesTest::generateTrivialIndices() {
         Containers::arrayView<UnsignedInt>({
             0, 1, 2, 3, 4, 5, 6
         }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateTrivialIndices(7, 100),
+        Containers::arrayView<UnsignedInt>({
+            100, 101, 102, 103, 104, 105, 106
+        }), TestSuite::Compare::Container);
 }
 
 void GenerateIndicesTest::generateLineStripIndices() {
@@ -397,6 +411,15 @@ void GenerateIndicesTest::generateLineStripIndices() {
             2, 3,
             3, 4,
             4, 5
+        }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(5, 100),
+        Containers::arrayView<UnsignedInt>({
+            100, 101,
+            101, 102,
+            102, 103,
+            103, 104
         }), TestSuite::Compare::Container);
 }
 
@@ -438,6 +461,16 @@ template<class T> void GenerateIndicesTest::generateLineStripIndicesIndexed() {
             93, 44,
             44, 85
         }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices, 10000),
+        Containers::arrayView<UnsignedInt>({
+            10060, 10021,
+            10021, 10072,
+            10072, 10093,
+            10093, 10044,
+            10044, 10085
+        }), TestSuite::Compare::Container);
 }
 
 template<class T> void GenerateIndicesTest::generateLineStripIndicesIndexed2D() {
@@ -458,6 +491,16 @@ template<class T> void GenerateIndicesTest::generateLineStripIndicesIndexed2D() 
             21, 72,
             72, 93,
             93, 44
+        }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices, 10000),
+        Containers::arrayView<UnsignedInt>({
+            10060, 10021,
+            10021, 10072,
+            10072, 10093,
+            10093, 10044,
+            10044, 10085
         }), TestSuite::Compare::Container);
 }
 
@@ -541,6 +584,16 @@ void GenerateIndicesTest::generateLineLoopIndices() {
             4, 5,
             5, 0
         }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(5, 100),
+        Containers::arrayView<UnsignedInt>({
+            100, 101,
+            101, 102,
+            102, 103,
+            103, 104,
+            104, 100
+        }), TestSuite::Compare::Container);
 }
 
 template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed() {
@@ -584,6 +637,17 @@ template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed() {
             44, 85,
             85, 60
         }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices, 10000),
+        Containers::arrayView<UnsignedInt>({
+            10060, 10021,
+            10021, 10072,
+            10072, 10093,
+            10093, 10044,
+            10044, 10085,
+            10085, 10060
+        }), TestSuite::Compare::Container);
 }
 
 template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed2D() {
@@ -605,6 +669,17 @@ template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed2D() {
             72, 93,
             93, 44,
             44, 60
+        }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices, 10000),
+        Containers::arrayView<UnsignedInt>({
+            10060, 10021,
+            10021, 10072,
+            10072, 10093,
+            10093, 10044,
+            10044, 10085,
+            10085, 10060
         }), TestSuite::Compare::Container);
 }
 
@@ -687,6 +762,16 @@ void GenerateIndicesTest::generateTriangleStripIndices() {
             4, 5, 6,
             6, 5, 7  /* Reversed */
         }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(7, 100),
+        Containers::arrayView<UnsignedInt>({
+            100, 101, 102,
+            102, 101, 103, /* Reversed */
+            102, 103, 104,
+            104, 103, 105, /* Reversed */
+            104, 105, 106
+        }), TestSuite::Compare::Container);
 }
 
 template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed() {
@@ -729,6 +814,16 @@ template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed(
             44, 85, 36,
             36, 85, 17  /* Reversed */
         }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(7), 10000),
+        Containers::arrayView<UnsignedInt>({
+            10060, 10021, 10072,
+            10072, 10021, 10093, /* Reversed */
+            10072, 10093, 10044,
+            10044, 10093, 10085, /* Reversed */
+            10044, 10085, 10036
+        }), TestSuite::Compare::Container);
 }
 
 template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed2D() {
@@ -750,6 +845,17 @@ template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed2
             72, 93, 44,
             44, 93, 85, /* Reversed */
             44, 85, 36
+        }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices, 10000),
+        Containers::arrayView<UnsignedInt>({
+            10060, 10021, 10072,
+            10072, 10021, 10093, /* Reversed */
+            10072, 10093, 10044,
+            10044, 10093, 10085, /* Reversed */
+            10044, 10085, 10036,
+            10036, 10085, 10017  /* Reversed */
         }), TestSuite::Compare::Container);
 }
 
@@ -832,6 +938,17 @@ void GenerateIndicesTest::generateTriangleFanIndices() {
             0, 5, 6,
             0, 6, 7
         }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(8, 100),
+        Containers::arrayView<UnsignedInt>({
+            100, 101, 102,
+            100, 102, 103,
+            100, 103, 104,
+            100, 104, 105,
+            100, 105, 106,
+            100, 106, 107
+        }), TestSuite::Compare::Container);
 }
 
 template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed() {
@@ -874,6 +991,16 @@ template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed() 
             60, 85, 36,
             60, 36, 17
         }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(7), 10000),
+        Containers::arrayView<UnsignedInt>({
+            10060, 10021, 10072,
+            10060, 10072, 10093,
+            10060, 10093, 10044,
+            10060, 10044, 10085,
+            10060, 10085, 10036
+        }), TestSuite::Compare::Container);
 }
 
 template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed2D() {
@@ -895,6 +1022,17 @@ template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed2D(
             60, 93, 44,
             60, 44, 85,
             60, 85, 36
+        }), TestSuite::Compare::Container);
+
+    /* Additional offset */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices, 10000),
+        Containers::arrayView<UnsignedInt>({
+            10060, 10021, 10072,
+            10060, 10072, 10093,
+            10060, 10093, 10044,
+            10060, 10044, 10085,
+            10060, 10085, 10036,
+            10060, 10036, 10017
         }), TestSuite::Compare::Container);
 }
 
@@ -1023,8 +1161,11 @@ template<class T> void GenerateIndicesTest::generateQuadIndices() {
         for(std::size_t j = 0; j != 4; ++j)
             remappedIndices[i*4 + j] = QuadIndices[i*4 + data.remap[j]];
 
-    Containers::Array<UnsignedInt> triangleIndices =
-    MeshTools::generateQuadIndices(transformedPositions, remappedIndices);
+    Containers::Array<UnsignedInt> triangleIndices;
+    if(data.offset)
+        triangleIndices = MeshTools::generateQuadIndices(transformedPositions, remappedIndices, data.offset);
+    else
+        triangleIndices = MeshTools::generateQuadIndices(transformedPositions, remappedIndices);
 
     CORRADE_COMPARE_AS(Containers::arrayView(triangleIndices), Containers::arrayView(data.expected), TestSuite::Compare::Container);
 }
@@ -1040,14 +1181,24 @@ template<class T> void GenerateIndicesTest::generateQuadIndicesInto() {
         indices[i] = QuadIndices[i];
 
     T triangleIndices[Containers::arraySize(QuadIndices)*6/4];
-    MeshTools::generateQuadIndicesInto(QuadPositions, indices, triangleIndices);
 
+    MeshTools::generateQuadIndicesInto(QuadPositions, indices, triangleIndices);
     CORRADE_COMPARE_AS(Containers::arrayView(triangleIndices), Containers::arrayView<T>({
         0, 2, 3, 0, 3, 4,           // ABC ACD
         9, 5, 6, 9, 6, 7,           // DAB DBC
         10, 11, 14, 10, 14, 15,     // ABC ACD
         19, 16, 17, 19, 17, 18,     // DAB DBC
         20, 21, 22, 20, 22, 23      // ABC ACD
+    }), TestSuite::Compare::Container);
+
+    /* With additional offset */
+    MeshTools::generateQuadIndicesInto(QuadPositions, indices, triangleIndices, 100);
+    CORRADE_COMPARE_AS(Containers::arrayView(triangleIndices), Containers::arrayView<T>({
+        100, 102, 103, 100, 103, 104,     // ABC ACD
+        109, 105, 106, 109, 106, 107,     // DAB DBC
+        110, 111, 114, 110, 114, 115,     // ABC ACD
+        119, 116, 117, 119, 117, 118,     // DAB DBC
+        120, 121, 122, 120, 122, 123      // ABC ACD
     }), TestSuite::Compare::Container);
 }
 

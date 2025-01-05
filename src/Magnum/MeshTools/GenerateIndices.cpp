@@ -85,18 +85,18 @@ UnsignedInt primitiveCount(const MeshPrimitive primitive, const UnsignedInt elem
     CORRADE_ASSERT_UNREACHABLE("MeshTools::primitiveCount(): invalid primitive" << primitive, {});
 }
 
-void generateTrivialIndicesInto(const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateTrivialIndicesInto(const Containers::StridedArrayView1D<UnsignedInt>& output, /*mutable*/ UnsignedInt offset) {
     for(std::size_t i = 0; i != output.size(); ++i)
-        output[i] = i;
+        output[i] = offset++;
 }
 
-Containers::Array<UnsignedInt> generateTrivialIndices(const UnsignedInt vertexCount) {
+Containers::Array<UnsignedInt> generateTrivialIndices(const UnsignedInt vertexCount, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, vertexCount};
-    generateTrivialIndicesInto(output);
+    generateTrivialIndicesInto(output, offset);
     return output;
 }
 
-void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 2,
         "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two vertices, got" << vertexCount, );
 
@@ -112,14 +112,14 @@ void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Container
         0             3     0                 5
     */
     for(std::size_t i = 0; i != iMax; ++i) {
-        output[i*2 + 0] = i;
-        output[i*2 + 1] = i + 1;
+        output[i*2 + 0] = offset + i;
+        output[i*2 + 1] = offset + i + 1;
     }
 }
 
 namespace {
 
-template<class T> void generateLineStripIndicesIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+template<class T> void generateLineStripIndicesIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(indices.size() == 0 || indices.size() >= 2,
         "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two indices, got" << indices.size(), );
 
@@ -130,67 +130,67 @@ template<class T> void generateLineStripIndicesIntoImplementation(const Containe
     /* Same as generateLineStripIndicesInto() above, just with the index array
        indirection on top */
     for(std::size_t i = 0; i != iMax; ++i) {
-        output[i*2 + 0] = indices[i];
-        output[i*2 + 1] = indices[i + 1];
+        output[i*2 + 0] = offset + indices[i];
+        output[i*2 + 1] = offset + indices[i + 1];
     }
 }
 
 }
 
-void generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateLineStripIndicesIntoImplementation(indices, output);
+void generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateLineStripIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateLineStripIndicesIntoImplementation(indices, output);
+void generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateLineStripIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateLineStripIndicesIntoImplementation(indices, output);
+void generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateLineStripIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateLineStripIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateLineStripIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateLineStripIndicesInto(): second index view dimension is not contiguous", );
     if(indices.size()[1] == 4)
-        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output);
+        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output, offset);
     else if(indices.size()[1] == 2)
-        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output);
+        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output, offset);
     else if(indices.size()[1] == 1)
-        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output);
+        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output, offset);
     else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateLineStripIndicesInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
 }
 
-Containers::Array<UnsignedInt> generateLineStripIndices(const UnsignedInt vertexCount) {
+Containers::Array<UnsignedInt> generateLineStripIndices(const UnsignedInt vertexCount, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*(Math::max(vertexCount, 1u) - 1)};
-    generateLineStripIndicesInto(vertexCount, output);
+    generateLineStripIndicesInto(vertexCount, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices) {
+Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*(Math::max(indices.size(), std::size_t{1}) - 1)};
-    generateLineStripIndicesInto(indices, output);
+    generateLineStripIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices) {
+Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*(Math::max(indices.size(), std::size_t{1}) - 1)};
-    generateLineStripIndicesInto(indices, output);
+    generateLineStripIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices) {
+Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*(Math::max(indices.size(), std::size_t{1}) - 1)};
-    generateLineStripIndicesInto(indices, output);
+    generateLineStripIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView2D<const char>& indices) {
+Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView2D<const char>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*(Math::max(indices.size()[0], std::size_t{1}) - 1)};
-    generateLineStripIndicesInto(indices, output);
+    generateLineStripIndicesInto(indices, output, offset);
     return output;
 }
 
-void generateLineLoopIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateLineLoopIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 2,
         "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two vertices, got" << vertexCount, );
     CORRADE_ASSERT(output.size() == 2*vertexCount,
@@ -206,18 +206,18 @@ void generateLineLoopIndicesInto(const UnsignedInt vertexCount, const Containers
         0 ----------- 3     0 7 ----------- 6 5
     */
     for(std::size_t i = 0, iMax = Math::max(vertexCount, 1u) - 1; i != iMax; ++i) {
-        output[i*2 + 0] = i;
-        output[i*2 + 1] = i + 1;
+        output[i*2 + 0] = offset + i;
+        output[i*2 + 1] = offset + i + 1;
     }
     if(vertexCount >= 2) {
-        output[2*vertexCount - 2] = vertexCount - 1;
-        output[2*vertexCount - 1] = 0;
+        output[2*vertexCount - 2] = offset + vertexCount - 1;
+        output[2*vertexCount - 1] = offset + 0;
     }
 }
 
 namespace {
 
-template<class T> void generateLineLoopIndicesIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+template<class T> void generateLineLoopIndicesIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(indices.size() == 0 || indices.size() >= 2,
         "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two indices, got" << indices.size(), );
     CORRADE_ASSERT(output.size() == 2*indices.size(),
@@ -226,71 +226,71 @@ template<class T> void generateLineLoopIndicesIntoImplementation(const Container
     /* Same as generateLineLoopIndicesInto() above, just with the index array
        indirection on top */
     for(std::size_t i = 0, iMax = Math::max(indices.size(), std::size_t{1}) - 1; i != iMax; ++i) {
-        output[i*2 + 0] = indices[i];
-        output[i*2 + 1] = indices[i + 1];
+        output[i*2 + 0] = offset + indices[i];
+        output[i*2 + 1] = offset + indices[i + 1];
     }
     if(indices.size() >= 2) {
-        output[2*indices.size() - 2] = indices[indices.size() - 1];
-        output[2*indices.size() - 1] = indices[0];
+        output[2*indices.size() - 2] = offset + indices[indices.size() - 1];
+        output[2*indices.size() - 1] = offset + indices[0];
     }
 }
 
 }
 
-void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateLineLoopIndicesIntoImplementation(indices, output);
+void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateLineLoopIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateLineLoopIndicesIntoImplementation(indices, output);
+void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateLineLoopIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateLineLoopIndicesIntoImplementation(indices, output);
+void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateLineLoopIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateLineLoopIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateLineLoopIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateLineLoopIndicesInto(): second index view dimension is not contiguous", );
     if(indices.size()[1] == 4)
-        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output);
+        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output, offset);
     else if(indices.size()[1] == 2)
-        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output);
+        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output, offset);
     else if(indices.size()[1] == 1)
-        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output);
+        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output, offset);
     else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateLineLoopIndicesInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
 }
 
-Containers::Array<UnsignedInt> generateLineLoopIndices(const UnsignedInt vertexCount) {
+Containers::Array<UnsignedInt> generateLineLoopIndices(const UnsignedInt vertexCount, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*vertexCount};
-    generateLineLoopIndicesInto(vertexCount, output);
+    generateLineLoopIndicesInto(vertexCount, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices) {
+Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*indices.size()};
-    generateLineLoopIndicesInto(indices, output);
+    generateLineLoopIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices) {
+Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*indices.size()};
-    generateLineLoopIndicesInto(indices, output);
+    generateLineLoopIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices) {
+Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*indices.size()};
-    generateLineLoopIndicesInto(indices, output);
+    generateLineLoopIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView2D<const char>& indices) {
+Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView2D<const char>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 2*indices.size()[0]};
-    generateLineLoopIndicesInto(indices, output);
+    generateLineLoopIndicesInto(indices, output, offset);
     return output;
 }
 
-void generateTriangleStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateTriangleStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 3,
         "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three vertices, got" << vertexCount, );
 
@@ -309,15 +309,15 @@ void generateTriangleStripIndicesInto(const UnsignedInt vertexCount, const Conta
             1 ----- 3 ----- 5           1 4 ----- 5 7 10 ---- 11
     */
     for(std::size_t i = 0; i != iMax; ++i) {
-        output[i*3 + 0] = i % 2 ? i + 1 : i;
-        output[i*3 + 1] = i % 2 ? i : i + 1;
-        output[i*3 + 2] = i + 2;
+        output[i*3 + 0] = offset + (i % 2 ? i + 1 : i);
+        output[i*3 + 1] = offset + (i % 2 ? i : i + 1);
+        output[i*3 + 2] = offset + i + 2;
     }
 }
 
 namespace {
 
-template<class T> void generateTriangleStripIndicesIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+template<class T> void generateTriangleStripIndicesIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(indices.size() == 0 || indices.size() >= 3,
         "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three indices, got" << indices.size(), );
 
@@ -328,68 +328,68 @@ template<class T> void generateTriangleStripIndicesIntoImplementation(const Cont
     /* Same as generateTriangleStripIndicesInto() above, just with the index
        array indirection on top */
     for(std::size_t i = 0; i != iMax; ++i) {
-        output[i*3 + 0] = indices[i % 2 ? i + 1 : i];
-        output[i*3 + 1] = indices[i % 2 ? i : i + 1];
-        output[i*3 + 2] = indices[i + 2];
+        output[i*3 + 0] = offset + indices[i % 2 ? i + 1 : i];
+        output[i*3 + 1] = offset + indices[i % 2 ? i : i + 1];
+        output[i*3 + 2] = offset + indices[i + 2];
     }
 }
 
 }
 
-void generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateTriangleStripIndicesIntoImplementation(indices, output);
+void generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateTriangleStripIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateTriangleStripIndicesIntoImplementation(indices, output);
+void generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateTriangleStripIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateTriangleStripIndicesIntoImplementation(indices, output);
+void generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateTriangleStripIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateTriangleStripIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateTriangleStripIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateTriangleStripIndicesInto(): second index view dimension is not contiguous", );
     if(indices.size()[1] == 4)
-        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output);
+        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output, offset);
     else if(indices.size()[1] == 2)
-        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output);
+        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output, offset);
     else if(indices.size()[1] == 1)
-        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output);
+        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output, offset);
     else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateTriangleStripIndicesInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
 }
 
-Containers::Array<UnsignedInt> generateTriangleStripIndices(const UnsignedInt vertexCount) {
+Containers::Array<UnsignedInt> generateTriangleStripIndices(const UnsignedInt vertexCount, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(vertexCount, 2u) - 2u)};
-    generateTriangleStripIndicesInto(vertexCount, output);
+    generateTriangleStripIndicesInto(vertexCount, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices) {
+Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size(), std::size_t{2}) - 2)};
-    generateTriangleStripIndicesInto(indices, output);
+    generateTriangleStripIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices) {
+Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size(), std::size_t{2}) - 2)};
-    generateTriangleStripIndicesInto(indices, output);
+    generateTriangleStripIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices) {
+Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size(), std::size_t{2}) - 2)};
-    generateTriangleStripIndicesInto(indices, output);
+    generateTriangleStripIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView2D<const char>& indices) {
+Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView2D<const char>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size()[0], std::size_t{2}) - 2)};
-    generateTriangleStripIndicesInto(indices, output);
+    generateTriangleStripIndicesInto(indices, output, offset);
     return output;
 }
 
-void generateTriangleFanIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateTriangleFanIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 3,
         "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three vertices, got" << vertexCount, );
 
@@ -409,15 +409,15 @@ void generateTriangleFanIndicesInto(const UnsignedInt vertexCount, const Contain
                     1                            1
     */
     for(std::size_t i = 0; i != iMax; ++i) {
-        output[i*3 + 0] = 0;
-        output[i*3 + 1] = i + 1;
-        output[i*3 + 2] = i + 2;
+        output[i*3 + 0] = offset + 0;
+        output[i*3 + 1] = offset + i + 1;
+        output[i*3 + 2] = offset + i + 2;
     }
 }
 
 namespace {
 
-template<class T> void generateTriangleFanIndicesIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+template<class T> void generateTriangleFanIndicesIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(indices.size() == 0 || indices.size() >= 3,
         "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three indices, got" << indices.size(), );
 
@@ -428,70 +428,70 @@ template<class T> void generateTriangleFanIndicesIntoImplementation(const Contai
     /* Same as generateTriangleStripIndicesInto() above, just with the index
        array indirection on top */
     for(std::size_t i = 0; i != iMax; ++i) {
-        output[i*3 + 0] = indices[0];
-        output[i*3 + 1] = indices[i + 1];
-        output[i*3 + 2] = indices[i + 2];
+        output[i*3 + 0] = offset + indices[0];
+        output[i*3 + 1] = offset + indices[i + 1];
+        output[i*3 + 2] = offset + indices[i + 2];
     }
 }
 
 }
 
-void generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateTriangleFanIndicesIntoImplementation(indices, output);
+void generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateTriangleFanIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateTriangleFanIndicesIntoImplementation(indices, output);
+void generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateTriangleFanIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    generateTriangleFanIndicesIntoImplementation(indices, output);
+void generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    generateTriangleFanIndicesIntoImplementation(indices, output, offset);
 }
 
-void generateTriangleFanIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+void generateTriangleFanIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateTriangleFanIndicesInto(): second index view dimension is not contiguous", );
     if(indices.size()[1] == 4)
-        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output);
+        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output, offset);
     else if(indices.size()[1] == 2)
-        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output);
+        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output, offset);
     else if(indices.size()[1] == 1)
-        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output);
+        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output, offset);
     else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateTriangleFanIndicesInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
 }
 
-Containers::Array<UnsignedInt> generateTriangleFanIndices(const UnsignedInt vertexCount) {
+Containers::Array<UnsignedInt> generateTriangleFanIndices(const UnsignedInt vertexCount, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(vertexCount, 2u) - 2)};
-    generateTriangleFanIndicesInto(vertexCount, output);
+    generateTriangleFanIndicesInto(vertexCount, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices) {
+Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size(), std::size_t{2}) - 2)};
-    generateTriangleFanIndicesInto(indices, output);
+    generateTriangleFanIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices) {
+Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size(), std::size_t{2}) - 2)};
-    generateTriangleFanIndicesInto(indices, output);
+    generateTriangleFanIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices) {
+Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size(), std::size_t{2}) - 2)};
-    generateTriangleFanIndicesInto(indices, output);
+    generateTriangleFanIndicesInto(indices, output, offset);
     return output;
 }
 
-Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView2D<const char>& indices) {
+Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView2D<const char>& indices, const UnsignedInt offset) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size()[0], std::size_t{2}) - 2)};
-    generateTriangleFanIndicesInto(indices, output);
+    generateTriangleFanIndicesInto(indices, output, offset);
     return output;
 }
 
 namespace {
 
-template<class T> inline void generateQuadIndicesIntoImplementation(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const T>& quads, const Containers::StridedArrayView1D<T>& output) {
+template<class T> inline void generateQuadIndicesIntoImplementation(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const T>& quads, const Containers::StridedArrayView1D<T>& output, const UnsignedInt offset) {
     CORRADE_ASSERT(quads.size() % 4 == 0,
         "MeshTools::generateQuadIndicesInto(): quad index count" << quads.size() << "not divisible by 4", );
     CORRADE_ASSERT(quads.size()*6/4 == output.size(),
@@ -528,20 +528,20 @@ template<class T> inline void generateQuadIndicesIntoImplementation(const Contai
 
         /* Assign the two triangles */
         for(std::size_t j = 0; j != 6; ++j)
-            output[6*i + j] = quads[4*i + split[j]];
+            output[6*i + j] = offset + quads[4*i + split[j]];
     }
 }
 
 }
 
-Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads) {
+Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads, const UnsignedInt offset) {
     /* We can skip zero-initialization here */
     Containers::Array<UnsignedInt> out{NoInit, quads.size()*6/4};
-    generateQuadIndicesIntoImplementation(positions, quads, Containers::stridedArrayView(out));
+    generateQuadIndicesIntoImplementation(positions, quads, Containers::stridedArrayView(out), offset);
     return out;
 }
 
-Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads) {
+Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads, const UnsignedInt offset) {
     /* Explicitly ensure we have the unused bytes zeroed out */
     Containers::Array<UnsignedInt> out{ValueInit, quads.size()*6/4};
     generateQuadIndicesIntoImplementation(positions, quads,
@@ -554,12 +554,12 @@ Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArra
                 #ifdef CORRADE_BIG_ENDIAN
                 + 1
                 #endif
-            , out.size(), 4}
-    );
+            , out.size(), 4},
+        offset);
     return out;
 }
 
-Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads) {
+Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const UnsignedInt offset) {
     /* Explicitly ensure we have the unused bytes zeroed out */
     Containers::Array<UnsignedInt> out{ValueInit, quads.size()*6/4};
     generateQuadIndicesIntoImplementation(positions, quads,
@@ -572,21 +572,21 @@ Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArra
                 #ifdef CORRADE_BIG_ENDIAN
                 + 3
                 #endif
-            , out.size(), 4}
-    );
+            , out.size(), 4},
+        offset);
     return out;
 }
 
-void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads, const Containers::StridedArrayView1D<UnsignedInt>& output) {
-    return generateQuadIndicesIntoImplementation(positions, quads, output);
+void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads, const Containers::StridedArrayView1D<UnsignedInt>& output, const UnsignedInt offset) {
+    return generateQuadIndicesIntoImplementation(positions, quads, output, offset);
 }
 
-void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads, const Containers::StridedArrayView1D<UnsignedShort>& output) {
-    return generateQuadIndicesIntoImplementation(positions, quads, output);
+void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads, const Containers::StridedArrayView1D<UnsignedShort>& output, const UnsignedInt offset) {
+    return generateQuadIndicesIntoImplementation(positions, quads, output, offset);
 }
 
-void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const Containers::StridedArrayView1D<UnsignedByte>& output) {
-    return generateQuadIndicesIntoImplementation(positions, quads, output);
+void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const Containers::StridedArrayView1D<UnsignedByte>& output, const UnsignedInt offset) {
+    return generateQuadIndicesIntoImplementation(positions, quads, output, offset);
 }
 
 Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
