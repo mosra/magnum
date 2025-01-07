@@ -643,18 +643,19 @@ template<class T> bool aabbCone(
 {
     const Vector3<T> c = aabbCenter - coneOrigin;
 
-    for(const Int axis: {0, 1, 2}) {
+    /* Not doing for(Int axis: {0, 1, 2}) because that'd need an
+       <initializer_list> include. FFS, C++. */
+    for(Int axis = 0; axis != 3; ++axis) {
         const Int z = axis;
         const Int x = (axis + 1) % 3;
         const Int y = (axis + 2) % 3;
         if(coneNormal[z] != T(0)) {
-            const Float t0 = ((c[z] - aabbExtents[z])/coneNormal[z]);
-            const Float t1 = ((c[z] + aabbExtents[z])/coneNormal[z]);
-
-            const Vector3<T> i0 = coneNormal*t0;
-            const Vector3<T> i1 = coneNormal*t1;
-
-            for(const auto& i : {i0, i1}) {
+            /* Dtto here, making an array to not need an initializer_list */
+            const Vector3<T> i01[]{
+                coneNormal*((c[z] - aabbExtents[z])/coneNormal[z]),
+                coneNormal*((c[z] + aabbExtents[z])/coneNormal[z])
+            };
+            for(const Vector3<T>& i: i01) {
                 Vector3<T> closestPoint = i;
 
                 if(i[x] - c[x] > aabbExtents[x]) {
