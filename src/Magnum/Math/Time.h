@@ -31,7 +31,9 @@
  * @m_since_latest
  */
 
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Utility.h>
+#endif
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
@@ -396,6 +398,7 @@ template<class T> template<class U> constexpr Nanoseconds<T>::Nanoseconds(Unit<S
 
 template<class T> template<class U> constexpr Seconds<T>::Seconds(Unit<Nanoseconds, U> value) noexcept: Unit<Math::Seconds, T>{T(static_cast<long double>(U(value))/1000000000.0l)} {}
 
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /**
  * @debugoperator{Nanoseconds}
  * @m_since_latest
@@ -407,6 +410,7 @@ MAGNUM_EXPORT Utility::Debug& operator<<(Utility::Debug& debug, const Unit<Nanos
  * @m_since_latest
  */
 MAGNUM_EXPORT Utility::Debug& operator<<(Utility::Debug& debug, const Unit<Seconds, Float>& value);
+#endif
 
 }}
 

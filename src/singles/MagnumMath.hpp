@@ -24,9 +24,11 @@
         #include <MagnumMath.hpp>
 
     If you need the deinlined symbols to be exported from a shared library,
-    `#define MAGNUM_EXPORT` as appropriate. In addition, contents of the
-    GlmIntegration and EigenIntegration libraries are included as well ---
-    opt-in by specifying either `#define MAGNUM_MATH_GLM_INTEGRATION` or
+    `#define MAGNUM_EXPORT` as appropriate. The STL compatibility bits for time
+    types are included as well --- opt-in with
+    `#define MAGNUM_MATH_STL_COMPATIBILITY` before including the file. Contents
+    of the GlmIntegration and EigenIntegration libraries can be opted in by
+    specifying either `#define MAGNUM_MATH_GLM_INTEGRATION` or
     `#define MAGNUM_MATH_EIGEN_INTEGRATION` before including the file.
     Including it multiple times with different macros defined works as well.
 
@@ -309,6 +311,8 @@ typedef Math::Range1D<Int> Range1Di;
 typedef Math::Range2D<Int> Range2Di;
 typedef Math::Range3D<Int> Range3Di;
 typedef Math::Frustum<Float> Frustum;
+typedef Math::Nanoseconds<Long> Nanoseconds;
+typedef Math::Seconds<Float> Seconds;
 typedef Math::Vector2<Half> Vector2h;
 typedef Math::Vector3<Half> Vector3h;
 typedef Math::Vector4<Half> Vector4h;
@@ -397,6 +401,7 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Math/RectangularMatrix.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Tags.h"
+#include "Magnum/Math/Time.h"
 #include "Magnum/Math/TypeTraits.h"
 #include "Magnum/Math/Unit.h"
 #include "Magnum/Math/Vector.h"
@@ -408,6 +413,10 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Math/Algorithms/KahanSum.h"
 #include "Magnum/Math/Algorithms/Qr.h"
 //#include "Magnum/Math/Algorithms/Svd.h" // TODO needs Optional and Triple
+#ifdef MAGNUM_MATH_STL_COMPATIBILITY
+// {{includes}}
+#include "Magnum/Math/TimeStl.h"
+#endif
 #ifdef MAGNUM_MATH_GLM_INTEGRATION
 // {{includes}}
 #include "Magnum/GlmIntegration/Integration.h"
@@ -424,4 +433,5 @@ typedef Math::Frustum<Double> Frustumd;
 // {{ includes }}
 #include "Magnum/Math/Functions.cpp"
 #include "Magnum/Math/Packing.cpp"
+/* Time.cpp is just debug output operators, not included */
 #endif

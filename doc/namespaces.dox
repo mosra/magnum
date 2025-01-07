@@ -113,10 +113,12 @@ more information.
     @endcode
 @par
     If you need the deinlined symbols to be exported from a shared library,
-    @cpp #define MAGNUM_EXPORT @ce as appropriate. In addition, contents of the
-    @ref GlmIntegration and @ref EigenIntegration libraries except for the
-    @ref Magnum/EigenIntegration/DynamicMatrixIntegration.h header are included
-    as well --- opt-in by specifying either
+    @cpp #define MAGNUM_EXPORT @ce as appropriate. The STL compatibility bits
+    for time types are included as well --- opt-in with
+    @cpp #define MAGNUM_MATH_STL_COMPATIBILITY @ce before including the file.
+    Contents of the @ref GlmIntegration and @ref EigenIntegration libraries
+    except for the @ref Magnum/EigenIntegration/DynamicMatrixIntegration.h
+    can be opted in by specifying either
     @cpp #define MAGNUM_MATH_GLM_INTEGRATION @ce or
     @cpp #define MAGNUM_MATH_EIGEN_INTEGRATION @ce before including the file.
     Including it multiple times with different macros defined works as well.
