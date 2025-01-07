@@ -24,6 +24,9 @@
     If you need the deinlined symbols to be exported from a shared library,
     `#define MAGNUM_MESHTOOLS_EXPORT` as appropriate.
 
+    v2020.06-3128-g47b22 (2025-01-07)
+    -   Initial release
+
     Generated from Corrade {{revision:corrade/src}} and
         Magnum {{revision:magnum/src}}, {{stats:loc}} / {{stats:preprocessed}} LoC
 */
