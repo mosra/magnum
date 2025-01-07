@@ -399,7 +399,6 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/BitVector.h"
 #include "Magnum/Math/Color.h"
-// TODO: ColorBatch (separate library because of StridedArrayView)
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/CubicHermite.h"
@@ -409,14 +408,12 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/Functions.h"
-// TODO: FunctionsBatch (separate library because of StridedArrayView)
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Intersection.h"
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Packing.h"
-// TODO: PackingBatch (separate library because of StridedArrayView)
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/RectangularMatrix.h"

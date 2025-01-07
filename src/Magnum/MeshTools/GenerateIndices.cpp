@@ -28,15 +28,20 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
 #include <Corrade/Utility/Algorithms.h>
+#endif
 
 #include "Magnum/Math/Vector3.h"
+#ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
 #include "Magnum/MeshTools/Copy.h"
 #include "Magnum/MeshTools/Implementation/remapAttributeData.h"
 #include "Magnum/Trade/MeshData.h"
+#endif
 
 namespace Magnum { namespace MeshTools {
 
+#ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
 UnsignedInt primitiveCount(const MeshPrimitive primitive, const UnsignedInt elementCount) {
     #ifndef CORRADE_NO_ASSERT
     UnsignedInt minElementCount;
@@ -84,6 +89,7 @@ UnsignedInt primitiveCount(const MeshPrimitive primitive, const UnsignedInt elem
         return elementCount < 2 ? 0 : elementCount - 2;
     CORRADE_ASSERT_UNREACHABLE("MeshTools::primitiveCount(): invalid primitive" << primitive, {});
 }
+#endif
 
 void generateTrivialIndicesInto(const Containers::StridedArrayView1D<UnsignedInt>& output, /*mutable*/ UnsignedInt offset) {
     for(std::size_t i = 0; i != output.size(); ++i)
@@ -589,6 +595,7 @@ void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>
     return generateQuadIndicesIntoImplementation(positions, quads, output, offset);
 }
 
+#ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
 Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
     CORRADE_ASSERT(!mesh.isIndexed() || !isMeshIndexTypeImplementationSpecific(mesh.indexType()),
         "MeshTools::generateIndices(): mesh has an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(mesh.indexType()),
@@ -687,5 +694,6 @@ Trade::MeshData generateIndices(const Trade::MeshData& mesh) {
        anything based on the DataFlags */
     return generateIndices(reference(mesh));
 }
+#endif
 
 }}

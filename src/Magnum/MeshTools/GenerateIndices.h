@@ -33,10 +33,13 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/visibility.h"
+#ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
 #include "Magnum/Trade/Trade.h"
+#endif
 
 namespace Magnum { namespace MeshTools {
 
+#ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
 /**
 @brief Actual primitive count for given primitive type and element count
 @m_since{2020,06}
@@ -49,6 +52,7 @@ is either zero or at least @cpp 2 @ce for a line-based primitive and at least
 @ref MeshPrimitive::Lines and by @cpp 3 @ce for @ref MeshPrimitive::Triangles.
 */
 MAGNUM_MESHTOOLS_EXPORT UnsignedInt primitiveCount(MeshPrimitive primitive, UnsignedInt elementCount);
+#endif
 
 /**
 @brief Create a trivial index buffer
@@ -509,6 +513,7 @@ MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedAr
  */
 MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const Containers::StridedArrayView1D<UnsignedByte>& output, UnsignedInt offset = 0);
 
+#ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
 /**
 @brief Convert a mesh to a plain indexed one
 @m_since{2020,06}
@@ -550,6 +555,7 @@ it's owned, doesn't need expanding and is already with
 @see @ref Trade::MeshData::vertexDataFlags()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(Trade::MeshData&& mesh);
+#endif
 
 }}
 

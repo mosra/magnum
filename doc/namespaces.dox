@@ -100,16 +100,23 @@ more information.
     This library is also available as a single-header, dependency-less
     [MagnumMath.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.hpp)
     library in the Magnum Singles repository for easier integration into your
-    projects. See @ref singles for more information. Everything except contents
-    of the @ref Magnum/Math/ColorBatch.h, @ref Magnum/Math/FunctionsBatch.h,
-    @ref Magnum/Math/PackingBatch.h and @ref Magnum/Math/Algorithms/Svd.h
-    headers and the @ref Magnum::Math::StrictWeakOrdering helper is included.
-    The library has a separate non-inline implementation part, enable it
+    projects, with the batch APIs available in
+    [MagnumMathBatch.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMathBatch.hpp) instead. See @ref singles for more information.
+    Everything except contents of the @ref Magnum/Math/Algorithms/Svd.h header
+    and the @ref Magnum::Math::StrictWeakOrdering helper is included. The
+    libraries have a separate non-inline implementation part, enable it
     * *just once* like this:
 @par
     @code{.cpp}
     #define MAGNUM_MATH_IMPLEMENTATION
     #include <MagnumMath.hpp>
+    @endcode
+@par
+    Or, for the batch APIs, like this:
+@par
+    @code{.cpp}
+    #define MAGNUM_MATH_BATCH_IMPLEMENTATION
+    #include <MagnumMathBatch.hpp>
     @endcode
 @par
     If you need the deinlined symbols to be exported from a shared library,
@@ -431,6 +438,27 @@ is built with both `MAGNUM_WITH_GL` and `MAGNUM_TARGET_GL` enabled (which is
 done by default).
 
 See @ref building, @ref cmake and @ref meshtools for more information.
+
+@m_class{m-block m-success}
+
+@par Single-header version
+    A subset of this library is also available as a single-header,
+    dependency-less [MagnumMeshTools.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMeshTools.hpp)
+    library in the Magnum Singles repository for easier integration into your
+    projects. See @ref singles for more information. At the moment, the
+    @ref Magnum/MeshTools/BoundingVolume.h and
+    @ref Magnum/MeshTools/GenerateIndices.h headers are included, except for
+    APIs relying on the @ref Trade library. The library has a separate
+    non-inline implementation part, enable it *just once* like this:
+@par
+    @code{.cpp}
+    #define MAGNUM_MESHTOOLS_IMPLEMENTATION
+    #include <MagnumMeshTools.hpp>
+    @endcode
+@par
+    If you need the deinlined symbols to be exported from a shared library,
+    @cpp #define MAGNUM_MESHTOOLS_EXPORT @ce as appropriate.
+
 */
 
 /** @dir Magnum/Primitives

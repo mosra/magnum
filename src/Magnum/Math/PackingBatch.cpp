@@ -27,7 +27,9 @@
 #include "PackingBatch.h"
 
 #include <Corrade/Containers/StridedArrayView.h>
+#ifndef MAGNUM_SINGLES_NO_UTILITY_ALGORITHMS_DEPENDENCY
 #include <Corrade/Utility/Algorithms.h>
+#endif
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Math/Packing.h"
@@ -404,6 +406,7 @@ void castInto(const Containers::StridedArrayView2D<const Double>& src, const Con
 
 namespace {
 
+#ifndef MAGNUM_SINGLES_NO_UTILITY_ALGORITHMS_DEPENDENCY
 template<class T> inline void copyImplementation(const Containers::StridedArrayView2D<const T>& src, const Containers::StridedArrayView2D<T>& dst) {
     /* Utility::copy() has its own assertions, but those are debug-only for
        perf reasons and don't require the second dimension to be contiguous.
@@ -418,6 +421,13 @@ template<class T> inline void copyImplementation(const Containers::StridedArrayV
 
     Utility::copy(src, dst);
 }
+#else
+/* Not as great because it doesn't have a fast memcpy codepath but more
+   acceptable than excluding the APIs altogether */
+template<class T> inline void copyImplementation(const Containers::StridedArrayView2D<const T>& src, const Containers::StridedArrayView2D<T>& dst) {
+    castIntoImplementation(src, dst);
+}
+#endif
 
 }
 

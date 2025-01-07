@@ -48,6 +48,8 @@ sources using the builtin @ref acme "single-header generator tool".
 Class or library            | Single-header version
 --------------------------- | ----------------------------
 @ref Math, \n @ref EigenIntegration, \n @ref GlmIntegration | [MagnumMath.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.hpp), depends on `CorradePair.h`
+@ref Math batch APIs        | [MagnumMathBatch.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMathBatch.hpp), depends on `MagnumMath.hpp` and `CorradeStridedArrayView.h`
+@ref MeshTools              | [MagnumMeshTools.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMeshTools.hpp), depends on `MagnumMathBatch.hpp` and `CorradeArray.h`
 
 There are also @ref corrade-singles "single-header libraries for Corrade APIs".
 
