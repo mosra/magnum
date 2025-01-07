@@ -222,6 +222,8 @@ template<class U> class className {                                         \
 
 namespace Magnum {
 
+using namespace Corrade;
+
 typedef Math::Half Half;
 typedef Math::BitVector<2> BitVector2;
 typedef Math::BitVector<3> BitVector3;
