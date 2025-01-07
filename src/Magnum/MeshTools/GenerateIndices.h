@@ -177,7 +177,7 @@ Generates a @cpp 0, 1, 1, 2, 3, ..., 0 @ce sequence, optionally with @p offset
 added to each index. Can be used to convert a @ref MeshPrimitive::LineLoop mesh
 to @ref MeshPrimitive::Lines. The @p vertexCount is expected to be either
 @cpp 0 @ce or at least @cpp 2 @ce. Primitive restart is not supported. If the
-mesh is already indexed, use @ref generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+mesh is already indexed, use @ref generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, UnsignedInt)
 and overloads instead.
 @see @ref generateLineLoopIndicesInto(), @ref generateLineStripIndices(),
     @ref generateTriangleStripIndices(), @ref generateTriangleFanIndices(),
@@ -189,8 +189,8 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(U
 @brief Create index buffer for an indexed line loop primitive
 @m_since_latest
 
-Like @ref generateLineLoopIndices(UnsignedInt), but merges @p indices into the
-generated line loop index buffer.
+Like @ref generateLineLoopIndices(UnsignedInt, UnsignedInt), but merges
+@p indices into the generated line loop index buffer.
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, UnsignedInt offset = 0);
 
@@ -212,7 +212,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(c
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
-@ref generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+@ref generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, UnsignedInt)
 etc. overloads.
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView2D<const char>& indices, UnsignedInt offset = 0);
@@ -225,7 +225,7 @@ A variant of @ref generateLineLoopIndices() that fills existing memory instead
 of allocating a new array. The @p vertexCount is expected to be either
 @cpp 0 @ce or at least @cpp 2 @ce, the @p output array is expected to have a
 size of @cpp 2*vertexCount @ce. Primitive restart is not supported.If
-the mesh is already indexed, use @ref generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&)
+the mesh is already indexed, use @ref generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&, UnsignedInt)
 and overloads instead.
 */
 MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output, UnsignedInt offset = 0);
@@ -234,7 +234,7 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(UnsignedInt vertexCount
 @brief Create index buffer for an indexed line loop primitive into an existing array
 @m_since_latest
 
-Like @ref generateLineLoopIndicesInto(UnsignedInt, const Containers::StridedArrayView1D<UnsignedInt>&),
+Like @ref generateLineLoopIndicesInto(UnsignedInt, const Containers::StridedArrayView1D<UnsignedInt>&, UnsignedInt),
 but merges @p indices into the generated line loop index buffer.
 */
 MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, UnsignedInt offset = 0);
@@ -257,7 +257,7 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(const Containers::Strid
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
-@ref generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&)
+@ref generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&, UnsignedInt)
 etc. overloads.
 */
 MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output, UnsignedInt offset = 0);
@@ -266,11 +266,12 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(const Containers::Strid
 @brief Create index buffer for a triangle strip primitive
 @m_since{2020,06}
 
-Generates a @cpp 0, 1, 2, 2, 1, 3, 2, 3, 4, ... @ce sequence. Can be used to
-convert a @ref MeshPrimitive::TriangleStrip mesh to
-@ref MeshPrimitive::Triangles. The @p vertexCount is expected to be either
-@cpp 0 @ce or at least @cpp 3 @ce. Primitive restart is not supported. If the
-mesh is already indexed, use @ref generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+Generates a @cpp 0, 1, 2, 2, 1, 3, 2, 3, 4, ... @ce sequence, optionally with
+@p offset added to each index. Can be used to convert a
+@ref MeshPrimitive::TriangleStrip mesh to @ref MeshPrimitive::Triangles. The
+@p vertexCount is expected to be either @cpp 0 @ce or at least @cpp 3 @ce.
+Primitive restart is not supported. If the mesh is already indexed, use
+@ref generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, UnsignedInt)
 and overloads instead.
 @see @ref generateTriangleStripIndicesInto(), @ref generateLineStripIndices(),
     @ref generateLineLoopIndices(), @ref generateTriangleFanIndices(),
@@ -282,8 +283,8 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndi
 @brief Create index buffer for an indexed triangle strip primitive
 @m_since_latest
 
-Like @ref generateTriangleStripIndices(UnsignedInt), but merges @p indices into
-the generated triangle strip index buffer.
+Like @ref generateTriangleStripIndices(UnsignedInt, UnsignedInt), but merges
+@p indices into the generated triangle strip index buffer.
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, UnsignedInt offset = 0);
 
@@ -305,7 +306,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndi
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
-@ref generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+@ref generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, UnsignedInt)
 etc. overloads.
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView2D<const char>& indices, UnsignedInt offset = 0);
