@@ -551,7 +551,7 @@ Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArra
         Containers::StridedArrayView1D<UnsignedShort>{
             Containers::arrayCast<UnsignedShort>(out),
             reinterpret_cast<UnsignedShort*>(out.data())
-                #ifdef CORRADE_BIG_ENDIAN
+                #ifdef CORRADE_TARGET_BIG_ENDIAN
                 + 1
                 #endif
             , out.size(), 4},
@@ -569,7 +569,7 @@ Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArra
         Containers::StridedArrayView1D<UnsignedByte>{
             Containers::arrayCast<UnsignedByte>(out),
             reinterpret_cast<UnsignedByte*>(out.data())
-                #ifdef CORRADE_BIG_ENDIAN
+                #ifdef CORRADE_TARGET_BIG_ENDIAN
                 + 3
                 #endif
             , out.size(), 4},
