@@ -32,6 +32,25 @@
     `#define MAGNUM_MATH_EIGEN_INTEGRATION` before including the file.
     Including it multiple times with different macros defined works as well.
 
+    v2020.06-3125-g632a2 (2025-01-07)
+    -   New Nanoseconds and Seconds types along with _nsec, _usec, _msec and
+        _sec literals and opt-in std::chrono compatibility
+    -   Literals are now in inline AngleLiterals, ColorLiterals, HalfLiterals
+        and TimeLiterals subnamespaces to allow for more fine-grained inclusion
+    -   Most const Vector APIs are now constexpr as well
+    -   The _rgbf and _rgbaf literals are now constexpr
+    -   Vector and [Rectangular]Matrix instances can are now constexpr
+        constructible directly from plain C arrays of matching sizes
+    -   Added Quaternion::rotation() from two vectors
+    -   Added Quaternion::xyzw() and wxyz() for conversion to a Vector4
+    -   Bezier APIs now use the leaf Vector2 / Vector3 types instead of the
+        base Vector type
+    -   New Matrix2x1, Matrix3x1, Matrix4x1, Matrix2x1d, Matrix3x1d and
+        Matrix4x1d typedefs for single-row matrices
+    -   Removed dependency on <utility> in favor of CorradePair.h, which
+        reduces the preprocessed size by about 500 lines, and enables constexpr
+        usage in various new places
+    -   Updated Eigen integration to work with MSVC 2022 17.10+
     v2020.06-2544-g3e435 (2023-09-11)
     -   Fixes to the Utility::swap() helper to avoid ambiguity with std::swap()
     v2020.06-2502-gfa079385b (2023-08-28)
