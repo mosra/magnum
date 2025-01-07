@@ -6,6 +6,8 @@
     https://doc.magnum.graphics/magnum/namespaceMagnum_1_1EigenIntegration.html
     https://doc.magnum.graphics/magnum/namespaceMagnum_1_1GlmIntegration.html
 
+    Depends on CorradePair.h.
+
     This is a single-header library generated from the Magnum project. With the
     goal being easy integration, it's deliberately free of all comments to keep
     the file size small. More info, changelogs and full docs here:
