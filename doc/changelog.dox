@@ -1745,6 +1745,10 @@ See also:
     -   @cpp TextureTools::distanceField() @ce, use the
         @ref TextureTools::DistanceFieldGL class instead.
 -   Removed APIs deprecated in 2019.10, in particular:
+    -   @cpp Trade::ImporterFileCallbackPolicy @ce, use the
+        @ref InputFileCallbackPolicy enum instead; additionally there was
+        @cpp Trade::ImporterFileCallbackPolicy::LoadPernament @ce containing a
+        typo, use @ref InputFileCallbackPolicy::LoadPermanent instead
     -   @cpp DebugTools::ForceRendererOptions::scale() @ce, use
         @ref DebugTools::ForceRendererOptions::size() instead
     -   @cpp Math::Color3::Hsv @ce and @cpp Math::Color4::Hsv @ce

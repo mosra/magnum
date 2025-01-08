@@ -41,8 +41,6 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* For APIs that used to take or return a std::string */
 #include <Corrade/Containers/StringStl.h>
-
-#include "Magnum/FileCallback.h"
 #endif
 
 namespace Magnum { namespace Trade {
@@ -91,13 +89,6 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFeature value);
 
 /** @debugoperatorenum{ImporterFeatures} */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFeatures value);
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief InputFileCallbackPolicy
- * @m_deprecated_since{2019,10} Use @ref InputFileCallbackPolicy instead.
- */
-typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
-#endif
 
 /**
 @brief Importer flag

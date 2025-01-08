@@ -45,10 +45,6 @@ class AbstractImageConverter;
 class AbstractImporter;
 class AbstractSceneConverter;
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
-#endif
-
 enum class MaterialAttribute: UnsignedInt;
 enum class MaterialTextureSwizzle: UnsignedInt;
 enum class MaterialAttributeType: UnsignedByte;
