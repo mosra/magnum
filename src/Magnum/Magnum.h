@@ -126,14 +126,6 @@ Enabled by default in a static build. On Windows see also the
 #define MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
 #undef MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief Multi-threaded build
- * @m_deprecated_since{2019,10} Use @ref CORRADE_BUILD_MULTITHREADED instead.
- */
-#define MAGNUM_BUILD_MULTITHREADED
-#undef MAGNUM_BUILD_MULTITHREADED
-#endif
-
 /**
 @brief OpenGL interoperability
 

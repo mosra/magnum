@@ -1745,6 +1745,9 @@ See also:
     -   @cpp TextureTools::distanceField() @ce, use the
         @ref TextureTools::DistanceFieldGL class instead.
 -   Removed APIs deprecated in 2019.10, in particular:
+    -   @cpp MAGNUM_BUILD_MULTITHREADED @ce, use
+        @ref CORRADE_BUILD_MULTITHREADED instead (i.e., the feature is now
+        enabled consistently between Corrade and Magnum)
     -   Templated @cpp Image*::data() @ce APIs returning a pointer which
         allowed for dangerous data access without any bounds, type or layout
         checks, use @ref Image::pixels() instead

@@ -38,12 +38,6 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include "Corrade/configure.h"
-#ifdef CORRADE_BUILD_MULTITHREADED
-/* For compatibility only, to be removed at some point. Deliberate double space
-   after the #define to avoid being unconditionally matched by older FindMagnum
-   modules. */
-#define  MAGNUM_BUILD_MULTITHREADED
-#endif
 /* The following applies only to desktop platforms */
 #if !defined(CORRADE_TARGET_IOS) && !defined(CORRADE_TARGET_ANDROID) && !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_WINDOWS_RT)
 /* MAGNUM_TARGET_HEADLESS used to be an option defined on desktop GL only, not
