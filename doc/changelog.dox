@@ -1769,6 +1769,10 @@ See also:
         @relativeref{Math::Frustum,begin()} / @relativeref{Math::Frustum,end()}
         instead
     -   @cpp Math::swizzle() @ce, use @ref Math::gather() instead
+    -   @cpp Magnum/MeshTools/GenerateFlatNormals.h @ce, use
+        @ref Magnum/MeshTools/GenerateNormals.h instead
+    -   @ref Magnum::MeshTools::generateFlatNormals() overload that used an
+        excessive amount of STL
     -   @cpp Text::FontFeature::MultiFile @ce,
         @cpp Text::AbstractFont::openData() @ce taking a vector of pairs, and
         @cpp openSingleData() @ce, use @ref Text::AbstractFont::openData() and

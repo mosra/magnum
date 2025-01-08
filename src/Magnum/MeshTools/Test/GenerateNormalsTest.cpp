@@ -38,20 +38,12 @@
 #include "Magnum/Primitives/Cylinder.h"
 #include "Magnum/Trade/MeshData.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <tuple>
-#include <vector>
-#endif
-
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct GenerateNormalsTest: TestSuite::Tester {
     explicit GenerateNormalsTest();
 
     void flat();
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    void flatDeprecated();
-    #endif
     void flatWrongCount();
     void flatIntoWrongSize();
 
@@ -75,9 +67,6 @@ struct GenerateNormalsTest: TestSuite::Tester {
 
 GenerateNormalsTest::GenerateNormalsTest() {
     addTests({&GenerateNormalsTest::flat,
-              #ifdef MAGNUM_BUILD_DEPRECATED
-              &GenerateNormalsTest::flatDeprecated,
-              #endif
               &GenerateNormalsTest::flatWrongCount,
               &GenerateNormalsTest::flatIntoWrongSize,
 
@@ -125,34 +114,6 @@ void GenerateNormalsTest::flat() {
             -Vector3::zAxis()
         }), TestSuite::Compare::Container);
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void GenerateNormalsTest::flatDeprecated() {
-    /* Two vertices connected by one edge, each wound in another direction */
-    std::vector<UnsignedInt> indices;
-    std::vector<Vector3> normals;
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    std::tie(indices, normals) = generateFlatNormals({
-        0, 1, 2,
-        1, 2, 3
-    }, {
-        {-1.0f, 0.0f, 0.0f},
-        {0.0f, -1.0f, 0.0f},
-        {0.0f, 1.0f, 0.0f},
-        {1.0f, 0.0f, 0.0f}
-    });
-    CORRADE_IGNORE_DEPRECATED_POP
-
-    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{
-        0, 0, 0,
-        1, 1, 1
-    }));
-    CORRADE_COMPARE(normals, (std::vector<Vector3>{
-        Vector3::zAxis(),
-        -Vector3::zAxis()
-    }));
-}
-#endif
 
 void GenerateNormalsTest::flatWrongCount() {
     CORRADE_SKIP_IF_NO_ASSERT();

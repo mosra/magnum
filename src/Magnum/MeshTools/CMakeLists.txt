@@ -80,7 +80,6 @@ if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumMeshTools_HEADERS
         CombineIndexedArrays.h
         FilterAttributes.h
-        GenerateFlatNormals.h
         Reference.h)
 endif()
 

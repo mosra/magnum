@@ -33,13 +33,6 @@
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector3.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <vector>
-
-#include "Magnum/MeshTools/Duplicate.h"
-#include "Magnum/MeshTools/RemoveDuplicates.h"
-#endif
-
 namespace Magnum { namespace MeshTools {
 
 void generateFlatNormalsInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
@@ -59,36 +52,6 @@ Containers::Array<Vector3> generateFlatNormals(const Containers::StridedArrayVie
     generateFlatNormalsInto(positions, Containers::arrayView(out));
     return out;
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Original implementation kept verbatim as I can't be bothered rewriting it
-   using the new APIs (the original test is kept as well) */
-std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions) {
-    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", {});
-
-    /* Create normal for every triangle (assuming counterclockwise winding) */
-    std::vector<UnsignedInt> normalIndices;
-    normalIndices.reserve(indices.size());
-    std::vector<Vector3> normals;
-    normals.reserve(indices.size()/3);
-    for(std::size_t i = 0; i != indices.size(); i += 3) {
-        const Vector3 normal = Math::cross(positions[indices[i+2]]-positions[indices[i+1]],
-                                           positions[indices[i]]-positions[indices[i+1]]).normalized();
-
-        /* Use the same normal for all three vertices of the face */
-        normalIndices.push_back(normals.size());
-        normalIndices.push_back(normals.size());
-        normalIndices.push_back(normals.size());
-        normals.push_back(normal);
-    }
-
-    /* Remove duplicate normals and return */
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    normalIndices = duplicate(normalIndices, removeDuplicates(normals));
-    CORRADE_IGNORE_DEPRECATED_POP
-    return {Utility::move(normalIndices), Utility::move(normals)};
-}
-#endif
 
 namespace {
 

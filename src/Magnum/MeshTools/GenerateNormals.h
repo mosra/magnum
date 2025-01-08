@@ -33,12 +33,6 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <utility> /* std::pair */
-#include <Corrade/Utility/StlForwardVector.h>
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace MeshTools {
 
 /**
@@ -80,26 +74,6 @@ conversions:
 @see @ref generateSmoothNormalsInto()
 */
 MAGNUM_MESHTOOLS_EXPORT void generateFlatNormalsInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief Generate flat normals
-@param indices      Triangle face indices
-@param positions    Triangle vertex positions
-@return Normal indices and vectors
-
-All vertices in each triangle face get the same normal vector. Removes
-duplicates before returning. Expects that the position count is divisible by 3.
-
-@m_deprecated_since{2019,10} This will generate index buffer that's different
-    from the input @p indices array, so you'll need to recombine them using
-    @ref combineIndexedArrays() in order to have a single index array for both
-    vertices and normals. Because this makes the usage more complex than
-    strictly necessary, this function is deprecated in favor of
-    @ref generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>&).
-*/
-CORRADE_DEPRECATED("use generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>&) instead") std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> MAGNUM_MESHTOOLS_EXPORT generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions);
-#endif
 
 /**
 @brief Generate smooth normals
