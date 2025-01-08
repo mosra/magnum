@@ -405,6 +405,9 @@ template<UnsignedInt dimensions> class Image {
         UnsignedInt pixelSize() const { return _pixelSize; }
 
         /** @brief Image size in pixels */
+        /* Unlike other getters this one is a const& so it's possible to slice
+           to the sizes when all images are in an array, for example for use
+           in TextureTools atlas APIs */
         const VectorTypeFor<dimensions, Int>& size() const { return _size; }
 
         /**
@@ -661,6 +664,9 @@ template<UnsignedInt dimensions> class CompressedImage {
         CompressedPixelFormat format() const { return _format; }
 
         /** @brief Image size in pixels */
+        /* Unlike other getters this one is a const& so it's possible to slice
+           to the sizes when all images are in an array, for example for use
+           in TextureTools atlas APIs */
         const VectorTypeFor<dimensions, Int>& size() const { return _size; }
 
         /**
