@@ -468,18 +468,6 @@ template<UnsignedInt dimensions, class T> class ImageView {
          */
         Containers::ArrayView<Type> data() const { return _data; }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Image data in a particular type
-         * @m_deprecated_since{2019,10} Use non-templated @ref data() together
-         *      with @ref Corrade::Containers::arrayCast() instead for properly
-         *      bounds-checked type conversion.
-         */
-        template<class U> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") const U* data() const {
-            return reinterpret_cast<const U*>(_data.data());
-        }
-        #endif
-
         /**
          * @brief Set image data
          *
@@ -861,18 +849,6 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
 
         /** @brief Raw image data */
         Containers::ArrayView<Type> data() const { return _data; }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Image data in a particular type
-         * @m_deprecated_since{2019,10} Use non-templated @ref data() together
-         *      with @ref Corrade::Containers::arrayCast() instead for properly
-         *      bounds-checked type conversion.
-         */
-        template<class U> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") const U* data() const {
-            return reinterpret_cast<const U*>(_data.data());
-        }
-        #endif
 
         /**
          * @brief Set image data

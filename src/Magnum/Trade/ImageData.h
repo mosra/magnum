@@ -808,28 +808,6 @@ template<UnsignedInt dimensions> class ImageData {
          */
         Containers::ArrayView<char> mutableData() &;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Image data in a particular type
-         * @m_deprecated_since{2019,10} Use non-templated @ref data() together
-         *      with @ref Corrade::Containers::arrayCast() instead for properly
-         *      bounds-checked type conversion.
-         */
-        template<class T> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") T* data() {
-            return reinterpret_cast<T*>(_data.data());
-        }
-
-        /**
-         * @brief Image data in a particular type
-         * @m_deprecated_since{2019,10} Use non-templated @ref data() together
-         *      with @ref Corrade::Containers::arrayCast() instead for properly
-         *      bounds-checked type conversion.
-         */
-        template<class T> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") const T* data() const {
-            return reinterpret_cast<const T*>(_data.data());
-        }
-        #endif
-
         /**
          * @brief Pixel data
          * @m_since{2019,10}

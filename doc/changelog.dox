@@ -1745,6 +1745,9 @@ See also:
     -   @cpp TextureTools::distanceField() @ce, use the
         @ref TextureTools::DistanceFieldGL class instead.
 -   Removed APIs deprecated in 2019.10, in particular:
+    -   Templated @cpp Image*::data() @ce APIs returning a pointer which
+        allowed for dangerous data access without any bounds, type or layout
+        checks, use @ref Image::pixels() instead
     -   @cpp Trade::ImporterFileCallbackPolicy @ce, use the
         @ref InputFileCallbackPolicy enum instead; additionally there was
         @cpp Trade::ImporterFileCallbackPolicy::LoadPernament @ce containing a
