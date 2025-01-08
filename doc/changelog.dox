@@ -1745,6 +1745,8 @@ See also:
     -   @cpp TextureTools::distanceField() @ce, use the
         @ref TextureTools::DistanceFieldGL class instead.
 -   Removed APIs deprecated in 2019.10, in particular:
+    -   @cpp DebugTools::ForceRendererOptions::scale() @ce, use
+        @ref DebugTools::ForceRendererOptions::size() instead
     -   @cpp Math::Color3::Hsv @ce and @cpp Math::Color4::Hsv @ce
         @ref std::tuple typedefs and @ref Math::Color3::fromHsv() /
         @ref Math::Color4::fromHsv() overloads taking separate hue, saturation
