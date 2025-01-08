@@ -452,7 +452,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         UnsignedInt pixelSize() const { return _pixelSize; }
 
         /** @brief Image size in pixels */
-        constexpr const VectorTypeFor<dimensions, Int>& size() const { return _size; }
+        const VectorTypeFor<dimensions, Int>& size() const { return _size; }
 
         /**
          * @brief Image data properties
@@ -837,7 +837,7 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
         CompressedPixelFormat format() const { return _format; }
 
         /** @brief Image size in pixels */
-        constexpr const VectorTypeFor<dimensions, Int>& size() const { return _size; }
+        const VectorTypeFor<dimensions, Int>& size() const { return _size; }
 
         /**
          * @brief Compressed image data properties
