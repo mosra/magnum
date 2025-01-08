@@ -657,16 +657,12 @@ void ImageViewTest::constructCompressedFromMutable() {
 }
 
 void ImageViewTest::constructNullptr() {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_SKIP("This is still allowed on a deprecated build, can't test.");
-    #elif defined(CORRADE_NO_ASSERT)
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #else
+    CORRADE_SKIP_IF_NO_ASSERT();
+
     Containers::String out;
     Error redirectError{&out};
     ImageView2D{PixelFormat::RGB8Unorm, {1, 3},  nullptr};
     CORRADE_COMPARE(out, "ImageView: data too small, got 0 but expected at least 12 bytes\n");
-    #endif
 }
 
 void ImageViewTest::constructInvalidSize() {

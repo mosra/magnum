@@ -1751,6 +1751,9 @@ See also:
     -   Templated @cpp Image*::data() @ce APIs returning a pointer which
         allowed for dangerous data access without any bounds, type or layout
         checks, use @ref Image::pixels() instead
+    -   Passing empty data with a non-zero size to @ref ImageView constructors,
+        which caused a runtime deprecation warning, is not allowed anymore. Use
+        a constructor without the data parameter instead.
     -   @cpp GL::TextureFormat::R3B3G2 @ce containing a typo, use
         @ref GL::TextureFormat::R3G3B2 instead
     -   @cpp Platform::GlfwApplication::Key::Smicolon @ce containing a typo,

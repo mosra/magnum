@@ -36,15 +36,7 @@ template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(co
 template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, data, flags} {}
 
 template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _flags{flags}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    #ifndef CORRADE_NO_ASSERT
-    if(size.product() && !_data && !_data.size())
-        Warning{} << "ImageView: passing empty data to a non-empty view is deprecated, use a constructor without the data parameter instead";
-    #endif
-    CORRADE_ASSERT(!_data || Implementation::imageDataSize(*this) <= _data.size(), "ImageView: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
-    #else
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "ImageView: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
-    #endif
     #ifndef CORRADE_NO_ASSERT
     Implementation::checkImageFlagsForSize("ImageView:", flags, size);
     #endif
