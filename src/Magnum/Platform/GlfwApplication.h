@@ -1180,14 +1180,6 @@ enum class GlfwApplication::Key: Int {
     Percent = '%',
 
     Semicolon = GLFW_KEY_SEMICOLON,     /**< Semicolon (`;`) */
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    /** Semicolon (`;`)
-     * @m_deprecated_since{2019,01} Use @ref Key::Semicolon instead.
-     */
-    Smicolon CORRADE_DEPRECATED_ENUM("use Key::Semicolon instead") = Semicolon,
-    #endif
-
     Equal = GLFW_KEY_EQUAL,             /**< Equal */
 
     /**

@@ -1751,6 +1751,10 @@ See also:
     -   Templated @cpp Image*::data() @ce APIs returning a pointer which
         allowed for dangerous data access without any bounds, type or layout
         checks, use @ref Image::pixels() instead
+    -   @cpp GL::TextureFormat::R3B3G2 @ce containing a typo, use
+        @ref GL::TextureFormat::R3G3B2 instead
+    -   @cpp Platform::GlfwApplication::Key::Smicolon @ce containing a typo,
+        use @ref Platform::GlfwApplication::Key::Semicolon instead
     -   @cpp Trade::ImporterFileCallbackPolicy @ce, use the
         @ref InputFileCallbackPolicy enum instead; additionally there was
         @cpp Trade::ImporterFileCallbackPolicy::LoadPernament @ce containing a
