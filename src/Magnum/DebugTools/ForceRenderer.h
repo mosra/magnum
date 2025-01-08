@@ -140,20 +140,6 @@ template<UnsignedInt dimensions> class ForceRenderer: public SceneGraph::Drawabl
          */
         explicit ForceRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, VectorTypeFor<dimensions, Float>&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Constructor
-         * @m_deprecated_since{2019,10} Implicit @ref ResourceManager singleton
-         *      is deprecated, use @ref ForceRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, ResourceKey, SceneGraph::DrawableGroup<dimensions, Float>*)
-         *      instead.
-         */
-        explicit CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, use a constructor with explicit ResourceManager reference instead") ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
-
-        #ifndef DOXYGEN_GENERATOR_OUTPUT
-        explicit CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, use a constructor with explicit DebugTools::ResourceManager reference instead") ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, VectorTypeFor<dimensions, Float>&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
-        #endif
-        #endif
-
         ~ForceRenderer();
 
     private:

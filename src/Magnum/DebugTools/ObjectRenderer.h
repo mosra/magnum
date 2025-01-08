@@ -106,16 +106,6 @@ template<UnsignedInt dimensions> class ObjectRenderer: public SceneGraph::Drawab
          */
         explicit ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Constructor
-         * @m_deprecated_since{2019,10} Implicit @ref ResourceManager singleton
-         *      is deprecated, use @ref ObjectRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, ResourceKey, SceneGraph::DrawableGroup<dimensions, Float>*)
-         *      instead.
-         */
-        explicit CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, use a constructor with explicit ResourceManager reference instead") ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
-        #endif
-
         ~ObjectRenderer();
 
     private:
