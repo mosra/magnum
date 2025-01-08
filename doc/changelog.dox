@@ -1761,6 +1761,9 @@ See also:
         @ref std::tuple typedefs and @ref Math::Color3::fromHsv() /
         @ref Math::Color4::fromHsv() overloads taking separate hue, saturation
         and value arguments. Use the @ref Math::ColorHsv struct instead.
+    -   @cpp Math::Frustum::planes() @ce, use @ref Math::Frustum::data() or
+        @relativeref{Math::Frustum,begin()} / @relativeref{Math::Frustum,end()}
+        instead
     -   @cpp Math::swizzle() @ce, use @ref Math::gather() instead
     -   @cpp Text::FontFeature::MultiFile @ce,
         @cpp Text::AbstractFont::openData() @ce taking a vector of pairs, and

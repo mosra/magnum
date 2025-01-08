@@ -42,10 +42,6 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Vector4.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Containers/ArrayView.h> /** @todo remove when planes() is gone */
-#endif
-
 #ifdef CORRADE_TARGET_WINDOWS /* I so HATE windef.h */
 #undef near
 #undef far
@@ -162,18 +158,6 @@ template<class T> class Frustum {
            wins. */
         auto data() const -> const T(&)[24] {
             return reinterpret_cast<const T(&)[24]>(_data);
-        }
-        #endif
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Frustum planes
-         * @m_deprecated_since{2019,10} Use @ref operator[](std::size_t) const,
-         *      @ref data() or @ref begin() / @ref end() instead.
-         */
-        constexpr CORRADE_DEPRECATED("use operator[](), data() or begin() / end() instead") Containers::StaticArrayView<6, const Vector4<T>> planes() const {
-            /* GCC 4.8 needs explicit construction */
-            return Containers::StaticArrayView<6, const Vector4<T>>{_data};
         }
         #endif
 
