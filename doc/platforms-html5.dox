@@ -358,6 +358,7 @@ Aspect ratio    | CSS class (landscape/portrait)
 1:1             | @cb{.css} .mn-aspect-1-1 @ce <b></b>
 4:3 (1.33:1)    | @cb{.css} .mn-aspect-4-3 @ce (default) / @cb{.css} .mn-aspect-3-4 @ce
 3:2 (1.5:1)     | @cb{.css} .mn-aspect-3-2 @ce / @cb{.css} .mn-aspect-2-3 @ce
+16:10 (1.6:1)   | @cb{.css} .mn-aspect-16-10 @ce / @cb{.css} .mn-aspect-10-16 @ce
 16:9 (1.78:1)   | @cb{.css} .mn-aspect-16-9 @ce / @cb{.css} .mn-aspect-9-16 @ce
 2:1             | @cb{.css} .mn-aspect-2-1 @ce / @cb{.css} .mn-aspect-1-2 @ce
 
@@ -381,6 +382,9 @@ Width           | CSS class
 600px           | @cb{.css} .mn-width-600 @ce <b></b>
 640px           | @cb{.css} .mn-width-640 @ce (default)
 800px           | @cb{.css} .mn-width-800 @ce <b></b>
+960px           | @cb{.css} .mn-width-960 @ce <b></b>
+1024px          | @cb{.css} .mn-width-1024 @ce <b></b>
+1280px          | @cb{.css} .mn-width-1280 @ce <b></b>
 
 For example, for a 480x640 canvas (3:4, portrait) you would use
 @cb{.html} <div class="mn-container mn-width-480 mn-aspect-3-4"> @ce. Besides

@@ -118,6 +118,15 @@ body {
 .mn-container.mn-width-800 .mn-sizer, #container.width-800 #sizer {
   width: 800px;
 }
+.mn-container.mn-width-960 .mn-sizer, #container.width-960 #sizer {
+  width: 960px;
+}
+.mn-container.mn-width-1024 .mn-sizer, #container.width-1024 #sizer {
+  width: 1024px;
+}
+.mn-container.mn-width-1280 .mn-sizer, #container.width-1280 #sizer {
+  width: 1280px;
+}
 
 .mn-container.mn-aspect-1-1 .mn-expander, #container.aspect-1-1 #expander {
   padding-bottom: 100%;
@@ -136,8 +145,14 @@ body {
 .mn-container.mn-aspect-2-3 .mn-expander, #container.aspect-2-3 #expander {
   padding-bottom: 150%;
 }
+.mn-container.mn-aspect-16-10 .mn-expander, #container.aspect-16-10 #expander {
+  padding-bottom: 62.5%
+}
 .mn-container.mn-aspect-16-9 .mn-expander, #container.aspect-16-9 #expander {
   padding-bottom: 56.25%
+}
+.mn-container.mn-aspect-10-16 .mn-expander, #container.aspect-10-16 #expander {
+  padding-bottom: 160%
 }
 .mn-container.mn-aspect-9-16 .mn-expander, #container.aspect-9-16 #expander {
   padding-bottom: 177.7778%
