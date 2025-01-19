@@ -662,30 +662,41 @@ void AndroidApplication::exec(android_app* state, Containers::Pointer<AndroidApp
     Data data{instancer, ANativeActivity_onCreate};
     state->userData = &data;
 
-    for(;;) {
-        /* Read all pending events. Block and wait for them only if the app
-           doesn't want to redraw immediately WHY THIS GODDAMN THING DOESNT
-           HAVE SOMETHING LIKE WAIT FOR EVENT SO I NEED TO TANGLE THIS TANGLED
-           MESS OF HELL */
-        int ident, events;
-        android_poll_source* source;
-        while((ident = ALooper_pollAll(
-            data.instance && (data.instance->_flags & Flag::Redraw) ? 0 : -1,
-            nullptr, &events, reinterpret_cast<void**>(&source))) >= 0)
-        {
-            /* Process this event OH SIR MAY MY POOR EXISTENCE CALL THIS
-               FUNCTION FOR YOU IF YOU DON'T MIND? */
-            if(source) source->process(state, source);
+    /* Read all pending events. Block and wait for them only if the app
+       doesn't want to redraw immediately WHY THIS GODDAMN THING DOESNT
+       HAVE SOMETHING LIKE WAIT FOR EVENT SO I NEED TO TANGLE THIS TANGLED
+       MESS OF HELL 
 
-            /* Exit WHY THIS HAS TO BE HANDLED HERE WHILE EVERY OTHER THING
-               IS HANDLED THROUGH CALLBACK GODDAMMIT */
-            if(state->destroyRequested != 0) return;
+       WHY THIS HAS TO BE HANDLED HERE WHILE EVERY OTHER THING
+       IS HANDLED THROUGH CALLBACK GODDAMMIT
+
+       reference:
+       https://github.com/android/ndk-samples/pull/1008/files
+    */
+    while (!state->destroyRequested)
+    {
+        android_poll_source* source = nullptr;
+        const auto timeout_ms = (data.instance && (data.instance->_flags & Flag::Redraw) ? 
+            0 : -1 /* negative value: wait indefinitely until an event appears */);
+
+        const auto result = ALooper_pollOnce(timeout_ms, nullptr, nullptr,
+            reinterpret_cast<void**>(&source));
+
+        if (result == ALOOPER_POLL_ERROR) {
+            return;
+        }
+
+        /* Process this event OH SIR MAY MY POOR EXISTENCE CALL THIS
+           FUNCTION FOR YOU IF YOU DON'T MIND? */
+        if(source) {
+            source->process(state, source);
         }
 
         /* Redraw the app if it wants to be redrawn. Frame limiting is done by
            Android itself */
-        if(data.instance && (data.instance->_flags & Flag::Redraw))
+        if(data.instance && (data.instance->_flags & Flag::Redraw)) {
             data.instance->drawEvent();
+        }
     }
 
     state->userData = nullptr;
