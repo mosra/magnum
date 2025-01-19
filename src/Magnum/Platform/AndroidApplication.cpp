@@ -662,25 +662,25 @@ void AndroidApplication::exec(android_app* state, Containers::Pointer<AndroidApp
     Data data{instancer, ANativeActivity_onCreate};
     state->userData = &data;
 
-    for(;;) {
-        /* Read all pending events. Block and wait for them only if the app
-           doesn't want to redraw immediately WHY THIS GODDAMN THING DOESNT
-           HAVE SOMETHING LIKE WAIT FOR EVENT SO I NEED TO TANGLE THIS TANGLED
-           MESS OF HELL */
-        int ident, events;
-        android_poll_source* source;
-        while((ident = ALooper_pollAll(
-            data.instance && (data.instance->_flags & Flag::Redraw) ? 0 : -1,
-            nullptr, &events, reinterpret_cast<void**>(&source))) >= 0)
-        {
-            /* Process this event OH SIR MAY MY POOR EXISTENCE CALL THIS
-               FUNCTION FOR YOU IF YOU DON'T MIND? */
-            if(source) source->process(state, source);
+    /* Poll for event until destroy is requested */
+    while(!state->destroyRequested) {
+        android_poll_source* source = nullptr;
+        const int result = ALooper_pollOnce(
+            data.instance && (data.instance->_flags & Flag::Redraw) ?
+                0 : -1, /* negative value: wait indefinitely until an event appears */
+            nullptr, nullptr, reinterpret_cast<void**>(&source));
 
-            /* Exit WHY THIS HAS TO BE HANDLED HERE WHILE EVERY OTHER THING
-               IS HANDLED THROUGH CALLBACK GODDAMMIT */
-            if(state->destroyRequested != 0) return;
-        }
+        /** @todo shouldn't this be acted upon somehow? the change in
+            https://github.com/android/ndk-samples/pull/1008 prints some error
+            message, the docs at https://developer.android.com/ndk/reference/group/looper
+            don't say anything useful as usual */
+        if(result == ALOOPER_POLL_ERROR)
+            return;
+
+        /* Process this event OH SIR MAY MY POOR EXISTENCE CALL THIS FUNCTION
+           FOR YOU IF YOU DON'T MIND? */
+        if(source)
+            source->process(state, source);
 
         /* Redraw the app if it wants to be redrawn. Frame limiting is done by
            Android itself */
