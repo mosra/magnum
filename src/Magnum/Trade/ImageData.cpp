@@ -34,7 +34,15 @@
 
 namespace Magnum { namespace Trade {
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, format, {}, pixelFormatSize(format), size, Utility::move(data), flags, importerState} {}
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, format, {}, (
+    /* Unlike with Image and ImageView have to do it like this to avoid an
+       ungraceful assertion from pixelFormatSize() afterwards */
+    #ifndef CORRADE_NO_ASSERT
+    isPixelFormatImplementationSpecific(format) ?
+        (CORRADE_CONSTEXPR_ASSERT(false, "Trade::ImageData: can't determine size of an implementation-specific pixel format" << Debug::hex << pixelFormatUnwrap(format) << Debug::nospace << ", pass it explicitly"), 0) :
+    #endif
+        pixelFormatSize(format)
+    ), size, Utility::move(data), flags, importerState} {}
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, format, size, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, flags, importerState} {
     CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),

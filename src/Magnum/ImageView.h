@@ -185,6 +185,14 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * parameters. For a 3D image, if @p flags contain
          * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
          * restrictions.
+         *
+         * The @p format is expected to not be implementation-specific, use the
+         * @ref ImageView(PixelStorage, PixelFormat, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
+         * overload to explicitly pass an implementation-specific
+         * @ref PixelFormat along with a pixel size, or the
+         * @ref ImageView(PixelStorage, U, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
+         * overload with the original implementation-specific enum type to have
+         * the pixel size determined implicitly.
          */
         explicit ImageView(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -211,6 +219,14 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * assign a memory view to the image. For a 3D image, if @p flags
          * contain @ref ImageFlag3D::CubeMap, the @p size is expected to match
          * its restrictions.
+         *
+         * The @p format is expected to not be implementation-specific, use the
+         * @ref ImageView(PixelStorage, PixelFormat, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
+         * overload to explicitly pass an implementation-specific
+         * @ref PixelFormat along with a pixel size, or the
+         * @ref ImageView(PixelStorage, U, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
+         * overload with the original implementation-specific enum type to have
+         * the pixel size determined implicitly.
          */
         explicit ImageView(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 

@@ -141,6 +141,14 @@ template<UnsignedInt dimensions> class Image {
          * parameters. For a 3D image, if @p flags contain
          * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
          * restrictions.
+         *
+         * The @p format is expected to not be implementation-specific, use the
+         * @ref Image(PixelStorage, PixelFormat, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
+         * overload to explicitly pass an implementation-specific
+         * @ref PixelFormat along with a pixel size, or the
+         * @ref Image(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
+         * overload with the original implementation-specific enum type to have
+         * the pixel size determined implicitly.
          */
         explicit Image(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -164,6 +172,14 @@ template<UnsignedInt dimensions> class Image {
          * Size is set to zero, data pointer to @cpp nullptr @ce and data
          * layout flags are empty. Move over a non-empty instance to make it
          * useful.
+         *
+         * The @p format is expected to not be implementation-specific, use the
+         * @ref Image(PixelStorage, PixelFormat, UnsignedInt, UnsignedInt)
+         * overload to explicitly pass an implementation-specific
+         * @ref PixelFormat along with a pixel size, or the
+         * @ref Image(PixelStorage, T) overload with the original
+         * implementation-specific enum type to have the pixel size determined
+         * implicitly.
          */
         /* No ImageFlags parameter here as this constructor is mainly used to
            query GL textures, and there the flags are forcibly reset */

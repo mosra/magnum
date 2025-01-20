@@ -32,6 +32,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once dataProperties() std::pair is gone */
 
 #include "Magnum/ImageView.h"
@@ -51,6 +52,7 @@ struct ImageTest: TestSuite::Tester {
     void constructCompressedGenericPlaceholder();
     void constructCompressedImplementationSpecific();
 
+    void constructUnknownImplementationSpecificPixelSize();
     void constructInvalidSize();
     void constructInvalidCubeMap();
     void constructCompressedInvalidSize();
@@ -108,6 +110,7 @@ ImageTest::ImageTest() {
               &ImageTest::constructCompressedGenericPlaceholder,
               &ImageTest::constructCompressedImplementationSpecific,
 
+              &ImageTest::constructUnknownImplementationSpecificPixelSize,
               &ImageTest::constructInvalidSize,
               &ImageTest::constructInvalidCubeMap,
               &ImageTest::constructCompressedInvalidSize,
@@ -469,6 +472,25 @@ void ImageTest::constructCompressedImplementationSpecific() {
     }
 
     /* Manual properties not implemented yet */
+}
+
+void ImageTest::constructUnknownImplementationSpecificPixelSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Containers::String out;
+    Error redirectError{&out};
+    Image2D{pixelFormatWrap(0x666), {1, 1}, Containers::Array<char>{NoInit, 1}};
+    Image2D{pixelFormatWrap(0x777)};
+    CORRADE_COMPARE_AS(out,
+        "Image: can't determine size of an implementation-specific pixel format 0x666, pass it explicitly\n"
+        /* The second message is printed because it cannot exit the
+           construction from the middle of the member initializer list. It does
+           so with non-graceful asserts tho and just one message is printed. */
+        "pixelFormatSize(): can't determine size of an implementation-specific format 0x666\n"
+
+        "Image: can't determine size of an implementation-specific pixel format 0x777, pass it explicitly\n"
+        "pixelFormatSize(): can't determine size of an implementation-specific format 0x777\n",
+        TestSuite::Compare::String);
 }
 
 void ImageTest::constructInvalidSize() {

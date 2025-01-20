@@ -32,6 +32,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once dataProperties() std::pair is gone */
 
 #include "Magnum/ImageView.h"
@@ -57,6 +58,7 @@ struct ImageDataTest: TestSuite::Tester {
     void constructCompressedGenericNotOwnedFlagOwned();
     void constructCompressedImplementationSpecificNotOwnedFlagOwned();
 
+    void constructUnknownImplementationSpecificPixelSize();
     void constructInvalidSize();
     void constructInvalidCubeMap();
     void constructCompressedInvalidSize();
@@ -132,6 +134,7 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::constructCompressedGenericNotOwnedFlagOwned,
               &ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned,
 
+              &ImageDataTest::constructUnknownImplementationSpecificPixelSize,
               &ImageDataTest::constructInvalidSize,
               &ImageDataTest::constructInvalidCubeMap,
               &ImageDataTest::constructCompressedInvalidSize,
@@ -653,6 +656,21 @@ void ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned()
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, DataFlag::Owned, data};
     CORRADE_COMPARE(out,
         "Trade::ImageData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
+}
+
+void ImageDataTest::constructUnknownImplementationSpecificPixelSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char data[1];
+
+    Containers::String out;
+    Error redirectError{&out};
+    ImageData2D{pixelFormatWrap(0x666), {1, 1}, Containers::Array<char>{NoInit, 1}};
+    ImageData2D{pixelFormatWrap(0x777), {1, 1}, DataFlags{}, data};
+    CORRADE_COMPARE_AS(out,
+        "Trade::ImageData: can't determine size of an implementation-specific pixel format 0x666, pass it explicitly\n"
+        "Trade::ImageData: can't determine size of an implementation-specific pixel format 0x777, pass it explicitly\n",
+        TestSuite::Compare::String);
 }
 
 void ImageDataTest::constructInvalidSize() {

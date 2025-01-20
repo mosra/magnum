@@ -32,6 +32,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once dataProperties() std::pair is gone */
 
 #include "Magnum/PixelFormat.h"
@@ -60,6 +61,7 @@ struct ImageViewTest: TestSuite::Tester {
     void constructCompressedFromMutable();
 
     void constructNullptr();
+    void constructUnknownImplementationSpecificPixelSize();
     void constructInvalidSize();
     void constructInvalidCubeMap();
     void constructCompressedInvalidSize();
@@ -115,6 +117,7 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::constructCompressedFromMutable,
 
               &ImageViewTest::constructNullptr,
+              &ImageViewTest::constructUnknownImplementationSpecificPixelSize,
               &ImageViewTest::constructInvalidSize,
               &ImageViewTest::constructInvalidCubeMap,
               &ImageViewTest::constructCompressedInvalidSize,
@@ -663,6 +666,27 @@ void ImageViewTest::constructNullptr() {
     Error redirectError{&out};
     ImageView2D{PixelFormat::RGB8Unorm, {1, 3},  nullptr};
     CORRADE_COMPARE(out, "ImageView: data too small, got 0 but expected at least 12 bytes\n");
+}
+
+void ImageViewTest::constructUnknownImplementationSpecificPixelSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char data[1];
+
+    Containers::String out;
+    Error redirectError{&out};
+    ImageView2D{pixelFormatWrap(0x666), {1, 1}, data};
+    ImageView2D{pixelFormatWrap(0x777), {1, 1}};
+    CORRADE_COMPARE_AS(out,
+        "ImageView: can't determine size of an implementation-specific pixel format 0x666, pass it explicitly\n"
+        /* The second message is printed because it cannot exit the
+           construction from the middle of the member initializer list. It does
+           so with non-graceful asserts tho and just one message is printed. */
+        "pixelFormatSize(): can't determine size of an implementation-specific format 0x666\n"
+
+        "ImageView: can't determine size of an implementation-specific pixel format 0x777, pass it explicitly\n"
+        "pixelFormatSize(): can't determine size of an implementation-specific format 0x777\n",
+        TestSuite::Compare::String);
 }
 
 void ImageViewTest::constructInvalidSize() {
