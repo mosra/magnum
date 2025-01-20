@@ -286,7 +286,7 @@ template<UnsignedInt dimensions> class BufferImage {
          *
          * @see @ref Magnum::pixelFormatSize(), @ref GL::pixelFormatSize()
          */
-        UnsignedInt pixelSize() const;
+        UnsignedInt pixelSize() const { return _pixelSize; }
 
         /** @brief Image size in pixels */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
@@ -374,6 +374,7 @@ template<UnsignedInt dimensions> class BufferImage {
         PixelType _type;
         Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
+        UnsignedInt _pixelSize;
         std::size_t _dataSize;
 };
 

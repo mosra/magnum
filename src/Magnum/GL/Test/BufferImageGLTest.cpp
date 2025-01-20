@@ -112,6 +112,7 @@ void BufferImageGLTest::construct() {
     CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(a.pixelSize(), 1);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.dataSize(), 3);
 
@@ -136,6 +137,7 @@ void BufferImageGLTest::constructGeneric() {
     CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(a.pixelSize(), 1);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.dataSize(), 3);
 
@@ -280,6 +282,7 @@ void BufferImageGLTest::constructBuffer() {
     CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(a.pixelSize(), 1);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.dataSize(), 3);
 
@@ -310,6 +313,7 @@ void BufferImageGLTest::constructBufferGeneric() {
     CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(a.pixelSize(), 1);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.dataSize(), 3);
 
@@ -421,8 +425,7 @@ void BufferImageGLTest::constructCompressedInvalidSize() {
 }
 
 void BufferImageGLTest::constructMove() {
-    const char data[4] = { 'a', 'b', 'c', 'd' };
-    BufferImage2D a{PixelFormat::Red, PixelType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw};
+    BufferImage2D a{PixelFormat::RGB, PixelType::UnsignedByte, {4, 1}, "abcabcabcab", BufferUsage::StaticDraw};
     const Int id = a.buffer().id();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -434,10 +437,11 @@ void BufferImageGLTest::constructMove() {
     CORRADE_COMPARE(a.size(), Vector2i());
 
     CORRADE_COMPARE(b.storage().alignment(), 4);
-    CORRADE_COMPARE(b.format(), GL::PixelFormat::Red);
+    CORRADE_COMPARE(b.format(), GL::PixelFormat::RGB);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(b.pixelSize(), 3);
     CORRADE_COMPARE(b.size(), Vector2i(4, 1));
-    CORRADE_COMPARE(b.dataSize(), 4);
+    CORRADE_COMPARE(b.dataSize(), 12);
     CORRADE_COMPARE(b.buffer().id(), id);
 
     const unsigned short data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -453,10 +457,11 @@ void BufferImageGLTest::constructMove() {
     CORRADE_COMPARE(b.size(), Vector2i(1, 2));
 
     CORRADE_COMPARE(c.storage().alignment(), 4);
-    CORRADE_COMPARE(c.format(), GL::PixelFormat::Red);
+    CORRADE_COMPARE(c.format(), GL::PixelFormat::RGB);
     CORRADE_COMPARE(c.type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(c.pixelSize(), 3);
     CORRADE_COMPARE(c.size(), Vector2i(4, 1));
-    CORRADE_COMPARE(c.dataSize(), 4);
+    CORRADE_COMPARE(c.dataSize(), 12);
     CORRADE_COMPARE(c.buffer().id(), id);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<BufferImage2D>::value);
@@ -556,6 +561,7 @@ void BufferImageGLTest::setData() {
     CORRADE_COMPARE(a.format(), GL::PixelFormat::RGBA);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
+    CORRADE_COMPARE(a.pixelSize(), 8);
     CORRADE_COMPARE(a.dataSize(), 16);
 
     /** @todo How to verify the contents in ES? */
@@ -584,6 +590,7 @@ void BufferImageGLTest::setDataGeneric() {
     CORRADE_COMPARE(a.format(), GL::PixelFormat::RGBA);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
+    CORRADE_COMPARE(a.pixelSize(), 8);
     CORRADE_COMPARE(a.dataSize(), 16);
 
     /** @todo How to verify the contents in ES? */

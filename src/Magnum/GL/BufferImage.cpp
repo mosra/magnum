@@ -38,22 +38,22 @@ template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const Pixe
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, data, usage} {}
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Utility::move(buffer)}, _dataSize{dataSize} {
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Utility::move(buffer)}, _pixelSize{pixelFormatSize(format, type)}, _dataSize{dataSize} {
     CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= dataSize, "GL::BufferImage::BufferImage(): data too small, got" << dataSize << "but expected at least" << Magnum::Implementation::imageDataSize(*this) << "bytes", );
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, Utility::move(buffer), dataSize} {}
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack}, _pixelSize{pixelFormatSize(format, type)}, _dataSize{} {
     /* Not delegating to the (buffer&&, dataSize) constructor to avoid a size
        assertion that'd happen with certain storage parameters */
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format): BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format)} {}
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(NoCreateT) noexcept: _format{PixelFormat::RGBA}, _type{PixelType::UnsignedByte}, _buffer{NoCreate}, _dataSize{} {}
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(NoCreateT) noexcept: _format{PixelFormat::RGBA}, _type{PixelType::UnsignedByte}, _buffer{NoCreate}, _pixelSize{4}, _dataSize{} {}
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _storage{Utility::move(other._storage)}, _format{Utility::move(other._format)}, _type{Utility::move(other._type)}, _size{Utility::move(other._size)}, _buffer{Utility::move(other._buffer)}, _dataSize{Utility::move(other._dataSize)} {
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _storage{Utility::move(other._storage)}, _format{Utility::move(other._format)}, _type{Utility::move(other._type)}, _size{Utility::move(other._size)}, _buffer{Utility::move(other._buffer)}, _pixelSize{Utility::move(other._pixelSize)}, _dataSize{Utility::move(other._dataSize)} {
     other._size = {};
 }
 
@@ -64,11 +64,10 @@ template<UnsignedInt dimensions> BufferImage<dimensions>& BufferImage<dimensions
     swap(_type, other._type);
     swap(_size, other._size);
     swap(_buffer, other._buffer);
+    swap(_pixelSize, other._pixelSize);
     swap(_dataSize, other._dataSize);
     return *this;
 }
-
-template<UnsignedInt dimensions> UnsignedInt BufferImage<dimensions>::pixelSize() const { return pixelFormatSize(_format, _type); }
 
 template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> BufferImage<dimensions>::dataProperties() const {
     return Magnum::Implementation::imageDataProperties<dimensions>(*this);
@@ -79,6 +78,7 @@ template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const Pix
     _format = format;
     _type = type;
     _size = size;
+    _pixelSize = pixelFormatSize(format, type);
 
     /* Keep the old storage if zero-sized nullptr buffer was passed */
     if(data.data() == nullptr && data.size() == 0)
