@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/GL/BufferImage.h"
+#include "Magnum/GL/PixelFormat.h"
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
@@ -52,6 +53,10 @@ void BufferImageTest::constructNoCreate() {
     {
         BufferImage2D image{NoCreate};
         CORRADE_COMPARE(image.buffer().id(), 0);
+        CORRADE_COMPARE(image.size(), Vector2i{});
+        CORRADE_COMPARE(image.format(), PixelFormat::RGBA);
+        CORRADE_COMPARE(image.type(), PixelType::UnsignedByte);
+        CORRADE_COMPARE(image.dataSize(), 0);
     }
 
     /* Implicit construction is not allowed */
@@ -62,6 +67,9 @@ void BufferImageTest::constructNoCreateCompressed() {
     {
         CompressedBufferImage2D image{NoCreate};
         CORRADE_COMPARE(image.buffer().id(), 0);
+        CORRADE_COMPARE(image.size(), Vector2i{});
+        CORRADE_COMPARE(image.format(), CompressedPixelFormat{});
+        CORRADE_COMPARE(image.dataSize(), 0);
     }
 
     CORRADE_VERIFY(true);
