@@ -119,11 +119,15 @@ template<UnsignedInt dimensions> ImageData<dimensions>& ImageData<dimensions>::o
     swap(_dataFlags, other._dataFlags);
     swap(_compressed, other._compressed);
     swap(_flags, other._flags);
-    if(_compressed) {
+    /* Because the CompressedPixelStorage is larger than the
+       uncompressed, copy it if either of the sides is compressed to ensure no
+       compressed properties are lost. The _storage / _compressedStorage and
+       _format / _compressedFormat are unions of trivially copyable contents so
+       copying a type that's not there should be fine. */
+    if(_compressed || other._compressed) {
         swap(_compressedStorage, other._compressedStorage);
         swap(_compressedFormat, other._compressedFormat);
-    }
-    else {
+    } else {
         swap(_storage, other._storage);
         swap(_format, other._format);
     }
