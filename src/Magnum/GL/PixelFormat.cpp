@@ -95,7 +95,7 @@ bool hasTextureFormat(const Magnum::PixelFormat format) {
 
 PixelFormat pixelFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
-        return pixelFormatUnwrap<GL::PixelFormat>(format);
+        return pixelFormatUnwrap<PixelFormat>(format);
 
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(FormatMapping),
         "GL::pixelFormat(): invalid format" << format, {});
@@ -516,7 +516,7 @@ bool hasTextureFormat(const Magnum::CompressedPixelFormat format) {
 
 CompressedPixelFormat compressedPixelFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
-        return compressedPixelFormatUnwrap<GL::CompressedPixelFormat>(format);
+        return compressedPixelFormatUnwrap<CompressedPixelFormat>(format);
 
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedFormatMapping),
         "GL::compressedPixelFormat(): invalid format" << format, {});

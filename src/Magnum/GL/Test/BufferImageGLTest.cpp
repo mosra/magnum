@@ -110,7 +110,7 @@ void BufferImageGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
-    CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
+    CORRADE_COMPARE(a.format(), PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.pixelSize(), 1);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
@@ -135,7 +135,7 @@ void BufferImageGLTest::constructGeneric() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
-    CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
+    CORRADE_COMPARE(a.format(), PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.pixelSize(), 1);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
@@ -196,7 +196,7 @@ void BufferImageGLTest::constructCompressed() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
     #endif
-    CORRADE_COMPARE(a.format(), GL::CompressedPixelFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);
 
@@ -225,7 +225,7 @@ void BufferImageGLTest::constructCompressedGeneric() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
     #endif
-    CORRADE_COMPARE(a.format(), GL::CompressedPixelFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);
 
@@ -280,7 +280,7 @@ void BufferImageGLTest::constructBuffer() {
     CORRADE_VERIFY(!buffer.id());
     CORRADE_COMPARE(a.buffer().id(), id);
     CORRADE_COMPARE(a.storage().alignment(), 1);
-    CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
+    CORRADE_COMPARE(a.format(), PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.pixelSize(), 1);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
@@ -311,7 +311,7 @@ void BufferImageGLTest::constructBufferGeneric() {
     CORRADE_VERIFY(!buffer.id());
     CORRADE_COMPARE(a.buffer().id(), id);
     CORRADE_COMPARE(a.storage().alignment(), 1);
-    CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
+    CORRADE_COMPARE(a.format(), PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.pixelSize(), 1);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
@@ -348,7 +348,7 @@ void BufferImageGLTest::constructBufferCompressed() {
     #endif
     CORRADE_VERIFY(!buffer.id());
     CORRADE_COMPARE(a.buffer().id(), id);
-    CORRADE_COMPARE(a.format(), GL::CompressedPixelFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);
 
@@ -383,7 +383,7 @@ void BufferImageGLTest::constructBufferCompressedGeneric() {
     #endif
     CORRADE_VERIFY(!buffer.id());
     CORRADE_COMPARE(a.buffer().id(), id);
-    CORRADE_COMPARE(a.format(), GL::CompressedPixelFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);
 
@@ -437,7 +437,7 @@ void BufferImageGLTest::constructMove() {
     CORRADE_COMPARE(a.size(), Vector2i());
 
     CORRADE_COMPARE(b.storage().alignment(), 4);
-    CORRADE_COMPARE(b.format(), GL::PixelFormat::RGB);
+    CORRADE_COMPARE(b.format(), PixelFormat::RGB);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.pixelSize(), 3);
     CORRADE_COMPARE(b.size(), Vector2i(4, 1));
@@ -457,7 +457,7 @@ void BufferImageGLTest::constructMove() {
     CORRADE_COMPARE(b.size(), Vector2i(1, 2));
 
     CORRADE_COMPARE(c.storage().alignment(), 4);
-    CORRADE_COMPARE(c.format(), GL::PixelFormat::RGB);
+    CORRADE_COMPARE(c.format(), PixelFormat::RGB);
     CORRADE_COMPARE(c.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(c.pixelSize(), 3);
     CORRADE_COMPARE(c.size(), Vector2i(4, 1));
@@ -485,7 +485,7 @@ void BufferImageGLTest::constructMoveCompressed() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{0});
     #endif
-    CORRADE_COMPARE(b.format(), GL::CompressedPixelFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(b.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(b.size(), Vector2i(4, 4));
     CORRADE_COMPARE(b.dataSize(), 8);
     CORRADE_COMPARE(b.buffer().id(), id);
@@ -509,7 +509,7 @@ void BufferImageGLTest::constructMoveCompressed() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(c.storage().compressedBlockSize(), Vector3i{0});
     #endif
-    CORRADE_COMPARE(c.format(), GL::CompressedPixelFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(c.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(c.size(), Vector2i(4, 4));
     CORRADE_COMPARE(c.dataSize(), 8);
     CORRADE_COMPARE(c.buffer().id(), id);
@@ -558,7 +558,7 @@ void BufferImageGLTest::setData() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 4);
-    CORRADE_COMPARE(a.format(), GL::PixelFormat::RGBA);
+    CORRADE_COMPARE(a.format(), PixelFormat::RGBA);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
     CORRADE_COMPARE(a.pixelSize(), 8);
@@ -587,7 +587,7 @@ void BufferImageGLTest::setDataGeneric() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 4);
-    CORRADE_COMPARE(a.format(), GL::PixelFormat::RGBA);
+    CORRADE_COMPARE(a.format(), PixelFormat::RGBA);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
     CORRADE_COMPARE(a.pixelSize(), 8);
@@ -621,7 +621,7 @@ void BufferImageGLTest::setDataCompressed() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
     #endif
-    CORRADE_COMPARE(a.format(), GL::CompressedPixelFormat::RGBAS3tcDxt3);
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt3);
     CORRADE_COMPARE(a.size(), Vector2i(8, 4));
     CORRADE_COMPARE(a.dataSize(), 16);
 
@@ -652,7 +652,7 @@ void BufferImageGLTest::setDataCompressedGeneric() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
     #endif
-    CORRADE_COMPARE(a.format(), GL::CompressedPixelFormat::RGBAS3tcDxt3);
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt3);
     CORRADE_COMPARE(a.size(), Vector2i(8, 4));
     CORRADE_COMPARE(a.dataSize(), 16);
 
