@@ -178,11 +178,14 @@ void PixelStorageTest::dataPropertiesImageHeight() {
 
 void PixelStorageTest::dataSize1D() {
     const Image1D image{
-        PixelStorage{}.setAlignment(2).setSkip({2, 0, 0}),
+        PixelStorage{}.setSkip({2, 0, 0}),
         PixelFormat::RGB8Unorm};
 
-    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Math::Vector<1, Int>{3}),
-        16);
+    {
+        CORRADE_EXPECT_FAIL("Data size in 1D takes alignment into account even though it shouldn't.");
+        CORRADE_COMPARE(Implementation::imageDataSizeFor<1>(image, 3), 15);
+    }
+    CORRADE_COMPARE(Implementation::imageDataSizeFor<1>(image, 3), 18);
 }
 
 void PixelStorageTest::dataSize2D() {
