@@ -44,9 +44,12 @@ template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const Pixe
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, Utility::move(buffer), dataSize} {}
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{0} {}
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {
+    /* Not delegating to the (buffer&&, dataSize) constructor to avoid a size
+       assertion that'd happen with certain storage parameters */
+}
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format): _storage{storage}, _format{GL::pixelFormat(format)}, _type{GL::pixelType(format)}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{0} {}
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format): BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format)} {}
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(NoCreateT) noexcept: _format{PixelFormat::RGBA}, _type{PixelType::UnsignedByte}, _buffer{NoCreate}, _dataSize{} {}
 
@@ -101,7 +104,10 @@ template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBu
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: CompressedBufferImage{storage, compressedPixelFormat(format), size, Utility::move(buffer), dataSize} {}
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage): _storage{storage}, _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {}
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage): _storage{storage}, _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {
+    /* Not delegating to the (buffer&&, dataSize) constructor to avoid a size
+       assertion that'd happen with certain storage parameters */
+}
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(NoCreateT) noexcept: _format{}, _buffer{NoCreate}, _dataSize{} {}
 
