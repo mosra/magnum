@@ -72,6 +72,9 @@ struct ImageDataTest: TestSuite::Tester {
     void constructMoveAttachState();
     void constructMoveCompressedAttachState();
 
+    void moveCompressedToUncompressed();
+    void moveUncompressedToCompressed();
+
     template<class T> void toViewGeneric();
     template<class T> void toViewImplementationSpecific();
     template<class T> void toViewCompressedGeneric();
@@ -143,6 +146,9 @@ ImageDataTest::ImageDataTest() {
 
               &ImageDataTest::constructMoveAttachState,
               &ImageDataTest::constructMoveCompressedAttachState,
+
+              &ImageDataTest::moveCompressedToUncompressed,
+              &ImageDataTest::moveUncompressedToCompressed,
 
               &ImageDataTest::toViewGeneric<const char>,
               &ImageDataTest::toViewGeneric<char>,
@@ -927,6 +933,118 @@ void ImageDataTest::constructMoveCompressedAttachState() {
     CORRADE_COMPARE(b.data(), data);
     CORRADE_COMPARE(b.data().size(), 8);
     CORRADE_COMPARE(b.importerState(), &stateNew);
+}
+
+void ImageDataTest::moveCompressedToUncompressed() {
+    auto data = new char[8*16];
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+    ImageData2D a{
+        CompressedPixelStorage{}
+            .setSkip({4, 4, 1})
+            .setRowLength(8)
+            .setImageHeight(8)
+            .setCompressedBlockSize({4, 4, 1})
+            .setCompressedBlockDataSize(16),
+        CompressedPixelFormat::Bc3RGBAUnorm, {4, 4}, Containers::Array<char>{data, 8*16}, ImageFlag2D::Array, &state};
+
+    auto data2 = new char[24];
+    int state2{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+    ImageData2D b{
+        PixelStorage{}
+            .setAlignment(2)
+            .setRowLength(2)
+            .setImageHeight(6)
+            .setSkip({0, 1, 0}),
+        PixelFormat::R8I, 1337, 1, {2, 5}, Containers::Array<char>{data2, 24}, ImageFlag2D(0x80), &state2};
+
+    /* The operation should swap the contents completely, not just partially
+       because one is compressed and the other not */
+    b = Utility::move(a);
+
+    CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_VERIFY(!a.isCompressed());
+    CORRADE_COMPARE(a.flags(), ImageFlag2D(0x80));
+    CORRADE_COMPARE(a.storage().alignment(), 2);
+    CORRADE_COMPARE(a.storage().rowLength(), 2);
+    CORRADE_COMPARE(a.storage().imageHeight(), 6);
+    CORRADE_COMPARE(a.storage().skip(), (Vector3i{0, 1, 0}));
+    CORRADE_COMPARE(a.format(), PixelFormat::R8I);
+    CORRADE_COMPARE(a.formatExtra(), 1337);
+    CORRADE_COMPARE(a.pixelSize(), 1);
+    CORRADE_COMPARE(a.size(), (Vector2i{2, 5}));
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(data2));
+    CORRADE_COMPARE(a.data().size(), 24);
+    CORRADE_COMPARE(a.importerState(), &state2);
+
+    CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_VERIFY(b.isCompressed());
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
+    CORRADE_COMPARE(b.compressedStorage().rowLength(), 8);
+    CORRADE_COMPARE(b.compressedStorage().imageHeight(), 8);
+    CORRADE_COMPARE(b.compressedStorage().skip(), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE(b.compressedStorage().compressedBlockDataSize(), 16);
+    CORRADE_COMPARE(b.compressedFormat(), CompressedPixelFormat::Bc3RGBAUnorm);
+    CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
+    CORRADE_COMPARE(b.data().size(), 8*16);
+    CORRADE_COMPARE(b.importerState(), &state);
+}
+
+void ImageDataTest::moveUncompressedToCompressed() {
+    auto data = new char[24];
+    int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+    ImageData2D a{
+        PixelStorage{}
+            .setAlignment(2)
+            .setRowLength(2)
+            .setImageHeight(6)
+            .setSkip({0, 1, 0}),
+        PixelFormat::R8I, 1337, 1, {2, 5}, Containers::Array<char>{data, 24}, ImageFlag2D::Array, &state};
+
+    auto data2 = new char[8*16];
+    int state2{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+    ImageData2D b{
+        CompressedPixelStorage{}
+            .setSkip({4, 4, 1})
+            .setRowLength(8)
+            .setImageHeight(8)
+            .setCompressedBlockSize({4, 4, 1})
+            .setCompressedBlockDataSize(16),
+        CompressedPixelFormat::Bc3RGBAUnorm, {4, 4}, Containers::Array<char>{data2, 8*16}, ImageFlag2D(0x80), &state2};
+
+    /* The operation should swap the contents completely, not just partially
+       because one is compressed and the other not */
+    b = Utility::move(a);
+
+    CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_VERIFY(a.isCompressed());
+    CORRADE_COMPARE(a.flags(), ImageFlag2D(0x80));
+    CORRADE_COMPARE(a.compressedStorage().rowLength(), 8);
+    CORRADE_COMPARE(a.compressedStorage().imageHeight(), 8);
+    CORRADE_COMPARE(a.compressedStorage().skip(), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE(a.compressedStorage().compressedBlockSize(), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE(a.compressedStorage().compressedBlockDataSize(), 16);
+    CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Bc3RGBAUnorm);
+    CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(data2));
+    CORRADE_COMPARE(a.data().size(), 8*16);
+    CORRADE_COMPARE(a.importerState(), &state2);
+
+    CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_VERIFY(!b.isCompressed());
+    CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
+    CORRADE_COMPARE(b.storage().alignment(), 2);
+    CORRADE_COMPARE(b.storage().rowLength(), 2);
+    CORRADE_COMPARE(b.storage().imageHeight(), 6);
+    CORRADE_COMPARE(b.storage().skip(), (Vector3i{0, 1, 0}));
+    CORRADE_COMPARE(b.format(), PixelFormat::R8I);
+    CORRADE_COMPARE(b.formatExtra(), 1337);
+    CORRADE_COMPARE(b.pixelSize(), 1);
+    CORRADE_COMPARE(b.size(), (Vector2i{2, 5}));
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
+    CORRADE_COMPARE(b.data().size(), 24);
+    CORRADE_COMPARE(b.importerState(), &state);
 }
 
 template<class T> void ImageDataTest::toViewGeneric() {
