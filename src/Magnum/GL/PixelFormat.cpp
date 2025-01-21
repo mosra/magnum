@@ -266,7 +266,7 @@ UnsignedInt pixelFormatSize(const PixelFormat format, const PixelType type) {
     #pragma GCC diagnostic pop
     #endif
 
-    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_ASSERT_UNREACHABLE("GL::pixelFormatSize(): unknown" << format << "or" << type, {});
 }
 
 Containers::Optional<Magnum::PixelFormat> genericPixelFormat(const PixelFormat format, PixelType type) {

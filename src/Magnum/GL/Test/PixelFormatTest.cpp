@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/String.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/PixelFormat.h"
@@ -444,8 +445,12 @@ void PixelFormatTest::sizeInvalid() {
 
     Containers::String out;
     Error redirectError{&out};
+    pixelFormatSize(PixelFormat(0xdeadbeef), PixelType(0xbadcafe));
     pixelFormatSize(PixelFormat::DepthStencil, PixelType::Float);
-    CORRADE_COMPARE(out, "GL::pixelFormatSize(): invalid GL::PixelType::Float specified for GL::PixelFormat::DepthStencil\n");
+    CORRADE_COMPARE_AS(out,
+        "GL::pixelFormatSize(): unknown GL::PixelFormat(0xdeadbeef) or GL::PixelType(0xbadcafe)\n"
+        "GL::pixelFormatSize(): invalid GL::PixelType::Float specified for GL::PixelFormat::DepthStencil\n",
+        TestSuite::Compare::String);
 }
 
 void PixelFormatTest::mapCompressedFormatTextureFormat() {
