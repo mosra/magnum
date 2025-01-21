@@ -174,8 +174,6 @@ namespace Vk {
         #endif
         return 12;
     }
-
-    enum class CompressedPixelFormat { Bc1SRGBAlpha = 42 };
 }
 
 template<class T> void ImageViewTest::constructGeneric() {
