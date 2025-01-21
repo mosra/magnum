@@ -311,7 +311,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param data              Image data
          * @param flags             Image layout flags
          *
-         * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(U, V) @ce
          * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with determined pixel size.
          */
@@ -325,7 +325,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param data              Image data
          * @param flags             Image layout flags
          *
-         * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(U) @ce
          * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
          * with determined pixel size and @p formatExtra set to @cpp 0 @ce.
          */
@@ -364,7 +364,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param size              Image size
          * @param flags             Image layout flags
          *
-         * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(U, V) @ce
          * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
          * with determined pixel size.
          *
@@ -380,7 +380,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param size              Image size
          * @param flags             Image layout flags
          *
-         * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
+         * Uses ADL to find a corresponding @cpp pixelFormatSize(U) @ce
          * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
          * with determined pixel size and @p formatExtra set to @cpp 0 @ce.
          *
