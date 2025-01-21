@@ -122,7 +122,7 @@ the @ref GL::PixelFormat and @ref GL::PixelType pair:
 
 @snippet Magnum.cpp ImageView-usage-gl
 
-In such cases, pixel size is calculated using either
+In such cases, pixel size is determined using either
 @cpp pixelFormatSize(T, U) @ce or @cpp pixelFormatSize(T) @ce that is found
 using [ADL](https://en.wikipedia.org/wiki/Argument-dependent_name_lookup), with
 @cpp T @ce and @cpp U @ce corresponding to types of passed arguments. The
@@ -252,7 +252,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param flags             Image layout flags
          *
          * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>),
-         * where pixel size is calculated automatically using
+         * where pixel size is determined automatically using
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
@@ -282,7 +282,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param flags             Image layout flags
          *
          * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>),
-         * where pixel size is calculated automatically using
+         * where pixel size is determined automatically using
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
@@ -313,7 +313,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
          * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
-         * with calculated pixel size.
+         * with determined pixel size.
          */
         template<class U, class V> explicit ImageView(PixelStorage storage, U format, V formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -327,7 +327,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
          * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
-         * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
+         * with determined pixel size and @p formatExtra set to @cpp 0 @ce.
          */
         template<class U> explicit ImageView(PixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -366,7 +366,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
          * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
-         * with calculated pixel size.
+         * with determined pixel size.
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
          * assign a memory view to the image.
@@ -382,7 +382,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
          * overload, then calls @ref ImageView(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
-         * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
+         * with determined pixel size and @p formatExtra set to @cpp 0 @ce.
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
          * assign a memory view to the image.

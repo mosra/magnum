@@ -276,7 +276,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_since_latest
          *
          * Unlike with @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*),
-         * where pixel size is calculated automatically using
+         * where pixel size is determined automatically using
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
@@ -374,7 +374,7 @@ template<UnsignedInt dimensions> class ImageData {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
          * overload, then calls @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
-         * with calculated pixel size.
+         * with determined pixel size.
          */
         template<class T, class U> explicit ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 
@@ -428,7 +428,7 @@ template<UnsignedInt dimensions> class ImageData {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
          * overload, then calls @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
-         * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
+         * with determined pixel size and @p formatExtra set to @cpp 0 @ce.
          */
         template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 

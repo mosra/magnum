@@ -207,7 +207,7 @@ template<UnsignedInt dimensions> class Image {
          * @param flags             Image layout flags
          *
          * Unlike with @ref Image(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>),
-         * where pixel size is calculated automatically using
+         * where pixel size is determined automatically using
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
@@ -235,7 +235,7 @@ template<UnsignedInt dimensions> class Image {
          * @param pixelSize         Size of a pixel in given format, in bytes
          *
          * Unlike with @ref Image(PixelStorage, PixelFormat), where pixel size
-         * is calculated automatically using @ref pixelFormatSize(), this
+         * is determined automatically using @ref pixelFormatSize(), this
          * allows you to specify an implementation-specific pixel format and
          * pixel size directly. Uses @ref pixelFormatWrap() internally to wrap
          * @p format in @ref PixelFormat.
@@ -264,7 +264,7 @@ template<UnsignedInt dimensions> class Image {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
          * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
-         * with calculated pixel size.
+         * with determined pixel size.
          */
         template<class T, class U> explicit Image(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -278,7 +278,7 @@ template<UnsignedInt dimensions> class Image {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
          * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
-         * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
+         * with determined pixel size and @p formatExtra set to @cpp 0 @ce.
          */
         template<class T> explicit Image(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -315,7 +315,7 @@ template<UnsignedInt dimensions> class Image {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T, U) @ce
          * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt)
-         * with calculated pixel size.
+         * with determined pixel size.
          */
         /* No ImageFlags parameter here as this constructor is mainly used to
            query GL textures, and there the flags are forcibly reset */
@@ -340,7 +340,7 @@ template<UnsignedInt dimensions> class Image {
          *
          * Uses ADL to find a corresponding @cpp pixelFormatSize(T) @ce
          * overload, then calls @ref Image(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt)
-         * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
+         * with determined pixel size and @p formatExtra set to @cpp 0 @ce.
          */
         /* No ImageFlags parameter here as this constructor is mainly used to
            query GL textures, and there the flags are forcibly reset */
