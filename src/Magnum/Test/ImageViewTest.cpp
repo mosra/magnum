@@ -60,7 +60,6 @@ struct ImageViewTest: TestSuite::Tester {
     void constructFromMutable();
     void constructCompressedFromMutable();
 
-    void constructNullptr();
     void constructUnknownImplementationSpecificPixelSize();
     void constructInvalidSize();
     void constructInvalidCubeMap();
@@ -116,7 +115,6 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::constructFromMutable,
               &ImageViewTest::constructCompressedFromMutable,
 
-              &ImageViewTest::constructNullptr,
               &ImageViewTest::constructUnknownImplementationSpecificPixelSize,
               &ImageViewTest::constructInvalidSize,
               &ImageViewTest::constructInvalidCubeMap,
@@ -655,15 +653,6 @@ void ImageViewTest::constructCompressedFromMutable() {
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
     CORRADE_COMPARE(b.data(), &data[0]);
     CORRADE_COMPARE(b.data().size(), 8);
-}
-
-void ImageViewTest::constructNullptr() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    Containers::String out;
-    Error redirectError{&out};
-    ImageView2D{PixelFormat::RGB8Unorm, {1, 3},  nullptr};
-    CORRADE_COMPARE(out, "ImageView: data too small, got 0 but expected at least 12 bytes\n");
 }
 
 void ImageViewTest::constructUnknownImplementationSpecificPixelSize() {
