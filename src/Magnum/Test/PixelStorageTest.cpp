@@ -30,6 +30,7 @@
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/PixelStorage.h"
+#include "Magnum/Implementation/ImageProperties.h"
 
 namespace Magnum { namespace Test { namespace {
 

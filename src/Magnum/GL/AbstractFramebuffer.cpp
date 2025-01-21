@@ -28,6 +28,7 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/Implementation/ImageProperties.h"
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/BufferImage.h"
 #endif
