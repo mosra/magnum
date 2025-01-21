@@ -172,8 +172,13 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
-           - that a particular pixel format maps to a particular GL format
-           - that a particular pixel type maps to a particular GL type */
+           - that a particular pixel format maps to a particular GL format and
+             back
+           - that a particular pixel format maps to a particular GL type and
+             back
+           - that a particular pixel format maps to a particular GL texture
+             format and back
+           - that the pixel format size matches size of the generic format */
         #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
@@ -190,6 +195,7 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     CORRADE_VERIFY(hasTextureFormat(Magnum::PixelFormat::format)); \
                     CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::format), Magnum::GL::TextureFormat::expectedTextureFormat); \
                     CORRADE_COMPARE(genericPixelFormat(Magnum::GL::TextureFormat::expectedTextureFormat), Magnum::PixelFormat::format); \
+                    CORRADE_COMPARE(pixelFormatSize(Magnum::GL::PixelFormat::expectedFormat, Magnum::GL::PixelType::expectedType), pixelFormatSize(Magnum::PixelFormat::format)); \
                     ++nextHandled; \
                     continue;
             /* For duplicate format/type mappings compared to _c() it only
@@ -206,6 +212,7 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     CORRADE_VERIFY(hasTextureFormat(Magnum::PixelFormat::format)); \
                     CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::format), Magnum::GL::TextureFormat::expectedTextureFormat); \
                     CORRADE_COMPARE(genericPixelFormat(Magnum::GL::TextureFormat::expectedTextureFormat), Magnum::PixelFormat::format); \
+                    CORRADE_COMPARE(pixelFormatSize(Magnum::GL::PixelFormat::expectedFormat, Magnum::GL::PixelType::expectedType), pixelFormatSize(Magnum::PixelFormat::format)); \
                     ++nextHandled; \
                     continue;
             #define _n(format, expectedFormat, expectedType) \
@@ -216,6 +223,7 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), Magnum::GL::PixelFormat::expectedFormat); \
                     CORRADE_COMPARE(pixelType(Magnum::PixelFormat::format), Magnum::GL::PixelType::expectedType); \
                     CORRADE_COMPARE(genericPixelFormat(Magnum::GL::PixelFormat::expectedFormat, Magnum::GL::PixelType::expectedType), Magnum::PixelFormat::format); \
+                    CORRADE_COMPARE(pixelFormatSize(Magnum::GL::PixelFormat::expectedFormat, Magnum::GL::PixelType::expectedType), pixelFormatSize(Magnum::PixelFormat::format)); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::format)); \
                     Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
@@ -237,6 +245,7 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::format)); \
                     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), Magnum::GL::PixelFormat::expectedFormat); \
                     CORRADE_COMPARE(pixelType(Magnum::PixelFormat::format), Magnum::GL::PixelType::expectedType); \
+                    CORRADE_COMPARE(pixelFormatSize(Magnum::GL::PixelFormat::expectedFormat, Magnum::GL::PixelType::expectedType), pixelFormatSize(Magnum::PixelFormat::format)); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::format)); \
                     Containers::String out; \
                     { /* Redirected otherwise graceful assert would abort */ \
@@ -425,6 +434,10 @@ void PixelFormatTest::mapGenericFormatUnsupported() {
 }
 
 void PixelFormatTest::size() {
+    /* Just basic sanity verification. Formats that have a matching generic
+       format are checked against the generic pixelFormatSize() in
+       mapFormatTypeTextureFormat() above. */
+
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGB, PixelType::UnsignedByte332), 1);
     #endif
