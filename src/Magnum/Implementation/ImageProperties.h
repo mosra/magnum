@@ -39,6 +39,16 @@ namespace Magnum { namespace Implementation {
 
 /* Used in *Image and Compressed*Image constructors */
 #ifndef CORRADE_NO_ASSERT
+inline void checkPixelSize(const char*
+    #ifndef CORRADE_STANDARD_ASSERT
+    const prefix
+    #endif
+    , const UnsignedInt pixelSize)
+{
+    CORRADE_ASSERT(pixelSize && pixelSize < 256,
+        prefix << "expected pixel size to be non-zero and less than 256 but got" << pixelSize, );
+}
+
 inline void checkImageFlagsForSize(const char*, const ImageFlags1D, const Math::Vector<1, Int>&) {}
 inline void checkImageFlagsForSize(const char*, const ImageFlags2D, const Vector2i&) {}
 inline void checkImageFlagsForSize(const char*

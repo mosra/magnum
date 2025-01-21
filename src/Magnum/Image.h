@@ -211,7 +211,8 @@ template<UnsignedInt dimensions> class Image {
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
-         * @ref PixelFormat.
+         * @ref PixelFormat. The @p pixelSize is expected to be non-zero and
+         * less than @cpp 256 @ce.
          *
          * The @p data array is expected to be of proper size for given
          * parameters. For a 3D image, if @p flags contain
@@ -238,7 +239,8 @@ template<UnsignedInt dimensions> class Image {
          * is determined automatically using @ref pixelFormatSize(), this
          * allows you to specify an implementation-specific pixel format and
          * pixel size directly. Uses @ref pixelFormatWrap() internally to wrap
-         * @p format in @ref PixelFormat.
+         * @p format in @ref PixelFormat. The @p pixelSize is expected to be
+         * non-zero and less than @cpp 256 @ce.
          */
         /* No ImageFlags parameter here as this constructor is mainly used to
            query GL textures, and there the flags are forcibly reset */
@@ -510,8 +512,8 @@ template<UnsignedInt dimensions> class Image {
         UnsignedInt _formatExtra;
         /** @todo this could be a short, saving 8 bytes for 1D and 3D images on
             64bit and 4 bytes for all dimensions on 32bit. Worth the pain? */
-        UnsignedInt _pixelSize;
-        /* 2-byte gap */
+        UnsignedByte _pixelSize;
+        /* 1 byte free */
         ImageFlags<dimensions> _flags;
         VectorTypeFor<dimensions, Int> _size;
         Containers::Array<char> _data;

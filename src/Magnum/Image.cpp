@@ -36,9 +36,10 @@ template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage sto
 
 template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: Image{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, Utility::move(data), flags} {}
 
-template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _flags{flags}, _size{size}, _data{Utility::move(data)} {
-    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{UnsignedByte(pixelSize)}, _flags{flags}, _size{size}, _data{Utility::move(data)} {
     #ifndef CORRADE_NO_ASSERT
+    Implementation::checkPixelSize("Image:", pixelSize);
+    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
     Implementation::checkImageFlagsForSize("Image:", flags, size);
     #endif
 }
@@ -47,7 +48,11 @@ template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage sto
 
 template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize) noexcept: Image{storage, pixelFormatWrap(format), formatExtra, pixelSize} {}
 
-template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _data{} {}
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{UnsignedByte(pixelSize)}, _data{} {
+    #ifndef CORRADE_NO_ASSERT
+    Implementation::checkPixelSize("Image:", pixelSize);
+    #endif
+}
 
 template<UnsignedInt dimensions> Image<dimensions>::Image(Image<dimensions>&& other) noexcept: _storage{Utility::move(other._storage)}, _format{Utility::move(other._format)}, _formatExtra{Utility::move(other._formatExtra)}, _pixelSize{Utility::move(other._pixelSize)}, _flags{Utility::move(other._flags)}, _size{Utility::move(other._size)}, _data{Utility::move(other._data)} {
     other._size = {};

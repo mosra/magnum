@@ -59,6 +59,7 @@ struct ImageDataTest: TestSuite::Tester {
     void constructCompressedImplementationSpecificNotOwnedFlagOwned();
 
     void constructUnknownImplementationSpecificPixelSize();
+    void constructInvalidPixelSize();
     void constructInvalidSize();
     void constructInvalidCubeMap();
     void constructCompressedInvalidSize();
@@ -135,6 +136,7 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned,
 
               &ImageDataTest::constructUnknownImplementationSpecificPixelSize,
+              &ImageDataTest::constructInvalidPixelSize,
               &ImageDataTest::constructInvalidSize,
               &ImageDataTest::constructInvalidCubeMap,
               &ImageDataTest::constructCompressedInvalidSize,
@@ -667,7 +669,30 @@ void ImageDataTest::constructUnknownImplementationSpecificPixelSize() {
     ImageData2D{pixelFormatWrap(0x777), {1, 1}, DataFlags{}, data};
     CORRADE_COMPARE_AS(out,
         "Trade::ImageData: can't determine size of an implementation-specific pixel format 0x666, pass it explicitly\n"
-        "Trade::ImageData: can't determine size of an implementation-specific pixel format 0x777, pass it explicitly\n",
+        /* The next messages are printed because it cannot exit the
+           construction from the middle of the member initializer list. It does
+           so with non-graceful asserts tho and just one message is printed. */
+        "Trade::ImageData: expected pixel size to be non-zero and less than 256 but got 0\n"
+
+        "Trade::ImageData: can't determine size of an implementation-specific pixel format 0x777, pass it explicitly\n"
+        "Trade::ImageData: expected pixel size to be non-zero and less than 256 but got 0\n",
+        TestSuite::Compare::String);
+}
+
+void ImageDataTest::constructInvalidPixelSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Containers::String out;
+    Error redirectError{&out};
+    ImageData2D{PixelStorage{}, 666, 0, 0, {}, nullptr};
+    ImageData2D{PixelStorage{}, 666, 0, 256, {}, nullptr};
+    ImageData2D{PixelStorage{}, 666, 0, 0, {}, DataFlags{}, nullptr};
+    ImageData2D{PixelStorage{}, 666, 0, 256, {}, DataFlags{}, nullptr};
+    CORRADE_COMPARE_AS(out,
+        "Trade::ImageData: expected pixel size to be non-zero and less than 256 but got 0\n"
+        "Trade::ImageData: expected pixel size to be non-zero and less than 256 but got 256\n"
+        "Trade::ImageData: expected pixel size to be non-zero and less than 256 but got 0\n"
+        "Trade::ImageData: expected pixel size to be non-zero and less than 256 but got 256\n",
         TestSuite::Compare::String);
 }
 

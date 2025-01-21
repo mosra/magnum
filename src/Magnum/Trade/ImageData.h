@@ -280,7 +280,8 @@ template<UnsignedInt dimensions> class ImageData {
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
-         * @ref Magnum::PixelFormat "PixelFormat".
+         * @ref Magnum::PixelFormat "PixelFormat". The @p pixelSize is expected
+         * to be non-zero and less than @cpp 256 @ce.
          *
          * The @p data array is expected to be of proper size for given
          * parameters. For a 3D image, if @p flags contain
@@ -917,7 +918,8 @@ template<UnsignedInt dimensions> class ImageData {
             CompressedPixelFormat _compressedFormat;
         };
         UnsignedInt _formatExtra;
-        UnsignedInt _pixelSize;
+        UnsignedByte _pixelSize;
+        /* 3 bytes free */
         VectorTypeFor<dimensions, Int> _size;
         Containers::Array<char> _data;
         const void* _importerState;

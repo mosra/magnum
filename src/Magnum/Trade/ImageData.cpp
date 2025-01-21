@@ -60,9 +60,10 @@ template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelFor
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, Utility::move(data), flags, importerState} {}
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _compressed{false}, _flags{flags}, _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{Utility::move(data)}, _importerState{importerState} {
-    CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= _data.size(), "Trade::ImageData: data too small, got" << _data.size() << "but expected at least" << Magnum::Implementation::imageDataSize(*this) << "bytes", );
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _compressed{false}, _flags{flags}, _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{UnsignedByte(pixelSize)}, _size{size}, _data{Utility::move(data)}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
+    Magnum::Implementation::checkPixelSize("Trade::ImageData:", pixelSize);
+    CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= _data.size(), "Trade::ImageData: data too small, got" << _data.size() << "but expected at least" << Magnum::Implementation::imageDataSize(*this) << "bytes", );
     Magnum::Implementation::checkImageFlagsForSize("Trade::ImageData:", flags, size);
     #endif
 }

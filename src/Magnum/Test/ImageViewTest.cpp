@@ -61,6 +61,7 @@ struct ImageViewTest: TestSuite::Tester {
     void constructCompressedFromMutable();
 
     void constructUnknownImplementationSpecificPixelSize();
+    void constructInvalidPixelSize();
     void constructInvalidSize();
     void constructInvalidCubeMap();
     void constructCompressedInvalidSize();
@@ -116,6 +117,7 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::constructCompressedFromMutable,
 
               &ImageViewTest::constructUnknownImplementationSpecificPixelSize,
+              &ImageViewTest::constructInvalidPixelSize,
               &ImageViewTest::constructInvalidSize,
               &ImageViewTest::constructInvalidCubeMap,
               &ImageViewTest::constructCompressedInvalidSize,
@@ -666,13 +668,32 @@ void ImageViewTest::constructUnknownImplementationSpecificPixelSize() {
     ImageView2D{pixelFormatWrap(0x777), {1, 1}};
     CORRADE_COMPARE_AS(out,
         "ImageView: can't determine size of an implementation-specific pixel format 0x666, pass it explicitly\n"
-        /* The second message is printed because it cannot exit the
+        /* The next messages are printed because it cannot exit the
            construction from the middle of the member initializer list. It does
            so with non-graceful asserts tho and just one message is printed. */
         "pixelFormatSize(): can't determine size of an implementation-specific format 0x666\n"
+        "ImageView: expected pixel size to be non-zero and less than 256 but got 0\n"
 
         "ImageView: can't determine size of an implementation-specific pixel format 0x777, pass it explicitly\n"
-        "pixelFormatSize(): can't determine size of an implementation-specific format 0x777\n",
+        "pixelFormatSize(): can't determine size of an implementation-specific format 0x777\n"
+        "ImageView: expected pixel size to be non-zero and less than 256 but got 0\n",
+        TestSuite::Compare::String);
+}
+
+void ImageViewTest::constructInvalidPixelSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Containers::String out;
+    Error redirectError{&out};
+    ImageView2D{PixelStorage{}, 666, 0, 0, {}, nullptr};
+    ImageView2D{PixelStorage{}, 666, 0, 256, {}, nullptr};
+    ImageView2D{PixelStorage{}, 666, 0, 0, {}};
+    ImageView2D{PixelStorage{}, 666, 0, 256, {}};
+    CORRADE_COMPARE_AS(out,
+        "ImageView: expected pixel size to be non-zero and less than 256 but got 0\n"
+        "ImageView: expected pixel size to be non-zero and less than 256 but got 256\n"
+        "ImageView: expected pixel size to be non-zero and less than 256 but got 0\n"
+        "ImageView: expected pixel size to be non-zero and less than 256 but got 256\n",
         TestSuite::Compare::String);
 }
 

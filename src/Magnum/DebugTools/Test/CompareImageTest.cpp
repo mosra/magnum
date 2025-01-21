@@ -294,7 +294,7 @@ void CompareImageTest::formatUnknown() {
     Containers::String out;
     Error redirectError{&out};
 
-    ImageView2D image{PixelStorage{}, PixelFormat(0xdead), 0, 0, {}};
+    ImageView2D image{PixelStorage{}, PixelFormat(0xdead), 0, 1, {}};
     Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
     CORRADE_COMPARE(out, "DebugTools::CompareImage: unknown format PixelFormat(0xdead)\n");
@@ -318,7 +318,7 @@ void CompareImageTest::formatImplementationSpecific() {
     Containers::String out;
     Error redirectError{&out};
 
-    ImageView2D image{PixelStorage{}, pixelFormatWrap(0xdead), 0, 0, {}};
+    ImageView2D image{PixelStorage{}, pixelFormatWrap(0xdead), 0, 1, {}};
     Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
     CORRADE_COMPARE(out, "DebugTools::CompareImage: can't compare implementation-specific pixel formats\n");

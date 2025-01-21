@@ -256,7 +256,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
-         * @ref PixelFormat.
+         * @ref PixelFormat. The @p pixelSize is expected to be non-zero and
+         * less than @cpp 256 @ce.
          *
          * The @p data array is expected to be of proper size for given
          * parameters. For a 3D image, if @p flags contain
@@ -286,7 +287,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @ref pixelFormatSize(), this allows you to specify an
          * implementation-specific pixel format and pixel size directly. Uses
          * @ref pixelFormatWrap() internally to wrap @p format in
-         * @ref PixelFormat.
+         * @ref PixelFormat. The @p pixelSize is expected to be non-zero and
+         * less than @cpp 256 @ce.
          *
          * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
          * assign a memory view to the image. For a 3D image, if @p flags
@@ -532,7 +534,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
         PixelStorage _storage;
         PixelFormat _format;
         UnsignedInt _formatExtra;
-        UnsignedInt _pixelSize;
+        UnsignedByte _pixelSize;
+        /* 1 byte free */
         ImageFlags<dimensions> _flags;
         VectorTypeFor<dimensions, Int> _size;
         Containers::ArrayView<Type> _data;
