@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/GL/TextureFormat.h"
 
 namespace Magnum { namespace GL {
@@ -519,6 +520,260 @@ CompressedPixelFormat compressedPixelFormat(const Magnum::CompressedPixelFormat 
     CORRADE_ASSERT(UnsignedInt(out),
         "GL::compressedPixelFormat(): format" << format << "is not supported on this target", {});
     return out;
+}
+
+Vector3i compressedPixelFormatBlockSize(const CompressedPixelFormat format) {
+    switch(format) {
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        case CompressedPixelFormat::RedRgtc1:
+        case CompressedPixelFormat::RGRgtc2:
+        case CompressedPixelFormat::SignedRedRgtc1:
+        case CompressedPixelFormat::SignedRGRgtc2:
+        case CompressedPixelFormat::RGBBptcUnsignedFloat:
+        case CompressedPixelFormat::RGBBptcSignedFloat:
+        case CompressedPixelFormat::RGBABptcUnorm:
+        case CompressedPixelFormat::SRGBAlphaBptcUnorm:
+        #endif
+        case CompressedPixelFormat::RGB8Etc2:
+        case CompressedPixelFormat::SRGB8Etc2:
+        case CompressedPixelFormat::RGB8PunchthroughAlpha1Etc2:
+        case CompressedPixelFormat::SRGB8PunchthroughAlpha1Etc2:
+        case CompressedPixelFormat::RGBA8Etc2Eac:
+        case CompressedPixelFormat::SRGB8Alpha8Etc2Eac:
+        case CompressedPixelFormat::R11Eac:
+        case CompressedPixelFormat::SignedR11Eac:
+        case CompressedPixelFormat::RG11Eac:
+        case CompressedPixelFormat::SignedRG11Eac:
+        case CompressedPixelFormat::RGBS3tcDxt1:
+        case CompressedPixelFormat::SRGBS3tcDxt1:
+        case CompressedPixelFormat::RGBAS3tcDxt1:
+        case CompressedPixelFormat::SRGBAlphaS3tcDxt1:
+        case CompressedPixelFormat::RGBAS3tcDxt3:
+        case CompressedPixelFormat::SRGBAlphaS3tcDxt3:
+        case CompressedPixelFormat::RGBAS3tcDxt5:
+        case CompressedPixelFormat::SRGBAlphaS3tcDxt5:
+        #ifdef MAGNUM_TARGET_GLES
+        case CompressedPixelFormat::RGBPvrtc4bppV1:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case CompressedPixelFormat::SRGBPvrtc4bppV1:
+        #endif
+        case CompressedPixelFormat::RGBAPvrtc4bppV1:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case CompressedPixelFormat::SRGBAlphaPvrtc4bppV1:
+        #endif
+        #endif
+        case CompressedPixelFormat::RGBAAstc4x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc4x4:
+            return {4, 4, 1};
+        case CompressedPixelFormat::RGBAAstc5x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x4:
+            return {5, 4, 1};
+        case CompressedPixelFormat::RGBAAstc5x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x5:
+            return {5, 5, 1};
+        case CompressedPixelFormat::RGBAAstc6x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x5:
+            return {6, 5, 1};
+        case CompressedPixelFormat::RGBAAstc6x6:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x6:
+            return {6, 6, 1};
+        case CompressedPixelFormat::RGBAAstc8x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc8x5:
+            return {8, 5, 1};
+        case CompressedPixelFormat::RGBAAstc8x6:
+        case CompressedPixelFormat::SRGB8Alpha8Astc8x6:
+            return {8, 6, 1};
+        case CompressedPixelFormat::RGBAAstc8x8:
+        case CompressedPixelFormat::SRGB8Alpha8Astc8x8:
+            return {8, 8, 1};
+        case CompressedPixelFormat::RGBAAstc10x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc10x5:
+            return {10, 5, 1};
+        case CompressedPixelFormat::RGBAAstc10x6:
+        case CompressedPixelFormat::SRGB8Alpha8Astc10x6:
+            return {10, 6, 1};
+        case CompressedPixelFormat::RGBAAstc10x8:
+        case CompressedPixelFormat::SRGB8Alpha8Astc10x8:
+            return {10, 8, 1};
+        case CompressedPixelFormat::RGBAAstc10x10:
+        case CompressedPixelFormat::SRGB8Alpha8Astc10x10:
+            return {10, 10, 1};
+        case CompressedPixelFormat::RGBAAstc12x10:
+        case CompressedPixelFormat::SRGB8Alpha8Astc12x10:
+            return {12, 10, 1};
+        case CompressedPixelFormat::RGBAAstc12x12:
+        case CompressedPixelFormat::SRGB8Alpha8Astc12x12:
+            return {12, 12, 1};
+        #ifdef MAGNUM_TARGET_GLES
+        case CompressedPixelFormat::RGBPvrtc2bppV1:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case CompressedPixelFormat::SRGBPvrtc2bppV1:
+        #endif
+        case CompressedPixelFormat::RGBAPvrtc2bppV1:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case CompressedPixelFormat::SRGBAlphaPvrtc2bppV1:
+        #endif
+            return {8, 4, 1};
+        #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        case CompressedPixelFormat::RGBAAstc3x3x3:
+        case CompressedPixelFormat::SRGB8Alpha8Astc3x3x3:
+            return {3, 3, 3};
+        case CompressedPixelFormat::RGBAAstc4x3x3:
+        case CompressedPixelFormat::SRGB8Alpha8Astc4x3x3:
+            return {4, 3, 3};
+        case CompressedPixelFormat::RGBAAstc4x4x3:
+        case CompressedPixelFormat::SRGB8Alpha8Astc4x4x3:
+            return {4, 4, 3};
+        case CompressedPixelFormat::RGBAAstc4x4x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc4x4x4:
+            return {4, 4, 4};
+        case CompressedPixelFormat::RGBAAstc5x4x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x4x4:
+            return {5, 4, 4};
+        case CompressedPixelFormat::RGBAAstc5x5x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x5x4:
+            return {5, 5, 4};
+        case CompressedPixelFormat::RGBAAstc5x5x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x5x5:
+            return {5, 5, 5};
+        case CompressedPixelFormat::RGBAAstc6x5x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x5x5:
+            return {6, 5, 5};
+        case CompressedPixelFormat::RGBAAstc6x6x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x6x5:
+            return {6, 6, 5};
+        case CompressedPixelFormat::RGBAAstc6x6x6:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x6x6:
+            return {6, 6, 6};
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case CompressedPixelFormat::Red:
+        case CompressedPixelFormat::RG:
+        case CompressedPixelFormat::RGB:
+        case CompressedPixelFormat::RGBA:
+            CORRADE_ASSERT_UNREACHABLE("GL::compressedPixelFormatBlockSize(): cannot determine block size of generic" << format, {});
+        #endif
+    }
+
+    CORRADE_ASSERT_UNREACHABLE("GL::compressedPixelFormatBlockSize(): unknown format" << format, {});
+}
+
+UnsignedInt compressedPixelFormatBlockDataSize(const CompressedPixelFormat format) {
+    switch(format) {
+        /* Values from Magnum/Implementation/compressedPixelFormatMapping.hpp,
+           names matched w/ GL/Implementation/compressedPixelFormatMapping.hpp.
+           Using the bit sizes to avoid accidental errors. */
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        case CompressedPixelFormat::RedRgtc1:
+        case CompressedPixelFormat::SignedRedRgtc1:
+        #endif
+        case CompressedPixelFormat::RGB8Etc2:
+        case CompressedPixelFormat::SRGB8Etc2:
+        case CompressedPixelFormat::R11Eac:
+        case CompressedPixelFormat::SignedR11Eac:
+        case CompressedPixelFormat::RGB8PunchthroughAlpha1Etc2:
+        case CompressedPixelFormat::SRGB8PunchthroughAlpha1Etc2:
+        case CompressedPixelFormat::RGBS3tcDxt1:
+        case CompressedPixelFormat::SRGBS3tcDxt1:
+        case CompressedPixelFormat::RGBAS3tcDxt1:
+        case CompressedPixelFormat::SRGBAlphaS3tcDxt1:
+        #ifdef MAGNUM_TARGET_GLES
+        case CompressedPixelFormat::RGBPvrtc2bppV1:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case CompressedPixelFormat::SRGBPvrtc2bppV1:
+        #endif
+        case CompressedPixelFormat::RGBAPvrtc2bppV1:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case CompressedPixelFormat::SRGBAlphaPvrtc2bppV1:
+        #endif
+        case CompressedPixelFormat::RGBPvrtc4bppV1:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case CompressedPixelFormat::SRGBPvrtc4bppV1:
+        #endif
+        case CompressedPixelFormat::RGBAPvrtc4bppV1:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case CompressedPixelFormat::SRGBAlphaPvrtc4bppV1:
+        #endif
+        #endif
+            return 64/8;
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        case CompressedPixelFormat::RGRgtc2:
+        case CompressedPixelFormat::SignedRGRgtc2:
+        case CompressedPixelFormat::RGBBptcUnsignedFloat:
+        case CompressedPixelFormat::RGBBptcSignedFloat:
+        case CompressedPixelFormat::RGBABptcUnorm:
+        case CompressedPixelFormat::SRGBAlphaBptcUnorm:
+        #endif
+        case CompressedPixelFormat::RG11Eac:
+        case CompressedPixelFormat::SignedRG11Eac:
+        case CompressedPixelFormat::RGBA8Etc2Eac:
+        case CompressedPixelFormat::SRGB8Alpha8Etc2Eac:
+        case CompressedPixelFormat::RGBAS3tcDxt3:
+        case CompressedPixelFormat::SRGBAlphaS3tcDxt3:
+        case CompressedPixelFormat::RGBAS3tcDxt5:
+        case CompressedPixelFormat::SRGBAlphaS3tcDxt5:
+        case CompressedPixelFormat::RGBAAstc4x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc4x4:
+        case CompressedPixelFormat::RGBAAstc5x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x4:
+        case CompressedPixelFormat::RGBAAstc5x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x5:
+        case CompressedPixelFormat::RGBAAstc6x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x5:
+        case CompressedPixelFormat::RGBAAstc6x6:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x6:
+        case CompressedPixelFormat::RGBAAstc8x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc8x5:
+        case CompressedPixelFormat::RGBAAstc8x6:
+        case CompressedPixelFormat::SRGB8Alpha8Astc8x6:
+        case CompressedPixelFormat::RGBAAstc8x8:
+        case CompressedPixelFormat::SRGB8Alpha8Astc8x8:
+        case CompressedPixelFormat::RGBAAstc10x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc10x5:
+        case CompressedPixelFormat::RGBAAstc10x6:
+        case CompressedPixelFormat::SRGB8Alpha8Astc10x6:
+        case CompressedPixelFormat::RGBAAstc10x8:
+        case CompressedPixelFormat::SRGB8Alpha8Astc10x8:
+        case CompressedPixelFormat::RGBAAstc10x10:
+        case CompressedPixelFormat::SRGB8Alpha8Astc10x10:
+        case CompressedPixelFormat::RGBAAstc12x10:
+        case CompressedPixelFormat::SRGB8Alpha8Astc12x10:
+        case CompressedPixelFormat::RGBAAstc12x12:
+        case CompressedPixelFormat::SRGB8Alpha8Astc12x12:
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        case CompressedPixelFormat::RGBAAstc3x3x3:
+        case CompressedPixelFormat::SRGB8Alpha8Astc3x3x3:
+        case CompressedPixelFormat::RGBAAstc4x3x3:
+        case CompressedPixelFormat::SRGB8Alpha8Astc4x3x3:
+        case CompressedPixelFormat::RGBAAstc4x4x3:
+        case CompressedPixelFormat::SRGB8Alpha8Astc4x4x3:
+        case CompressedPixelFormat::RGBAAstc4x4x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc4x4x4:
+        case CompressedPixelFormat::RGBAAstc5x4x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x4x4:
+        case CompressedPixelFormat::RGBAAstc5x5x4:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x5x4:
+        case CompressedPixelFormat::RGBAAstc5x5x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc5x5x5:
+        case CompressedPixelFormat::RGBAAstc6x5x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x5x5:
+        case CompressedPixelFormat::RGBAAstc6x6x5:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x6x5:
+        case CompressedPixelFormat::RGBAAstc6x6x6:
+        case CompressedPixelFormat::SRGB8Alpha8Astc6x6x6:
+        #endif
+            return 128/8;
+        #ifndef MAGNUM_TARGET_GLES
+        case CompressedPixelFormat::Red:
+        case CompressedPixelFormat::RG:
+        case CompressedPixelFormat::RGB:
+        case CompressedPixelFormat::RGBA:
+            CORRADE_ASSERT_UNREACHABLE("GL::compressedPixelFormatBlockDataSize(): cannot determine block size of generic" << format, {});
+        #endif
+    }
+
+    CORRADE_ASSERT_UNREACHABLE("GL::compressedPixelFormatBlockDataSize(): unknown format" << format, {});
 }
 
 TextureFormat textureFormat(const Magnum::CompressedPixelFormat format) {

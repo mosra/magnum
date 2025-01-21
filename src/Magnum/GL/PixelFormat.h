@@ -702,7 +702,9 @@ MAGNUM_GL_EXPORT PixelType pixelType(Magnum::PixelFormat format, UnsignedInt ext
 /**
 @brief Size of a pixel for given format/type combination in bytes
 
-@see @ref Magnum::pixelFormatSize(), @ref PixelStorage::dataProperties()
+@see @ref Magnum::pixelFormatSize(), @ref compressedPixelFormatBlockSize(),
+    @ref compressedPixelFormatBlockDataSize(),
+    @ref PixelStorage::dataProperties()
 */
 MAGNUM_GL_EXPORT UnsignedInt pixelFormatSize(PixelFormat format, PixelType type);
 
@@ -2156,6 +2158,34 @@ The mapping operation is done with an @f$ \mathcal{O}(1) @f$ complexity.
     @ref genericCompressedPixelFormat(CompressedPixelFormat)
 */
 MAGNUM_GL_EXPORT CompressedPixelFormat compressedPixelFormat(Magnum::CompressedPixelFormat format);
+
+/**
+@brief Block size of given compressed pixel format, in pixels
+@m_since_latest
+
+Expects that @p format is not one of the generic
+@ref CompressedPixelFormat::Red, @relativeref{CompressedPixelFormat,RG},
+@relativeref{CompressedPixelFormat,RGB} or
+@relativeref{CompressedPixelFormat,RGBA} formats for which properties are
+unspecified. For 2D formats the Z dimension is always 1.
+@see @ref compressedPixelFormatBlockDataSize(),
+    @ref Magnum::compressedPixelFormatBlockSize(), @ref pixelFormatSize()
+*/
+MAGNUM_GL_EXPORT Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat format);
+
+/**
+@brief Block size of given compressed pixel format, in bytes
+@m_since_latest
+
+Expects that @p format is not one of the generic
+@ref CompressedPixelFormat::Red, @relativeref{CompressedPixelFormat,RG},
+@relativeref{CompressedPixelFormat,RGB} or
+@relativeref{CompressedPixelFormat,RGBA} formats for which properties are
+unspecified.
+@see @ref compressedPixelFormatBlockSize(),
+    @ref Magnum::compressedPixelFormatBlockDataSize(), @ref pixelFormatSize()
+*/
+MAGNUM_GL_EXPORT UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat format);
 
 /**
 @brief Convert OpenGL compressed pixel format to a generic compressed pixel format

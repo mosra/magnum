@@ -219,6 +219,10 @@ See also:
     @ref GL::Renderer::setDepthRange() if the extension is available. See also
     [mosra/magnum#543](https://github.com/mosra/magnum/issues/543) and
     [mosra/magnum#558](https://github.com/mosra/magnum/issues/558).
+-   Added @ref GL::compressedPixelFormatBlockSize() and
+    @ref GL::compressedPixelFormatBlockDataSize() utilities as OpenGL-specific
+    counterparts to the generic @ref compressedPixelFormatBlockSize() /
+    @ref compressedPixelFormatBlockDataSize() queries
 -   A new @cpp "nv-egl-crashy-query-device-attrib" @ce workaround for a crash
     happening during EGL initialization in recent NVidia drivers.  See
     @ref opengl-workarounds and [mosra/magnum#491](https://github.com/mosra/magnum/pull/491)

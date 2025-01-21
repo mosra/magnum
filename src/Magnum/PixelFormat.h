@@ -793,7 +793,8 @@ enum class PixelFormat: UnsignedInt {
 
 Expects that the pixel format is *not* implementation-specific.
 @see @ref isPixelFormatImplementationSpecific(), @ref GL::pixelFormatSize(),
-    @ref vertexFormatSize()
+    @ref compressedPixelFormatBlockSize(),
+    @ref compressedPixelFormatBlockDataSize(), @ref vertexFormatSize()
 */
 MAGNUM_EXPORT UnsignedInt pixelFormatSize(PixelFormat format);
 
@@ -2538,12 +2539,13 @@ enum class CompressedPixelFormat: UnsignedInt {
 };
 
 /**
-@brief Block size of given compressed pixel format
+@brief Block size of given compressed pixel format, in pixels
 @m_since_latest
 
 For 2D formats the Z dimension is always 1. Expects that the pixel format is
 * *not* implementation-specific.
 @see @ref compressedPixelFormatBlockDataSize(),
+    @ref GL::compressedPixelFormatBlockSize(), @ref pixelFormatSize(),
     @ref isCompressedPixelFormatImplementationSpecific()
 */
 MAGNUM_EXPORT Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat format);
@@ -2558,12 +2560,12 @@ MAGNUM_EXPORT CORRADE_DEPRECATED("use compressedPixelFormatBlockSize() instead")
 #endif
 
 /**
-@brief Block data size of given compressed pixel format
+@brief Block size of given compressed pixel format, in bytes
 @m_since_latest
 
-Byte size of each compressed block. Expects that the pixel format is *not*
-implementation-specific.
+Expects that the pixel format is *not* implementation-specific.
 @see @ref compressedPixelFormatBlockSize(),
+    @ref GL::compressedPixelFormatBlockDataSize(), @ref pixelFormatSize(),
     @ref isCompressedPixelFormatImplementationSpecific()
 */
 MAGNUM_EXPORT UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat format);

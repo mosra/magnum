@@ -30,6 +30,7 @@
 #include <Corrade/TestSuite/Compare/String.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/TextureFormat.h"
 
@@ -66,6 +67,12 @@ struct PixelFormatTest: TestSuite::Tester {
     void mapCompressedTextureFormatInvalid();
     void mapGenericCompressedFormatUnsupported();
 
+    void sizeCompressed();
+    #ifndef MAGNUM_TARGET_GLES
+    void sizeCompressedGeneric();
+    #endif
+    void sizeCompressedInvalid();
+
     void debugPixelFormat();
     void debugPixelType();
     void debugCompressedPixelFormat();
@@ -97,6 +104,12 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::mapCompressedTextureFormatUnsupported,
               &PixelFormatTest::mapCompressedTextureFormatInvalid,
               &PixelFormatTest::mapGenericCompressedFormatUnsupported,
+
+              &PixelFormatTest::sizeCompressed,
+              #ifndef MAGNUM_TARGET_GLES
+              &PixelFormatTest::sizeCompressedGeneric,
+              #endif
+              &PixelFormatTest::sizeCompressedInvalid,
 
               &PixelFormatTest::debugPixelFormat,
               &PixelFormatTest::debugPixelType,
@@ -486,8 +499,14 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
-           - that a particular pixel format maps to a particular GL format
-           - that a particular pixel type maps to a particular GL type */
+           - that a particular pixel format maps to a particular GL format and
+             back
+           - that a particular pixel format maps to a particular GL type and
+             back
+           - that a particular pixel format maps to a particular GL texture
+             format and back
+           - that the pixel format block size matches block size of the generic
+             format */
         #ifdef CORRADE_TARGET_GCC
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
@@ -503,6 +522,8 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
                     CORRADE_COMPARE(compressedPixelFormat(Magnum::CompressedPixelFormat::format), Magnum::GL::CompressedPixelFormat::expectedFormat); \
                     CORRADE_COMPARE(textureFormat(Magnum::CompressedPixelFormat::format), Magnum::GL::TextureFormat::Compressed ## expectedFormat); \
                     CORRADE_COMPARE(genericCompressedPixelFormat(Magnum::GL::TextureFormat::Compressed ## expectedFormat), Magnum::CompressedPixelFormat::format); \
+                    CORRADE_COMPARE(compressedPixelFormatBlockSize(Magnum::GL::CompressedPixelFormat::expectedFormat), compressedPixelFormatBlockSize(Magnum::CompressedPixelFormat::format)); \
+                    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(Magnum::GL::CompressedPixelFormat::expectedFormat), compressedPixelFormatBlockDataSize(Magnum::CompressedPixelFormat::format)); \
                     ++nextHandled; \
                     continue;
             /* For duplicate mappings compared to _c() it only checks the
@@ -516,6 +537,8 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
                     CORRADE_VERIFY(hasTextureFormat(Magnum::CompressedPixelFormat::format)); \
                     CORRADE_COMPARE(compressedPixelFormat(Magnum::CompressedPixelFormat::format), Magnum::GL::CompressedPixelFormat::expectedFormat); \
                     CORRADE_COMPARE(textureFormat(Magnum::CompressedPixelFormat::format), Magnum::GL::TextureFormat::Compressed ## expectedFormat); \
+                    CORRADE_COMPARE(compressedPixelFormatBlockSize(Magnum::GL::CompressedPixelFormat::expectedFormat), compressedPixelFormatBlockSize(Magnum::CompressedPixelFormat::format)); \
+                    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(Magnum::GL::CompressedPixelFormat::expectedFormat), compressedPixelFormatBlockDataSize(Magnum::CompressedPixelFormat::format)); \
                     ++nextHandled; \
                     continue;
             #define _s(format) \
@@ -651,6 +674,46 @@ void PixelFormatTest::mapGenericCompressedFormatUnsupported() {
     /* For uncompressed texture formats it returns NullOpt too, instead of
        asserting. See comment in the source for reasons. */
     CORRADE_COMPARE(genericCompressedPixelFormat(TextureFormat::RGB), Containers::NullOpt);
+}
+
+void PixelFormatTest::sizeCompressed() {
+    /* Just basic sanity verification. Formats that have a matching generic
+       format are checked against the generic compressedPixelFormatBlock*Size()
+       in mapCompressedFormatTextureFormat() above. */
+
+    CORRADE_COMPARE(compressedPixelFormatBlockSize(CompressedPixelFormat::SRGBAlphaS3tcDxt1), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(CompressedPixelFormat::SRGBAlphaS3tcDxt1), 8);
+
+    CORRADE_COMPARE(compressedPixelFormatBlockSize(CompressedPixelFormat::SRGB8Alpha8Astc10x5), (Vector3i{10, 5, 1}));
+    CORRADE_COMPARE(compressedPixelFormatBlockDataSize(CompressedPixelFormat::SRGB8Alpha8Astc10x5), 16);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void PixelFormatTest::sizeCompressedGeneric() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Containers::String out;
+    Error redirectError{&out};
+    compressedPixelFormatBlockSize(CompressedPixelFormat::RG);
+    compressedPixelFormatBlockDataSize(CompressedPixelFormat::RG);
+    CORRADE_COMPARE_AS(out,
+        "GL::compressedPixelFormatBlockSize(): cannot determine block size of generic GL::CompressedPixelFormat::RG\n"
+        "GL::compressedPixelFormatBlockDataSize(): cannot determine block size of generic GL::CompressedPixelFormat::RG\n",
+        TestSuite::Compare::String);
+}
+#endif
+
+void PixelFormatTest::sizeCompressedInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Containers::String out;
+    Error redirectError{&out};
+    compressedPixelFormatBlockSize(CompressedPixelFormat(0xdeadbeef));
+    compressedPixelFormatBlockDataSize(CompressedPixelFormat(0xdeadbeef));
+    CORRADE_COMPARE_AS(out,
+        "GL::compressedPixelFormatBlockSize(): unknown format GL::CompressedPixelFormat(0xdeadbeef)\n"
+        "GL::compressedPixelFormatBlockDataSize(): unknown format GL::CompressedPixelFormat(0xdeadbeef)\n",
+        TestSuite::Compare::String);
 }
 
 void PixelFormatTest::debugPixelFormat() {
