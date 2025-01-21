@@ -51,7 +51,6 @@ namespace Magnum { namespace SceneGraph {
 #define MAGNUM_SCENEGRAPH_EXPORT_HPP
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractObject<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractObject<3, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractTransformation<2, Float>;
@@ -90,6 +89,5 @@ template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicTranslationRotationScali
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicTranslationRotationScalingTransformation3D<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<2, Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<3, Float>>;
-#endif
 
 }}

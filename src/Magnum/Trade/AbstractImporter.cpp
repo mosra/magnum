@@ -1302,7 +1302,7 @@ Containers::String AbstractImporter::materialName(const UnsignedInt id) {
 
 Containers::String AbstractImporter::doMaterialName(UnsignedInt) { return {}; }
 
-#if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+#ifndef MAGNUM_BUILD_DEPRECATED
 Containers::Optional<MaterialData>
 #else
 Implementation::OptionalButAlsoPointer<MaterialData>
@@ -1329,7 +1329,7 @@ Containers::Optional<MaterialData> AbstractImporter::doMaterial(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::material(): not implemented", {});
 }
 
-#if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+#ifndef MAGNUM_BUILD_DEPRECATED
 Containers::Optional<MaterialData>
 #else
 Implementation::OptionalButAlsoPointer<MaterialData>

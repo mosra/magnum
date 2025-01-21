@@ -182,7 +182,6 @@ template<UnsignedInt dimensions> Texture<dimensions>& Texture<dimensions>::setLa
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template class
     /* GCC needs the export macro on the class definition (and here it warns
@@ -204,7 +203,6 @@ template class
     MAGNUM_GL_EXPORT
     #endif
     Texture<3>;
-#endif
 #endif
 
 }}

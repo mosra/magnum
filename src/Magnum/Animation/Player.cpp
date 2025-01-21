@@ -53,9 +53,7 @@ Debug& operator<<(Debug& debug, const State value) {
 #define MAGNUM_EXPORT_HPP
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT_HPP Player<Float, Float>;
 template class MAGNUM_EXPORT_HPP Player<std::chrono::nanoseconds, Float>;
-#endif
 
 }}

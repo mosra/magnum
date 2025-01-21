@@ -126,7 +126,6 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DefaultFramebuffer::Status value) {
     debug << "GL::DefaultFramebuffer::Status" << Debug::nospace;
 
@@ -143,6 +142,5 @@ Debug& operator<<(Debug& debug, const DefaultFramebuffer::Status value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 }}

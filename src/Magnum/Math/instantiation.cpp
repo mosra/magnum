@@ -34,7 +34,6 @@
 
 namespace Corrade { namespace Utility {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Apparently clang-cl doesn't propagate the export from the extern template
    declaration or something */
 #ifdef CORRADE_TARGET_CLANG_CL
@@ -96,13 +95,11 @@ template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Range<3,
    vectors instantiated above */
 template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Float>>;
 template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Double>>;
-#endif
 
 }}
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template Debug& operator<<(Debug&, const Bezier<2, 2, Float>&);
 template Debug& operator<<(Debug&, const Bezier<2, 3, Float>&);
 template Debug& operator<<(Debug&, const Bezier<3, 2, Float>&);
@@ -221,6 +218,5 @@ template Debug& operator<<(Debug&, const Range<3, Int>&);
 template Debug& operator<<(Debug&, const Range<1, Double>&);
 template Debug& operator<<(Debug&, const Range<2, Double>&);
 template Debug& operator<<(Debug&, const Range<3, Double>&);
-#endif
 
 }}

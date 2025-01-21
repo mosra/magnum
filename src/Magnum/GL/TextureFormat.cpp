@@ -41,7 +41,6 @@ namespace Magnum { namespace GL {
    genericCompressedPixelFormat(CompressedPixelFormat) so are defined in
    PixelFormat.cpp instead (and tested there too) */
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const TextureFormat value) {
     debug << "GL::TextureFormat" << Debug::nospace;
 
@@ -302,6 +301,5 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 }}

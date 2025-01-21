@@ -33,7 +33,6 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace {
 
 constexpr const char* MeshPrimitiveNames[] {
@@ -87,7 +86,6 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
 
     return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
-#endif
 
 UnsignedInt meshIndexTypeSize(const MeshIndexType type) {
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(type),

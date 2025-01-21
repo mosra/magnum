@@ -891,7 +891,6 @@ struct MyShader: AbstractShaderProgram {
         additionsUniform;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 MyShader::MyShader() {
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
@@ -932,7 +931,6 @@ MyShader::MyShader() {
     colorUniform = uniformLocation("color");
     additionsUniform = uniformLocation("additions");
 }
-#endif
 
 void AbstractShaderProgramGLTest::uniform() {
     MyShader shader;
@@ -995,7 +993,6 @@ struct MyDoubleShader: AbstractShaderProgram {
         additionsUniform;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 MyDoubleShader::MyDoubleShader() {
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
@@ -1016,7 +1013,6 @@ MyDoubleShader::MyDoubleShader() {
     colorUniform = uniformLocation("color");
     additionsUniform = uniformLocation("additions");
 }
-#endif
 
 void AbstractShaderProgramGLTest::uniformDouble() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::gpu_shader_fp64>())
@@ -1187,7 +1183,6 @@ struct UniformBlockShader: AbstractShaderProgram {
         materialUniformBlock;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 UniformBlockShader::UniformBlockShader() {
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
@@ -1217,7 +1212,6 @@ UniformBlockShader::UniformBlockShader() {
     matricesUniformBlock = uniformBlockIndex("matrices");
     materialUniformBlock = uniformBlockIndex("material");
 }
-#endif
 
 void AbstractShaderProgramGLTest::uniformBlock() {
     #ifndef MAGNUM_TARGET_GLES

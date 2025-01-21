@@ -466,7 +466,6 @@ void Renderer::initializeContextBasedFunctionality() {
     setClearColor(0x1f1f1f_rgbf);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Renderer::Error value) {
     debug << "GL::Renderer::Error" << Debug::nospace;
 
@@ -522,7 +521,6 @@ Debug& operator<<(Debug& debug, const Renderer::GraphicsResetStatus value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 #endif
 
 }}

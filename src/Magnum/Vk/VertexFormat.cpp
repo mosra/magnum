@@ -34,7 +34,6 @@ namespace Magnum { namespace Vk {
 
 namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
 constexpr VertexFormat VertexFormatMapping[] {
     /* GCC 4.8 doesn't like just a {} for default enum values */
     #define _c(input, output) VertexFormat::output,
@@ -43,7 +42,6 @@ constexpr VertexFormat VertexFormatMapping[] {
     #undef _s
     #undef _c
 };
-#endif
 
 }
 

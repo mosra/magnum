@@ -32,7 +32,6 @@
 
 #include "Magnum/GL/Version.h"
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Define stuff that we need because I can't be bothered with creating a new
    header just for a few defines */
 #define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091
@@ -44,7 +43,6 @@
 
 #ifndef WGL_ARB_create_context_no_error
 #define WGL_CONTEXT_OPENGL_NO_ERROR_ARB 0x31B3
-#endif
 #endif
 
 namespace Magnum { namespace Platform {

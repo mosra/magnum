@@ -134,7 +134,6 @@ template<UnsignedInt dimensions> Containers::Array<char> CompressedImage<dimensi
     return data;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT Image<1>;
 template class MAGNUM_EXPORT Image<2>;
 template class MAGNUM_EXPORT Image<3>;
@@ -142,6 +141,5 @@ template class MAGNUM_EXPORT Image<3>;
 template class MAGNUM_EXPORT CompressedImage<1>;
 template class MAGNUM_EXPORT CompressedImage<2>;
 template class MAGNUM_EXPORT CompressedImage<3>;
-#endif
 
 }

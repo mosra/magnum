@@ -714,10 +714,8 @@ void AbstractRenderer::render(const std::string& text) {
     _mesh.setCount(indexCount);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_TEXT_EXPORT Renderer<2>;
 template class MAGNUM_TEXT_EXPORT Renderer<3>;
-#endif
 #endif
 
 }}

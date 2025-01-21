@@ -105,7 +105,6 @@ template<UnsignedInt dimensions> MultisampleTexture<dimensions>& MultisampleText
     return *this;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class
     /* GCC needs the export macro on the class definition (and here it warns
        that the type is already defined so the export is ignored), while Clang
@@ -119,7 +118,6 @@ template class
     MAGNUM_GL_EXPORT
     #endif
     MultisampleTexture<3>;
-#endif
 
 }}
 #endif

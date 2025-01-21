@@ -54,8 +54,7 @@ template<> struct Renderer<3> {
 
 }
 
-/* Doxygen gets confused when using {} to initialize parent object */
-template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), _options{manager.get<ObjectRendererOptions>(options)} {
+template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>{object, drawables}, _options{manager.get<ObjectRendererOptions>(options)} {
     /* Shader */
     _shader = manager.get<GL::AbstractShaderProgram, Shaders::VertexColorGL<dimensions>>(Renderer<dimensions>::shader());
     if(!_shader) manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::VertexColorGL<dimensions>);

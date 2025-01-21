@@ -687,7 +687,6 @@ bool Buffer::unmapImplementationApple(Buffer& self) {
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Buffer::TargetHint value) {
     debug << "GL::Buffer::TargetHint" << Debug::nospace;
 
@@ -744,7 +743,6 @@ Debug& operator<<(Debug& debug, const Buffer::Target value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 #endif
 
 }}

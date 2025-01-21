@@ -66,7 +66,6 @@ LightData::LightData(const LightType type, const Color3& color, const Float inte
 
 LightData::LightData(const LightType type, const Color3& color, const Float intensity, const void* const importerState) noexcept: LightData{type, color, intensity, Constants::inf(), importerState} {}
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const LightType value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 
@@ -86,6 +85,5 @@ Debug& operator<<(Debug& debug, const LightType value) {
 
     return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
 }
-#endif
 
 }}

@@ -33,7 +33,6 @@ namespace Magnum { namespace Vk {
 
 namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
 constexpr const char* FeatureNames[] {
     #define _c(value, field) #value,
     #define _cver(value, field, suffix, version) _c(value, field)
@@ -43,7 +42,6 @@ constexpr const char* FeatureNames[] {
     #undef _cver
     #undef _cext
 };
-#endif
 
 }
 

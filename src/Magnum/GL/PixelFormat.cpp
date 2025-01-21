@@ -38,7 +38,6 @@ namespace Magnum { namespace GL {
 
 namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
 constexpr struct {
     PixelFormat format;
     PixelType type;
@@ -71,7 +70,6 @@ constexpr TextureFormat TextureFormatMapping[] {
     #undef _d
     #undef _c
 };
-#endif
 
 }
 
@@ -344,7 +342,6 @@ Containers::Optional<Magnum::PixelFormat> genericPixelFormat(const TextureFormat
     }
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const PixelFormat value) {
     debug << "GL::PixelFormat" << Debug::nospace;
 
@@ -480,7 +477,6 @@ Debug& operator<<(Debug& debug, const PixelType value) {
 
 namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
 /* Enum values are the same between CompressedPixelFormat and TextureFormat, so
    having just a single table for both */
 constexpr CompressedPixelFormat CompressedFormatMapping[] {
@@ -492,7 +488,6 @@ constexpr CompressedPixelFormat CompressedFormatMapping[] {
     #undef _d
     #undef _c
 };
-#endif
 
 }
 
@@ -693,6 +688,5 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 }}

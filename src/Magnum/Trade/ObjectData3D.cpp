@@ -98,7 +98,6 @@ Matrix4 ObjectData3D::transformation() const {
     return _transformation.matrix;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 CORRADE_IGNORE_DEPRECATED_PUSH
 Debug& operator<<(Debug& debug, const ObjectInstanceType3D value) {
     debug << "Trade::ObjectInstanceType3D" << Debug::nospace;
@@ -136,6 +135,5 @@ Debug& operator<<(Debug& debug, const ObjectFlags3D value) {
         ObjectFlag3D::HasTranslationRotationScaling});
 }
 CORRADE_IGNORE_DEPRECATED_POP
-#endif
 
 }}

@@ -171,8 +171,7 @@ void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, c
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayView makes Doxygen grumpy */
-void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures) {
+void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, const Containers::ArrayView<AbstractTexture* const> textures) {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* Create array of IDs and also update bindings in state tracker */
@@ -1593,8 +1592,7 @@ void AbstractTexture::subImage2DImplementationDefault(AbstractTexture& self, GLi
     glTexSubImage2D(self._target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
-/* Doxygen gets confused by the template parameter */
-#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_GLES)
+#ifndef MAGNUM_TARGET_GLES
 template<void(*original)(AbstractTexture&, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void AbstractTexture::subImageImplementationSvga3DSliceBySlice(AbstractTexture& self, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* const data, const PixelStorage& storage) {
     /* Upload the data slice by slice only if this is an array texture and we
        are copying from user memory (not from a buffer) */
@@ -1671,8 +1669,7 @@ void AbstractTexture::subImage3DImplementationDefault(AbstractTexture& self, GLi
     #endif
 }
 
-/* Doxygen gets confused by the template parameter */
-#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_WEBGL
 template<void(*original)(AbstractTexture&, GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void AbstractTexture::subImageImplementationSvga3DSliceBySlice(AbstractTexture& self, GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* const data, const PixelStorage& storage) {
     /* Upload the data slice by slice only if this is an array texture and we
        are copying from user memory (not from a buffer) */
@@ -1736,7 +1733,6 @@ void AbstractTexture::invalidateSubImageImplementationARB(AbstractTexture& self,
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> void AbstractTexture::image(const GLint level, Image<dimensions>& image, const ImageFlags<dimensions> flags) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
@@ -2076,9 +2072,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, con
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, CompressedBufferImage<2>&, BufferUsage);
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, CompressedBufferImage<3>&, BufferUsage);
 #endif
-#endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::compressedBlockSize(const GLenum target, const TextureFormat format) {
     GLint value;
@@ -2397,7 +2391,6 @@ void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture& texture, const
     state.parameteriImplementation(texture, GL_TEXTURE_WRAP_R_OES, GLint(wrapping.z()));
     #endif
 }
-#endif
 #endif
 
 }}

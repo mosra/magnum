@@ -235,10 +235,8 @@ template<UnsignedInt dimensions> Containers::Array<char> ImageData<dimensions>::
     return data;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_TRADE_EXPORT ImageData<1>;
 template class MAGNUM_TRADE_EXPORT ImageData<2>;
 template class MAGNUM_TRADE_EXPORT ImageData<3>;
-#endif
 
 }}

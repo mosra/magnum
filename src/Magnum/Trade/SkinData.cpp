@@ -56,9 +56,7 @@ template<UnsignedInt dimensions> Containers::Array<MatrixTypeFor<dimensions, Flo
     return Utility::move(_inverseBindMatrixData);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_TRADE_EXPORT SkinData<2>;
 template class MAGNUM_TRADE_EXPORT SkinData<3>;
-#endif
 
 }}

@@ -102,7 +102,6 @@ Matrix3 ObjectData2D::transformation() const {
     return _transformation.matrix;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 CORRADE_IGNORE_DEPRECATED_PUSH
 Debug& operator<<(Debug& debug, const ObjectInstanceType2D value) {
     debug << "Trade::ObjectInstanceType2D" << Debug::nospace;
@@ -139,6 +138,5 @@ Debug& operator<<(Debug& debug, const ObjectFlags2D value) {
         ObjectFlag2D::HasTranslationRotationScaling});
 }
 CORRADE_IGNORE_DEPRECATED_POP
-#endif
 
 }}

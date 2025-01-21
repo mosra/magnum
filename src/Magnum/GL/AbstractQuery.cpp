@@ -123,7 +123,6 @@ bool AbstractQuery::resultAvailable() {
     return result == GL_TRUE;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     UnsignedInt result;
     #ifndef MAGNUM_TARGET_GLES2
@@ -165,7 +164,6 @@ template<> Long AbstractQuery::result<Long>() {
     #endif
     return result;
 }
-#endif
 
 void AbstractQuery::begin() {
     #ifndef MAGNUM_TARGET_GLES2

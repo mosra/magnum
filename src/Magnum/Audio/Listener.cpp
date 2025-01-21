@@ -119,9 +119,7 @@ template<UnsignedInt dimensions> bool Listener<dimensions>::isActive() const {
 #define MAGNUM_AUDIO_EXPORT_HPP
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_AUDIO_EXPORT_HPP Listener<2>;
 template class MAGNUM_AUDIO_EXPORT_HPP Listener<3>;
-#endif
 
 }}

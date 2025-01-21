@@ -455,7 +455,6 @@ void Framebuffer::parameterImplementationDSA(Framebuffer& self, const GLenum par
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
     debug << "GL::Framebuffer::Status" << Debug::nospace;
 
@@ -485,6 +484,5 @@ Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 }}

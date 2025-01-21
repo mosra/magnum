@@ -161,7 +161,6 @@ template<UnsignedInt dimensions> TextureArray<dimensions>& TextureArray<dimensio
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template class
     /* GCC needs the export macro on the class definition (and here it warns
@@ -177,7 +176,6 @@ template class
     MAGNUM_GL_EXPORT
     #endif
     TextureArray<2>;
-#endif
 
 }}
 #endif

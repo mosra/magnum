@@ -28,7 +28,6 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const ResourceState value) {
     debug << "ResourceState" << Debug::nospace;
 
@@ -53,6 +52,5 @@ Debug& operator<<(Debug& debug, const ResourceState value) {
 Debug& operator<<(Debug& debug, const ResourceKey& value) {
     return debug << "ResourceKey(0x" << Debug::nospace << static_cast<const Utility::HashDigest<sizeof(std::size_t)>&>(value) << Debug::nospace << ")";
 }
-#endif
 
 }

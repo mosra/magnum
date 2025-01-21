@@ -77,9 +77,7 @@ template<UnsignedInt dimensions> void Playable<dimensions>::cleanGain() {
 #define MAGNUM_AUDIO_EXPORT_HPP
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_AUDIO_EXPORT_HPP Playable<2>;
 template class MAGNUM_AUDIO_EXPORT_HPP Playable<3>;
-#endif
 
 }}

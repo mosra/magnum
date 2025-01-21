@@ -118,7 +118,6 @@ UnsignedInt meshIndexTypeSize(const MeshIndexType type) {
     CORRADE_ASSERT_UNREACHABLE("GL::meshIndexTypeSize(): invalid type" << type, {});
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const MeshPrimitive value) {
     debug << "GL::MeshPrimitive" << Debug::nospace;
 
@@ -163,7 +162,6 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 struct Mesh::AttributeLayout {
     /* Records attribute layout with a non-owning Buffer reference. Used as a

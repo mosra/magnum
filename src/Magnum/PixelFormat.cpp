@@ -730,17 +730,14 @@ PixelFormat pixelFormat(const PixelFormat format, const UnsignedInt channelCount
 
 namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
 constexpr const char* PixelFormatNames[] {
     #define _c(format) #format,
     #include "Magnum/Implementation/pixelFormatMapping.hpp"
     #undef _c
 };
-#endif
 
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const PixelFormat value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 
@@ -757,11 +754,9 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
 
     return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
-#endif
 
 namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
 constexpr UnsignedShort CompressedBlockData[] {
     /* Assuming w/h/d/s is never larger than 16 (and never zero), each number
        has 1 subtracted and packed into four bits, 16 bits in total. The size
@@ -776,7 +771,6 @@ constexpr UnsignedShort CompressedBlockData[] {
     #include "Magnum/Implementation/compressedPixelFormatMapping.hpp"
     #undef _c
 };
-#endif
 
 }
 
@@ -1192,17 +1186,14 @@ bool isCompressedPixelFormatSrgb(const CompressedPixelFormat format) {
 
 namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 constexpr const char* CompressedPixelFormatNames[] {
     #define _c(format, width, height, depth, size) #format,
     #include "Magnum/Implementation/compressedPixelFormatMapping.hpp"
     #undef _c
 };
-#endif
 
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 
@@ -1219,7 +1210,6 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
 
     return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
-#endif
 
 }
 

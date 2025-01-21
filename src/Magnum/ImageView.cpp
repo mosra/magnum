@@ -86,7 +86,6 @@ template<UnsignedInt dimensions, class T> std::pair<VectorTypeFor<dimensions, st
     return Implementation::compressedImageDataProperties<dimensions>(*this);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT ImageView<1, const char>;
 template class MAGNUM_EXPORT ImageView<2, const char>;
 template class MAGNUM_EXPORT ImageView<3, const char>;
@@ -100,6 +99,5 @@ template class MAGNUM_EXPORT CompressedImageView<3, const char>;
 template class MAGNUM_EXPORT CompressedImageView<1, char>;
 template class MAGNUM_EXPORT CompressedImageView<2, char>;
 template class MAGNUM_EXPORT CompressedImageView<3, char>;
-#endif
 
 }

@@ -1323,7 +1323,6 @@ Context::Configuration& Context::Configuration::addDisabledExtensions(std::initi
     return addDisabledExtensions(Containers::arrayView(extensions));
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_WEBGL
 Debug& operator<<(Debug& debug, const Context::Flag value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
@@ -1417,6 +1416,5 @@ Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
         #endif
     });
 }
-#endif
 
 }}

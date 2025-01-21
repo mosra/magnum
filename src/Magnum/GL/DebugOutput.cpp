@@ -220,7 +220,6 @@ void DebugOutput::callbackImplementationKhrES(const Callback callback) {
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
     debug << "GL::DebugOutput::Source" << Debug::nospace;
 
@@ -276,7 +275,6 @@ Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 void DebugMessage::insert(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::StringView string) {
     Context::current().state().debug.messageInsertImplementation(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
@@ -294,7 +292,6 @@ void DebugMessage::insertImplementationGremedy(GLenum, GLenum, GLuint, GLenum, c
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
     debug << "GL::DebugMessage::Source" << Debug::nospace;
 
@@ -327,7 +324,6 @@ Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 Int DebugGroup::maxStackDepth() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
@@ -370,7 +366,6 @@ void DebugGroup::pushImplementationExt(GLenum, GLuint, const GLsizei length, con
 
 void DebugGroup::popImplementationNoOp() {}
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
     debug << "GL::DebugGroup::Source" << Debug::nospace;
 
@@ -385,7 +380,6 @@ Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 }}
 #endif

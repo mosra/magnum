@@ -93,9 +93,7 @@ template<UnsignedInt dimensions> PlayableGroup<dimensions>& PlayableGroup<dimens
 #define MAGNUM_AUDIO_EXPORT_HPP
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_AUDIO_EXPORT_HPP PlayableGroup<2>;
 template class MAGNUM_AUDIO_EXPORT_HPP PlayableGroup<3>;
-#endif
 
 }}

@@ -40,7 +40,6 @@ Containers::Pair<Int, Int> version(const Version version)  {
     return {v/100, (v%100)/10};
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Version value) {
     switch(value) {
         /* LCOV_EXCL_START */
@@ -75,6 +74,5 @@ Debug& operator<<(Debug& debug, const Version value) {
 
     return debug << "Invalid(" << Debug::nospace << Debug::hex << Int(value) << Debug::nospace << ")";
 }
-#endif
 
 }}

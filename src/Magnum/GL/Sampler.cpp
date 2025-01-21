@@ -130,7 +130,6 @@ Float Sampler::maxMaxAnisotropy() {
     return value;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const SamplerFilter value) {
     debug << "GL::SamplerFilter" << Debug::nospace;
 
@@ -235,7 +234,6 @@ Debug& operator<<(Debug& debug, const SamplerDepthStencilMode value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 #endif
 
 }}

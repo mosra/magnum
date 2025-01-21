@@ -997,7 +997,6 @@ struct Checker {
     Framebuffer framebuffer;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 FloatShader::FloatShader(Containers::StringView type, Containers::StringView conversion
     /* WebGL 1 requires that at least one attribute is not instanced. The
        addVertexBufferInstancedFloat() and drawInstancedAttributeSingleInstance()
@@ -1196,7 +1195,6 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
 template<class T> T Checker::get(PixelFormat format, PixelType type) {
     return Containers::arrayCast<T>(framebuffer.read({{}, Vector2i{1}}, {format, type}).data())[0];
 }
-#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferUnsignedInt() {
@@ -2108,7 +2106,6 @@ struct MultipleShader: AbstractShaderProgram {
     explicit MultipleShader();
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 MultipleShader::MultipleShader() {
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(
@@ -2171,7 +2168,6 @@ MultipleShader::MultipleShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
-#endif
 
 void MeshGLTest::addVertexBufferMultiple() {
     const Float data[] = {
@@ -3928,7 +3924,6 @@ struct MultiDrawChecker {
     Framebuffer _framebuffer;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 MultiDrawChecker::MultiDrawChecker(): _framebuffer{{{}, Vector2i{2}}} {
     _renderbuffer.setStorage(
         #ifndef MAGNUM_TARGET_GLES2
@@ -3952,7 +3947,6 @@ Vector4 MultiDrawChecker::get() {
                                            redChannel[1][0],
                                            redChannel[1][1]});
 }
-#endif
 
 void MeshGLTest::multiDraw() {
     auto&& data = MultiDrawData[testCaseInstanceId()];

@@ -155,7 +155,6 @@ template<UnsignedInt dimensions> Buffer CompressedBufferImage<dimensions>::relea
     return Utility::move(_buffer);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_GL_EXPORT BufferImage<1>;
 template class MAGNUM_GL_EXPORT BufferImage<2>;
 template class MAGNUM_GL_EXPORT BufferImage<3>;
@@ -163,7 +162,6 @@ template class MAGNUM_GL_EXPORT BufferImage<3>;
 template class MAGNUM_GL_EXPORT CompressedBufferImage<1>;
 template class MAGNUM_GL_EXPORT CompressedBufferImage<2>;
 template class MAGNUM_GL_EXPORT CompressedBufferImage<3>;
-#endif
 #endif
 
 }}

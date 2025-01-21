@@ -965,7 +965,6 @@ void Shader::completionStatusImplementationFallback(GLuint, GLenum, GLint* value
     *value = GL_TRUE;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Shader::Type value) {
     debug << "GL::Shader::Type" << Debug::nospace;
 
@@ -986,6 +985,5 @@ Debug& operator<<(Debug& debug, const Shader::Type value) {
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
-#endif
 
 }}

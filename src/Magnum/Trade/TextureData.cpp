@@ -28,7 +28,6 @@
 
 namespace Magnum { namespace Trade {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const TextureType value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 
@@ -51,6 +50,5 @@ Debug& operator<<(Debug& debug, const TextureType value) {
 
     return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
 }
-#endif
 
 }}

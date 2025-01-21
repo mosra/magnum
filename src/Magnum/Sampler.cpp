@@ -30,7 +30,6 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const SamplerFilter value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 
@@ -88,6 +87,5 @@ Debug& operator<<(Debug& debug, const SamplerWrapping value) {
 
     return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
 }
-#endif
 
 }

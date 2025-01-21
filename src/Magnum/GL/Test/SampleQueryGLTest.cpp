@@ -165,7 +165,6 @@ struct MyShader: public AbstractShaderProgram {
     explicit MyShader();
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 MyShader::MyShader() {
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(
@@ -214,7 +213,6 @@ MyShader::MyShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
-#endif
 
 void SampleQueryGLTest::querySamplesPassed() {
     #ifdef MAGNUM_TARGET_GLES2

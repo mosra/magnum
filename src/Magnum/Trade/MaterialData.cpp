@@ -42,7 +42,6 @@ namespace {
 
 using namespace Containers::Literals;
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
 constexpr Containers::StringView LayerMap[]{
     #define _c(name) #name ## _s,
     #include "Magnum/Trade/Implementation/materialLayerProperties.hpp"
@@ -62,7 +61,6 @@ constexpr struct {
     #undef _ct
     #undef _cnt
 };
-#endif
 
 }
 
@@ -255,7 +253,6 @@ const void* MaterialAttributeData::value() const {
     return _data.data + Implementation::MaterialAttributeDataSize - materialAttributeTypeSize(_data.type);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* On Windows (MSVC, clang-cl and MinGw) it needs an explicit export otherwise
    the symbol doesn't get exported. */
 template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialAttributeData::value<Containers::StringView>() const {
@@ -274,7 +271,6 @@ template<> MAGNUM_TRADE_EXPORT Containers::ArrayView<const void> MaterialAttribu
     const std::size_t size = *(nameEnd + 1);
     return {_data.data + Implementation::MaterialAttributeDataSize - size, size};
 }
-#endif
 
 MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, Containers::Array<UnsignedInt>&& layerData, const void* const importerState) noexcept: _data{Utility::move(attributeData)}, _layerOffsets{Utility::move(layerData)}, _types{types}, _attributeDataFlags{DataFlag::Owned|DataFlag::Mutable}, _layerDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
@@ -1000,7 +996,6 @@ void* MaterialData::mutableAttribute(const MaterialLayer layer, const MaterialAt
     return mutableAttribute(string, name);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* On Windows (MSVC, clang-cl and MinGw) it needs an explicit export otherwise
    the symbol doesn't get exported. */
 template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialData::attribute<Containers::StringView>(const UnsignedInt layer, const UnsignedInt id) const {
@@ -1070,7 +1065,6 @@ template<> MAGNUM_TRADE_EXPORT Containers::ArrayView<void> MaterialData::mutable
     const std::size_t size = *(nameEnd + 1);
     return {const_cast<char*>(data._data.data) + Implementation::MaterialAttributeDataSize - size, size};
 }
-#endif
 
 const void* MaterialData::findAttribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
