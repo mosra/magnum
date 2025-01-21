@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* each entry is width, height, depth, size in bytes */
+/* each entry is width, height, depth, size in bits */
 #ifdef _c
 /* https://www.khronos.org/registry/DataFormat/specs/1.1/dataformat.1.1.html#_bc1_with_no_alpha */
 _c(Bc1RGBUnorm, 4, 4, 1, 64)
