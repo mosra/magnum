@@ -724,21 +724,23 @@ void ImageDataTest::constructInvalidCubeMap() {
 }
 
 void ImageDataTest::constructCompressedInvalidSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
     CORRADE_EXPECT_FAIL("Size checking for compressed image data is not implemented yet.");
 
     /* Too small for given format */
     {
         Containers::String out;
         Error redirectError{&out};
-        ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{2}};
-        CORRADE_COMPARE(out, "Trade::ImageData::ImageData(): data too small, got 2 but expected at least 4 bytes\n");
+        ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{15}};
+        CORRADE_COMPARE(out, "Trade::ImageData: data too small, got 15 but expected at least 16 bytes\n");
 
     /* Size should be rounded up even if the image size is not full block */
     } {
         Containers::String out;
         Error redirectError{&out};
-        ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{2}};
-        CORRADE_COMPARE(out, "Trade::ImageData::ImageData(): data too small, got 2 but expected at least 4 bytes\n");
+        ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{15}};
+        CORRADE_COMPARE(out, "Trade::ImageData: data too small, got 15 but expected at least 16 bytes\n");
     }
 }
 

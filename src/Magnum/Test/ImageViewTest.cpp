@@ -700,13 +700,12 @@ void ImageViewTest::constructInvalidPixelSize() {
 void ImageViewTest::constructInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    const char data[11]{};
+
     Containers::String out;
     Error redirectError{&out};
-
-    /* Doesn't consider alignment */
-    const char data[3*3]{};
     ImageView2D{PixelFormat::RGB8Unorm, {1, 3}, data};
-    CORRADE_COMPARE(out, "ImageView: data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "ImageView: data too small, got 11 but expected at least 12 bytes\n");
 }
 
 void ImageViewTest::constructInvalidCubeMap() {
@@ -731,23 +730,25 @@ void ImageViewTest::constructInvalidCubeMap() {
 }
 
 void ImageViewTest::constructCompressedInvalidSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
     CORRADE_EXPECT_FAIL("Size checking for compressed image data is not implemented yet.");
 
-    const char data[2]{};
+    const char data[15]{};
 
     /* Too small for given format */
     {
         Containers::String out;
         Error redirectError{&out};
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, data};
-        CORRADE_COMPARE(out, "CompressedImageView: data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "CompressedImageView: data too small, got 15 but expected at least 16 bytes\n");
 
     /* Size should be rounded up even if the image size is not full block */
     } {
         Containers::String out;
         Error redirectError{&out};
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, data};
-        CORRADE_COMPARE(out, "CompressedImageView: data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out, "CompressedImageView: data too small, got 15 but expected at least 16 bytes\n");
     }
 }
 
@@ -832,35 +833,39 @@ template<class T> void ImageViewTest::setDataCompressed() {
 void ImageViewTest::setDataInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    ImageView2D image{PixelFormat::RGB8Unorm, {1, 3}};
+    const char data[11]{};
+
     Containers::String out;
     Error redirectError{&out};
-
-    ImageView2D image{PixelFormat::RGB8Unorm, {1, 3}};
-    const char data[3*3]{};
-
-    /* Doesn't consider alignment */
     image.setData(data);
-    CORRADE_COMPARE(out, "ImageView::setData(): data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "ImageView::setData(): data too small, got 11 but expected at least 12 bytes\n");
 }
 
 void ImageViewTest::setDataCompressedInvalidSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
     CORRADE_EXPECT_FAIL("Size checking for compressed image data is not implemented yet.");
 
-    const char data[2]{};
+    const char data[11]{};
 
     /* Too small for given format */
     {
+        CompressedImageView2D image{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}};
+
         Containers::String out;
         Error redirectError{&out};
-        CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, data};
-        CORRADE_COMPARE(out, "CompressedImageView::setData(): data too small, got 2 but expected at least 4 bytes\n");
+        image.setData(data);
+        CORRADE_COMPARE(out, "CompressedImageView::setData(): data too small, got 11 but expected at least 16 bytes\n");
 
     /* Size should be rounded up even if the image size is not that big */
     } {
+        CompressedImageView2D image{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}};
+
         Containers::String out;
         Error redirectError{&out};
-        CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, data};
-        CORRADE_COMPARE(out, "CompressedImageView::setData(): data too small, got 2 but expected at least 4 bytes\n");
+        image.setData(data);
+        CORRADE_COMPARE(out, "CompressedImageView::setData(): data too small, got 11 but expected at least 16 bytes\n");
     }
 }
 

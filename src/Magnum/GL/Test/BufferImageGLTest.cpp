@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once dataProperties() std::pair is gone */
 
 #include "Magnum/PixelFormat.h"
@@ -63,6 +64,8 @@ struct BufferImageGLTest: OpenGLTester {
     void setDataGeneric();
     void setDataCompressed();
     void setDataCompressedGeneric();
+    void setDataInvalidSize();
+    void setDataCompressedInvalidSize();
 
     void release();
     void releaseCompressed();
@@ -93,6 +96,8 @@ BufferImageGLTest::BufferImageGLTest() {
               &BufferImageGLTest::setDataGeneric,
               &BufferImageGLTest::setDataCompressed,
               &BufferImageGLTest::setDataCompressedGeneric,
+              &BufferImageGLTest::setDataInvalidSize,
+              &BufferImageGLTest::setDataCompressedInvalidSize,
 
               &BufferImageGLTest::release,
               &BufferImageGLTest::releaseCompressed});
@@ -399,28 +404,38 @@ void BufferImageGLTest::constructInvalidSize() {
 
     Containers::String out;
     Error redirectError{&out};
-
-    /* Doesn't consider alignment */
-    BufferImage2D{Magnum::PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{3*3}, BufferUsage::StaticDraw};
-    CORRADE_COMPARE(out, "GL::BufferImage: data too small, got 9 but expected at least 12 bytes\n");
+    BufferImage2D{Magnum::PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{11}, BufferUsage::StaticDraw};
+    CORRADE_COMPARE(out, "GL::BufferImage: data too small, got 11 but expected at least 12 bytes\n");
 }
 
 void BufferImageGLTest::constructCompressedInvalidSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
     CORRADE_EXPECT_FAIL("Size checking for compressed image data is not implemented yet.");
 
     /* Too small for given format */
     {
         Containers::String out;
         Error redirectError{&out};
-        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
-        CORRADE_COMPARE(out, "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
+        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{15}, BufferUsage::StaticDraw};
+        /* Here it's assuming the buffer is already filled, of given size */
+        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, GL::Buffer{}, 15};
+        CORRADE_COMPARE_AS(out,
+            "GL::CompressedBufferImage: data too small, got 15 but expected at least 16 bytes\n"
+            "GL::CompressedBufferImage: data too small, got 15 but expected at least 16 bytes\n",
+            TestSuite::Compare::String);
 
     /* Size should be rounded up even if the image size is not full block */
     } {
         Containers::String out;
         Error redirectError{&out};
-        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
-        CORRADE_COMPARE(out, "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
+        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{15}, BufferUsage::StaticDraw};
+        /* Here it's assuming the buffer is already filled, of given size */
+        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, GL::Buffer{}, 15};
+        CORRADE_COMPARE_AS(out,
+            "GL::CompressedBufferImage: data too small, got 15 but expected at least 16 bytes\n"
+            "GL::CompressedBufferImage: data too small, got 15 but expected at least 16 bytes\n",
+            TestSuite::Compare::String);
     }
 }
 
@@ -661,6 +676,57 @@ void BufferImageGLTest::setDataCompressedGeneric() {
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data2),
         TestSuite::Compare::Container);
     #endif
+}
+
+void BufferImageGLTest::setDataInvalidSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    BufferImage2D image{PixelFormat::Red, PixelType::UnsignedByte, {}, {nullptr, 7}, BufferUsage::StaticDraw};
+
+    Containers::String out;
+    Error redirectError{&out};
+    image.setData(PixelFormat::RGB, PixelType::UnsignedByte, {1, 3},  Containers::Array<char>{11}, BufferUsage::StaticDraw);
+    /* Keeping current storage */
+    image.setData(PixelFormat::RGBA, PixelType::UnsignedByte, {2, 1},  nullptr, BufferUsage::StaticDraw);
+    CORRADE_COMPARE_AS(out,
+        "GL::BufferImage::setData(): data too small, got 11 but expected at least 12 bytes\n"
+        "GL::BufferImage::setData(): current storage too small, got 7 but expected at least 8 bytes\n",
+        TestSuite::Compare::String);
+}
+
+void BufferImageGLTest::setDataCompressedInvalidSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* Fits almost two blocks, but only almost */
+    CompressedBufferImage2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, "helloheyhellhe", BufferUsage::StaticDraw};
+    CORRADE_COMPARE(a.dataSize(), 15);
+
+    CORRADE_EXPECT_FAIL("Size checking for compressed image data is not implemented yet.");
+
+    /* Too small for given format */
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        a.setData(CompressedPixelFormat::RGBAS3tcDxt3, {8, 4}, "helloheyhelloheyhelloheyhellhe", BufferUsage::StaticDraw);
+        /* Keeping current storage */
+        a.setData(CompressedPixelFormat::RGBAS3tcDxt1, {8, 4}, nullptr, BufferUsage::StaticDraw);
+        CORRADE_COMPARE_AS(out,
+            "GL::CompressedBufferImage::setData(): data too small, got 31 but expected at least 32 bytes\n"
+            "GL::CompressedBufferImage::setData(): current storage too small, got 15 but expected at least 16 bytes\n",
+            TestSuite::Compare::String);
+
+    /* Size should be rounded up even if the image size is not that big */
+    } {
+        Containers::String out;
+        Error redirectError{&out};
+        a.setData(CompressedPixelFormat::RGBAS3tcDxt3, {5, 2}, "helloheyhelloheyhelloheyhellhe", BufferUsage::StaticDraw);
+        /* Keeping current storage */
+        a.setData(CompressedPixelFormat::RGBAS3tcDxt1, {5, 2}, nullptr, BufferUsage::StaticDraw);
+        CORRADE_COMPARE_AS(out,
+            "GL::CompressedBufferImage::setData(): data too small, got 31 but expected at least 32 bytes\n"
+            "GL::CompressedBufferImage::setData(): current storage too small, got 15 but expected at least 16 bytes\n",
+            TestSuite::Compare::String);
+    }
 }
 
 void BufferImageGLTest::release() {
