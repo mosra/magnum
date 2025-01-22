@@ -402,7 +402,7 @@ void BufferImageGLTest::constructInvalidSize() {
 
     /* Doesn't consider alignment */
     BufferImage2D{Magnum::PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{3*3}, BufferUsage::StaticDraw};
-    CORRADE_COMPARE(out, "GL::BufferImage::BufferImage(): data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out, "GL::BufferImage: data too small, got 9 but expected at least 12 bytes\n");
 }
 
 void BufferImageGLTest::constructCompressedInvalidSize() {
