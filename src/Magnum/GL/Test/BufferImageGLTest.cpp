@@ -41,8 +41,10 @@ struct BufferImageGLTest: OpenGLTester {
 
     void construct();
     void constructGeneric();
+    void constructPlaceholder();
     void constructCompressed();
     void constructCompressedGeneric();
+    void constructCompressedPlaceholder();
     void constructBuffer();
     void constructBufferGeneric();
     void constructBufferCompressed();
@@ -69,8 +71,10 @@ struct BufferImageGLTest: OpenGLTester {
 BufferImageGLTest::BufferImageGLTest() {
     addTests({&BufferImageGLTest::construct,
               &BufferImageGLTest::constructGeneric,
+              &BufferImageGLTest::constructPlaceholder,
               &BufferImageGLTest::constructCompressed,
               &BufferImageGLTest::constructCompressedGeneric,
+              &BufferImageGLTest::constructCompressedPlaceholder,
               &BufferImageGLTest::constructBuffer,
               &BufferImageGLTest::constructBufferGeneric,
               &BufferImageGLTest::constructBufferCompressed,
@@ -142,6 +146,36 @@ void BufferImageGLTest::constructGeneric() {
     #endif
 }
 
+void BufferImageGLTest::constructPlaceholder() {
+    {
+        BufferImage2D a{PixelFormat::Red, PixelType::UnsignedByte};
+
+        CORRADE_COMPARE(a.storage().alignment(), 4);
+        CORRADE_COMPARE(a.format(), PixelFormat::Red);
+        CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
+        CORRADE_COMPARE(a.pixelSize(), 1);
+        CORRADE_COMPARE(a.size(), Vector2i{});
+        CORRADE_COMPARE(a.dataSize(), 0);
+        CORRADE_VERIFY(a.buffer().id());
+    } {
+        BufferImage2D a{
+            PixelStorage{}
+                /* Even with skip it shouldn't assert on data size */
+                .setSkip({1, 0, 0})
+                .setAlignment(1),
+            PixelFormat::RGB, PixelType::UnsignedByte};
+
+        CORRADE_COMPARE(a.storage().skip(), (Vector3i{1, 0, 0}));
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), PixelFormat::RGB);
+        CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
+        CORRADE_COMPARE(a.pixelSize(), 3);
+        CORRADE_COMPARE(a.size(), Vector2i{});
+        CORRADE_COMPARE(a.dataSize(), 0);
+        CORRADE_VERIFY(a.buffer().id());
+    }
+}
+
 void BufferImageGLTest::constructCompressed() {
     const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0 };
     CompressedBufferImage2D a{
@@ -198,6 +232,32 @@ void BufferImageGLTest::constructCompressedGeneric() {
     CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
+}
+
+void BufferImageGLTest::constructCompressedPlaceholder() {
+    {
+        CompressedBufferImage2D a;
+
+        CORRADE_COMPARE(a.storage().rowLength(), 0);
+        CORRADE_COMPARE(a.format(), CompressedPixelFormat{});
+        CORRADE_COMPARE(a.size(), Vector2i{});
+        CORRADE_COMPARE(a.dataSize(), 0);
+        CORRADE_VERIFY(a.buffer().id());
+    } {
+        CompressedBufferImage2D a{
+            CompressedPixelStorage{}
+                /* Even with skip it shouldn't assert on data size */
+                .setSkip({1, 0, 0})
+                .setRowLength(12)
+        };
+
+        CORRADE_COMPARE(a.storage().skip(), (Vector3i{1, 0, 0}));
+        CORRADE_COMPARE(a.storage().rowLength(), 12);
+        CORRADE_COMPARE(a.format(), CompressedPixelFormat{});
+        CORRADE_COMPARE(a.size(), Vector2i{});
+        CORRADE_COMPARE(a.dataSize(), 0);
+        CORRADE_VERIFY(a.buffer().id());
+    }
 }
 
 void BufferImageGLTest::constructBuffer() {
