@@ -248,17 +248,6 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
 
 constexpr PixelStorage::PixelStorage() noexcept: _rowLength{0}, _imageHeight{0}, _skip{0}, _alignment{4} {}
 
-namespace Implementation {
-    /* Used in templated image[view] constructors */
-    template<class T> inline UnsignedInt pixelFormatSizeAdl(T format) {
-        return pixelFormatSize(format);
-    }
-
-    template<class T, class U> inline UnsignedInt pixelFormatSizeAdl(T format, U formatExtra) {
-        return pixelFormatSize(format, formatExtra);
-    }
-}
-
 }
 
 #endif
