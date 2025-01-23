@@ -138,7 +138,6 @@ template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData
     _dataSize = data.size();
 }
 
-
 template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage) {
     setData(storage, compressedPixelFormat(format), size, data, usage);
 }
