@@ -783,7 +783,7 @@ void ImageDataTest::constructMoveGeneric() {
     CORRADE_COMPARE(b.formatExtra(), 0);
     CORRADE_COMPARE(b.pixelSize(), 16);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 3*16);
     CORRADE_COMPARE(b.importerState(), &state);
 
@@ -791,7 +791,7 @@ void ImageDataTest::constructMoveGeneric() {
     ImageData2D c{PixelFormat::R8I, {2, 6}, Containers::Array<char>{data2, 24}};
     c = Utility::move(b);
 
-    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data2));
     CORRADE_COMPARE(b.size(), (Vector2i{2, 6}));
 
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -802,7 +802,7 @@ void ImageDataTest::constructMoveGeneric() {
     CORRADE_COMPARE(c.formatExtra(), 0);
     CORRADE_COMPARE(c.pixelSize(), 16);
     CORRADE_COMPARE(c.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(c.data(), data);
+    CORRADE_COMPARE(c.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(c.data().size(), 3*16);
     CORRADE_COMPARE(c.importerState(), &state);
 
@@ -828,7 +828,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
     CORRADE_COMPARE(b.formatExtra(), 1337);
     CORRADE_COMPARE(b.pixelSize(), 6);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 3*6);
     CORRADE_COMPARE(b.importerState(), &state);
 
@@ -837,7 +837,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
         1, 2, 8, {2, 6}, Containers::Array<char>{data2, 12*4*2}};
     c = Utility::move(b);
 
-    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data2));
     CORRADE_COMPARE(b.size(), Vector2i(2, 6));
 
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -848,7 +848,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
     CORRADE_COMPARE(c.formatExtra(), 1337);
     CORRADE_COMPARE(c.pixelSize(), 6);
     CORRADE_COMPARE(c.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(c.data(), data);
+    CORRADE_COMPARE(c.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(c.data().size(), 3*6);
     CORRADE_COMPARE(c.importerState(), &state);
 }
@@ -870,7 +870,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
     CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.compressedFormat(), CompressedPixelFormat::Bc3RGBAUnorm);
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
     CORRADE_COMPARE(b.importerState(), &state);
 
@@ -878,7 +878,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
     ImageData2D c{CompressedPixelFormat::Bc1RGBAUnorm, {8, 4}, Containers::Array<char>{data2, 16}};
     c = Utility::move(b);
 
-    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data2));
     CORRADE_COMPARE(b.size(), (Vector2i{8, 4}));
 
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -887,7 +887,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
     CORRADE_COMPARE(c.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(c.compressedFormat(), CompressedPixelFormat::Bc3RGBAUnorm);
     CORRADE_COMPARE(c.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(c.data(), data);
+    CORRADE_COMPARE(c.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(c.data().size(), 8);
     CORRADE_COMPARE(c.importerState(), &state);
 }
@@ -909,7 +909,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
     CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
     CORRADE_COMPARE(b.importerState(), &state);
 
@@ -917,7 +917,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
     ImageData2D c{CompressedPixelFormat::Bc2RGBAUnorm, {8, 4}, Containers::Array<char>{data2, 16}};
     c = Utility::move(b);
 
-    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data2));
     CORRADE_COMPARE(b.size(), (Vector2i{8, 4}));
 
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -926,7 +926,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
     CORRADE_COMPARE(c.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(c.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(c.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(c.data(), data);
+    CORRADE_COMPARE(c.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(c.data().size(), 8);
     CORRADE_COMPARE(c.importerState(), &state);
 }
@@ -950,7 +950,7 @@ void ImageDataTest::constructMoveAttachState() {
     CORRADE_COMPARE(b.formatExtra(), 1337);
     CORRADE_COMPARE(b.pixelSize(), 6);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 3*6);
     CORRADE_COMPARE(b.importerState(), &stateNew);
 }
@@ -973,7 +973,7 @@ void ImageDataTest::constructMoveCompressedAttachState() {
     CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
     CORRADE_COMPARE(b.importerState(), &stateNew);
 }
@@ -1104,7 +1104,7 @@ template<class T> void ImageDataTest::toViewGeneric() {
     CORRADE_COMPARE(b.formatExtra(), 0);
     CORRADE_COMPARE(b.pixelSize(), 4);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
 }
 
 template<class T> void ImageDataTest::toViewImplementationSpecific() {
@@ -1121,7 +1121,7 @@ template<class T> void ImageDataTest::toViewImplementationSpecific() {
     CORRADE_COMPARE(b.formatExtra(), 1337);
     CORRADE_COMPARE(b.pixelSize(), 6);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
 }
 
 template<class T> void ImageDataTest::toViewCompressedGeneric() {
@@ -1137,7 +1137,7 @@ template<class T> void ImageDataTest::toViewCompressedGeneric() {
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), CompressedPixelFormat::Bc1RGBUnorm);
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
 }
 
@@ -1154,7 +1154,7 @@ template<class T> void ImageDataTest::toViewCompressedImplementationSpecific() {
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
 }
 
@@ -1162,15 +1162,15 @@ void ImageDataTest::data() {
     auto data = new char[4*4];
     ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, Containers::Array<char>{data, 4*4}};
     const ImageData2D& ca = a;
-    CORRADE_COMPARE(a.data(), data);
-    CORRADE_COMPARE(ca.data(), data);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
+    CORRADE_COMPARE(ca.data(), static_cast<const void*>(data));
 }
 
 void ImageDataTest::dataRvalue() {
     auto data = new char[4*4];
     Containers::Array<char> released = ImageData2D{PixelFormat::RGBA8Unorm,
         {1, 3}, Containers::Array<char>{data, 4*4}}.data();
-    CORRADE_COMPARE(released.data(), data);
+    CORRADE_COMPARE(released.data(), static_cast<const void*>(data));
 }
 
 void ImageDataTest::mutableAccessNotAllowed() {

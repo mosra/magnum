@@ -195,7 +195,7 @@ void ImageTest::constructGeneric() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 4);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 4*4);
     } {
         auto data = new char[3*2];
@@ -208,7 +208,7 @@ void ImageTest::constructGeneric() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 2);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 3*2);
     }
 }
@@ -255,7 +255,7 @@ void ImageTest::constructImplementationSpecific() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 12);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 3*12);
     } {
         auto data = new char[3*12];
@@ -268,7 +268,7 @@ void ImageTest::constructImplementationSpecific() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 12);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 3*12);
     }
 
@@ -283,7 +283,7 @@ void ImageTest::constructImplementationSpecific() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 3*8);
     } {
         auto data = new char[3*6];
@@ -295,7 +295,7 @@ void ImageTest::constructImplementationSpecific() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 3*6);
     }
 
@@ -310,7 +310,7 @@ void ImageTest::constructImplementationSpecific() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 3*6);
     }
 }
@@ -402,7 +402,7 @@ void ImageTest::constructCompressedGeneric() {
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 8);
     } {
         auto data = new char[8];
@@ -414,7 +414,7 @@ void ImageTest::constructCompressedGeneric() {
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), Vector2i(4, 4));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 8);
     }
 }
@@ -455,7 +455,7 @@ void ImageTest::constructCompressedImplementationSpecific() {
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 8);
     } {
         auto data = new char[8];
@@ -467,7 +467,7 @@ void ImageTest::constructCompressedImplementationSpecific() {
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
         CORRADE_COMPARE(a.data().size(), 8);
     }
 
@@ -601,14 +601,14 @@ void ImageTest::constructMoveGeneric() {
     CORRADE_COMPARE(b.formatExtra(), 0);
     CORRADE_COMPARE(b.pixelSize(), 16);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 3*16);
 
     auto data2 = new char[24];
     Image2D c{PixelFormat::R8I, {2, 6}, Containers::Array<char>{data2, 24}};
     c = Utility::move(b);
 
-    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data2));
     CORRADE_COMPARE(b.size(), (Vector2i{2, 6}));
 
     CORRADE_COMPARE(c.flags(), ImageFlag2D::Array);
@@ -617,7 +617,7 @@ void ImageTest::constructMoveGeneric() {
     CORRADE_COMPARE(c.formatExtra(), 0);
     CORRADE_COMPARE(c.pixelSize(), 16);
     CORRADE_COMPARE(c.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(c.data(), data);
+    CORRADE_COMPARE(c.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(c.data().size(), 3*16);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Image2D>::value);
@@ -639,7 +639,7 @@ void ImageTest::constructMoveImplementationSpecific() {
     CORRADE_COMPARE(b.formatExtra(), 1337);
     CORRADE_COMPARE(b.pixelSize(), 6);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 3*6);
 
     auto data2 = new char[12*4*2];
@@ -647,7 +647,7 @@ void ImageTest::constructMoveImplementationSpecific() {
         1, 2, 8, {2, 6}, Containers::Array<char>{data2, 12*4*2}};
     c = Utility::move(b);
 
-    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data2));
     CORRADE_COMPARE(b.size(), Vector2i(2, 6));
 
     CORRADE_COMPARE(c.flags(), ImageFlag2D::Array);
@@ -656,7 +656,7 @@ void ImageTest::constructMoveImplementationSpecific() {
     CORRADE_COMPARE(c.formatExtra(), 1337);
     CORRADE_COMPARE(c.pixelSize(), 6);
     CORRADE_COMPARE(c.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(c.data(), data);
+    CORRADE_COMPARE(c.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(c.data().size(), 3*6);
 }
 
@@ -674,21 +674,21 @@ void ImageTest::constructMoveCompressedGeneric() {
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), CompressedPixelFormat::Bc3RGBAUnorm);
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
 
     auto data2 = new char[16];
     CompressedImage2D c{CompressedPixelFormat::Bc1RGBAUnorm, {8, 4}, Containers::Array<char>{data2, 16}};
     c = Utility::move(b);
 
-    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data2));
     CORRADE_COMPARE(b.size(), (Vector2i{8, 4}));
 
     CORRADE_COMPARE(c.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(c.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(c.format(), CompressedPixelFormat::Bc3RGBAUnorm);
     CORRADE_COMPARE(c.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(c.data(), data);
+    CORRADE_COMPARE(c.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(c.data().size(), 8);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<CompressedImage2D>::value);
@@ -709,21 +709,21 @@ void ImageTest::constructMoveCompressedImplementationSpecific() {
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
 
     auto data2 = new char[16];
     CompressedImage2D c{CompressedPixelFormat::Bc2RGBAUnorm, {8, 4}, Containers::Array<char>{data2, 16}};
     c = Utility::move(b);
 
-    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data2));
     CORRADE_COMPARE(b.size(), (Vector2i{8, 4}));
 
     CORRADE_COMPARE(c.flags(), ImageFlag2D::Array);
     CORRADE_COMPARE(c.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(c.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(c.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(c.data(), data);
+    CORRADE_COMPARE(c.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(c.data().size(), 8);
 }
 
@@ -741,7 +741,7 @@ template<class T> void ImageTest::toViewGeneric() {
     CORRADE_COMPARE(b.formatExtra(), 0);
     CORRADE_COMPARE(b.pixelSize(), 4);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
 }
 
 template<class T> void ImageTest::toViewImplementationSpecific() {
@@ -758,7 +758,7 @@ template<class T> void ImageTest::toViewImplementationSpecific() {
     CORRADE_COMPARE(b.formatExtra(), 1337);
     CORRADE_COMPARE(b.pixelSize(), 6);
     CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
 }
 
 template<class T> void ImageTest::toViewCompressedGeneric() {
@@ -774,7 +774,7 @@ template<class T> void ImageTest::toViewCompressedGeneric() {
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), CompressedPixelFormat::Bc1RGBUnorm);
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
 }
 
@@ -791,7 +791,7 @@ template<class T> void ImageTest::toViewCompressedImplementationSpecific() {
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
-    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
     CORRADE_COMPARE(b.data().size(), 8);
 }
 
@@ -799,8 +799,8 @@ void ImageTest::data() {
     auto data = new char[4*4];
     Image2D a{PixelFormat::RGBA8Unorm, {1, 3}, Containers::Array<char>{data, 4*4}};
     const Image2D& ca = a;
-    CORRADE_COMPARE(a.data(), data);
-    CORRADE_COMPARE(ca.data(), data);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
+    CORRADE_COMPARE(ca.data(), static_cast<const void*>(data));
 }
 
 void ImageTest::dataCompressed() {
@@ -808,15 +808,15 @@ void ImageTest::dataCompressed() {
     CompressedImage2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
         Containers::Array<char>{data, 8}};
     const CompressedImage2D& ca = a;
-    CORRADE_COMPARE(a.data(), data);
-    CORRADE_COMPARE(ca.data(), data);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
+    CORRADE_COMPARE(ca.data(), static_cast<const void*>(data));
 }
 
 void ImageTest::dataRvalue() {
     auto data = new char[4*4];
     Containers::Array<char> released = Image2D{PixelFormat::RGBA8Unorm, {1, 3},
         Containers::Array<char>{data, 4*4}}.data();
-    CORRADE_COMPARE(released.data(), data);
+    CORRADE_COMPARE(released.data(), static_cast<const void*>(data));
 }
 
 void ImageTest::dataRvalueCompressed() {
@@ -824,7 +824,7 @@ void ImageTest::dataRvalueCompressed() {
     Containers::Array<char> released = CompressedImage2D{
         CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
         Containers::Array<char>{data, 8}}.data();
-    CORRADE_COMPARE(released.data(), data);
+    CORRADE_COMPARE(released.data(), static_cast<const void*>(data));
 }
 
 void ImageTest::dataProperties() {
