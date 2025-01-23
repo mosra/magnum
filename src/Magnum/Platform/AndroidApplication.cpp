@@ -120,15 +120,17 @@ bool AndroidApplication::tryCreate(const Configuration& configuration, const GLC
         return false;
     }
 
+    _glConfiguration = glConfiguration;
+
     /* Choose config */
     const EGLint configAttributes[] = {
         EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-        EGL_RED_SIZE, glConfiguration.colorBufferSize().r(),
-        EGL_GREEN_SIZE, glConfiguration.colorBufferSize().g(),
-        EGL_BLUE_SIZE, glConfiguration.colorBufferSize().b(),
-        EGL_ALPHA_SIZE, glConfiguration.colorBufferSize().a(),
-        EGL_DEPTH_SIZE, glConfiguration.depthBufferSize(),
-        EGL_STENCIL_SIZE, glConfiguration.stencilBufferSize(),
+        EGL_RED_SIZE, _glConfiguration.colorBufferSize().r(),
+        EGL_GREEN_SIZE, _glConfiguration.colorBufferSize().g(),
+        EGL_BLUE_SIZE, _glConfiguration.colorBufferSize().b(),
+        EGL_ALPHA_SIZE, _glConfiguration.colorBufferSize().a(),
+        EGL_DEPTH_SIZE, _glConfiguration.depthBufferSize(),
+        EGL_STENCIL_SIZE, _glConfiguration.stencilBufferSize(),
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         EGL_NONE
     };
@@ -176,6 +178,71 @@ bool AndroidApplication::tryCreate(const Configuration& configuration, const GLC
     return _context->tryCreate(glConfiguration);
 }
 
+bool AndroidApplication::reactivateContext() {
+    /* Choose config */
+    const EGLint configAttributes[] = {
+        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+        EGL_RED_SIZE, _glConfiguration.colorBufferSize().r(),
+        EGL_GREEN_SIZE, _glConfiguration.colorBufferSize().g(),
+        EGL_BLUE_SIZE, _glConfiguration.colorBufferSize().b(),
+        EGL_ALPHA_SIZE, _glConfiguration.colorBufferSize().a(),
+        EGL_DEPTH_SIZE, _glConfiguration.depthBufferSize(),
+        EGL_STENCIL_SIZE, _glConfiguration.stencilBufferSize(),
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+        EGL_NONE
+    };
+    EGLint configCount;
+    EGLConfig config;
+    if (!eglChooseConfig(_display, configAttributes, &config, 1, &configCount)) {
+        Error() << "Platform::AndroidApplication::tryCreate(): cannot choose EGL config:"
+            << Implementation::eglErrorString(eglGetError());
+        return false;
+    }
+
+    /* Resize native window and match it to the selected format */
+    EGLint format;
+    CORRADE_INTERNAL_ASSERT_OUTPUT(eglGetConfigAttrib(_display, config, EGL_NATIVE_VISUAL_ID, &format));
+    ANativeWindow_setBuffersGeometry(_state->window,
+        configuration.size().isZero() ? 0 : configuration.size().x(),
+        configuration.size().isZero() ? 0 : configuration.size().y(), format);
+
+    /* Create surface and context */
+    if (!(_surface = eglCreateWindowSurface(_display, config, _state->window, nullptr))) {
+        Error() << "Platform::AndroidApplication::tryCreate(): cannot create EGL window surface:"
+            << Implementation::eglErrorString(eglGetError());
+        return false;
+    }
+
+    /* Make the context current */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, _surface, _surface, _glContext));
+    return true;
+}
+
+void AndroidApplication::pauseContext() {
+    /* Pause the context current */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, nullptr, nullptr, nullptr));
+
+    _application_has_valid_surface = false;
+}
+
+void AndroidApplication::pauseApplication()
+{
+    pauseContext();
+}
+
+void AndroidApplication::resumeApplication()
+{
+    reactivateContext();
+}
+
+bool AndroidApplication::hasValidSurface() {
+    return _application_has_valid_surface;
+}
+
+bool AndroidApplication::hasFocus() {
+    return _application_has_focus;
+}
+
 Vector2i AndroidApplication::framebufferSize() const {
     return {ANativeWindow_getWidth(_state->window),
             ANativeWindow_getHeight(_state->window)};
@@ -214,18 +281,30 @@ void AndroidApplication::commandEvent(android_app* state, int32_t cmd) {
             /* Create the application */
             if(!data.instance) {
                 data.instance = data.instancer(state);
-                data.instance->drawEvent();
             }
+            else {
+                data.instance->resumeApplication();
+            }
+            data.instance->drawEvent();
+            data.instance->_application_has_valid_surface = true;
             break;
 
         case APP_CMD_TERM_WINDOW:
-            /* Destroy the application */
-            data.instance.reset();
+            /* This can occur if: the application is destroyed, or just sent to the background */
+            if (data.instance) {
+                data.instance->pauseApplication();
+            }
             break;
 
         case APP_CMD_GAINED_FOCUS:
+            if (data.instance) {
+                data.instance->_application_has_focus = true;
+            }
+            break;
         case APP_CMD_LOST_FOCUS:
-            /** @todo Make use of these */
+            if (data.instance) {
+                data.instance->_application_has_focus = false;
+            }
             break;
 
         case APP_CMD_CONFIG_CHANGED: {
