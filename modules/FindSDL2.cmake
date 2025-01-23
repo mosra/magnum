@@ -78,6 +78,25 @@ if(TARGET SDL2::SDL2 OR TARGET SDL2::SDL2-static OR TARGET SDL2 OR TARGET SDL2-s
         set(_SDL2_TARGET SDL2-static)
     endif()
 
+    # Well, in 2.24, SDL's CMake config started adding SDL2::SDL2 as an alias
+    # to SDL2::SDL2-static. Which is kind of nice, however we still need to
+    # support the older versions, and we use the name of the target to know
+    # whether it's a static or a dynamic build. Additionally, the problem with
+    # the alias is that we can't get INTERFACE_INCLUDE_DIRECTORIES from it on
+    # CMake before 3.18 because there it's not an ALIAS but an INTERFACE with
+    # INTERFACE_LINK_LIBRARIES pointing to SDL2::SDL2-static. In that case, and
+    # in case it's an alias, switch to the static target instead.
+    #
+    # https://github.com/libsdl-org/SDL/commit/6d1dfc8322f752a02e876a99bb5e2e355319389d
+    if(TARGET SDL2::SDL2 AND TARGET SDL2::SDL2-static)
+        get_target_property(_SDL2_ALIASED_TARGET SDL2::SDL2 ALIASED_TARGET)
+        get_target_property(_SDL2_INTERFACE_LINK_LIBRARIES SDL2::SDL2 INTERFACE_LINK_LIBRARIES)
+        if(_SDL2_ALIASED_TARGET STREQUAL "SDL2::SDL2-static" OR _SDL2_INTERFACE_LINK_LIBRARIES STREQUAL "SDL2::SDL2-static")
+            set(_SDL2_TARGET SDL2::SDL2-static)
+            unset(_SDL2_DYNAMIC)
+        endif()
+    endif()
+
     # In case we don't have https://github.com/libsdl-org/SDL/pull/4074 yet,
     # do the alias ourselves.
     if(NOT TARGET SDL2::SDL2)
