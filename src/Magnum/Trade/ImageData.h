@@ -246,11 +246,8 @@ template<UnsignedInt dimensions> class ImageData {
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
-         * Compared to @ref ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
-         * creates an instance that doesn't own the passed data. The
-         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
-         * indicate the external data can be modified, and is expected to *not*
-         * have @ref DataFlag::Owned set.
+         * Equivalent to calling @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * with default-constructed @ref PixelStorage.
          */
         explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 
@@ -552,11 +549,8 @@ template<UnsignedInt dimensions> class ImageData {
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
-         * Compared to @ref ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
-         * creates an instance that doesn't own the passed data. The
-         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
-         * indicate the external data can be modified, and is expected to *not*
-         * have @ref DataFlag::Owned set.
+         * Equivalent to calling @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * with default-constructed @ref CompressedPixelStorage.
          */
         explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 

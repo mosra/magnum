@@ -52,11 +52,7 @@ template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelSto
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{{}, format, size, Utility::move(data), flags, importerState} {}
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{format, size, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, flags, importerState} {
-    CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
-        "Trade::ImageData: can't construct a non-owned instance with" << dataFlags, );
-    _dataFlags = dataFlags;
-}
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{{}, format, size, dataFlags, data, flags, importerState} {}
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, Utility::move(data), flags, importerState} {}
 
@@ -90,19 +86,11 @@ template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const Compress
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{{}, format, size, Utility::move(data), flags, importerState} {}
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{format, size, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, flags, importerState} {
-    CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
-        "Trade::ImageData: can't construct a non-owned instance with" << dataFlags, );
-    _dataFlags = dataFlags;
-}
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{{}, format, size, dataFlags, data, flags, importerState} {}
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, compressedPixelFormatWrap(format), size, Utility::move(data), flags, importerState} {}
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, format, size, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, flags, importerState} {
-    CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
-        "Trade::ImageData: can't construct a non-owned instance with" << dataFlags, );
-    _dataFlags = dataFlags;
-}
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, compressedPixelFormatWrap(format), size, dataFlags, data, flags, importerState} {}
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: _dataFlags{other._dataFlags}, _compressed{Utility::move(other._compressed)}, _flags{Utility::move(other._flags)}, _size{Utility::move(other._size)}, _data{Utility::move(other._data)}, _importerState{Utility::move(other._importerState)} {
     if(_compressed) {
