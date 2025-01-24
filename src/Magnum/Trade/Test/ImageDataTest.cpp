@@ -78,6 +78,8 @@ struct ImageDataTest: TestSuite::Tester {
     void moveCompressedToUncompressed();
     void moveUncompressedToCompressed();
 
+    void propertiesInvalid();
+
     template<class T> void toViewGeneric();
     template<class T> void toViewImplementationSpecific();
     template<class T> void toViewCompressedGeneric();
@@ -95,7 +97,6 @@ struct ImageDataTest: TestSuite::Tester {
     void pixels1D();
     void pixels2D();
     void pixels3D();
-    void pixelsCompressed();
 };
 
 template<class> struct MutabilityTraits;
@@ -155,6 +156,8 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::moveCompressedToUncompressed,
               &ImageDataTest::moveUncompressedToCompressed,
 
+              &ImageDataTest::propertiesInvalid,
+
               &ImageDataTest::toViewGeneric<const char>,
               &ImageDataTest::toViewGeneric<char>,
               &ImageDataTest::toViewImplementationSpecific<const char>,
@@ -175,8 +178,7 @@ ImageDataTest::ImageDataTest() {
 
               &ImageDataTest::pixels1D,
               &ImageDataTest::pixels2D,
-              &ImageDataTest::pixels3D,
-              &ImageDataTest::pixelsCompressed});
+              &ImageDataTest::pixels3D});
 }
 
 namespace GL {
@@ -1090,6 +1092,41 @@ void ImageDataTest::moveUncompressedToCompressed() {
     CORRADE_COMPARE(b.importerState(), &state);
 }
 
+void ImageDataTest::propertiesInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char data[8]{};
+    ImageData2D uncompressed{PixelFormat::RGBA8Unorm, {1, 1}, DataFlag::Mutable, data};
+    ImageData2D compressed{CompressedPixelFormat::Bc1RGBUnorm, {1, 1}, DataFlag::Mutable, data};
+
+    Containers::String out;
+    Error redirectError{&out};
+    uncompressed.compressedStorage();
+    uncompressed.compressedFormat();
+    compressed.storage();
+    compressed.format();
+    compressed.formatExtra();
+    compressed.pixelSize();
+    compressed.dataProperties();
+    compressed.pixels();
+    /* pixels<T>() calls non-templated pixels(), so assume there it will blow
+       up correctly as well (can't test because it asserts inside arrayCast()
+       due to zero stride) */
+    compressed.mutablePixels();
+    /* Same for mutablePixels<T>() */
+    CORRADE_COMPARE_AS(out,
+        "Trade::ImageData::compressedStorage(): the image is not compressed\n"
+        "Trade::ImageData::compressedFormat(): the image is not compressed\n"
+        "Trade::ImageData::storage(): the image is compressed\n"
+        "Trade::ImageData::format(): the image is compressed\n"
+        "Trade::ImageData::formatExtra(): the image is compressed\n"
+        "Trade::ImageData::pixelSize(): the image is compressed\n"
+        "Trade::ImageData::dataProperties(): the image is compressed\n"
+        "Trade::ImageData::pixels(): the image is compressed\n"
+        "Trade::ImageData::mutablePixels(): the image is compressed\n",
+        TestSuite::Compare::String);
+}
+
 template<class T> void ImageDataTest::toViewGeneric() {
     setTestCaseTemplateName(MutabilityTraits<T>::name());
 
@@ -1304,21 +1341,6 @@ void ImageDataTest::pixels3D() {
         CORRADE_COMPARE(pixels.stride(), (Containers::Stride3D{140, 20, 3}));
         CORRADE_COMPARE(pixels.data(), cimage.data() + 140 + 2*20 + 3*3);
     }
-}
-
-void ImageDataTest::pixelsCompressed() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    Trade::ImageData2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, Containers::Array<char>{8}};
-
-    Containers::String out;
-    Error redirectError{&out};
-
-    a.pixels();
-    /* a.pixels<T>() calls non-templated pixels(), so assume there it will
-       blow up correctly as well (can't test because it asserts inside
-       arrayCast() due to zero stride) */
-    CORRADE_COMPARE(out, "Trade::ImageData::pixels(): the image is compressed\n");
 }
 
 }}}}
