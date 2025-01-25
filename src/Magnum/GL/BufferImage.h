@@ -455,9 +455,9 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param usage             Image buffer usage
          *
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
-         *      for non-default compressed pixel storage
-         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
-         *      WebGL.
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          */
         explicit CompressedBufferImage(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
 
@@ -510,9 +510,9 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * If @p dataSize is @cpp 0 @ce, the buffer is unconditionally
          * reallocated on the first call to @ref setData().
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
-         *      for non-default compressed pixel storage
-         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
-         *      WebGL.
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          */
         explicit CompressedBufferImage(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
 
@@ -561,9 +561,9 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * Format is undefined, size is zero and buffer is empty, call
          * @ref setData() to fill the image with data.
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
-         *      for non-default compressed pixel storage
-         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
-         *      WebGL.
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          */
         /*implicit*/ CompressedBufferImage(CompressedPixelStorage storage);
 
@@ -617,8 +617,9 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * See @ref CompressedPixelStorage::dataProperties() for more
          * information.
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
-         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
-         *      WebGL.
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          */
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
@@ -645,8 +646,9 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * that current data size is large enough for the new parameters.
          * @see @ref Buffer::setData()
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
-         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
-         *      WebGL.
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          */
         void setData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
 
