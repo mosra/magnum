@@ -222,10 +222,15 @@ void ImageTest::constructGenericPlaceholder() {
         CORRADE_COMPARE(a.size(), Vector2i{});
         CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
-        Image2D a{PixelStorage{}.setAlignment(1),
+        Image2D a{
+            PixelStorage{}
+                /* Even with skip it shouldn't assert on data size */
+                .setSkip({1, 0, 0})
+                .setAlignment(1),
             PixelFormat::RGB16F};
 
         CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().skip(), (Vector3i{1, 0, 0}));
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), PixelFormat::RGB16F);
         CORRADE_COMPARE(a.formatExtra(), 0);
@@ -320,10 +325,15 @@ void ImageTest::constructImplementationSpecificPlaceholder() {
         CORRADE_COMPARE(a.size(), Vector2i{});
         CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
-        Image2D a{PixelStorage{}.setAlignment(1),
+        Image2D a{
+            PixelStorage{}
+                /* Even with skip it shouldn't assert on data size */
+                .setSkip({1, 0, 0})
+                .setAlignment(1),
             Vk::PixelFormat::R32G32B32F};
 
         CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().skip(), (Vector3i{1, 0, 0}));
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
         CORRADE_COMPARE(a.formatExtra(), 0);
@@ -344,10 +354,16 @@ void ImageTest::constructImplementationSpecificPlaceholder() {
         CORRADE_COMPARE(a.size(), Vector2i{});
         CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
-        Image2D a{PixelStorage{}.setAlignment(1),
+        Image2D a{
+            PixelStorage{}
+                /* Even with skip it shouldn't assert on data size */
+                .setSkip({1, 0, 0})
+                .setAlignment(1),
             GL::PixelFormat::RGB, GL::PixelType::UnsignedShort};
 
         CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().skip(), (Vector3i{1, 0, 0}));
+        CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
@@ -357,9 +373,13 @@ void ImageTest::constructImplementationSpecificPlaceholder() {
 
     /* Manual pixel size */
     {
-        Image2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6};
+        Image2D a{PixelStorage{}
+            /* Even with skip it shouldn't assert on data size */
+            .setSkip({1, 0, 0})
+            .setAlignment(1), 666, 1337, 6};
 
         CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().skip(), (Vector3i{1, 0, 0}));
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
@@ -406,9 +426,14 @@ void ImageTest::constructCompressedGenericPlaceholder() {
         CORRADE_COMPARE(a.size(), Vector2i{});
         CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
-        CompressedImage2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4})};
+        CompressedImage2D a{
+            CompressedPixelStorage{}
+                /* Even with skip it shouldn't assert on data size */
+                .setSkip({1, 0, 0})
+                .setCompressedBlockSize(Vector3i{4})};
 
         CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().skip(), (Vector3i{1, 0, 0}));
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat{});
         CORRADE_COMPARE(a.size(), Vector2i{});
