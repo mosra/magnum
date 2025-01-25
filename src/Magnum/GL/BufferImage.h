@@ -640,7 +640,9 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * Updates the image buffer with given data.
+         * Updates the image buffer with given data. Passing @cpp nullptr @ce
+         * zero-sized @p data will not reallocate current storage, but expects
+         * that current data size is large enough for the new parameters.
          * @see @ref Buffer::setData()
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
