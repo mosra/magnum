@@ -1211,15 +1211,9 @@ void CubeMapTextureArrayGLTest::compressedSubImage() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{12, 12, 6}));
-
-    {
-        CORRADE_EXPECT_FAIL_IF(data.storage != CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
-            "Non-default compressed pixel storage for cube map textures behaves weirdly on NVidia for client-memory images");
-
-        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
-            Containers::arrayView(CompressedSubDataComplete),
-            TestSuite::Compare::Container);
-    }
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(CompressedSubDataComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 
