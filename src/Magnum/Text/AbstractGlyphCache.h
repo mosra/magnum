@@ -41,6 +41,7 @@
 #include "Magnum/TextureTools/TextureTools.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <utility> /* std::pair */
 #include <Corrade/Utility/Macros.h>
 #include <Corrade/Utility/StlForwardVector.h>
 #endif
