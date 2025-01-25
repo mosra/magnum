@@ -2170,7 +2170,7 @@ void AbstractTexture::DataHelper<1>::setCompressedImage(AbstractTexture& texture
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     Context::current().state().renderer.applyPixelStorageUnpack(image.storage());
     texture.bindInternal();
-    glCompressedTexImage1D(texture._target, level, GLenum(image.format()), image.size()[0], 0, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
+    glCompressedTexImage1D(texture._target, level, GLenum(compressedPixelFormat(image.format())), image.size()[0], 0, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
 }
 
 void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, BufferImage1D& image) {
