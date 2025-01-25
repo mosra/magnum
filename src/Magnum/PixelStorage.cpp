@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Implementation/ImageProperties.h"
 
 namespace Magnum {
 
@@ -54,16 +55,8 @@ std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> PixelStorage::
 std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> CompressedPixelStorage::dataProperties(const Vector3i& size) const {
     CORRADE_ASSERT(_blockDataSize && _blockSize.product(), "CompressedPixelStorage::dataProperties(): expected non-zero storage parameters", {});
 
-    const Vector3i blockCount = (size + _blockSize - Vector3i{1})/_blockSize;
-    const Math::Vector3<std::size_t> dataSize{
-        std::size_t(_rowLength ? (_rowLength + _blockSize.x() - 1)/_blockSize.x() : blockCount.x()),
-        std::size_t(_imageHeight ? (_imageHeight + _blockSize.y() - 1)/_blockSize.y() : blockCount.y()),
-        std::size_t(blockCount.z())};
+    return Implementation::compressedDataProperties(*this, _blockSize, _blockDataSize, size);
 
-    const Vector3i skipBlockCount = (_skip + _blockSize - Vector3i{1})/_blockSize;
-    const Math::Vector3<std::size_t> offset = (Math::Vector3<std::size_t>{1, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{skipBlockCount})*_blockDataSize;
-
-    return std::make_pair(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{});
 }
 
 bool CompressedPixelStorage::operator==(const CompressedPixelStorage& other) const {

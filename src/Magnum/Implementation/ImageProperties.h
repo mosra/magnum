@@ -72,6 +72,21 @@ template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std
     return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
 }
 
+/* Used in CompressedPixelStorage::dataProperties(), where it passes the
+   storage-supplied block size */
+inline std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> compressedDataProperties(const CompressedPixelStorage& storage, const Vector3i& blockSize, const UnsignedInt blockDataSize, const Vector3i& size) {
+    const Vector3i blockCount = (size + blockSize - Vector3i{1})/blockSize;
+    const Math::Vector3<std::size_t> dataSize{
+        std::size_t(storage.rowLength() ? (storage.rowLength() + blockSize.x() - 1)/blockSize.x() : blockCount.x()),
+        std::size_t(storage.imageHeight() ? (storage.imageHeight() + blockSize.y() - 1)/blockSize.y() : blockCount.y()),
+        std::size_t(blockCount.z())};
+
+    const Vector3i skipBlockCount = (storage.skip() + blockSize - Vector3i{1})/blockSize;
+    const Math::Vector3<std::size_t> offset = (Math::Vector3<std::size_t>{1, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{skipBlockCount})*blockDataSize;
+
+    return std::make_pair(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{});
+}
+
 /* Used in Compressed*Image::dataProperties() */
 template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> compressedImageDataProperties(const T& image) {
     std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
