@@ -1744,7 +1744,7 @@ void AbstractImageConverterTest::convertImageData2DToData() {
 
     /* Should get "C" when converting compressed */
     {
-        Containers::Optional<Containers::Array<char>> out = converter.convertToData(ImageData2D{CompressedPixelFormat::Bc1RGBUnorm, {4, 4}, Containers::Array<char>{4}});
+        Containers::Optional<Containers::Array<char>> out = converter.convertToData(ImageData2D{CompressedPixelFormat::Bc1RGBUnorm, {4, 4}, Containers::Array<char>{NoInit, 8}});
         CORRADE_VERIFY(out);
         CORRADE_COMPARE_AS(*out,
             Containers::arrayView({'C'}),
@@ -1766,7 +1766,7 @@ void AbstractImageConverterTest::convertImageData3DToData() {
 
     /* Should get "C" when converting compressed */
     {
-        Containers::Optional<Containers::Array<char>> out = converter.convertToData(ImageData3D{CompressedPixelFormat::Bc1RGBUnorm, {4, 4, 1}, Containers::Array<char>{4}});
+        Containers::Optional<Containers::Array<char>> out = converter.convertToData(ImageData3D{CompressedPixelFormat::Bc1RGBUnorm, {4, 4, 1}, Containers::Array<char>{NoInit, 8}});
         CORRADE_VERIFY(out);
         CORRADE_COMPARE_AS(*out,
             Containers::arrayView({'C'}),
@@ -3048,7 +3048,7 @@ void AbstractImageConverterTest::convertCompressed2DToFile() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{NoInit, 128}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d", TestSuite::Compare::FileToString);
 }
@@ -3067,7 +3067,7 @@ void AbstractImageConverterTest::convertCompressed3DToFile() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{NoInit, 256}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
@@ -3164,7 +3164,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughData() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* doConvertToFile() should call doConvertToData() */
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{NoInit, 128}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d", TestSuite::Compare::FileToString);
 }
@@ -3184,7 +3184,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughData() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* doConvertToFile() should call doConvertToData() */
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x02}, Containers::Array<char>{NoInit, 256}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d\x02", TestSuite::Compare::FileToString);
 }
@@ -3408,7 +3408,7 @@ void AbstractImageConverterTest::convertImageData1DToFile() {
         "B", TestSuite::Compare::FileToString);
 
     /* Should get "C" when converting compressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData1D{CompressedPixelFormat::Bc2RGBAUnorm, 4, Containers::Array<char>{8}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData1D{CompressedPixelFormat::Bc2RGBAUnorm, 4, Containers::Array<char>{NoInit, 16}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "C", TestSuite::Compare::FileToString);
 }
@@ -3422,7 +3422,7 @@ void AbstractImageConverterTest::convertImageData2DToFile() {
         "B", TestSuite::Compare::FileToString);
 
     /* Should get "C" when converting compressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{8}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{NoInit, 16}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "C", TestSuite::Compare::FileToString);
 }
@@ -3436,7 +3436,7 @@ void AbstractImageConverterTest::convertImageData3DToFile() {
         "B", TestSuite::Compare::FileToString);
 
     /* Should get "C" when converting compressed */
-    CORRADE_VERIFY(converter.convertToFile(ImageData3D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4, 1}, Containers::Array<char>{4}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(converter.convertToFile(ImageData3D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4, 1}, Containers::Array<char>{NoInit, 16}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "C", TestSuite::Compare::FileToString);
 }
@@ -3957,7 +3957,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFile() {
 
     const char data[8]{};
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{NoInit, 128}},
         CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
@@ -3983,7 +3983,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFile() {
 
     const char data[8]{};
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{64}},
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{NoInit, 1792}},
         CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
@@ -4041,7 +4041,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileFailed() {
         }
     } converter;
 
-    const char imageData[4]{};
+    const char imageData[8]{};
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
@@ -4099,7 +4099,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughData() {
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}},
+        CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{NoInit, 128}},
         CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
@@ -4127,8 +4127,8 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughData() {
 
     /* doConvertToFile() should call doConvertToData() */
     CORRADE_VERIFY(converter.convertToFile({
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{64}},
-        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 4}, data}
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{NoInit, 1792}},
+        CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}
     }, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d\x0e\x02", TestSuite::Compare::FileToString);
@@ -4213,7 +4213,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataFaile
        should be printed (the base implementation assumes the plugin does it) */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 4}, data}}, filename));
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
     CORRADE_COMPARE(out, "");
 }
@@ -4376,7 +4376,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileNotImplemented()
     const char data[8]{};
     Containers::String out;
     Error redirectError{&out};
-    converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 4}, data}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out, "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 3D image conversion advertised but not implemented\n");
 }
 
@@ -4485,7 +4485,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughLevels() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{NoInit, 128}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d\x01", TestSuite::Compare::FileToString);
 }
@@ -4507,7 +4507,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughLevels() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{64}}, filename));
+    CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{NoInit, 1792}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d\x0e\x01", TestSuite::Compare::FileToString);
 }

@@ -4557,7 +4557,7 @@ void AbstractSceneConverterTest::addImage1DFailed() {
         }
     } converter;
 
-    const char imageData[4]{};
+    const char imageData[16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
@@ -4745,7 +4745,7 @@ void AbstractSceneConverterTest::addImage2DFailed() {
         }
     } converter;
 
-    const char imageData[4]{};
+    const char imageData[16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
@@ -4955,7 +4955,7 @@ void AbstractSceneConverterTest::addImage3DFailed() {
         }
     } converter;
 
-    const char imageData[4]{};
+    const char imageData[16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
@@ -5118,7 +5118,7 @@ void AbstractSceneConverterTest::addImageLevels1DCompressedView() {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(imageLevels[1].isCompressed());
-            CORRADE_COMPARE(imageLevels[1].compressedStorage().compressedBlockSize(), Vector3i{3});
+            CORRADE_COMPARE(imageLevels[1].compressedStorage().rowLength(), 6);
             CORRADE_COMPARE(imageLevels[1].compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(imageLevels[1].size(), 3);
             CORRADE_COMPARE(imageLevels[1].flags(), ImageFlags1D{});
@@ -5131,13 +5131,13 @@ void AbstractSceneConverterTest::addImageLevels1DCompressedView() {
         bool addCalled = false;
     } converter;
 
-    const char imageData[6]{};
+    const char imageData[2*16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
     CORRADE_COMPARE(converter.add({
         CompressedImageView1D{CompressedPixelFormat::Astc3x3x3RGBASrgb, 1, imageData},
-        CompressedImageView1D{CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}), CompressedPixelFormat::Astc3x3x3RGBASrgb, 3, imageData}
+        CompressedImageView1D{CompressedPixelStorage{}.setRowLength(6), CompressedPixelFormat::Astc3x3x3RGBASrgb, 3, imageData}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image1DCount(), 1);
@@ -5159,7 +5159,7 @@ void AbstractSceneConverterTest::addImageLevels1DFailed() {
         }
     } converter;
 
-    const char imageData[4]{};
+    const char imageData[16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
@@ -5336,7 +5336,7 @@ void AbstractSceneConverterTest::addImageLevels2DCompressedView() {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(imageLevels[1].isCompressed());
-            CORRADE_COMPARE(imageLevels[1].compressedStorage().compressedBlockSize(), Vector3i{3});
+            CORRADE_COMPARE(imageLevels[1].compressedStorage().rowLength(), 6);
             CORRADE_COMPARE(imageLevels[1].compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(imageLevels[1].size(), (Vector2i{3, 1}));
             CORRADE_COMPARE(imageLevels[1].flags(), ImageFlag2D::Array);
@@ -5349,13 +5349,13 @@ void AbstractSceneConverterTest::addImageLevels2DCompressedView() {
         bool addCalled = false;
     } converter;
 
-    const char imageData[6]{};
+    const char imageData[2*16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add({
         CompressedImageView2D{CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 1}, imageData, ImageFlag2D::Array},
-        CompressedImageView2D{CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}), CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 1}, imageData, ImageFlag2D::Array}
+        CompressedImageView2D{CompressedPixelStorage{}.setRowLength(6), CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 1}, imageData, ImageFlag2D::Array}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
@@ -5377,7 +5377,7 @@ void AbstractSceneConverterTest::addImageLevels2DFailed() {
         }
     } converter;
 
-    const char imageData[4]{};
+    const char imageData[16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
@@ -5743,7 +5743,7 @@ void AbstractSceneConverterTest::addImageLevels3DCompressedView() {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(imageLevels[1].isCompressed());
-            CORRADE_COMPARE(imageLevels[1].compressedStorage().compressedBlockSize(), Vector3i{3});
+            CORRADE_COMPARE(imageLevels[1].compressedStorage().rowLength(), 6);
             CORRADE_COMPARE(imageLevels[1].compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(imageLevels[1].size(), (Vector3i{3, 1, 1}));
             CORRADE_COMPARE(imageLevels[1].flags(), ImageFlag3D::Array);
@@ -5756,13 +5756,13 @@ void AbstractSceneConverterTest::addImageLevels3DCompressedView() {
         bool addCalled = false;
     } converter;
 
-    const char imageData[6]{};
+    const char imageData[2*16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add({
         CompressedImageView3D{CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 1, 1}, imageData, ImageFlag3D::Array},
-        CompressedImageView3D{CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}), CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 1, 1}, imageData, ImageFlag3D::Array}
+        CompressedImageView3D{CompressedPixelStorage{}.setRowLength(6), CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 1, 1}, imageData, ImageFlag3D::Array}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);
@@ -5784,7 +5784,7 @@ void AbstractSceneConverterTest::addImageLevels3DFailed() {
         }
     } converter;
 
-    const char imageData[4]{};
+    const char imageData[16]{};
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
