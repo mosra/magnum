@@ -230,6 +230,20 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
     CORRADE_COMPARE(inputImage->size(), (Vector2i{256, 256}));
 
     DistanceFieldGlyphCacheGL cache{data.sourceSize, data.size, 32};
+
+    /* Clear the target texture to avoid random garbage getting in when the
+       data.flushRange isn't covering the whole output */
+    Containers::Array<char> zeros{ValueInit, data.size.product()*pixelFormatSize(cache.processedFormat())};
+    cache.texture().setSubImage(0, {},
+        /* On ES2, R8Unorm maps to Luminance, but here it's actually Red if
+           EXT_texture_rg is supported */
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        cache.processedFormat() == PixelFormat::R8Unorm ?
+            ImageView2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte, data.size, zeros} :
+        #endif
+            ImageView2D{cache.processedFormat(), data.size, zeros}
+    );
+
     Containers::StridedArrayView3D<const char> src = inputImage->pixels();
     /* Test also uploading under an offset. The cache might be three-component
        in some cases, slice the destination view to just the first component */
