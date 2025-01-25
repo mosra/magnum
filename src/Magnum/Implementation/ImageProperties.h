@@ -117,12 +117,6 @@ template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor
     return r.first + r.second;
 }
 
-/* Use in compressed image upload functions */
-template<class T> std::size_t occupiedCompressedImageDataSize(const T& image, std::size_t dataSize) {
-    return image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize()
-        ? compressedImageDataOffsetSizeFor(image, image.size()).second : dataSize;
-}
-
 template<std::size_t dimensions, class T> std::ptrdiff_t pixelStorageSkipOffsetFor(const T& image, const Math::Vector<dimensions, Int>& size) {
     return image.storage().dataProperties(image.pixelSize(), Vector3i::pad(size, 1)).first.sum();
 }
