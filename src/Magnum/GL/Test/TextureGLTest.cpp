@@ -59,6 +59,12 @@ struct TextureGLTest: OpenGLTester {
     explicit TextureGLTest();
 
     #ifndef MAGNUM_TARGET_GLES
+    void compressedBlockSize1D();
+    void compressedBlockSize2D();
+    void compressedBlockSize3D();
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     void construct1D();
     #endif
     void construct2D();
@@ -458,6 +464,12 @@ const struct {
 TextureGLTest::TextureGLTest() {
     addTests({
         #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::compressedBlockSize1D,
+        &TextureGLTest::compressedBlockSize2D,
+        &TextureGLTest::compressedBlockSize3D,
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::construct1D,
         #endif
         &TextureGLTest::construct2D,
@@ -703,6 +715,56 @@ TextureGLTest::TextureGLTest() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 using namespace Containers::Literals;
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::compressedBlockSize1D() {
+    /* For uncompressed formats returns zero */
+    CORRADE_COMPARE(Texture1D::compressedBlockSize(TextureFormat::RGBA8), 0);
+    CORRADE_COMPARE(Texture1D::compressedBlockDataSize(TextureFormat::RGBA8), 0);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_SKIP("No 1D texture compression format exists.");
+}
+
+void TextureGLTest::compressedBlockSize2D() {
+    /* For uncompressed formats returns zero */
+    CORRADE_COMPARE(Texture2D::compressedBlockSize(TextureFormat::RGBA8), Vector2i{});
+    CORRADE_COMPARE(Texture2D::compressedBlockDataSize(TextureFormat::RGBA8), 0);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
+
+    {
+        /* Same happens with e.g. ASTC 10x10, where it reports 1 (?!) */
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa,
+            "Mesa misreports compressed block size for certain formats.");
+        CORRADE_COMPARE(Texture2D::compressedBlockSize(TextureFormat::CompressedRGBAS3tcDxt1), Vector2i{4});
+    }
+    CORRADE_COMPARE(Texture2D::compressedBlockSize(TextureFormat::CompressedRGBAS3tcDxt3), Vector2i{4});
+    CORRADE_COMPARE(Texture2D::compressedBlockDataSize(TextureFormat::CompressedRGBAS3tcDxt1), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void TextureGLTest::compressedBlockSize3D() {
+    /* For uncompressed formats returns zero */
+    CORRADE_COMPARE(Texture3D::compressedBlockSize(TextureFormat::RGBA8), Vector3i{});
+    CORRADE_COMPARE(Texture3D::compressedBlockDataSize(TextureFormat::RGBA8), 0);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_compression_bptc>())
+        CORRADE_SKIP(Extensions::ARB::texture_compression_bptc::string() << "is not supported.");
+
+    CORRADE_COMPARE(Texture3D::compressedBlockSize(TextureFormat::CompressedRGBABptcUnorm), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE(Texture3D::compressedBlockDataSize(TextureFormat::CompressedRGBABptcUnorm), 16);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

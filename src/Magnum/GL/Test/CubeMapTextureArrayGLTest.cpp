@@ -46,6 +46,10 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct CubeMapTextureArrayGLTest: OpenGLTester {
     explicit CubeMapTextureArrayGLTest();
 
+    #ifndef MAGNUM_TARGET_GLES
+    void compressedBlockSize();
+    #endif
+
     void construct();
     void constructMove();
     void wrap();
@@ -273,29 +277,34 @@ const struct {
 };
 
 CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
-    addTests({&CubeMapTextureArrayGLTest::construct,
-              &CubeMapTextureArrayGLTest::constructMove,
-              &CubeMapTextureArrayGLTest::wrap,
+    addTests({
+        #ifndef MAGNUM_TARGET_GLES
+        &CubeMapTextureArrayGLTest::compressedBlockSize,
+        #endif
 
-              &CubeMapTextureArrayGLTest::label,
+        &CubeMapTextureArrayGLTest::construct,
+        &CubeMapTextureArrayGLTest::constructMove,
+        &CubeMapTextureArrayGLTest::wrap,
 
-              &CubeMapTextureArrayGLTest::bind,
-              &CubeMapTextureArrayGLTest::bindImage,
+        &CubeMapTextureArrayGLTest::label,
 
-              &CubeMapTextureArrayGLTest::sampling<GenericSampler>,
-              &CubeMapTextureArrayGLTest::sampling<GLSampler>,
-              &CubeMapTextureArrayGLTest::samplingSrgbDecode,
-              &CubeMapTextureArrayGLTest::samplingBorderInteger,
-              &CubeMapTextureArrayGLTest::samplingSwizzle,
-              &CubeMapTextureArrayGLTest::samplingDepthStencilMode,
-              #ifdef MAGNUM_TARGET_GLES
-              &CubeMapTextureArrayGLTest::samplingBorder,
-              #endif
+        &CubeMapTextureArrayGLTest::bind,
+        &CubeMapTextureArrayGLTest::bindImage,
 
-              &CubeMapTextureArrayGLTest::storage,
+        &CubeMapTextureArrayGLTest::sampling<GenericSampler>,
+        &CubeMapTextureArrayGLTest::sampling<GLSampler>,
+        &CubeMapTextureArrayGLTest::samplingSrgbDecode,
+        &CubeMapTextureArrayGLTest::samplingBorderInteger,
+        &CubeMapTextureArrayGLTest::samplingSwizzle,
+        &CubeMapTextureArrayGLTest::samplingDepthStencilMode,
+        #ifdef MAGNUM_TARGET_GLES
+        &CubeMapTextureArrayGLTest::samplingBorder,
+        #endif
 
-              &CubeMapTextureArrayGLTest::view,
-              &CubeMapTextureArrayGLTest::viewOnNonArray});
+        &CubeMapTextureArrayGLTest::storage,
+
+        &CubeMapTextureArrayGLTest::view,
+        &CubeMapTextureArrayGLTest::viewOnNonArray});
 
     addInstancedTests({
         &CubeMapTextureArrayGLTest::image,
@@ -340,6 +349,30 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
 }
 
 using namespace Containers::Literals;
+
+#ifndef MAGNUM_TARGET_GLES
+void CubeMapTextureArrayGLTest::compressedBlockSize() {
+    /* For uncompressed formats returns zero */
+    CORRADE_COMPARE(CubeMapTextureArray::compressedBlockSize(TextureFormat::RGBA8), Vector2i{});
+    CORRADE_COMPARE(CubeMapTextureArray::compressedBlockDataSize(TextureFormat::RGBA8), 0);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
+
+    {
+        /* Same happens with e.g. ASTC 10x10, where it reports 1 (?!) */
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa,
+            "Mesa misreports compressed block size for certain formats.");
+        CORRADE_COMPARE(CubeMapTextureArray::compressedBlockSize(TextureFormat::CompressedRGBAS3tcDxt1), Vector2i{4});
+    }
+    CORRADE_COMPARE(CubeMapTextureArray::compressedBlockSize(TextureFormat::CompressedRGBAS3tcDxt3), Vector2i{4});
+    CORRADE_COMPARE(CubeMapTextureArray::compressedBlockDataSize(TextureFormat::CompressedRGBAS3tcDxt1), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 void CubeMapTextureArrayGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES

@@ -46,6 +46,8 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct RectangleTextureGLTest: OpenGLTester {
     explicit RectangleTextureGLTest();
 
+    void compressedBlockSize();
+
     void construct();
     void constructMove();
     void wrap();
@@ -121,7 +123,9 @@ const struct {
 };
 
 RectangleTextureGLTest::RectangleTextureGLTest() {
-    addTests({&RectangleTextureGLTest::construct,
+    addTests({&RectangleTextureGLTest::compressedBlockSize,
+
+              &RectangleTextureGLTest::construct,
               &RectangleTextureGLTest::constructMove,
               &RectangleTextureGLTest::wrap,
 
@@ -166,6 +170,16 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
 }
 
 using namespace Containers::Literals;
+
+void RectangleTextureGLTest::compressedBlockSize() {
+    /* For uncompressed formats returns zero */
+    CORRADE_COMPARE(RectangleTexture::compressedBlockSize(TextureFormat::RGBA8), Vector2i{});
+    CORRADE_COMPARE(RectangleTexture::compressedBlockDataSize(TextureFormat::RGBA8), 0);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_SKIP("No rectangle texture compression format exists.");
+}
 
 void RectangleTextureGLTest::construct() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())

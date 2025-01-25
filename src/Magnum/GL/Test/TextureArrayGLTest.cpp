@@ -55,6 +55,11 @@ struct TextureArrayGLTest: OpenGLTester {
     explicit TextureArrayGLTest();
 
     #ifndef MAGNUM_TARGET_GLES
+    void compressedBlockSize1D();
+    void compressedBlockSize2D();
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     void construct1D();
     #endif
     void construct2D();
@@ -295,6 +300,11 @@ const struct {
 TextureArrayGLTest::TextureArrayGLTest() {
     addTests({
         #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayGLTest::compressedBlockSize1D,
+        &TextureArrayGLTest::compressedBlockSize2D,
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::construct1D,
         #endif
         &TextureArrayGLTest::construct2D,
@@ -449,6 +459,40 @@ TextureArrayGLTest::TextureArrayGLTest() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 using namespace Containers::Literals;
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureArrayGLTest::compressedBlockSize1D() {
+    /* For uncompressed formats returns zero */
+    CORRADE_COMPARE(Texture1DArray::compressedBlockSize(TextureFormat::RGBA8), 0);
+    CORRADE_COMPARE(Texture1DArray::compressedBlockDataSize(TextureFormat::RGBA8), 0);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_SKIP("No 1D texture compression format exists.");
+}
+
+void TextureArrayGLTest::compressedBlockSize2D() {
+    /* For uncompressed formats returns zero */
+    CORRADE_COMPARE(Texture2DArray::compressedBlockSize(TextureFormat::RGBA8), Vector2i{});
+    CORRADE_COMPARE(Texture2DArray::compressedBlockDataSize(TextureFormat::RGBA8), 0);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
+
+    {
+        /* Same happens with e.g. ASTC 10x10, where it reports 1 (?!) */
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa,
+            "Mesa misreports compressed block size for certain formats.");
+        CORRADE_COMPARE(Texture2DArray::compressedBlockSize(TextureFormat::CompressedRGBAS3tcDxt1), Vector2i{4});
+    }
+    CORRADE_COMPARE(Texture2DArray::compressedBlockSize(TextureFormat::CompressedRGBAS3tcDxt3), Vector2i{4});
+    CORRADE_COMPARE(Texture2DArray::compressedBlockDataSize(TextureFormat::CompressedRGBAS3tcDxt1), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

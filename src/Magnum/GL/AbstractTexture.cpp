@@ -2099,7 +2099,10 @@ Vector2i AbstractTexture::DataHelper<2>::compressedBlockSize(const GLenum target
 
 Vector3i AbstractTexture::DataHelper<3>::compressedBlockSize(const GLenum target, const TextureFormat format) {
     /** @todo use real value when OpenGL has proper queries for 3D compression formats */
-    return Vector3i{DataHelper<2>::compressedBlockSize(target, format), 1};
+    const Vector2i value = DataHelper<2>::compressedBlockSize(target, format);
+    /* If the 2D size is zero (e.g. when the format is uncompressed), return a
+       zero in 3D as well */
+    return value == Vector2i{} ? Vector3i{} : Vector3i{value, 1};
 }
 #endif
 
