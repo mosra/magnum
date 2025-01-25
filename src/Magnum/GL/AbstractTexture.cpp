@@ -1912,6 +1912,8 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
     CORRADE_ASSERT(image.size() == range.size(),
         "GL::AbstractTexture::subImage(): expected image view size" << range.size() << "but got" << image.size(), );
 
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
@@ -1928,6 +1930,8 @@ template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2D
 template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, const BasicMutableImageView<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, const BufferUsage usage) {
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
@@ -1963,6 +1967,8 @@ template std::size_t MAGNUM_GL_EXPORT AbstractTexture::compressedSubImageSize<2>
 template std::size_t MAGNUM_GL_EXPORT AbstractTexture::compressedSubImageSize<3>(TextureFormat format, const Math::Vector<3, Int>& size);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image, const ImageFlags<dimensions> flags) {
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
@@ -2002,6 +2008,8 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
     CORRADE_ASSERT(image.size() == range.size(),
         "GL::AbstractTexture::compressedSubImage(): expected image view size" << range.size() << "but got" << image.size(), );
 
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
@@ -2039,6 +2047,8 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, con
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, const BasicMutableCompressedImageView<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, const BufferUsage usage) {
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();

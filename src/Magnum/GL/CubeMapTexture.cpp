@@ -98,8 +98,6 @@ Vector2i CubeMapTexture::imageSize(const Int level) {
 
 #ifndef MAGNUM_TARGET_GLES
 void CubeMapTexture::image(const Int level, Image3D& image) {
-    createIfNotAlready();
-
     const Vector3i size{imageSize(level), 6};
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
 
@@ -132,8 +130,6 @@ void CubeMapTexture::image(const Int level, const MutableImageView3D& image) {
 }
 
 void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUsage usage) {
-    createIfNotAlready();
-
     const Vector3i size{imageSize(level), 6};
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
 
@@ -154,8 +150,6 @@ BufferImage3D CubeMapTexture::image(const Int level, BufferImage3D&& image, cons
 }
 
 void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) {
-    createIfNotAlready();
-
     const Vector3i size{imageSize(level), 6};
 
     /* If the user-provided pixel storage doesn't tell us all properties about
@@ -228,8 +222,6 @@ void CubeMapTexture::compressedImage(const Int level, const MutableCompressedIma
 }
 
 void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& image, const BufferUsage usage) {
-    createIfNotAlready();
-
     const Vector3i size{imageSize(level), 6};
 
     /* If the user-provided pixel storage doesn't tell us all properties about
@@ -428,6 +420,8 @@ BufferImage3D CubeMapTexture::subImage(const Int level, const Range3Di& range, B
 }
 
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D& image) {
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     /* Internal texture format. Zero-init to avoid an assert about value
@@ -464,14 +458,16 @@ CompressedImage3D CubeMapTexture::compressedSubImage(const Int level, const Rang
 }
 
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, const MutableCompressedImageView3D& image) {
-    #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(image.data().data() != nullptr || !range.size().product(),
         "GL::CubeMapTexture::compressedSubImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == range.size(),
         "GL::CubeMapTexture::compressedSubImage(): expected image view size" << range.size() << "but got" << image.size(), );
 
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
+    #ifndef CORRADE_NO_ASSERT
     /* Internal texture format. Zero-init to avoid an assert about value
        already wrapped in compressedPixelFormatWrap() later if the drivers are
        extra shitty (Intel Windows drivers, I'm talking about you). */
@@ -499,6 +495,8 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
 }
 
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D& image, const BufferUsage usage) {
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     /* Internal texture format. Zero-init to avoid an assert about value
@@ -533,8 +531,6 @@ CompressedBufferImage3D CubeMapTexture::compressedSubImage(const Int level, cons
 #endif
 
 CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& offset, const ImageView3D& image) {
-    createIfNotAlready();
-
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
@@ -549,8 +545,6 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& off
 
 #ifndef MAGNUM_TARGET_GLES2
 CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& offset, BufferImage3D& image) {
-    createIfNotAlready();
-
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     Context::current().state().renderer.applyPixelStorageUnpack(image.storage());
     Context::current().state().texture.cubeSubImage3DImplementation(*this, level, offset, image.size(), image.format(), image.type(), nullptr, image.storage());
@@ -560,6 +554,8 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& off
 
 #ifndef MAGNUM_TARGET_GLES
 CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vector3i& offset, const CompressedImageView3D& image) {
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
@@ -569,6 +565,8 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vec
 }
 
 CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vector3i& offset, CompressedBufferImage3D& image) {
+    /* Explicitly create if not already because the texture might have been
+       created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
