@@ -130,7 +130,6 @@ struct CubeMapTextureGLTest: OpenGLTester {
     void compressedImageQueryView();
     void compressedImageQueryViewNullptr();
     void compressedImageQueryViewBadSize();
-    void compressedImageQueryViewBadDataSize();
     void compressedImageQueryViewBadFormat();
     #endif
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -145,7 +144,6 @@ struct CubeMapTextureGLTest: OpenGLTester {
     void compressedSubImageQueryView();
     void compressedSubImageQueryViewNullptr();
     void compressedSubImageQueryViewBadSize();
-    void compressedSubImageQueryViewBadDataSize();
     void compressedSubImageQueryViewBadFormat();
     void compressedSubImageQueryBuffer();
     #endif
@@ -168,7 +166,6 @@ struct CubeMapTextureGLTest: OpenGLTester {
     void compressedImage3DQueryView();
     void compressedImage3DQueryViewNullptr();
     void compressedImage3DQueryViewBadSize();
-    void compressedImage3DQueryViewBadDataSize();
     void compressedImage3DQueryViewBadFormat();
     #endif
 
@@ -432,7 +429,6 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
     #ifndef MAGNUM_TARGET_GLES
     addTests({&CubeMapTextureGLTest::compressedImageQueryViewNullptr,
               &CubeMapTextureGLTest::compressedImageQueryViewBadSize,
-              &CubeMapTextureGLTest::compressedImageQueryViewBadDataSize,
               &CubeMapTextureGLTest::compressedImageQueryViewBadFormat});
 
     addInstancedTests({
@@ -443,7 +439,6 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
 
     addTests({&CubeMapTextureGLTest::compressedImage3DQueryViewNullptr,
               &CubeMapTextureGLTest::compressedImage3DQueryViewBadSize,
-              &CubeMapTextureGLTest::compressedImage3DQueryViewBadDataSize,
               &CubeMapTextureGLTest::compressedImage3DQueryViewBadFormat});
     #endif
 
@@ -462,7 +457,6 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
     #ifndef MAGNUM_TARGET_GLES
     addTests({&CubeMapTextureGLTest::compressedSubImageQueryViewNullptr,
               &CubeMapTextureGLTest::compressedSubImageQueryViewBadSize,
-              &CubeMapTextureGLTest::compressedSubImageQueryViewBadDataSize,
               &CubeMapTextureGLTest::compressedSubImageQueryViewBadFormat});
     #endif
 
@@ -1462,26 +1456,6 @@ void CubeMapTextureGLTest::compressedImageQueryViewBadSize() {
     CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view size Vector(4, 4) but got Vector(4, 8)\n");
 }
 
-void CubeMapTextureGLTest::compressedImageQueryViewBadDataSize() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-
-    CubeMapTexture texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4});
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    char data[16 - 1];
-    MutableCompressedImageView2D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, data};
-
-    Containers::String out;
-    Error redirectError{&out};
-    texture.compressedImage(CubeMapCoordinate::PositiveX, 0, image);
-    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view data size 16 bytes but got 15\n");
-}
-
 void CubeMapTextureGLTest::compressedImageQueryViewBadFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -1811,26 +1785,6 @@ void CubeMapTextureGLTest::compressedSubImageQueryViewBadSize() {
     Error redirectError{&out};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image);
     CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedSubImage(): expected image view size Vector(4, 4, 1) but got Vector(4, 4, 2)\n");
-}
-
-void CubeMapTextureGLTest::compressedSubImageQueryViewBadDataSize() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-
-    CubeMapTexture texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{12});
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    char data[16 - 1];
-    MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4, 4, 1}, data};
-
-    Containers::String out;
-    Error redirectError{&out};
-    texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image);
-    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedSubImage(): expected image view data size 16 bytes but got 15\n");
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryViewBadFormat() {
@@ -2219,26 +2173,6 @@ void CubeMapTextureGLTest::compressedImage3DQueryViewBadSize() {
     Error redirectError{&out};
     texture.compressedImage(0, image);
     CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view size Vector(4, 4, 6) but got Vector(4, 8, 6)\n");
-}
-
-void CubeMapTextureGLTest::compressedImage3DQueryViewBadDataSize() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-
-    CubeMapTexture texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4});
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    char data[16*6 - 1];
-    MutableCompressedImageView3D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4, 4, 6}, data};
-
-    Containers::String out;
-    Error redirectError{&out};
-    texture.compressedImage(0, image);
-    CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view data size 96 bytes but got 95\n");
 }
 
 void CubeMapTextureGLTest::compressedImage3DQueryViewBadFormat() {

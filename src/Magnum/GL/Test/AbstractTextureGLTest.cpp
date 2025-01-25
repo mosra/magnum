@@ -55,11 +55,9 @@ struct AbstractTextureGLTest: OpenGLTester {
 
     void compressedImageQueryViewNullptr();
     void compressedImageQueryViewBadSize();
-    void compressedImageQueryViewBadDataSize();
     void compressedImageQueryViewBadFormat();
     void compressedSubImageQueryViewNullptr();
     void compressedSubImageQueryViewBadSize();
-    void compressedSubImageQueryViewBadDataSize();
     void compressedSubImageQueryViewBadFormat();
     #endif
 };
@@ -76,11 +74,9 @@ AbstractTextureGLTest::AbstractTextureGLTest() {
 
               &AbstractTextureGLTest::compressedImageQueryViewNullptr,
               &AbstractTextureGLTest::compressedImageQueryViewBadSize,
-              &AbstractTextureGLTest::compressedImageQueryViewBadDataSize,
               &AbstractTextureGLTest::compressedImageQueryViewBadFormat,
               &AbstractTextureGLTest::compressedSubImageQueryViewNullptr,
               &AbstractTextureGLTest::compressedSubImageQueryViewBadSize,
-              &AbstractTextureGLTest::compressedSubImageQueryViewBadDataSize,
               &AbstractTextureGLTest::compressedSubImageQueryViewBadFormat,
               #endif
               });
@@ -229,26 +225,6 @@ void AbstractTextureGLTest::compressedImageQueryViewBadSize() {
     CORRADE_COMPARE(out, "GL::AbstractTexture::compressedImage(): expected image view size Vector(4, 4) but got Vector(4, 8)\n");
 }
 
-void AbstractTextureGLTest::compressedImageQueryViewBadDataSize() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-
-    Texture2D texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4});
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    char data[16 - 1];
-    MutableCompressedImageView2D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, data};
-
-    Containers::String out;
-    Error redirectError{&out};
-    texture.compressedImage(0, image);
-    CORRADE_COMPARE(out, "GL::AbstractTexture::compressedImage(): expected image view data size 16 bytes but got 15\n");
-}
-
 void AbstractTextureGLTest::compressedImageQueryViewBadFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -314,30 +290,6 @@ void AbstractTextureGLTest::compressedSubImageQueryViewBadSize() {
     Error redirectError{&out};
     texture.compressedSubImage(0, {{}, Vector2i{4}}, image);
     CORRADE_COMPARE(out, "GL::AbstractTexture::compressedSubImage(): expected image view size Vector(4, 4) but got Vector(4, 8)\n");
-}
-
-void AbstractTextureGLTest::compressedSubImageQueryViewBadDataSize() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
-    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-    if(!Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
-
-    Texture2D texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4});
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    char data[16 - 1];
-    MutableCompressedImageView2D image{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, data};
-
-    Containers::String out;
-    Error redirectError{&out};
-    texture.compressedSubImage(0, {{}, Vector2i{4}}, image);
-    CORRADE_COMPARE(out, "GL::AbstractTexture::compressedSubImage(): expected image view data size 16 bytes but got 15\n");
 }
 
 void AbstractTextureGLTest::compressedSubImageQueryViewBadFormat() {

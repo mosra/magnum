@@ -1831,18 +1831,6 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
     CORRADE_ASSERT(image.size() == size,
         "GL::AbstractTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
 
-    /* If the user-provided pixel storage doesn't tell us all properties about
-       the compression, we need to ask GL for it */
-    std::size_t dataSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
-        GLint textureDataSize;
-        Context::current().state().texture.getLevelParameterivImplementation(*this, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
-        dataSize = textureDataSize;
-    } else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
-
-    CORRADE_ASSERT(image.data().size() == dataSize,
-        "GL::AbstractTexture::compressedImage(): expected image view data size" << dataSize << "bytes but got" << image.data().size(), );
-
     /* Internal texture format */
     GLint format;
     Context::current().state().texture.getLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
@@ -2022,17 +2010,6 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
 
     CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
         "GL::AbstractTexture::compressedSubImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
-
-    /* Calculate compressed subimage size. If the user-provided pixel storage
-       doesn't tell us all properties about the compression, we need to ask GL
-       for it. That requires GL_ARB_internalformat_query2. */
-    std::size_t dataSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
-        dataSize = compressedSubImageSize<dimensions>(TextureFormat(format), size);
-    else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
-
-    CORRADE_ASSERT(image.data().size() == dataSize,
-        "GL::AbstractTexture::compressedSubImage(): expected image view data size" << dataSize << "bytes but got" << image.data().size(), );
     #endif
 
     const Vector3i paddedOffset = Vector3i::pad<dimensions>(range.min());
