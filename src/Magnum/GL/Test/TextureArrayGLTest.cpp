@@ -287,7 +287,7 @@ const struct {
         #endif
         Containers::arrayView(CompressedData2D).exceptPrefix(16), 0},
     #ifndef MAGNUM_TARGET_GLES
-    {"skip Y",
+    {"skip Z",
         Containers::arrayView(CompressedData2D).exceptPrefix(16),
         CompressedPixelStorage{}
             .setCompressedBlockSize({4, 4, 1})
