@@ -83,7 +83,7 @@ class MAGNUM_EXPORT PixelStorage {
         constexpr Int rowLength() const { return _rowLength; }
 
         /**
-         * @brief Set row length
+         * @brief Set row length in pixels
          *
          * Used only on 2D and 3D images. If set to @cpp 0 @ce, size
          * information from the actual image is used. Default is @cpp 0 @ce.
@@ -97,7 +97,7 @@ class MAGNUM_EXPORT PixelStorage {
         constexpr Int imageHeight() const { return _imageHeight; }
 
         /**
-         * @brief Set image height
+         * @brief Set image height in pixels
          *
          * Used only on 3D images. If set to @cpp 0 @ce, size information from
          * the actual image is used. Default is @cpp 0 @ce.
@@ -211,11 +211,11 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
         /**
          * @brief Data properties for given parameters
          *
-         * Returns byte offset in each dimension, count of blocks in each
-         * dimension and block data size for image of given @p size with
-         * current pixel storage parameters. Adding byte offset and product of
-         * the vector multiplied with block data size gives minimal byte count
-         * to store given data.
+         * Returns byte offset in each direction and @cpp {rowLength, rowCount,
+ layerCount} @ce
+         * *in blocks* for image of given @p size with current pixel storage
+         * parameters. Sum of the byte offset vector gives the byte offset of
+         * first block in the data array.
          *
          * Expects @ref compressedBlockSize() and @ref compressedBlockDataSize()
          * to be non-zero.
