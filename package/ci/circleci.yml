@@ -15,6 +15,11 @@ executors:
   ubuntu-18_04:
     docker:
     - image: ubuntu:bionic-20220427
+  # Used by the ThreadSanitizer build. Cannot be a Docker because we need to
+  # disable ASLR which can only be done with a real VM.
+  ubuntu-20_04:
+    machine:
+      image: ubuntu-2004:2024.11.1
   # Anything below 13.4.1 (and all x86 variants) are deprecated as of June 28th
   # 2024
   xcode-13_4:
@@ -138,30 +143,41 @@ commands:
   # embedded toolchains still use it, for Clang we just pick the version
   # available in the oldest supported distro.
   install-clang:
+    parameters:
+      sudo:
+        type: string
+        default: ""
+      symbolizer-link:
+        type: boolean
+        default: true
     steps:
     - run:
-        # For some reason, CMake needs a working C compiler, so provice CC as
+        # For some reason, CMake needs a working C compiler, so provide CC as
         # well for the case when default gcc isn't installed.
-        #
-        # The llvm-symbolizer link needs to be set in order to have usable
-        # symbols in the output. This affects suppressions as well, meaning
-        # they won't work if the symbols are not resolvable. It's not enough to
-        # just `export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer-6.0`
-        # because it then complains that
-        #
-        #   External symbolizer path is set to '/usr/bin/llvm-symbolizer-6.0'
-        #   which isn't a known symbolizer. Please set the path to the
-        #   llvm-symbolizer binary or other known tool.
-        #
-        # Probably because because it detects tool type based on the filename?
-        # Ugh.
         name: Install Clang
         command: |
-          apt install -y clang
+          << parameters.sudo >> apt install -y clang
           echo 'export CC=clang' >> $BASH_ENV
           echo 'export CXX=clang++' >> $BASH_ENV
-          ls -l /usr/bin/llvm-symbolizer-6.0
-          ln -s /usr/bin/llvm-symbolizer{-6.0,}
+    # With Clang 6 on 18.04, the llvm-symbolizer link needs to be set in order
+    # to have usable symbols in the output. This affects suppressions as well,
+    # meaning they won't work if the symbols are not resolvable. It's not
+    # enough to just `export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer-6.0`
+    # because it then complains that
+    #
+    #   External symbolizer path is set to '/usr/bin/llvm-symbolizer-6.0' which
+    #   isn't a known symbolizer. Please set the path to the llvm-symbolizer
+    #   binary or other known tool.
+    #
+    # Probably because because it detects tool type based on the filename? Ugh.
+    - when:
+        condition: << parameters.symbolizer-link >>
+        steps:
+        - run:
+            name: Create /usr/bin/llvm-symbolizer symlink
+            command: |
+              ls -l /usr/bin/llvm-symbolizer-6.0
+              ln -s /usr/bin/llvm-symbolizer{-6.0,}
 
   install-nodejs:
     parameters:
@@ -550,8 +566,21 @@ jobs:
     - build:
         script: unix-desktop.sh
 
+  # https://github.com/google/sanitizers/issues/1716 ; started happening on
+  # 2024-11-08 as CircleCI uses a base system with kernel 6.5 instead of 5.15
+  # for Docker images:
+  #   https://discuss.circleci.com/t/docker-executor-infrastructure-upgrade/52282
+  # This manifests when running corrade-rc already:
+  #   ThreadSanitizer: unexpected memory mapping 0x7e2f226ae000-0x7e2f22b00000
+  # Unfortunately, with Docker images, none of the suggested
+  #   sysctl vm.mmap_rnd_bits=28
+  #   echo 0 | tee /proc/sys/kernel/randomize_va_space
+  # works, complaining about read-only filesystem. The only way to set those is
+  # with a real VM instead of Docker, which is what's done here. It also means
+  # it's not possible to test on 18.04 anymore as those VMs are no longer
+  # provided.
   linux-threadsanitizer:
-    executor: ubuntu-18_04
+    executor: ubuntu-20_04
     environment:
       # STUPID yml interprets unquoted OFF as a boolean. Applications don't
       # have any automated tests, so building them for sanitizers doesn't make
@@ -567,14 +596,22 @@ jobs:
         -DMAGNUM_WITH_GLXCONTEXT=ON
         -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
-    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libidn11 libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
+        extra: cmake libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
+        sudo: sudo
     - cap-ninja-jobs
-    - install-clang
-    - install-cmake:
-        version: "3.5.2"
+    - install-clang:
+        sudo: sudo
+        symbolizer-link: false
     - setup-null-openal-driver
+    - run:
+        # Right now (2025-01-17) it's already set to 28 so nothing needs to be
+        # changed. This is for the future when it may break again, and yes,
+        # setting it explicitly to 32 causes the above error again.
+        name: Ensure ASLR is compatible with ThreadSanitizer
+        command: |
+          sudo sysctl vm.mmap_rnd_bits
+          sudo sysctl vm.mmap_rnd_bits=28
     - build:
         script: unix-desktop.sh
 
