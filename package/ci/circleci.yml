@@ -55,6 +55,9 @@ commands:
       extra:
         type: string
         default: ""
+      sudo:
+        type: string
+        default: ""
     steps:
     - run:
         # TODO when switching to the new codecov uploader, gpg and git needs to
@@ -62,24 +65,9 @@ commands:
         name: Update apt and install base packages
         # Git is needed always for cloning Corrade
         command: |
-          apt update
+          << parameters.sudo >> apt update
           if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then export LCOV_PACKAGES="lcov curl"; fi
-          # libidn11 needed by CMake
-          apt install -y git ninja-build libidn11 $LCOV_PACKAGES << parameters.extra >>
-
-  install-base-linux-arm64:
-    parameters:
-      extra:
-        type: string
-        default: ""
-    steps:
-    - run:
-        name: Update apt and install base packages
-        # Compared to Docker images this needs sudo
-        command: |
-          sudo apt update
-          if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then export LCOV_PACKAGES="lcov curl"; fi
-          sudo apt install -y ninja-build gcc cmake $LCOV_PACKAGES << parameters.extra >>
+          << parameters.sudo >> apt install -y git ninja-build $LCOV_PACKAGES << parameters.extra >>
 
   # TODO this might get resolved with 1.11.1:
   #   https://github.com/ninja-build/ninja/pull/1827
@@ -337,8 +325,9 @@ jobs:
         -DMAGNUM_WITH_GLXCONTEXT=ON
         -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+        extra: libidn11 libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     # In this case it gets stuck even with 16 jobs. Only on GCC, usually when
     # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
@@ -366,9 +355,10 @@ jobs:
         -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
     # Not installing the old GCC 4.8 and CMake 3.5 to speed up. These are
-    # tested more than enough on other jobs.
-    - install-base-linux-arm64:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+    # tested more than enough on other jobs. Machine executors need sudo.
+    - install-base-linux:
+        extra: gcc cmake libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+        sudo: sudo
     - setup-null-openal-driver
     - build:
         script: unix-desktop.sh
@@ -411,8 +401,9 @@ jobs:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "ON"
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libsdl2-dev libglfw3-dev wget unzip
+        extra: libidn11 libsdl2-dev libglfw3-dev wget unzip
     # In this case it gets stuck even with 16 jobs. Only on GCC, usually when
     # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
@@ -443,8 +434,9 @@ jobs:
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libsdl2-dev libglfw3-dev wget unzip
+        extra: libidn11 libsdl2-dev libglfw3-dev wget unzip
     # In this case it gets stuck even with 16 jobs. Only on GCC, usually when
     # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
@@ -482,8 +474,9 @@ jobs:
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+        extra: libidn11 libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     # In this case it gets stuck even with 16 jobs, usually when the huge
     # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
     # get involved.
@@ -513,8 +506,9 @@ jobs:
         -DMAGNUM_WITH_GLXCONTEXT=ON
         -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+        extra: libidn11 libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     # In this case it gets stuck even with 20 jobs, usually when the huge
     # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
     # get involved.
@@ -545,8 +539,9 @@ jobs:
         -DMAGNUM_WITH_GLXCONTEXT=ON
         -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
+        extra: libidn11 libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
     - cap-ninja-jobs
     - install-clang
     - install-cmake:
@@ -572,8 +567,9 @@ jobs:
         -DMAGNUM_WITH_GLXCONTEXT=ON
         -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
+        extra: libidn11 libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
     - cap-ninja-jobs
     - install-clang
     - install-cmake:
