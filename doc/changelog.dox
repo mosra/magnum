@@ -1529,6 +1529,9 @@ See also:
         @relativeref{Text::AbstractGlyphCache,addGlyph()} that better expose
         multi-font and 2D array support. The old API can only be called on 2D
         glyph caches now.
+    -   @cpp Text::AbstractGlyphCache::operator[]() @ce is deprecated in favor
+        of @ref Text::AbstractGlyphCache::glyph() that returns also an array
+        atlas layer. See also [mosra/magnum#661](https://github.com/mosra/magnum/issues/661).
     -   @cpp Text::AbstractGlyphCache::textureSize() @ce is deprecated in favor
         of @ref Text::AbstractGlyphCache::size() which returns a 3D size in
         order to support texture arrays as well. The old API can only be called
