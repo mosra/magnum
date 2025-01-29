@@ -144,8 +144,7 @@ possible.
 -   Gitter community chat — https://gitter.im/mosra/magnum
 -   E-mail — info@magnum.graphics
 -   Google Groups mailing list — magnum-engine@googlegroups.com ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
--   Twitter — https://twitter.com/czmosra and the
-    [#MagnumEngine](https://twitter.com/hashtag/MagnumEngine) hashtag
+-   Bluesky — https://bsky.app/profile/mosra.cz
 
 See also the Magnum Project [Contact & Support page](https://magnum.graphics/contact/)
 for further information.
