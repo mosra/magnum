@@ -10,7 +10,6 @@ commercial purposes.
 [![Build Status](https://circleci.com/gh/mosra/magnum.svg?style=shield)](https://circleci.com/gh/mosra/magnum)
 [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
 [![Coverage Status](https://codecov.io/gh/mosra/magnum/branch/master/graph/badge.svg)](https://codecov.io/gh/mosra/magnum)
-[![Hunter Package](https://img.shields.io/badge/hunter-magnum-lightgrey.svg)](https://hunter.readthedocs.io/en/latest/packages/pkg/magnum.html)
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 -   Project homepage — https://magnum.graphics/
