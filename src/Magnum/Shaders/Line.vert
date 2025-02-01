@@ -274,7 +274,7 @@ in highp mat4 instancedTransformationMatrix;
 noperspective
 #endif
 out highp vec2 centerDistanceSigned;
-out highp float halfSegmentLength;
+flat out highp float halfSegmentLength;
 #ifdef CAN_USE_NOPERSPECTIVE
 noperspective
 #endif

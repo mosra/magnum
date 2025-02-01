@@ -166,7 +166,7 @@ layout(std140
 noperspective
 #endif
 in highp vec2 centerDistanceSigned;
-in highp float halfSegmentLength;
+flat in highp float halfSegmentLength;
 #ifdef CAN_USE_NOPERSPECTIVE
 noperspective
 #endif
