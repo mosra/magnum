@@ -380,6 +380,19 @@ struct MAGNUM_SHADERS_EXPORT LineMaterialUniform {
     }
 
     /**
+     * @brief Set the @ref miterLimit field
+     * @return Reference to self (for method chaining)
+     *
+     * For convenience it's recommended to use the @ref setMiterLengthLimit()
+     * and @ref setMiterAngleLimit() helpers instead of setting this value
+     * directly.
+     */
+    LineMaterialUniform& setMiterLimit(Float limit) {
+        miterLimit = limit;
+        return *this;
+    }
+
+    /**
      * @brief Set the @ref miterLimit field to a length value
      * @return Reference to self (for method chaining)
      *

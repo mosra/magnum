@@ -49,8 +49,9 @@ struct LineTest: TestSuite::Tester {
     void materialUniformConstructNoInit();
     void materialUniformSetters();
 
-    void materialUniformSetMiterLengthLimitInvalid();
-    void materialUniformSetMiterAngleLimitInvalid();
+    void materialUniformMiterLimit();
+    void materialUniformMiterLengthLimitInvalid();
+    void materialUniformMiterAngleLimitInvalid();
 
     void debugCapStyle();
     void debugJoinStyle();
@@ -66,7 +67,7 @@ const struct {
     const char* name;
     Float limit;
     const char* message;
-} MaterialUniformSetMiterLengthLimitInvalidData[]{
+} MaterialUniformMiterLengthLimitInvalidData[]{
     {"too short", 0.9997f,
         "expected a finite value greater than or equal to 1, got 0.9997"},
     {"too long", Constants::inf(),
@@ -77,7 +78,7 @@ const struct {
     const char* name;
     Rad limit;
     const char* message;
-} MaterialUniformSetMiterAngleLimitInvalidData[]{
+} MaterialUniformMiterAngleLimitInvalidData[]{
     {"too small", 0.0_degf,
         "expected a value greater than 0° and less than or equal to 180°, got 0°"},
     {"too large", 180.1_degf,
@@ -95,13 +96,15 @@ LineTest::LineTest() {
 
               &LineTest::materialUniformConstructDefault,
               &LineTest::materialUniformConstructNoInit,
-              &LineTest::materialUniformSetters});
+              &LineTest::materialUniformSetters,
 
-    addInstancedTests({&LineTest::materialUniformSetMiterLengthLimitInvalid},
-        Containers::arraySize(MaterialUniformSetMiterLengthLimitInvalidData));
+              &LineTest::materialUniformMiterLimit});
 
-    addInstancedTests({&LineTest::materialUniformSetMiterAngleLimitInvalid},
-        Containers::arraySize(MaterialUniformSetMiterAngleLimitInvalidData));
+    addInstancedTests({&LineTest::materialUniformMiterLengthLimitInvalid},
+        Containers::arraySize(MaterialUniformMiterLengthLimitInvalidData));
+
+    addInstancedTests({&LineTest::materialUniformMiterAngleLimitInvalid},
+        Containers::arraySize(MaterialUniformMiterAngleLimitInvalidData));
 
     addTests({&LineTest::debugCapStyle,
               &LineTest::debugJoinStyle,
@@ -259,19 +262,34 @@ void LineTest::materialUniformSetters() {
      .setColor(0x354565fc_rgbaf)
      .setWidth(2.5f)
      .setSmoothness(7.0f)
-     .setMiterLengthLimit(25.0f);
+     .setMiterLimit(3.4567f);
+
     CORRADE_COMPARE(a.backgroundColor, 0x01020304_rgbaf);
     CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
     CORRADE_COMPARE(a.width, 2.5f);
     CORRADE_COMPARE(a.smoothness, 7.0f);
+    CORRADE_COMPARE(a.miterLimit, 3.4567f);
+}
+
+void LineTest::materialUniformMiterLimit() {
+    LineMaterialUniform a;
+
+    /* Verifying documented relation of the default to angle/length */
+    CORRADE_COMPARE(a.miterLimit, 0.875f);
+    a.setMiterLengthLimit(4.0f);
+    CORRADE_COMPARE(a.miterLimit, 0.875f);
+    a.setMiterAngleLimit(28.955_degf);
+    CORRADE_COMPARE(a.miterLimit, 0.875f);
+
+    a.setMiterLengthLimit(25.0f);
     CORRADE_COMPARE(a.miterLimit, 0.9968f);
 
     a.setMiterAngleLimit(35.0_degf);
     CORRADE_COMPARE(a.miterLimit, 0.819152f);
 }
 
-void LineTest::materialUniformSetMiterLengthLimitInvalid() {
-    auto&& data = MaterialUniformSetMiterLengthLimitInvalidData[testCaseInstanceId()];
+void LineTest::materialUniformMiterLengthLimitInvalid() {
+    auto&& data = MaterialUniformMiterLengthLimitInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     CORRADE_SKIP_IF_NO_ASSERT();
@@ -284,8 +302,8 @@ void LineTest::materialUniformSetMiterLengthLimitInvalid() {
     CORRADE_COMPARE(out, Utility::format("Shaders::LineMaterialUniform::setMiterLengthLimit(): {}\n", data.message));
 }
 
-void LineTest::materialUniformSetMiterAngleLimitInvalid() {
-    auto&& data = MaterialUniformSetMiterAngleLimitInvalidData[testCaseInstanceId()];
+void LineTest::materialUniformMiterAngleLimitInvalid() {
+    auto&& data = MaterialUniformMiterAngleLimitInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     CORRADE_SKIP_IF_NO_ASSERT();
