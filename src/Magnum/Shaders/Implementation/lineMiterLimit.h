@@ -32,21 +32,23 @@
 
 namespace Magnum { namespace Shaders { namespace Implementation {
 
-inline Float lineMiterLengthLimit(const char* const name, const Float limit) {
-    #if defined(CORRADE_NO_ASSERT) || defined(CORRADE_STANDARD_ASSERT)
-    static_cast<void>(name);
+inline Float lineMiterLengthLimit(const char*
+    #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
+    const name
     #endif
+, const Float limit) {
     CORRADE_ASSERT(limit >= 1.0f && !Math::isInf(limit),
         name << "expected a finite value greater than or equal to 1, got" << limit, {});
     /* Calculate the half-angle from the length and return a cosine of it */
     return Math::cos(2.0f*Math::asin(1.0f/limit));
 }
 
-inline Float lineMiterAngleLimit(const char* const name, const Rad limit) {
-    using namespace Math::Literals;
-    #if defined(CORRADE_NO_ASSERT) || defined(CORRADE_STANDARD_ASSERT)
-    static_cast<void>(name);
+inline Float lineMiterAngleLimit(const char*
+    #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
+    const name
     #endif
+, const Rad limit) {
+    using namespace Math::Literals;
     CORRADE_ASSERT(limit > 0.0_radf && limit <= Rad{Constants::pi()},
         name << "expected a value greater than 0° and less than or equal to 180°, got" << Float(Deg(limit)) << Debug::nospace << "°", {});
     /* Return a cosine of the angle */
