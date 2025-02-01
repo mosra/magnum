@@ -181,6 +181,7 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     }
     vert.addSource(rs.getString("generic.glsl"_s))
         .addSource(rs.getString("Line.vert"_s))
+        .addSource(rs.getString("Line.in.vert"_s))
         .submitCompile();
 
     GL::Shader frag{version, GL::Shader::Type::Fragment};
@@ -212,6 +213,7 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     }
     frag.addSource(rs.getString("generic.glsl"_s))
         .addSource(rs.getString("Line.frag"_s))
+        .addSource(rs.getString("Line.in.frag"_s))
         .submitCompile();
 
     LineGL<dimensions> out{NoInit};

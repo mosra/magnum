@@ -200,6 +200,15 @@ layout(location = OBJECT_ID_OUTPUT_ATTRIBUTE_LOCATION)
 out highp uint fragmentObjectId;
 #endif
 
+/* Coming from Line.in.frag. That file is added after this one in order to have
+   #extension directives before any code. */
+mediump float lineBlendFactor(
+    in highp vec2 centerDistanceSigned,
+    in highp float halfSegmentLength,
+    in highp float hasCap,
+    in mediump const float width,
+    in mediump const float smoothness);
+
 void main() {
     #ifdef UNIFORM_BUFFERS
     #ifdef OBJECT_ID
@@ -218,48 +227,12 @@ void main() {
     mediump const float smoothness = materials[materialId].material_smoothness;
     #endif
 
-    /* Calculate a distance from the original line endpoint (B). Assuming a cap
-       that's not a butt, actual quad vertices (2, 3 on the left diagram) would
-       be at a distance `width/2` in both X and Y (in the space of the line
-       segment, where X is in direction of the segment and Y is in direction to
-       the line edges):
-
-          ----------2                       --------2
-                    |                               |
-        [0,0]   B   |                     [0,0]     B
-                    |                               |
-          ----------3                       --------3
-
-       For a butt cap, the endpoint B would be at the edge instead (right
-       diagram) -- to have handling consistent for all cap styles, add
-       `width/2` to the center distance in that case. For fragments on the left
-       of B the X distance would be negative, make it 0 in that case
-       instead. */
-    highp const vec2 centerDistance = abs(centerDistanceSigned);
-    highp vec2 endpointDistance = vec2(max(centerDistance.x
-        #ifdef CAP_STYLE_BUTT
-        + width*0.5
-        #endif
-        - halfSegmentLength, 0.0), centerDistance.y);
-
-    /* If hasCap is negative, it means the nearest endpoint is a join, not a
-       cap. Thus no smoothing happens in the direction of a cap, i.e. same as
-       if we'd be at the center of the line. */
-    if(hasCap < 0.0) endpointDistance.x = 0.0;
-
-    /* Calculate a single distance factor out of the two-dimensional endpoint
-       distance. This will form the cap shape. */
-    #if defined(CAP_STYLE_BUTT) || defined(CAP_STYLE_SQUARE)
-    highp const float distance1D = max(endpointDistance.x, endpointDistance.y);
-    #elif defined(CAP_STYLE_ROUND)
-    highp const float distance1D = length(endpointDistance);
-    #elif defined(CAP_STYLE_TRIANGLE)
-    highp const float distance1D = endpointDistance.x + endpointDistance.y;
-    #else
-    #error
-    #endif
-
-    mediump const float factor = smoothstep(width*0.5 - smoothness, width*0.5 + smoothness, distance1D);
+    mediump const float factor = lineBlendFactor(
+        centerDistanceSigned,
+        halfSegmentLength,
+        hasCap,
+        width,
+        smoothness);
 
     fragmentColor = mix(
         #ifdef VERTEX_COLOR
