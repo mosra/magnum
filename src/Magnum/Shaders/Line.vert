@@ -375,14 +375,14 @@ void main() {
 
     /* Decide about the line direction vector `d` and edge direction vector `e`
        from the `pointMarkerComponent` input. Quad corners 0 and 1 come from
-       segment endpoint A, are marked with the POINT_MARKER_BEGIN_MASK bit and
-       so their line direction is taken from `nextPosition`, quad corners 2 and
-       3 come from B and are *not* marked with POINT_MARKER_BEGIN_MASK and so
-       their line direction is taken from `previousPosition`, with the
-       direction being always from point A to point B. The edge direction is
-       then perpendicular to the line direction, with points 0 and 2 marked
-       with POINT_MARKER_UP_MASK using it directly, while points 1 and 3
-       don't have POINT_MARKER_UP_MASK and have to negate it:
+       segment endpoint A, are marked with the ANNOTATION_BEGIN_MASK bit and so
+       their line direction is taken from `nextPosition`, quad corners 2 and 3
+       come from B and are *not* marked with ANNOTATION_BEGIN_MASK and so their
+       line direction is taken from `previousPosition`, with the direction
+       being always from point A to point B. The edge direction is then
+       perpendicular to the line direction, with points 0 and 2 marked with
+       ANNOTATION_UP_MASK using it directly, while points 1 and 3 don't have
+       ANNOTATION_UP_MASK and have to negate it:
 
                  ^        ^
                  e        e
@@ -396,7 +396,7 @@ void main() {
                  e        e
                  v        v
 
-       The POINT_MARKER_CAP_MASK is then used below. */
+       The ANNOTATION_CAP_MASK is then used below. */
     highp const vec2 lineDirection = bool(annotation & ANNOTATION_BEGIN_MASK) ?
         transformedNextPosition - transformedPosition :
         transformedPosition - transformedPreviousPosition;

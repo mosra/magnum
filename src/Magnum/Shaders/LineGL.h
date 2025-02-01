@@ -1026,7 +1026,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL<dimensions>:
          *
          * Unlike for example the SVG specification that uses
          * @ref LineCapStyle::Butt by default, the default value is
-         * @ref LineCapStyle::Square, in order to make zero-length lines visible.
+         * @ref LineCapStyle::Square, in order to make zero-length lines
+         * visible.
          * @see @ref LineGL::capStyle()
          */
         Configuration& setCapStyle(LineCapStyle style) {

@@ -102,10 +102,10 @@ enum class LineJoinStyle: UnsignedByte {
      * @htmlinclude line-join-miter.svg
      *
      * In this style, the points `A`, `B` and `C` collapse to a zero-area
-     * triangle. If the miter length `l` would be larger than the limit set in
+     * triangle. If the miter length `l` would be larger than the limit set via
      * @ref LineGL::setMiterLengthLimit() /
      * @ref LineMaterialUniform::setMiterLengthLimit() or the angle between the
-     * two segments `α` would be less than the limit set in
+     * two segments `α` would be less than the limit set via
      * @ref LineGL::setMiterAngleLimit() /
      * @ref LineMaterialUniform::setMiterAngleLimit(), it switches to
      * @ref LineJoinStyle::Bevel instead.
@@ -467,7 +467,8 @@ struct MAGNUM_SHADERS_EXPORT LineMaterialUniform {
      *
      * For convenience it's recommended to use the @ref setMiterLengthLimit()
      * and @ref setMiterAngleLimit() helpers instead of setting this value
-     * directly.
+     * directly. Default value is @cpp 0.875f @ce, which corresponds to a
+     * length of @cpp 4.0f @ce and angle of approximately @cpp 28.955_degf @ce.
      * @see @ref LineGL::setMiterLengthLimit(),
      *      @ref LineGL::setMiterAngleLimit()
      */
