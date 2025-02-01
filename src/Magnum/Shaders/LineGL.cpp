@@ -124,7 +124,8 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     #endif
 
     /* Cap and join style is needed by both the vertex and fragment shader,
-       prepare their defines just once for both */
+       prepare their defines just once for both. This snippet is shared between
+       Shaders::LineGL and Ui::LineLayerGL, keep in sync. */
     Containers::StringView capStyleDefine, joinStyleDefine;
     switch(configuration.capStyle()) {
         case LineCapStyle::Butt:

@@ -49,6 +49,8 @@ struct LineTest: TestSuite::Tester {
     void materialUniformConstructNoInit();
     void materialUniformSetters();
 
+    /* Miter limit tests are copied verbatim between the Shaders and Ui
+       libraries */
     void materialUniformMiterLimit();
     void materialUniformMiterLengthLimitInvalid();
     void materialUniformMiterAngleLimitInvalid();

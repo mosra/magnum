@@ -46,6 +46,9 @@ namespace Magnum { namespace Shaders {
 @see @ref LineGL::capStyle(), @ref LineGL::Configuration::setCapStyle()
 */
 enum class LineCapStyle: UnsignedByte {
+    /* Keep these in sync with Ui::LineCapStyle (except for the related links,
+       of course). The images are used directly from there. */
+
     /**
      * [Butt cap](https://en.wikipedia.org/wiki/Butt_joint). The line is cut
      * off right at the endpoint. Lines of zero length will be invisible.
@@ -95,6 +98,9 @@ enum class LineCapStyle: UnsignedByte {
 @see @ref LineGL::joinStyle(), @ref LineGL::Configuration::setJoinStyle()
 */
 enum class LineJoinStyle: UnsignedByte {
+    /* Keep these in sync with Ui::LineJoinStyle (except for the related links,
+       of course). The images are used directly from there. */
+
     /**
      * [Miter join](https://en.wikipedia.org/wiki/Miter_joint). The outer edges
      * of both line segments extend until they intersect.
@@ -156,6 +162,9 @@ The type is 32-bit in order to match the default type of the
 bits.
 */
 enum class LineVertexAnnotation: UnsignedInt {
+    /* Keep these in sync with the internal Ui::LineLayer LineVertexAnnotation*
+       constants and ANNOTATION_* defines in Line.in.vert. */
+
     /**
      * The point extends upwards assuming a left-to-right direction of the line
      * segment. If not set, it extends downwards. Visualized as `U` in the

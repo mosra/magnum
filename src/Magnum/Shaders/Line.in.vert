@@ -24,6 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* This file, along with *.in.frag, is copied verbatim between the Shaders
+   and Ui libraries */
+
 /* Point annotation, matching the LineVertexAnnotation enum bits */
 #define ANNOTATION_UP_MASK 1u
 #define ANNOTATION_JOIN_MASK 2u

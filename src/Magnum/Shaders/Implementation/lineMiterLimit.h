@@ -32,6 +32,9 @@
 
 namespace Magnum { namespace Shaders { namespace Implementation {
 
+/* These helpers, along with tests, are copied verbatim between the Shaders and
+   Ui libraries */
+
 inline Float lineMiterLengthLimit(const char*
     #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
     const name

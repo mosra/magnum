@@ -24,6 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* This file, along with *.in.vert, is copied verbatim between the Shaders
+   and Ui libraries */
+
 mediump float lineBlendFactor(
     in highp vec2 centerDistanceSigned,
     in highp float halfSegmentLength,
