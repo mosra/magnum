@@ -211,8 +211,7 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
         /**
          * @brief Data properties for given parameters
          *
-         * Returns byte offset in each direction and @cpp {rowLength, rowCount,
- layerCount} @ce
+         * Returns byte offset in each direction and @cpp {rowLength, rowCount, layerCount} @ce
          * *in blocks* for image of given @p size with current pixel storage
          * parameters. Sum of the byte offset vector gives the byte offset of
          * first block in the data array.
