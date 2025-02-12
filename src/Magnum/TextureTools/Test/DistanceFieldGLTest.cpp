@@ -31,7 +31,6 @@
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
-#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/System.h> /* isSandboxed() */
 #endif
 
@@ -125,7 +124,7 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Path::join(Utility::Path::split(*Utility::Path::executableLocation()).first(), "DistanceFieldGLTestFiles");
+        _testDir = Utility::Path::join(Utility::Path::path(*Utility::Path::executableLocation()), "DistanceFieldGLTestFiles");
     } else
     #endif
     {

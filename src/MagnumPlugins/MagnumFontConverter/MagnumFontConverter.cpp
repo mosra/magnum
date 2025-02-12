@@ -79,7 +79,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     Utility::Configuration configuration;
 
     configuration.setValue("version", 1);
-    configuration.setValue("image", Utility::Path::split(filename).second() + ".tga");
+    configuration.setValue("image", Utility::Path::filename(filename) + ".tga");
     configuration.setValue("originalImageSize", cache.size().xy());
     configuration.setValue("padding", cache.padding());
     configuration.setValue("fontSize", font.size());

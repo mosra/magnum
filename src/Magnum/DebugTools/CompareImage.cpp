@@ -783,7 +783,7 @@ void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utili
     }
 
     const ImageView2D image{PixelStorage{}.setAlignment(1), _state->actualFormat, Vector2i{Int(pixels.size()[1]), Int(pixels.size()[0])}, data};
-    const Containers::String filename = Utility::Path::join(path, Utility::Path::split(_state->expectedFilename).second());
+    const Containers::String filename = Utility::Path::join(path, Utility::Path::filename(_state->expectedFilename));
 
     /* Export the data the base view/view comparator saved. Ignore failures,
        we're in the middle of a fail anyway (and everything will print messages

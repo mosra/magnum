@@ -369,7 +369,7 @@ see documentation of a particular converter for more information.)")
     PluginManager::Manager<ShaderTools::AbstractConverter> converterManager{
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(ShaderTools::AbstractConverter::pluginSearchPaths().back()).second())
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::filename(ShaderTools::AbstractConverter::pluginSearchPaths().back()))
         #endif
     };
 

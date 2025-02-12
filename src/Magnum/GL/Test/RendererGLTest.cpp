@@ -116,7 +116,7 @@ RendererGLTest::RendererGLTest() {
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Path::join(Utility::Path::split(*Utility::Path::executableLocation()).first(), "RendererGLTestFiles");
+        _testDir = Utility::Path::join(Utility::Path::path(*Utility::Path::executableLocation()), "RendererGLTestFiles");
     } else
     #endif
     {

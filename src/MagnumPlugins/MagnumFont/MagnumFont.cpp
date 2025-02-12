@@ -139,7 +139,7 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
 
 auto MagnumFont::doOpenFile(const Containers::StringView filename, const Float size) -> Properties {
     _opened.emplace();
-    _opened->filePath.emplace(Utility::Path::split(filename).first());
+    _opened->filePath.emplace(Utility::Path::path(filename));
 
     return AbstractFont::doOpenFile(filename, size);
 }

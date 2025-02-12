@@ -26,7 +26,6 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/GrowableArray.h>
-#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -523,13 +522,13 @@ no -C / --converter is specified, AnyImageConverter is used.)")
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::filename(Trade::AbstractImporter::pluginSearchPaths().back()))
         #endif
     };
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::filename(Trade::AbstractImageConverter::pluginSearchPaths().back()))
         #endif
     };
 

@@ -24,7 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Pair.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -165,7 +164,7 @@ int FontConverter::exec() {
     PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::filename(Trade::AbstractImageConverter::pluginSearchPaths().back()))
         #endif
     };
 
@@ -173,7 +172,7 @@ int FontConverter::exec() {
     PluginManager::Manager<AbstractFont> fontManager{
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(AbstractFont::pluginSearchPaths().back()).second())
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::filename(AbstractFont::pluginSearchPaths().back()))
         #endif
     };
     Containers::Pointer<AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
@@ -184,7 +183,7 @@ int FontConverter::exec() {
     PluginManager::Manager<AbstractFontConverter> converterManager{
         #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(AbstractFontConverter::pluginSearchPaths().back()).second())
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::filename(AbstractFontConverter::pluginSearchPaths().back()))
         #endif
     };
     converterManager.registerExternalManager(imageConverterManager);

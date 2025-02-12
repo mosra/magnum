@@ -34,11 +34,6 @@
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/System.h>
 
-#ifdef CORRADE_TARGET_APPLE
-#include <Corrade/Containers/Pair.h>
-#include <Corrade/Utility/System.h> /* isSandboxed() */
-#endif
-
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -344,7 +339,7 @@ VertexColorGLTest::VertexColorGLTest() {
         && std::getenv("SIMULATOR_UDID")
         #endif
     ) {
-        _testDir = Utility::Path::split(*Utility::Path::executableLocation()).first();
+        _testDir = Utility::Path::path(*Utility::Path::executableLocation());
     } else
     #endif
     {
