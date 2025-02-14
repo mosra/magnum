@@ -550,6 +550,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @cpp false @ce.
          */
         bool fillGlyphCache(AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const UnsignedInt>& glyphs);
+        /** @overload */
+        bool fillGlyphCache(AbstractGlyphCache& cache, std::initializer_list<UnsignedInt> glyphs);
 
         /**
          * @brief Fill glyph cache with given character set

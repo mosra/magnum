@@ -1184,11 +1184,11 @@ void AbstractFontTest::fillGlyphCache() {
             CORRADE_COMPARE_AS(glyphs, Containers::arrayView({
                 16u, 5u, 11u, 2u
             }), TestSuite::Compare::Container);
-            called = true;
+            ++called;
             return true;
         }
 
-        bool called = false;
+        Int called = 0;
 
         private:
             bool _opened = false;
@@ -1200,7 +1200,11 @@ void AbstractFontTest::fillGlyphCache() {
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
 
     CORRADE_VERIFY(font.fillGlyphCache(cache, Containers::arrayView({16u, 5u, 11u, 2u})));
-    CORRADE_VERIFY(font.called);
+    CORRADE_COMPARE(font.called, 1);
+
+    /* Also the initializer list overload */
+    CORRADE_VERIFY(font.fillGlyphCache(cache, {16, 5, 11, 2}));
+    CORRADE_COMPARE(font.called, 2);
 }
 
 void AbstractFontTest::fillGlyphCacheOutOfRange() {
@@ -1234,7 +1238,9 @@ void AbstractFontTest::fillGlyphCacheOutOfRange() {
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u, 15u, 3u, 16u, 80u}));
+    font.fillGlyphCache(cache, {0, 15, 3, 16, 80});
     CORRADE_COMPARE(out,
+        "Text::AbstractFont::fillGlyphCache(): index 16 out of range for 16 glyphs\n"
         "Text::AbstractFont::fillGlyphCache(): index 16 out of range for 16 glyphs\n");
 }
 
@@ -1379,6 +1385,7 @@ void AbstractFontTest::fillGlyphCacheFailed() {
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
 
     CORRADE_VERIFY(!font.fillGlyphCache(cache, Containers::ArrayView<const UnsignedInt>{}));
+    CORRADE_VERIFY(!font.fillGlyphCache(cache, {}));
     CORRADE_VERIFY(!font.fillGlyphCache(cache, ""));
 }
 
@@ -1404,8 +1411,10 @@ void AbstractFontTest::fillGlyphCacheNotSupported() {
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u, 15u}));
+    font.fillGlyphCache(cache, {0u, 15u});
     font.fillGlyphCache(cache, "hello");
     CORRADE_COMPARE(out,
+        "Text::AbstractFont::fillGlyphCache(): feature not supported\n"
         "Text::AbstractFont::fillGlyphCache(): feature not supported\n"
         "Text::AbstractFont::fillGlyphCache(): feature not supported\n");
 }
@@ -1441,8 +1450,10 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u}));
+    font.fillGlyphCache(cache, {0});
     font.fillGlyphCache(cache, "hello");
     CORRADE_COMPARE(out,
+        "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented\n"
         "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented\n"
         "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented\n");
 }
@@ -1465,8 +1476,10 @@ void AbstractFontTest::fillGlyphCacheNoFont() {
     Error redirectError{&out};
     DummyGlyphCache cache{PixelFormat::R8Unorm, {100, 100}};
     font.fillGlyphCache(cache, Containers::arrayView({0u, 15u}));
+    font.fillGlyphCache(cache, {0, 15});
     font.fillGlyphCache(cache, "hello");
     CORRADE_COMPARE(out,
+        "Text::AbstractFont::fillGlyphCache(): no font opened\n"
         "Text::AbstractFont::fillGlyphCache(): no font opened\n"
         "Text::AbstractFont::fillGlyphCache(): no font opened\n");
 }
