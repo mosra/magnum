@@ -166,15 +166,17 @@ efficiency.
 
 @snippet Text.cpp AbstractGlyphCache-filling-atlas
 
-In case the layouting fails, triggering the assertion, the cache size was
-picked too small or there was already enough glyphs added that the new ones
-didn't fit. The solution is then to either increase the cache size, turn the
-cache into an array, or create a second cache for the new data. Depending on
-the input sizes it's also possible to achieve a better packing efficiency by
-toggling various @ref TextureTools::AtlasLandfillFlag values --- you can for
-example create temporary instances aside, attempt packing with them, and then
-for filling the glyph cache itself pick the set of flags that resulted in the
-smallest @ref TextureTools::AtlasLandfill::filledSize().
+On success, @ref TextureTools::AtlasLandfill::add() returns a range spanning
+all added images, which we'll use later for GPU texture upload. In case of a
+failure, triggering the assertion above, the cache size was picked too small or
+there was already enough glyphs added that the new ones didn't fit. The
+solution is then to either increase the cache size, turn the cache into an
+array, or create a second cache for the new data. Depending on the input sizes
+it's also possible to achieve a better packing efficiency by toggling various
+@ref TextureTools::AtlasLandfillFlag values --- you can for example create
+temporary instances aside, attempt packing with them, and then for filling the
+glyph cache itself pick the set of flags that resulted in the smallest
+@ref TextureTools::AtlasLandfill::filledSize().
 
 @subsection Text-AbstractGlyphCache-filling-glyphs Adding glyphs
 

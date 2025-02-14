@@ -199,15 +199,15 @@ Containers::Array<Vector2i> offsets{NoInit, images.size()};
 cache.atlas().clearFlags(
     TextureTools::AtlasLandfillFlag::RotatePortrait|
     TextureTools::AtlasLandfillFlag::RotateLandscape);
-CORRADE_INTERNAL_ASSERT(cache.atlas().add(
+Containers::Optional<Range2Di> range = cache.atlas().add(
     stridedArrayView(images).slice(&ImageView2D::size),
-    offsets));
+    offsets);
+CORRADE_INTERNAL_ASSERT(range);
 /* [AbstractGlyphCache-filling-atlas] */
 
 /* [AbstractGlyphCache-filling-glyphs] */
 /* The glyph cache is just 2D, so copying to the first slice */
 Containers::StridedArrayView3D<char> dst = cache.image().pixels()[0];
-Range2Di updated;
 for(UnsignedInt i = 0; i != images.size(); ++i) {
     Range2Di rectangle = Range2Di::fromSize(offsets[i], images[i].size());
     cache.addGlyph(fontId, i, {}, rectangle);
@@ -218,13 +218,10 @@ for(UnsignedInt i = 0; i != images.size(); ++i) {
         std::size_t(offsets[i].y()),
         std::size_t(offsets[i].x()),
         0}, src.size()));
-
-    /* Maintain a range that was updated in the glyph cache */
-    updated = Math::join(updated, rectangle);
 }
 
-/* Reflect the image data update to the actual GPU-side texture */
-cache.flushImage(updated);
+/* Reflect the updated image range to the actual GPU-side texture */
+cache.flushImage(*range);
 /* [AbstractGlyphCache-filling-glyphs] */
 }
 
