@@ -1004,15 +1004,23 @@ void AtlasTest::landfillArrayPadded() {
 }
 
 void AtlasTest::landfillArrayNoFit() {
-    /* Same as landfillArray(portrait, widest first) (which is the default
-       flags) which fits into {11, 6, 2} but limiting depth to 1 */
+    /* It should fail in the second slice, not first, to test also that the
+       recursion failure is propagated */
+    {
+        AtlasLandfill atlas{{6, 6, 2}};
+        Vector3i offsets[Containers::arraySize(LandfillArraySizes)];
+        UnsignedByte rotationData[2];
+        Containers::MutableBitArrayView rotations{rotationData, 0, Containers::arraySize(LandfillArraySizes)};
+        CORRADE_VERIFY(!atlas.add(LandfillArraySizes, offsets, rotations));
 
-    AtlasLandfill atlas{{11, 6, 1}};
-
-    Vector3i offsets[Containers::arraySize(LandfillArraySizes)];
-    UnsignedByte rotationData[2];
-    Containers::MutableBitArrayView rotations{rotationData, 0, Containers::arraySize(LandfillArraySizes)};
-    CORRADE_VERIFY(!atlas.add(LandfillArraySizes, offsets, rotations));
+    /* Sanity check that with one more slice it works */
+    } {
+        AtlasLandfill atlas{{6, 6, 3}};
+        Vector3i offsets[Containers::arraySize(LandfillArraySizes)];
+        UnsignedByte rotationData[2];
+        Containers::MutableBitArrayView rotations{rotationData, 0, Containers::arraySize(LandfillArraySizes)};
+        CORRADE_VERIFY(atlas.add(LandfillArraySizes, offsets, rotations));
+    }
 }
 
 void AtlasTest::landfillInvalidSize() {
