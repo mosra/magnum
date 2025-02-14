@@ -117,14 +117,14 @@ const Vector2i LandfillSizes[]{
 const struct {
     TestSuite::TestCaseDescriptionSourceLocation name;
     AtlasLandfillFlags flags;
-    Vector3i size;
-    Vector3i filledSize;
+    Vector2i size;
+    Vector2i filledSize;
     Containers::Pair<Vector2i, bool> offsetsFlips[Containers::arraySize(LandfillSizes)];
 } LandfillData[]{
     /* In all of these, rectangles with the same size should keep their order.
        5 after 3, 9 after 8 after 6 (and b after a after 7 if they're rotated
        to the same orientation) */
-    {"no rotation, no width sorting", {}, {11, 12, 1}, {11, 9, 1}, {
+    {"no rotation, no width sorting", {}, {11, 12}, {11, 9}, {
         /* Here it discovers that item 8 is higher than 5 and so it begins from
            the opposite end in the same direction again, instead of flipping
            the direction at item 8.
@@ -154,7 +154,7 @@ const struct {
         {{5, 8}, false},    /* d (zero height, thus invisible) */
         {{8, 0}, false}}},  /* e (zero width, thus invisible) */
     /* No rotation with width sorting omitted, not interesting */
-    {"portrait, no width sorting", AtlasLandfillFlag::RotatePortrait, {11, 12, 1}, {11, 9, 1}, {
+    {"portrait, no width sorting", AtlasLandfillFlag::RotatePortrait, {11, 12}, {11, 9}, {
         /* Here it should compare against the height of item 8, not item 0.
            Which is again higher than item 4 on the other side so it again
            begins from the opposite side.
@@ -183,7 +183,7 @@ const struct {
         {{6, 7}, false},    /* c */
         {{3, 0}, true},     /* d (zero height, thus invisible) */
         {{6, 0}, false}}},  /* e (zero width, thus invisible) */
-    {"portrait, widest first", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst, {11, 12, 1}, {11, 8, 1}, {
+    {"portrait, widest first", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst, {11, 12}, {11, 8}, {
         /* 9988   cba7
            99886644ba7
            000 6644555
@@ -207,7 +207,7 @@ const struct {
         {{7, 7}, false},    /* c */
         {{3, 0}, true},     /* d (zero height, thus invisible) */
         {{6, 0}, false}}},  /* e (zero width, thus invisible) */
-    {"portrait, widest first, unbounded height", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst, {11, 0, 1}, {11, 8, 1}, {
+    {"portrait, widest first, unbounded height", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst, {11, 0}, {11, 8}, {
         /* Should have the same result as above.
          *
            9988   cba7
@@ -233,7 +233,7 @@ const struct {
         {{7, 7}, false},    /* c */
         {{3, 0}, true},     /* d (zero height, thus invisible) */
         {{6, 0}, false}}},  /* e (zero width, thus invisible) */
-    {"portrait, widest first, reverse direction always", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst|AtlasLandfillFlag::ReverseDirectionAlways, {11, 12, 1}, {11, 10, 1}, {
+    {"portrait, widest first, reverse direction always", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst|AtlasLandfillFlag::ReverseDirectionAlways, {11, 12}, {11, 10}, {
         /* Here it continues in reverse direction after placing item 9 even
            though it's higher than item 5 as it's forced to.
 
@@ -262,7 +262,7 @@ const struct {
         {{3, 8}, false},    /* c */
         {{3, 0}, true},     /* d (zero height, thus invisible) */
         {{6, 0}, false}}},  /* e (zero width, thus invisible) */
-    {"portrait, narrowest first", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::NarrowestFirst, {11, 12, 1}, {11, 9, 1}, {
+    {"portrait, narrowest first", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::NarrowestFirst, {11, 12}, {11, 9}, {
         /*        99
            66b   c9988
            66ba7555 88
@@ -287,7 +287,7 @@ const struct {
         {{6, 7}, false},    /* c */
         {{0, 0}, true},     /* d (zero height, thus invisible) */
         {{7, 0}, false}}},  /* e (zero width, thus invisible) */
-    {"landscape, no width sorting", AtlasLandfillFlag::RotateLandscape, {11, 12, 1}, {11, 9, 1}, {
+    {"landscape, no width sorting", AtlasLandfillFlag::RotateLandscape, {11, 12}, {11, 9}, {
         /* After placing 3 it continues in reverse direction as 0 isn't lower
            (i.e., same behavior as if reversal was forced, and makes sense);
            after placing 1 it continues in reverse direction with 2 again;
@@ -317,7 +317,7 @@ const struct {
         {{8, 8}, false},    /* c */
         {{5, 9}, false},    /* d (zero height, thus invisible) */
         {{2, 8}, true}}},   /* e (zero width, thus invisible) */
-    {"landscape, widest first", AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::WidestFirst, {11, 12, 1}, {11, 9, 1}, {
+    {"landscape, widest first", AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::WidestFirst, {11, 12}, {11, 9}, {
         /* No change compared to "no width sorting" in this case.
 
            99    bbc
@@ -344,7 +344,7 @@ const struct {
         {{8, 8}, false},    /* c */
         {{5, 9}, false},    /* d (zero height, thus invisible) */
         {{2, 8}, true}}},   /* e (zero width, thus invisible) */
-    {"landscape, narrowest first", AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::NarrowestFirst, {11, 12, 1}, {11, 10, 1}, {
+    {"landscape, narrowest first", AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::NarrowestFirst, {11, 12}, {11, 10}, {
         /* No special behavior worth commenting on here. Flips direction after
            placing 5, after 8, and doesn't after placing 2.
 
@@ -615,7 +615,7 @@ void AtlasTest::landfill() {
 
     AtlasLandfill atlas{data.size};
     /* For unbounded sizes it should return 0 again */
-    CORRADE_COMPARE(atlas.size(), data.size);
+    CORRADE_COMPARE(atlas.size(), (Vector3i{data.size, 1}));
 
     Vector2i offsets[Containers::arraySize(LandfillSizes)];
     /* In case rotations aren't enabled, this isn't zero-initialized by
@@ -630,7 +630,7 @@ void AtlasTest::landfill() {
     else
         CORRADE_VERIFY(atlas.add(LandfillSizes, offsets, rotations));
 
-    CORRADE_COMPARE(atlas.filledSize(), data.filledSize);
+    CORRADE_COMPARE(atlas.filledSize(), (Vector3i{data.filledSize, 1}));
     CORRADE_COMPARE_AS(rotations,
         Containers::stridedArrayView(data.offsetsFlips)
             .slice(&Containers::Pair<Vector2i, bool>::second)
