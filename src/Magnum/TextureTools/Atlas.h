@@ -345,6 +345,8 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          * @param[in]  sizes        Texture sizes
          * @param[out] offsets      Resulting offsets in the atlas
          * @param[out] rotations    Which textures got rotated
+         * @return Range spanning all added items including padding or
+         *      @relativeref{Corrade,Containers::NullOpt} if they didn't fit
          *
          * The @p sizes, @p offsets and @p rotations views are expected to have
          * the same size. The @p sizes are all expected to be not larger than
@@ -364,17 +366,18 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          * height are treated as any others to make sure they don't overlap
          * other items.
          *
-         * On success returns @cpp true @ce and updates @ref filledSize(). If
-         * @ref size() is bounded, can return @cpp false @ce if the items
-         * didn't fit, in which case the internals and contents of @p offsets
-         * and @p rotations are left in an undefined state. For an unbounded
-         * @ref size() returns @cpp true @ce always.
+         * On success updates @ref filledSize() and returns a range spanning
+         * all added items including padding, which can be used for example to
+         * perform a partial GPU texture upload. If @ref size() is bounded, can
+         * return @relativeref{Corrade,Containers::NullOpt} if the items didn't
+         * fit, in which case the internals and contents of @p offsets and
+         * @p rotations are left in an undefined state. For an unbounded
+         * @ref size() the function never fails.
          * @see @ref setFlags(), @ref setPadding()
          */
-        bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView rotations);
-
+        Containers::Optional<Range3Di> add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView rotations);
         /** @overload */
-        bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView rotations);
+        Containers::Optional<Range3Di> add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView rotations);
 
         /**
          * @brief Add textures to the atlas with rotations disabled
@@ -385,20 +388,20 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          * @relativeref{AtlasLandfillFlag,RotateLandscape} is set.
          * @see @ref clearFlags()
          */
-        bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
-
+        Containers::Optional<Range3Di> add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
         /** @overload */
-        bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
+        Containers::Optional<Range3Di> add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
 
         /**
          * @brief Add textures to a non-array atlas
          *
-         * Can be called only if @ref size() depth is @cpp 1 @ce.
+         * Like @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector3i>&, Containers::MutableBitArrayView),
+         * but omitting the third dimension. Can be called only if @ref size()
+         * depth is @cpp 1 @ce.
          */
-        bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
-
+        Containers::Optional<Range2Di> add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
         /** @overload */
-        bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
+        Containers::Optional<Range2Di> add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
 
         /**
          * @brief Add textures to a non-array atlas with rotations disabled
@@ -410,10 +413,9 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          * @relativeref{AtlasLandfillFlag,RotateLandscape} is set.
          * @see @ref clearFlags()
          */
-        bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets);
-
+        Containers::Optional<Range2Di> add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets);
         /** @overload */
-        bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets);
+        Containers::Optional<Range2Di> add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets);
 
     private:
         Containers::Pointer<Implementation::AtlasLandfillState> _state;
