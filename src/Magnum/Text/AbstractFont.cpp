@@ -381,6 +381,10 @@ bool AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const Containers::S
     return doFillGlyphCache(cache, glyphs);
 }
 
+bool AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const std::initializer_list<UnsignedInt> glyphs) {
+    return fillGlyphCache(cache, Containers::stridedArrayView(glyphs));
+}
+
 bool AbstractFont::doFillGlyphCache(AbstractGlyphCache&, const Containers::StridedArrayView1D<const UnsignedInt>&) {
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", {});
     return {};

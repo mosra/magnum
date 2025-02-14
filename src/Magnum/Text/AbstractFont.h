@@ -30,6 +30,7 @@
  * @brief Class @ref Magnum::Text::AbstractFont, enum @ref Magnum::Text::FontFeature, enum set @ref Magnum::Text::FontFeatures
  */
 
+#include <initializer_list>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 #include <Corrade/Utility/StlForwardString.h> /** @todo remove once file callbacks are std::string-free */
 
@@ -550,6 +551,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @cpp false @ce.
          */
         bool fillGlyphCache(AbstractGlyphCache& cache, const Containers::StridedArrayView1D<const UnsignedInt>& glyphs);
+        /** @overload */
+        bool fillGlyphCache(AbstractGlyphCache& cache, std::initializer_list<UnsignedInt> glyphs);
 
         /**
          * @brief Fill glyph cache with given character set
