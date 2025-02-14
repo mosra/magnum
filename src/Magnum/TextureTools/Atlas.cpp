@@ -31,17 +31,17 @@
 #include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/Math/Range.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <vector>
-
-#include "Magnum/Math/Range.h"
 #endif
 
 namespace Magnum { namespace TextureTools {
@@ -96,7 +96,7 @@ struct AtlasLandfillState {
 
 namespace {
 
-bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, const Int slice, const Containers::StridedArrayView1D<const Containers::Pair<Vector2i, UnsignedInt>> sortedFlippedSizes, const Containers::StridedArrayView1D<Vector2i> offsets, const Containers::StridedArrayView1D<Int> zOffsets, const Containers::BitArrayView rotations) {
+Containers::Optional<Range3Di> atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, const Int slice, const Containers::StridedArrayView1D<const Containers::Pair<Vector2i, UnsignedInt>> sortedFlippedSizes, const Containers::StridedArrayView1D<Vector2i> offsets, const Containers::StridedArrayView1D<Int> zOffsets, const Containers::BitArrayView rotations) {
     /* Add a new slice if not there yet, extend the yOffsets array */
     if(UnsignedInt(slice) >= state.slices.size()) {
         CORRADE_INTERNAL_ASSERT(UnsignedInt(slice) == state.slices.size());
@@ -117,6 +117,7 @@ bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, co
     if(sliceState.direction == -1)
         sliceYOffsets = sliceYOffsets.flipped<0>();
 
+    Range3Di range;
     std::size_t i;
     for(i = 0; i != sortedFlippedSizes.size(); ++i) {
         const Vector2i size = sortedFlippedSizes[i].first();
@@ -161,11 +162,15 @@ bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, co
         /* Save the position (X-flip it in case we're in reverse direction),
            add the (appropriately rotated) padding to it so it points to the
            original unpadded size */
-        offsets[index] = padding + Vector2i{
+        const Vector2i offset{
             sliceState.direction > 0 ? sliceState.xOffset :
                 state.size.x() - sliceState.xOffset - size.x(),
-            placementYOffset
-        };
+            placementYOffset};
+        offsets[index] = padding + offset;
+
+        /* Add this item to the range spanning all added items, including the
+           (potentially rotated) padding */
+        range = join(range, Range3Di::fromSize({offset, slice}, {size, 1}));
 
         /* Advance to the next X offset */
         sliceState.xOffset += size.x();
@@ -179,13 +184,18 @@ bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, co
     /* If there are items that didn't fit, recurse to the next slice. This
        should only happen if the Y size is bounded. */
     if(i < sortedFlippedSizes.size()) {
+        /* If there are no more slices, fail */
         if(slice + 1 == state.size.z())
-            return false;
-        return atlasLandfillAddSortedFlipped(state, slice + 1,  sortedFlippedSizes.exceptPrefix(i), offsets, zOffsets, rotations);
+            return {};
+        /* If the recursion succeeded, return the two ranges joined */
+        if(const Containers::Optional<Range3Di> out = atlasLandfillAddSortedFlipped(state, slice + 1,  sortedFlippedSizes.exceptPrefix(i), offsets, zOffsets, rotations))
+            return Range3Di{join(range, *out)};
+        /* If it didn't, fail */
+        return {};
     }
 
     /* Everything fit, success */
-    return true;
+    return range;
 }
 
 }
@@ -252,7 +262,7 @@ AtlasLandfill& AtlasLandfill::setFlags(AtlasLandfillFlags flags) {
 
 namespace {
 
-bool atlasLandfillAdd(Implementation::AtlasLandfillState& state, const Containers::StridedArrayView1D<const Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i> offsets, const Containers::StridedArrayView1D<Int> zOffsets, const Containers::MutableBitArrayView rotations) {
+Containers::Optional<Range3Di> atlasLandfillAdd(Implementation::AtlasLandfillState& state, const Containers::StridedArrayView1D<const Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i> offsets, const Containers::StridedArrayView1D<Int> zOffsets, const Containers::MutableBitArrayView rotations) {
     CORRADE_ASSERT(offsets.size() == sizes.size(),
         "TextureTools::AtlasLandfill::add(): expected sizes and offsets views to have the same size, got" << sizes.size() << "and" << offsets.size(), {});
     CORRADE_ASSERT((!(state.flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)) && rotations.isEmpty()) || rotations.size() == sizes.size(),
@@ -342,41 +352,42 @@ bool atlasLandfillAdd(Implementation::AtlasLandfillState& state, const Container
 
 }
 
-bool AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView flips) {
+Containers::Optional<Range3Di> AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView flips) {
     return atlasLandfillAdd(*_state, sizes, offsets.slice(&Vector3i::xy), offsets.slice(&Vector3i::z), flips);
 }
 
-bool AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView flips) {
+Containers::Optional<Range3Di> AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView flips) {
     return add(Containers::stridedArrayView(sizes), offsets, flips);
 }
 
-bool AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
+Containers::Optional<Range3Di> AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
     CORRADE_ASSERT(!(_state->flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)),
         "TextureTools::AtlasLandfill::add():" << (_state->flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)) << "set, expected a rotations view", {});
     return add(sizes, offsets, nullptr);
 }
 
-bool AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
+Containers::Optional<Range3Di> AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
     return add(Containers::stridedArrayView(sizes), offsets);
 }
 
-bool AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView flips) {
+Containers::Optional<Range2Di> AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView flips) {
     CORRADE_ASSERT(_state->size.z() == 1,
         "TextureTools::AtlasLandfill::add(): use the three-component overload for an array atlas", {});
-    return atlasLandfillAdd(*_state, sizes, offsets, nullptr, flips);
+    const Containers::Optional<Range3Di> out = atlasLandfillAdd(*_state, sizes, offsets, nullptr, flips);
+    return out ? Containers::optional(out->xy()) : Containers::NullOpt;
 }
 
-bool AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView flips) {
+Containers::Optional<Range2Di> AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView flips) {
     return add(Containers::stridedArrayView(sizes), offsets, flips);
 }
 
-bool AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets) {
+Containers::Optional<Range2Di> AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets) {
     CORRADE_ASSERT(!(_state->flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)),
         "TextureTools::AtlasLandfill::add():" << (_state->flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)) << "set, expected a rotations view", {});
     return add(sizes, offsets, nullptr);
 }
 
-bool AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets) {
+Containers::Optional<Range2Di> AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets) {
     return add(Containers::stridedArrayView(sizes), offsets);
 }
 

@@ -25,9 +25,10 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
-#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -35,12 +36,11 @@
 #include <Corrade/Utility/Format.h>
 
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/TextureTools/Atlas.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <vector>
-
-#include "Magnum/Math/Range.h"
 #endif
 
 namespace Magnum { namespace TextureTools { namespace Test { namespace {
@@ -584,12 +584,12 @@ void AtlasTest::landfillFullFit() {
     UnsignedByte rotationData[1];
     Containers::MutableBitArrayView rotations{rotationData, 0, 4};
     /* Testing the init list overload here as all others test the view */
-    CORRADE_VERIFY(atlas.add({
+    CORRADE_COMPARE(atlas.add({
         {2, 4}, /* 0 */
         {2, 3}, /* 1 */
         {2, 3}, /* 2 */
         {2, 2}, /* 3 */
-    }, offsets, rotations));
+    }, offsets, rotations), (Range2Di{{}, {4, 6}}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{4, 6, 1}));
     CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
         false, false, false, false
@@ -626,9 +626,9 @@ void AtlasTest::landfill() {
 
     /* Test the rotations-less overload if no rotations are enabled */
     if(!(data.flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)))
-        CORRADE_VERIFY(atlas.add(LandfillSizes, offsets));
+        CORRADE_COMPARE(atlas.add(LandfillSizes, offsets), (Range2Di{{}, data.filledSize}));
     else
-        CORRADE_VERIFY(atlas.add(LandfillSizes, offsets, rotations));
+        CORRADE_COMPARE(atlas.add(LandfillSizes, offsets, rotations), (Range2Di{{}, data.filledSize}));
 
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{data.filledSize, 1}));
     CORRADE_COMPARE_AS(rotations,
@@ -672,22 +672,25 @@ void AtlasTest::landfillIncremental() {
     AtlasLandfill atlas{{11, 8}};
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{11, 0, 1}));
 
-    CORRADE_VERIFY(atlas.add(
+    /* The first addition spans a range that begins at the origin and ends at
+       filledSize() */
+    CORRADE_COMPARE(atlas.add(
         sizes.prefix(5),
         offsets.prefix(5),
-        rotations.prefix(5)));
+        rotations.prefix(5)), (Range2Di{{}, {11, 6}}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{11, 6, 1}));
 
-    CORRADE_VERIFY(atlas.add(
+    /* Following additions are just incremental */
+    CORRADE_COMPARE(atlas.add(
         sizes.slice(5, 9),
         offsets.slice(5, 9),
-        rotations.slice(5, 9)));
+        rotations.slice(5, 9)), (Range2Di{{0, 4}, {8, 8}}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{11, 8, 1}));
 
-    CORRADE_VERIFY(atlas.add(
+    CORRADE_COMPARE(atlas.add(
         sizes.exceptPrefix(9),
         offsets.exceptPrefix(9),
-        rotations.exceptPrefix(9)));
+        rotations.exceptPrefix(9)), (Range2Di{{7, 6}, {11, 8}}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{11, 8, 1}));
 
     CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
@@ -728,7 +731,10 @@ void AtlasTest::landfillPadded() {
     Vector2i offsets[8];
     UnsignedByte rotationData[1];
     Containers::MutableBitArrayView rotations{rotationData, 0, 8};
-    CORRADE_VERIFY(atlas.add({
+
+    /* The filled size includes the padding as well, since that's what is
+       likely desirable to get copied as well */
+    CORRADE_COMPARE(atlas.add({
         {6, 2}, /* 0, padded to {8, 6}, flipped */
         {1, 3}, /* 1, padded to {3, 7} */
         {4, 1}, /* 2, padded to {6, 5}, flipped */
@@ -737,7 +743,7 @@ void AtlasTest::landfillPadded() {
         {1, 1}, /* 5, padded to {3, 5} */
         {3, 0}, /* 6 (zero height), padded to {5, 4}, flipped */
         {0, 2}, /* 7 (zero width), padded to {2, 6} */
-    }, offsets, rotations));
+    }, offsets, rotations), (Range2Di{{}, {17, 13}}));
 
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{17, 13, 1}));
     CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
@@ -780,7 +786,7 @@ void AtlasTest::landfillNoFit() {
     Vector2i offsets[Containers::arraySize(LandfillSizes)];
     UnsignedByte rotationData[2];
     Containers::MutableBitArrayView rotations{rotationData, 0, Containers::arraySize(LandfillSizes)};
-    CORRADE_VERIFY(!atlas.add(LandfillSizes, offsets, rotations));
+    CORRADE_COMPARE(atlas.add(LandfillSizes, offsets, rotations), Containers::NullOpt);
 }
 
 void AtlasTest::landfillCopy() {
@@ -822,14 +828,14 @@ void AtlasTest::landfillArrayFullFit() {
     UnsignedByte rotationData[1];
     Containers::MutableBitArrayView rotations{rotationData, 0, 6};
     /* Testing the init list overload as all others test the view */
-    CORRADE_VERIFY(atlas.add({
+    CORRADE_COMPARE(atlas.add({
         {3, 5}, /* 0 */
         {1, 5}, /* 1 */
         {3, 3}, /* 2 */
         {1, 3}, /* 3 */
         {2, 2}, /* 4 */
         {2, 2}, /* 5 */
-    }, offsets, rotations));
+    }, offsets, rotations), (Range3Di{{}, {4, 5, 2}}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{4, 5, 2}));
     CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
         false, false, false, false, false, false
@@ -867,9 +873,9 @@ void AtlasTest::landfillArray() {
 
     /* Test the rotations-less overload if no rotations are enabled */
     if(!(data.flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)))
-        CORRADE_VERIFY(atlas.add(LandfillArraySizes, offsets));
+        CORRADE_COMPARE(atlas.add(LandfillArraySizes, offsets), (Range3Di{{}, data.filledSize}));
     else
-        CORRADE_VERIFY(atlas.add(LandfillArraySizes, offsets, rotations));
+        CORRADE_COMPARE(atlas.add(LandfillArraySizes, offsets, rotations), (Range3Di{{}, data.filledSize}));
 
     CORRADE_COMPARE(atlas.filledSize(), data.filledSize);
     CORRADE_COMPARE_AS(rotations,
@@ -909,22 +915,28 @@ void AtlasTest::landfillArrayIncremental() {
     AtlasLandfill atlas{{11, 6, 2}};
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{11, 6, 0}));
 
-    CORRADE_VERIFY(atlas.add(
+    /* The first addition spans a range that begins at the origin and ends at
+       filledSize(). Well, almost, because the first four items don't make use
+       of the rightmost column. */
+    CORRADE_COMPARE(atlas.add(
         sizes.prefix(4),
         offsets.prefix(4),
-        rotations.prefix(4)));
+        rotations.prefix(4)), (Range3Di{{}, {10, 6, 1}}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{11, 6, 1}));
 
-    CORRADE_VERIFY(atlas.add(
+    /* Following additions are incremental ... well, in this case it overflows
+       to the next slice, which means it covers basically the whole area */
+    CORRADE_COMPARE(atlas.add(
         sizes.slice(4, 7),
         offsets.slice(4, 7),
-        rotations.slice(4, 7)));
+        rotations.slice(4, 7)), (Range3Di{{}, {11, 6, 2}}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{11, 6, 2}));
 
-    CORRADE_VERIFY(atlas.add(
+    /* The last addition is then just a tiny bit of the second slice */
+    CORRADE_COMPARE(atlas.add(
         sizes.exceptPrefix(7),
         offsets.exceptPrefix(7),
-        rotations.exceptPrefix(7)));
+        rotations.exceptPrefix(7)), (Range3Di{{2, 0, 1}, {7, 2, 2}}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{11, 6, 2}));
 
     CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
@@ -961,7 +973,7 @@ void AtlasTest::landfillArrayPadded() {
     Vector3i offsets[8];
     UnsignedByte rotationData[1];
     Containers::MutableBitArrayView rotations{rotationData, 0, 8};
-    CORRADE_VERIFY(atlas.add({
+    CORRADE_COMPARE(atlas.add({
         {6, 2}, /* 0, padded to {8, 6}, flipped */
         {1, 3}, /* 1, padded to {3, 7} */
         {4, 1}, /* 2, padded to {6, 5}, flipped */
@@ -970,7 +982,7 @@ void AtlasTest::landfillArrayPadded() {
         {1, 1}, /* 5, padded to {3, 5} */
         {3, 0}, /* 6 (zero height), padded to {5, 4}, flipped */
         {0, 2}, /* 7 (zero width), padded to {2, 6} */
-    }, offsets, rotations));
+    }, offsets, rotations), (Range3Di{{}, {16, 12, 2}}));
 
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{16, 12, 2}));
     CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
@@ -1011,7 +1023,7 @@ void AtlasTest::landfillArrayNoFit() {
         Vector3i offsets[Containers::arraySize(LandfillArraySizes)];
         UnsignedByte rotationData[2];
         Containers::MutableBitArrayView rotations{rotationData, 0, Containers::arraySize(LandfillArraySizes)};
-        CORRADE_VERIFY(!atlas.add(LandfillArraySizes, offsets, rotations));
+        CORRADE_COMPARE(atlas.add(LandfillArraySizes, offsets, rotations), Containers::NullOpt);
 
     /* Sanity check that with one more slice it works */
     } {
@@ -1019,7 +1031,7 @@ void AtlasTest::landfillArrayNoFit() {
         Vector3i offsets[Containers::arraySize(LandfillArraySizes)];
         UnsignedByte rotationData[2];
         Containers::MutableBitArrayView rotations{rotationData, 0, Containers::arraySize(LandfillArraySizes)};
-        CORRADE_VERIFY(atlas.add(LandfillArraySizes, offsets, rotations));
+        CORRADE_COMPARE(atlas.add(LandfillArraySizes, offsets, rotations), (Range3Di{{}, {6, 6, 3}}));
     }
 }
 

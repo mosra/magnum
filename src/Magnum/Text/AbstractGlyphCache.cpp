@@ -302,7 +302,7 @@ std::vector<Range2Di> AbstractGlyphCache::reserve(const std::vector<Vector2i>& s
     for(std::size_t i = 0; i != sizes.size(); ++i)
         out[i].max() = sizes[i];
 
-    const bool succeeded = state.atlas.add(
+    const bool succeeded = !!state.atlas.add(
         Containers::stridedArrayView(out).slice(&Range2Di::max),
         Containers::stridedArrayView(out).slice(&Range2Di::min));
 

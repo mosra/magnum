@@ -36,6 +36,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/TextureTools/Atlas.h"
 #include "Magnum/Trade/MaterialData.h"
