@@ -314,10 +314,10 @@ bool atlasLandfillAdd(Implementation::AtlasLandfillState& state, const Container
         sortedFlippedSizes[i] = {sizePadded, UnsignedInt(i)};
     }
 
-    /* Sort to have the highest first. Assuming the items are square,
-       which is checked below in the loop. It's highly likely there are many
-       textures of the same size, thus use a stable sort to have output
-       consistent across platforms. */
+    /* Sort according to the preference specified in flags, but always to have
+       the highest first. It's highly likely there are many textures of the
+       same size, thus use a stable sort to have output consistent across
+       platforms. */
     /** @todo stable_sort allocates, would be great if i could make it reuse
         the memory allocated for output */
     if(state.flags & AtlasLandfillFlag::NarrowestFirst)
