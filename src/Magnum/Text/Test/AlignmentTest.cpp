@@ -76,7 +76,7 @@ void AlignmentTest::forDirection() {
     /* For Start / End it resolves based on ShapeDirection, keeping all extra
        bits as well */
     CORRADE_COMPARE(alignmentForDirection(
-        Alignment::TopStart,
+        Alignment::TopBegin,
         LayoutDirection::HorizontalTopToBottom,
         ShapeDirection::LeftToRight
     ), Alignment::TopLeft);
@@ -86,7 +86,7 @@ void AlignmentTest::forDirection() {
         ShapeDirection::LeftToRight
     ), Alignment::MiddleRightIntegral);
     CORRADE_COMPARE(alignmentForDirection(
-        Alignment::MiddleStartGlyphBoundsIntegral,
+        Alignment::MiddleBeginGlyphBoundsIntegral,
         LayoutDirection::HorizontalTopToBottom,
         ShapeDirection::RightToLeft
     ), Alignment::MiddleRightGlyphBoundsIntegral);
@@ -98,7 +98,7 @@ void AlignmentTest::forDirection() {
 
     /* Unspecified ShapeDirection behaves same as LeftToRight */
     CORRADE_COMPARE(alignmentForDirection(
-        Alignment::BottomStart,
+        Alignment::BottomBegin,
         LayoutDirection::HorizontalTopToBottom,
         ShapeDirection::Unspecified
     ), Alignment::BottomLeft);

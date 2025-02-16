@@ -44,11 +44,11 @@ namespace Implementation {
         AlignmentLeft = 0,
         AlignmentCenter = 1 << 0,
         AlignmentRight = 2 << 0,
-        /* Start and End is Left or Right based on ShapeDirection, and possibly
+        /* Begin and End is Left or Right based on ShapeDirection, and possibly
            also Top / Bottom eventually for vertical text */
-        AlignmentStart = 3 << 0,
+        AlignmentBegin = 3 << 0,
         AlignmentEnd = 4 << 0,
-        AlignmentHorizontal = AlignmentLeft|AlignmentCenter|AlignmentRight|AlignmentStart|AlignmentEnd,
+        AlignmentHorizontal = AlignmentLeft|AlignmentCenter|AlignmentRight|AlignmentBegin|AlignmentEnd,
 
         AlignmentLine = 0,
         AlignmentBottom = 1 << 4,
@@ -78,13 +78,13 @@ are only needed for `*Middle` and `*Center` alignments as they may result in
 the bounding rectangle to have odd dimensions, which would then result in
 half-pixel shifts when divided by 2.
 
-The `*Start` and `*End` values behave the same as `*Left` and `*Right`,
+The `*Begin` and `*End` values behave the same as `*Left` and `*Right`,
 respectively, if @ref ShapeDirection::LeftToRight is passed to
 @ref AbstractShaper::setDirection(), or if it's
 @ref ShapeDirection::Unspecified and the particular font plugin doesn't detect
 @ref ShapeDirection::RightToLeft when shaping. If
 @ref ShapeDirection::RightToLeft is set (or detected for
-@ref ShapeDirection::Unspecified), they're swapped, i.e. `*Start` becomes
+@ref ShapeDirection::Unspecified), they're swapped, i.e. `*Begin` becomes
 `*Right` and `*End` becomes `*Left`.
 @see @ref Renderer::render(), @ref Renderer::Renderer(),
     @see @ref alignmentForDirection()
@@ -92,7 +92,7 @@ respectively, if @ref ShapeDirection::LeftToRight is passed to
 enum class Alignment: UnsignedByte {
     /**
      * Leftmost cursor position and vertical line position is at origin.
-     * @see @ref Alignment::LineLeftGlyphBounds, @ref Alignment::LineStart,
+     * @see @ref Alignment::LineLeftGlyphBounds, @ref Alignment::LineBegin,
      *      @ref Alignment::LineEnd
      */
     LineLeft = Implementation::AlignmentLine|Implementation::AlignmentLeft,
@@ -100,7 +100,7 @@ enum class Alignment: UnsignedByte {
     /**
      * Left side of the glyph bounding rectangle and vertical line position is
      * at origin.
-     * @see @ref Alignment::LineLeft, @ref Alignment::LineStartGlyphBounds,
+     * @see @ref Alignment::LineLeft, @ref Alignment::LineBeginGlyphBounds,
      *      @ref Alignment::LineEndGlyphBounds
      * @m_since_latest
      */
@@ -145,7 +145,7 @@ enum class Alignment: UnsignedByte {
     /**
      * Rightmost cursor position and vertical line position is at origin.
      * @see @ref Alignment::LineRightGlyphBounds, @ref Alignment::LineEnd,
-     *      @ref Alignment::LineStart
+     *      @ref Alignment::LineBegin
      * @see @ref alignmentForDirection()
      */
     LineRight = Implementation::AlignmentLine|Implementation::AlignmentRight,
@@ -154,7 +154,7 @@ enum class Alignment: UnsignedByte {
      * Right side of the glyph bounding rectangle and vertical line position is
      * at origin.
      * @see @ref Alignment::LineRight, @ref Alignment::LineEndGlyphBounds,
-     *      @ref Alignment::LineStartGlyphBounds
+     *      @ref Alignment::LineBeginGlyphBounds
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
@@ -166,7 +166,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    LineStart = Implementation::AlignmentLine|Implementation::AlignmentStart,
+    LineBegin = Implementation::AlignmentLine|Implementation::AlignmentBegin,
 
     /**
      * @ref Alignment::LineRightGlyphBounds for
@@ -175,7 +175,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    LineStartGlyphBounds = LineStart|Implementation::AlignmentGlyphBounds,
+    LineBeginGlyphBounds = LineBegin|Implementation::AlignmentGlyphBounds,
 
     /**
      * @ref Alignment::LineLeft for @ref ShapeDirection::RightToLeft,
@@ -196,7 +196,7 @@ enum class Alignment: UnsignedByte {
 
     /**
      * Leftmost cursor position and bottommost line descent is at origin.
-     * @see @ref Alignment::BottomLeftGlyphBounds, @ref Alignment::BottomStart,
+     * @see @ref Alignment::BottomLeftGlyphBounds, @ref Alignment::BottomBegin,
      *      @ref Alignment::BottomEnd
      * @m_since_latest
      */
@@ -204,7 +204,7 @@ enum class Alignment: UnsignedByte {
 
     /**
      * Bottom left corner of the glyph bounding rectangle is at origin.
-     * @see @ref Alignment::BottomLeft, @ref Alignment::BottomStartGlyphBounds,
+     * @see @ref Alignment::BottomLeft, @ref Alignment::BottomBeginGlyphBounds,
      *      @ref Alignment::BottomEndGlyphBounds
      * @m_since_latest
      */
@@ -250,7 +250,7 @@ enum class Alignment: UnsignedByte {
     /**
      * Rightmost cursor position and bottommost line descent is at origin.
      * @see @ref Alignment::BottomRightGlyphBounds, @ref Alignment::BottomEnd,
-     *      @ref Alignment::BottomStart
+     *      @ref Alignment::BottomBegin
      * @m_since_latest
      */
     BottomRight = Implementation::AlignmentBottom|Implementation::AlignmentRight,
@@ -258,7 +258,7 @@ enum class Alignment: UnsignedByte {
     /**
      * Bottom right corner of the glyph bounding rectangle is at origin.
      * @see @ref Alignment::BottomRight, @ref Alignment::BottomEndGlyphBounds,
-     *      @ref Alignment::BottomStartGlyphBounds
+     *      @ref Alignment::BottomBeginGlyphBounds
      * @m_since_latest
      */
     BottomRightGlyphBounds = BottomRight|Implementation::AlignmentGlyphBounds,
@@ -269,7 +269,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    BottomStart = Implementation::AlignmentBottom|Implementation::AlignmentStart,
+    BottomBegin = Implementation::AlignmentBottom|Implementation::AlignmentBegin,
 
     /**
      * @ref Alignment::BottomRightGlyphBounds for
@@ -278,7 +278,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    BottomStartGlyphBounds = BottomStart|Implementation::AlignmentGlyphBounds,
+    BottomBeginGlyphBounds = BottomBegin|Implementation::AlignmentGlyphBounds,
 
     /**
      * @ref Alignment::BottomLeft for @ref ShapeDirection::RightToLeft,
@@ -301,7 +301,7 @@ enum class Alignment: UnsignedByte {
      * Leftmost cursor position and a midpoint between topmost line ascent and
      * bottommost line descent is at origin.
      * @see @ref Alignment::MiddleLeftGlyphBounds,
-     *      @ref Alignment::MiddleLeftIntegral, @ref Alignment::MiddleStart,
+     *      @ref Alignment::MiddleLeftIntegral, @ref Alignment::MiddleBegin,
      *      @ref Alignment::MiddleEnd
      */
     MiddleLeft = Implementation::AlignmentMiddle|Implementation::AlignmentLeft,
@@ -312,7 +312,7 @@ enum class Alignment: UnsignedByte {
      * to whole units.
      * @see @ref Alignment::MiddleLeft,
      *      @ref Alignment::MiddleLeftGlyphBoundsIntegral,
-     *      @ref Alignment::MiddleStartIntegral,
+     *      @ref Alignment::MiddleBeginIntegral,
      *      @ref Alignment::MiddleEndIntegral
      */
     MiddleLeftIntegral = MiddleLeft|Implementation::AlignmentIntegral,
@@ -322,7 +322,7 @@ enum class Alignment: UnsignedByte {
      * origin.
      * @see @ref Alignment::MiddleLeft,
      *      @ref Alignment::MiddleLeftGlyphBoundsIntegral,
-     *      @ref Alignment::MiddleStartGlyphBounds,
+     *      @ref Alignment::MiddleBeginGlyphBounds,
      *      @ref Alignment::MiddleEndGlyphBounds
      * @m_since_latest
      */
@@ -333,7 +333,7 @@ enum class Alignment: UnsignedByte {
      * origin, with the vertical offset rounded to whole units.
      * @see @ref Alignment::MiddleLeftGlyphBounds,
      *      @ref Alignment::MiddleLeftIntegral,
-     *      @ref Alignment::MiddleStartGlyphBoundsIntegral,
+     *      @ref Alignment::MiddleBeginGlyphBoundsIntegral,
      *      @ref Alignment::MiddleEndGlyphBoundsIntegral
      * @m_since_latest
      */
@@ -380,7 +380,7 @@ enum class Alignment: UnsignedByte {
      * bottommost line descent is at origin.
      * @see @ref Alignment::MiddleRightGlyphBounds,
      *      @ref Alignment::MiddleRightIntegral, @ref Alignment::MiddleEnd,
-     *      @ref Alignment::MiddleStart
+     *      @ref Alignment::MiddleBegin
      */
     MiddleRight = Implementation::AlignmentMiddle|Implementation::AlignmentRight,
 
@@ -391,7 +391,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref Alignment::MiddleRight,
      *      @ref Alignment::MiddleRightGlyphBoundsIntegral,
      *      @ref Alignment::MiddleEndIntegral,
-     *      @ref Alignment::MiddleStartIntegral
+     *      @ref Alignment::MiddleBeginIntegral
      */
     MiddleRightIntegral = MiddleRight|Implementation::AlignmentIntegral,
 
@@ -401,7 +401,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref Alignment::MiddleRight,
      *      @ref Alignment::MiddleRightGlyphBoundsIntegral,
      *      @ref Alignment::MiddleEndGlyphBounds,
-     *      @ref Alignment::MiddleStartGlyphBounds
+     *      @ref Alignment::MiddleBeginGlyphBounds
      * @m_since_latest
      */
     MiddleRightGlyphBounds = MiddleRight|Implementation::AlignmentGlyphBounds,
@@ -412,7 +412,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref Alignment::MiddleRightGlyphBounds,
      *      @ref Alignment::MiddleRightIntegral,
      *      @ref Alignment::MiddleEndGlyphBoundsIntegral,
-     *      @ref Alignment::MiddleStartGlyphBoundsIntegral
+     *      @ref Alignment::MiddleBeginGlyphBoundsIntegral
      * @m_since_latest
      */
     MiddleRightGlyphBoundsIntegral = MiddleRightGlyphBounds|Implementation::AlignmentIntegral,
@@ -423,7 +423,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    MiddleStart = Implementation::AlignmentMiddle|Implementation::AlignmentStart,
+    MiddleBegin = Implementation::AlignmentMiddle|Implementation::AlignmentBegin,
 
     /**
      * @ref Alignment::MiddleRightIntegral for
@@ -432,7 +432,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    MiddleStartIntegral = MiddleStart|Implementation::AlignmentIntegral,
+    MiddleBeginIntegral = MiddleBegin|Implementation::AlignmentIntegral,
 
     /**
      * @ref Alignment::MiddleRightGlyphBounds for
@@ -441,7 +441,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    MiddleStartGlyphBounds = MiddleStart|Implementation::AlignmentGlyphBounds,
+    MiddleBeginGlyphBounds = MiddleBegin|Implementation::AlignmentGlyphBounds,
 
     /**
      * @ref Alignment::MiddleRightGlyphBoundsIntegral for
@@ -450,7 +450,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    MiddleStartGlyphBoundsIntegral = MiddleStartGlyphBounds|Implementation::AlignmentIntegral,
+    MiddleBeginGlyphBoundsIntegral = MiddleBeginGlyphBounds|Implementation::AlignmentIntegral,
 
     /**
      * @ref Alignment::MiddleLeft for @ref ShapeDirection::RightToLeft,
@@ -489,14 +489,14 @@ enum class Alignment: UnsignedByte {
 
     /**
      * Leftmost cursor position and topmost line ascent is at origin.
-     * @see @ref Alignment::TopLeftGlyphBounds, @ref Alignment::TopStart,
+     * @see @ref Alignment::TopLeftGlyphBounds, @ref Alignment::TopBegin,
      *      @ref Alignment::TopEnd
      */
     TopLeft = Implementation::AlignmentTop|Implementation::AlignmentLeft,
 
     /**
      * Top left corner of the glyph bounding rectangle is at origin.
-     * @see @ref Alignment::TopLeft, @ref Alignment::TopStartGlyphBounds,
+     * @see @ref Alignment::TopLeft, @ref Alignment::TopBeginGlyphBounds,
      *      @ref Alignment::TopEndGlyphBounds
      * @m_since_latest
      */
@@ -540,14 +540,14 @@ enum class Alignment: UnsignedByte {
     /**
      * Rightmost cursor position and topmost line ascent is at origin.
      * @see @ref Alignment::TopRightGlyphBounds, @ref Alignment::TopEnd,
-     *      @ref Alignment::TopStart
+     *      @ref Alignment::TopBegin
      */
     TopRight = Implementation::AlignmentTop|Implementation::AlignmentRight,
 
     /**
      * Top right corner of the glyph bounding rectangle is at origin.
      * @see @ref Alignment::TopRight, @ref Alignment::TopEndGlyphBounds,
-     *      @ref Alignment::TopStartGlyphBounds
+     *      @ref Alignment::TopBeginGlyphBounds
      * @m_since_latest
      */
     TopRightGlyphBounds = TopRight|Implementation::AlignmentGlyphBounds,
@@ -558,7 +558,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    TopStart = Implementation::AlignmentTop|Implementation::AlignmentStart,
+    TopBegin = Implementation::AlignmentTop|Implementation::AlignmentBegin,
 
     /**
      * @ref Alignment::TopRightGlyphBounds for
@@ -567,7 +567,7 @@ enum class Alignment: UnsignedByte {
      * @see @ref alignmentForDirection()
      * @m_since_latest
      */
-    TopStartGlyphBounds = TopStart|Implementation::AlignmentGlyphBounds,
+    TopBeginGlyphBounds = TopBegin|Implementation::AlignmentGlyphBounds,
 
     /**
      * @ref Alignment::TopLeft for @ref ShapeDirection::RightToLeft,
@@ -597,7 +597,7 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, Alignment value);
 The @p layoutDirection is currently expected to always be
 @ref LayoutDirection::HorizontalTopToBottom and @p shapeDirection never
 @ref ShapeDirection::TopToBottom or @ref ShapeDirection::BottomToTop. Then, if
-@p alignment is `*Start` or `*End`, it's converted to `*Left` or `*Right`,
+@p alignment is `*Begin` or `*End`, it's converted to `*Left` or `*Right`,
 respectively, if @p shapeDirection is @ref ShapeDirection::LeftToRight or
 @ref ShapeDirection::Unspecified, and `*Right` or `*Left`, respectively, if
 @p shapeDirection is @ref ShapeDirection::RightToLeft.
