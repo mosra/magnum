@@ -222,11 +222,11 @@ const struct {
     {"bottom right, glyph bounds",
         Alignment::BottomRightGlyphBounds, ShapeDirection::Unspecified,
         {-12.5f, -3.75f}},
-    {"line start, direction unspecified",
-        Alignment::LineStart, ShapeDirection::Unspecified,
+    {"line begin, direction unspecified",
+        Alignment::LineBegin, ShapeDirection::Unspecified,
         {}}, /* Same as line left, thus no shift */
-    {"bottom start, LTR",
-        Alignment::BottomStart, ShapeDirection::LeftToRight,
+    {"bottom begin, LTR",
+        Alignment::BottomBegin, ShapeDirection::LeftToRight,
         {0.0f, 1.25f}}, /* Same as bottom left */
     {"line end, RTL",
         Alignment::LineEnd, ShapeDirection::RightToLeft,
@@ -237,8 +237,8 @@ const struct {
     {"top end, LTR",
         Alignment::TopEnd, ShapeDirection::LeftToRight,
         {-3.0f, -2.25f}}, /* Same as top right */
-    {"line start, RTL",
-        Alignment::LineStart, ShapeDirection::RightToLeft,
+    {"line begin, RTL",
+        Alignment::LineBegin, ShapeDirection::RightToLeft,
         {-3.0f, 0.0f}}, /* Same as line right */
     {"line left, RTL",
         Alignment::LineLeft, ShapeDirection::RightToLeft,
@@ -935,10 +935,10 @@ void RendererTest::alignBlockInvalidDirection() {
     Containers::String out;
     Error redirectError{&out};
     alignRenderedBlock({}, LayoutDirection::VerticalRightToLeft, Alignment::LineLeft, nullptr);
-    alignRenderedBlock({}, LayoutDirection::HorizontalTopToBottom, Alignment::LineStartGlyphBounds, nullptr);
+    alignRenderedBlock({}, LayoutDirection::HorizontalTopToBottom, Alignment::LineBeginGlyphBounds, nullptr);
     CORRADE_COMPARE_AS(out,
         "Text::alignRenderedBlock(): only Text::LayoutDirection::HorizontalTopToBottom is supported right now, got Text::LayoutDirection::VerticalRightToLeft\n"
-        "Text::alignRenderedBlock(): Text::Alignment::LineStartGlyphBounds has to be resolved to *Left / *Right before being passed to this function\n",
+        "Text::alignRenderedBlock(): Text::Alignment::LineBeginGlyphBounds has to be resolved to *Left / *Right before being passed to this function\n",
         TestSuite::Compare::String);
 }
 

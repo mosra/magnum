@@ -192,7 +192,7 @@ Range2D alignRenderedLine(const Range2D& lineRectangle, const LayoutDirection di
     CORRADE_ASSERT(direction == LayoutDirection::HorizontalTopToBottom,
         "Text::alignRenderedLine(): only" << LayoutDirection::HorizontalTopToBottom << "is supported right now, got" << direction, {});
     CORRADE_ASSERT(
-        (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentStart &&
+        (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentBegin &&
         (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentEnd,
         "Text::alignRenderedLine():" << alignment << "has to be resolved to *Left / *Right before being passed to this function", {});
     #ifdef CORRADE_NO_ASSERT
@@ -226,7 +226,7 @@ Range2D alignRenderedBlock(const Range2D& blockRectangle, const LayoutDirection 
     CORRADE_ASSERT(direction == LayoutDirection::HorizontalTopToBottom,
         "Text::alignRenderedBlock(): only" << LayoutDirection::HorizontalTopToBottom << "is supported right now, got" << direction, {});
     CORRADE_ASSERT(
-        (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentStart &&
+        (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentBegin &&
         (UnsignedByte(alignment) & Implementation::AlignmentHorizontal) != Implementation::AlignmentEnd,
         "Text::alignRenderedBlock():" << alignment << "has to be resolved to *Left / *Right before being passed to this function", {});
     #ifdef CORRADE_NO_ASSERT

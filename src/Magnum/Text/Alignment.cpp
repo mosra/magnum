@@ -47,8 +47,8 @@ Debug& operator<<(Debug& debug, const Alignment value) {
         _c(LineCenterGlyphBoundsIntegral)
         _c(LineRight)
         _c(LineRightGlyphBounds)
-        _c(LineStart)
-        _c(LineStartGlyphBounds)
+        _c(LineBegin)
+        _c(LineBeginGlyphBounds)
         _c(LineEnd)
         _c(LineEndGlyphBounds)
         _c(BottomLeft)
@@ -59,8 +59,8 @@ Debug& operator<<(Debug& debug, const Alignment value) {
         _c(BottomCenterGlyphBoundsIntegral)
         _c(BottomRight)
         _c(BottomRightGlyphBounds)
-        _c(BottomStart)
-        _c(BottomStartGlyphBounds)
+        _c(BottomBegin)
+        _c(BottomBeginGlyphBounds)
         _c(BottomEnd)
         _c(BottomEndGlyphBounds)
         _c(MiddleLeft)
@@ -75,10 +75,10 @@ Debug& operator<<(Debug& debug, const Alignment value) {
         _c(MiddleRightIntegral)
         _c(MiddleRightGlyphBounds)
         _c(MiddleRightGlyphBoundsIntegral)
-        _c(MiddleStart)
-        _c(MiddleStartIntegral)
-        _c(MiddleStartGlyphBounds)
-        _c(MiddleStartGlyphBoundsIntegral)
+        _c(MiddleBegin)
+        _c(MiddleBeginIntegral)
+        _c(MiddleBeginGlyphBounds)
+        _c(MiddleBeginGlyphBoundsIntegral)
         _c(MiddleEnd)
         _c(MiddleEndIntegral)
         _c(MiddleEndGlyphBounds)
@@ -91,8 +91,8 @@ Debug& operator<<(Debug& debug, const Alignment value) {
         _c(TopCenterGlyphBoundsIntegral)
         _c(TopRight)
         _c(TopRightGlyphBounds)
-        _c(TopStart)
-        _c(TopStartGlyphBounds)
+        _c(TopBegin)
+        _c(TopBeginGlyphBounds)
         _c(TopEnd)
         _c(TopEndGlyphBounds)
         #undef _c
@@ -114,7 +114,7 @@ Alignment alignmentForDirection(const Alignment alignment, const LayoutDirection
 
     const UnsignedByte horizontal = UnsignedByte(alignment) & Implementation::AlignmentHorizontal;
     const UnsignedByte exceptHorizontal = UnsignedByte(alignment) & ~Implementation::AlignmentHorizontal;
-    if(horizontal == Implementation::AlignmentStart)
+    if(horizontal == Implementation::AlignmentBegin)
         return Alignment((shapeDirection == ShapeDirection::RightToLeft ?
             Implementation::AlignmentRight :
             Implementation::AlignmentLeft)|exceptHorizontal);
