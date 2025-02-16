@@ -53,13 +53,13 @@ void mainTextureTools();
 void mainTextureTools() {
 {
 /* [AtlasLandfill-usage] */
-Containers::ArrayView<const ImageView2D> images = DOXYGEN_ELLIPSIS({});
+Containers::Array<Image2D> images = DOXYGEN_ELLIPSIS({}); /* or ImageView2D, Trade::ImageData2D... */
 Containers::Array<Vector2i> offsets{NoInit, images.size()};
 Containers::BitArray rotations{NoInit, images.size()};
 
 /* Fill the atlas with an unbounded height */
 TextureTools::AtlasLandfill atlas{{1024, 0}};
-atlas.add(stridedArrayView(images).slice(&ImageView2D::size), offsets, rotations);
+atlas.add(stridedArrayView(images).slice(&Image2D::size), offsets, rotations);
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
 Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize().xy(),
@@ -78,13 +78,13 @@ for(std::size_t i = 0; i != images.size(); ++i) {
 }
 
 {
-Containers::ArrayView<const ImageView2D> images;
+Containers::Array<Image2D> images;
 Containers::Array<Vector2i> offsets{NoInit, images.size()};
 TextureTools::AtlasLandfill atlas{{1024, 0}};
 /* [AtlasLandfill-usage-no-rotation] */
 atlas.clearFlags(TextureTools::AtlasLandfillFlag::RotatePortrait|
                  TextureTools::AtlasLandfillFlag::RotateLandscape)
-     .add(stridedArrayView(images).slice(&ImageView2D::size), offsets);
+     .add(stridedArrayView(images).slice(&Image2D::size), offsets);
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
 Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize().xy(),
@@ -101,13 +101,13 @@ for(std::size_t i = 0; i != images.size(); ++i) {
 
 {
 /* [AtlasLandfill-usage-array] */
-Containers::ArrayView<const ImageView2D> images = DOXYGEN_ELLIPSIS({});
+Containers::Array<Image2D> images = DOXYGEN_ELLIPSIS({});
 Containers::Array<Vector3i> offsets{NoInit, images.size()};
 Containers::BitArray rotations{NoInit, images.size()};
 
 /* Fill the atlas with an unbounded depth */
 TextureTools::AtlasLandfill atlas{{1024, 1024, 0}};
-atlas.add(stridedArrayView(images).slice(&ImageView2D::size), offsets, rotations);
+atlas.add(stridedArrayView(images).slice(&Image2D::size), offsets, rotations);
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
 Image3D output{PixelFormat::RGBA8Unorm, atlas.filledSize(),
@@ -128,9 +128,9 @@ for(std::size_t i = 0; i != images.size(); ++i) {
 
 {
 /* [atlasArrayPowerOfTwo] */
-Containers::ArrayView<const ImageView2D> input;
+Containers::Array<Image2D> input = DOXYGEN_ELLIPSIS({}); /* or ImageView2D, Trade::ImageData2D... */
 Containers::StridedArrayView1D<const Vector2i> sizes =
-    stridedArrayView(input).slice(&ImageView2D::size);
+    stridedArrayView(input).slice(&Image2D::size);
 Containers::Array<Vector3i> offsets{NoInit, input.size()};
 
 /* Size the atlas based on the largest image and fill it */
