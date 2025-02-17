@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="cz.mosra.magnum.PlatformAndroidApplicationTest" android:versionCode="1" android:versionName="1.0">
   <uses-feature android:glEsVersion="0x00020000" />
-  <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="11" />
+  <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="24" />
   <application android:label="AndroidApplication Test" android:hasCode="false">
     <activity
         android:name="android.app.NativeActivity"
