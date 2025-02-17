@@ -1125,7 +1125,16 @@ bool Sdl2Application::mainLoopIteration() {
             } break;
 
             case SDL_MOUSEWHEEL: {
-                ScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
+                ScrollEvent e{event,
+                    #if SDL_VERSION_ATLEAST(2, 0, 18)
+                    {event.wheel.preciseX, event.wheel.preciseY}
+                    #else
+                    {Float(event.wheel.x), Float(event.wheel.y)}
+                    #endif
+                    #if SDL_VERSION_ATLEAST(2, 0, 26)
+                    , {Float(event.wheel.mouseX), Float(event.wheel.mouseY)}
+                    #endif
+                };
                 scrollEvent(e);
             } break;
 
