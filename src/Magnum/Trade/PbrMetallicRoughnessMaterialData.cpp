@@ -55,31 +55,6 @@ bool PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture() const {
        roughnessTextureLayer() == metalnessTextureLayer();
 }
 
-bool PbrMetallicRoughnessMaterialData::hasRoughnessMetallicOcclusionTexture() const {
-    if(!hasAttribute(MaterialAttribute::RoughnessTexture) ||
-       !hasAttribute(MaterialAttribute::MetalnessTexture) ||
-       !hasAttribute(MaterialAttribute::OcclusionTexture))
-        return false;
-
-    const UnsignedInt roughnessTexture = attribute<UnsignedInt>(MaterialAttribute::RoughnessTexture);
-    if(attribute<UnsignedInt>(MaterialAttribute::MetalnessTexture) != roughnessTexture ||
-       attribute<UnsignedInt>(MaterialAttribute::OcclusionTexture) != roughnessTexture ||
-       roughnessTextureSwizzle() != MaterialTextureSwizzle::R ||
-       metalnessTextureSwizzle() != MaterialTextureSwizzle::G ||
-       occlusionTextureSwizzle() != MaterialTextureSwizzle::B)
-        return false;
-
-    const Matrix3 roughnessTextureMatrix = this->roughnessTextureMatrix();
-    const UnsignedInt roughnessTextureCoordinates = this->roughnessTextureCoordinates();
-    const UnsignedInt roughnessTextureLayer = this->roughnessTextureLayer();
-    return metalnessTextureMatrix() == roughnessTextureMatrix &&
-        occlusionTextureMatrix() == roughnessTextureMatrix &&
-        metalnessTextureCoordinates() == roughnessTextureCoordinates &&
-        occlusionTextureCoordinates() == roughnessTextureCoordinates &&
-        metalnessTextureLayer() == roughnessTextureLayer &&
-        occlusionTextureLayer() == roughnessTextureLayer;
-}
-
 bool PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture() const {
     if(!hasAttribute(MaterialAttribute::OcclusionTexture) ||
        !hasAttribute(MaterialAttribute::RoughnessTexture) ||
@@ -103,6 +78,31 @@ bool PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture() co
         metalnessTextureCoordinates() == occlusionTextureCoordinates &&
         roughnessTextureLayer() == occlusionTextureLayer &&
         metalnessTextureLayer() == occlusionTextureLayer;
+}
+
+bool PbrMetallicRoughnessMaterialData::hasRoughnessMetallicOcclusionTexture() const {
+    if(!hasAttribute(MaterialAttribute::RoughnessTexture) ||
+       !hasAttribute(MaterialAttribute::MetalnessTexture) ||
+       !hasAttribute(MaterialAttribute::OcclusionTexture))
+        return false;
+
+    const UnsignedInt roughnessTexture = attribute<UnsignedInt>(MaterialAttribute::RoughnessTexture);
+    if(attribute<UnsignedInt>(MaterialAttribute::MetalnessTexture) != roughnessTexture ||
+       attribute<UnsignedInt>(MaterialAttribute::OcclusionTexture) != roughnessTexture ||
+       roughnessTextureSwizzle() != MaterialTextureSwizzle::R ||
+       metalnessTextureSwizzle() != MaterialTextureSwizzle::G ||
+       occlusionTextureSwizzle() != MaterialTextureSwizzle::B)
+        return false;
+
+    const Matrix3 roughnessTextureMatrix = this->roughnessTextureMatrix();
+    const UnsignedInt roughnessTextureCoordinates = this->roughnessTextureCoordinates();
+    const UnsignedInt roughnessTextureLayer = this->roughnessTextureLayer();
+    return metalnessTextureMatrix() == roughnessTextureMatrix &&
+        occlusionTextureMatrix() == roughnessTextureMatrix &&
+        metalnessTextureCoordinates() == roughnessTextureCoordinates &&
+        occlusionTextureCoordinates() == roughnessTextureCoordinates &&
+        metalnessTextureLayer() == roughnessTextureLayer &&
+        occlusionTextureLayer() == roughnessTextureLayer;
 }
 
 bool PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture() const {
