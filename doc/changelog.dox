@@ -485,7 +485,8 @@ See also:
     @ref Trade::PbrMetallicRoughnessMaterialData,
     @ref Trade::PbrSpecularGlossinessMaterialData and
     @ref Trade::PbrClearCoatMaterialData convenience accessor APIs similar to
-    @ref Trade::PhongMaterialData. See [mosra/magnum#459](https://github.com/mosra/magnum/pull/459).
+    @ref Trade::PhongMaterialData. See also [mosra/magnum#459](https://github.com/mosra/magnum/pull/459)
+    and [mosra/magnum#662](https://github.com/mosra/magnum/issues/662).
 -   Added @ref Trade::PhongMaterialData::hasSpecularTexture(),
     @ref Trade::PhongMaterialData::specularTextureSwizzle(),
     @ref Trade::PhongMaterialData::normalTextureScale() and

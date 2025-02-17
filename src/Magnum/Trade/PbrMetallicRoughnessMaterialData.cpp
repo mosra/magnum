@@ -56,15 +56,21 @@ bool PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture() const {
 }
 
 bool PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture() const {
-    if(!hasAttribute(MaterialAttribute::OcclusionTexture) ||
-       !hasAttribute(MaterialAttribute::RoughnessTexture) ||
-       !hasAttribute(MaterialAttribute::MetalnessTexture))
+    if(!hasAttribute(MaterialAttribute::OcclusionTexture))
         return false;
 
     const UnsignedInt occlusionTexture = attribute<UnsignedInt>(MaterialAttribute::OcclusionTexture);
-    if(attribute<UnsignedInt>(MaterialAttribute::RoughnessTexture) != occlusionTexture ||
-       attribute<UnsignedInt>(MaterialAttribute::MetalnessTexture) != occlusionTexture ||
-       occlusionTextureSwizzle() != MaterialTextureSwizzle::R ||
+    if(hasAttribute(MaterialAttribute::NoneRoughnessMetallicTexture)) {
+        if(attribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture) != occlusionTexture)
+            return false;
+    } else if(hasAttribute(MaterialAttribute::MetalnessTexture) &&
+              hasAttribute(MaterialAttribute::RoughnessTexture)) {
+        if(attribute<UnsignedInt>(MaterialAttribute::RoughnessTexture) != occlusionTexture ||
+           attribute<UnsignedInt>(MaterialAttribute::MetalnessTexture) != occlusionTexture)
+            return false;
+    } else return false;
+
+    if(occlusionTextureSwizzle() != MaterialTextureSwizzle::R ||
        roughnessTextureSwizzle() != MaterialTextureSwizzle::G ||
        metalnessTextureSwizzle() != MaterialTextureSwizzle::B)
         return false;

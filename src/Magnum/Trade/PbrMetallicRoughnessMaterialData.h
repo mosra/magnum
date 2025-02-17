@@ -124,13 +124,15 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         /**
          * @brief Whether the material has a combined occlusion/roughness/metallic texture
          *
-         * Returns @cpp true @ce if @ref MaterialAttribute::OcclusionTexture,
-         * @ref MaterialAttribute::RoughnessTexture and
-         * @ref MaterialAttribute::MetalnessTexture are all present, point to
-         * the same texture ID, @ref MaterialAttribute::OcclusionTextureSwizzle
-         * is set to @ref MaterialTextureSwizzle::R (or omitted, in which case
-         * it's the default), @ref MaterialAttribute::RoughnessTextureSwizzle
-         * is set to @ref MaterialTextureSwizzle::G and
+         * Returns @cpp true @ce if @ref MaterialAttribute::OcclusionTexture
+         * and either the @ref MaterialAttribute::NoneRoughnessMetallicTexture
+         * attribute is present or both @ref MaterialAttribute::RoughnessTexture
+         * and @ref MaterialAttribute::MetalnessTexture are present and they
+         * point to the same texture ID,
+         * @ref MaterialAttribute::OcclusionTextureSwizzle is set to
+         * @ref MaterialTextureSwizzle::R (or omitted, in which case it's the
+         * default), @ref MaterialAttribute::RoughnessTextureSwizzle is set to
+         * @ref MaterialTextureSwizzle::G and
          * @ref MaterialAttribute::MetalnessTextureSwizzle is set to
          * @ref MaterialTextureSwizzle::B, and additionally
          * @ref MaterialAttribute::OcclusionTextureMatrix,
