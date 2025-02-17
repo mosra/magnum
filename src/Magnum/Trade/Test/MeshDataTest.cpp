@@ -73,6 +73,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttribute2DNonContiguous();
     void constructAttributeTypeErased();
     void constructAttributeTypeErasedMorphTarget();
+    template<class T> void constructAttributeTypeErasedCharAmbiguity();
     void constructAttributeNullptr();
     void constructAttributeNullptrMorphTarget();
     void constructAttributePadding();
@@ -284,6 +285,8 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttribute2DNonContiguous,
               &MeshDataTest::constructAttributeTypeErased,
               &MeshDataTest::constructAttributeTypeErasedMorphTarget,
+              &MeshDataTest::constructAttributeTypeErasedCharAmbiguity<char>,
+              &MeshDataTest::constructAttributeTypeErasedCharAmbiguity<const char>,
               &MeshDataTest::constructAttributeNullptr,
               &MeshDataTest::constructAttributeNullptrMorphTarget,
               &MeshDataTest::constructAttributePadding,
@@ -1041,6 +1044,34 @@ void MeshDataTest::constructAttributeTypeErasedMorphTarget() {
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector3);
     CORRADE_VERIFY(positions.data().data() == positionData);
+}
+
+template<class> struct NameTraits;
+template<> struct NameTraits<char> {
+    static const char* name() { return "char"; }
+};
+template<> struct NameTraits<const char> {
+    static const char* name() { return "const char"; }
+};
+
+template<class T> void MeshDataTest::constructAttributeTypeErasedCharAmbiguity() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    /* StridedArrayView1D<[const ]char> is convertible to both
+       StridedArrayView1D<const void> and StridedArrayView2D<const char>,
+       verify the void is preferred. 2D conversion would result in the size
+       being {1, 3} which doesn't make sense. */
+    char data[3]{};
+    Containers::StridedArrayView1D<T> view = data;
+    MeshAttributeData attribute{meshAttributeCustom(15), VertexFormat::Byte, view, 0, 33};
+    CORRADE_VERIFY(!attribute.isOffsetOnly());
+    CORRADE_COMPARE(attribute.arraySize(), 0);
+    CORRADE_COMPARE(attribute.morphTargetId(), 33);
+    CORRADE_COMPARE(attribute.name(), meshAttributeCustom(15));
+    CORRADE_COMPARE(attribute.format(), VertexFormat::Byte);
+    /* If the delegation would be wrong, size would be 1 */
+    CORRADE_COMPARE(attribute.data().size(), 3);
+    CORRADE_VERIFY(attribute.data().data() == data);
 }
 
 void MeshDataTest::constructAttributeNullptr() {
