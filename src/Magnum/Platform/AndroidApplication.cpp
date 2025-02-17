@@ -5,6 +5,7 @@
                 2020, 2021, 2022, 2023, 2024, 2025
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2021 nodoteve <nodoteve@yandex.com>
+    Copyright © 2025 hsdk123 <daegon.dhsk@outlook.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
