@@ -3345,16 +3345,27 @@ CORRADE_IGNORE_DEPRECATED_POP
 */
 class Sdl2Application::ScrollEvent: public Sdl2Application::InputEvent {
     public:
-        /** @brief Scroll offset */
+        /**
+         * @brief Scroll offset
+         *
+         * @note SDL versions before 2.0.18 only report an integer value, which
+         *      may result in the returned value being zero if the offset
+         *      reported by the system is a fractional value less than one.
+         */
         Vector2 offset() const { return _offset; }
 
         /**
          * @brief Position
          *
-         * For mouse input the position is always reported in whole pixels.
-         * Lazily populated on first request.
+         * For mouse input the position is always reported in whole pixels. On
+         * SDL versions before 2.26.0 is lazily populated on first request.
          */
+        /* Yeah, it's 2.0.22 and then 2.24.0, they changed the versioning */
+        #if SDL_VERSION_ATLEAST(2, 26, 0)
+        Vector2 position() const { return _position; }
+        #else
         Vector2 position();
+        #endif
 
         /**
          * @brief Keyboard modifiers
@@ -3366,10 +3377,27 @@ class Sdl2Application::ScrollEvent: public Sdl2Application::InputEvent {
     private:
         friend Sdl2Application;
 
-        explicit ScrollEvent(const SDL_Event& event, const Vector2& offset): InputEvent{event}, _offset{offset} {}
+        explicit ScrollEvent(const SDL_Event& event, const Vector2& offset
+            /* Yeah, it's 2.0.22 and then 2.24.0, they changed the
+               versioning */
+            #if SDL_VERSION_ATLEAST(2, 26, 0)
+            , const Vector2& position
+            #endif
+        ): InputEvent{event}, _offset{offset}
+            /* Yeah, it's 2.0.22 and then 2.24.0, they changed the
+               versioning */
+            #if SDL_VERSION_ATLEAST(2, 26, 0)
+            , _position{position}
+            #endif
+            {}
 
         const Vector2 _offset;
+        /* Yeah, it's 2.0.22 and then 2.24.0, they changed the versioning */
+        #if SDL_VERSION_ATLEAST(2, 26, 0)
+        const Vector2 _position;
+        #else
         Containers::Optional<Vector2> _position;
+        #endif
         Containers::Optional<Sdl2Application::Modifiers> _modifiers;
 };
 

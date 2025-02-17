@@ -1125,7 +1125,18 @@ bool Sdl2Application::mainLoopIteration() {
             } break;
 
             case SDL_MOUSEWHEEL: {
-                ScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
+                ScrollEvent e{event,
+                    #if SDL_VERSION_ATLEAST(2, 0, 18)
+                    {event.wheel.preciseX, event.wheel.preciseY}
+                    #else
+                    {Float(event.wheel.x), Float(event.wheel.y)}
+                    #endif
+                    /* Yeah, it's 2.0.22 and then 2.24.0, they changed the
+                       versioning */
+                    #if SDL_VERSION_ATLEAST(2, 26, 0)
+                    , {Float(event.wheel.mouseX), Float(event.wheel.mouseY)}
+                    #endif
+                };
                 scrollEvent(e);
             } break;
 
@@ -1684,6 +1695,8 @@ Sdl2Application::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
+/* Yeah, it's 2.0.22 and then 2.24.0, they changed the versioning */
+#if !SDL_VERSION_ATLEAST(2, 26, 0)
 Vector2 Sdl2Application::ScrollEvent::position() {
     if(!_position) {
         Vector2i position;
@@ -1692,6 +1705,7 @@ Vector2 Sdl2Application::ScrollEvent::position() {
     }
     return *_position;
 }
+#endif
 
 Sdl2Application::Modifiers Sdl2Application::ScrollEvent::modifiers() {
     if(!_modifiers)
