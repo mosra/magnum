@@ -483,6 +483,15 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * by GPU APIs.
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept;
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* These two are here to direct StridedArrayView1D<[const ]char> to the
+           1D overload, because that's likely what one wants. The 2D conversion
+           adds a dimension at the front, which would make the attribute have
+           just a single vertex with likely a sparse second dimension, causing
+           an immediate assert. */
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<char>& data, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept: MeshAttributeData{name, format, Containers::StridedArrayView1D<const void>{data}, arraySize, morphTargetId} {}
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const char>& data, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept: MeshAttributeData{name, format, Containers::StridedArrayView1D<const void>{data}, arraySize, morphTargetId} {}
+        #endif
 
         /**
          * @brief Constructor
