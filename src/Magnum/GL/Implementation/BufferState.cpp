@@ -190,7 +190,9 @@ BufferState::BufferState(Context& context, Containers::StaticArrayView<Implement
     }
 
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
-    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify"_s)) {
+    /* Enable this only on Apple's own drivers, not alternatives like ANGLE or
+       Zink */
+    if(context.vendorString() == "Apple"_s && !context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify"_s)) {
         dataImplementation = &Buffer::dataImplementationApple;
         subDataImplementation = &Buffer::subDataImplementationApple;
         mapImplementation = &Buffer::mapImplementationApple;
