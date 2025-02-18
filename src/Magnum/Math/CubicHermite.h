@@ -172,10 +172,18 @@ template<class T> class CubicHermite {
         }
         #endif
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare.
+         */
         bool operator==(const CubicHermite<T>& other) const;
 
-        /** @brief Non-equality comparison */
+        /**
+         * @brief Non-equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare.
+         */
         bool operator!=(const CubicHermite<T>& other) const {
             return !operator==(other);
         }

@@ -447,12 +447,20 @@ template<class T> class Quaternion {
         }
         #endif
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare.
+         */
         bool operator==(const Quaternion<T>& other) const {
             return _vector == other._vector && TypeTraits<T>::equals(_scalar, other._scalar);
         }
 
-        /** @brief Non-equality comparison */
+        /**
+         * @brief Non-equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare.
+         */
         bool operator!=(const Quaternion<T>& other) const {
             return !operator==(other);
         }

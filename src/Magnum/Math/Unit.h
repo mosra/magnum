@@ -69,12 +69,22 @@ template<template<class> class Derived, class T> class Unit {
         /** @brief Explicit conversion to underlying type */
         constexpr explicit operator T() const { return _value; }
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare for
+         * floating-point types.
+         */
         constexpr bool operator==(Unit<Derived, T> other) const {
             return TypeTraits<T>::equals(_value, other._value);
         }
 
-        /** @brief Non-equality comparison */
+        /**
+         * @brief Non-equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare for
+         * floating-point types.
+         */
         constexpr bool operator!=(Unit<Derived, T> other) const {
             return !operator==(other);
         }

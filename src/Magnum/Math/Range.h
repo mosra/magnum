@@ -183,10 +183,22 @@ template<UnsignedInt dimensions, class T> class Range {
             return Implementation::RangeConverter<dimensions, T, U>::to(*this);
         }
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done by comparing the underlying vectors, which internally uses
+         * @ref TypeTraits::equals(), i.e. a fuzzy compare for floating-point
+         * types.
+         */
         bool operator==(const Range<dimensions, T>& other) const;
 
-        /** @brief Non-equality comparison */
+        /**
+         * @brief Non-equality comparison
+         *
+         * Done by comparing the underlying vectors, which internally uses
+         * @ref TypeTraits::equals(), i.e. a fuzzy compare for floating-point
+         * types.
+         */
         bool operator!=(const Range<dimensions, T>& other) const {
             return !operator==(other);
         }

@@ -307,7 +307,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          */
         void setRow(std::size_t row, const Vector<cols, T>& data);
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done by comparing the underlying vectors, which internally uses
+         * @ref TypeTraits::equals(), i.e. a fuzzy compare for floating-point
+         * types.
+         */
         bool operator==(const RectangularMatrix<cols, rows, T>& other) const {
             for(std::size_t i = 0; i != cols; ++i)
                 if(_data[i] != other._data[i]) return false;
@@ -318,6 +324,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Non-equality comparison
          *
+         * Done by comparing the underlying vectors, which internally uses
+         * @ref TypeTraits::equals(), i.e. a fuzzy compare for floating-point
+         * types.
          * @see @ref Vector::operator<(), @ref Vector::operator<=(),
          *      @ref Vector::operator>=(), @ref Vector::operator>()
          */

@@ -117,7 +117,12 @@ template<class T> class Frustum {
             return Implementation::FrustumConverter<T, U>::to(*this);
         }
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done by comparing the underlying vectors, which internally uses
+         * @ref TypeTraits::equals(), i.e. a fuzzy compare.
+         */
         bool operator==(const Frustum<T>& other) const {
             for(std::size_t i = 0; i != 6; ++i)
                 if(_data[i] != other._data[i]) return false;
@@ -125,7 +130,12 @@ template<class T> class Frustum {
             return true;
         }
 
-        /** @brief Non-equality comparison */
+        /**
+         * @brief Non-equality comparison
+         *
+         * Done by comparing the underlying vectors, which internally uses
+         * @ref TypeTraits::equals(), i.e. a fuzzy compare.
+         */
         bool operator!=(const Frustum<T>& other) const {
             return !operator==(other);
         }

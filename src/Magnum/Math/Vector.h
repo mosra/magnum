@@ -309,6 +309,8 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Equality comparison
          *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare for
+         * floating-point types.
          * @see @ref Math::equal()
          */
         bool operator==(const Vector<size, T>& other) const {
@@ -321,6 +323,8 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Non-equality comparison
          *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare for
+         * floating-point types.
          * @see @ref Math::notEqual()
          */
         bool operator!=(const Vector<size, T>& other) const {

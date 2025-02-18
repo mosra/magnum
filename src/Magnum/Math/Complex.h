@@ -212,13 +212,21 @@ template<class T> class Complex {
         }
         #endif
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare.
+         */
         bool operator==(const Complex<T>& other) const {
             return TypeTraits<T>::equals(_real, other._real) &&
                    TypeTraits<T>::equals(_imaginary, other._imaginary);
         }
 
-        /** @brief Non-equality comparison */
+        /**
+         * @brief Non-equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare.
+         */
         bool operator!=(const Complex<T>& other) const {
             return !operator==(other);
         }

@@ -112,7 +112,9 @@ class Half {
          * @brief Equality comparison
          *
          * Returns `false` if one of the values is half-float representation of
-         * NaN, otherwise does bitwise comparison.
+         * NaN, otherwise does bitwise comparison. Note that, unlike with other
+         * floating-point Magnum math types, due to the limited precision of
+         * half floats it's *not* a fuzzy compare.
          */
         constexpr bool operator==(Half other) const {
             return (((      _data & 0x7c00) == 0x7c00 && (      _data & 0x03ff)) ||

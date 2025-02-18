@@ -183,14 +183,24 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         constexpr auto data() const -> const VectorType(&)[order + 1] { return _data; }
         #endif
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done by comparing the underlying vectors, which internally uses
+         * @ref TypeTraits::equals(), i.e. a fuzzy compare.
+         */
         bool operator==(const Bezier<order, dimensions, T>& other) const {
             for(std::size_t i = 0; i != order + 1; ++i)
                 if(_data[i] != other._data[i]) return false;
             return true;
         }
 
-        /** @brief Non-equality comparison */
+        /**
+         * @brief Non-equality comparison
+         *
+         * Done by comparing the underlying vectors, which internally uses
+         * @ref TypeTraits::equals(), i.e. a fuzzy compare.
+         */
         bool operator!=(const Bezier<order, dimensions, T>& other) const {
             return !operator==(other);
         }

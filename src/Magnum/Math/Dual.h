@@ -148,13 +148,23 @@ template<class T> class Dual {
         }
         #endif
 
-        /** @brief Equality comparison */
+        /**
+         * @brief Equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare for
+         * floating-point types.
+         */
         bool operator==(const Dual<T>& other) const {
             return TypeTraits<T>::equals(_real, other._real) &&
                    TypeTraits<T>::equals(_dual, other._dual);
         }
 
-        /** @brief Non-equality comparison */
+        /**
+         * @brief Non-equality comparison
+         *
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare for
+         * floating-point types.
+         */
         bool operator!=(const Dual<T>& other) const {
             return !operator==(other);
         }
