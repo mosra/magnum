@@ -246,8 +246,12 @@ See also:
     information.
 -   A new @cpp "mesa-broken-dsa-framebuffer-clear" @ce workaround for a crash
     on exit happening with Mesa 24 when the DSA variants of
-    @ref GL::Framebuffer::clearColor() and related APIs are used.  See
+    @ref GL::Framebuffer::clearColor() and related APIs are used. See
     @ref opengl-workarounds for more information.
+-   A new @cpp "apple-crashy-msaa-default-framebuffer" @ce workaround fixing a
+    crash inside Apple's GL implementation when a window with multisampled
+    default framebuffer is moved or resized. See @ref opengl-workarounds for
+    more information.
 
 @subsubsection changelog-latest-new-math Math library
 
