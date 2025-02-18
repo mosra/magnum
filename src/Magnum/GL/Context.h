@@ -897,6 +897,7 @@ class MAGNUM_GL_EXPORT Context {
 
         /* Defined in Implementation/driverSpecific.cpp */
         MAGNUM_GL_LOCAL void setupDriverWorkarounds();
+        MAGNUM_GL_LOCAL void setupDriverWorkaroundsWithStateCreated();
 
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_GL_LOCAL static bool isCoreProfileImplementationDefault(Context& self);

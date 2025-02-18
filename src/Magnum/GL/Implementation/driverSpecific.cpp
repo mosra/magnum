@@ -33,6 +33,13 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/Math/Range.h"
 
+#if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+/* For the "apple-crashy-msaa-default-framebuffer" workaround */
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
+#endif
+
 #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
 /* Including any Emscripten header should also make __EMSCRIPTEN_major__ etc
    macros available, independently of whether they're passed implicitly (before
@@ -107,6 +114,20 @@ constexpr Containers::StringView KnownWorkarounds[]{
    implications. So FORTUNATELY unbinding the textures worked around this too,
    and is a much nicer workaround after all. */
 "apple-buffer-texture-unbind-on-buffer-modify"_s,
+#endif
+
+#if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+/* Creating a multisampled default framebuffer in both SDL and GLFW causes a
+   crash in gldUpdateReadFramebuffer() inside Apple's GL-over-Metal
+   implementation when the window gets moved or resized. Disabling
+   multisampling fixes it, but it's also fixed by creating and then immediately
+   destroying a custom framebuffer with a multisampled attachment. Ideally the
+   workaround would only be enabled if the default framebuffer is multisampled,
+   but that's unfortunately only queryable since GL 4.3+, while Apple is stuck
+   on 4.1. So the workaround is enabled always.
+
+   The assumption is that this affects only desktop GL, not GLES on iOS. */
+"apple-crashy-msaa-default-framebuffer"_s,
 #endif
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
@@ -875,6 +896,29 @@ void Context::setupDriverWorkarounds() {
                 _extensionStatus.set(Extensions::EXT::disjoint_timer_query_webgl2::Index, true);
             }
         }
+    }
+    #endif
+
+    /* Additional workarounds done in setupDriverWorkaroundsWithStateCreated()
+       below */
+}
+
+void Context::setupDriverWorkaroundsWithStateCreated() {
+    /* Compared to setupDriverWorkarounds(), which is called even before the
+       context is current and the internal state tracker is created, everything
+       here depends on the context being current and state ready. */
+
+    #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+    /* Creating and then immediately destructing is what fixes it, yes. Enable
+       this only on Apple's own drivers, not alternatives like ANGLE or Zink.
+       Also ideally would be done only if the default framebuffer is
+       multisampled, but that's only possible to query since GL 4.3, and Apple
+       is stuck at 4.1, so doing this always. */
+    if(vendorString() == "Apple"_s && !isDriverWorkaroundDisabled("apple-crashy-msaa-default-framebuffer"_s)) {
+        GL::Renderbuffer renderbuffer;
+        renderbuffer.setStorageMultisample(4, GL::RenderbufferFormat::RGBA8, Vector2i{1});
+        GL::Framebuffer framebuffer{{{}, Vector2i{1}}};
+        framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, renderbuffer);
     }
     #endif
 }
