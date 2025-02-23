@@ -399,10 +399,9 @@ template<std::size_t size, class T> inline Vector<size, T> clamp(const Vector<si
 
 Returns `1` if @p x > 0, `0` if @p x = 0 and `-1` if @p x < 0.
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, UnderlyingTypeOf<T>>::type sign(T scalar) {
-    if(scalar > T(0)) return UnderlyingTypeOf<T>(1);
-    if(scalar < T(0)) return UnderlyingTypeOf<T>(-1);
-    return UnderlyingTypeOf<T>(0);
+template<class T> constexpr inline typename std::enable_if<IsScalar<T>::value, UnderlyingTypeOf<T>>::type sign(T x) {
+    using U = UnderlyingTypeOf<T>;
+    return U(U(bool(x > T(0))) - U(bool(x < T(0))));
 }
 
 /** @overload */
