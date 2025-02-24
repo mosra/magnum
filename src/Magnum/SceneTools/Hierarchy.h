@@ -230,7 +230,7 @@ MAGNUM_SCENETOOLS_EXPORT void absoluteFieldTransformations2DInto(const Trade::Sc
 #endif
 
 /**
-@brief Calculate absolute 2D transformations for given field
+@brief Calculate absolute 3D transformations for given field
 @m_since_latest
 
 For all entries of given field in @p scene returns an absolute transformation
