@@ -1002,7 +1002,10 @@ bool Context::tryCreate(const Configuration& configuration) {
         _extensionRequiredVersion[extension.index()] = Version::None;
 
     /* Setup driver workarounds (increase required version for particular
-       extensions), see Implementation/driverWorkarounds.cpp */
+       extensions), see Implementation/driverWorkarounds.cpp. Workarounds done
+       here are what affects state creation below, there's another set of
+       workarounds that instead depend on the created state, which are then
+       set up in setupDriverWorkaroundsWithStateCreated() afterwards. */
     setupDriverWorkarounds();
 
     /* Set this context as current */
@@ -1032,6 +1035,10 @@ bool Context::tryCreate(const Configuration& configuration) {
     Containers::Pair<Containers::ArrayTuple, Containers::Reference<Implementation::State>> state = Implementation::State::allocate(*this, output);
     _stateData = Utility::move(state.first());
     _state = &*state.second();
+
+    /* Setup driver workarounds that need the state to be created already.
+       Counterpart to the setupDriverWorkarounds() call above. */
+    setupDriverWorkaroundsWithStateCreated();
 
     /* Print a list of used workarounds */
     if(!_driverWorkarounds.isEmpty()) {
