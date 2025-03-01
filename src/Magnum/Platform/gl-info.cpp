@@ -84,7 +84,7 @@
 #include <emscripten/version.h>
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace {
 
 /** @page magnum-gl-info Magnum GL Info
 @brief Displays information about Magnum engine OpenGL capabilities
@@ -877,6 +877,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 }
 #endif
 
-}
+}}
 
 MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::MagnumInfo)
