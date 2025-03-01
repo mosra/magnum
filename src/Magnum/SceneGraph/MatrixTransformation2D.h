@@ -210,6 +210,8 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
     protected:
         /* Allow construction only from Object */
         explicit BasicMatrixTransformation2D() = default;
+        /* To silence -Wnon-virtual-dtor */
+        ~BasicMatrixTransformation2D() = default;
 
     private:
         void doResetTransformation() override final { resetTransformation(); }

@@ -112,6 +112,8 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
     protected:
         /* Allow construction only from Object */
         explicit TranslationTransformation() = default;
+        /* To silence -Wnon-virtual-dtor */
+        ~TranslationTransformation() = default;
 
     private:
         void doResetTransformation() override final { resetTransformation(); }

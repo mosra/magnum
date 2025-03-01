@@ -1167,6 +1167,11 @@ See also:
 -   Created a RPM package with a helper script for building (see
     [mosra/magnum#537](https://github.com/mosra/magnum/pull/537) and
     [mosra/magnum#650](https://github.com/mosra/magnum/pull/650))
+-   Worked around a `-Wnon-virtual-dtor` warning on GCC and Clang in the
+    @ref SceneGraph library. The same warning (which is off by default) fires
+    also for any use of @ref Platform application classes, fixing that would
+    however only add warning suppression noise or force destructors to be
+    `virtual` for no reason, so it's not done there. See [mosra/magnum#665](https://github.com/mosra/magnum/issues/665).
 
 @subsection changelog-latest-bugfixes Bug fixes
 

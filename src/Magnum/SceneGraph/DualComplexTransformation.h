@@ -185,6 +185,8 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
     protected:
         /* Allow construction only from Object */
         explicit BasicDualComplexTransformation() = default;
+        /* To silence -Wnon-virtual-dtor */
+        ~BasicDualComplexTransformation() = default;
 
     private:
         void doResetTransformation() override final { resetTransformation(); }

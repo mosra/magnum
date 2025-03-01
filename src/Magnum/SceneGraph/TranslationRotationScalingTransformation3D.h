@@ -286,6 +286,8 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
     protected:
         /* Allow construction only from Object */
         explicit BasicTranslationRotationScalingTransformation3D() = default;
+        /* To silence -Wnon-virtual-dtor */
+        ~BasicTranslationRotationScalingTransformation3D() = default;
 
     private:
         void doResetTransformation() override final { resetTransformation(); }

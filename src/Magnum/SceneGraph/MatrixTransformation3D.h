@@ -283,6 +283,8 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
     protected:
         /* Allow construction only from Object */
         explicit BasicMatrixTransformation3D() = default;
+        /* To silence -Wnon-virtual-dtor */
+        ~BasicMatrixTransformation3D() = default;
 
     private:
         void doResetTransformation() override final { resetTransformation(); }

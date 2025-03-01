@@ -206,6 +206,8 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
     protected:
         /* Allow construction only from Object */
         explicit BasicTranslationRotationScalingTransformation2D() = default;
+        /* To silence -Wnon-virtual-dtor */
+        ~BasicTranslationRotationScalingTransformation2D() = default;
 
     private:
         void doResetTransformation() override final { resetTransformation(); }

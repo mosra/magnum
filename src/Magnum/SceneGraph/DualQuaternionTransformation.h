@@ -209,6 +209,8 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
     protected:
         /* Allow construction only from Object */
         explicit BasicDualQuaternionTransformation() = default;
+        /* To silence -Wnon-virtual-dtor */
+        ~BasicDualQuaternionTransformation() = default;
 
     private:
         void doResetTransformation() override final { resetTransformation(); }
