@@ -58,7 +58,7 @@
 #error no windowless application available on this platform
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace {
 
 /** @page magnum-distancefieldconverter Distance Field conversion utility
 @brief Converts red channel of an image to distance field representation
@@ -128,8 +128,6 @@ and parameters. Size restrictions from it apply here as well, in particular the
 ratio of the source image size and and `--output-size` is expected to be a
 multiple of 2.
 */
-
-namespace TextureTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class DistanceFieldConverter: public Platform::WindowlessApplication {
@@ -255,4 +253,4 @@ int DistanceFieldConverter::exec() {
 
 }}
 
-MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::TextureTools::DistanceFieldConverter)
+MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::DistanceFieldConverter)
