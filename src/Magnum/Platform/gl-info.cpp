@@ -202,16 +202,16 @@ Vendor extension support:
 */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-class MagnumInfo: public Platform::WindowlessApplication {
+class GLInfo: public Platform::WindowlessApplication {
     public:
-        explicit MagnumInfo(const Arguments& arguments);
+        explicit GLInfo(const Arguments& arguments);
 
         int exec() override { return 0; }
 };
 
 using namespace Containers::Literals;
 
-MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
+GLInfo::GLInfo(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
     Utility::Arguments args;
     args.addBooleanOption('s', "short").setHelp("short", "display just essential info and exit")
         .addBooleanOption("extension-strings").setHelp("extension-strings", "list all extension strings provided by the driver (implies --short)")
@@ -879,4 +879,4 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
 }}
 
-MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::MagnumInfo)
+MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::GLInfo)
