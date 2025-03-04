@@ -71,8 +71,8 @@ tries to open the file with it. Supported formats:
 -   DirectX X (`*.x`), loaded with any plugin that provides `DirectXImporter`
 -   AutoCAD DXF (`*.dxf`), loaded with any plugin that provides `DxfImporter`
 -   Autodesk FBX (`*.fbx`), loaded with any plugin that provides `FbxImporter`
--   glTF (`*.gltf`, `*.glb`), loaded with @ref GltfImporter or any other plugin
-    that provides it
+-   glTF (`*.gltf`, `*.glb`) and [VRM](https://vrm.dev/en/) (`*.vrm`), loaded
+    with @ref GltfImporter or any other plugin that provides it
 -   Industry Foundation Classes (IFC/Step) (`*.ifc`), loaded with any plugin
     that provides `IfcImporter`
 -   Irrlicht Mesh and Scene (`*.irrmesh`, `*.irr`), loaded with any plugin that

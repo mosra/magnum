@@ -106,7 +106,9 @@ void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
     else if(normalizedExtension == ".fbx"_s)
         plugin = "FbxImporter"_s;
     else if(normalizedExtension == ".gltf"_s ||
-            normalizedExtension == ".glb"_s)
+            normalizedExtension == ".glb"_s ||
+            /* https://github.com/vrm-c/vrm-specification/blob/master/specification/0.0/README.md#file-extension */
+            normalizedExtension == ".vrm"_s)
         plugin = "GltfImporter"_s;
     else if(normalizedExtension == ".ifc"_s)
         plugin = "IfcImporter"_s;
