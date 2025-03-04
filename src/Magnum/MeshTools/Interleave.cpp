@@ -91,7 +91,24 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
         return Containers::NullOpt;
 
     return Containers::StridedArrayView2D<const char>{
-        mesh.vertexData(), mesh.vertexData().data() + minOffset,
+        /* MeshData only requires the vertex data to be large enough to fit the
+           actual data, not to have the size large enough to fit `count*stride`
+           elements. The StridedArrayView expects the latter, so this extends
+           the size to satisfy the assert. For simplicity it overextends by the
+           whole stride instead of just max end offset, relying on the input
+           MeshData having checked the bounds already. To be clear, the output
+           is *never* out of bounds of the vertex data, the second dimension is
+           always sized to fit within. This is verified in the
+           interleavedDataGapsTrailingOmitted() test.
+
+           Additionally, the max() is here because some algorithms such as
+           combineFaceAttributes() pass `{nullptr, ~std::size_t{}}` as
+           vertexData and without the max() it would overflow. That case is
+           tested in interleavedDataVertexDataWholeMemory(). */
+        /** @todo maybe just fix StridedArrayView to require only what's really
+            needed? */
+        {mesh.vertexData().data(), Math::max(mesh.vertexData().size(), mesh.vertexData().size() + stride)},
+        mesh.vertexData().data() + minOffset,
         {mesh.vertexCount(), maxOffset - minOffset},
         {std::ptrdiff_t(stride), 1}};
 }

@@ -59,6 +59,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleavedData();
     void interleavedDataUnordered();
     void interleavedDataGaps();
+    void interleavedDataGapsTrailingOmitted();
     void interleavedDataAliased();
     void interleavedDataSingleAttribute();
     void interleavedDataArrayAttributes();
@@ -147,6 +148,7 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::interleavedData,
               &InterleaveTest::interleavedDataUnordered,
               &InterleaveTest::interleavedDataGaps,
+              &InterleaveTest::interleavedDataGapsTrailingOmitted,
               &InterleaveTest::interleavedDataAliased,
               &InterleaveTest::interleavedDataSingleAttribute,
               &InterleaveTest::interleavedDataArrayAttributes,
@@ -447,6 +449,30 @@ void InterleaveTest::interleavedDataGaps() {
     CORRADE_COMPARE(interleaved.size()[0], 3);
     CORRADE_COMPARE(interleaved.size()[1], 31);
     CORRADE_COMPARE(interleaved.stride()[0], 40);
+    CORRADE_COMPARE(interleaved.stride()[1], 1);
+}
+
+void InterleaveTest::interleavedDataGapsTrailingOmitted() {
+    /* Similar to interleavedDataGaps(), but with padding at the end omitted.
+       MeshData allows that, but StridedArrayView constructors don't (which is
+       why this is using offset-only attributes), so verify we don't trip up on
+       that. */
+    Containers::Array<char> vertexData{2*48 + 36};
+    const char* vertexDataPointer = vertexData.data();
+
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector2, 5, 3, 48},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, 24, 3, 48}
+    }};
+    CORRADE_VERIFY(MeshTools::isInterleaved(data));
+
+    Containers::StridedArrayView2D<const char> interleaved = MeshTools::interleavedData(data);
+    CORRADE_COMPARE(interleaved.data(), vertexDataPointer + 5);
+    CORRADE_COMPARE(interleaved.size()[0], 3);
+    CORRADE_COMPARE(interleaved.size()[1], 31);
+    CORRADE_COMPARE(interleaved.stride()[0], 48);
     CORRADE_COMPARE(interleaved.stride()[1], 1);
 }
 
