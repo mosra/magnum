@@ -55,7 +55,8 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
        problems especially when used within interleavedLayout() etc. May
        tackle properly later. */
     const Int stride = mesh.attributeStride(0);
-    if(stride <= 0) return Containers::NullOpt;
+    if(stride <= 0)
+        return Containers::NullOpt;
 
     std::size_t minOffset = ~std::size_t{};
     std::size_t maxOffset = 0;
@@ -86,7 +87,8 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
         maxOffset = Math::max(maxOffset, minOffset + stride);
 
     /* The offsets can't fit into the stride, report failure */
-    if(maxOffset - minOffset > UnsignedInt(stride)) return Containers::NullOpt;
+    if(maxOffset - minOffset > UnsignedInt(stride))
+        return Containers::NullOpt;
 
     return Containers::StridedArrayView2D<const char>{
         mesh.vertexData(), mesh.vertexData().data() + minOffset,
