@@ -46,6 +46,9 @@
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
+#ifdef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/Iterable.h>
+#endif
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
