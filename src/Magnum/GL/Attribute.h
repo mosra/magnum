@@ -192,12 +192,41 @@ template<UnsignedInt location, class T> class Attribute {
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class DataType: GLenum {
-            UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
-            Byte = GL_BYTE,                     /**< Byte */
-            UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
-            Short = GL_SHORT,                   /**< Short */
-            UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
-            Int = GL_INT,                       /**< Int */
+            /**
+             * Unsigned byte. On WebGL is only for float and unsigned integer
+             * attributes, cannot be used with signed integer attributes.
+             */
+            UnsignedByte = GL_UNSIGNED_BYTE,
+
+            /**
+             * Byte. On WebGL is only for float and signed integer attributes,
+             * cannot be used with unsigned integer attributes.
+             */
+            Byte = GL_BYTE,
+
+            /**
+             * Unsigned short. On WebGL is only for float and unsigned integer
+             * attributes, cannot be used with signed integer attributes.
+             */
+            UnsignedShort = GL_UNSIGNED_SHORT,
+
+            /**
+             * Short. On WebGL is only for float and signed integer attributes,
+             * cannot be used with unsigned integer attributes.
+             */
+            Short = GL_SHORT,
+
+            /**
+             * Unsigned int. On WebGL is only for float and unsigned integer
+             * attributes, cannot be used with signed integer attributes.
+             */
+            UnsignedInt = GL_UNSIGNED_INT,
+
+            /**
+             * Int. On WebGL is only for float and signed integer attributes,
+             * cannot be used with unsigned integer attributes.
+             */
+            Int = GL_INT,
 
             #ifndef MAGNUM_TARGET_WEBGL
             /**
@@ -890,12 +919,26 @@ struct IntAttribute {
     typedef Int ScalarType;
 
     enum class DataType: GLenum {
-        UnsignedByte = GL_UNSIGNED_BYTE,
         Byte = GL_BYTE,
-        UnsignedShort = GL_UNSIGNED_SHORT,
         Short = GL_SHORT,
-        UnsignedInt = GL_UNSIGNED_INT,
-        Int = GL_INT
+        Int = GL_INT,
+        #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
+        UnsignedByte
+            #ifdef MAGNUM_TARGET_WEBGL
+            CORRADE_DEPRECATED_ENUM("using an unsigned type with a signed attribute isn't supported in WebGL, either make the attribute and the GLSL definition unsigned or use a signed type")
+            #endif
+            = GL_UNSIGNED_BYTE,
+        UnsignedShort
+            #ifdef MAGNUM_TARGET_WEBGL
+            CORRADE_DEPRECATED_ENUM("using an unsigned type with a signed attribute isn't supported in WebGL, either make the attribute and the GLSL definition unsigned or use a signed type")
+            #endif
+            = GL_UNSIGNED_SHORT,
+        UnsignedInt
+            #ifdef MAGNUM_TARGET_WEBGL
+            CORRADE_DEPRECATED_ENUM("using an unsigned type with a signed attribute isn't supported in WebGL, either make the attribute and the GLSL definition unsigned or use a signed type")
+            #endif
+            = GL_UNSIGNED_INT,
+        #endif
     };
     constexpr static DataType DefaultDataType = DataType::Int;
     enum: UnsignedInt { DefaultDataTypeSize = 4 };
@@ -914,17 +957,38 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, IntAttribute::DataType value);
 struct UnsignedIntAttribute {
     typedef UnsignedInt ScalarType;
 
-    typedef IntAttribute::DataType DataType;
+    enum class DataType: GLenum {
+        UnsignedByte = GL_UNSIGNED_BYTE,
+        UnsignedShort = GL_UNSIGNED_SHORT,
+        UnsignedInt = GL_UNSIGNED_INT,
+        #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
+        Byte
+            #ifdef MAGNUM_TARGET_WEBGL
+            CORRADE_DEPRECATED_ENUM("using a signed type with an unsigned attribute isn't supported in WebGL, either make the attribute and the GLSL definition signed or use an unsigned type")
+            #endif
+            = GL_BYTE,
+        Short
+            #ifdef MAGNUM_TARGET_WEBGL
+            CORRADE_DEPRECATED_ENUM("using a signed type with an unsigned attribute isn't supported in WebGL, either make the attribute and the GLSL definition signed or use an unsigned type")
+            #endif
+            = GL_SHORT,
+        Int
+            #ifdef MAGNUM_TARGET_WEBGL
+            CORRADE_DEPRECATED_ENUM("using a signed type with an unsigned attribute isn't supported in WebGL, either make the attribute and the GLSL definition signed or use an unsigned type")
+            #endif
+            = GL_INT
+        #endif
+    };
     constexpr static DataType DefaultDataType = DataType::UnsignedInt;
     enum: UnsignedInt { DefaultDataTypeSize = 4 };
 
     typedef IntAttribute::DataOption DataOption;
     typedef IntAttribute::DataOptions DataOptions;
 
-    static UnsignedInt size(GLint components, DataType dataType) {
-        return IntAttribute::size(components, dataType);
-    }
+    static UnsignedInt MAGNUM_GL_EXPORT size(GLint components, DataType dataType);
 };
+
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, UnsignedIntAttribute::DataType value);
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

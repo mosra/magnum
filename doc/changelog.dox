@@ -1357,6 +1357,20 @@ See also:
 -   @cpp GL::Mesh::indexTypeSize() @ce is deprecated in favor of a standalone
     @ref GL::meshIndexTypeSize() utility that you can call on the enum returned
     from @ref GL::Mesh::indexType()
+-   On WebGL builds, @ref GL::Attribute::DataType::Byte,
+    @relativeref{GL::Attribute::DataType,Short} and
+    @relativeref{GL::Attribute::DataType,Int} values are deprecated for
+    @ref GL::Attribute with an unsigned integer type, and conversely
+    @ref GL::Attribute::DataType::UnsignedByte,
+    @relativeref{GL::Attribute::DataType,UnsignedShort} and
+    @relativeref{GL::Attribute::DataType,UnsignedInt} values are deprecated for
+    @ref GL::Attribute with a signed integer type. Those never actually worked,
+    causing a WebGL error because WebGL requires the signedness to match
+    between the attribute and the GLSL definition, now it's being checked at
+    compile time. If @ref MAGNUM_BUILD_DEPRECATED is disabled, only values with
+    matching signedness are present for integer @ref GL::Attribute on WebGL
+    builds. There's no such restriction on OpenGL ES and desktop GL, there all
+    combinations are exposed like before.
 -   The @cpp Array @ce, @cpp Array1D @ce, @cpp Array2D @ce and
     @cpp Array3D @ce types that were used exclusively for specifying
     @ref SamplerWrapping in various texture APIs are deprecated in favor of

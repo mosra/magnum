@@ -96,6 +96,7 @@ struct AttributeTest: TestSuite::Tester {
     void debugDataTypeFloat();
     #ifndef MAGNUM_TARGET_GLES2
     void debugDataTypeInt();
+    void debugDataTypeUnsignedInt();
     #endif
     #ifndef MAGNUM_TARGET_GLES
     void debugDataTypeDouble();
@@ -170,6 +171,7 @@ AttributeTest::AttributeTest() {
               &AttributeTest::debugDataTypeFloat,
               #ifndef MAGNUM_TARGET_GLES2
               &AttributeTest::debugDataTypeInt,
+              &AttributeTest::debugDataTypeUnsignedInt,
               #endif
               #ifndef MAGNUM_TARGET_GLES
               &AttributeTest::debugDataTypeDouble,
@@ -517,6 +519,19 @@ void AttributeTest::attributeVectorInt() {
     CORRADE_COMPARE(cdb.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Int);
     CORRADE_COMPARE(cdb.dataType(), DynamicAttribute::DataType::Int);
+
+    /* Unsigned types for signed attributes are not supported on WebGL, exposed
+       just as deprecated for backwards compatibility */
+    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
+    Attribute c{Attribute::Components::One, Attribute::DataType::UnsignedShort};
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+    CORRADE_COMPARE(c.vectorStride(), 2);
+    #endif
     #else
     CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
     #endif
@@ -574,6 +589,19 @@ void AttributeTest::attributeVectorUnsignedInt() {
     CORRADE_COMPARE(cdb.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::UnsignedShort);
     CORRADE_COMPARE(cdb.dataType(), DynamicAttribute::DataType::UnsignedShort);
+
+    /* Signed types for unsigned attributes are not supported on WebGL, exposed
+       just as deprecated for backwards compatibility */
+    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
+    Attribute c{Attribute::Components::One, Attribute::DataType::Short};
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+    CORRADE_COMPARE(c.vectorStride(), 2);
+    #endif
     #else
     CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
     #endif
@@ -1298,9 +1326,53 @@ void AttributeTest::debugDataTypeFloat() {
 void AttributeTest::debugDataTypeInt() {
     typedef Attribute<3, Int> Attribute;
 
-    Containers::String out;
-    Debug{&out} << Attribute::DataType::Short << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::DataType::Short GL::Attribute::DataType(0xdead)\n");
+    {
+        Containers::String out;
+        Debug{&out} << Attribute::DataType::Short << Attribute::DataType(0xdead);
+        CORRADE_COMPARE(out, "GL::Attribute::DataType::Short GL::Attribute::DataType(0xdead)\n");
+    }
+
+    /* Unsigned types for signed attributes are not supported on WebGL, exposed
+       just as deprecated for backwards compatibility */
+    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
+    {
+        Containers::String out;
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        #endif
+        Debug{&out} << Attribute::DataType::UnsignedInt << Attribute::DataType::UnsignedByte;
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+        CORRADE_COMPARE(out, "GL::Attribute::DataType::UnsignedInt GL::Attribute::DataType::UnsignedByte\n");
+    }
+    #endif
+}
+
+void AttributeTest::debugDataTypeUnsignedInt() {
+    typedef Attribute<3, UnsignedInt> Attribute;
+
+    {
+        Containers::String out;
+        Debug{&out} << Attribute::DataType::UnsignedShort << Attribute::DataType(0xdead);
+        CORRADE_COMPARE(out, "GL::Attribute::DataType::UnsignedShort GL::Attribute::DataType(0xdead)\n");
+    }
+
+    /* Signed types for unsigned attributes are not supported on WebGL, exposed
+       just as deprecated for backwards compatibility */
+    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
+    {
+        Containers::String out;
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        #endif
+        Debug{&out} << Attribute::DataType::Int << Attribute::DataType::Byte;
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+        CORRADE_COMPARE(out, "GL::Attribute::DataType::Int GL::Attribute::DataType::Byte\n");
+    }
+    #endif
 }
 #endif
 

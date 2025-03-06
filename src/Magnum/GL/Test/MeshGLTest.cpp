@@ -1719,6 +1719,9 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
     CORRADE_SKIP("WebGL doesn't allow supplying signed data to an unsigned attribute.");
     #endif
 
+    /* Signed DataType is now deprecated for unsigned attributes, so build the
+       rest only on non-WebGL or on deprecated WebGL builds */
+    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
     constexpr Short data[] = { 0, 24563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1728,7 +1731,13 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
 
     if(testCaseInstanceId() == 0) {
         setTestCaseDescription("Attribute");
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        #endif
         mesh.addVertexBuffer(buffer, 2, 2, Attribute<0, UnsignedInt>{Attribute<0, UnsignedInt>::DataType::Short});
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
     } else if(testCaseInstanceId() == 1) {
         setTestCaseDescription("DynamicAttribute");
         mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
@@ -1749,6 +1758,7 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 16583);
+    #endif
 }
 
 void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
@@ -1761,6 +1771,9 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
     CORRADE_SKIP("WebGL doesn't allow supplying unsigned data to a signed attribute.");
     #endif
 
+    /* Unsigned DataType is now deprecated for signed attributes, so build the
+       rest only on non-WebGL or on deprecated WebGL builds */
+    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
     constexpr UnsignedShort data[] = { 0, 49563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1770,7 +1783,13 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
 
     if(testCaseInstanceId() == 0) {
         setTestCaseDescription("Attribute");
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        #endif
         mesh.addVertexBuffer(buffer, 2, 2, Attribute<0, Int>{Attribute<0, Int>::DataType::UnsignedShort});
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
     } else if(testCaseInstanceId() == 1) {
         setTestCaseDescription("DynamicAttribute");
         mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
@@ -1791,6 +1810,7 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 16583);
+    #endif
 }
 
 void MeshGLTest::addVertexBufferIntWithShort() {
