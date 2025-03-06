@@ -90,32 +90,49 @@ constexpr struct {
     bool asData;
     const char* plugin;
 } DetectData[]{
+    /* Try to keep the order the same as in the documentation, and use all
+       variants if there are */
     {"ASTC", "8x8.astc", false, "AstcImporter"},
     {"ASTC data", "8x8.astc", true, "AstcImporter"},
-    {"PNG", "rgb.png", false, "PngImporter"},
-    {"PNG data", "rgb.png", true, "PngImporter"},
-    {"JPEG", "gray.jpg", false, "JpegImporter"},
-    {"JPEG data", "gray.jpg", true, "JpegImporter"},
-    {"JPEG uppercase", "uppercase.JPG", false, "JpegImporter"},
-    {"JPEG2000", "image.jp2", false, "Jpeg2000Importer"},
+    {"Basis", "rgb.basis", false, "BasisImporter"},
+    {"Basis data", "rgb.basis", true, "BasisImporter"},
+    {"BMP", "rgb.bmp", false, "BmpImporter"},
+    {"BMP data", "rgb.bmp", true, "BmpImporter"},
+    {"DDS", "rgba_dxt1.dds", false, "DdsImporter"},
+    {"DDS data", "rgba_dxt1.dds", true, "DdsImporter"},
+    {"GIF", "image.gif", false, "GifImporter"},
+    {"OpenEXR", "skybox.exr", false, "OpenExrImporter"},
     {"HDR", "rgb.hdr", false, "HdrImporter"},
     {"HDR data", "rgb.hdr", true, "HdrImporter"},
     {"HDR data, different signature", "rgb.2.hdr", true, "HdrImporter"},
     {"ICO", "pngs.ico", false, "IcoImporter"},
-    {"DDS", "rgba_dxt1.dds", false, "DdsImporter"},
-    {"DDS data", "rgba_dxt1.dds", true, "DdsImporter"},
-    {"BMP", "rgb.bmp", false, "BmpImporter"},
-    {"BMP data", "rgb.bmp", true, "BmpImporter"},
-    {"GIF", "image.gif", false, "GifImporter"},
+    {"JPEG", "gray.jpg", false, "JpegImporter"},
+    {"JPEG data", "gray.jpg", true, "JpegImporter"},
+    {"JPEG uppercase", "uppercase.JPG", false, "JpegImporter"},
+    {"JPEG2000", "image.jp2", false, "Jpeg2000Importer"},
+    /* KTX2, including data, tested sufficiently elsewhere */
+    {"MNG", "obsolete.mng", false, "MngImporter"},
+    {"Portable Bitmap", "text.pbm", false, "PbmImporter"},
+    {"Portable Graymap", "text.pgm", false, "PgmImporter"},
+    {"Portable Anymap", "text.pnm", false, "PnmImporter"},
+    {"Portable Pixmap", "text.ppm", false, "PpmImporter"},
+    {"ZSoft PCX", "image.pcx", false, "PcxImporter"},
+    {"Softimage PIC", "image.pic", false, "PicImporter"},
+    {"PNG", "rgb.png", false, "PngImporter"},
+    {"PNG data", "rgb.png", true, "PngImporter"},
     {"PSD", "image.psd", false, "PsdImporter"},
+    {"Sillicon Graphics SGI", "pixar.sgi", false, "SgiImporter"},
+    {"Sillicon Graphics BW", "pixar.bw", false, "SgiImporter"},
+    {"Sillicon Graphics RGB", "pixar.rgb", false, "SgiImporter"},
+    {"Sillicon Graphics RGBA", "pixar.rgba", false, "SgiImporter"},
     {"TIFF", "image.tiff", false, "TiffImporter"},
+    {"TIFF, 3-character extension", "image.tif", false, "TiffImporter"},
     {"TIFF data", "image.tiff", true, "TiffImporter"},
-    {"Basis", "rgb.basis", false, "BasisImporter"},
-    {"Basis data", "rgb.basis", true, "BasisImporter"},
+    /* TGA, including data, tested sufficiently elsewhere. The extension
+       variants however cannot be tested because the plugin is available. */
     {"OpenVDB", "volume.vdb", false, "OpenVdbImporter"},
     {"WebP", "rgb-lossless.webp", false, "WebPImporter"},
     {"WebP data", "rgb-lossless.webp", true, "WebPImporter"}
-    /* Not testing everything, just the most important ones */
 };
 
 const struct {

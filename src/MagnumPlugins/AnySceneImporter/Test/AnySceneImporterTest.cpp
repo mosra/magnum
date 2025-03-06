@@ -117,23 +117,46 @@ const struct {
     {"OBJ", Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-multiple.obj")},
 };
 
-constexpr struct {
+const struct {
     const char* name;
     const char* filename;
     const char* plugin;
 } DetectData[]{
-    {"Blender", "suzanne.blend", "BlenderImporter"},
-    {"COLLADA", "xml.dae", "ColladaImporter"},
+    /* Try to keep the order the same as in the documentation, and use all
+       variants if there are */
+    {"3ds Max", "autodesk.3ds", "3dsImporter"},
+    {"3ds Max ASE", "autodesk.ase", "3dsImporter"},
     {"3MF", "print.3mf", "3mfImporter"},
+    {"AC3D", "file.ac", "Ac3dImporter"},
+    {"Blender", "suzanne.blend", "BlenderImporter"},
+    {"Biovision BVH", "scene.bvh", "BvhImporter"},
+    {"CharacterStudio Motion", "motion.csm", "CsmImporter"},
+    {"COLLADA", "xml.dae", "ColladaImporter"},
+    {"DirectX X", "microsoft.x", "DirectXImporter"},
+    {"AutoCAD DXF", "autodesk.dxf", "DxfImporter"},
     {"FBX", "autodesk.fbx", "FbxImporter"},
     {"glTF", "khronos.gltf", "GltfImporter"},
     {"glTF binary", "khronos.glb", "GltfImporter"},
     {"VRM", "humanoid.vrm", "GltfImporter"},
+    {"IFC", "step.ifc", "IfcImporter"},
+    {"Irrlicht", "venerable.irr", "IrrlichtImporter"},
+    {"Irrlicht Mesh", "venerable.irrmesh", "IrrlichtImporter"},
+    {"LightWave", "magnum.lwo", "LightWaveImporter"},
+    {"LightWave Scene", "magnum.lws", "LightWaveImporter"},
+    {"Modo", "magnum.lxo", "ModoImporter"},
+    {"Milkshape 3D", "latte.ms3d", "MilkshapeImporter"},
+    {"Ogre XML", "weapon.mesh.xml", "OgreImporter"},
     {"OpenGEX", "eric.ogex", "OpenGexImporter"},
     {"Stanford PLY", "bunny.ply", "StanfordImporter"},
     {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordImporter"},
     {"STL", "robot.stl", "StlImporter"},
-    /* Not testing everything, only the most important ones */
+    {"TrueSpace COB", "huh.cob", "TrueSpaceImporter"},
+    {"TrueSpace SCN", "huh.scn", "TrueSpaceImporter"},
+    {"Unreal", "tournament.3d", "UnrealImporter"},
+    {"Valve Model SMD", "hl3.smd", "ValveImporter"},
+    {"Valve Model VTA", "hl3.vta", "ValveImporter"},
+    {"XGL", "thingy.xgl", "XglImporter"},
+    {"XGL compressed", "thingy.zgl", "XglImporter"},
 };
 
 const struct {
