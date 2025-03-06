@@ -2042,6 +2042,8 @@ See also:
     That's no longer the case and cube map images are 3D. Because no importer
     implemented support for cube map images, this shouldn't cause a problem in
     practice.
+-   @relativeref{Trade,AnySceneImporter} now recognizes only `*.mesh.xml` for
+    OGRE XML files, because `*.xml` may be used for COLLADA files as well
 
 @subsection changelog-latest-documentation Documentation
 

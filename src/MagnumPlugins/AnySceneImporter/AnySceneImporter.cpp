@@ -77,74 +77,73 @@ void AnySceneImporter::doClose() {
 void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    /* We don't detect any double extensions yet, so we can normalize just the
-       extension. In case we eventually might, it'd have to be split() instead
-       to save at least by normalizing just the filename and not the path. */
-    const Containers::String normalizedExtension = Utility::String::lowercase(Utility::Path::splitExtension(filename).second());
+    /* Can't reliably lowercase just the extension as we detect double
+       extensions as well. But we can lowercase just the filename, at least. */
+    const Containers::String normalized = Utility::String::lowercase(Utility::Path::filename(filename));
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".3ds"_s ||
-       normalizedExtension == ".ase"_s)
+    if(normalized.hasSuffix(".3ds"_s) ||
+       normalized.hasSuffix(".ase"_s))
         plugin = "3dsImporter"_s;
-    else if(normalizedExtension == ".3mf"_s)
+    else if(normalized.hasSuffix(".3mf"_s))
         plugin = "3mfImporter"_s;
-    else if(normalizedExtension == ".ac"_s)
+    else if(normalized.hasSuffix(".ac"_s))
         plugin = "Ac3dImporter"_s;
-    else if(normalizedExtension == ".blend"_s)
+    else if(normalized.hasSuffix(".blend"_s))
         plugin = "BlenderImporter"_s;
-    else if(normalizedExtension == ".bvh"_s)
+    else if(normalized.hasSuffix(".bvh"_s))
         plugin = "BvhImporter"_s;
-    else if(normalizedExtension == ".csm"_s)
+    else if(normalized.hasSuffix(".csm"_s))
         plugin = "CsmImporter"_s;
-    else if(normalizedExtension == ".dae"_s)
+    else if(normalized.hasSuffix(".dae"_s))
         plugin = "ColladaImporter"_s;
-    else if(normalizedExtension == ".x"_s)
+    else if(normalized.hasSuffix(".x"_s))
         plugin = "DirectXImporter"_s;
-    else if(normalizedExtension == ".dxf"_s)
+    else if(normalized.hasSuffix(".dxf"_s))
         plugin = "DxfImporter"_s;
-    else if(normalizedExtension == ".fbx"_s)
+    else if(normalized.hasSuffix(".fbx"_s))
         plugin = "FbxImporter"_s;
-    else if(normalizedExtension == ".gltf"_s ||
-            normalizedExtension == ".glb"_s ||
+    else if(normalized.hasSuffix(".gltf"_s) ||
+            normalized.hasSuffix(".glb"_s) ||
             /* https://github.com/vrm-c/vrm-specification/blob/master/specification/0.0/README.md#file-extension */
-            normalizedExtension == ".vrm"_s)
+            normalized.hasSuffix(".vrm"_s))
         plugin = "GltfImporter"_s;
-    else if(normalizedExtension == ".ifc"_s)
+    else if(normalized.hasSuffix(".ifc"_s))
         plugin = "IfcImporter"_s;
-    else if(normalizedExtension == ".irrmesh"_s ||
-            normalizedExtension == ".irr"_s)
+    else if(normalized.hasSuffix(".irrmesh"_s) ||
+            normalized.hasSuffix(".irr"_s))
         plugin = "IrrlichtImporter"_s;
-    else if(normalizedExtension == ".lwo"_s ||
-            normalizedExtension == ".lws"_s)
+    else if(normalized.hasSuffix(".lwo"_s) ||
+            normalized.hasSuffix(".lws"_s))
         plugin = "LightWaveImporter"_s;
-    else if(normalizedExtension == ".lxo"_s)
+    else if(normalized.hasSuffix(".lxo"_s))
         plugin = "ModoImporter"_s;
-    else if(normalizedExtension == ".ms3d"_s)
+    else if(normalized.hasSuffix(".mesh.xml"_s))
+        plugin = "OgreImporter"_s;
+    else if(normalized.hasSuffix(".ms3d"_s))
         plugin = "MilkshapeImporter"_s;
     /** @todo pass `*.mtl` files to ObjImporter as well, once the builtin one
         can handle materials and can open them directly (UfbxImporter can,
         Assimp tries to open them as a FBX ffs) */
-    else if(normalizedExtension == ".obj"_s)
+    else if(normalized.hasSuffix(".obj"_s))
         plugin = "ObjImporter"_s;
-    else if(normalizedExtension == ".xml"_s)
-        plugin = "OgreImporter"_s;
-    else if(normalizedExtension == ".ogex"_s)
+    else if(normalized.hasSuffix(".ogex"_s))
         plugin = "OpenGexImporter"_s;
-    else if(normalizedExtension == ".ply"_s)
+    else if(normalized.hasSuffix(".ply"_s))
         plugin = "StanfordImporter"_s;
-    else if(normalizedExtension == ".stl"_s)
+    else if(normalized.hasSuffix(".stl"_s))
         plugin = "StlImporter"_s;
-    else if(normalizedExtension == ".cob"_s ||
-            normalizedExtension == ".scn"_s)
+    else if(normalized.hasSuffix(".cob"_s) ||
+            normalized.hasSuffix(".scn"_s))
         plugin = "TrueSpaceImporter"_s;
-    else if(normalizedExtension == ".3d"_s)
+    else if(normalized.hasSuffix(".3d"_s))
         plugin = "UnrealImporter"_s;
-    else if(normalizedExtension == ".smd"_s ||
-            normalizedExtension == ".vta"_s)
+    else if(normalized.hasSuffix(".smd"_s) ||
+            normalized.hasSuffix(".vta"_s))
         plugin = "ValveImporter"_s;
-    else if(normalizedExtension == ".xgl"_s ||
-            normalizedExtension == ".zgl"_s)
+    else if(normalized.hasSuffix(".xgl"_s) ||
+            normalized.hasSuffix(".zgl"_s))
         plugin = "XglImporter"_s;
     else {
         Error{} << "Trade::AnySceneImporter::openFile(): cannot determine the format of" << filename;
