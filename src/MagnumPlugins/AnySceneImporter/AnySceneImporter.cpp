@@ -166,6 +166,12 @@ void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
             /** @todo isn't *.scn also too generic? */
             normalized.hasSuffix(".scn"_s))
         plugin = "TrueSpaceImporter"_s;
+    /* https://en.wikipedia.org/wiki/Universal_Scene_Description */
+    else if(normalized.hasSuffix(".usd"_s) ||
+            normalized.hasSuffix(".usda"_s) ||
+            normalized.hasSuffix(".usdc"_s) ||
+            normalized.hasSuffix(".usdz"_s))
+        plugin = "UsdImporter"_s;
     else if(normalized.hasSuffix(".3d"_s))
         plugin = "UnrealImporter"_s;
     else if(normalized.hasSuffix(".smd"_s) ||

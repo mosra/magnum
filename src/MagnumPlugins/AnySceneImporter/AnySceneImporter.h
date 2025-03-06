@@ -96,6 +96,9 @@ tries to open the file with it. Supported formats:
     `StlImporter`
 -   TrueSpace (`*.cob`, `*.scn`), loaded with any plugin that provides
     `TrueSpaceImporter`
+-   [Universal Scene Description (USD)](https://en.wikipedia.org/wiki/Universal_Scene_Description)
+    (`*.usd`, `*.usda`, `*.usdc`, `*.usdz`), loaded with any plugin that
+    provides `UsdImporter`
 -   Unreal (`*.3d`), loaded with any plugin that provides `UnrealImporter`
 -   Valve Model (`*.smd`, `*.vta`), loaded with any plugin that provides
     `ValveImporter`

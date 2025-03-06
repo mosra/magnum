@@ -967,7 +967,7 @@ See also:
     in @relativeref{Trade,AnyImageConverter}
 -   Recognizing WebP files in @relativeref{Trade,AnyImageConverter}
 -   Recognizing glTF files in @relativeref{Trade,AnySceneConverter}
--   Recognizing 3MF and VRM files in @relativeref{Trade,AnySceneImporter}
+-   Recognizing 3MF, VRM and USD files in @relativeref{Trade,AnySceneImporter}
 -   Recognizing OpenVBD files in @relativeref{Trade,AnyImageImporter} and
     @relativeref{Trade,AnyImageConverter}
 -   @ref Audio::AnyImporter "AnyAudioImporter",
