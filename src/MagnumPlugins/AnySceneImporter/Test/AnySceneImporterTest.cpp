@@ -65,6 +65,7 @@ struct AnySceneImporterTest: TestSuite::Tester {
 
     void load();
     void detect();
+    void reject();
 
     void unknown();
 
@@ -161,6 +162,22 @@ const struct {
 
 const struct {
     const char* name;
+    const char* filename;
+} RejectData[]{
+    /* This lists pairs of filenames where, just based on extension, any
+       detection cannot be done */
+    {"COLLADA with a *.xml extension", "collada.xml"},
+    {"OGRE XML with just a *.xml extension", "mesh.xml"},
+    {"OGRE *.mesh", "ogre.mesh"},
+    {"Meshwork *.mesh", "foo.mesh"},
+    {"OBJ-like *.ter file", "terrain.ter"},
+    {"Terragen *.ter", "terragen.ter"},
+    {"Quake 1 *.mdl", "quake.mdl"},
+    {"3D Game Studio (3DGS) *.mdl", "3dgs.mdl"},
+};
+
+const struct {
+    const char* name;
     ImporterFlags flags;
     bool quiet;
 } PropagateConfigurationUnknownData[]{
@@ -174,6 +191,9 @@ AnySceneImporterTest::AnySceneImporterTest() {
 
     addInstancedTests({&AnySceneImporterTest::detect},
         Containers::arraySize(DetectData));
+
+    addInstancedTests({&AnySceneImporterTest::reject},
+        Containers::arraySize(RejectData));
 
     addTests({&AnySceneImporterTest::unknown,
 
@@ -268,6 +288,18 @@ void AnySceneImporterTest::detect() {
         "Trade::AnySceneImporter::openFile(): cannot load the {0} plugin\n",
         data.plugin));
     #endif
+}
+
+void AnySceneImporterTest::reject() {
+    auto&& data = RejectData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->openFile(data.filename));
+    CORRADE_COMPARE(out, Utility::format("Trade::AnySceneImporter::openFile(): cannot determine the format of {}\n", data.filename));
 }
 
 void AnySceneImporterTest::unknown() {

@@ -81,6 +81,34 @@ void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
        extensions as well. But we can lowercase just the filename, at least. */
     const Containers::String normalized = Utility::String::lowercase(Utility::Path::filename(filename));
 
+    /* Some extensions supported by AssimpImporter are deliberately not
+       recognized due to being overly generic, conflicting, or too obscure. In particular:
+
+        -   `*.mdl`, used by both Quake I and "3D GameStudio (3DGS)"
+        -   `*.md2`, `*.md3`, `*.pk3`, `*.md5*` used by Quake II and III and
+            Doom 3, not recognized because Quake I isn't recognized either
+        -   `*.mesh`, which is OGRE, Meshwork and likely other formats too
+            http://justsolve.archiveteam.org/wiki/Meshwork_model
+            https://file.org/extension/mesh
+        -   `*.nff`, which is both "Neutral File Format" and
+            "Sense8 WorldToolKit"
+        -   `*.off`, which is "Object File Format", likely a variant of the
+            above, feels rather obscure
+        -   `*.ndo`, which is "Izware Nendo", feels rather obscure
+        -   `*.raw`, which can be PovRAY Raw, but also raw image data or just
+            anything. Especially problematic when e.g. magnum-player first
+            tries to open a file as a scene and if that fails, falls back to
+            opening an image.
+        -   `*.xml`, which can be an OGRE XML mesh but also COLLADA. Ogre XML
+            is recognized as `*.mesh.xml` instead.
+        -   `*.ter`, which is Terragen Terrain. I couldn't find any file that
+            would load with Assimp, the only `terrain.ter` I found is an
+            OBJ-like text file for which Assimp complains that "Magic string
+            'TERRAGEN' not found".
+
+       The conflicting extensions are explicitly tested in AnySceneImporterTest
+       to ensure they're not added by accident. */
+
     /* Detect the plugin from extension */
     Containers::StringView plugin;
     if(normalized.hasSuffix(".3ds"_s) ||
@@ -135,6 +163,7 @@ void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
     else if(normalized.hasSuffix(".stl"_s))
         plugin = "StlImporter"_s;
     else if(normalized.hasSuffix(".cob"_s) ||
+            /** @todo isn't *.scn also too generic? */
             normalized.hasSuffix(".scn"_s))
         plugin = "TrueSpaceImporter"_s;
     else if(normalized.hasSuffix(".3d"_s))

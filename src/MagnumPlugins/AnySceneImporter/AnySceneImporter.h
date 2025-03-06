@@ -85,7 +85,9 @@ tries to open the file with it. Supported formats:
 -   Wavefront OBJ (`*.obj`), loaded with @ref ObjImporter or any other plugin
     that provides it
 -   OGRE XML (`*.mesh.xml`), loaded with any plugin that provides
-    `OgreImporter`
+    `OgreImporter`. The `*.mesh` extension isn't recognized because it's used
+    by [Meshwork](http://justsolve.archiveteam.org/wiki/Meshwork_model) as
+    well.
 -   OpenGEX (`*.ogex`), loaded with @ref OpenGexImporter or any other plugin
     that provides it
 -   Stanford (`*.ply`), loaded with @ref StanfordImporter or any other plugin
@@ -98,6 +100,14 @@ tries to open the file with it. Supported formats:
 -   Valve Model (`*.smd`, `*.vta`), loaded with any plugin that provides
     `ValveImporter`
 -   XGL (`*.xgl`, `*.zgl`), loaded with any plugin that provides `XglImporter`
+
+@note
+    Note that this list is not exhaustive, in particular the
+    @ref AssimpImporter lists many more file extensions. Not all can be
+    supported by this plugin because they're either very generic or used by
+    multiple different formats, such as `*.mdl` used for both Quake I and 3D
+    GameStudio. If file opening fails with this plugin, you can try directly
+    with a concrete plugin such as the @ref AssimpImporter as a fallback.
 
 Only loading from files is supported as the filename is used to detect the
 format, however @ref ImporterFeature::FileCallback is supported as well.
