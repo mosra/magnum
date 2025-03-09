@@ -43,6 +43,7 @@
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
@@ -98,6 +99,33 @@ CORRADE_PLUGIN_REGISTER(MyFontConverter, MyNamespace::MyFontConverter,
    avoid -Wmisssing-prototypes */
 void mainText();
 void mainText() {
+{
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font =
+    manager.loadAndInstantiate("StbTrueTypeFont");
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+/* [AbstractFont-glyph-cache-by-id] */
+CORRADE_INTERNAL_ASSERT_OUTPUT(font->fillGlyphCache(cache, {
+    font->glyphForName("fi"),
+    font->glyphForName("f_f"),
+    font->glyphForName("fl"),
+    DOXYGEN_ELLIPSIS()
+}));
+/* [AbstractFont-glyph-cache-by-id] */
+
+/* [AbstractFont-glyph-cache-all] */
+Containers::Array<UnsignedInt> glyphs{NoInit, font->glyphCount()};
+for(UnsignedInt i = 0; i != font->glyphCount(); ++i)
+    glyphs[i] = i;
+
+CORRADE_INTERNAL_ASSERT_OUTPUT(font->fillGlyphCache(cache, glyphs));
+/* [AbstractFont-glyph-cache-all] */
+}
+
 {
 PluginManager::Manager<Text::AbstractFont> manager;
 Containers::Pointer<Text::AbstractFont> font =
@@ -180,13 +208,33 @@ font->setFileCallback([](const std::string& filename,
 }
 
 {
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+/* [AbstractGlyphCache-usage-fill] */
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
+
+if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
+                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                "0123456789?!:;,. "))
+    Fatal{} << "Glyph cache too small to fit all characters";
+/* [AbstractGlyphCache-usage-fill] */
+}
+
+{
 struct: Text::AbstractGlyphCache {
     using Text::AbstractGlyphCache::AbstractGlyphCache;
 
     Text::GlyphCacheFeatures doFeatures() const override { return {}; }
 } cache{PixelFormat::R8Unorm, Vector2i{256}};
 /* [AbstractGlyphCache-filling-images] */
-Containers::ArrayView<const ImageView2D> images = DOXYGEN_ELLIPSIS({});
+Containers::Array<Image2D> images = DOXYGEN_ELLIPSIS({}); /* or ImageView2D, Trade::ImageData2D... */
 /* [AbstractGlyphCache-filling-images] */
 
 /* [AbstractGlyphCache-filling-font] */
@@ -200,7 +248,7 @@ cache.atlas().clearFlags(
     TextureTools::AtlasLandfillFlag::RotatePortrait|
     TextureTools::AtlasLandfillFlag::RotateLandscape);
 Containers::Optional<Range2Di> range = cache.atlas().add(
-    stridedArrayView(images).slice(&ImageView2D::size),
+    stridedArrayView(images).slice(&Image2D::size),
     offsets);
 CORRADE_INTERNAL_ASSERT(range);
 /* [AbstractGlyphCache-filling-atlas] */
