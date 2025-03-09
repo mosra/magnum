@@ -61,17 +61,18 @@ Containers::Pointer<Text::AbstractFont> font =
 if(!font->openFile("font.ttf", 12.0f))
     Fatal{} << "Can't open font.ttf with StbTrueTypeFont";
 
-Text::GlyphCacheGL cache{PixelFormat::R8Unorm, Vector2i{128}};
-font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
-                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                            "0123456789?!:;,. ");
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};
+if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
+                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                "0123456789?!:;,. "))
+    Fatal{} << "Glyph cache too small to fit all characters";
 /* [AbstractFont-usage] */
 }
 
 {
-/* [AbstractGlyphCache-filling-construct] */
-Text::GlyphCacheGL cache{PixelFormat::R8Unorm, Vector2i{512}};
-/* [AbstractGlyphCache-filling-construct] */
+/* [AbstractGlyphCache-usage-construct] */
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};
+/* [AbstractGlyphCache-usage-construct] */
 }
 
 {
@@ -84,26 +85,11 @@ Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndI
 font->openFile("font.ttf", 96.0f);
 
 Text::DistanceFieldGlyphCacheGL cache{Vector2i{1024}, Vector2i{128}, 12};
-font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
-                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                            "0123456789?!:;,. ");
+if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
+                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                "0123456789?!:;,. "))
+    Fatal{} << "Glyph cache too small to fit all characters";
 /* [DistanceFieldGlyphCacheGL-usage] */
-}
-
-{
-/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
-   the font pointer. I don't care, I just want you to check compilation errors,
-   not more! */
-PluginManager::Manager<Text::AbstractFont> manager;
-/* [GlyphCacheGL-usage] */
-Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
-font->openFile("font.ttf", 12.0f);
-
-Text::GlyphCacheGL cache{PixelFormat::R8Unorm, Vector2i{128}};
-font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
-                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                            "0123456789?!:;,. ");
-/* [GlyphCacheGL-usage] */
 }
 
 {

@@ -40,28 +40,21 @@
 namespace Magnum { namespace Text {
 
 /**
-@brief OpenGL glyph cache
+@brief OpenGL implementation of a glyph cache
 @m_since_latest
 
-Contains font glyphs rendered into a texture atlas.
-
-@section Text-GlyphCacheGL-usage Usage
-
-Create the @ref GlyphCacheGL object with sufficient size and then call
-@ref AbstractFont::createGlyphCache() to fill it with glyphs.
-
-@snippet Text-gl.cpp GlyphCacheGL-usage
-
-See the @ref BasicRenderer "Renderer*D" class for information about text
-rendering. The @ref AbstractGlyphCache base class has more information about
-general glyph cache usage.
+Implementation of an @ref AbstractGlyphCache backed by a @ref GL::Texture2D.
+See the @ref AbstractGlyphCache class documentation for information about
+setting up an instance of this class and filling it with glyphs. See the
+@ref DistanceFieldGlyphCacheGL subclass for a variant that adds distance field
+processing on top.
 
 @section Text-GlyphCacheGL-internal-format Internal texture format
 
 The @ref GL::TextureFormat used by @ref texture() is implicitly coming from
-@ref GL::textureFormat(Magnum::PixelFormat) applied to @ref format(), or if
-@ref GlyphCacheFeature::ImageProcessing is supported, to @ref processedFormat()
-instead.
+@ref GL::textureFormat(Magnum::PixelFormat) applied to the @ref format() that
+was passed at construction time, or if @ref GlyphCacheFeature::ImageProcessing
+is supported, to @ref processedFormat() instead.
 
 If @ref PixelFormat::R8Unorm is used for @ref format() or if
 @ref GlyphCacheFeature::ImageProcessing is supported and
@@ -195,8 +188,7 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
 
     private:
         MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
-        /** @todo make those MAGNUM_TEXT_LOCAL again once MagnumFont doesn't
-            need to subclass anything anymore */
+        /* These are not MAGNUM_TEXT_LOCAL because the test makes a subclass */
         void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
         /* Used if a subclass advertises GlyphCacheFeature::ImageProcessing /
            ProcessedImageDownload in its doFeatures() */

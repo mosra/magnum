@@ -524,7 +524,7 @@ that doesn't recreate everything on each text change:
 
 @subsection Text-BasicRenderer-usage-font-size Font size
 
-As mentioned in @ref Text-AbstractFont-usage-font-size "AbstractFont class documentation",
+As mentioned in @ref Text-AbstractFont-font-size "AbstractFont class documentation",
 the size at which the font is loaded is decoupled from the size at which a
 concrete text is rendered. In particular, with a concrete projection matrix,
 the size you pass to either @ref render() or to the @ref BasicRenderer()
@@ -539,7 +539,7 @@ proportional to the window size. The first approach results in e.g. a 12 pt
 font matching a 12 pt font in other applications, and is what's shown in the
 above snippets. The most straightforward way to achieve that is to set up the
 projection matrix size to match actual window pixels, such as @ref Platform::Sdl2Application::windowSize() "Platform::*Application::windowSize()".
-If using the regular @ref GlyphCache, for best visual quality it should be
+If using the regular @ref GlyphCacheGL, for best visual quality it should be
 created with the @ref AbstractFont loaded at the same size as the text to be
 rendered, although often a double supersampling achieves a crisper result.
 I.e., loading the font with 24 pt, but rendering with 12 pt. See below for
@@ -549,8 +549,8 @@ The second approach, with text size being relative to the window size, is for
 cases where the text is meant to match surrounding art, such as in a game menu.
 In this case the projection size is usually something arbitrary that doesn't
 match window pixels, and the text point size then has to be relative to that.
-For this use case a @ref DistanceFieldGlyphCache is the better match, as it can
-provide text at different sizes with minimal quality loss. See its
+For this use case a @ref DistanceFieldGlyphCacheGL is the better match, as it
+can provide text at different sizes with minimal quality loss. See its
 documentation for details about picking the right font size and other
 parameters for best results.
 
@@ -571,7 +571,7 @@ concepts for DPI-aware rendering:
     display has a 200% interface scale, a 12 pt font would be 32 pixels. But if
     it only has a 150% scale, all interface elements will be smaller, and a 12
     pt font would be only 24 pixels. The size used by the @ref AbstractFont and
-    @ref GlyphCache should be chosen with respect to the actual physical
+    @ref GlyphCacheGL should be chosen with respect to the actual physical
     pixels.
 
 When using for example @ref Platform::Sdl2Application or other `*Application`
@@ -585,7 +585,7 @@ would be calculated like this:
 
 @snippet Text-gl.cpp BasicRenderer-dpi-interface-size
 
-And a multiplier for the @ref AbstractFont and @ref GlyphCache font size like
+And a multiplier for the @ref AbstractFont and @ref GlyphCacheGL font size like
 this. The @ref BasicRenderer "Renderer*D" keeps using the size without this
 multiplier.
 

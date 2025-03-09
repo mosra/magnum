@@ -44,8 +44,8 @@ namespace Magnum { namespace Text {
 @m_since_latest
 
 Unlike the base @ref GlyphCacheGL, this class converts each binary image to a
-distance field. It's not possible to only use this cache for monochrome glyphs
-as the internal texture format is single-channel.
+distance field. It's possible to only use this cache for monochrome glyphs as
+the internal texture format is single-channel.
 
 @section Text-DistanceFieldGlyphCacheGL-usage Usage
 

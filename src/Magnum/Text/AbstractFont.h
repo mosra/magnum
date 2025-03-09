@@ -114,17 +114,21 @@ glyphs will be rasterized. Then it stays open until the font is destroyed,
 @ref close() or another font is opened.
 
 In the following example a font is loaded from the filesystem using the
-@ref StbTrueTypeFont plugin, prerendering all needed glyphs, completely with
-all error handling:
+@ref StbTrueTypeFont plugin, prerendering desired glyphs into a
+@ref GlyphCacheGL, completely with all error handling ---  depending on the
+font file, font plugin implementation, font size and cache size, it may happen
+that the characters won't all fit, which should be checked by the application:
 
 @snippet Text-gl.cpp AbstractFont-usage
 
 See @ref plugins for more information about general plugin usage and the list
 of @m_class{m-doc} <a href="#derived-classes">derived classes</a> for available
-font plugins. See @ref GlyphCache for more information about glyph caches and
-@ref BasicRenderer "Renderer*D" for information about actual text rendering.
+font plugins. See @ref AbstractGlyphCache for more information about glyph
+caches, @ref BasicRenderer "Renderer*D" for high-level text rendering, and
+@ref AbstractShaper for low-level access to the font text shaping
+functionality.
 
-@subsection Text-AbstractFont-usage-font-size Font size
+@section Text-AbstractFont-font-size Font size
 
 Font libraries specify font size in *points*, where 1 pt = ~1.333 px at 96 DPI,
 so in the above snippet a 12 pt font corresponds to 16 px on a 96 DPI display.
@@ -136,18 +140,47 @@ properties are specified *in pixels* in @ref lineHeight(), @ref ascent() and
 @ref descent().
 
 The font size used when opening the font affects how large the glyphs will be
-when rendered into the @ref GlyphCache. Actual text rendering with
+when rendered into the glyph cache. Actual text rendering with
 @ref BasicRenderer "Renderer*D" however uses its own font size, and the
 rendered size is then additionally depending on the actual projection used.
 This decoupling of font sizes is useful for example in case of
-@ref DistanceFieldGlyphCache, where a single prerendered glyph size can be used
-to render arbitrarily large font sizes without becoming blurry or jaggy. When
-not using a distance field glyph cache, it's usually desirable to have the font
-size and the actual rendered size match. See
+@ref DistanceFieldGlyphCacheGL, where a single prerendered glyph size can be
+used to render arbitrarily large font sizes without becoming blurry or jaggy.
+When not using a distance field glyph cache, it's usually desirable to have the
+font size and the actual rendered size match. See
 @ref Text-BasicRenderer-usage-font-size "the Renderer*D documentation" for
 further information about picking font sizes.
 
-@subsection Text-AbstractFont-usage-callbacks Loading data from memory, using file callbacks
+@section Text-AbstractFont-glyph-cache Glyph cache filling options
+
+Besides filling the cache with glyphs corresponding to individual characters in
+a UTF-8 string, it's possible to directly specify glyph IDs with
+@ref fillGlyphCache(AbstractGlyphCache&, const Containers::StridedArrayView1D<const UnsignedInt>&).
+That's useful for example with ligatures like *fl* or *ff* that can get used by
+a particular font implementation instead of individual letters, and which thus
+don't have a clear mapping to a Unicode codepoint. You can use some font
+introspection utility to retrieve either directly the glyph IDs, or get just
+glyph names and match them with IDs using @ref glyphForName() at runtime. The
+following snippet prerenders a few of the named ligatures present in the
+[Source Sans](https://github.com/adobe-fonts/source-sans) font that this
+website uses. Again explicitly checking that the operation succeeds, this time
+with a @ref CORRADE_INTERNAL_ASSERT_OUTPUT() macro:
+
+@snippet Text.cpp AbstractFont-glyph-cache-by-id
+
+Subsequent calls to @ref fillGlyphCache() add to already existing glyphs,
+allowing for incremental filling based on which glyphs are needed by actual
+text. Such as by passing the output of @ref AbstractShaper::glyphIdsInto()
+through @ref AbstractGlyphCache::glyphIdsInto() and adding all glyphs which it
+didn't find. Note that, however, the glyph cache packing is the most efficient
+when all glyphs are added at once.
+
+Finally, it's possible to use this overload to populate the glyph cache with
+all glyphs in the font:
+
+@snippet Text.cpp AbstractFont-glyph-cache-all
+
+@section Text-AbstractFont-usage-callbacks Loading data from memory, using file callbacks
 
 Besides loading data directly from the filesystem using @ref openFile() like
 shown above, it's possible to use @ref openData() to import data from memory.

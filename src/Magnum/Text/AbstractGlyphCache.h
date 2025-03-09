@@ -107,37 +107,44 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, GlyphCacheFeatures value);
 @m_since{2019,10}
 
 A GPU-API-agnostic base for glyph caches, supporting multiple fonts and both 2D
-and 2D array textures. See the @ref GlyphCache and @ref DistanceFieldGlyphCache
-subclasses for concrete OpenGL implementations. The base class provides a
-common interface for adding fonts, glyph properties, uploading glyph data and
-retrieving glyph properties back.
+and 2D array textures. Provides a common interface for adding fonts, glyph
+properties, uploading glyph data and retrieving glyph properties back, the
+@ref GlyphCacheGL and @ref DistanceFieldGlyphCacheGL subclasses then provide
+concrete implementations backed with an OpenGL texture.
 
-@section Text-AbstractGlyphCache-filling Filling the glyph cache
+@section Text-AbstractGlyphCache-usage Basic usage
 
 A glyph cache is constructed through the concrete GPU-API-specific subclasses,
-namely the @ref GlyphCache and @ref DistanceFieldGlyphCache classes mentioned
-above. Depending on the use case and platform capabilities it's also possible
-to create glyph caches with 2D texture arrays, for example when large alphabets
-are used or when the cache may get filled on-demand with many additional
-glyphs.
+such as @ref GlyphCacheGL. Its constructor takes a @ref PixelFormat and desired
+texture size. @ref PixelFormat::R8Unorm is the usual choice,
+@ref PixelFormat::RGBA8Unorm is useful for emoji fonts or when arbitrary icon
+data are put into the cache.
 
-A glyph cache is created in an appropriate @ref PixelFormat and a size.
-@ref PixelFormat::R8Unorm is the usual choice, @ref PixelFormat::RGBA8Unorm is
-useful for emoji fonts or when arbitrary icon data are put into the cache.
+@snippet Text-gl.cpp AbstractGlyphCache-usage-construct
 
-@snippet Text-gl.cpp AbstractGlyphCache-filling-construct
+Afterwards, assuming there's an opened @ref AbstractFont instance and a known
+set of glyphs to prerender, the high-level use involves just calling
+@ref AbstractFont::fillGlyphCache(), which then does all packing and data
+copying on its own. Note that depending on the font file, font plugin
+implementation, font size and cache size, it may happen that the characters
+won't all fit, which should be checked by the application:
 
-The rest of this section describes low level usage of the glyph cache filling
-APIs, which are useful mainly when implementing an @ref AbstractFont itself or
-when adding arbitrary other image data to the cache. When using the glyph cache
-with an existing @ref AbstractFont instance, often the high level use involves
-just calling @ref AbstractFont::fillGlyphCache(), which does all of the
-following on its own.
+@snippet Text.cpp AbstractGlyphCache-usage-fill
 
-Let's say we want to fill the glyph cache with a custom set of images that
-don't necessarily need to be a font per se. Assuming the input images are
-stored in a simple array, and the goal is to put them all together into the
-cache and reference them later simply by their array indices.
+As long as the cache size allows, you can call
+@ref AbstractFont::fillGlyphCache() multiple times with additional glyphs and
+other fonts. See the @ref Text-AbstractFont-glyph-cache "AbstractFont documentation"
+for more options for glyph cache filling.
+
+@section Text-AbstractGlyphCache-filling Filling the glyph cache directly
+
+This section describes low level usage of the glyph cache filling APIs, which
+are useful mainly when implementing an @ref AbstractFont itself or when adding
+arbitrary other image data to the cache. Let's say we want to fill the glyph
+cache with a custom set of images that don't necessarily need to be a font per
+se. Assuming the input images are stored in a simple array, and the goal is to
+put them all together into the cache and reference them later simply by their
+array indices.
 
 @snippet Text.cpp AbstractGlyphCache-filling-images
 
@@ -192,7 +199,7 @@ letters *j* or *q* that reach below the baseline).
 
 Important is to call @ref flushImage() at the end, which makes the glyph cache
 update its actual GPU-side texture based on what area of the image was updated.
-In case of @ref DistanceFieldGlyphCache for example it also triggers distance
+In case of @ref DistanceFieldGlyphCacheGL for example it also triggers distance
 field generation for given area.
 
 If the images put into the cache are meant to be used with general meshes, the
@@ -852,8 +859,9 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @param[in]  fontGlyphIds     Glyph IDs in given font
          * @param[out] glyphIds         Resulting cache-global glyph IDs
          *
-         * A batch variant of @ref glyphId(), mainly meant to be used to index
-         * the @ref glyphOffsets() const, @ref glyphLayers() const and
+         * A batch variant of @ref glyphId(), mainly meant to be used with the
+         * output of @ref AbstractShaper::glyphIdsInto() to then index the
+         * @ref glyphOffsets() const, @ref glyphLayers() const and
          * @ref glyphRectangles() const views.
          *
          * The @p fontId is expected to be less than @ref fontCount(), all
