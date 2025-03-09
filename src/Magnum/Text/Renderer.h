@@ -524,7 +524,7 @@ that doesn't recreate everything on each text change:
 
 @subsection Text-BasicRenderer-usage-font-size Font size
 
-As mentioned in @ref Text-AbstractFont-usage-font-size "AbstractFont class documentation",
+As mentioned in @ref Text-AbstractFont-font-size "AbstractFont class documentation",
 the size at which the font is loaded is decoupled from the size at which a
 concrete text is rendered. In particular, with a concrete projection matrix,
 the size you pass to either @ref render() or to the @ref BasicRenderer()
