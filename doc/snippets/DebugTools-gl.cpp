@@ -171,14 +171,16 @@ Image2D image = DebugTools::textureSubImage(texture, 0, rect,
 /* [textureSubImage-2D-rvalue] */
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
 {
 GL::Texture2D texture;
 Range2Di rect;
+CORRADE_IGNORE_DEPRECATED_PUSH
 /* [textureSubImage-2D-rvalue-buffer] */
 GL::BufferImage2D image = DebugTools::textureSubImage(texture, 0, rect,
     {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [textureSubImage-2D-rvalue-buffer] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
 
@@ -191,15 +193,17 @@ Image2D image = DebugTools::textureSubImage(texture,
 /* [textureSubImage-cubemap-rvalue] */
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
 {
 GL::CubeMapTexture texture;
 Range2Di rect;
+CORRADE_IGNORE_DEPRECATED_PUSH
 /* [textureSubImage-cubemap-rvalue-buffer] */
 GL::BufferImage2D image = DebugTools::textureSubImage(texture,
     GL::CubeMapCoordinate::PositiveX, 0, rect, {PixelFormat::RGBA8Unorm},
     GL::BufferUsage::StaticRead);
 /* [textureSubImage-cubemap-rvalue-buffer] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
 }
