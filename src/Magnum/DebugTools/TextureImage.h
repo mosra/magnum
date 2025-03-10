@@ -106,9 +106,16 @@ Convenience alternative to the above, example usage:
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D&& image);
 
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
 /**
 @brief Read range of given texture mip level to buffer image
+@m_deprecated_since_latest As these APIs are mainly meant to be used for
+    testing and verification, there's little point in having a variant that
+    puts the data into a pixel buffer by creating a temporary framebuffer. Use
+    @ref textureSubImage(GL::Texture2D&, Int, const Range2Di&, Image2D&)
+    instead or populate the buffer using
+    @ref GL::Framebuffer::read(const Range2Di&, GL::BufferImage2D&, GL::BufferUsage)
+    on a non-temporary framebuffer.
 
 Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 (such as OpenGL ES) by creating a framebuffer object and using
@@ -127,10 +134,17 @@ it
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
     @ref building-features for more information.
 */
-MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
+MAGNUM_DEBUGTOOLS_EXPORT CORRADE_DEPRECATED("use textureSubImage(GL::Texture2D&, Int, const Range2Di&, Image2D&) instead") void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
 /**
 @brief Read range of given texture mip level to buffer image
+@m_deprecated_since_latest As these APIs are mainly meant to be used for
+    testing and verification, there's little point in having a variant that
+    puts the data into a buffer image by creating a temporary framebuffer. Use
+    @ref textureSubImage(GL::Texture2D&, Int, const Range2Di&, Image2D&&)
+    instead or populate the buffer image directly using
+    @ref GL::Framebuffer::read(const Range2Di&, GL::BufferImage2D&&, GL::BufferUsage)
+    on a non-temporary framebuffer.
 
 Convenience alternative to the above, example usage:
 
@@ -140,10 +154,17 @@ Convenience alternative to the above, example usage:
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
     @ref building-features for more information.
 */
-MAGNUM_DEBUGTOOLS_EXPORT GL::BufferImage2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
+MAGNUM_DEBUGTOOLS_EXPORT CORRADE_DEPRECATED("use textureSubImage(GL::Texture2D&, Int, const Range2Di&, Image2D&&) instead") GL::BufferImage2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 
 /**
 @brief Read range of given cube map texture coordinate mip level to buffer image
+@m_deprecated_since_latest As these APIs are mainly meant to be used for
+    testing and verification, there's little point in having a variant that
+    puts the data into a buffer image by creating a temporary framebuffer. Use
+    @ref textureSubImage(GL::CubeMapTexture&, GL::CubeMapCoordinate, Int, const Range2Di&, Image2D&)
+    instead or populate the buffer image directly using
+    @ref GL::Framebuffer::read(const Range2Di&, GL::BufferImage2D&, GL::BufferUsage)
+    on a non-temporary framebuffer.
 
 Emulates @ref GL::CubeMapTexture::subImage() call on platforms that don't
 support it (such as OpenGL ES) by creating a framebuffer object and using
@@ -160,10 +181,17 @@ it
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
     @ref building-features for more information.
 */
-MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
+MAGNUM_DEBUGTOOLS_EXPORT CORRADE_DEPRECATED("use textureSubImage(GL::CubeMapTexture2D&, GL::CubeMapCoordinate, Int, const Range2Di&, Image2D&) instead") void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
 /**
 @brief Read range of given cube map texture coordinate mip level to buffer image
+@m_deprecated_since_latest As these APIs are mainly meant to be used for
+    testing and verification, there's little point in having a variant that
+    puts the data into a buffer image by creating a temporary framebuffer. Use
+    @ref textureSubImage(GL::CubeMapTexture&, GL::CubeMapCoordinate, Int, const Range2Di&, Image2D&)
+    instead or populate the buffer image directly using
+    @ref GL::Framebuffer::read(const Range2Di&, GL::BufferImage2D&, GL::BufferUsage)
+    on a non-temporary framebuffer.
 
 Convenience alternative to the above, example usage:
 
@@ -173,7 +201,7 @@ Convenience alternative to the above, example usage:
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
     @ref building-features for more information.
 */
-MAGNUM_DEBUGTOOLS_EXPORT GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
+MAGNUM_DEBUGTOOLS_EXPORT CORRADE_DEPRECATED("use textureSubImage(GL::CubeMapTexture2D&, GL::CubeMapCoordinate, Int, const Range2Di&, Image2D&&) instead") GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 #endif
 #else
 #error this header is available only in the OpenGL build
