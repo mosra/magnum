@@ -53,9 +53,21 @@ struct GlyphCacheGLTest: GL::OpenGLTester {
     explicit GlyphCacheGLTest();
 
     void construct();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructArray();
+    #endif
     void constructNoPadding();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructNoPaddingArray();
+    #endif
     void constructProcessed();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructProcessedArray();
+    #endif
     void constructProcessedNoPadding();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructProcessedNoPaddingArray();
+    #endif
     #ifdef MAGNUM_BUILD_DEPRECATED
     void constructDeprecated();
     void constructDeprecatedProcessed();
@@ -64,19 +76,45 @@ struct GlyphCacheGLTest: GL::OpenGLTester {
     #endif
 
     void constructCopy();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructCopyArray();
+    #endif
     void constructMove();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructMoveArray();
+    #endif
 
     void setImage();
+    #ifndef MAGNUM_TARGET_GLES2
+    void setImageArray();
+    #endif
     void setImageFourChannel();
+    /* setImageArray() tests a two-channel format, so no need for
+       setImageFourChannelArray() */
 
     void flushImageSubclassProcessedFormatSize();
+    #ifndef MAGNUM_TARGET_GLES2
+    void flushImageSubclassProcessedFormatSizeArray();
+    #endif
 };
 
 GlyphCacheGLTest::GlyphCacheGLTest() {
     addTests({&GlyphCacheGLTest::construct,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::constructArray,
+              #endif
               &GlyphCacheGLTest::constructNoPadding,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::constructNoPaddingArray,
+              #endif
               &GlyphCacheGLTest::constructProcessed,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::constructProcessedArray,
+              #endif
               &GlyphCacheGLTest::constructProcessedNoPadding,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::constructProcessedNoPaddingArray,
+              #endif
               #ifdef MAGNUM_BUILD_DEPRECATED
               &GlyphCacheGLTest::constructDeprecated,
               &GlyphCacheGLTest::constructDeprecatedProcessed,
@@ -85,12 +123,25 @@ GlyphCacheGLTest::GlyphCacheGLTest() {
               #endif
 
               &GlyphCacheGLTest::constructCopy,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::constructCopyArray,
+              #endif
               &GlyphCacheGLTest::constructMove,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::constructMoveArray,
+              #endif
 
               &GlyphCacheGLTest::setImage,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::setImageArray,
+              #endif
               &GlyphCacheGLTest::setImageFourChannel,
 
-              &GlyphCacheGLTest::flushImageSubclassProcessedFormatSize});
+              &GlyphCacheGLTest::flushImageSubclassProcessedFormatSize,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::flushImageSubclassProcessedFormatSizeArray,
+              #endif
+              });
 }
 
 void GlyphCacheGLTest::construct() {
@@ -105,6 +156,20 @@ void GlyphCacheGLTest::construct() {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::constructArray() {
+    GlyphCacheArrayGL cache{PixelFormat::R8Unorm, {1024, 2048, 7}, {3, 2}};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{1024, 2048, 7}));
+    #endif
+}
+#endif
+
 void GlyphCacheGLTest::constructNoPadding() {
     GlyphCacheGL cache{PixelFormat::RGBA8Unorm, {1024, 2048}};
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -116,6 +181,20 @@ void GlyphCacheGLTest::constructNoPadding() {
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{1024, 2048}));
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::constructNoPaddingArray() {
+    GlyphCacheArrayGL cache{PixelFormat::RGBA8Unorm, {1024, 2048, 7}};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.format(), PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{1024, 2048, 7}));
+    #endif
+}
+#endif
 
 void GlyphCacheGLTest::constructProcessed() {
     struct Cache: GlyphCacheGL {
@@ -137,6 +216,28 @@ void GlyphCacheGLTest::constructProcessed() {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::constructProcessedArray() {
+    struct Cache: GlyphCacheArrayGL {
+        explicit Cache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): GlyphCacheArrayGL{format, size, processedFormat, processedSize, padding} {}
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+    } cache{PixelFormat::R8Unorm, {1024, 2048, 7}, PixelFormat::RGBA8Unorm, {128, 256}, {3, 2}};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 7}));
+    CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{128, 256, 7}));
+    #endif
+}
+#endif
+
 void GlyphCacheGLTest::constructProcessedNoPadding() {
     struct Cache: GlyphCacheGL {
         explicit Cache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheGL{format, size, processedFormat, processedSize} {}
@@ -156,6 +257,28 @@ void GlyphCacheGLTest::constructProcessedNoPadding() {
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::constructProcessedNoPaddingArray() {
+    struct Cache: GlyphCacheArrayGL {
+        explicit Cache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheArrayGL{format, size, processedFormat, processedSize} {}
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+    } cache{PixelFormat::R8Unorm, {1024, 2048, 7}, PixelFormat::RGBA8Unorm, {128, 256}};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 7}));
+    CORRADE_COMPARE(cache.padding(), Vector2i{1});
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{128, 256, 7}));
+    #endif
+}
+#endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void GlyphCacheGLTest::constructDeprecated() {
@@ -224,6 +347,13 @@ void GlyphCacheGLTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_assignable<GlyphCacheGL>{});
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::constructCopyArray() {
+    CORRADE_VERIFY(!std::is_copy_constructible<GlyphCacheArrayGL>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<GlyphCacheArrayGL>{});
+}
+#endif
+
 void GlyphCacheGLTest::constructMove() {
     GlyphCacheGL a{PixelFormat::R8Unorm, {1024, 512}};
 
@@ -239,6 +369,24 @@ void GlyphCacheGLTest::constructMove() {
     CORRADE_VERIFY(std::is_nothrow_move_constructible<GlyphCacheGL>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<GlyphCacheGL>::value);
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::constructMoveArray() {
+    GlyphCacheArrayGL a{PixelFormat::R8Unorm, {1024, 512, 7}};
+
+    GlyphCacheArrayGL b = Utility::move(a);
+    CORRADE_COMPARE(b.format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 7}));
+
+    GlyphCacheArrayGL c{PixelFormat::RGBA8Unorm, {2, 3, 3}};
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 7}));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<GlyphCacheArrayGL>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<GlyphCacheArrayGL>::value);
+}
+#endif
 
 const UnsignedByte InputData[]{
     0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
@@ -328,6 +476,152 @@ void GlyphCacheGLTest::setImage() {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::setImageArray() {
+    GlyphCacheArrayGL cache{PixelFormat::RG8Unorm, {8, 8, 4}};
+
+    /* Fill the texture with non-zero data to verify the padding gets uploaded
+       as well */
+    cache.texture().setSubImage(0, {}, Image3D{PixelFormat::RG8Unorm, {8, 8, 4}, Containers::Array<char>{DirectInit, 8*8*4*2, '\xcd'}});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Utility::copy(
+        Containers::arrayCast<3, const Vector2ub>(Containers::StridedArrayView4D<const UnsignedByte>{InputData, {2, 2, 4, 2}}),
+        cache.image().pixels<Vector2ub>().sliceSize({1, 4, 3}, {2, 2, 4}));
+    cache.flushImage(Range3Di::fromSize({3, 4, 1}, {4, 2, 2}));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    ImageView3D actual3D = cache.image();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* The CPU-side image is zero-initialized, what was set above in the
+       texture isn't present there */
+    const UnsignedByte expectedData03[8*8*2]{};
+    const UnsignedByte expectedData1[]{
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+        0, 0, 0, 0, 0, 0, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0, 0,
+        0, 0, 0, 0, 0, 0, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
+    const UnsignedByte expectedData2[]{
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+        0, 0, 0, 0, 0, 0, 0x00, 0xff, 0x11, 0xee, 0x22, 0xdd, 0x33, 0xcc, 0, 0,
+        0, 0, 0, 0, 0, 0, 0x44, 0xbb, 0x55, 0xaa, 0x66, 0x99, 0x77, 0x88, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
+    /** @todo ugh have slicing on images directly already, and 3D image
+        comparison */
+    const std::size_t sliceSize = actual3D.size().xy().product()*2;
+    CORRADE_COMPARE_AS((ImageView2D{actual3D.format(), actual3D.size().xy(), actual3D.data()}),
+        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedData03}),
+        DebugTools::CompareImage);
+    CORRADE_COMPARE_AS((ImageView2D{actual3D.format(), actual3D.size().xy(), actual3D.data().exceptPrefix(1*sliceSize)}),
+        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedData1}),
+        DebugTools::CompareImage);
+    CORRADE_COMPARE_AS((ImageView2D{actual3D.format(), actual3D.size().xy(), actual3D.data().exceptPrefix(2*sliceSize)}),
+        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedData2}),
+        DebugTools::CompareImage);
+    CORRADE_COMPARE_AS((ImageView2D{actual3D.format(), actual3D.size().xy(), actual3D.data().exceptPrefix(3*sliceSize)}),
+        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedData03}),
+        DebugTools::CompareImage);
+
+    /* The actual texture has just the slice updated, the rest stays. On GLES
+       we cannot really verify that the size matches, but at least
+       something. */
+    #ifdef MAGNUM_TARGET_GLES
+    /** @todo implement; blocked on Image being able to allocate and slice
+        itself so I don't need to implement & test all that from scratch just
+        for that one utility */
+    CORRADE_SKIP("Cannot verify texture contents because DebugTools::textureSubImage() isn't implemented for texture arrays yet");
+    #else
+    Image3D image = cache.texture().image(0, {PixelFormat::RG8Unorm});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    const UnsignedByte expectedTextureData03[]{
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+    };
+    const UnsignedByte expectedTextureData1[]{
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+
+        0xcd, 0xcd, 0xcd, 0xcd, 0, 0, 0x00, 0x11,
+            0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0, 0,
+        0xcd, 0xcd, 0xcd, 0xcd, 0, 0, 0x88, 0x99,
+            0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0, 0,
+        0xcd, 0xcd, 0xcd, 0xcd, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+    };
+    const UnsignedByte expectedTextureData2[]{
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+
+        0xcd, 0xcd, 0xcd, 0xcd, 0, 0, 0x00, 0xff,
+            0x11, 0xee, 0x22, 0xdd, 0x33, 0xcc, 0, 0,
+        0xcd, 0xcd, 0xcd, 0xcd, 0, 0, 0x44, 0xbb,
+            0x55, 0xaa, 0x66, 0x99, 0x77, 0x88, 0, 0,
+        0xcd, 0xcd, 0xcd, 0xcd, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+    };
+    /** @todo ugh have slicing on images directly already, and 3D image
+        comparison */
+    CORRADE_COMPARE_AS((ImageView2D{image.format(), image.size().xy(), image.data()}),
+        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData03}),
+        DebugTools::CompareImage);
+    CORRADE_COMPARE_AS((ImageView2D{image.format(), image.size().xy(), image.data().exceptPrefix(1*sliceSize)}),
+        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData1}),
+        DebugTools::CompareImage);
+    CORRADE_COMPARE_AS((ImageView2D{image.format(), image.size().xy(), image.data().exceptPrefix(2*sliceSize)}),
+        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData2}),
+        DebugTools::CompareImage);
+    CORRADE_COMPARE_AS((ImageView2D{image.format(), image.size().xy(), image.data().exceptPrefix(3*sliceSize)}),
+        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData03}),
+        DebugTools::CompareImage);
+    #endif
+}
+#endif
+
 void GlyphCacheGLTest::setImageFourChannel() {
     /* Same as setImage(), but with a four-channel format (so quarter of
        width). Needed to be able to read the texture on ES2 to verify the
@@ -390,6 +684,31 @@ void GlyphCacheGLTest::flushImageSubclassProcessedFormatSize() {
         "Text::GlyphCacheGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size\n",
         TestSuite::Compare::String);
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::flushImageSubclassProcessedFormatSizeArray() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct Cache: GlyphCacheArrayGL {
+        explicit Cache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheArrayGL{format, size, processedFormat, processedSize} {}
+
+        GlyphCacheFeatures doFeatures() const override {
+            return GlyphCacheFeature::ImageProcessing;
+        }
+    };
+    Cache differentFormat{PixelFormat::R8Unorm, {32, 32, 7}, PixelFormat::RGBA8Unorm, {32, 32}};
+    Cache differentSize{PixelFormat::R8Unorm, {32, 32, 7}, PixelFormat::R8Unorm, {16, 32}};
+
+    Containers::String out;
+    Error redirectError{&out};
+    differentFormat.flushImage({{}, {32, 32, 3}});
+    differentSize.flushImage({{}, {32, 32, 3}});
+    CORRADE_COMPARE_AS(out,
+        "Text::GlyphCacheArrayGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size\n"
+        "Text::GlyphCacheArrayGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size\n",
+        TestSuite::Compare::String);
+}
+#endif
 
 }}}}
 
