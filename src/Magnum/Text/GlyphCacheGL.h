@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::GlyphCacheGL
+ * @brief Class @ref Magnum::Text::GlyphCacheGL, @ref Magnum::Text::GlyphCacheArrayGL
  * @m_since_latest
  */
 
@@ -35,6 +35,9 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
+#endif
 #include "Magnum/Text/AbstractGlyphCache.h"
 
 namespace Magnum { namespace Text {
@@ -47,7 +50,8 @@ Implementation of an @ref AbstractGlyphCache backed by a @ref GL::Texture2D.
 See the @ref AbstractGlyphCache class documentation for information about
 setting up an instance of this class and filling it with glyphs. See the
 @ref DistanceFieldGlyphCacheGL subclass for a variant that adds distance field
-processing on top.
+processing on top, @ref GlyphCacheArrayGL is then using a @ref GL::Texture2DArray
+instead.
 
 @section Text-GlyphCacheGL-internal-format Internal texture format
 
@@ -197,6 +201,99 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
         Image3D doProcessedImage() override;
         #endif
 };
+
+#ifndef MAGNUM_TARGET_GLES2
+/**
+@brief OpenGL array glyph cache
+@m_since_latest
+
+Implementation of an @ref AbstractGlyphCache backed by a
+@ref GL::Texture2DArray, other than that equivalent to @ref GlyphCacheGL. See
+the @ref AbstractGlyphCache class documentation for information about setting
+up a glyph cache instance and filling it with glyphs, and @ref GlyphCacheGL for
+details on how the internal texture format is picked. The usage differs from
+@ref GlyphCacheGL only in specifying one extra dimension for size:
+
+@snippet Text-gl.cpp GlyphCacheArrayGL-usage
+
+@requires_gl30 Extension @gl_extension{EXT,texture_array}
+@requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+@requires_webgl20 Texture arrays are not available in WebGL 1.0.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+*/
+class MAGNUM_TEXT_EXPORT GlyphCacheArrayGL: public AbstractGlyphCache {
+    public:
+        /**
+         * @brief Constructor
+         * @param format            Source image format
+         * @param size              Source image size size in pixels
+         * @param padding           Padding around every glyph in pixels
+         * @m_since_latest
+         *
+         * The @p size is expected to be non-zero. If the implementation
+         * advertises @ref GlyphCacheFeature::ImageProcessing, the
+         * @ref processedFormat() and @ref processedSize() is the same as
+         * @p format and @p size, use @ref AbstractGlyphCache(PixelFormat, const Vector3i&, PixelFormat, const Vector2i&, const Vector2i&)
+         * to specify different values.
+         */
+        explicit GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, const Vector2i& padding = Vector2i{1});
+
+        /**
+         * @brief Construct with a specific processed format and size
+         * @param format            Source image format
+         * @param size              Source image size size in pixels
+         * @param processedFormat   Processed image format
+         * @param processedSize     Processed glyph cache texture size in
+         *      pixels
+         * @param padding           Padding around every glyph in pixels. See
+         *      @ref Text-AbstractGlyphCache-padding for more information about
+         *      the default.
+         * @m_since_latest
+         *
+         * The @p size and @p processedSize is expected to be non-zero, depth
+         * of processed size is implicitly the same as in @p size. All glyphs
+         * are saved in @p format relative to @p size and with @p padding,
+         * although the actual glyph cache texture is in @p processedFormat and
+         * has @p processedSize.
+         * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
+         */
+        explicit GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
+
+        /**
+         * @brief Construct without creating the internal state and the OpenGL texture object
+         * @m_since_latest
+         *
+         * The constructed instance is equivalent to moved-from state, i.e. no
+         * APIs can be safely called on the object. Useful in cases where you
+         * will overwrite the instance later anyway. Move another object over
+         * it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
+         */
+        explicit GlyphCacheArrayGL(NoCreateT) noexcept;
+
+        /** @brief Cache texture */
+        GL::Texture2DArray& texture() { return _texture; }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        GL::Texture2DArray _texture;
+
+    private:
+        MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
+        /* These are not MAGNUM_TEXT_LOCAL because the test makes a subclass */
+        void doSetImage(const Vector3i& offset, const ImageView3D& image) override;
+};
+#endif
 
 }}
 #else

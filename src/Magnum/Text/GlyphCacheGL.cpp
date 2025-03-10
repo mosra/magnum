@@ -182,4 +182,32 @@ Image3D GlyphCacheGL::doProcessedImage() {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+GlyphCacheArrayGL::GlyphCacheArrayGL(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{format, size, processedFormat, processedSize, padding} {
+    #ifndef MAGNUM_TARGET_GLES
+    if(processedFormat == PixelFormat::R8Unorm)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
+    #endif
+
+    /* Initialize the texture */
+    _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setStorage(1, GL::textureFormat(processedFormat), {processedSize, size.z()});
+}
+
+GlyphCacheArrayGL::GlyphCacheArrayGL(const PixelFormat format, const Vector3i& size, const Vector2i& padding): GlyphCacheArrayGL{format, size, format, size.xy(), padding} {}
+
+GlyphCacheArrayGL::GlyphCacheArrayGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate}, _texture{NoCreate} {}
+
+GlyphCacheFeatures GlyphCacheArrayGL::doFeatures() const { return {}; }
+
+void GlyphCacheArrayGL::doSetImage(const Vector3i& offset, const ImageView3D& image) {
+    CORRADE_ASSERT(format() == processedFormat() && size() == processedSize(),
+        "Text::GlyphCacheArrayGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size", );
+
+    _texture.setSubImage(0, offset, image);
+}
+#endif
+
 }}

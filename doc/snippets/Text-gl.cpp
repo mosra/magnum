@@ -75,6 +75,21 @@ Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};
 /* [AbstractGlyphCache-usage-construct] */
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+PluginManager::Manager<Text::AbstractFont> manager;
+/* [GlyphCacheArrayGL-usage] */
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
+
+Text::GlyphCacheArrayGL cache{PixelFormat::R8Unorm, {256, 256, 8}};
+if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
+                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                "0123456789?!:;,. "))
+    Fatal{} << "Glyph cache too small to fit all characters";
+/* [GlyphCacheArrayGL-usage] */
+}
+#endif
+
 {
 /* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
    the font pointer. I don't care, I just want you to check compilation errors,

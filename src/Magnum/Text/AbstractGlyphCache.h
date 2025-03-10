@@ -109,8 +109,8 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, GlyphCacheFeatures value);
 A GPU-API-agnostic base for glyph caches, supporting multiple fonts and both 2D
 and 2D array textures. Provides a common interface for adding fonts, glyph
 properties, uploading glyph data and retrieving glyph properties back, the
-@ref GlyphCacheGL and @ref DistanceFieldGlyphCacheGL subclasses then provide
-concrete implementations backed with an OpenGL texture.
+@ref GlyphCacheGL, @ref GlyphCacheArrayGL and @ref DistanceFieldGlyphCacheGL
+subclasses then provide concrete implementations backed with an OpenGL texture.
 
 @section Text-AbstractGlyphCache-usage Basic usage
 
