@@ -63,6 +63,9 @@ class GlyphCacheGL;
 typedef CORRADE_DEPRECATED("use DistanceFieldGlyphCacheGL instead") DistanceFieldGlyphCacheGL DistanceFieldGlyphCache;
 typedef CORRADE_DEPRECATED("use GlyphCacheGL instead") GlyphCacheGL GlyphCache;
 #endif
+#ifndef MAGNUM_TARGET_GLES2
+class GlyphCacheArrayGL;
+#endif
 class AbstractRenderer;
 template<UnsignedInt> class BasicRenderer;
 typedef BasicRenderer<2> Renderer2D;

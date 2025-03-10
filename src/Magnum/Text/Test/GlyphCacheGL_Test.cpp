@@ -34,10 +34,17 @@ struct GlyphCacheGL_Test: TestSuite::Tester {
     explicit GlyphCacheGL_Test();
 
     void constructNoCreate();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructNoCreateArray();
+    #endif
 };
 
 GlyphCacheGL_Test::GlyphCacheGL_Test() {
-    addTests({&GlyphCacheGL_Test::constructNoCreate});
+    addTests({&GlyphCacheGL_Test::constructNoCreate,
+              #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGL_Test::constructNoCreateArray
+              #endif
+              });
 }
 
 void GlyphCacheGL_Test::constructNoCreate() {
@@ -49,6 +56,18 @@ void GlyphCacheGL_Test::constructNoCreate() {
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoCreateT, GlyphCacheGL>::value);
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGL_Test::constructNoCreateArray() {
+    GlyphCacheArrayGL cache{NoCreate};
+
+    /* Shouldn't crash or try to acces GL */
+    CORRADE_VERIFY(true);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, GlyphCacheArrayGL>::value);
+}
+#endif
 
 }}}}
 
