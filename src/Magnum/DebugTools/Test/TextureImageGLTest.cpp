@@ -38,6 +38,7 @@
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Range.h"
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -73,6 +74,8 @@ struct TextureImageGLTest: GL::OpenGLTester {
     void subImage2DUInt();
     void subImage2DFloat();
     void subImage2DFloatGeneric();
+    void subImage2DHalf();
+    void subImage2DHalfGeneric();
     #endif
 };
 
@@ -96,9 +99,13 @@ TextureImageGLTest::TextureImageGLTest() {
               &TextureImageGLTest::subImage2DUInt,
               &TextureImageGLTest::subImage2DFloat,
               &TextureImageGLTest::subImage2DFloatGeneric,
+              &TextureImageGLTest::subImage2DHalf,
+              &TextureImageGLTest::subImage2DHalfGeneric,
               #endif
               });
 }
+
+using namespace Math::Literals;
 
 constexpr UnsignedByte Data2D[] = { 0x00, 0x01, 0x02, 0x03,
                                     0x04, 0x05, 0x06, 0x07,
@@ -422,6 +429,46 @@ void TextureImageGLTest::subImage2DFloatGeneric() {
         Containers::arrayView(Data2DFloat),
         TestSuite::Compare::Container);
 }
+
+const Half Data2DHalf[] = { 1.0_h,
+                            3.14159_h,
+                            2.71828_h,
+                            1.41421_h };
+
+void TextureImageGLTest::subImage2DHalf() {
+    GL::Texture2D texture;
+    texture
+        .setStorage(1, GL::TextureFormat::R16F, Vector2i{2})
+        .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Half, Vector2i{2}, Data2DHalf});
+
+    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::Red, GL::PixelType::Half});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::Red));
+    CORRADE_COMPARE(GL::PixelType(image.formatExtra()), GL::PixelType::Half);
+    CORRADE_COMPARE(image.pixelSize(), 2);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Half>(image.data()),
+        Containers::arrayView(Data2DHalf),
+        TestSuite::Compare::Container);
+}
+
+void TextureImageGLTest::subImage2DHalfGeneric() {
+    GL::Texture2D texture;
+    texture
+        .setStorage(1, GL::TextureFormat::R16F, Vector2i{2})
+        .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Half, Vector2i{2}, Data2DHalf});
+
+    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::R16F});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), PixelFormat::R16F);
+    CORRADE_COMPARE(image.formatExtra(), 0);
+    CORRADE_COMPARE(image.pixelSize(), 2);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Half>(image.data()),
+        Containers::arrayView(Data2DHalf),
+        TestSuite::Compare::Container);
+}
+
 #endif
 
 }}}}
