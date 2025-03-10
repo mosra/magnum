@@ -56,7 +56,7 @@ struct TextureImageGLTest: GL::OpenGLTester {
 
     void subImage2D();
     void subImage2DNotReadable();
-    #ifndef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
     void subImage2DBuffer();
     void subImage2DBufferNotReadable();
     #endif
@@ -64,7 +64,7 @@ struct TextureImageGLTest: GL::OpenGLTester {
 
     void subImageCube();
     void subImageCubeNotReadable();
-    #ifndef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
     void subImageCubeBuffer();
     void subImageCubeBufferNotReadable();
     #endif
@@ -79,7 +79,7 @@ struct TextureImageGLTest: GL::OpenGLTester {
 TextureImageGLTest::TextureImageGLTest() {
     addTests({&TextureImageGLTest::subImage2D,
               &TextureImageGLTest::subImage2DNotReadable,
-              #ifndef MAGNUM_TARGET_GLES2
+              #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
               &TextureImageGLTest::subImage2DBuffer,
               &TextureImageGLTest::subImage2DBufferNotReadable,
               #endif
@@ -87,7 +87,7 @@ TextureImageGLTest::TextureImageGLTest() {
 
               &TextureImageGLTest::subImageCube,
               &TextureImageGLTest::subImageCubeNotReadable,
-              #ifndef MAGNUM_TARGET_GLES2
+              #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
               &TextureImageGLTest::subImageCubeBuffer,
               &TextureImageGLTest::subImageCubeBufferNotReadable,
               #endif
@@ -154,12 +154,14 @@ void TextureImageGLTest::subImage2DNotReadable() {
     #endif
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
 void TextureImageGLTest::subImage2DBuffer() {
     GL::Texture2D texture;
     texture.setImage(0, GL::TextureFormat::RGBA8, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D});
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     GL::BufferImage2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte}, GL::BufferUsage::StaticRead);
+    CORRADE_IGNORE_DEPRECATED_POP
     Containers::Array<char> data = bufferData(image.buffer());
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
@@ -188,7 +190,9 @@ void TextureImageGLTest::subImage2DBufferNotReadable() {
     Containers::String out;
     Error redirectError{&out};
     /* The read type doesn't have to match, it doesn't get that far */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte}, GL::BufferUsage::StaticRead);
+    CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(out, "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::Unsupported\n");
@@ -283,7 +287,7 @@ void TextureImageGLTest::subImageCubeNotReadable() {
     #endif
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
 void TextureImageGLTest::subImageCubeBuffer() {
     ImageView2D view{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
 
@@ -295,7 +299,9 @@ void TextureImageGLTest::subImageCubeBuffer() {
            .setImage(GL::CubeMapCoordinate::PositiveZ, 0, GL::TextureFormat::RGBA8, view)
            .setImage(GL::CubeMapCoordinate::NegativeZ, 0, GL::TextureFormat::RGBA8, view);
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     GL::BufferImage2D image = textureSubImage(texture, GL::CubeMapCoordinate::PositiveX, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte}, GL::BufferUsage::StaticRead);
+    CORRADE_IGNORE_DEPRECATED_POP
     Containers::Array<char> data = bufferData(image.buffer());
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
@@ -332,7 +338,9 @@ void TextureImageGLTest::subImageCubeBufferNotReadable() {
     Containers::String out;
     Error redirectError{&out};
     /* The read type doesn't have to match, it doesn't get that far */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     textureSubImage(texture, GL::CubeMapCoordinate::PositiveX, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte}, GL::BufferUsage::StaticRead);
+    CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(out, "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::Unsupported\n");

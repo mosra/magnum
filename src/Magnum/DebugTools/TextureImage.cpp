@@ -27,7 +27,7 @@
 #include "TextureImage.h"
 
 #include "Magnum/Image.h"
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
 #include "Magnum/GL/BufferImage.h"
 #endif
 #include "Magnum/GL/Context.h"
@@ -194,7 +194,7 @@ Image2D textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di&
     return Utility::move(image);
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
 void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& range, GL::BufferImage2D& image, const GL::BufferUsage usage) {
     #ifndef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>()) {
@@ -213,7 +213,9 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
 }
 
 GL::BufferImage2D textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& range, GL::BufferImage2D&& image, const GL::BufferUsage usage) {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     textureSubImage(texture, level, range, image, usage);
+    CORRADE_IGNORE_DEPRECATED_POP
     return Utility::move(image);
 }
 #endif
@@ -233,7 +235,7 @@ Image2D textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate
     return Utility::move(image);
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
 void textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, GL::BufferImage2D& image, const GL::BufferUsage usage) {
     GL::Framebuffer fb{range};
     fb.attachCubeMapTexture(GL::Framebuffer::ColorAttachment{0}, texture, coordinate, level);
@@ -245,7 +247,9 @@ void textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate co
 }
 
 GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, GL::BufferImage2D&& image, const GL::BufferUsage usage) {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     textureSubImage(texture, coordinate, level, range, image, usage);
+    CORRADE_IGNORE_DEPRECATED_POP
     return Utility::move(image);
 }
 #endif
