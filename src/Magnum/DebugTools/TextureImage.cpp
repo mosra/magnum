@@ -115,9 +115,27 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
     }
     #endif
 
+    /* While I cannot reproduce this on any drivers I tried, not even on WebGL,
+       the ES3.0 and 3.1 spec says that Float isn't guaranteed to be supported,
+       only UnsignedByte and Int or UnsignedInt. I could probably do some
+       comparison against fb.implementationColorReadFormat() but this is more
+       straightforward.
+
+       ES3.2 says Float is supported. What still isn't guaranteed to be
+       supported are one-, two- and three-component formats, but so far I
+       didn't have a problem with these anywhere.
+
+       Half floats aren't guaranteed to be supported either, but given that I
+       cannot reproduce this issue anywhere anymore, I don't think I should
+       waste time implementing a half-float variant. */
+    /** @todo or just remove this altogether? */
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
     GL::PixelType type = GL::pixelType(image.format(), image.formatExtra());
-    if(type == GL::PixelType::Float) {
+    if(type == GL::PixelType::Float
+        #ifndef MAGNUM_TARGET_WEBGL
+        && !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) {
         GL::TextureFormat textureFormat;
         GL::PixelFormat reinterpretFormat;
         GL::PixelFormat format = GL::pixelFormat(image.format());
@@ -223,6 +241,11 @@ GL::BufferImage2D textureSubImage(GL::Texture2D& texture, const Int level, const
 void textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, Image2D& image) {
     GL::Framebuffer fb{range};
     fb.attachCubeMapTexture(GL::Framebuffer::ColorAttachment{0}, texture, coordinate, level);
+
+    /* Compared to textureSubImage(GL::Texture2D&), here's no specialized code
+       path for float formats, as it's impossible to sample it in a shader with
+       2D coordinates. It's also questionable if that's still needed. */
+    /** @todo or just remove this altogether? */
 
     CORRADE_ASSERT(fb.checkStatus(GL::FramebufferTarget::Read) == GL::Framebuffer::Status::Complete,
         "DebugTools::textureSubImage(): texture format not framebuffer-readable:" << fb.checkStatus(GL::FramebufferTarget::Read), );
