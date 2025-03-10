@@ -50,11 +50,13 @@ is available, it's just an alias to @ref GL::Texture2D::subImage().
 The function expects that @p texture has a @ref GL::TextureFormat that's
 framebuffer-readable and that the @ref GL::PixelFormat and @ref GL::PixelType
 combination or the generic @relativeref{Magnum,PixelFormat} is compatible with
-it. In addition, on OpenGL ES 3.0, images with @ref GL::PixelType::Float
-are supported --- they are reinterpreted as @ref GL::PixelType::UnsignedInt
-using an additional shader and the @glsl floatBitsToUint() @ce GLSL function
-and then reinterpreted back to @ref GL::PixelType::Float when read to client
-memory.
+it. On OpenGL ES 3.0 and 3.1, @ref GL::PixelType::Float isn't guaranteed to be
+supported for reading so such images are reinterpreted as
+@ref GL::PixelType::UnsignedInt using an additional shader and the
+@glsl floatBitsToUint() @ce GLSL function and then reinterpreted back to
+@ref GL::PixelType::Float when read to client memory. On OpenGL ES 3.2 and on
+desktop GL, @ref GL::PixelType::Float is guaranteed to be supported. No similar
+treatment is done for any other types.
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
