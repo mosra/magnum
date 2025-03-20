@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::RendererCore, @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::BasicRenderer, enum @ref Magnum::Text::RendererCoreFlag, enum set @ref Magnum::Text::RendererCoreFlags, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::glyphQuadBounds(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto()
+ * @brief Class @ref Magnum::Text::RendererCore, @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::BasicRenderer, enum @ref Magnum::Text::RendererCoreFlag, enum set @ref Magnum::Text::RendererCoreFlags, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::glyphQuadBounds(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto(), @ref Magnum::Text::glyphRangeForBytes()
  */
 
 #include <Corrade/Containers/Pointer.h>
