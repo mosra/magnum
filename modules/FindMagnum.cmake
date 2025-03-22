@@ -361,24 +361,10 @@ if(NOT TARGET Magnum::Magnum)
     # information to guess also build type of dynamic plugins
     if(MAGNUM_LIBRARY_DEBUG AND MAGNUM_LIBRARY_RELEASE)
         set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_RELEASE})
-        get_filename_component(_MAGNUM_PLUGINS_DIR_PREFIX ${MAGNUM_LIBRARY_DEBUG} PATH)
-        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(_MAGNUM_PLUGINS_DIR_SUFFIX "-d")
-        endif()
     elseif(MAGNUM_LIBRARY_DEBUG)
         set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_DEBUG})
-        get_filename_component(_MAGNUM_PLUGINS_DIR_PREFIX ${MAGNUM_LIBRARY_DEBUG} PATH)
-        set(_MAGNUM_PLUGINS_DIR_SUFFIX "-d")
     elseif(MAGNUM_LIBRARY_RELEASE)
         set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_RELEASE})
-        get_filename_component(_MAGNUM_PLUGINS_DIR_PREFIX ${MAGNUM_LIBRARY_RELEASE} PATH)
-    endif()
-
-    # On DLL platforms the plugins are stored in bin/ instead of lib/, modify
-    # _MAGNUM_PLUGINS_DIR_PREFIX accordingly
-    if(CORRADE_TARGET_WINDOWS)
-        get_filename_component(_MAGNUM_PLUGINS_DIR_PREFIX ${_MAGNUM_PLUGINS_DIR_PREFIX} PATH)
-        set(_MAGNUM_PLUGINS_DIR_PREFIX ${_MAGNUM_PLUGINS_DIR_PREFIX}/bin)
     endif()
 
     if(MAGNUM_LIBRARY_RELEASE)
