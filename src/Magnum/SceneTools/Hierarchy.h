@@ -116,7 +116,7 @@ having no cycles (i.e., every node listed just once) and not being sparse
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> childrenDepthFirst(const Trade::SceneData& scene);
 
 /**
-@brief Retrieve childrem in a depth-first order into a pre-allocated view
+@brief Retrieve children in a depth-first order into a pre-allocated view
 @m_since_latest
 
 Like @ref childrenDepthFirst(), but puts the result into @p mappingDestination
