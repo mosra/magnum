@@ -175,6 +175,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_COLOR_TEXTURE_SAMPLES}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_gles Multisample textures are not available in WebGL.
+         * @see @ref MultisampleTexture, @ref Renderbuffer::maxSamples()
          */
         static Int maxColorSamples();
 
@@ -188,6 +189,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEPTH_TEXTURE_SAMPLES}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_gles Multisample textures are not available in WebGL.
+         * @see @ref MultisampleTexture, @ref Renderbuffer::maxSamples()
          */
         static Int maxDepthSamples();
 
@@ -201,6 +203,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_INTEGER_SAMPLES}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_gles Multisample textures are not available in WebGL.
+         * @see @ref MultisampleTexture, @ref Renderbuffer::maxSamples()
          */
         static Int maxIntegerSamples();
         #endif

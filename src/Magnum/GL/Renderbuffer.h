@@ -93,6 +93,9 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          *      @def_gl_keyword{MAX_SAMPLES}
          * @requires_webgl20 Multisample framebuffers are not available in
          *      WebGL 1.0.
+         * @see @ref AbstractTexture::maxColorSamples(),
+         *      @ref AbstractTexture::maxDepthSamples(),
+         *      @ref AbstractTexture::maxIntegerSamples()
          */
         static Int maxSamples();
         #endif
