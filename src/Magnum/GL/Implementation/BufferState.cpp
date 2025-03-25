@@ -100,6 +100,8 @@ BufferState::BufferState(Context& context, Containers::StaticArrayView<Implement
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
         context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-buffer-dsa"_s))
         #endif
+        && (!(context.detectedDriver() & Context::DetectedDriver::NVidia) ||
+        context.isDriverWorkaroundDisabled("nv-broken-buffer-dsa"_s))
     ) {
         extensions[Extensions::ARB::direct_state_access::Index] =
                    Extensions::ARB::direct_state_access::string();

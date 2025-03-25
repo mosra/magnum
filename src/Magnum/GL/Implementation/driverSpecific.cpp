@@ -220,6 +220,19 @@ constexpr Containers::StringView KnownWorkarounds[]{
    to that device. On well-behaved driver versions, eglQueryDeviceAttribEXT()
    returns false instead of segfaulting. */
 "nv-egl-crashy-query-device-attrib"_s,
+
+/* On NV driver 572.83, DSA buffer APIs don't work. This was reported on
+   Windows with a NVIDIA RTX 2000 ADA generation graphics card, and downgrading
+   to an older driver version (September 13 2024, not sure which version) fixes
+   that. On Arch and 570.86 it doesn't happen. Not sure if it's really specific
+   to that GPU generation or it's just a regression in the platform-independent
+   GL frontend.
+
+   The behavior is similar to the one explained below in the
+   "intel-windows-crazy-broken-buffer-dsa" workaround (ImGui rendering
+   flickering a lot), but as I cannot reproduce locally I'm not doing the same
+   investigation. Yet at least. */
+"nv-broken-buffer-dsa"_s,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -354,7 +367,9 @@ constexpr Containers::StringView KnownWorkarounds[]{
      like the workaround would be incomplete with some code paths still relying
      on DSA that's not there. It's clearly Intel drivers fault.
    - With both enabled, things seem to be fine, and I hope it stays that way
-     also for future driver updates. */
+     also for future driver updates.
+
+   See also the "nv-broken-buffer-dsa" workaround, which is similar. */
 "intel-windows-crazy-broken-buffer-dsa"_s,
 "intel-windows-crazy-broken-vao-dsa"_s,
 

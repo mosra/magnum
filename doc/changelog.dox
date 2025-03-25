@@ -248,6 +248,9 @@ See also:
     on exit happening with Mesa 24 when the DSA variants of
     @ref GL::Framebuffer::clearColor() and related APIs are used.  See
     @ref opengl-workarounds for more information.
+-   A new @cpp "nv-broken-buffer-dsa" @ce workaround for a rendering corruption
+    on NVidia 572.82 drivers happening when DSA codepaths for @ref GL::Buffer
+    are used. See @ref opengl-workarounds for more information.
 
 @subsubsection changelog-latest-new-math Math library
 
