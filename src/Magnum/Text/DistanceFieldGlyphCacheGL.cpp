@@ -34,7 +34,7 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #endif
-#ifndef CORRADE_NO_ASSERT
+#if !defined(CORRADE_NO_ASSERT) || defined(MAGNUM_BUILD_DEPRECATED)
 #include "Magnum/GL/PixelFormat.h"
 #endif
 #include "Magnum/GL/TextureFormat.h"
