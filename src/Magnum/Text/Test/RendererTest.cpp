@@ -5293,7 +5293,17 @@ void RendererTest::addSingleLine() {
     /* Set padding to zero for easier dummy glyph addition below */
     } glyphCache{PixelFormat::R8Unorm, {16, 16}, {}};
 
-    struct: AbstractFont {
+    struct
+        /* MSVC 2017 (_MSC_VER == 191x) crashes at runtime accessing instance2
+           in the following case. Not a problem in MSVC 2015 or 2019+.
+            struct: SomeBase {
+            } instance1, instance2;
+           Simply naming the derived struct is enough to fix the crash, FFS. */
+        #if defined(CORRADE_TARGET_MSVC) && _MSC_VER >= 1910 && _MSC_VER < 1920
+        ThisNameAlonePreventsMSVC2017FromBlowingUp
+        #endif
+        : AbstractFont
+    {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
@@ -5571,7 +5581,17 @@ void RendererTest::addMultipleLines() {
     /* Set padding to zero for easier dummy glyph addition below */
     } glyphCache{PixelFormat::R8Unorm, {16, 16}, {}};
 
-    struct: AbstractFont {
+    struct
+        /* MSVC 2017 (_MSC_VER == 191x) crashes at runtime accessing instance2
+           in the following case. Not a problem in MSVC 2015 or 2019+.
+            struct: SomeBase {
+            } instance1, instance2;
+           Simply naming the derived struct is enough to fix the crash, FFS. */
+        #if defined(CORRADE_TARGET_MSVC) && _MSC_VER >= 1910 && _MSC_VER < 1920
+        ThisNameAlonePreventsMSVC2017FromBlowingUp
+        #endif
+        : AbstractFont
+    {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
@@ -5915,7 +5935,17 @@ void RendererTest::addFontNotFoundInCache() {
         GlyphCacheFeatures doFeatures() const override { return {}; }
     } glyphCache{PixelFormat::R8Unorm, {16, 16}};
 
-    struct: AbstractFont {
+    struct
+        /* MSVC 2017 (_MSC_VER == 191x) crashes at runtime accessing instance2
+           in the following case. Not a problem in MSVC 2015 or 2019+.
+            struct: SomeBase {
+            } instance1, instance2;
+           Simply naming the derived struct is enough to fix the crash, FFS. */
+        #if defined(CORRADE_TARGET_MSVC) && _MSC_VER >= 1910 && _MSC_VER < 1920
+        ThisNameAlonePreventsMSVC2017FromBlowingUp
+        #endif
+        : AbstractFont
+    {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
@@ -5960,7 +5990,17 @@ void RendererTest::multipleBlocks() {
     /* Set padding to zero for easier dummy glyph addition below */
     } glyphCache{PixelFormat::R8Unorm, {16, 16}, {}};
 
-    struct: AbstractFont {
+    struct
+        /* MSVC 2017 (_MSC_VER == 191x) crashes at runtime accessing instance2
+           in the following case. Not a problem in MSVC 2015 or 2019+.
+            struct: SomeBase {
+            } instance1, instance2;
+           Simply naming the derived struct is enough to fix the crash, FFS. */
+        #if defined(CORRADE_TARGET_MSVC) && _MSC_VER >= 1910 && _MSC_VER < 1920
+        ThisNameAlonePreventsMSVC2017FromBlowingUp
+        #endif
+        : AbstractFont
+    {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
@@ -6154,7 +6194,17 @@ template<class T> void RendererTest::indicesVertices() {
     /* Set padding to zero for easier dummy glyph addition below */
     } glyphCache{PixelFormat::R8Unorm, {16, 16, data.glyphCacheArraySize}, {}};
 
-    struct: AbstractFont {
+    struct
+        /* MSVC 2017 (_MSC_VER == 191x) crashes at runtime accessing instance2
+           in the following case. Not a problem in MSVC 2015 or 2019+.
+            struct: SomeBase {
+            } instance1, instance2;
+           Simply naming the derived struct is enough to fix the crash, FFS. */
+        #if defined(CORRADE_TARGET_MSVC) && _MSC_VER >= 1910 && _MSC_VER < 1920
+        ThisNameAlonePreventsMSVC2017FromBlowingUp
+        #endif
+        : AbstractFont
+    {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
