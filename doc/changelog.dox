@@ -418,9 +418,9 @@ See also:
 -   Support for instanced drawing in @ref Shaders::MeshVisualizerGL2D and
     @ref Shaders::MeshVisualizerGL3D for better feature parity with the other
     shaders
--   New @ref Shaders::Generic::JointIds,
-    @ref Shaders::Generic::SecondaryJointIds, @ref Shaders::Generic::Weights
-    and @ref Shaders::Generic::SecondaryWeights attributes for GPU skinning
+-   New @ref Shaders::GenericGL::JointIds,
+    @ref Shaders::GenericGL::SecondaryJointIds, @ref Shaders::GenericGL::Weights
+    and @ref Shaders::GenericGL::SecondaryWeights attributes for GPU skinning
     support (see also [mosra/magnum#441](https://github.com/mosra/magnum/pull/441))
 -   New @ref Shaders::GenericGL::TextureArrayCoordinates attribute for shaders
     accepting three-component texture array coordinates
