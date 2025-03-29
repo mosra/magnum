@@ -422,6 +422,8 @@ See also:
     @ref Shaders::Generic::SecondaryJointIds, @ref Shaders::Generic::Weights
     and @ref Shaders::Generic::SecondaryWeights attributes for GPU skinning
     support (see also [mosra/magnum#441](https://github.com/mosra/magnum/pull/441))
+-   New @ref Shaders::GenericGL::TextureArrayCoordinates attribute for shaders
+    accepting three-component texture array coordinates
 -   GPU skinning support in @ref Shaders::FlatGL, @ref Shaders::PhongGL and
     @ref Shaders::MeshVisualizerGL2D / @ref Shaders::MeshVisualizerGL3D (see
     also [mosra/magnum#444](https://github.com/mosra/magnum/pull/444) and

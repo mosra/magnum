@@ -74,9 +74,7 @@ future use, with no attribute definition implemented yet.
 <tr>
 <td>1</td>
 <td colspan="3">
-@ref TextureCoordinates
-
-* *Reserved* --- third component for a layer
+@ref TextureCoordinates / @ref TextureArrayCoordinates
 </td>
 </tr>
 <tr>
@@ -290,10 +288,29 @@ template<UnsignedInt dimensions> struct GenericGL {
     /**
      * @brief 2D texture coordinates
      *
-     * @ref Magnum::Vector2 "Vector2". Corresponds to
+     * @ref Magnum::Vector2 "Vector2". Use either this or the
+     * @ref TextureArrayCoordinates attribute. Corresponds to
      * @ref Trade::MeshAttribute::TextureCoordinates.
      */
     typedef GL::Attribute<1, Vector2> TextureCoordinates;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * @brief 2D array texture coordinates
+     * @m_since_latest
+     *
+     * @ref Magnum::Vector3 "Vector3". Use either this or the
+     * @ref TextureCoordinates attribute. Currently doesn't have a
+     * corresponding @ref Trade::MeshAttribute.
+     * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+     * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+     * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+     */
+    /* Not naming this TextureCoordinates3D as that's semantically something
+       else, plus texture arrays are not on ES2 while 3D textures are. The name
+       for 3D coords would then be TextureVolumeCoordinates I think. */
+    typedef GL::Attribute<1, Vector3> TextureArrayCoordinates;
+    #endif
 
     /**
      * @brief Three-component vertex color
@@ -541,6 +558,9 @@ struct BaseGenericGL {
     };
 
     typedef GL::Attribute<1, Vector2> TextureCoordinates;
+    #ifndef MAGNUM_TARGET_GLES2
+    typedef GL::Attribute<1, Vector3> TextureArrayCoordinates;
+    #endif
     typedef GL::Attribute<2, Magnum::Color3> Color3;
     typedef GL::Attribute<2, Magnum::Color4> Color4;
     #ifndef MAGNUM_TARGET_GLES2
