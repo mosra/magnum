@@ -87,6 +87,7 @@ corrade_add_test(TextScriptTest ScriptTest.cpp LIBRARIES MagnumTextTestLib)
 if(MAGNUM_TARGET_GL)
     corrade_add_test(TextGlyphCacheGL_Test GlyphCacheGL_Test.cpp LIBRARIES MagnumText)
     corrade_add_test(TextDistanceFieldGlyphCacheGL_Test DistanceFieldGlyphCacheGL_Test.cpp LIBRARIES MagnumText)
+    corrade_add_test(TextRendererGL_Test RendererGL_Test.cpp LIBRARIES MagnumText)
 
     if(MAGNUM_BUILD_GL_TESTS)
         corrade_add_test(TextDistanceFieldGlyphCacheGLTest DistanceFieldGlyphCacheGLTest.cpp
@@ -120,9 +121,32 @@ if(MAGNUM_TARGET_GL)
                 MagnumTextTestLib
                 MagnumOpenGLTester
                 MagnumDebugTools)
+
         corrade_add_test(TextRendererGLTest RendererGLTest.cpp
             LIBRARIES
+                MagnumDebugTools
+                MagnumShaders
                 MagnumTextTestLib
-                MagnumOpenGLTester)
+                MagnumOpenGLTester
+            FILES
+                render.tga
+                render-nothing.tga)
+        target_include_directories(TextRendererGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+        if(MAGNUM_BUILD_PLUGINS_STATIC)
+            if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+                target_link_libraries(TextRendererGLTest PRIVATE AnyImageImporter)
+            endif()
+            if(MAGNUM_WITH_TGAIMPORTER)
+                target_link_libraries(TextRendererGLTest PRIVATE TgaImporter)
+            endif()
+        else()
+            # So the plugins get properly built when building the test
+            if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+                add_dependencies(TextRendererGLTest AnyImageImporter)
+            endif()
+            if(MAGNUM_WITH_TGAIMPORTER)
+                add_dependencies(TextRendererGLTest TgaImporter)
+            endif()
+        endif()
     endif()
 endif()

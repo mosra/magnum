@@ -73,6 +73,7 @@ class AbstractRenderer;
 template<UnsignedInt> class BasicRenderer;
 typedef BasicRenderer<2> Renderer2D;
 typedef BasicRenderer<3> Renderer3D;
+class RendererGL;
 #endif
 
 }}

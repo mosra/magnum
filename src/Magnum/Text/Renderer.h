@@ -68,8 +68,9 @@ enum class RendererCoreFlag: UnsignedByte {
      */
     GlyphClusters = 1 << 0,
 
-    /* Additions to this enum have to be propagated to RendererFlag and the
-       mask in RendererCore::flag() */
+    /* Additions to this enum have to be propagated to RendererFlag,
+       RendererGLFlag and the masks in RendererCore::flags() and
+       Renderer::flags() */
 };
 
 /**
@@ -651,6 +652,9 @@ enum class RendererFlag: UnsignedByte {
      * memory so this flag includes both clusters and positions.
      */
     GlyphPositionsClusters = Int(RendererCoreFlag::GlyphClusters)
+
+    /* Additions to this enum have to be propagated to RendererGLFlag and the
+       mask in Renderer::flags() */
 };
 
 /**
@@ -1061,6 +1065,9 @@ class MAGNUM_TEXT_EXPORT Renderer: public RendererCore {
     protected:
     #endif
         struct State;
+
+        /* Delegated to by RendererGL constructors */
+        explicit MAGNUM_TEXT_LOCAL Renderer(Containers::Pointer<State>&& state);
 
     private:
         /* While the allocators get just size to grow by, these functions get

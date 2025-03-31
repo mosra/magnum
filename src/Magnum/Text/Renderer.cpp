@@ -930,6 +930,8 @@ Renderer::State::State(const AbstractGlyphCache& glyphCache, void(*glyphAllocato
 
 Renderer::Renderer(const AbstractGlyphCache& glyphCache, void(*glyphAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&), void* glyphAllocatorState, void(*runAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&), void* runAllocatorState, void(*indexAllocator)(void*, UnsignedInt, Containers::ArrayView<char>&), void* indexAllocatorState, void(*vertexAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&), void* vertexAllocatorState, RendererFlags flags): RendererCore{Containers::pointer<State>(glyphCache, glyphAllocator, glyphAllocatorState, runAllocator, runAllocatorState, indexAllocator, indexAllocatorState, vertexAllocator, vertexAllocatorState, flags)} {}
 
+Renderer::Renderer(Containers::Pointer<State>&& state): RendererCore{Utility::move(state)} {}
+
 Renderer::Renderer(Renderer&&) noexcept = default;
 
 Renderer::~Renderer() = default;
@@ -937,7 +939,8 @@ Renderer::~Renderer() = default;
 Renderer& Renderer::operator=(Renderer&&) noexcept = default;
 
 RendererFlags Renderer::flags() const {
-    return RendererFlags{UnsignedByte(_state->flags)};
+    /* Subclasses inherit and add their own flags, mask them away */
+    return RendererFlags{UnsignedByte(_state->flags)} & RendererFlags{0x1};
 }
 
 namespace {

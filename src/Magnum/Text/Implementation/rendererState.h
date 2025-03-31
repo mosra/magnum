@@ -150,7 +150,8 @@ struct Renderer::State: RendererCore::AllocatorState {
 
 namespace Implementation {
 
-/* Not used in the state structs above but needed by Renderer */
+/* Not used in the state structs above but needed by both Renderer and
+   RendererGL */
 struct Vertex {
     Vector2 position;
     Vector2 textureCoordinates;

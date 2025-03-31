@@ -66,10 +66,12 @@ set(MagnumText_PRIVATE_HEADERS
 if(MAGNUM_TARGET_GL)
     list(APPEND MagnumText_GracefulAssert_SRCS
         DistanceFieldGlyphCacheGL.cpp
-        GlyphCacheGL.cpp)
+        GlyphCacheGL.cpp
+        RendererGL.cpp)
     list(APPEND MagnumText_HEADERS
         DistanceFieldGlyphCacheGL.h
-        GlyphCacheGL.h)
+        GlyphCacheGL.h
+        RendererGL.h)
     if(MAGNUM_BUILD_DEPRECATED)
         list(APPEND MagnumText_HEADERS
             DistanceFieldGlyphCache.h
