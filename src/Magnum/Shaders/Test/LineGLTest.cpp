@@ -1576,11 +1576,9 @@ void LineGLTest::renderLineCapsJoins2DReversed() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         /** @todo sync this with render2D() once the overlaps are fixed */
@@ -1638,11 +1636,9 @@ void LineGLTest::renderLineCapsJoins2DTransformed() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 119.0f, 0.112f}));
@@ -1843,11 +1839,9 @@ template<LineGL3D::Flag flag> void LineGLTest::renderCube3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 119.0f, 0.102f}));
