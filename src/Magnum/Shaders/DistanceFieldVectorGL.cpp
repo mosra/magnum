@@ -45,6 +45,7 @@
 #include <Corrade/Utility/Format.h>
 
 #include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/TextureArray.h"
 #endif
 
 #ifdef MAGNUM_BUILD_STATIC
@@ -110,6 +111,10 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
         #endif
     }
     #endif
+    #ifndef MAGNUM_TARGET_GLES
+    if(configuration.flags() >= Flag::TextureArrays)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::texture_array);
+    #endif
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
@@ -133,6 +138,9 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     GL::Shader vert{version, GL::Shader::Type::Vertex};
     vert.addSource(rs.getString("compatibility.glsl"_s))
         .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
+        #endif
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
@@ -159,7 +167,11 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
         .submitCompile();
 
     GL::Shader frag{version, GL::Shader::Type::Fragment};
-    frag.addSource(rs.getString("compatibility.glsl"_s));
+    frag.addSource(rs.getString("compatibility.glsl"_s))
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
+        #endif
+        ;
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         #ifndef MAGNUM_TARGET_WEBGL
@@ -259,6 +271,10 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix"_s);
             if(_flags & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix"_s);
+            #ifndef MAGNUM_TARGET_GLES2
+            if(_flags & Flag::TextureArrays)
+                _textureLayerUniform = uniformLocation("textureLayer"_s);
+            #endif
             _colorUniform = uniformLocation("color"_s);
             _outlineColorUniform = uniformLocation("outlineColor"_s);
             _outlineRangeUniform = uniformLocation("outlineRange"_s);
@@ -300,6 +316,7 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
         if(_flags & Flag::TextureTransformation)
             setTextureMatrix(Matrix3{Math::IdentityInit});
+        /* Texture layer is zero by default */
         setColor(Color4{1.0f});
         /* Outline color is zero by default */
         setOutlineRange(0.5f, 1.0f);
@@ -343,6 +360,17 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
     setUniform(_textureMatrixUniform, matrix);
     return *this;
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setTextureLayer(UnsignedInt id) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::DistanceFieldVectorGL::setTextureLayer(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_flags & Flag::TextureArrays,
+        "Shaders::DistanceFieldVectorGL::setTextureLayer(): the shader was not created with texture arrays enabled", *this);
+    setUniform(_textureLayerUniform, id);
+    return *this;
+}
+#endif
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setColor(const Color4& color) {
     #ifndef MAGNUM_TARGET_GLES2
@@ -493,9 +521,24 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
 #endif
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindVectorTexture(GL::Texture2D& texture) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
+        "Shaders::DistanceFieldVectorGL::bindVectorTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
+    #endif
     texture.bind(TextureUnit);
     return *this;
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindVectorTexture(GL::Texture2DArray& texture) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(_flags & Flag::TextureArrays,
+        "Shaders::DistanceFieldVectorGL::bindVectorTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
+    #endif
+    texture.bind(TextureUnit);
+    return *this;
+}
+#endif
 
 template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<2>;
 template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<3>;
@@ -523,6 +566,7 @@ Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlag value) {
         _c(ShaderStorageBuffers)
         #endif
         _c(MultiDraw)
+        _c(TextureArrays)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -545,7 +589,8 @@ Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlags value) {
         #ifndef MAGNUM_TARGET_WEBGL
         DistanceFieldVectorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
         #endif
-        DistanceFieldVectorGLFlag::UniformBuffers
+        DistanceFieldVectorGLFlag::UniformBuffers,
+        DistanceFieldVectorGLFlag::TextureArrays
         #endif
     });
 }

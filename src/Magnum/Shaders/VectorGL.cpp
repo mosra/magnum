@@ -45,6 +45,7 @@
 #include <Corrade/Utility/Format.h>
 
 #include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/TextureArray.h"
 #endif
 
 #ifdef MAGNUM_BUILD_STATIC
@@ -110,6 +111,10 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
         #endif
     }
     #endif
+    #ifndef MAGNUM_TARGET_GLES
+    if(configuration.flags() >= Flag::TextureArrays)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::texture_array);
+    #endif
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
@@ -133,6 +138,9 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     GL::Shader vert{version, GL::Shader::Type::Vertex};
     vert.addSource(rs.getString("compatibility.glsl"_s))
         .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
+        #endif
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
@@ -159,7 +167,11 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
         .submitCompile();
 
     GL::Shader frag{version, GL::Shader::Type::Fragment};
-    frag.addSource(rs.getString("compatibility.glsl"_s));
+    frag.addSource(rs.getString("compatibility.glsl"_s))
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
+        #endif
+        ;
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         #ifndef MAGNUM_TARGET_WEBGL
@@ -260,6 +272,10 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& s
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix"_s);
             if(_flags & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix"_s);
+            #ifndef MAGNUM_TARGET_GLES2
+            if(_flags & Flag::TextureArrays)
+                _textureLayerUniform = uniformLocation("textureLayer"_s);
+            #endif
             _backgroundColorUniform = uniformLocation("backgroundColor"_s);
             _colorUniform = uniformLocation("color"_s);
         }
@@ -299,6 +315,7 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& s
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
         if(_flags & Flag::TextureTransformation)
             setTextureMatrix(Matrix3{Math::IdentityInit});
+        /* Texture layer is zero by default */
         /* Background color is zero by default */
         setColor(Color4{1.0f});
     }
@@ -340,6 +357,17 @@ template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::set
     setUniform(_textureMatrixUniform, matrix);
     return *this;
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setTextureLayer(UnsignedInt id) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::VectorGL::setTextureLayer(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_flags & Flag::TextureArrays,
+        "Shaders::VectorGL::setTextureLayer(): the shader was not created with texture arrays enabled", *this);
+    setUniform(_textureLayerUniform, id);
+    return *this;
+}
+#endif
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setBackgroundColor(const Color4& color) {
     #ifndef MAGNUM_TARGET_GLES2
@@ -472,9 +500,24 @@ template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bin
 #endif
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bindVectorTexture(GL::Texture2D& texture) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
+        "Shaders::VectorGL::bindVectorTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
+    #endif
     texture.bind(TextureUnit);
     return *this;
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bindVectorTexture(GL::Texture2DArray& texture) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(_flags & Flag::TextureArrays,
+        "Shaders::VectorGL::bindVectorTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
+    #endif
+    texture.bind(TextureUnit);
+    return *this;
+}
+#endif
 
 template class MAGNUM_SHADERS_EXPORT VectorGL<2>;
 template class MAGNUM_SHADERS_EXPORT VectorGL<3>;
@@ -502,6 +545,7 @@ Debug& operator<<(Debug& debug, const VectorGLFlag value) {
         _c(ShaderStorageBuffers)
         #endif
         _c(MultiDraw)
+        _c(TextureArrays)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -524,7 +568,8 @@ Debug& operator<<(Debug& debug, const VectorGLFlags value) {
         #ifndef MAGNUM_TARGET_WEBGL
         VectorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
         #endif
-        VectorGLFlag::UniformBuffers
+        VectorGLFlag::UniformBuffers,
+        VectorGLFlag::TextureArrays
         #endif
     });
 }

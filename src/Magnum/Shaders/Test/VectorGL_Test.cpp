@@ -92,8 +92,8 @@ void VectorGL_Test::debugFlag() {
 void VectorGL_Test::debugFlags() {
     Containers::String out;
 
-    Debug{&out} << VectorGL3D::Flags{VectorGL3D::Flag::TextureTransformation|VectorGL3D::Flag(0xf0)} << VectorGL3D::Flags{};
-    CORRADE_COMPARE(out, "Shaders::VectorGL::Flag::TextureTransformation|Shaders::VectorGL::Flag(0xf0) Shaders::VectorGL::Flags{}\n");
+    Debug{&out} << VectorGL3D::Flags{VectorGL3D::Flag::TextureTransformation|VectorGL3D::Flag(0x80)} << VectorGL3D::Flags{};
+    CORRADE_COMPARE(out, "Shaders::VectorGL::Flag::TextureTransformation|Shaders::VectorGL::Flag(0x80) Shaders::VectorGL::Flags{}\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2

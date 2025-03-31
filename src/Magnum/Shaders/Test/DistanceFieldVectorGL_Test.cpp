@@ -92,8 +92,8 @@ void DistanceFieldVectorGL_Test::debugFlag() {
 void DistanceFieldVectorGL_Test::debugFlags() {
     Containers::String out;
 
-    Debug{&out} << DistanceFieldVectorGL3D::Flags{DistanceFieldVectorGL3D::Flag::TextureTransformation|DistanceFieldVectorGL3D::Flag(0xf0)} << DistanceFieldVectorGL3D::Flags{};
-    CORRADE_COMPARE(out, "Shaders::DistanceFieldVectorGL::Flag::TextureTransformation|Shaders::DistanceFieldVectorGL::Flag(0xf0) Shaders::DistanceFieldVectorGL::Flags{}\n");
+    Debug{&out} << DistanceFieldVectorGL3D::Flags{DistanceFieldVectorGL3D::Flag::TextureTransformation|DistanceFieldVectorGL3D::Flag(0x80)} << DistanceFieldVectorGL3D::Flags{};
+    CORRADE_COMPARE(out, "Shaders::DistanceFieldVectorGL::Flag::TextureTransformation|Shaders::DistanceFieldVectorGL::Flag(0x80) Shaders::DistanceFieldVectorGL::Flags{}\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2

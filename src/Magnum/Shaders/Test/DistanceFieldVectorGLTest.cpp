@@ -63,6 +63,7 @@
 
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/MeshView.h"
+#include "Magnum/GL/TextureArray.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/Primitives/Circle.h"
@@ -100,9 +101,12 @@ struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void setUniformUniformBuffersEnabled();
     template<UnsignedInt dimensions> void bindBufferUniformBuffersNotEnabled();
+    template<UnsignedInt dimensions> void bindTextureInvalid();
+    template<UnsignedInt dimensions> void bindTextureArrayInvalid();
     #endif
     template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
     #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setTextureLayerNotArray();
     template<UnsignedInt dimensions> void bindTextureTransformBufferNotEnabled();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
@@ -167,7 +171,11 @@ constexpr struct {
     DistanceFieldVectorGL2D::Flags flags;
 } ConstructData[]{
     {"", {}},
-    {"texture transformation", DistanceFieldVectorGL2D::Flag::TextureTransformation}
+    {"texture transformation", DistanceFieldVectorGL2D::Flag::TextureTransformation},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"texture arrays", DistanceFieldVectorGL2D::Flag::TextureArrays},
+    {"texture transformation + texture arrays", DistanceFieldVectorGL2D::Flag::TextureTransformation|DistanceFieldVectorGL2D::Flag::TextureArrays},
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -179,12 +187,14 @@ constexpr struct {
     {"classic fallback", {}, 1, 1},
     {"", DistanceFieldVectorGL2D::Flag::UniformBuffers, 1, 1},
     {"texture transformation", DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation, 1, 1},
+    {"texture arrays", DistanceFieldVectorGL2D::Flag::TextureArrays, 1, 1},
+    {"texture transformation + texture arrays", DistanceFieldVectorGL2D::Flag::TextureTransformation|DistanceFieldVectorGL2D::Flag::TextureArrays, 1, 1},
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
        and 3+1 in 2D, per-material 4 */
     {"multiple materials, draws", DistanceFieldVectorGL2D::Flag::UniformBuffers, 16, 48},
-    {"multidraw with all the things", DistanceFieldVectorGL2D::Flag::MultiDraw|DistanceFieldVectorGL2D::Flag::TextureTransformation, 16, 48},
+    {"multidraw with all the things", DistanceFieldVectorGL2D::Flag::MultiDraw|DistanceFieldVectorGL2D::Flag::TextureTransformation|DistanceFieldVectorGL2D::Flag::TextureArrays, 16, 48},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"shader storage + multidraw with all the things", DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::MultiDraw|DistanceFieldVectorGL2D::Flag::TextureTransformation, 0, 0}
+    {"shader storage + multidraw with all the things", DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::MultiDraw|DistanceFieldVectorGL2D::Flag::TextureTransformation|DistanceFieldVectorGL2D::Flag::TextureArrays, 0, 0}
     #endif
 };
 
@@ -206,22 +216,77 @@ const struct {
     const char* name;
     DistanceFieldVectorGL2D::Flags flags;
     Matrix3 textureTransformation;
+    bool arrayTextureCoordinates;
+    Int layerAttribute, layerUniform;
     Color4 color, outlineColor;
     Float outlineRangeStart, outlineRangeEnd, smoothness;
     const char* file2D;
     const char* file3D;
     bool flip;
 } RenderData[] {
-    {"texture transformation", DistanceFieldVectorGL2D::Flag::TextureTransformation,
+    {"texture transformation",
+        DistanceFieldVectorGL2D::Flag::TextureTransformation,
         Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
-        0xffffff_rgbf, 0x00000000_rgbaf, 0.5f, 1.0f, 0.04f,
+        false, 0, 0, 0xffffff_rgbf, 0x00000000_rgbaf, 0.5f, 1.0f, 0.04f,
         "defaults-distancefield.tga", "defaults-distancefield.tga", true},
-    {"smooth0.1", {}, {}, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
+    {"smooth0.1",
+        {}, {},
+        false, 0, 0, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
         "smooth0.1-2D.tga", "smooth0.1-3D.tga", false},
-    {"smooth0.2", {}, {}, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.2f,
+    {"smooth0.2",
+        {}, {},
+        false, 0, 0, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.2f,
         "smooth0.2-2D.tga", "smooth0.2-3D.tga", false},
-    {"outline", {}, {}, 0xffff99_rgbf, 0x9999ff_rgbf, 0.6f, 0.45f, 0.05f,
-        "outline2D.tga", "outline3D.tga", false}
+    {"outline",
+        {}, {},
+        false, 0, 0, 0xffff99_rgbf, 0x9999ff_rgbf, 0.6f, 0.45f, 0.05f,
+        "outline2D.tga", "outline3D.tga", false},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"array texture, 2D coordinates, first layer",
+        DistanceFieldVectorGL2D::Flag::TextureArrays, {},
+        false, 0, 0, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
+        "smooth0.1-2D.tga", "smooth0.1-3D.tga", false},
+    {"array texture, 2D coordinates, arbitrary layer from uniform",
+        DistanceFieldVectorGL2D::Flag::TextureArrays, {},
+        false, 0, 6, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
+        "smooth0.1-2D.tga", "smooth0.1-3D.tga", false},
+    {"array texture, 2D coordinates, texture transformation, arbitrary layer from uniform",
+        DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        false, 0, 6, 0xffffff_rgbf, 0x00000000_rgbaf, 0.5f, 1.0f, 0.04f,
+        "defaults-distancefield.tga", "defaults-distancefield.tga", true},
+    {"array texture, array coordinates, first layer",
+        DistanceFieldVectorGL2D::Flag::TextureArrays, {},
+        true, 0, 0, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
+        "smooth0.1-2D.tga", "smooth0.1-3D.tga", false},
+    {"array texture, array coordinates, arbitrary layer from attribute",
+        DistanceFieldVectorGL2D::Flag::TextureArrays, {},
+        true, 6, 0, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
+        "smooth0.1-2D.tga", "smooth0.1-3D.tga", false},
+    {"array texture, array coordinates, arbitrary layer from uniform",
+        DistanceFieldVectorGL2D::Flag::TextureArrays, {},
+        true, 0, 6, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
+        "smooth0.1-2D.tga", "smooth0.1-3D.tga", false},
+    {"array texture, array coordinates, arbitrary layer from both",
+        DistanceFieldVectorGL2D::Flag::TextureArrays, {},
+        true, 2, 4, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
+        "smooth0.1-2D.tga", "smooth0.1-3D.tga", false},
+    {"array texture, array coordinates, texture transformation, arbitrary layer from attribute",
+        DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        true, 6, 0, 0xffffff_rgbf, 0x00000000_rgbaf, 0.5f, 1.0f, 0.04f,
+        "defaults-distancefield.tga", "defaults-distancefield.tga", true},
+    {"array texture, array coordinates, texture transformation, arbitrary layer from uniform",
+        DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        true, 0, 6, 0xffffff_rgbf, 0x00000000_rgbaf, 0.5f, 1.0f, 0.04f,
+        "defaults-distancefield.tga", "defaults-distancefield.tga", true},
+    {"array texture, array coordinates, texture transformation, arbitrary layer from both",
+        DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        true, 2, 4, 0xffffff_rgbf, 0x00000000_rgbaf, 0.5f, 1.0f, 0.04f,
+        "defaults-distancefield.tga", "defaults-distancefield.tga", true},
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -239,9 +304,17 @@ constexpr struct {
         {}, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
+    {"bind with offset, texture array", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::TextureArrays, 1, 1, true, 16,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
+    {"bind with offset, texture array, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
     #endif
@@ -249,9 +322,17 @@ constexpr struct {
         {}, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
+    {"draw offset, texture array", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::TextureArrays, 2, 3, false, 1,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
+    {"draw offset, texture array, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
     #endif
@@ -259,9 +340,17 @@ constexpr struct {
         DistanceFieldVectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
+    {"multidraw, texture array", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
+    {"multidraw, texture array, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
     #endif
@@ -312,10 +401,16 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
         &DistanceFieldVectorGLTest::setUniformUniformBuffersEnabled<3>,
         &DistanceFieldVectorGLTest::bindBufferUniformBuffersNotEnabled<2>,
         &DistanceFieldVectorGLTest::bindBufferUniformBuffersNotEnabled<3>,
+        &DistanceFieldVectorGLTest::bindTextureInvalid<2>,
+        &DistanceFieldVectorGLTest::bindTextureInvalid<3>,
+        &DistanceFieldVectorGLTest::bindTextureArrayInvalid<2>,
+        &DistanceFieldVectorGLTest::bindTextureArrayInvalid<3>,
         #endif
         &DistanceFieldVectorGLTest::setTextureMatrixNotEnabled<2>,
         &DistanceFieldVectorGLTest::setTextureMatrixNotEnabled<3>,
         #ifndef MAGNUM_TARGET_GLES2
+        &DistanceFieldVectorGLTest::setTextureLayerNotArray<2>,
+        &DistanceFieldVectorGLTest::setTextureLayerNotArray<3>,
         &DistanceFieldVectorGLTest::bindTextureTransformBufferNotEnabled<2>,
         &DistanceFieldVectorGLTest::bindTextureTransformBufferNotEnabled<3>,
         #endif
@@ -633,6 +728,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setUniformUnifo
     Error redirectError{&out};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
+        .setTextureLayer({})
         .setColor({})
         .setOutlineColor({})
         .setOutlineRange({}, {})
@@ -640,6 +736,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setUniformUnifo
     CORRADE_COMPARE(out,
         "Shaders::DistanceFieldVectorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::DistanceFieldVectorGL::setTextureLayer(): the shader was created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::setColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::setOutlineColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::setOutlineRange(): the shader was created with uniform buffers enabled\n"
@@ -676,6 +773,45 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindBufferUnifo
         "Shaders::DistanceFieldVectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::DistanceFieldVectorGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
 }
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindTextureInvalid() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D texture;
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL<dimensions>::Flag::TextureArrays)};
+
+    Containers::String out;
+    Error redirectError{&out};
+    shader.bindVectorTexture(texture);
+    CORRADE_COMPARE(out, "Shaders::DistanceFieldVectorGL::bindVectorTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n");
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindTextureArrayInvalid() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    GL::Texture2DArray texture;
+    DistanceFieldVectorGL<dimensions> shader;
+
+    Containers::String out;
+    Error redirectError{&out};
+    shader.bindVectorTexture(texture);
+    CORRADE_COMPARE(out, "Shaders::DistanceFieldVectorGL::bindVectorTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n");
+}
 #endif
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureMatrixNotEnabled() {
@@ -693,6 +829,25 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureMatri
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureLayerNotArray() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D texture;
+    DistanceFieldVectorGL<dimensions> shader;
+
+    Containers::String out;
+    Error redirectError{&out};
+    shader.setTextureLayer(37);
+    CORRADE_COMPARE(out, "Shaders::DistanceFieldVectorGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
+}
+
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindTextureTransformBufferNotEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
@@ -1032,36 +1187,89 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    GL::Mesh square = MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
+    struct Vertex {
+        Vector2 position;
+        Vector3 textureCoords;
+    } squareData[] {
+        {{ 1.0f, -1.0f}, {1.0f, 0.0f, Float(data.layerAttribute)}},
+        {{ 1.0f,  1.0f}, {1.0f, 1.0f, Float(data.layerAttribute)}},
+        {{-1.0f, -1.0f}, {0.0f, 0.0f, Float(data.layerAttribute)}},
+        {{-1.0f,  1.0f}, {0.0f, 1.0f, Float(data.layerAttribute)}}
+    };
+    GL::Mesh square{GL::MeshPrimitive::TriangleStrip};
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.arrayTextureCoordinates) {
+        square.addVertexBuffer(GL::Buffer{squareData}, 0,
+            GenericGL2D::Position{},
+            GenericGL2D::TextureArrayCoordinates{});
+    } else
+    #endif
+    {
+        square.addVertexBuffer(GL::Buffer{squareData}, 0,
+            GenericGL2D::Position{},
+            GenericGL2D::TextureCoordinates{},
+            sizeof(Float));
+    }
+    square.setCount(4);
+
+    DistanceFieldVectorGL2D::Flags flags = data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag & DistanceFieldVectorGL2D::Flag::UniformBuffers && (data.flags & DistanceFieldVectorGL2D::Flag::TextureArrays) && !(data.flags & DistanceFieldVectorGL2D::Flag::TextureTransformation) && data.layerUniform) {
+        CORRADE_INFO("Texture arrays with layer passed from a uniform currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= DistanceFieldVectorGL2D::Flag::TextureTransformation;
+    }
+    #endif
+    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Configuration{}
+        .setFlags(flags)};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
 
-    GL::Texture2D texture;
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    #endif
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags & DistanceFieldVectorGL2D::Flag::TextureArrays) {
+        textureArray = GL::Texture2DArray{};
+        textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, {image->size(), data.layerUniform + data.layerAttribute + 1})
+            .setSubImage(0, {0, 0, data.layerUniform + data.layerAttribute}, ImageView2D{*image});
 
-    #ifdef MAGNUM_TARGET_GLES2
-    /* Don't want to bother with the fiasco of single-channel formats and
-       texture storage extensions on ES2 */
-    texture.setImage(0, TextureFormatR, *image);
-    #else
-    texture.setStorage(1, TextureFormatR, image->size())
-        .setSubImage(0, {}, *image);
+        shader.bindVectorTexture(textureArray);
+    } else
     #endif
+    {
+        texture = GL::Texture2D{};
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge);
 
-    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Configuration{}
-        .setFlags(data.flags|flag)};
-    shader.bindVectorTexture(texture);
+        #ifdef MAGNUM_TARGET_GLES2
+        /* Don't want to bother with the fiasco of single-channel formats and
+           texture storage extensions on ES2 */
+        texture.setImage(0, TextureFormatR, *image);
+        #else
+        texture.setStorage(1, TextureFormatR, image->size())
+            .setSubImage(0, {}, *image);
+        #endif
+
+        shader.bindVectorTexture(texture);
+    }
 
     if(flag == DistanceFieldVectorGL2D::Flag{}) {
         if(data.textureTransformation != Matrix3{})
             shader.setTextureMatrix(data.textureTransformation);
         else shader.setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f}));
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.layerUniform != 0) /* to verify the default */
+            shader.setTextureLayer(data.layerUniform);
+        #endif
         shader.setColor(data.color)
             .setOutlineColor(data.outlineColor)
             .setOutlineRange(data.outlineRangeStart, data.outlineRangeEnd)
@@ -1095,8 +1303,9 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
         GL::Buffer textureTransformationlUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layerUniform)
         }};
-        if(data.flags & DistanceFieldVectorGL2D::Flag::TextureTransformation)
+        if(flags & DistanceFieldVectorGL2D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationlUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
@@ -1163,30 +1372,79 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid(Primitives::PlaneFlag::TextureCoordinates));
+    struct Vertex {
+        Vector3 position;
+        Vector3 textureCoords;
+    } planeData[] {
+        {{ 1.0f, -1.0f, 0.0f}, {1.0f, 0.0f, Float(data.layerAttribute)}},
+        {{ 1.0f,  1.0f, 0.0f}, {1.0f, 1.0f, Float(data.layerAttribute)}},
+        {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, Float(data.layerAttribute)}},
+        {{-1.0f,  1.0f, 0.0f}, {0.0f, 1.0f, Float(data.layerAttribute)}}
+    };
+    GL::Mesh plane{GL::MeshPrimitive::TriangleStrip};
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.arrayTextureCoordinates) {
+        plane.addVertexBuffer(GL::Buffer{planeData}, 0,
+            GenericGL3D::Position{},
+            GenericGL3D::TextureArrayCoordinates{});
+    } else
+    #endif
+    {
+        plane.addVertexBuffer(GL::Buffer{planeData}, 0,
+            GenericGL3D::Position{},
+            GenericGL3D::TextureCoordinates{},
+            sizeof(Float));
+    }
+    plane.setCount(4);
+
+    DistanceFieldVectorGL3D::Flags flags = data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag & DistanceFieldVectorGL3D::Flag::UniformBuffers && (data.flags & DistanceFieldVectorGL3D::Flag::TextureArrays) && !(data.flags & DistanceFieldVectorGL3D::Flag::TextureTransformation) && data.layerUniform) {
+        CORRADE_INFO("Texture arrays with layer passed from a uniform currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= DistanceFieldVectorGL3D::Flag::TextureTransformation;
+    }
+    #endif
+    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Configuration{}
+        .setFlags(flags)};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
 
-    GL::Texture2D texture;
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    #endif
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags & DistanceFieldVectorGL3D::Flag::TextureArrays) {
+        textureArray = GL::Texture2DArray{};
+        textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, {image->size(), data.layerUniform + data.layerAttribute + 1})
+            .setSubImage(0, {0, 0, data.layerUniform + data.layerAttribute}, ImageView2D{*image});
 
-    #ifdef MAGNUM_TARGET_GLES2
-    /* Don't want to bother with the fiasco of single-channel formats and
-       texture storage extensions on ES2 */
-    texture.setImage(0, TextureFormatR, *image);
-    #else
-    texture.setStorage(1, TextureFormatR, image->size())
-        .setSubImage(0, {}, *image);
+        shader.bindVectorTexture(textureArray);
+    } else
     #endif
+    {
+        texture = GL::Texture2D{};
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge);
 
-    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Configuration{}
-        .setFlags(data.flags|flag)};
-    shader.bindVectorTexture(texture);
+        #ifdef MAGNUM_TARGET_GLES2
+        /* Don't want to bother with the fiasco of single-channel formats and
+           texture storage extensions on ES2 */
+        texture.setImage(0, TextureFormatR, *image);
+        #else
+        texture.setStorage(1, TextureFormatR, image->size())
+            .setSubImage(0, {}, *image);
+        #endif
+
+        shader.bindVectorTexture(texture);
+    }
 
     if(flag == DistanceFieldVectorGL3D::Flag{}) {
         if(data.textureTransformation != Matrix3{})
@@ -1196,6 +1454,10 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationZ(15.0_degf));
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.layerUniform != 0) /* to verify the default */
+            shader.setTextureLayer(data.layerUniform);
+        #endif
         shader.setColor(data.color)
             .setOutlineColor(data.outlineColor)
             .setOutlineRange(data.outlineRangeStart, data.outlineRangeEnd)
@@ -1232,8 +1494,9 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
         GL::Buffer textureTransformationlUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layerUniform)
         }};
-        if(data.flags & DistanceFieldVectorGL2D::Flag::TextureTransformation)
+        if(flags & DistanceFieldVectorGL2D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationlUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
@@ -1308,6 +1571,11 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
+    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Configuration{}
+        .setFlags(DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1317,12 +1585,36 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
 
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
-    GL::Texture2D vector;
-    vector.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, GL::TextureFormat::R8, image->size())
-        .setSubImage(0, {}, *image);
+
+    /* For arrays we the original image three times to different offsets in
+       three different slices */
+    GL::Texture2D vector{NoCreate};
+    GL::Texture2DArray vectorArray{NoCreate};
+    if(data.flags & DistanceFieldVectorGL2D::Flag::TextureArrays) {
+        Vector3i size{image->size().x(), image->size().y()*2, 6};
+
+        vectorArray = GL::Texture2DArray{};
+        vectorArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, size)
+            /* Clear to all zeros for reproducible output */
+            .setSubImage(0, {}, Image3D{PixelFormat::R8Unorm, size, Containers::Array<char>{ValueInit, std::size_t(size.product())}})
+            .setSubImage(0, {0, size.y()/4, 1}, ImageView2D{*image})
+            .setSubImage(0, {0, size.y()/2, 3}, ImageView2D{*image})
+            .setSubImage(0, {0, 0, 5}, ImageView2D{*image});
+
+        shader.bindVectorTexture(vectorArray);
+    } else {
+        vector = GL::Texture2D{};
+        vector.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, image->size())
+            .setSubImage(0, {}, *image);
+
+        shader.bindVectorTexture(vector);
+    }
 
     /* Circle is a fan, plane is a strip, make it indexed first */
     Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(32,
@@ -1331,7 +1623,47 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         Primitives::SquareFlag::TextureCoordinates));
     Trade::MeshData triangleData = MeshTools::generateIndices(Primitives::circle2DSolid(3,
         Primitives::Circle2DFlag::TextureCoordinates));
-    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({circleData, squareData, triangleData}));
+
+    /* Assuming the texture coordinates are the last attribute, add a four-byte
+       padding after, which we subsequently abuse as the layer index */
+    /** @todo clean this up once MeshData (and primitives?) support array
+        coordinates directly */
+    Trade::MeshData meshData = MeshTools::interleave(
+        MeshTools::concatenate({circleData, squareData, triangleData}),
+        {Trade::MeshAttributeData{4}});
+    CORRADE_COMPARE(meshData.attributeCount(), 2);
+    CORRADE_COMPARE(meshData.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(meshData.attributeName(1), Trade::MeshAttribute::TextureCoordinates);
+    /* Manual cast because the real attribute type is Vector2 */
+    const Containers::StridedArrayView1D<Vector3> textureCoordinates = Containers::arrayCast<Vector3>(meshData.mutableAttribute<Vector2>(Trade::MeshAttribute::TextureCoordinates));
+
+    /* The circle will use the last slice, coming from just the attribute
+       alone */
+    for(UnsignedInt i = 0; i != circleData.vertexCount(); ++i)
+        textureCoordinates[i].z() = 5;
+    /* The square will use the third slice, coming from both the attribute and
+       the uniform */
+    for(UnsignedInt i = 0; i != squareData.vertexCount(); ++i)
+        textureCoordinates[circleData.vertexCount() + i].z() = 1;
+    /* The triangle will use the second slice, coming from just the uniform.
+       The memory isn't initialized by default however, so set the attribute to
+       0. */
+    for(UnsignedInt i = 0; i != triangleData.vertexCount(); ++i)
+        textureCoordinates[circleData.vertexCount() + squareData.vertexCount() + i].z() = 0;
+
+    /* Making some assumptions about the layout for simplicity */
+    CORRADE_COMPARE(meshData.attributeStride(0), sizeof(Vector2) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeStride(1), sizeof(Vector2) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeOffset(0), 0);
+    CORRADE_COMPARE(meshData.attributeOffset(1), sizeof(Vector2));
+    GL::Mesh mesh;
+    mesh.addVertexBuffer(GL::Buffer{meshData.vertexData()}, 0,
+            GenericGL2D::Position{},
+            GenericGL2D::TextureArrayCoordinates{})
+        .setIndexBuffer(GL::Buffer{GL::Buffer::TargetHint::ElementArray, meshData.indexData()}, 0,
+            meshData.indexType())
+        .setCount(meshData.indexCount());
+
     GL::MeshView circle{mesh};
     circle.setCount(circleData.indexCount());
     GL::MeshView square{mesh};
@@ -1379,17 +1711,30 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
     Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & DistanceFieldVectorGL2D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.0f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{})*
             Matrix3::translation({0.5f, 0.5f})*
             Matrix3::rotation(180.0_degf)*
-            Matrix3::translation({-0.5f, -0.5f})
-        );
+            Matrix3::translation({-0.5f, -0.5f}))
+        .setLayer(0); /* ignored if not array */
     textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & DistanceFieldVectorGL2D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.5f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{})*
             Matrix3::translation(Vector2::xAxis(1.0f))*
-            Matrix3::scaling(Vector2::xScale(-1.0f))
-        );
+            Matrix3::scaling(Vector2::xScale(-1.0f)))
+        .setLayer(2); /* ignored if not array */
     textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
-        .setTextureMatrix(Matrix3{});
+        .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & DistanceFieldVectorGL2D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.25f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{}))
+        .setLayer(1); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<DistanceFieldVectorDrawUniform> drawData{2*data.uniformIncrement + 1};
@@ -1402,12 +1747,6 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
     drawData[2*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
         .setMaterialId(data.bindWithOffset ? 0 : 0);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
-
-    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Configuration{}
-        .setFlags(DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation|data.flags)
-        .setMaterialCount(data.materialCount)
-        .setDrawCount(data.drawCount)};
-    shader.bindVectorTexture(vector);
 
     /* Rebinding UBOs / SSBOs each time */
     if(data.bindWithOffset) {
@@ -1528,6 +1867,11 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
+    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Configuration{}
+        .setFlags(DistanceFieldVectorGL3D::Flag::UniformBuffers|DistanceFieldVectorGL3D::Flag::TextureTransformation|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1537,12 +1881,36 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
 
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
-    GL::Texture2D vector;
-    vector.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, GL::TextureFormat::R8, image->size())
-        .setSubImage(0, {}, *image);
+
+    /* For arrays we the original image three times to different offsets in
+       three different slices */
+    GL::Texture2D vector{NoCreate};
+    GL::Texture2DArray vectorArray{NoCreate};
+    if(data.flags & DistanceFieldVectorGL3D::Flag::TextureArrays) {
+        Vector3i size{image->size().x(), image->size().y()*2, 6};
+
+        vectorArray = GL::Texture2DArray{};
+        vectorArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, size)
+            /* Clear to all zeros for reproducible output */
+            .setSubImage(0, {}, Image3D{PixelFormat::R8Unorm, size, Containers::Array<char>{ValueInit, std::size_t(size.product())}})
+            .setSubImage(0, {0, size.y()/4, 1}, ImageView2D{*image})
+            .setSubImage(0, {0, size.y()/2, 3}, ImageView2D{*image})
+            .setSubImage(0, {0, 0, 5}, ImageView2D{*image});
+
+        shader.bindVectorTexture(vectorArray);
+    } else {
+        vector = GL::Texture2D{};
+        vector.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, image->size())
+            .setSubImage(0, {}, *image);
+
+        shader.bindVectorTexture(vector);
+    }
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
@@ -1551,7 +1919,51 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         Primitives::PlaneFlag::TextureCoordinates));
     Trade::MeshData coneData = Primitives::coneSolid(1, 32, 1.0f,
         Primitives::ConeFlag::TextureCoordinates);
-    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({sphereData, planeData, coneData}));
+
+    /* Assuming the texture coordinates are the last attribute, add a four-byte
+       padding after, which we subsequently abuse as the layer index */
+    /** @todo clean this up once MeshData (and primitives?) support array
+        coordinates directly */
+    Trade::MeshData meshData = MeshTools::interleave(
+        MeshTools::concatenate({sphereData, planeData, coneData}),
+        {Trade::MeshAttributeData{4}});
+    CORRADE_COMPARE(meshData.attributeCount(), 3);
+    CORRADE_COMPARE(meshData.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(meshData.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(meshData.attributeName(2), Trade::MeshAttribute::TextureCoordinates);
+    /* Manual cast because the real attribute type is Vector2 */
+    const Containers::StridedArrayView1D<Vector3> textureCoordinates = Containers::arrayCast<Vector3>(meshData.mutableAttribute<Vector2>(Trade::MeshAttribute::TextureCoordinates));
+
+    /* The sphere will use the last slice, coming from just the attribute
+       alone */
+    for(UnsignedInt i = 0; i != sphereData.vertexCount(); ++i)
+        textureCoordinates[i].z() = 5;
+    /* The plane will use the third slice, coming from both the attribute and
+       the uniform */
+    for(UnsignedInt i = 0; i != planeData.vertexCount(); ++i)
+        textureCoordinates[sphereData.vertexCount() + i].z() = 1;
+    /* The cone will use the first slice, coming from just the uniform. The
+       memory isn't initialized by default however, so set the attribute to
+       0. */
+    for(UnsignedInt i = 0; i != coneData.vertexCount(); ++i)
+        textureCoordinates[sphereData.vertexCount() + planeData.vertexCount() + i].z() = 0;
+
+    /* Making some assumptions about the layout for simplicity */
+    CORRADE_COMPARE(meshData.attributeStride(0), sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeStride(1), sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeStride(2), sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeOffset(0), 0);
+    CORRADE_COMPARE(meshData.attributeOffset(1), sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeOffset(2), sizeof(Vector3) + sizeof(Vector3));
+    GL::Mesh mesh;
+    mesh.addVertexBuffer(GL::Buffer{meshData.vertexData()}, 0,
+            GenericGL3D::Position{},
+            GenericGL3D::Normal{},
+            GenericGL3D::TextureArrayCoordinates{})
+        .setIndexBuffer(GL::Buffer{GL::Buffer::TargetHint::ElementArray, meshData.indexData()}, 0,
+            meshData.indexType())
+        .setCount(meshData.indexCount());
+
     GL::MeshView sphere{mesh};
     sphere.setCount(sphereData.indexCount());
     GL::MeshView plane{mesh};
@@ -1604,17 +2016,30 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
     Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & DistanceFieldVectorGL3D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.0f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{})*
             Matrix3::translation({0.5f, 0.5f})*
             Matrix3::rotation(180.0_degf)*
-            Matrix3::translation({-0.5f, -0.5f})
-        );
+            Matrix3::translation({-0.5f, -0.5f}))
+        .setLayer(0); /* ignored if not array */
     textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & DistanceFieldVectorGL3D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.5f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{})*
             Matrix3::translation(Vector2::xAxis(1.0f))*
-            Matrix3::scaling(Vector2::xScale(-1.0f))
-        );
+            Matrix3::scaling(Vector2::xScale(-1.0f)))
+        .setLayer(2); /* ignored if not array */
     textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
-        .setTextureMatrix(Matrix3{});
+        .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & DistanceFieldVectorGL3D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.25f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{}))
+        .setLayer(1); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<DistanceFieldVectorDrawUniform> drawData{2*data.uniformIncrement + 1};
@@ -1627,12 +2052,6 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
     drawData[2*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
         .setMaterialId(data.bindWithOffset ? 0 : 0);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
-
-    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Configuration{}
-        .setFlags(DistanceFieldVectorGL3D::Flag::UniformBuffers|DistanceFieldVectorGL3D::Flag::TextureTransformation|data.flags)
-        .setMaterialCount(data.materialCount)
-        .setDrawCount(data.drawCount)};
-    shader.bindVectorTexture(vector);
 
     /* Rebinding UBOs / SSBOs each time */
     if(data.bindWithOffset) {

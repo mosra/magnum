@@ -61,6 +61,7 @@
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/MeshView.h"
+#include "Magnum/GL/TextureArray.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/Primitives/Circle.h"
@@ -99,9 +100,12 @@ struct VectorGLTest: GL::OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void setUniformUniformBuffersEnabled();
     template<UnsignedInt dimensions> void bindBufferUniformBuffersNotEnabled();
+    template<UnsignedInt dimensions> void bindTextureInvalid();
+    template<UnsignedInt dimensions> void bindTextureArrayInvalid();
     #endif
     template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
     #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setTextureLayerNotArray();
     template<UnsignedInt dimensions> void bindTextureTransformBufferNotEnabled();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
@@ -166,7 +170,11 @@ constexpr struct {
     VectorGL2D::Flags flags;
 } ConstructData[]{
     {"", {}},
-    {"texture transformation", VectorGL2D::Flag::TextureTransformation}
+    {"texture transformation", VectorGL2D::Flag::TextureTransformation},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"texture arrays", VectorGL2D::Flag::TextureArrays},
+    {"texture transformation + texture arrays", VectorGL2D::Flag::TextureTransformation|VectorGL2D::Flag::TextureArrays},
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -178,12 +186,14 @@ constexpr struct {
     {"classic fallback", {}, 1, 1},
     {"", VectorGL2D::Flag::UniformBuffers, 1, 1},
     {"texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1, 1},
+    {"texture arrays", VectorGL2D::Flag::TextureArrays, 1, 1},
+    {"texture transformation + texture arrays", VectorGL2D::Flag::TextureTransformation|VectorGL2D::Flag::TextureArrays, 1, 1},
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
        and 3+1 in 2D, per-material 3 */
     {"multiple materials, draws", VectorGL2D::Flag::UniformBuffers, 15, 42},
-    {"multidraw with all the things", VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation, 15, 42},
+    {"multidraw with all the things", VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation|VectorGL2D::Flag::TextureArrays, 15, 42},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"shader storage + multidraw with all the things", VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation, 0, 0}
+    {"shader storage + multidraw with all the things", VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation|VectorGL2D::Flag::TextureArrays, 0, 0}
     #endif
 };
 #endif
@@ -207,17 +217,68 @@ const struct {
     const char* name;
     VectorGL2D::Flags flags;
     Matrix3 textureTransformation;
+    bool arrayTextureCoordinates;
+    Int layerAttribute, layerUniform;
     Color4 backgroundColor, color;
     const char* file2D;
     const char* file3D;
     bool flip;
 } RenderData[] {
-    {"texture transformation", VectorGL2D::Flag::TextureTransformation,
+    {"texture transformation",
+        VectorGL2D::Flag::TextureTransformation,
         Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
-        0x00000000_rgbaf, 0xffffff_rgbf,
+        false, 0, 0, 0x00000000_rgbaf, 0xffffff_rgbf,
         "defaults.tga", "defaults.tga", true},
-    {"", {}, {}, 0x9999ff_rgbf, 0xffff99_rgbf,
-        "vector2D.tga", "vector3D.tga", false}
+    {"",
+        {}, {},
+        false, 0, 0, 0x9999ff_rgbf, 0xffff99_rgbf,
+        "vector2D.tga", "vector3D.tga", false},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"array texture, 2D coordinates, first layer",
+        VectorGL2D::Flag::TextureArrays, {},
+        false, 0, 0, 0x9999ff_rgbf, 0xffff99_rgbf,
+        "vector2D.tga", "vector3D.tga", false},
+    {"array texture, 2D coordinates, arbitrary layer from uniform",
+        VectorGL2D::Flag::TextureArrays, {},
+        false, 0, 6, 0x9999ff_rgbf, 0xffff99_rgbf,
+        "vector2D.tga", "vector3D.tga", false},
+    {"array texture, 2D coordinates, texture transformation, arbitrary layer from uniform",
+        VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        false, 0, 6, 0x00000000_rgbaf, 0xffffff_rgbf,
+        "defaults.tga", "defaults.tga", true},
+    {"array texture, array coordinates, first layer",
+        VectorGL2D::Flag::TextureArrays, {},
+        true, 0, 0, 0x9999ff_rgbf, 0xffff99_rgbf,
+        "vector2D.tga", "vector3D.tga", false},
+    {"array texture, array coordinates, arbitrary layer from attribute",
+        VectorGL2D::Flag::TextureArrays, {},
+        true, 6, 0, 0x9999ff_rgbf, 0xffff99_rgbf,
+        "vector2D.tga", "vector3D.tga", false},
+    {"array texture, array coordinates, arbitrary layer from uniform",
+        VectorGL2D::Flag::TextureArrays, {},
+        true, 0, 6, 0x9999ff_rgbf, 0xffff99_rgbf,
+        "vector2D.tga", "vector3D.tga", false},
+    {"array texture, array coordinates, arbitrary layer from both",
+        VectorGL2D::Flag::TextureArrays, {},
+        true, 2, 4, 0x9999ff_rgbf, 0xffff99_rgbf,
+        "vector2D.tga", "vector3D.tga", false},
+    {"array texture, array coordinates, texture transformation, arbitrary layer from attribute",
+        VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        true, 6, 0, 0x00000000_rgbaf, 0xffffff_rgbf,
+        "defaults.tga", "defaults.tga", true},
+    {"array texture, array coordinates, texture transformation, arbitrary layer from uniform",
+        VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        true, 0, 6, 0x00000000_rgbaf, 0xffffff_rgbf,
+        "defaults.tga", "defaults.tga", true},
+    {"array texture, array coordinates, texture transformation, arbitrary layer from both",
+        VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        true, 2, 4, 0x00000000_rgbaf, 0xffffff_rgbf,
+        "defaults.tga", "defaults.tga", true},
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -235,9 +296,17 @@ constexpr struct {
         {}, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
+    {"bind with offset, texture array", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::TextureArrays, 1, 1, true, 16,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
+    {"bind with offset, texture array, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
     #endif
@@ -245,9 +314,17 @@ constexpr struct {
         {}, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
+    {"draw offset, texture array", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::TextureArrays, 2, 3, false, 1,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
+    {"draw offset, texture array, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
     #endif
@@ -255,9 +332,17 @@ constexpr struct {
         VectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
+    {"multidraw, texture array", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
+    {"multidraw, texture array, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
     #endif
@@ -308,10 +393,16 @@ VectorGLTest::VectorGLTest() {
         &VectorGLTest::setUniformUniformBuffersEnabled<3>,
         &VectorGLTest::bindBufferUniformBuffersNotEnabled<2>,
         &VectorGLTest::bindBufferUniformBuffersNotEnabled<3>,
+        &VectorGLTest::bindTextureInvalid<2>,
+        &VectorGLTest::bindTextureInvalid<3>,
+        &VectorGLTest::bindTextureArrayInvalid<2>,
+        &VectorGLTest::bindTextureArrayInvalid<3>,
         #endif
         &VectorGLTest::setTextureMatrixNotEnabled<2>,
         &VectorGLTest::setTextureMatrixNotEnabled<3>,
         #ifndef MAGNUM_TARGET_GLES2
+        &VectorGLTest::setTextureLayerNotArray<2>,
+        &VectorGLTest::setTextureLayerNotArray<3>,
         &VectorGLTest::bindTextureTransformBufferNotEnabled<2>,
         &VectorGLTest::bindTextureTransformBufferNotEnabled<3>,
         #endif
@@ -628,11 +719,13 @@ template<UnsignedInt dimensions> void VectorGLTest::setUniformUniformBuffersEnab
     Error redirectError{&out};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
+        .setTextureLayer({})
         .setBackgroundColor({})
         .setColor({});
     CORRADE_COMPARE(out,
         "Shaders::VectorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::VectorGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::VectorGL::setTextureLayer(): the shader was created with uniform buffers enabled\n"
         "Shaders::VectorGL::setBackgroundColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::VectorGL::setColor(): the shader was created with uniform buffers enabled\n");
 }
@@ -667,6 +760,45 @@ template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotE
         "Shaders::VectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::VectorGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
 }
+
+template<UnsignedInt dimensions> void VectorGLTest::bindTextureInvalid() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D texture;
+    VectorGL<dimensions> shader{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL<dimensions>::Flag::TextureArrays)};
+
+    Containers::String out;
+    Error redirectError{&out};
+    shader.bindVectorTexture(texture);
+    CORRADE_COMPARE(out, "Shaders::VectorGL::bindVectorTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead\n");
+}
+
+template<UnsignedInt dimensions> void VectorGLTest::bindTextureArrayInvalid() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    GL::Texture2DArray texture;
+    VectorGL<dimensions> shader;
+
+    Containers::String out;
+    Error redirectError{&out};
+    shader.bindVectorTexture(texture);
+    CORRADE_COMPARE(out, "Shaders::VectorGL::bindVectorTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead\n");
+}
 #endif
 
 template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled() {
@@ -684,6 +816,25 @@ template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled()
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void VectorGLTest::setTextureLayerNotArray() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    GL::Texture2D texture;
+    VectorGL<dimensions> shader;
+
+    Containers::String out;
+    Error redirectError{&out};
+    shader.setTextureLayer(37);
+    CORRADE_COMPARE(out, "Shaders::VectorGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
+}
+
 template<UnsignedInt dimensions> void VectorGLTest::bindTextureTransformBufferNotEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
@@ -1007,30 +1158,81 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    GL::Mesh square = MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
+    /** @todo clean this up once MeshData (and primitives?) support array
+        coordinates directly */
+    struct Vertex {
+        Vector2 position;
+        Vector3 textureCoords;
+    } squareData[] {
+        {{ 1.0f, -1.0f}, {1.0f, 0.0f, Float(data.layerAttribute)}},
+        {{ 1.0f,  1.0f}, {1.0f, 1.0f, Float(data.layerAttribute)}},
+        {{-1.0f, -1.0f}, {0.0f, 0.0f, Float(data.layerAttribute)}},
+        {{-1.0f,  1.0f}, {0.0f, 1.0f, Float(data.layerAttribute)}}
+    };
+    GL::Mesh square{GL::MeshPrimitive::TriangleStrip};
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.arrayTextureCoordinates) {
+        square.addVertexBuffer(GL::Buffer{squareData}, 0,
+            GenericGL2D::Position{},
+            GenericGL2D::TextureArrayCoordinates{});
+    } else
+    #endif
+    {
+        square.addVertexBuffer(GL::Buffer{squareData}, 0,
+            GenericGL2D::Position{},
+            GenericGL2D::TextureCoordinates{},
+            sizeof(Float));
+    }
+    square.setCount(4);
+
+    VectorGL2D::Flags flags = data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag & VectorGL2D::Flag::UniformBuffers && (data.flags & VectorGL2D::Flag::TextureArrays) && !(data.flags & VectorGL2D::Flag::TextureTransformation) && data.layerUniform) {
+        CORRADE_INFO("Texture arrays with layer passed from a uniform currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= VectorGL2D::Flag::TextureTransformation;
+    }
+    #endif
+    VectorGL2D shader{VectorGL2D::Configuration{}
+        .setFlags(flags)};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
 
-    GL::Texture2D texture;
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    #endif
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags & VectorGL2D::Flag::TextureArrays) {
+        textureArray = GL::Texture2DArray{};
+        textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatR, {image->size(), data.layerUniform + data.layerAttribute + 1})
+            .setSubImage(0, {0, 0, data.layerUniform + data.layerAttribute}, ImageView2D{*image});
 
-    #ifdef MAGNUM_TARGET_GLES2
-    /* Don't want to bother with the fiasco of single-channel formats and
-       texture storage extensions on ES2 */
-    texture.setImage(0, TextureFormatR, *image);
-    #else
-    texture.setStorage(1, TextureFormatR, image->size())
-        .setSubImage(0, {}, *image);
+        shader.bindVectorTexture(textureArray);
+    } else
     #endif
+    {
+        texture = GL::Texture2D{};
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge);
 
-    VectorGL2D shader{VectorGL2D::Configuration{}
-        .setFlags(data.flags|flag)};
-    shader.bindVectorTexture(texture);
+        #ifdef MAGNUM_TARGET_GLES2
+        /* Don't want to bother with the fiasco of single-channel formats and
+           texture storage extensions on ES2 */
+        texture.setImage(0, TextureFormatR, *image);
+        #else
+        texture.setStorage(1, TextureFormatR, image->size())
+            .setSubImage(0, {}, *image);
+        #endif
+
+        shader.bindVectorTexture(texture);
+    }
 
     if(flag == VectorGL2D::Flag{}) {
         shader.setBackgroundColor(data.backgroundColor)
@@ -1040,6 +1242,10 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
         else shader.setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f})*
             Matrix3::rotation(5.0_degf));
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.layerUniform != 0) /* to verify the default */
+            shader.setTextureLayer(data.layerUniform);
+        #endif
         shader.draw(square);
     }
     #ifndef MAGNUM_TARGET_GLES2
@@ -1063,13 +1269,14 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layerUniform)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             VectorMaterialUniform{}
                 .setBackgroundColor(data.backgroundColor)
                 .setColor(data.color)
         }};
-        if(data.flags & VectorGL2D::Flag::TextureTransformation)
+        if(flags & VectorGL2D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
@@ -1135,30 +1342,79 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid(Primitives::PlaneFlag::TextureCoordinates));
+    struct Vertex {
+        Vector3 position;
+        Vector3 textureCoords;
+    } planeData[] {
+        {{ 1.0f, -1.0f, 0.0f}, {1.0f, 0.0f, Float(data.layerAttribute)}},
+        {{ 1.0f,  1.0f, 0.0f}, {1.0f, 1.0f, Float(data.layerAttribute)}},
+        {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, Float(data.layerAttribute)}},
+        {{-1.0f,  1.0f, 0.0f}, {0.0f, 1.0f, Float(data.layerAttribute)}}
+    };
+    GL::Mesh plane{GL::MeshPrimitive::TriangleStrip};
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.arrayTextureCoordinates) {
+        plane.addVertexBuffer(GL::Buffer{planeData}, 0,
+            GenericGL3D::Position{},
+            GenericGL3D::TextureArrayCoordinates{});
+    } else
+    #endif
+    {
+        plane.addVertexBuffer(GL::Buffer{planeData}, 0,
+            GenericGL3D::Position{},
+            GenericGL3D::TextureCoordinates{},
+            sizeof(Float));
+    }
+    plane.setCount(4);
+
+    VectorGL3D::Flags flags = data.flags|flag;
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag & VectorGL3D::Flag::UniformBuffers && (data.flags & VectorGL3D::Flag::TextureArrays) && !(data.flags & VectorGL3D::Flag::TextureTransformation) && data.layerUniform) {
+        CORRADE_INFO("Texture arrays with layer passed from a uniform currently require texture transformation if UBOs are used, enabling implicitly.");
+        flags |= VectorGL3D::Flag::TextureTransformation;
+    }
+    #endif
+    VectorGL3D shader{VectorGL3D::Configuration{}
+        .setFlags(flags)};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
 
-    GL::Texture2D texture;
+    GL::Texture2D texture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray textureArray{NoCreate};
+    #endif
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
-    texture.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags & VectorGL3D::Flag::TextureArrays) {
+        textureArray = GL::Texture2DArray{};
+        textureArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, TextureFormatR, {image->size(), data.layerUniform + data.layerAttribute + 1})
+            .setSubImage(0, {0, 0, data.layerUniform + data.layerAttribute}, ImageView2D{*image});
 
-    #ifdef MAGNUM_TARGET_GLES2
-    /* Don't want to bother with the fiasco of single-channel formats and
-       texture storage extensions on ES2 */
-    texture.setImage(0, TextureFormatR, *image);
-    #else
-    texture.setStorage(1, TextureFormatR, image->size())
-        .setSubImage(0, {}, *image);
+        shader.bindVectorTexture(textureArray);
+    } else
     #endif
+    {
+        texture = GL::Texture2D{};
+        texture.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge);
 
-    VectorGL3D shader{VectorGL3D::Configuration{}
-        .setFlags(data.flags|flag)};
-    shader.bindVectorTexture(texture);
+        #ifdef MAGNUM_TARGET_GLES2
+        /* Don't want to bother with the fiasco of single-channel formats and
+           texture storage extensions on ES2 */
+        texture.setImage(0, TextureFormatR, *image);
+        #else
+        texture.setStorage(1, TextureFormatR, image->size())
+            .setSubImage(0, {}, *image);
+        #endif
+
+        shader.bindVectorTexture(texture);
+    }
 
     if(flag == VectorGL3D::Flag{}) {
         shader.setBackgroundColor(data.backgroundColor)
@@ -1170,6 +1426,10 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationZ(15.0_degf));
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.layerUniform != 0) /* to verify the default */
+            shader.setTextureLayer(data.layerUniform);
+        #endif
         shader.draw(plane);
     }
     #ifndef MAGNUM_TARGET_GLES2
@@ -1195,13 +1455,14 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
         GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, {
             TextureTransformationUniform{}
                 .setTextureMatrix(data.textureTransformation)
+                .setLayer(data.layerUniform)
         }};
         GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
             VectorMaterialUniform{}
                 .setBackgroundColor(data.backgroundColor)
                 .setColor(data.color)
         }};
-        if(data.flags & VectorGL3D::Flag::TextureTransformation)
+        if(flags & VectorGL3D::Flag::TextureTransformation)
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
@@ -1275,6 +1536,11 @@ void VectorGLTest::renderMulti2D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
+    VectorGL2D shader{VectorGL2D::Configuration{}
+        .setFlags(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1284,21 +1550,85 @@ void VectorGLTest::renderMulti2D() {
 
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
-    GL::Texture2D vector;
-    vector.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, GL::TextureFormat::R8, image->size())
-        .setSubImage(0, {}, *image);
 
-    /* Circle is a fan, plane is a strip, make it indexed first */
+    /* For arrays we the original image three times to different offsets in
+       three different slices */
+    GL::Texture2D vector{NoCreate};
+    GL::Texture2DArray vectorArray{NoCreate};
+    if(data.flags & VectorGL2D::Flag::TextureArrays) {
+        Vector3i size{image->size().x(), image->size().y()*2, 6};
+
+        vectorArray = GL::Texture2DArray{};
+        vectorArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, size)
+            /* Clear to all zeros for reproducible output */
+            .setSubImage(0, {}, Image3D{PixelFormat::R8Unorm, size, Containers::Array<char>{ValueInit, std::size_t(size.product())}})
+            .setSubImage(0, {0, size.y()/4, 1}, ImageView2D{*image})
+            .setSubImage(0, {0, size.y()/2, 3}, ImageView2D{*image})
+            .setSubImage(0, {0, 0, 5}, ImageView2D{*image});
+
+        shader.bindVectorTexture(vectorArray);
+    } else {
+        vector = GL::Texture2D{};
+        vector.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, image->size())
+            .setSubImage(0, {}, *image);
+
+        shader.bindVectorTexture(vector);
+    }
+
+    /* Circle is a fan, square is a strip, make it indexed first */
     Trade::MeshData circleData = MeshTools::generateIndices(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
     Trade::MeshData squareData = MeshTools::generateIndices(Primitives::squareSolid(
         Primitives::SquareFlag::TextureCoordinates));
     Trade::MeshData triangleData = MeshTools::generateIndices(Primitives::circle2DSolid(3,
         Primitives::Circle2DFlag::TextureCoordinates));
-    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({circleData, squareData, triangleData}));
+
+    /* Assuming the texture coordinates are the last attribute, add a four-byte
+       padding after, which we subsequently abuse as the layer index */
+    /** @todo clean this up once MeshData (and primitives?) support array
+        coordinates directly */
+    Trade::MeshData meshData = MeshTools::interleave(
+        MeshTools::concatenate({circleData, squareData, triangleData}),
+        {Trade::MeshAttributeData{4}});
+    CORRADE_COMPARE(meshData.attributeCount(), 2);
+    CORRADE_COMPARE(meshData.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(meshData.attributeName(1), Trade::MeshAttribute::TextureCoordinates);
+    /* Manual cast because the real attribute type is Vector2 */
+    const Containers::StridedArrayView1D<Vector3> textureCoordinates = Containers::arrayCast<Vector3>(meshData.mutableAttribute<Vector2>(Trade::MeshAttribute::TextureCoordinates));
+
+    /* The circle will use the last slice, coming from just the attribute
+       alone */
+    for(UnsignedInt i = 0; i != circleData.vertexCount(); ++i)
+        textureCoordinates[i].z() = 5;
+    /* The square will use the third slice, coming from both the attribute and
+       the uniform */
+    for(UnsignedInt i = 0; i != squareData.vertexCount(); ++i)
+        textureCoordinates[circleData.vertexCount() + i].z() = 1;
+    /* The triangle will use the second slice, coming from just the uniform.
+       The memory isn't initialized by default however, so set the attribute to
+       0. */
+    for(UnsignedInt i = 0; i != triangleData.vertexCount(); ++i)
+        textureCoordinates[circleData.vertexCount() + squareData.vertexCount() + i].z() = 0;
+
+    /* Making some assumptions about the layout for simplicity */
+    CORRADE_COMPARE(meshData.attributeStride(0), sizeof(Vector2) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeStride(1), sizeof(Vector2) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeOffset(0), 0);
+    CORRADE_COMPARE(meshData.attributeOffset(1), sizeof(Vector2));
+    GL::Mesh mesh;
+    mesh.addVertexBuffer(GL::Buffer{meshData.vertexData()}, 0,
+            GenericGL2D::Position{},
+            GenericGL2D::TextureArrayCoordinates{})
+        .setIndexBuffer(GL::Buffer{GL::Buffer::TargetHint::ElementArray, meshData.indexData()}, 0,
+            meshData.indexType())
+        .setCount(meshData.indexCount());
+
     GL::MeshView circle{mesh};
     circle.setCount(circleData.indexCount());
     GL::MeshView square{mesh};
@@ -1346,17 +1676,30 @@ void VectorGLTest::renderMulti2D() {
     Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & VectorGL2D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.0f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{})*
             Matrix3::translation({0.5f, 0.5f})*
             Matrix3::rotation(180.0_degf)*
-            Matrix3::translation({-0.5f, -0.5f})
-        );
+            Matrix3::translation({-0.5f, -0.5f}))
+        .setLayer(0); /* ignored if not array */
     textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & VectorGL2D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.5f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{})*
             Matrix3::translation(Vector2::xAxis(1.0f))*
-            Matrix3::scaling(Vector2::xScale(-1.0f))
-        );
+            Matrix3::scaling(Vector2::xScale(-1.0f)))
+        .setLayer(2); /* ignored if not array */
     textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
-        .setTextureMatrix(Matrix3{});
+        .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & VectorGL2D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.25f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{}))
+        .setLayer(1); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<VectorDrawUniform> drawData{2*data.uniformIncrement + 1};
@@ -1369,12 +1712,6 @@ void VectorGLTest::renderMulti2D() {
     drawData[2*data.uniformIncrement] = VectorDrawUniform{}
         .setMaterialId(data.bindWithOffset ? 0 : 1);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
-
-    VectorGL2D shader{VectorGL2D::Configuration{}
-        .setFlags(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation|data.flags)
-        .setMaterialCount(data.materialCount)
-        .setDrawCount(data.drawCount)};
-    shader.bindVectorTexture(vector);
 
     /* Rebinding UBOs / SSBOs each time */
     if(data.bindWithOffset) {
@@ -1495,6 +1832,11 @@ void VectorGLTest::renderMulti3D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
+    VectorGL3D shader{VectorGL3D::Configuration{}
+        .setFlags(VectorGL3D::Flag::UniformBuffers|VectorGL3D::Flag::TextureTransformation|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
@@ -1504,12 +1846,36 @@ void VectorGLTest::renderMulti3D() {
 
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector.tga")) && (image = importer->image2D(0)));
-    GL::Texture2D vector;
-    vector.setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, GL::TextureFormat::R8, image->size())
-        .setSubImage(0, {}, *image);
+
+    /* For arrays we the original image three times to different offsets in
+       three different slices */
+    GL::Texture2D vector{NoCreate};
+    GL::Texture2DArray vectorArray{NoCreate};
+    if(data.flags & VectorGL2D::Flag::TextureArrays) {
+        Vector3i size{image->size().x(), image->size().y()*2, 6};
+
+        vectorArray = GL::Texture2DArray{};
+        vectorArray.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, size)
+            /* Clear to all zeros for reproducible output */
+            .setSubImage(0, {}, Image3D{PixelFormat::R8Unorm, size, Containers::Array<char>{ValueInit, std::size_t(size.product())}})
+            .setSubImage(0, {0, size.y()/4, 1}, ImageView2D{*image})
+            .setSubImage(0, {0, size.y()/2, 3}, ImageView2D{*image})
+            .setSubImage(0, {0, 0, 5}, ImageView2D{*image});
+
+        shader.bindVectorTexture(vectorArray);
+    } else {
+        vector = GL::Texture2D{};
+        vector.setMinificationFilter(GL::SamplerFilter::Linear)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::R8, image->size())
+            .setSubImage(0, {}, *image);
+
+        shader.bindVectorTexture(vector);
+    }
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
@@ -1518,7 +1884,51 @@ void VectorGLTest::renderMulti3D() {
         Primitives::PlaneFlag::TextureCoordinates));
     Trade::MeshData coneData = Primitives::coneSolid(1, 32, 1.0f,
         Primitives::ConeFlag::TextureCoordinates);
-    GL::Mesh mesh = MeshTools::compile(MeshTools::concatenate({sphereData, planeData, coneData}));
+
+    /* Assuming the texture coordinates are the last attribute, add a four-byte
+       padding after, which we subsequently abuse as the layer index */
+    /** @todo clean this up once MeshData (and primitives?) support array
+        coordinates directly */
+    Trade::MeshData meshData = MeshTools::interleave(
+        MeshTools::concatenate({sphereData, planeData, coneData}),
+        {Trade::MeshAttributeData{4}});
+    CORRADE_COMPARE(meshData.attributeCount(), 3);
+    CORRADE_COMPARE(meshData.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(meshData.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(meshData.attributeName(2), Trade::MeshAttribute::TextureCoordinates);
+    /* Manual cast because the real attribute type is Vector2 */
+    const Containers::StridedArrayView1D<Vector3> textureCoordinates = Containers::arrayCast<Vector3>(meshData.mutableAttribute<Vector2>(Trade::MeshAttribute::TextureCoordinates));
+
+    /* The sphere will use the last slice, coming from just the attribute
+       alone */
+    for(UnsignedInt i = 0; i != sphereData.vertexCount(); ++i)
+        textureCoordinates[i].z() = 5;
+    /* The plane will use the third slice, coming from both the attribute and
+       the uniform */
+    for(UnsignedInt i = 0; i != planeData.vertexCount(); ++i)
+        textureCoordinates[sphereData.vertexCount() + i].z() = 1;
+    /* The cone will use the first slice, coming from just the uniform. The
+       memory isn't initialized by default however, so set the attribute to
+       0. */
+    for(UnsignedInt i = 0; i != coneData.vertexCount(); ++i)
+        textureCoordinates[sphereData.vertexCount() + planeData.vertexCount() + i].z() = 0;
+
+    /* Making some assumptions about the layout for simplicity */
+    CORRADE_COMPARE(meshData.attributeStride(0), sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeStride(1), sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeStride(2), sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeOffset(0), 0);
+    CORRADE_COMPARE(meshData.attributeOffset(1), sizeof(Vector3));
+    CORRADE_COMPARE(meshData.attributeOffset(2), sizeof(Vector3) + sizeof(Vector3));
+    GL::Mesh mesh;
+    mesh.addVertexBuffer(GL::Buffer{meshData.vertexData()}, 0,
+            GenericGL3D::Position{},
+            GenericGL3D::Normal{},
+            GenericGL3D::TextureArrayCoordinates{})
+        .setIndexBuffer(GL::Buffer{GL::Buffer::TargetHint::ElementArray, meshData.indexData()}, 0,
+            meshData.indexType())
+        .setCount(meshData.indexCount());
+
     GL::MeshView sphere{mesh};
     sphere.setCount(sphereData.indexCount());
     GL::MeshView plane{mesh};
@@ -1571,17 +1981,30 @@ void VectorGLTest::renderMulti3D() {
     Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & VectorGL3D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.0f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{})*
             Matrix3::translation({0.5f, 0.5f})*
             Matrix3::rotation(180.0_degf)*
-            Matrix3::translation({-0.5f, -0.5f})
-        );
+            Matrix3::translation({-0.5f, -0.5f}))
+        .setLayer(0); /* ignored if not array */
     textureTransformationData[1*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & VectorGL3D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.5f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{})*
             Matrix3::translation(Vector2::xAxis(1.0f))*
-            Matrix3::scaling(Vector2::xScale(-1.0f))
-        );
+            Matrix3::scaling(Vector2::xScale(-1.0f)))
+        .setLayer(2); /* ignored if not array */
     textureTransformationData[2*data.uniformIncrement] = TextureTransformationUniform{}
-        .setTextureMatrix(Matrix3{});
+        .setTextureMatrix(
+            /* Additional Y shift + scale in the array slice */
+            (data.flags & VectorGL3D::Flag::TextureArrays ?
+                Matrix3::translation(Vector2::yAxis(0.25f))*
+                Matrix3::scaling(Vector2::yScale(0.5f)) : Matrix3{}))
+        .setLayer(1); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
     Containers::Array<VectorDrawUniform> drawData{2*data.uniformIncrement + 1};
@@ -1594,12 +2017,6 @@ void VectorGLTest::renderMulti3D() {
     drawData[2*data.uniformIncrement] = VectorDrawUniform{}
         .setMaterialId(data.bindWithOffset ? 0 : 1);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
-
-    VectorGL3D shader{VectorGL3D::Configuration{}
-        .setFlags(VectorGL3D::Flag::UniformBuffers|VectorGL3D::Flag::TextureTransformation|data.flags)
-        .setMaterialCount(data.materialCount)
-        .setDrawCount(data.drawCount)};
-    shader.bindVectorTexture(vector);
 
     /* Rebinding UBOs / SSBOs each time */
     if(data.bindWithOffset) {
