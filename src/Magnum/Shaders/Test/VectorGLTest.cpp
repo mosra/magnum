@@ -1015,7 +1015,7 @@ template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -1117,7 +1117,7 @@ template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -1291,7 +1291,7 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
     Image2D rendered = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
     /* Dropping the alpha channel, as it's always 1.0 */
     Containers::StridedArrayView2D<Color3ub> pixels =
-        Containers::arrayCast<Color3ub>(rendered.pixels<Color4ub>());
+        rendered.pixels<Color4ub>().slice(&Color4ub::rgb);
     if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1477,7 +1477,7 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
     Image2D rendered = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
     /* Dropping the alpha channel, as it's always 1.0 */
     Containers::StridedArrayView2D<Color3ub> pixels =
-        Containers::arrayCast<Color3ub>(rendered.pixels<Color4ub>());
+        rendered.pixels<Color4ub>().slice(&Color4ub::rgb);
     if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1784,7 +1784,7 @@ void VectorGLTest::renderMulti2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "VectorTestFiles", data.expected2D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
@@ -2089,7 +2089,7 @@ void VectorGLTest::renderMulti3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "VectorTestFiles", data.expected3D}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }

@@ -1257,7 +1257,7 @@ template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager}));
 }
@@ -1355,7 +1355,7 @@ template<LineGL3D::Flag flag> void LineGLTest::renderDefaults3D() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager}));
 }
@@ -1514,7 +1514,7 @@ template<LineGL2D::Flag flag> void LineGLTest::renderLineCapsJoins2D() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
+        image.pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 119.0f, 0.111f}));
@@ -1578,7 +1578,7 @@ void LineGLTest::renderLineCapsJoins2DReversed() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         /** @todo sync this with render2D() once the overlaps are fixed */
@@ -1638,7 +1638,7 @@ void LineGLTest::renderLineCapsJoins2DTransformed() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 119.0f, 0.112f}));
@@ -1841,7 +1841,7 @@ template<LineGL3D::Flag flag> void LineGLTest::renderCube3D() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 119.0f, 0.102f}));
@@ -1876,7 +1876,7 @@ void LineGLTest::renderPerspective3D() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/perspective3D.tga"),
         /* Minor differences on SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 6.0f, 0.025f}));
@@ -1987,7 +1987,7 @@ template<class T, LineGL2D::Flag flag> void LineGLTest::renderVertexColor2D() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/vertex-color.tga"),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 1.34f, 0.028f}));
@@ -2101,7 +2101,7 @@ template<class T, LineGL3D::Flag flag> void LineGLTest::renderVertexColor3D() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/vertex-color.tga"),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 1.34f, 0.028f}));
@@ -2455,7 +2455,7 @@ template<LineGL2D::Flag flag> void LineGLTest::renderInstanced2D() {
        - Third up center, magenta with a yellow base color, so red */
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/instanced.tga"),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 17.0f, 0.107f}));
@@ -2611,7 +2611,7 @@ template<LineGL3D::Flag flag> void LineGLTest::renderInstanced3D() {
        - Third up center, magenta with a yellow base color, so red */
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/instanced.tga"),
         /* Minor differences on NVidia vs Mesa Intel vs SwiftShader */
         (DebugTools::CompareImageToFile{_manager, 17.0f, 0.107f}));
@@ -2845,7 +2845,7 @@ void LineGLTest::renderMulti2D() {
        - Point up center, red */
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/multidraw.tga"),
         /* Minor differences on NVidia vs Mesa Intel, also on ARM Mali */
         (DebugTools::CompareImageToFile{_manager, 0.67f, 0.011f}));
@@ -3076,7 +3076,7 @@ void LineGLTest::renderMulti3D() {
        - Point up center, red */
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/multidraw.tga"),
         /* Minor differences on NVidia vs Mesa Intel, also on ARM Mali */
         (DebugTools::CompareImageToFile{_manager, 0.67f, 0.011f}));

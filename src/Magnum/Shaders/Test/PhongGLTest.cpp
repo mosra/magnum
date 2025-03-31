@@ -2386,7 +2386,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "PhongTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -2527,7 +2527,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -2750,7 +2750,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -3013,7 +3013,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -3213,7 +3213,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
     Image2D actual = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
     Containers::StridedArrayView2D<Color3ub> pixels =
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(actual.pixels<Color4ub>());
+        actual.pixels<Color4ub>().slice(&Color4ub::rgb);
 
     /* Rotate pixels back to upright position so we can compare with the 0°
        file and ensure the tangent calculation is transformation invariant */
@@ -3384,7 +3384,7 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "PhongTestFiles/vertexColor.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -3521,7 +3521,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
         #endif
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
-            Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+            _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
             Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
@@ -3543,7 +3543,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
     ) {
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
-            Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+            _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
             Utility::Path::join({_testDir, "PhongTestFiles", "shininess0-overflow.tga"}),
             /* The threshold = 0.001 case has a slight reddish tone on
                SwiftShader; ARM Mali has one pixel off */
@@ -3735,7 +3735,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, data.expected),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -3914,7 +3914,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
     const Float maxThreshold = 12.67f, meanThreshold = 0.113f;
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 
@@ -4053,7 +4053,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
 
     /* Analytical output check. Comment this out when image comparison fails
        for easier debugging. */
@@ -4070,7 +4070,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<const Color3ub>(image.pixels<Color4ub>()),
+        image.pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "PhongTestFiles", data.file}),
         /* Minor differences on ES2 and on NVidia */
         (DebugTools::CompareImageToFile{_manager, 3.0f, 0.27f}));
@@ -4117,7 +4117,7 @@ void PhongGLTest::renderLightsSetOneByOne() {
     }
     #endif
 
-    const Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -4131,7 +4131,7 @@ void PhongGLTest::renderLightsSetOneByOne() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<const Color3ub>(image.pixels<Color4ub>()),
+        image.pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "PhongTestFiles/light-point-range1.5.tga"}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -4174,7 +4174,7 @@ void PhongGLTest::renderLowLightAngle() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "PhongTestFiles/low-light-angle.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -4266,7 +4266,7 @@ void PhongGLTest::renderLightCulling() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -4452,7 +4452,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         /* Should be equivalent to masked Flat3D */
         Utility::Path::join(_testDir, "FlatTestFiles/textured3D-alpha-mask0.5.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
@@ -4552,7 +4552,7 @@ void PhongGLTest::renderDoubleSided() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "PhongTestFiles/double-sided.tga"),
         (DebugTools::CompareImageToFile{_manager, 1.34f, 0.04f}));
 }
@@ -4715,7 +4715,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSkinning() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "TestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager}));
 }
@@ -5143,7 +5143,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
@@ -5317,7 +5317,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstancedSkinning() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "TestFiles/skinning-instanced.tga"),
         (DebugTools::CompareImageToFile{_manager}));
 }
@@ -5724,7 +5724,7 @@ void PhongGLTest::renderMulti() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 
@@ -5995,7 +5995,7 @@ void PhongGLTest::renderMultiSkinning() {
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "TestFiles/skinning-multi.tga"),
         (DebugTools::CompareImageToFile{_manager}));
 }
