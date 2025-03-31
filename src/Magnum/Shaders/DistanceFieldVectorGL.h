@@ -622,10 +622,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Bind a vector texture
          * @return Reference to self (for method chaining)
          *
-         * @see @ref DistanceFieldVectorGL::Flag::TextureTransformation,
-         *      @ref VectorGL::Flag::TextureTransformation,
-         *      @ref DistanceFieldVectorGL::setTextureMatrix(),
-         *      @ref VectorGL::setTextureMatrix()
+         * @see @ref Flag::TextureTransformation, @ref setTextureMatrix()
          */
         DistanceFieldVectorGL<dimensions>& bindVectorTexture(GL::Texture2D& texture);
 

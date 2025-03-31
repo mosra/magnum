@@ -579,7 +579,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @brief Bind a vector texture
          * @return Reference to self (for method chaining)
          *
-         * @see @ref Flag::TextureTransformation, @ref setTextureMatrix()s
+         * @see @ref Flag::TextureTransformation, @ref setTextureMatrix()
          */
         VectorGL<dimensions>& bindVectorTexture(GL::Texture2D& texture);
 
