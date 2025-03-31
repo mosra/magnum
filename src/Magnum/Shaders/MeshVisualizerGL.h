@@ -1531,7 +1531,7 @@ Consistently with the other shaders, textured object ID is also supported if
 the @ref TextureCoordinates attribute and bind an integer texture via
 @ref bindObjectIdTexture(). @ref Flag::TextureTransformation then enables
 texture transformation and @ref Flag::TextureArrays texture arrays for the
-object ID texture.
+object ID texture, with the layer selected using @ref setTextureLayer().
 
 If you enable @ref Flag::VertexId, the shader will use the color map to
 visualize how are vertices shared among primitives. That's useful for

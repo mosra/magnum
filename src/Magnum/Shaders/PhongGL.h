@@ -82,6 +82,10 @@ Common rendering setup:
 
 @snippet Shaders-gl.cpp PhongGL-usage-texture2
 
+If @ref Flag::TextureArrays is enabled, pass @ref GL::Texture2DArray instances
+instead of @ref GL::Texture2D. By default layer @cpp 0 @ce is used, call
+@ref setTextureLayer() to pick a different texture array layer.
+
 @section Shaders-PhongGL-lights Light specification
 
 By default, the shader provides a single directional "fill" light, coming from
@@ -309,6 +313,10 @@ buffer setup equivalent to the
 would look like this:
 
 @snippet Shaders-gl.cpp PhongGL-ubo
+
+When uniform buffers with @ref Flag::TextureArrays are used,
+@ref Flag::TextureTransformation has to be enabled as well in order to supply
+the texture layer using @ref TextureTransformationUniform::layer.
 
 For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
 @ref Flag::TextureArrays) and supply desired light, material and draw count via

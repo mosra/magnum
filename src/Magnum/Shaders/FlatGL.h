@@ -109,6 +109,10 @@ Common rendering setup:
 
 @snippet Shaders-gl.cpp FlatGL-usage-textured2
 
+If @ref Flag::TextureArrays is enabled, pass a @ref GL::Texture2DArray instance
+instead of @ref GL::Texture2D. By default layer @cpp 0 @ce is used, call
+@ref setTextureLayer() to pick a different texture array layer.
+
 For coloring the texture based on intensity you can use the @ref VectorGL
 shader. The 3D version of this shader is equivalent to @ref PhongGL with zero
 lights, however this implementation is much simpler and thus likely also
@@ -223,6 +227,10 @@ buffer setup equivalent to
 the @ref Shaders-FlatGL-colored "colored case at the top" would look like this:
 
 @snippet Shaders-gl.cpp FlatGL-ubo
+
+When uniform buffers with @ref Flag::TextureArrays are used,
+@ref Flag::TextureTransformation has to be enabled as well in order to supply
+the texture layer using @ref TextureTransformationUniform::layer.
 
 For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
 @ref Flag::TextureArrays), supply desired material and draw count via
