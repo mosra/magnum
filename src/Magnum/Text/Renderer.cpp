@@ -62,7 +62,6 @@
 #include <Corrade/Containers/ArrayViewStl.h> /** @todo remove once Renderer is STL-free */
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Renderer is STL-free */
 
-#include "Magnum/Mesh.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Mesh.h"
@@ -201,6 +200,8 @@ RendererCore::RendererCore(const AbstractGlyphCache& glyphCache, void(*glyphAllo
         Containers::pointer<State>(glyphCache, glyphAllocator, glyphAllocatorState, runAllocator, runAllocatorState, flags) :
         Containers::pointer<AllocatorState>(glyphCache, glyphAllocator, glyphAllocatorState, runAllocator, runAllocatorState, flags)} {}
 
+RendererCore::RendererCore(Containers::Pointer<State>&& state): _state{Utility::move(state)} {}
+
 RendererCore::RendererCore(NoCreateT) noexcept {}
 
 RendererCore::RendererCore(RendererCore&&) noexcept = default;
@@ -214,7 +215,8 @@ const AbstractGlyphCache& RendererCore::glyphCache() const {
 }
 
 RendererCoreFlags RendererCore::flags() const {
-    return _state->flags;
+    /* Subclasses inherit and add their own flags, mask them away */
+    return _state->flags & RendererCoreFlags{0x1};
 }
 
 UnsignedInt RendererCore::glyphCount() const {
@@ -504,7 +506,8 @@ void RendererCore::resetInternal() {
 
 RendererCore& RendererCore::reset() {
     clear();
-    /* Reset also all other settable state to defaults */
+    /* Reset also all other settable state to defaults. Is in a separate helper
+       because it gets called from Renderer::reset() as well. */
     resetInternal();
 
     return *this;
@@ -769,6 +772,589 @@ Containers::Pair<Range2D, Range1Dui> RendererCore::render(AbstractShaper& shaper
 }
 
 Containers::Pair<Range2D, Range1Dui> RendererCore::render(AbstractShaper& shaper, const Float size, const Containers::StringView text, const std::initializer_list<FeatureRange> features) {
+    return render(shaper, size, text, Containers::arrayView(features));
+}
+
+Debug& operator<<(Debug& debug, const RendererFlag value) {
+    debug << "Text::RendererFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case RendererFlag::v: return debug << "::" #v;
+        _c(GlyphPositionsClusters)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const RendererFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Text::RendererFlags{}", {
+        RendererFlag::GlyphPositionsClusters
+    });
+}
+
+namespace {
+
+template<class Vertex> auto defaultGlyphAllocatorFor(const RendererFlags flags, const bool hasCustomVertexAllocator) -> void(*)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&) {
+    /* If glyph positions and clusters are meant to be preserved, or if a
+       custom vertex allocator is used and thus shouldn't allocate the whole
+       vertex data again just to store glyph data inside, use the default
+       RendererCore allocator */
+    /** @todo it will still result in IDs being allocated and then never used
+        after, provide a custom allocator for this case as well */
+    if(flags >= RendererFlag::GlyphPositionsClusters || hasCustomVertexAllocator)
+        return nullptr;
+
+    return [](void* const state, const UnsignedInt glyphCount, Containers::StridedArrayView1D<Vector2>& glyphPositions, Containers::StridedArrayView1D<UnsignedInt>& glyphIds, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>& glyphAdvances) {
+        Containers::Array<char>& vertexData = *static_cast<Containers::Array<char>*>(state);
+
+        const std::size_t existingSize = glyphPositions.size();
+        const std::size_t desiredByteSize = 4*(existingSize + glyphCount)*sizeof(Vertex);
+        if(desiredByteSize > vertexData.size()) {
+            /* Using arrayAppend() as it reallocates with a growth strategy,
+               arrayResize() would take the size literally */
+            arrayAppend(vertexData, NoInit, desiredByteSize - vertexData.size());
+        }
+
+        const Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
+        /* As each glyph turns into four vertices, we have plenty of space to
+           store everything. Glyph positions occupy the position of each first
+           vertex, */
+        glyphPositions = vertices.slice(&Vertex::position).every(4);
+        /* glyph IDs the first four bytes of the texture coordinates of each
+           first vertex, */
+        glyphIds = Containers::arrayCast<UnsignedInt>(vertices.slice(&Vertex::textureCoordinates)).every(4);
+        /* and advances the position of each *second* vertex from the
+           yet-unused suffix. If we have no vertex data at all however, which
+           can happen when calling clear() right after construction, don't
+           slice away any prefix to avoid OOB access. */
+        glyphAdvances = vertices.slice(&Vertex::position).exceptPrefix(
+            vertexData.size() ? existingSize*4 + 1 : 0
+        ).every(4);
+    };
+}
+
+void defaultIndexAllocator(void* state, UnsignedInt size, Containers::ArrayView<char>& indices) {
+    Containers::Array<char>& indexData = *static_cast<Containers::Array<char>*>(state);
+
+    const std::size_t desiredByteSize = indices.size() + size;
+    if(desiredByteSize > indexData.size()) {
+        /* Using arrayAppend() as it reallocates with a growth strategy,
+           arrayResize() would take the size literally */
+        arrayAppend(indexData, NoInit, desiredByteSize - indexData.size());
+    }
+
+    indices = indexData;
+}
+
+template<class Vertex> auto defaultVertexAllocatorFor(const RendererFlags flags, const bool hasCustomGlyphAllocator) -> void(*)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&) {
+    /* If glyph positions and clusters are meant to be preserved, or if a
+       custom glyph allocator is used so there's no data sharing between the
+       two, vertices are in a separate allocation. The second branch part
+       is explicitly verified in the indicesVertices(custom glyph allocator)
+       test. */
+    if(flags >= RendererFlag::GlyphPositionsClusters || hasCustomGlyphAllocator)
+        return [](void* const state, const UnsignedInt vertexCount, Containers::StridedArrayView1D<Vector2>& vertexPositions, Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates) {
+            Containers::Array<char>& vertexData = *static_cast<Containers::Array<char>*>(state);
+
+            const std::size_t desiredByteSize = (vertexPositions.size() + vertexCount)*sizeof(Vertex);
+            if(desiredByteSize > vertexData.size()) {
+                /* Using arrayAppend() as it reallocates with a growth
+                   strategy, arrayResize() would take the size literally */
+                arrayAppend(vertexData, NoInit, desiredByteSize - vertexData.size());
+            }
+
+            const Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
+            vertexPositions = vertices.slice(&Vertex::position);
+            /* The texture coordinates are Vector3 for array glyph caches, the
+               allocator wants just a two-component prefix with an assumption
+               that the third component is there too. Can't use
+               .slice(&Vector3::xy) because the type may be Vector2. */
+            vertexTextureCoordinates = Containers::arrayCast<Vector2>(vertices.slice(&Vertex::textureCoordinates));
+        };
+    /* If not, vertices share the allocation with glyph properties, and since
+       they're always allocated after, the size should be sufficient and it's
+       just about redirecting the views to new memory */
+    else
+        return [](void* const state, const UnsignedInt
+            #ifndef CORRADE_NO_ASSERT
+            vertexCount
+            #endif
+            , Containers::StridedArrayView1D<Vector2>& vertexPositions, Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates)
+        {
+            Containers::Array<char>& vertexData = *static_cast<Containers::Array<char>*>(state);
+
+            /* As both the glyph allocator and vertex allocator share the same
+               array, the assumption is that the glyph allocator already
+               enlarged the array for all needed glyphs. Or this allocator is
+               called from clear() with zero vertex count, in which case the
+               array size can be whatever. */
+            CORRADE_INTERNAL_ASSERT((vertexPositions.size() + vertexCount)*sizeof(Vertex) == vertexData.size() || vertexCount == 0);
+
+            const Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
+            vertexPositions = vertices.slice(&Vertex::position);
+            /* The texture coordinates are Vector3 for array glyph caches, the
+               allocator wants just a two-component prefix with an assumption
+               that the third component is there too. Can't use
+               .slice(&Vector3::xy) because the type may be Vector2. */
+            vertexTextureCoordinates = Containers::arrayCast<Vector2>(vertices.slice(&Vertex::textureCoordinates));
+        };
+}
+
+}
+
+Renderer::State::State(const AbstractGlyphCache& glyphCache, void(*glyphAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&), void* glyphAllocatorState, void(*const runAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&), void* runAllocatorState, void(*indexAllocator)(void*, UnsignedInt, Containers::ArrayView<char>&), void* indexAllocatorState, void(*vertexAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&), void* vertexAllocatorState, RendererFlags flags):
+    RendererCore::AllocatorState{glyphCache,
+        glyphAllocator ? glyphAllocator :
+            glyphCache.size().z() == 1 ?
+                defaultGlyphAllocatorFor<Implementation::Vertex>(flags, !!vertexAllocator) :
+                defaultGlyphAllocatorFor<Implementation::VertexArray>(flags, !!vertexAllocator),
+        /* The defaultGlyphAllocatorFor() puts glyph data into the same
+           allocation as vertex data so it's `&vertexData`, not `&glyphData`
+           here. If such sharing isn't desired because the glyph data need to
+           be accessible etc., defaultGlyphAllocatorFor() returns nullptr,
+           which then causes `&vertexData` to be ignored and RendererCore then
+           picks its own default allocator and `&glyphData`. */
+        glyphAllocator ? glyphAllocatorState : &vertexData,
+        runAllocator, runAllocatorState,
+        RendererCoreFlags{UnsignedByte(flags)}},
+    indexAllocator{indexAllocator ? indexAllocator : defaultIndexAllocator},
+    indexAllocatorState{indexAllocator ? indexAllocatorState : &indexData},
+    vertexAllocator{vertexAllocator ? vertexAllocator :
+        glyphCache.size().z() == 1 ?
+            defaultVertexAllocatorFor<Implementation::Vertex>(flags, !!glyphAllocator) :
+            defaultVertexAllocatorFor<Implementation::VertexArray>(flags, !!glyphAllocator)},
+    vertexAllocatorState{vertexAllocator ? vertexAllocatorState : &vertexData} {}
+
+Renderer::Renderer(const AbstractGlyphCache& glyphCache, void(*glyphAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&), void* glyphAllocatorState, void(*runAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&), void* runAllocatorState, void(*indexAllocator)(void*, UnsignedInt, Containers::ArrayView<char>&), void* indexAllocatorState, void(*vertexAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&), void* vertexAllocatorState, RendererFlags flags): RendererCore{Containers::pointer<State>(glyphCache, glyphAllocator, glyphAllocatorState, runAllocator, runAllocatorState, indexAllocator, indexAllocatorState, vertexAllocator, vertexAllocatorState, flags)} {}
+
+Renderer::Renderer(Renderer&&) noexcept = default;
+
+Renderer::~Renderer() = default;
+
+Renderer& Renderer::operator=(Renderer&&) noexcept = default;
+
+RendererFlags Renderer::flags() const {
+    return RendererFlags{UnsignedByte(_state->flags)};
+}
+
+namespace {
+    /* Like meshIndexTypeSize() but inline, constexpr, branchless and without
+       assertions */
+    constexpr UnsignedInt indexTypeSize(MeshIndexType type) {
+        return 1 << (int(type) - 1);
+    }
+    static_assert(
+        indexTypeSize(MeshIndexType::UnsignedByte) == sizeof(UnsignedByte) &&
+        indexTypeSize(MeshIndexType::UnsignedShort) == sizeof(UnsignedShort) &&
+        indexTypeSize(MeshIndexType::UnsignedInt) == sizeof(UnsignedInt),
+        "broken assumptions about MeshIndexType values matching type sizes");
+}
+
+UnsignedInt Renderer::glyphIndexCapacity() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_INTERNAL_DEBUG_ASSERT(state.indices.size() % 6 == 0);
+    return state.indices.size()/(6*indexTypeSize(state.indexType));
+}
+
+UnsignedInt Renderer::glyphVertexCapacity() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_INTERNAL_DEBUG_ASSERT(state.vertexPositions.size() % 4 == 0);
+    return state.vertexPositions.size()/4;
+}
+
+MeshIndexType Renderer::indexType() const {
+    return static_cast<const State&>(*_state).indexType;
+}
+
+namespace {
+    /* used by setIndexType() and allocateIndices() */
+    MeshIndexType indexTypeFor(MeshIndexType minType, UnsignedInt glyphCount) {
+        MeshIndexType minTypeForGlyphCount;
+        if(glyphCount > 16384)
+            minTypeForGlyphCount = MeshIndexType::UnsignedInt;
+        else if(glyphCount > 64)
+            minTypeForGlyphCount = MeshIndexType::UnsignedShort;
+        else
+            minTypeForGlyphCount = MeshIndexType::UnsignedByte;
+        return Utility::max(minType, minTypeForGlyphCount);
+    }
+}
+
+Renderer& Renderer::setIndexType(const MeshIndexType type) {
+    State& state = static_cast<State&>(*_state);
+    CORRADE_ASSERT(!state.rendering,
+        "Text::Renderer::setIndexType(): rendering in progress", *this);
+
+    /* Remember the type as the smallest index type we can use going forward */
+    state.minIndexType = type;
+
+    /* If the capacity is zero, just update the currently used index type
+       without calling an allocator */
+    if(state.glyphPositions.isEmpty()) {
+        state.indexType = type;
+
+    /* Otherwise, if the index type for current capacity is now different from
+       what's currently used, reallocate the indices fully */
+    } else if(indexTypeFor(type, state.glyphPositions.size()) != state.indexType) {
+        /* In particular, the allocator gets a zero-sized prefix of the view
+           it returned last time (*not* just nullptr), to hint that it can
+           reallocate without preserving any contents at all */
+        state.indices = state.indices.prefix(0);
+        allocateIndices(
+            #ifndef CORRADE_NO_ASSERT
+            "Text::Renderer::setIndexType():",
+            #endif
+            state.glyphPositions.size()
+        );
+    }
+
+    return *this;
+}
+
+Containers::StridedArrayView1D<const Vector2> Renderer::glyphPositions() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_ASSERT(RendererFlags(UnsignedByte(state.flags)) >= RendererFlag::GlyphPositionsClusters,
+        "Text::Renderer::glyphPositions(): glyph positions and clusters not enabled", {});
+    return state.glyphPositions.prefix(state.glyphCount);
+}
+
+Containers::StridedArrayView1D<const UnsignedInt> Renderer::glyphClusters() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_ASSERT(RendererFlags(UnsignedByte(state.flags)) >= RendererFlag::GlyphPositionsClusters,
+        "Text::Renderer::glyphClusters(): glyph positions and clusters not enabled", {});
+    return state.glyphClusters.prefix(state.glyphCount);
+}
+
+Containers::StridedArrayView2D<const char> Renderer::indices() const {
+    const State& state = static_cast<const State&>(*_state);
+    const UnsignedInt typeSize = indexTypeSize(state.indexType);
+    return stridedArrayView(state.indices.prefix(state.glyphCount*6*typeSize)).expanded<0, 2>({state.glyphCount*6, typeSize});
+}
+
+/* On Windows (MSVC, clang-cl and MinGw) these need an explicit export
+   otherwise the specializations don't get exported */
+template<> MAGNUM_TEXT_EXPORT Containers::ArrayView<const UnsignedByte> Renderer::indices<UnsignedByte>() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_ASSERT(state.indexType == MeshIndexType::UnsignedByte,
+        "Text::Renderer::indices(): cannot retrieve" << state.indexType << "as an UnsignedByte", {});
+    return Containers::arrayCast<UnsignedByte>(state.indices).prefix(state.glyphCount*6);
+}
+
+template<> MAGNUM_TEXT_EXPORT Containers::ArrayView<const UnsignedShort> Renderer::indices<UnsignedShort>() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_ASSERT(state.indexType == MeshIndexType::UnsignedShort,
+        "Text::Renderer::indices(): cannot retrieve" << state.indexType << "as an UnsignedShort", {});
+    return Containers::arrayCast<UnsignedShort>(state.indices).prefix(state.glyphCount*6);
+}
+
+template<> MAGNUM_TEXT_EXPORT Containers::ArrayView<const UnsignedInt> Renderer::indices<UnsignedInt>() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_ASSERT(state.indexType == MeshIndexType::UnsignedInt,
+        "Text::Renderer::indices(): cannot retrieve" << state.indexType << "as an UnsignedInt", {});
+    return Containers::arrayCast<UnsignedInt>(state.indices).prefix(state.glyphCount*6);
+}
+
+Containers::StridedArrayView1D<const Vector2> Renderer::vertexPositions() const {
+    const State& state = static_cast<const State&>(*_state);
+    return state.vertexPositions.prefix(state.glyphCount*4);
+}
+
+Containers::StridedArrayView1D<const Vector2> Renderer::vertexTextureCoordinates() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_ASSERT(state.glyphCache.size().z() == 1,
+        "Text::Renderer::vertexTextureCoordinates(): cannot retrieve two-dimensional coordinates with an array glyph cache", {});
+    return state.vertexTextureCoordinates.prefix(state.glyphCount*4);
+}
+
+Containers::StridedArrayView1D<const Vector3> Renderer::vertexTextureArrayCoordinates() const {
+    const State& state = static_cast<const State&>(*_state);
+    CORRADE_ASSERT(state.glyphCache.size().z() != 1,
+        "Text::Renderer::vertexTextureArrayCoordinates(): cannot retrieve three-dimensional coordinates with a non-array glyph cache", {});
+    return Containers::arrayCast<Vector3>(state.vertexTextureCoordinates.prefix(state.glyphCount*4));
+}
+
+void Renderer::allocateIndices(
+    #ifndef CORRADE_NO_ASSERT
+    const char* const messagePrefix,
+    #endif
+    const UnsignedInt totalGlyphCount)
+{
+    State& state = static_cast<State&>(*_state);
+
+    /* The data allocated by RendererCore should already be at this size or
+       more, since allocateGlyphs() is always called before this function. */
+    CORRADE_INTERNAL_ASSERT(state.glyphPositions.size() >= totalGlyphCount);
+
+    /* This function should only be called if we need more memory, from clear()
+       with everything empty or from setIndexType() if the type changes (where
+       it sets `state.indices` to an empty prefix).
+
+       The expectation is that `state.indices` is only as large as makes sense
+       for given `state.indexType`, as is done below. */
+    CORRADE_INTERNAL_DEBUG_ASSERT(6*totalGlyphCount*indexTypeSize(state.indexType) > state.indices.size() || (state.glyphCount == 0 && state.renderingGlyphCount == 0 && totalGlyphCount == 0));
+
+    /* Figure out index type needed for this glyph count. If it's different or
+       we're called from clear() with totalGlyphCount being 0, we're replacing
+       the whole index array. If it's not, we're generating just the extra
+       indices. */
+    const MeshIndexType indexType = indexTypeFor(state.minIndexType, totalGlyphCount);
+    const UnsignedInt typeSize = indexTypeSize(indexType);
+    UnsignedInt previousFilledSize;
+    if(indexType != state.indexType || totalGlyphCount == 0) {
+        previousFilledSize = 0;
+        state.indexType = indexType;
+    } else {
+        previousFilledSize = state.indices.size();
+    }
+
+    /* Sliced copy of the view for the allocator to update */
+    Containers::ArrayView<char> indices = state.indices.prefix(previousFilledSize);
+
+    /* While this function gets total glyph count, the allocator gets byte
+       count to grow by */
+    state.indexAllocator(state.indexAllocatorState,
+        totalGlyphCount*6*typeSize - previousFilledSize,
+        indices);
+
+    /* Cap the returned capacity to just what's possible to represent with
+       given type size. E.g., for an 8-bit type it can represent indices only
+       for 256 vertices / 64 glyphs at most, which is 384 indices, thus is
+       never larger than 384 bytes. */
+    const UnsignedInt glyphCapacity = Math::min(
+        /* 64 for 1-byte indices, 16k for 2-byte, 1M for 4-byte */
+        1u << (8*typeSize - 2),
+        UnsignedInt(indices.size()/(6*typeSize)));
+
+    /* These assertions are present even for the builtin allocator but
+       shouldn't fire. If they do, the whole thing is broken, but it's better
+       to blow up with a nice message than with some strange OOB error later */
+    CORRADE_ASSERT(glyphCapacity >= totalGlyphCount,
+        messagePrefix << "expected allocated indices to have at least" << totalGlyphCount*6*typeSize << "bytes but got" << indices.size(), );
+
+    state.indices = indices.prefix(glyphCapacity*6*typeSize);
+
+    /* Fill the indices during allocation already as they're not dependent on
+       the contents in any way */
+    const UnsignedInt glyphOffset = previousFilledSize/(6*typeSize);
+    const Containers::ArrayView<char> indicesToFill = state.indices.exceptPrefix(previousFilledSize);
+    if(indexType == MeshIndexType::UnsignedByte)
+        renderGlyphQuadIndicesInto(glyphOffset, Containers::arrayCast<UnsignedByte>(indicesToFill));
+    else if(indexType == MeshIndexType::UnsignedShort)
+        renderGlyphQuadIndicesInto(glyphOffset, Containers::arrayCast<UnsignedShort>(indicesToFill));
+    else if(indexType == MeshIndexType::UnsignedInt)
+        renderGlyphQuadIndicesInto(glyphOffset, Containers::arrayCast<UnsignedInt>(indicesToFill));
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+void Renderer::allocateVertices(
+    #ifndef CORRADE_NO_ASSERT
+    const char* const messagePrefix,
+    #endif
+    const UnsignedInt totalGlyphCount)
+{
+    State& state = static_cast<State&>(*_state);
+
+    /* The data allocated by RendererCore should already be at this size or
+       more, since allocateGlyphs() is always called before this function */
+    CORRADE_INTERNAL_ASSERT(state.glyphPositions.size() >= totalGlyphCount);
+
+    /* This function should only be called if we need more memory or from
+       clear() with everything empty */
+    CORRADE_INTERNAL_DEBUG_ASSERT(4*totalGlyphCount > state.vertexPositions.size() || (state.glyphCount == 0 && totalGlyphCount == 0));
+
+    /* Sliced copies of the views for the allocator to update. Unlike with
+       allocateGlyphs(), where `state.renderingGlyphCount` is used because it
+       gets called from add(), this is called with `state.glyphCount` because
+       it's only called from render(), and so the vertex capacity may not yet
+       include space for the in-progress glyphs. */
+    Containers::StridedArrayView1D<Vector2> vertexPositions =
+        state.vertexPositions.prefix(state.glyphCount*4);
+    Containers::StridedArrayView1D<Vector2> vertexTextureCoordinates =
+        state.vertexTextureCoordinates.prefix(state.glyphCount*4);
+
+    /* While this function gets total glyph count, the allocator gets vertex
+       count to grow by instead */
+    state.vertexAllocator(state.vertexAllocatorState, (totalGlyphCount - state.glyphCount)*4,
+        vertexPositions,
+        vertexTextureCoordinates);
+    /* Take the smallest size of both as the new vertex capacity */
+    const std::size_t minGlyphCapacity = Math::min({
+        vertexPositions.size()/4,
+        vertexTextureCoordinates.size()/4});
+    /* These assertions are present even for the builtin allocator but
+       shouldn't fire. If they do, the whole thing is broken, but it's better
+       to blow up with a nice message than with some strange OOB error later */
+    CORRADE_ASSERT(minGlyphCapacity >= totalGlyphCount,
+        messagePrefix << "expected allocated vertex positions and texture coordinates to have at least" << totalGlyphCount*4 << "elements but got" << vertexPositions.size() << "and" << vertexTextureCoordinates.size(), );
+    CORRADE_ASSERT(state.glyphCache.size().z() == 1 || std::size_t(Math::abs(vertexTextureCoordinates.stride())) >= sizeof(Vector3),
+        messagePrefix << "expected allocated texture coordinates to have a stride large enough to fit a Vector3 but got only" << Math::abs(vertexTextureCoordinates.stride()) << "bytes", );
+
+    /* Keep just the minimal size for both, which is the new capacity */
+    state.vertexPositions = vertexPositions.prefix(minGlyphCapacity *4);
+    state.vertexTextureCoordinates = vertexTextureCoordinates.prefix(minGlyphCapacity *4);
+}
+
+Renderer& Renderer::clear() {
+    RendererCore::clear();
+
+    /* Not calling allocateIndices() with 0 because it makes no sense to
+       regenerate the index buffer to the exact same contents on every clear */
+    allocateVertices(
+        #ifndef CORRADE_NO_ASSERT
+        "", /* Asserts won't happen as returned sizes will be always >= 0 */
+        #endif
+        0);
+
+    return *this;
+}
+
+Renderer& Renderer::reset() {
+    /* Compared to RendererCore::reset() this calls our clear() instead of
+       RendererCore::clear() */
+    clear();
+    resetInternal();
+    return *this;
+}
+
+Renderer& Renderer::reserve(const UnsignedInt glyphCapacity, const UnsignedInt runCapacity) {
+    State& state = static_cast<State&>(*_state);
+
+    /* Reserve glyph and run capacity. It's possible that there's already
+       enough glyph/run capacity but the index/vertex capacity not yet because
+       glyphs/runs get allocated during add() already and index/vertex only
+       during the final render(). */
+    RendererCore::reserve(glyphCapacity, runCapacity);
+
+    /* Reserve (and fill) indices if there's too little of them for the
+       required glyph capacity. Done separately from vertex allocation because
+       each of the allocations can have a different growth pattern and the
+       index type can change during the renderer lifetime.
+
+       The expectation is that `state.indices` is only as large as makes sense
+       for given `state.indexType` (e.g., for an 8-bit type it can represent
+       indices only for 256 vertices / 64 glyphs at most, which is 384 indices,
+       thus is never larger than 384 bytes). */
+    if(state.indices.size() < glyphCapacity*6*indexTypeSize(state.indexType))
+        allocateIndices(
+            #ifndef CORRADE_NO_ASSERT
+            "Text::Renderer::reserve():",
+            #endif
+            glyphCapacity);
+
+    /* Reserve vertices if there's too little of them for the required glyph
+       capacity */
+    if(state.vertexPositions.size() < glyphCapacity*4)
+        allocateVertices(
+            #ifndef CORRADE_NO_ASSERT
+            "Text::Renderer::reserve():",
+            #endif
+            glyphCapacity);
+
+    return *this;
+}
+
+Containers::Pair<Range2D, Range1Dui> Renderer::render() {
+    State& state = static_cast<State&>(*_state);
+
+    /* If we need to generate more indices / vertices than what's in the
+       capacity, allocate more. The logic is the same as in reserve(), see
+       there for more information.
+
+       This has to be called before RendererCore::render() in order to know
+       which glyphs have only positions + IDs (state.renderingGlyphCount) and
+       which have also index and vertex data (state.glyphCount). The
+       RendererCore::render() then makes both values the same. */
+    if(state.indices.size() < state.renderingGlyphCount *6*indexTypeSize(state.indexType))
+        allocateIndices(
+            #ifndef CORRADE_NO_ASSERT
+            "Text::Renderer::render():",
+            #endif
+            state.renderingGlyphCount);
+    if(state.vertexPositions.size() < state.renderingGlyphCount *4)
+        allocateVertices(
+            #ifndef CORRADE_NO_ASSERT
+            "Text::Renderer::render():",
+            #endif
+            state.renderingGlyphCount);
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* For testing only -- if vertex allocation failed, bail. Indices are only
+       touched in allocateIndices(), so if allocateIndices() fails we don't
+       need to exit here. */
+    if(state.vertexPositions.size() < state.renderingGlyphCount *4)
+        return {};
+    #endif
+
+    /* Finish rendering of glyph positions and IDs */
+    const bool isArray = state.glyphCache.size().z() > 1;
+    const Containers::Pair<Range2D, Range1Dui> out = RendererCore::render();
+
+    /* Populate vertex data for all runs */
+    UnsignedInt glyphBegin = out.second().min() ? state.runEnds[out.second().min() - 1] : 0;
+    for(UnsignedInt run = out.second().min(), runEnd = out.second().max(); run != runEnd; ++run) {
+        const UnsignedInt glyphEnd = state.runEnds[run];
+
+        const Containers::StridedArrayView1D<const Vector2> glyphPositions = state.glyphPositions.slice(glyphBegin, glyphEnd);
+        const Containers::StridedArrayView1D<const UnsignedInt> glyphIds = state.glyphIds.slice(glyphBegin, glyphEnd);
+        const Containers::StridedArrayView1D<Vector2> vertexPositions = state.vertexPositions.slice(4*glyphBegin, 4*glyphEnd);
+        const Containers::StridedArrayView1D<Vector2> vertexTextureCoordinates = state.vertexTextureCoordinates.slice(4*glyphBegin, 4*glyphEnd);
+        if(!isArray) renderGlyphQuadsInto(state.glyphCache,
+                state.runScales[run],
+                glyphPositions,
+                glyphIds,
+                vertexPositions,
+                vertexTextureCoordinates);
+        else renderGlyphQuadsInto(state.glyphCache,
+                state.runScales[run],
+                glyphPositions,
+                glyphIds,
+                vertexPositions,
+                Containers::arrayCast<Vector3>(vertexTextureCoordinates));
+
+        glyphBegin = glyphEnd;
+    }
+
+    return out;
+}
+
+Renderer& Renderer::add(AbstractShaper& shaper, const Float size, const Containers::StringView text, const UnsignedInt begin, const UnsignedInt end, const Containers::ArrayView<const FeatureRange> features) {
+    return static_cast<Renderer&>(RendererCore::add(shaper, size, text, begin, end, features));
+}
+
+Renderer& Renderer::add(AbstractShaper& shaper, const Float size, const Containers::StringView text, const UnsignedInt begin, const UnsignedInt end) {
+    return static_cast<Renderer&>(RendererCore::add(shaper, size, text, begin, end));
+}
+
+Renderer& Renderer::add(AbstractShaper& shaper, const Float size, const Containers::StringView text, const UnsignedInt begin, const UnsignedInt end, const std::initializer_list<FeatureRange> features) {
+    return static_cast<Renderer&>(RendererCore::add(shaper, size, text, begin, end, features));
+}
+
+Renderer& Renderer::add(AbstractShaper& shaper, const Float size, const Containers::StringView text, const Containers::ArrayView<const FeatureRange> features) {
+    return static_cast<Renderer&>(RendererCore::add(shaper, size, text, features));
+}
+
+Renderer& Renderer::add(AbstractShaper& shaper, const Float size, const Containers::StringView text) {
+    return static_cast<Renderer&>(RendererCore::add(shaper, size, text));
+}
+
+Renderer& Renderer::add(AbstractShaper& shaper, const Float size, const Containers::StringView text, const std::initializer_list<FeatureRange> features) {
+    return static_cast<Renderer&>(RendererCore::add(shaper, size, text, features));
+}
+
+Containers::Pair<Range2D, Range1Dui> Renderer::render(AbstractShaper& shaper, const Float size, const Containers::StringView text, const Containers::ArrayView<const FeatureRange> features) {
+    /* Compared to RendererCore::render() this calls our render() instead of
+       RendererCore::render() */
+    add(shaper, size, text, features);
+    return render();
+}
+
+Containers::Pair<Range2D, Range1Dui> Renderer::render(AbstractShaper& shaper, const Float size, const Containers::StringView text) {
+    return render(shaper, size, text, {});
+}
+
+Containers::Pair<Range2D, Range1Dui> Renderer::render(AbstractShaper& shaper, const Float size, const Containers::StringView text, const std::initializer_list<FeatureRange> features) {
     return render(shaper, size, text, Containers::arrayView(features));
 }
 

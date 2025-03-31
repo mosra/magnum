@@ -29,6 +29,7 @@
 #include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
@@ -40,6 +41,7 @@
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Format.h>
 
+#include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
@@ -87,17 +89,28 @@ struct RendererTest: TestSuite::Tester {
 
     void debugFlagCore();
     void debugFlagsCore();
+    void debugFlag();
+    void debugFlags();
 
     void constructCore();
     void constructCoreAllocator();
     void constructCoreNoCreate();
 
+    void construct();
+    void constructAllocator();
+    void constructNoCreate();
+
     void constructCopyCore();
     void constructMoveCore();
+    void constructCopy();
+    void constructMove();
 
     void propertiesCore();
     void propertiesCoreInvalid();
     void propertiesCoreRenderingInProgress();
+    void properties();
+    void propertiesInvalid();
+    void propertiesRenderingInProgress();
 
     void glyphsForRuns();
     void glyphsForRunsInvalid();
@@ -107,6 +120,14 @@ struct RendererTest: TestSuite::Tester {
     void allocateCoreGlyphAllocatorInvalid();
     void allocateCoreRunAllocator();
     void allocateCoreRunAllocatorInvalid();
+    template<class Index, class TextureCoordinates> void allocate();
+    void allocateDifferentIndexType();
+    void allocateIndexAllocator();
+    void allocateIndexAllocatorInvalid();
+    void allocateIndexAllocatorMaxIndexCountForType();
+    void allocateVertexAllocator();
+    void allocateVertexAllocatorInvalid();
+    void allocateVertexAllocatorNotEnoughStrideForArrayGlyphCache();
 
     void addSingleLine();
     void addSingleLineAlign();
@@ -116,8 +137,12 @@ struct RendererTest: TestSuite::Tester {
 
     void multipleBlocks();
 
+    template<class T> void indicesVertices();
+
     void clearResetCore();
     void clearResetCoreAllocators();
+    void clearReset();
+    void clearResetAllocators();
 
     #ifdef MAGNUM_TARGET_GL
     void renderData();
@@ -230,64 +255,149 @@ const struct {
 };
 
 const struct {
+    const char* name;
+    Int glyphCacheArraySize;
+    RendererFlags flags;
+} ConstructData[]{
+    {"", 1, {}},
+    {"with glyph positions and clusters", 1, RendererFlag::GlyphPositionsClusters},
+    {"array glyph cache", 5, {}},
+    {"array glyph cache, with glyph positions and clusters", 5, RendererFlag::GlyphPositionsClusters}
+};
+
+const struct {
+    const char* name;
+    Int glyphCacheArraySize;
+    void(*glyphAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&);
+    void(*runAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&);
+    void(*indexAllocator)(void*, UnsignedInt, Containers::ArrayView<char>&);
+    void(*vertexAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&);
+    RendererFlags flags;
+} ConstructAllocatorData[]{
+    {"no allocators", 1,
+        nullptr, nullptr, nullptr, nullptr, {}},
+    {"no allocators, with glyph positions & clusters", 1,
+        nullptr, nullptr, nullptr, nullptr, RendererFlag::GlyphPositionsClusters},
+    {"no allocators, array glyph cache", 5,
+        nullptr, nullptr, nullptr, nullptr, {}},
+    {"no allocators, array glyph cache, with glyph positions & clusters", 5,
+        nullptr, nullptr, nullptr, nullptr, RendererFlag::GlyphPositionsClusters},
+    {"glyph allocator", 1, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, nullptr, nullptr, nullptr, {}},
+    {"glyph allocator, with glyph positions & clusters", 1, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, nullptr, nullptr, nullptr, RendererFlag::GlyphPositionsClusters},
+    {"run allocator", 1, nullptr, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&){
+        ++*static_cast<int*>(called);
+    }, nullptr, nullptr, {}},
+    {"index allocator", 1, nullptr, nullptr, [](void* called, UnsignedInt, Containers::ArrayView<char>&){
+        ++*static_cast<int*>(called);
+    }, nullptr, {}},
+    {"vertex allocator", 1, nullptr, nullptr, nullptr, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, {}},
+    {"vertex allocator. array glyph cache", 5, nullptr, nullptr, nullptr, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, {}},
+    {"all allocators", 1, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::ArrayView<char>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, {}},
+    {"all allocators, with glyph positions & clusters", 1, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::ArrayView<char>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, RendererFlag::GlyphPositionsClusters},
+    {"all allocators, array glyph cache", 5, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::ArrayView<char>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, {}},
+    {"all allocators, array glyph cache, with glyph positions & clusters", 5, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::ArrayView<char>&){
+        ++*static_cast<int*>(called);
+    }, [](void* called, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&){
+        ++*static_cast<int*>(called);
+    }, RendererFlag::GlyphPositionsClusters},
+};
+
+const struct {
     TestSuite::TestCaseDescriptionSourceLocation name;
     RendererCoreFlags flagsCore;
+    RendererFlags flags;
     UnsignedInt reserveGlyphs, reserveRuns,
         secondReserveGlyphs, secondReserveRuns;
     bool render, renderAddOnly, expectNoGlyphReallocation, expectNoRunReallocation;
     UnsignedInt expectedGlyphCapacity, expectedRunCapacity;
 } AllocateData[]{
     {"second reserve() same as first",
-        {}, 26, 3, 26, 3, false, false, true, true, 26, 3},
+        {}, {}, 26, 3, 26, 3, false, false, true, true, 26, 3},
     {"second reserve() less glyphs than first",
-        {}, 26, 3, 23, 3, false, false, true, true, 26, 3},
+        {}, {}, 26, 3, 23, 3, false, false, true, true, 26, 3},
     {"second reserve() less runs than first",
-        {}, 26, 3, 26, 1, false, false, true, true, 26, 3},
+        {}, {}, 26, 3, 26, 1, false, false, true, true, 26, 3},
     {"second reserve() reallocates glyphs",
-        {}, 3, 3, 26, 3, false, false, false, true, 26, 3},
+        {}, {},  3, 3, 26, 3, false, false, false, true, 26, 3},
     {"second reserve() reallocates runs",
-        {}, 26, 1, 26, 3, false, false, true, false, 26, 3},
+        {}, {}, 26, 1, 26, 3, false, false, true, false, 26, 3},
     {"render",
-        {}, 26, 3,  0, 0, true, false, true, true, 26, 3},
+        {}, {}, 26, 3,  0, 0, true, false, true, true, 26, 3},
     {"render, second reserve() reallocates glyphs",
-        {},  3, 3, 26, 3, true, false, false, true, 26, 3},
+        {}, {},  3, 3, 26, 3, true, false, false, true, 26, 3},
     {"render, second reserve() reallocates runs",
-        {}, 26, 1, 26, 3, true, false, true, false, 26, 3},
+        {}, {}, 26, 1, 26, 3, true, false, true, false, 26, 3},
     {"render, second render() reallocates glyphs",
-        {},  3, 3,  0, 0, true, false, false, true, 26, 3},
+        {}, {},  3, 3,  0, 0, true, false, false, true, 26, 3},
     {"render, second render() reallocates runs",
-        {}, 26, 1,  0, 0, true, false, true, false, 26, 3},
+        {}, {}, 26, 1,  0, 0, true, false, true, false, 26, 3},
     {"render, second reserve() reallocates both, second render() also",
-        {},  3, 1, 13, 2, true, false, false, false, 13, 2},
+        {}, {},  3, 1, 13, 2, true, false, false, false, 13, 2},
     {"render, second reserve() while in progress reallocates glyphs",
-        {},  3, 3, 26, 3, true, true, false, true, 26, 3},
+        {}, {},  3, 3, 26, 3, true, true, false, true, 26, 3},
     {"render, second reserve() while in progress reallocates runs",
-        {}, 26, 1, 26, 3, true, true, true, false, 26, 3},
+        {}, {}, 26, 1, 26, 3, true, true, true, false, 26, 3},
     {"render, second render() while in progress reallocates glyphs",
-        {},  3, 3,  0, 0, true, true, false, true, 26, 3},
+        {}, {},  3, 3,  0, 0, true, true, false, true, 26, 3},
     {"render, second render() while in progress reallocates runs",
-        {}, 26, 1,  0, 0, true, true, true, false, 26, 3},
+        {}, {}, 26, 1,  0, 0, true, true, true, false, 26, 3},
     {"render, second reserve() while in progress reallocates both, second render() also",
-        {},  3, 1, 13, 2, true, true, false, false, 13, 2},
+        {}, {},  3, 1, 13, 2, true, true, false, false, 13, 2},
     /* The flag affects only glyph allocation, not runs, so their variants are
        not tested below */
     {"with glyph (positions and) clusters, second reserve() same as first",
-        RendererCoreFlag::GlyphClusters,
+        RendererCoreFlag::GlyphClusters, RendererFlag::GlyphPositionsClusters,
         26, 3, 26, 3, false, false, true, true, 26, 3},
     {"with glyph (positions and) clusters, second reserve() less glyphs than first",
-        RendererCoreFlag::GlyphClusters,
+        RendererCoreFlag::GlyphClusters, RendererFlag::GlyphPositionsClusters,
         26, 3, 23, 3, false, false, true, true, 26, 3},
     {"with glyph (positions and) clusters, second reserve() reallocates glyphs",
-        RendererCoreFlag::GlyphClusters,
+        RendererCoreFlag::GlyphClusters, RendererFlag::GlyphPositionsClusters,
         3, 3, 26, 3, false, false, false, true, 26, 3},
     {"with glyph (positions and) clusters, render",
-        RendererCoreFlag::GlyphClusters,
+        RendererCoreFlag::GlyphClusters, RendererFlag::GlyphPositionsClusters,
         26, 3,  0, 0, true, false, true, true, 26, 3},
     {"with glyph (positions and) clusters, render, second render() reallocates glyphs",
-        RendererCoreFlag::GlyphClusters,
+        RendererCoreFlag::GlyphClusters, RendererFlag::GlyphPositionsClusters,
         3, 3,  0, 0, true, false, false, true, 26, 3},
     {"with glyph (positions and) clusters, render, second render() while in progress reallocates glyphs",
-        RendererCoreFlag::GlyphClusters,
+        RendererCoreFlag::GlyphClusters, RendererFlag::GlyphPositionsClusters,
         3, 3,  0, 0, true, true, false, true, 26, 3}
 };
 
@@ -450,6 +560,399 @@ const struct {
     {"render, ends too small",
         true, 5, 4,
         "Text::RendererCore::add(): expected allocated run scales and ends to have at least 5 elements but got 5 and 4\n"},
+};
+
+const struct {
+    TestSuite::TestCaseDescriptionSourceLocation name;
+    Containers::Optional<MeshIndexType> indexTypeFirst;
+    UnsignedInt reserveFirst;
+    MeshIndexType expectedIndexTypeFirst;
+    Containers::Optional<MeshIndexType> indexTypeSecond;
+    bool clear;
+    UnsignedInt reserveSecond, expectedCapacitySecond, expectedIndexCapacitySecond;
+    MeshIndexType expectedIndexTypeSecond;
+} AllocateDifferentIndexTypeData[]{
+    {"UnsignedByte to UnsignedShort due to capacity",
+        {}, 12, MeshIndexType::UnsignedByte,
+        {}, false, 65, 65, 65, MeshIndexType::UnsignedShort},
+    {"UnsignedByte to UnsignedInt due to capacity",
+        {}, 12, MeshIndexType::UnsignedByte,
+        {}, false, 16385, 16385, 16385, MeshIndexType::UnsignedInt},
+    {"UnsignedShort to UnsignedInt due to capacity",
+        {}, 65, MeshIndexType::UnsignedShort,
+        {}, false, 16385, 16385, 16385, MeshIndexType::UnsignedInt},
+
+    {"UnsignedShort stays even after reserving less",
+        {}, 65, MeshIndexType::UnsignedShort,
+        {}, false, 12, 65, 65, MeshIndexType::UnsignedShort},
+    {"UnsignedInt stays even after reserving less",
+        {}, 16385, MeshIndexType::UnsignedInt,
+        {}, false, 12, 16385, 16385, MeshIndexType::UnsignedInt},
+
+    {"UnsignedByte changed to UnsignedShort",
+        {}, 12, MeshIndexType::UnsignedByte,
+        MeshIndexType::UnsignedShort, false, 0, 12, 12, MeshIndexType::UnsignedShort},
+    {"UnsignedByte changed to UnsignedInt",
+        {}, 12, MeshIndexType::UnsignedByte,
+        MeshIndexType::UnsignedInt, false, 0, 12, 12, MeshIndexType::UnsignedInt},
+    {"UnsignedShort changed to UnsignedInt",
+        MeshIndexType::UnsignedShort, 12, MeshIndexType::UnsignedShort,
+        MeshIndexType::UnsignedInt, false, 0, 12, 12, MeshIndexType::UnsignedInt},
+    {"UnsignedShort due to capacity, changed to UnsignedInt",
+        {}, 65, MeshIndexType::UnsignedShort,
+        MeshIndexType::UnsignedInt, false, 0, 65, 65, MeshIndexType::UnsignedInt},
+    {"UnsignedInt changed to UnsignedShort",
+        MeshIndexType::UnsignedInt, 12, MeshIndexType::UnsignedInt,
+        /* The full existing capacity gets reused for a smaller type, so it
+           doubles */
+        MeshIndexType::UnsignedShort, false, 0, 12, 24, MeshIndexType::UnsignedShort},
+    {"UnsignedInt changed to UnsignedByte",
+        MeshIndexType::UnsignedInt, 12, MeshIndexType::UnsignedInt,
+        /* The full existing capacity gets reused for a smaller type, so it
+           quadruples */
+        MeshIndexType::UnsignedByte, false, 0, 12, 48, MeshIndexType::UnsignedByte},
+    {"UnsignedShort changed to UnsignedByte",
+        MeshIndexType::UnsignedShort, 12, MeshIndexType::UnsignedShort,
+        /* The full existing capacity gets reused for a smaller type, so it
+           doubles */
+        MeshIndexType::UnsignedByte, false, 0, 12, 24, MeshIndexType::UnsignedByte},
+
+    {"UnsignedInt changed to UnsignedByte but capacity needs UnsignedShort",
+        MeshIndexType::UnsignedInt, 65, MeshIndexType::UnsignedInt,
+        /* The full existing capacity gets reused for a smaller type, so it
+           doubles */
+        MeshIndexType::UnsignedByte, false, 0, 65, 130, MeshIndexType::UnsignedShort},
+    {"UnsignedInt changed to UnsignedByte but capacity needs UnsignedInt",
+        MeshIndexType::UnsignedInt, 16385, MeshIndexType::UnsignedInt,
+        MeshIndexType::UnsignedByte, false, 0, 16385, 16385, MeshIndexType::UnsignedInt},
+    {"UnsignedInt changed to UnsignedShort but capacity needs UnsignedInt",
+        MeshIndexType::UnsignedInt, 16385, MeshIndexType::UnsignedInt,
+        MeshIndexType::UnsignedShort, false, 0, 16385, 16385, MeshIndexType::UnsignedInt},
+    {"UnsignedShort changed to UnsignedByte but capacity needs UnsignedShort",
+        MeshIndexType::UnsignedShort, 65, MeshIndexType::UnsignedShort,
+        MeshIndexType::UnsignedByte, false, 0, 65, 65, MeshIndexType::UnsignedShort},
+
+    {"UnsignedByte, cleared, stays UnsignedByte",
+        {}, 64, MeshIndexType::UnsignedByte,
+        {}, true, 0, 64, 64, MeshIndexType::UnsignedByte},
+    {"UnsignedShort explicit, cleared, stays UnsignedShort",
+        MeshIndexType::UnsignedShort, 12, MeshIndexType::UnsignedShort,
+        {}, true, 0, 12, 12, MeshIndexType::UnsignedShort},
+    {"UnsignedShort explicit + capacity, cleared, stays UnsignedShort",
+        MeshIndexType::UnsignedShort, 16384, MeshIndexType::UnsignedShort,
+        {}, true, 0, 16384, 16384, MeshIndexType::UnsignedShort},
+    {"UnsignedShort due to capacity, cleared, stays UnsignedShort",
+        {}, 65, MeshIndexType::UnsignedShort,
+        /* clear() doesn't touch the index buffer in any way so this doesn't
+           become UnsignedByte even though it could if the capacity would be
+           reset to < 65 */
+        {}, true, 0, 65, 65, MeshIndexType::UnsignedShort},
+    {"UnsignedInt explicit, cleared, stays UnsignedInt",
+        MeshIndexType::UnsignedInt, 12, MeshIndexType::UnsignedInt,
+        {}, true, 0, 12, 12, MeshIndexType::UnsignedInt},
+    {"UnsignedInt explicit + capacity, cleared, stays UnsignedInt",
+        MeshIndexType::UnsignedInt, 30000, MeshIndexType::UnsignedInt,
+        {}, true, 0, 30000, 30000, MeshIndexType::UnsignedInt},
+    {"UnsignedInt due to capacity, cleared, stays UnsignedInt",
+        {}, 16385, MeshIndexType::UnsignedInt,
+        /* clear() doesn't touch the index buffer in any way so this doesn't
+           become UnsignedShort or less even though it could if the capacity
+           would be reset to < 16385 */
+        {}, true, 0, 16385, 16385, MeshIndexType::UnsignedInt},
+};
+
+const struct {
+    TestSuite::TestCaseDescriptionSourceLocation name;
+    Containers::Optional<MeshIndexType> indexType;
+    UnsignedInt reserve;
+    MeshIndexType expectedIndexType;
+    Containers::Optional<MeshIndexType> secondIndexType;
+    UnsignedInt secondReserve;
+    MeshIndexType expectedSecondIndexType;
+    bool render, renderAddOnly, expectNoReallocation;
+    UnsignedInt indicesSize, expectedCapacity, expectedIndexCapacity;
+} AllocateIndexAllocatorData[]{
+    {"second reserve() same as first, UnsignedByte",
+        {}, 26, MeshIndexType::UnsignedByte,
+        {}, 26, MeshIndexType::UnsignedByte,
+        false, false, true, 0, 26, 26},
+    {"second reserve() same as first, UnsignedShort",
+        MeshIndexType::UnsignedShort, 26, MeshIndexType::UnsignedShort,
+        {}, 26, MeshIndexType::UnsignedShort,
+        false, false, true, 0, 26, 26},
+    {"second reserve() same as first, UnsignedInt",
+        MeshIndexType::UnsignedInt, 26, MeshIndexType::UnsignedInt,
+        {}, 26, MeshIndexType::UnsignedInt,
+        false, false, true, 0, 26, 26},
+    {"second reserve() smaller than first, UnsignedByte",
+        MeshIndexType::UnsignedByte, 26, MeshIndexType::UnsignedByte,
+        {}, 23, MeshIndexType::UnsignedByte,
+        false, false, true, 0, 26, 26},
+    {"second reserve() smaller than first, UnsignedShort",
+        MeshIndexType::UnsignedShort, 26, MeshIndexType::UnsignedShort,
+        {}, 23, MeshIndexType::UnsignedShort,
+        false, false, true, 0, 26, 26},
+    {"second reserve() smaller than first, UnsignedInt",
+        MeshIndexType::UnsignedInt, 26, MeshIndexType::UnsignedInt,
+        {}, 23, MeshIndexType::UnsignedInt,
+        false, false, true, 0, 26, 26},
+    {"second reserve() reallocates, UnsignedByte",
+        MeshIndexType::UnsignedByte, 3, MeshIndexType::UnsignedByte,
+        {}, 26, MeshIndexType::UnsignedByte,
+        /* Not a multiple of 6 type sizes, should get capped, same below */
+        false, false, false, 27*6*1 + 3, 26, 27},
+    {"second reserve() reallocates, UnsignedShort",
+        MeshIndexType::UnsignedShort, 3, MeshIndexType::UnsignedShort,
+        {}, 26, MeshIndexType::UnsignedShort,
+        false, false, false, 30*6*2 + 11, 26, 30},
+    {"second reserve() reallocates, UnsignedInt",
+        MeshIndexType::UnsignedInt, 3, MeshIndexType::UnsignedInt,
+        {}, 26, MeshIndexType::UnsignedInt,
+        false, false, false, 26*6*4 + 21, 26, 26},
+    {"second reserve() reallocates, type changes to UnsignedShort",
+        {}, 3, MeshIndexType::UnsignedByte,
+        {}, 65, MeshIndexType::UnsignedShort,
+        false, false, false, 69*6*2 + 11, 65, 69},
+    {"second reserve() reallocates, type changes to UnsignedInt",
+        {}, 3, MeshIndexType::UnsignedByte,
+        {}, 16385, MeshIndexType::UnsignedInt,
+        false, false, false, 18343*6*4 + 21, 16385, 18343},
+    {"second setIndexType() same as first, UnsignedByte",
+        {}, 26, MeshIndexType::UnsignedByte,
+        MeshIndexType::UnsignedByte, 0, MeshIndexType::UnsignedByte,
+        false, false, true, 0, 26, 26},
+    {"second setIndexType() same as first, UnsignedShort",
+        MeshIndexType::UnsignedShort, 26, MeshIndexType::UnsignedShort,
+        MeshIndexType::UnsignedShort, 0, MeshIndexType::UnsignedShort,
+        false, false, true, 0, 26, 26},
+    {"second setIndexType() same as first, UnsignedInt",
+        MeshIndexType::UnsignedInt, 26, MeshIndexType::UnsignedInt,
+        MeshIndexType::UnsignedInt, 0, MeshIndexType::UnsignedInt,
+        false, false, true, 0, 26, 26},
+    {"second setIndexType() reallocates, UnsignedByte, type changes to UnsignedShort",
+        {}, 26, MeshIndexType::UnsignedByte,
+        MeshIndexType::UnsignedShort, 0, MeshIndexType::UnsignedShort,
+        false, false, false, 28*6*2 + 1, 26, 28},
+    {"second setIndexType() reallocates, UnsignedByte, type changes to UnsignedInt",
+        {}, 26, MeshIndexType::UnsignedByte,
+        MeshIndexType::UnsignedInt, 0, MeshIndexType::UnsignedInt,
+        false, false, false, 28*6*4 + 1, 26, 28},
+    {"second setIndexType() reallocates, UnsignedShort, type changes to UnsignedInt",
+        MeshIndexType::UnsignedShort, 26, MeshIndexType::UnsignedShort,
+        MeshIndexType::UnsignedInt, 0, MeshIndexType::UnsignedInt,
+        false, false, false, 28*6*4 + 1, 26, 28},
+    {"second setIndexType() reallocates, UnsignedInt, type changes to UnsignedShort",
+        MeshIndexType::UnsignedInt, 26, MeshIndexType::UnsignedInt,
+        MeshIndexType::UnsignedShort, 0, MeshIndexType::UnsignedShort,
+        false, false, false, 28*6*2 + 1, 26, 28},
+    {"second setIndexType() reallocates, UnsignedInt, type changes to UnsignedByte",
+        MeshIndexType::UnsignedInt, 26, MeshIndexType::UnsignedInt,
+        MeshIndexType::UnsignedByte, 0, MeshIndexType::UnsignedByte,
+        false, false, false, 28*6*1 + 1, 26, 28},
+    {"second setIndexType() reallocates, UnsignedShort, type changes to UnsignedByte",
+        MeshIndexType::UnsignedShort, 26, MeshIndexType::UnsignedShort,
+        MeshIndexType::UnsignedByte, 0, MeshIndexType::UnsignedByte,
+        false, false, false, 28*6*1 + 1, 26, 28},
+    {"second setIndexType() reallocates, UnsignedInt, type changed to UnsignedByte but capacity needs UnsignedShort",
+        MeshIndexType::UnsignedInt, 65, MeshIndexType::UnsignedInt,
+        MeshIndexType::UnsignedByte, 0, MeshIndexType::UnsignedShort,
+        false, false, false, 70*6*2 + 1, 65, 70},
+    {"second setIndexType(), UnsignedInt, type changes to UnsignedByte but capacity still needs UnsignedInt",
+        MeshIndexType::UnsignedInt, 16385, MeshIndexType::UnsignedInt,
+        MeshIndexType::UnsignedByte, 0, MeshIndexType::UnsignedInt,
+        false, false, true, 0, 16385, 16385},
+    {"second setIndexType(), UnsignedInt, type changes to UnsignedShort but capacity still needs UnsignedInt",
+        MeshIndexType::UnsignedInt, 16385, MeshIndexType::UnsignedInt,
+        MeshIndexType::UnsignedShort, 0, MeshIndexType::UnsignedInt,
+        false, false, true, 0, 16385, 16385},
+    {"second setIndexType(), UnsignedShort, type changes to UnsignedByte but capacity still needs UnsignedShort",
+        MeshIndexType::UnsignedShort, 65, MeshIndexType::UnsignedShort,
+        MeshIndexType::UnsignedByte, 0, MeshIndexType::UnsignedShort,
+        false, false, true, 0, 65, 65},
+    {"render, UnsignedByte",
+        {}, 26, MeshIndexType::UnsignedByte,
+        {}, 26, MeshIndexType::UnsignedShort,
+        true, false, true, 0, 26, 26},
+    {"render, UnsignedShort",
+        MeshIndexType::UnsignedShort, 26, MeshIndexType::UnsignedShort,
+        {}, 26, MeshIndexType::UnsignedShort,
+        true, false, true, 0, 26, 26},
+    {"render, UnsignedInt",
+        MeshIndexType::UnsignedInt, 26, MeshIndexType::UnsignedInt,
+        {}, 26, MeshIndexType::UnsignedInt,
+        true, false, true, 0, 26, 26},
+    {"render, second render() reallocates, UnsignedByte",
+        MeshIndexType::UnsignedByte, 3, MeshIndexType::UnsignedByte,
+        {}, 26, MeshIndexType::UnsignedByte,
+        /* Not a multiple of 6 type sizes, should get capped, same below */
+        true, false, false, 28*6*1 + 5, 26, 28},
+    {"render, second render() reallocates, UnsignedShort",
+        MeshIndexType::UnsignedShort, 3, MeshIndexType::UnsignedShort,
+        {}, 26, MeshIndexType::UnsignedShort,
+        true, false, false, 27*6*2 + 9, 26, 27},
+    {"render, second render() reallocates, UnsignedInt",
+        MeshIndexType::UnsignedInt, 3, MeshIndexType::UnsignedInt,
+        {}, 26, MeshIndexType::UnsignedInt,
+        true, false, false, 29*6*4 + 19, 26, 29},
+    {"render, second render() reallocates while in progress, UnsignedByte",
+        MeshIndexType::UnsignedByte, 3, MeshIndexType::UnsignedByte,
+        {}, 26, MeshIndexType::UnsignedByte,
+        true, true, false, 28*6*1 + 5, 26, 28},
+    {"render, second render() reallocates while in progress, UnsignedShort",
+        MeshIndexType::UnsignedShort, 3, MeshIndexType::UnsignedShort,
+        {}, 26, MeshIndexType::UnsignedShort,
+        true, true, false, 27*6*2 + 9, 26, 27},
+    {"render, second render() reallocates while in progress, UnsignedInt",
+        MeshIndexType::UnsignedInt, 3, MeshIndexType::UnsignedInt,
+        {}, 26, MeshIndexType::UnsignedInt,
+        true, true, false, 29*6*4 + 19, 26, 29},
+};
+
+const struct {
+    TestSuite::TestCaseDescriptionSourceLocation name;
+    MeshIndexType indexType;
+    bool setIndexType, render;
+    std::size_t size;
+    const char* expected;
+} AllocateIndexAllocatorInvalidData[]{
+    {"reserve, too small, UnsignedByte",
+        MeshIndexType::UnsignedByte, false, false, 101,
+        "Text::Renderer::reserve(): expected allocated indices to have at least 102 bytes but got 101\n"},
+    {"reserve, too small, UnsignedShort",
+        MeshIndexType::UnsignedShort, false, false, 199,
+        "Text::Renderer::reserve(): expected allocated indices to have at least 204 bytes but got 199\n"},
+    {"reserve, too small, UnsignedInt",
+        MeshIndexType::UnsignedInt, false, false, 405,
+        "Text::Renderer::reserve(): expected allocated indices to have at least 408 bytes but got 405\n"},
+    /* Not testing setIndexType() with UnsignedByte, the initial allocation is
+       large enough for it already so the allocator doesn't even get called */
+    {"setIndexType, too small, UnsignedShort",
+        /* Here it's just for the initial 10 glyphs, not 17 */
+        MeshIndexType::UnsignedShort, true, false, 119,
+        "Text::Renderer::setIndexType(): expected allocated indices to have at least 120 bytes but got 119\n"},
+    {"setIndexType, too small, UnsignedInt",
+        /* Here it's just for the initial 10 glyphs, not 17 */
+        MeshIndexType::UnsignedInt, true, false, 239,
+        "Text::Renderer::setIndexType(): expected allocated indices to have at least 240 bytes but got 239\n"},
+    {"render, too small, UnsignedByte",
+        MeshIndexType::UnsignedByte, false, true, 101,
+        "Text::Renderer::render(): expected allocated indices to have at least 102 bytes but got 101\n"},
+    {"render, too small, UnsignedShort",
+        MeshIndexType::UnsignedShort, false, true, 199,
+        "Text::Renderer::render(): expected allocated indices to have at least 204 bytes but got 199\n"},
+    {"render, too small, UnsignedInt",
+        MeshIndexType::UnsignedInt, false, true, 405,
+        "Text::Renderer::render(): expected allocated indices to have at least 408 bytes but got 405\n"},
+};
+
+const struct {
+    const char* name;
+    MeshIndexType indexType;
+    UnsignedInt expected;
+} AllocateIndexAllocatorMaxIndexCountForTypeData[]{
+    {"UnsignedByte", MeshIndexType::UnsignedByte,
+        /* 256 indexable vertices is at most 64 glyphs */
+        64},
+    {"UnsignedShort", MeshIndexType::UnsignedShort,
+        /* 65536 indexable vertices is at most 16384 glyphs */
+        16384},
+};
+
+const struct {
+    TestSuite::TestCaseDescriptionSourceLocation name;
+    Int glyphCacheArraySize;
+    UnsignedInt reserve, secondReserve;
+    bool render, renderAddOnly, expectNoReallocation;
+    UnsignedInt
+        positionSize,
+        textureCoordinateSize,
+        expectedCapacity;
+} AllocateVertexAllocatorData[]{
+    {"second reserve() same as first",
+        1, 26, 26, false, false, true,
+        0, 0, 26},
+    {"second reserve() smaller than first",
+        1, 26, 23, false, false, true,
+        0, 0, 26},
+    {"second reserve() reallocates, positions smallest",
+        1, 3, 26, false, false, false,
+        /* Not a multiple of 4, should get capped, same below */
+        27*4 + 3, 28*4 + 1, 27},
+    {"second reserve() reallocates, texture coordinates smallest",
+        1, 3, 26, false, false, false,
+        27*4 + 2, 26*4 + 0, 26},
+    {"array glyph cache, second reserve() same as first",
+        5, 26, 26, false, false, true,
+        0, 0, 26},
+    {"array glyph cache, second reserve() smaller than first",
+        5, 26, 23, false, false, true,
+        0, 0, 26},
+    {"array glyph cache, second reserve() reallocates, positions smallest",
+        5, 23, 26, false, false, false,
+        /* Not a multiple of 4, should get capped, same below */
+        27*4 + 3, 28*4 + 1, 27},
+    {"array glyph cache, second reserve() reallocates, texture coordinates smallest",
+        5, 23, 26, false, false, false,
+        27*4 + 2, 26*4 + 3, 26},
+    {"array glyph cache, second reserve() reallocates while in progress",
+        5, 23, 26, false, true, false,
+        26*4 + 2, 26*4 + 2, 26},
+    {"render",
+        1, 26, 26, true, false, true,
+        0, 0, 26},
+    {"render, second render() reallocates, positions smallest",
+        1, 3, 26, true, false, false,
+        /* Not a multiple of 4, should get capped, same below */
+        27*4 + 0, 28*4 + 3, 27},
+    {"render, second render() reallocates, texture coordinates smallest",
+        1, 3, 26, true, false, false,
+        27*4 + 1, 26*4 + 3, 26},
+    {"array glyph cache, render",
+        5, 26, 26, true, false, true,
+        0, 0, 26},
+    {"array glyph cache, render, second render() reallocates, positions smallest",
+        5, 3, 26, true, false, false,
+        27*4 + 2, 28*4 + 3, 27},
+    {"array glyph cache, render, second render() reallocates, texture coordinates smallest",
+        5, 3, 26, true, false, false,
+        27*4 + 1, 26*4 + 3, 26},
+    {"array glyph cache, render, second render() reallocates while in progress",
+        5, 3, 26, true, true, false,
+        26*4 + 1, 26*4 + 1, 26},
+};
+
+const struct {
+    TestSuite::TestCaseDescriptionSourceLocation name;
+    bool render;
+    std::size_t positionSize, textureCoordinateSize;
+    const char* expected;
+} AllocateVertexAllocatorInvalidData[]{
+    {"reserve, positions too small",
+        false, 67, 68,
+        "Text::Renderer::reserve(): expected allocated vertex positions and texture coordinates to have at least 68 elements but got 67 and 68\n"},
+    {"render, positions too small",
+        true, 64, 68,
+        "Text::Renderer::render(): expected allocated vertex positions and texture coordinates to have at least 68 elements but got 64 and 68\n"},
+    {"reserve, texture coordinates too small",
+        false, 68, 63,
+        "Text::Renderer::reserve(): expected allocated vertex positions and texture coordinates to have at least 68 elements but got 68 and 63\n"},
+    {"render, texture coordinates too small",
+        true, 68, 65,
+        "Text::Renderer::render(): expected allocated vertex positions and texture coordinates to have at least 68 elements but got 68 and 65\n"},
+};
+
+const struct {
+    TestSuite::TestCaseDescriptionSourceLocation name;
+    bool render;
+    bool flipped;
+    const char* expected;
+} AllocateVertexAllocatorNotEnoughStrideForArrayGlyphCacheData[]{
+    {"reserve", false, false,
+        "Text::Renderer::reserve(): expected allocated texture coordinates to have a stride large enough to fit a Vector3 but got only 8 bytes\n"},
+    {"reserve, flipped", false, true,
+        "Text::Renderer::reserve(): expected allocated texture coordinates to have a stride large enough to fit a Vector3 but got only 8 bytes\n"},
+    {"render", true, false,
+        "Text::Renderer::render(): expected allocated texture coordinates to have a stride large enough to fit a Vector3 but got only 8 bytes\n"},
 };
 
 const struct {
@@ -893,6 +1396,47 @@ const struct {
 
 const struct {
     const char* name;
+    Int glyphCacheArraySize;
+    RendererFlags flags;
+    bool customGlyphAllocator;
+    UnsignedInt reserve;
+} IndicesVerticesData[]{
+    {"",
+        1, {}, false, 0},
+    {"array glyph cache",
+        5, {}, false, 0},
+    {"glyph positions + clusters",
+        1, RendererFlag::GlyphPositionsClusters, false, 0},
+    {"glyph positions + clusters, array glyph cache",
+        5, RendererFlag::GlyphPositionsClusters, false, 0},
+    {"reserve all upfront",
+        1, {}, false, 16},
+    {"reserve all upfront, array glyph cache",
+        5, {}, false, 16},
+    {"reserve all upfront, glyph positions + clusters",
+        1, RendererFlag::GlyphPositionsClusters, false, 16},
+    {"reserve all upfront, glyph positions + clusters, array glyph cache",
+        5, RendererFlag::GlyphPositionsClusters, false, 16},
+    {"reserve partially upfront",
+        1, {}, false, 4},
+    {"reserve partially upfront, array glyph cache",
+        5, {}, false, 4},
+    {"reserve partially upfront, glyph positions + clusters",
+        1, RendererFlag::GlyphPositionsClusters, false, 4},
+    {"reserve partially upfront, glyph positions + clusters, array glyph cache",
+        5, RendererFlag::GlyphPositionsClusters, false, 4},
+    {"custom glyph allocator",
+        1, {}, true, 0},
+    {"custom glyph allocator, array glyph cache",
+        5, {}, true, 0},
+    {"custom glyph allocator, glyph positions + clusters",
+        1, RendererFlag::GlyphPositionsClusters, true, 0},
+    {"custom glyph allocator, glyph positions + clusters, array glyph cache",
+        5, RendererFlag::GlyphPositionsClusters, true, 0},
+};
+
+const struct {
+    const char* name;
     RendererCoreFlags flags;
     bool renderAddOnly, reset;
     UnsignedInt expectedBuiltinGlyphAllocatorCapacity;
@@ -907,6 +1451,19 @@ const struct {
     /* Here the glyph advances alias other memory so 3 can fit */
     {"clear while in progress, with glyph clusters", RendererCoreFlag::GlyphClusters, true, false, 3},
     {"reset while in progress", {}, true, true, 2},
+};
+
+const struct {
+    const char* name;
+    RendererFlags flags;
+    bool renderAddOnly, reset;
+} ClearResetData[]{
+    {"clear", {}, false, false},
+    {"clear, with glyph positions & clusters", RendererFlag::GlyphPositionsClusters, false, false},
+    {"reset", {}, false, true},
+    {"clear while in progress", {}, true, false},
+    {"clear while in progress, with glyph positions & clusters", RendererFlag::GlyphPositionsClusters, true, false},
+    {"reset while in progress", {}, true, true},
 };
 
 #ifdef MAGNUM_TARGET_GL
@@ -1133,7 +1690,9 @@ RendererTest::RendererTest() {
         Containers::arraySize(GlyphRangeForBytesData));
 
     addTests({&RendererTest::debugFlagCore,
-              &RendererTest::debugFlagsCore});
+              &RendererTest::debugFlagsCore,
+              &RendererTest::debugFlag,
+              &RendererTest::debugFlags});
 
     addInstancedTests({&RendererTest::constructCore,
                        &RendererTest::constructCoreAllocator},
@@ -1141,12 +1700,23 @@ RendererTest::RendererTest() {
 
     addTests({&RendererTest::constructCoreNoCreate});
 
+    addInstancedTests({&RendererTest::construct,
+                       &RendererTest::constructAllocator},
+        Containers::arraySize(ConstructData));
+
+    addTests({&RendererTest::constructNoCreate});
+
     addTests({&RendererTest::constructCopyCore,
               &RendererTest::constructMoveCore,
+              &RendererTest::constructCopy,
+              &RendererTest::constructMove,
 
               &RendererTest::propertiesCore,
               &RendererTest::propertiesCoreInvalid,
               &RendererTest::propertiesCoreRenderingInProgress,
+              &RendererTest::properties,
+              &RendererTest::propertiesInvalid,
+              &RendererTest::propertiesRenderingInProgress,
 
               &RendererTest::glyphsForRuns,
               &RendererTest::glyphsForRunsInvalid});
@@ -1166,6 +1736,36 @@ RendererTest::RendererTest() {
     addInstancedTests({&RendererTest::allocateCoreRunAllocatorInvalid},
         Containers::arraySize(AllocateCoreRunAllocatorInvalidData));
 
+    addInstancedTests<RendererTest>({
+        &RendererTest::allocate<UnsignedByte, Vector2>,
+        &RendererTest::allocate<UnsignedShort, Vector2>,
+        &RendererTest::allocate<UnsignedInt, Vector2>,
+        &RendererTest::allocate<UnsignedByte, Vector3>,
+        &RendererTest::allocate<UnsignedShort, Vector3>,
+        &RendererTest::allocate<UnsignedInt, Vector3>},
+        Containers::arraySize(AllocateData));
+
+    addInstancedTests({&RendererTest::allocateDifferentIndexType},
+        Containers::arraySize(AllocateDifferentIndexTypeData));
+
+    addInstancedTests({&RendererTest::allocateIndexAllocator},
+        Containers::arraySize(AllocateIndexAllocatorData));
+
+    addInstancedTests({&RendererTest::allocateIndexAllocatorInvalid},
+        Containers::arraySize(AllocateIndexAllocatorInvalidData));
+
+    addInstancedTests({&RendererTest::allocateIndexAllocatorMaxIndexCountForType},
+        Containers::arraySize(AllocateIndexAllocatorMaxIndexCountForTypeData));
+
+    addInstancedTests({&RendererTest::allocateVertexAllocator},
+        Containers::arraySize(AllocateVertexAllocatorData));
+
+    addInstancedTests({&RendererTest::allocateVertexAllocatorInvalid},
+        Containers::arraySize(AllocateVertexAllocatorInvalidData));
+
+    addInstancedTests({&RendererTest::allocateVertexAllocatorNotEnoughStrideForArrayGlyphCache},
+        Containers::arraySize(AllocateVertexAllocatorNotEnoughStrideForArrayGlyphCacheData));
+
     addInstancedTests({&RendererTest::addSingleLine},
         Containers::arraySize(AddSingleLineData));
 
@@ -1183,9 +1783,19 @@ RendererTest::RendererTest() {
     addInstancedTests({&RendererTest::multipleBlocks},
         Containers::arraySize(MultipleBlocksData));
 
+    addInstancedTests<RendererTest>({
+        &RendererTest::indicesVertices<UnsignedByte>,
+        &RendererTest::indicesVertices<UnsignedShort>,
+        &RendererTest::indicesVertices<UnsignedInt>
+    }, Containers::arraySize(IndicesVerticesData));
+
     addInstancedTests({&RendererTest::clearResetCore,
                        &RendererTest::clearResetCoreAllocators},
         Containers::arraySize(ClearResetCoreData));
+
+    addInstancedTests({&RendererTest::clearReset,
+                       &RendererTest::clearResetAllocators},
+        Containers::arraySize(ClearResetData));
 
     #ifdef MAGNUM_TARGET_GL
     addInstancedTests({&RendererTest::renderData},
@@ -2047,6 +2657,18 @@ void RendererTest::debugFlagsCore() {
     CORRADE_COMPARE(out, "Text::RendererCoreFlag::GlyphClusters|Text::RendererCoreFlag(0xf0) Text::RendererCoreFlags{}\n");
 }
 
+void RendererTest::debugFlag() {
+    Containers::String out;
+    Debug{&out} << RendererFlag::GlyphPositionsClusters << RendererFlag(0xca);
+    CORRADE_COMPARE(out, "Text::RendererFlag::GlyphPositionsClusters Text::RendererFlag(0xca)\n");
+}
+
+void RendererTest::debugFlags() {
+    Containers::String out;
+    Debug{&out} << (RendererFlag::GlyphPositionsClusters|RendererFlag(0xf0)) << RendererFlags{};
+    CORRADE_COMPARE(out, "Text::RendererFlag::GlyphPositionsClusters|Text::RendererFlag(0xf0) Text::RendererFlags{}\n");
+}
+
 void RendererTest::constructCore() {
     auto&& data = ConstructCoreData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -2121,6 +2743,100 @@ void RendererTest::constructCoreNoCreate() {
     CORRADE_VERIFY(!std::is_convertible<NoCreateT, RendererCore>::value);
 }
 
+void RendererTest::construct() {
+    auto&& data = ConstructData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16, data.glyphCacheArraySize}};
+
+    Renderer renderer{glyphCache, data.flags};
+    CORRADE_COMPARE(&renderer.glyphCache(), &glyphCache);
+    CORRADE_COMPARE(renderer.flags(), data.flags);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+    CORRADE_COMPARE(renderer.indexType(), MeshIndexType::UnsignedByte);
+    CORRADE_VERIFY(!renderer.isRendering());
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    CORRADE_COMPARE(renderer.cursor(), Vector2{});
+    CORRADE_COMPARE(renderer.alignment(), Alignment::MiddleCenter);
+    CORRADE_COMPARE(renderer.layoutDirection(), LayoutDirection::HorizontalTopToBottom);
+    if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+        CORRADE_COMPARE(renderer.glyphPositions().size(), 0);
+        CORRADE_COMPARE(renderer.glyphClusters().size(), 0);
+    }
+    /* Second dimension size matches index type size always */
+    CORRADE_COMPARE(renderer.indices().size(), (Containers::Size2D{0, 1}));
+    CORRADE_COMPARE(renderer.indices<UnsignedByte>().size(), 0);
+    CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+    if(data.glyphCacheArraySize == 1)
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+    else
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+}
+
+void RendererTest::constructAllocator() {
+    auto&& data = ConstructAllocatorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16, data.glyphCacheArraySize}};
+
+    int called = 0;
+    Renderer renderer{glyphCache, data.glyphAllocator, &called, data.runAllocator, &called, data.indexAllocator, &called, data.vertexAllocator, &called, data.flags};
+    CORRADE_COMPARE(&renderer.glyphCache(), &glyphCache);
+    CORRADE_COMPARE(renderer.flags(), data.flags);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+    CORRADE_COMPARE(renderer.indexType(), MeshIndexType::UnsignedByte);
+    CORRADE_VERIFY(!renderer.isRendering());
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    CORRADE_COMPARE(renderer.cursor(), Vector2{});
+    CORRADE_COMPARE(renderer.alignment(), Alignment::MiddleCenter);
+    CORRADE_COMPARE(renderer.layoutDirection(), LayoutDirection::HorizontalTopToBottom);
+    if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+        CORRADE_COMPARE(renderer.glyphPositions().size(), 0);
+        CORRADE_COMPARE(renderer.glyphClusters().size(), 0);
+    }
+    /* Second dimension size matches index type size always */
+    CORRADE_COMPARE(renderer.indices().size(), (Containers::Size2D{0, 1}));
+    CORRADE_COMPARE(renderer.indices<UnsignedByte>().size(), 0);
+    CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+    if(data.glyphCacheArraySize == 1)
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+    else
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+
+    /* The allocators should not be called by default */
+    CORRADE_COMPARE(called, 0);
+}
+
+void RendererTest::constructNoCreate() {
+    Renderer renderer{NoCreate};
+
+    /* Shouldn't crash */
+    CORRADE_VERIFY(true);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Renderer>::value);
+}
+
 void RendererTest::constructCopyCore() {
     CORRADE_VERIFY(!std::is_copy_constructible<RendererCore>{});
     CORRADE_VERIFY(!std::is_copy_assignable<RendererCore>{});
@@ -2147,6 +2863,39 @@ void RendererTest::constructMoveCore() {
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<RendererCore>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<RendererCore>::value);
+}
+
+void RendererTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<Renderer>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Renderer>{});
+}
+
+void RendererTest::constructMove() {
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16, 2}},
+        anotherGlyphCache{PixelFormat::RGBA8Unorm, {4, 4}};
+
+    /* Verify that both the RendererCore and the Renderer state is
+       transferred */
+    Renderer a{glyphCache, RendererFlag::GlyphPositionsClusters};
+    a.setIndexType(MeshIndexType::UnsignedShort);
+
+    Renderer b = Utility::move(a);
+    CORRADE_COMPARE(&b.glyphCache(), &glyphCache);
+    CORRADE_COMPARE(b.flags(), RendererFlag::GlyphPositionsClusters);
+    CORRADE_COMPARE(b.indexType(), MeshIndexType::UnsignedShort);
+
+    Renderer c{anotherGlyphCache};
+    c = Utility::move(b);
+    CORRADE_COMPARE(&c.glyphCache(), &glyphCache);
+    CORRADE_COMPARE(c.flags(), RendererFlag::GlyphPositionsClusters);
+    CORRADE_COMPARE(c.indexType(), MeshIndexType::UnsignedShort);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Renderer>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Renderer>::value);
 }
 
 void RendererTest::propertiesCore() {
@@ -2255,6 +3004,124 @@ void RendererTest::propertiesCoreRenderingInProgress() {
         "Text::RendererCore::setAlignment(): rendering in progress\n"
         "Text::RendererCore::setLineAdvance(): rendering in progress\n"
         "Text::RendererCore::setLayoutDirection(): rendering in progress\n",
+        TestSuite::Compare::String);
+}
+
+void RendererTest::properties() {
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    Renderer renderer{glyphCache};
+    CORRADE_COMPARE(renderer.indexType(), MeshIndexType::UnsignedByte);
+    /* Second dimension size matches index type size */
+    CORRADE_COMPARE(renderer.indices().size(), (Containers::Size2D{0, 1}));
+
+    renderer.setIndexType(MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE(renderer.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE(renderer.indices().size(), (Containers::Size2D{0, 4}));
+
+    /* The setIndexType() behavior is tested thoroughly in
+       allocate(), allocateIndexAllocator() and indexTypeChange() */
+}
+
+void RendererTest::propertiesInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}},
+      glyphCacheArray{PixelFormat::R8Unorm, {16, 16, 2}};
+
+    Renderer renderer{glyphCache};
+    Renderer rendererArray{glyphCacheArray};
+    Renderer rendererUnsignedShortIndices{glyphCache};
+    Renderer rendererUnsignedIntIndices{glyphCache};
+    rendererUnsignedShortIndices.setIndexType(MeshIndexType::UnsignedShort);
+    rendererUnsignedIntIndices.setIndexType(MeshIndexType::UnsignedInt);
+
+    Containers::String out;
+    Error redirectError{&out};
+    renderer.glyphPositions();
+    renderer.glyphClusters();
+    renderer.indices<UnsignedShort>();
+    renderer.indices<UnsignedInt>();
+    rendererUnsignedShortIndices.indices<UnsignedByte>();
+    rendererUnsignedShortIndices.indices<UnsignedInt>();
+    rendererUnsignedIntIndices.indices<UnsignedByte>();
+    rendererUnsignedIntIndices.indices<UnsignedShort>();
+    renderer.vertexTextureArrayCoordinates();
+    rendererArray.vertexTextureCoordinates();
+    CORRADE_COMPARE_AS(out,
+        "Text::Renderer::glyphPositions(): glyph positions and clusters not enabled\n"
+        "Text::Renderer::glyphClusters(): glyph positions and clusters not enabled\n"
+        "Text::Renderer::indices(): cannot retrieve MeshIndexType::UnsignedByte as an UnsignedShort\n"
+        "Text::Renderer::indices(): cannot retrieve MeshIndexType::UnsignedByte as an UnsignedInt\n"
+        "Text::Renderer::indices(): cannot retrieve MeshIndexType::UnsignedShort as an UnsignedByte\n"
+        "Text::Renderer::indices(): cannot retrieve MeshIndexType::UnsignedShort as an UnsignedInt\n"
+        "Text::Renderer::indices(): cannot retrieve MeshIndexType::UnsignedInt as an UnsignedByte\n"
+        "Text::Renderer::indices(): cannot retrieve MeshIndexType::UnsignedInt as an UnsignedShort\n"
+        "Text::Renderer::vertexTextureArrayCoordinates(): cannot retrieve three-dimensional coordinates with a non-array glyph cache\n"
+        "Text::Renderer::vertexTextureCoordinates(): cannot retrieve two-dimensional coordinates with an array glyph cache\n",
+        TestSuite::Compare::String);
+}
+
+void RendererTest::propertiesRenderingInProgress() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+    glyphCache.addFont(0, &font);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return 0;
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+    } shaper{font};
+
+    Renderer renderer{glyphCache};
+
+    /* It should be marked as in progress even if there aren't any glyphs, to
+       enforce correct usage in all cases. The begin/end/features are used just
+       to make code coverage happier, nothing else. */
+    renderer.add(shaper, 1.0f, "hello", 0, 5, Containers::ArrayView<const FeatureRange>{});
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_VERIFY(renderer.isRendering());
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+
+    /* It should blow up even if the properties are set to exactly the same as
+       before */
+    Containers::String out;
+    Error redirectError{&out};
+    renderer.setIndexType(MeshIndexType::UnsignedByte);
+    CORRADE_COMPARE_AS(out,
+        "Text::Renderer::setIndexType(): rendering in progress\n",
         TestSuite::Compare::String);
 }
 
@@ -3184,7 +4051,11 @@ void RendererTest::allocateCoreRunAllocator() {
     allocation.expectedRunScaleData = runScales;
     allocation.expectedRunEndData = runEnds;
     Float runScales2[8];
-    UnsignedInt runEnds2[8];
+    /* The run ends get used to slice up the glyph array in render(), and the
+       allocator assumes the data were transferred from previous. It doesn't
+       matter much what offsets are there, they just have to be in range to not
+       assert (or crash on no-assert builds). */
+    UnsignedInt runEnds2[8]{};
     allocation.runScales = Containers::arrayView(runScales2)
         .prefix(data.scaleSize);
     allocation.runEnds = Containers::arrayView(runEnds2)
@@ -3323,6 +4194,1364 @@ void RendererTest::allocateCoreRunAllocatorInvalid() {
         CORRADE_COMPARE(renderer.runCount(), 2);
     }
     CORRADE_COMPARE(renderer.runCapacity(), 5);
+}
+
+template<class> struct IndexTraits;
+template<> struct IndexTraits<UnsignedByte> {
+    static MeshIndexType type() { return MeshIndexType::UnsignedByte; }
+};
+template<> struct IndexTraits<UnsignedShort> {
+    static MeshIndexType type() { return MeshIndexType::UnsignedShort; }
+};
+template<> struct IndexTraits<UnsignedInt> {
+    static MeshIndexType type() { return MeshIndexType::UnsignedInt; }
+};
+
+template<class> struct TextureCoordinateTraits;
+template<> struct TextureCoordinateTraits<Vector2> {
+    static const char* name() { return "Vector2"; }
+    enum: Int { GlyphCacheArraySize = 1 };
+    enum: bool { HasArrayGlyphCache = false };
+};
+template<> struct TextureCoordinateTraits<Vector3> {
+    static const char* name() { return "Vector3"; }
+    enum: Int { GlyphCacheArraySize = 5 };
+    enum: bool { HasArrayGlyphCache = true };
+};
+
+template<class Index, class TextureCoordinates> void RendererTest::allocate() {
+    auto&& data = AllocateData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName({Math::TypeTraits<Index>::name(), TextureCoordinateTraits<TextureCoordinates>::name()});
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    /* Set padding to zero for easier dummy glyph addition below */
+    } glyphCache{PixelFormat::R8Unorm, {16, 16, TextureCoordinateTraits<TextureCoordinates>::GlyphCacheArraySize}, {}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Properties doOpenFile(Containers::StringView, Float size) override {
+            _opened = true;
+            /* The size is used to scale advances, ascent & descent is used to
+               align the block. Line height is used for multi-line text which
+               we don't test here, glyph count is overriden in addFont()
+               below. */
+            return {size, 2.5f, -1.0f, 10000.0f, 0};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+    font.openFile("", 1.0f);
+    UnsignedInt fontId = glyphCache.addFont(23*2, &font);
+    /* Add just the first few glyphs, in shuffled order to not have their IDs
+       match the clusters. Just the simplest possible sizes to verify that the
+       data get correctly populated and not overwritten on reallocation,
+       detailed test for vertex data, proper per-run scaling etc. is in
+       indicesVertices(). */
+    glyphCache.addGlyph(fontId, 4, {},
+        TextureCoordinateTraits<TextureCoordinates>::GlyphCacheArraySize/2,
+        Range2Di::fromSize({8, 12}, {2, 1}));
+    glyphCache.addGlyph(fontId, 0, {},
+        TextureCoordinateTraits<TextureCoordinates>::GlyphCacheArraySize - 1,
+        Range2Di::fromSize({12, 8}, {1, 2}));
+    glyphCache.addGlyph(fontId, 2, {},
+        0,
+        Range2Di::fromSize({12, 12}, {2, 2}));
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return text.size();
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            for(UnsignedInt i = 0; i != ids.size(); ++i)
+                ids[i] = i*2;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            for(UnsignedInt i = 0; i != offsets.size(); ++i) {
+                advances[i] = {1.5f, 0.0f};
+                offsets[i] = {0.0f, i % 2 ? 0.0f : 0.5f};
+            }
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>& clusters) const override {
+            for(UnsignedInt i = 0; i != clusters.size(); ++i)
+                clusters[i] = 10 + i;
+        }
+    } shaper{font};
+
+    Renderer renderer{glyphCache, data.flags};
+    renderer.setIndexType(IndexTraits<Index>::type());
+    CORRADE_COMPARE(renderer.indexType(), IndexTraits<Index>::type());
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+        CORRADE_COMPARE(renderer.glyphPositions().size(), 0);
+        CORRADE_COMPARE(renderer.glyphPositions().data(), nullptr);
+        CORRADE_COMPARE(renderer.glyphClusters().size(), 0);
+        CORRADE_COMPARE(renderer.glyphClusters().data(), nullptr);
+    }
+    CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+    CORRADE_COMPARE(renderer.vertexPositions().data(), nullptr);
+    if(!TextureCoordinateTraits<TextureCoordinates>::HasArrayGlyphCache) {
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().data(), nullptr);
+    } else {
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().data(), nullptr);
+    }
+
+    /* Reserving with 0 should be a no-op */
+    renderer.reserve(0, 0);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+        CORRADE_COMPARE(renderer.glyphPositions().size(), 0);
+        CORRADE_COMPARE(renderer.glyphPositions().data(), nullptr);
+        CORRADE_COMPARE(renderer.glyphClusters().size(), 0);
+        CORRADE_COMPARE(renderer.glyphClusters().data(), nullptr);
+    }
+    CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+    CORRADE_COMPARE(renderer.vertexPositions().data(), nullptr);
+    if(!TextureCoordinateTraits<TextureCoordinates>::HasArrayGlyphCache) {
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().data(), nullptr);
+    } else {
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().data(), nullptr);
+    }
+
+    /* The views should be non-null now even if no glyphs are rendered */
+    renderer.reserve(data.reserveGlyphs, data.reserveRuns);
+    CORRADE_COMPARE(renderer.indexType(), IndexTraits<Index>::type());
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), data.reserveGlyphs);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.reserveGlyphs);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.reserveGlyphs);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), data.reserveRuns);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+        CORRADE_COMPARE(renderer.glyphPositions().size(), 0);
+        CORRADE_VERIFY(renderer.glyphPositions().data());
+        CORRADE_COMPARE(renderer.glyphClusters().size(), 0);
+        CORRADE_VERIFY(renderer.glyphClusters().data());
+    }
+    CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+    CORRADE_VERIFY(renderer.vertexPositions().data());
+    if(!TextureCoordinateTraits<TextureCoordinates>::HasArrayGlyphCache) {
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+        CORRADE_VERIFY(renderer.vertexTextureCoordinates().data());
+    } else {
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+        CORRADE_VERIFY(renderer.vertexTextureArrayCoordinates().data());
+    }
+
+    /* Rendering shouldn't reallocate anything */
+    if(data.render) {
+        renderer.add(shaper, 1.0f, "abc");
+        CORRADE_COMPARE(renderer.indexType(), IndexTraits<Index>::type());
+        CORRADE_COMPARE(renderer.glyphCapacity(), data.reserveGlyphs);
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.reserveGlyphs);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.reserveGlyphs);
+        CORRADE_COMPARE(renderer.runCapacity(), data.reserveRuns);
+        if(data.renderAddOnly) {
+            CORRADE_COMPARE(renderer.glyphCount(), 0);
+            CORRADE_COMPARE(renderer.runCount(), 0);
+            CORRADE_VERIFY(renderer.isRendering());
+            if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+                CORRADE_COMPARE(renderer.glyphPositions().size(), 0);
+                CORRADE_COMPARE(renderer.glyphClusters().size(), 0);
+            }
+            CORRADE_COMPARE(renderer.runScales().size(), 0);
+            CORRADE_COMPARE(renderer.runEnds().size(), 0);
+            CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+            if(!TextureCoordinateTraits<TextureCoordinates>::HasArrayGlyphCache)
+                CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+            else
+                CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+        } else {
+            renderer.render();
+            CORRADE_COMPARE(renderer.glyphCount(), 3);
+            CORRADE_COMPARE(renderer.runCount(), 1);
+            CORRADE_VERIFY(!renderer.isRendering());
+            /* 3 letters, which is 4.5 units with advance being 1.5, so
+               starting at -2.25 when centered, vertical center is at 0.25. */
+            if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+                CORRADE_COMPARE_AS(renderer.glyphPositions(), Containers::arrayView<Vector2>({
+                    {-2.25f, -0.25f},
+                    {-0.75f, -0.75f},
+                    { 0.75f, -0.25f}
+                }), TestSuite::Compare::Container);
+                CORRADE_COMPARE_AS(renderer.glyphClusters(), Containers::arrayView<UnsignedInt>({
+                    10, 11, 12
+                }), TestSuite::Compare::Container);
+            }
+            CORRADE_COMPARE_AS(renderer.runScales(), Containers::arrayView({
+                1.0f
+            }), TestSuite::Compare::Container);
+            CORRADE_COMPARE_AS(renderer.runEnds(), Containers::arrayView({
+                3u
+            }), TestSuite::Compare::Container);
+            CORRADE_COMPARE_AS(renderer.indices<Index>(), Containers::arrayView<Index>({
+                0, 1, 2, 2, 1, 3,
+                4, 5, 6, 6, 5, 7,
+                8, 9, 10, 10, 9, 11
+            }), TestSuite::Compare::Container);
+            /* 2---3
+               |   |
+               0---1 ; vertex 0 is matching corresponding glyph position */
+            CORRADE_COMPARE_AS(renderer.vertexPositions(), Containers::arrayView<Vector2>({
+                {-2.25f, -0.25f}, /* a, 1x2 */
+                {-1.25f, -0.25f},
+                {-2.25f,  1.75f},
+                {-1.25f,  1.75f},
+
+                {-0.75f, -0.75f}, /* b, 2x2 */
+                { 1.25f, -0.75f},
+                {-0.75f,  1.25f},
+                { 1.25f,  1.25f},
+
+                { 0.75f, -0.25f}, /* c, 2x1 */
+                { 2.75f, -0.25f},
+                { 0.75f,  0.75f},
+                { 2.75f,  0.75f},
+            }), TestSuite::Compare::Container);
+            if(!TextureCoordinateTraits<TextureCoordinates>::HasArrayGlyphCache)
+                CORRADE_COMPARE_AS(renderer.vertexTextureCoordinates(), Containers::arrayView<Vector2>({
+                    {0.75f,   0.5f}, /* a, offset (3/4, 2/4) */
+                    {0.8125f, 0.5f},
+                    {0.75f,   0.625f},
+                    {0.8125f, 0.625f},
+
+                    {0.75f,   0.75f}, /* b, offset (3/4, 3/4) */
+                    {0.875f,  0.75f},
+                    {0.75f,   0.875f},
+                    {0.875f,  0.875f},
+
+                    {0.5f,    0.75f}, /* c, offset (2/4, 3/4) */
+                    {0.625f,  0.75f},
+                    {0.5f,    0.8125f},
+                    {0.625f,  0.8125f},
+                }), TestSuite::Compare::Container);
+            else {
+                Float last = TextureCoordinateTraits<TextureCoordinates>::GlyphCacheArraySize - 1;
+                Float mid = TextureCoordinateTraits<TextureCoordinates>::GlyphCacheArraySize/2;
+                CORRADE_COMPARE_AS(renderer.vertexTextureArrayCoordinates(), Containers::arrayView<Vector3>({
+                    {0.75f,   0.5f,    last}, /* a */
+                    {0.8125f, 0.5f,    last},
+                    {0.75f,   0.625f,  last},
+                    {0.8125f, 0.625f,  last},
+
+                    {0.75f,   0.75f,   0.0f}, /* b */
+                    {0.875f,  0.75f,   0.0f},
+                    {0.75f,   0.875f,  0.0f},
+                    {0.875f,  0.875f,  0.0f},
+
+                    {0.5f,    0.75f,   mid}, /* c */
+                    {0.625f,  0.75f,   mid},
+                    {0.5f,    0.8125f, mid},
+                    {0.625f,  0.8125f, mid},
+                }), TestSuite::Compare::Container);
+            }
+        }
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 1);
+    }
+
+    /* Reserving / rendering again should copy the existing data if not
+       reserved enough */
+    const void* currentPositions =
+        data.flags >= RendererFlag::GlyphPositionsClusters ?
+            renderer.glyphPositions().data() : nullptr;
+    const void* currentClusters =
+        data.flags >= RendererFlag::GlyphPositionsClusters ?
+            renderer.glyphClusters().data() : nullptr;
+    const void* currentRunScales = renderer.runScales().data();
+    const void* currentRunEnds = renderer.runEnds().data();
+    const void* currentVertexPositions = renderer.vertexPositions().data();
+    const void* currentVertexTextureCoordinates =
+        TextureCoordinateTraits<TextureCoordinates>::HasArrayGlyphCache ?
+            renderer.vertexTextureArrayCoordinates().data() :
+            renderer.vertexTextureCoordinates().data();
+    /* Reserving while a render is in progress shouldn't reset any internal
+       state */
+    if(data.secondReserveGlyphs || data.secondReserveRuns) {
+        renderer.reserve(data.secondReserveGlyphs, data.secondReserveRuns);
+        CORRADE_COMPARE(renderer.indexType(), IndexTraits<Index>::type());
+        CORRADE_COMPARE(renderer.glyphCapacity(), data.expectedGlyphCapacity);
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.expectedGlyphCapacity);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.expectedGlyphCapacity);
+        CORRADE_COMPARE(renderer.runCapacity(), data.expectedRunCapacity);
+        CORRADE_COMPARE(renderer.isRendering(), data.renderAddOnly);
+    }
+    if(data.render) {
+        /* Make two more runs */
+        renderer
+            .add(shaper, 4.0f/3.0f, "defghijk")
+            .render(shaper, 4.0f/3.0f, "lmnopqrstuvwxyz");
+        CORRADE_COMPARE(renderer.glyphCount(), 26);
+        CORRADE_COMPARE(renderer.runCount(), 3);
+        CORRADE_VERIFY(!renderer.isRendering());
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 26);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 3);
+    }
+    CORRADE_COMPARE(renderer.indexType(), IndexTraits<Index>::type());
+    CORRADE_COMPARE(renderer.glyphCapacity(), 26);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 26);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 26);
+    CORRADE_COMPARE(renderer.runCapacity(), 3);
+
+    /* If it shouldn't reallocate, the views should stay the same */
+    if(data.expectNoGlyphReallocation) {
+        if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+            CORRADE_COMPARE(renderer.glyphPositions().data(), currentPositions);
+            CORRADE_COMPARE(renderer.glyphClusters().data(), currentClusters);
+        }
+        CORRADE_COMPARE(renderer.vertexPositions().data(), currentVertexPositions);
+        if(!TextureCoordinateTraits<TextureCoordinates>::HasArrayGlyphCache)
+            CORRADE_COMPARE(renderer.vertexTextureCoordinates().data(), currentVertexTextureCoordinates);
+        else
+            CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().data(), currentVertexTextureCoordinates);
+    }
+    if(data.expectNoRunReallocation) {
+        CORRADE_COMPARE(renderer.runScales().data(), currentRunScales);
+        CORRADE_COMPARE(renderer.runEnds().data(), currentRunEnds);
+    }
+
+    /* Verify that both the original data and (prefix of) the new is there. If
+       only reserving, we have no way to know. */
+    if(data.render) {
+        CORRADE_COMPARE_AS(renderer.indices<Index>().prefix(5*6), Containers::arrayView<Index>({
+            0, 1, 2, 2, 1, 3,
+            4, 5, 6, 6, 5, 7,
+            8, 9, 10, 10, 9, 11,
+            12, 13, 14, 14, 13, 15, /* Second part starts here */
+            16, 17, 18, 18, 17, 19
+        }), TestSuite::Compare::Container);
+        /* If the first part wasn't finalized, it's 26 letters in total, which
+           is 50.5 units with advance being 1.5 for the first 3 and 2.0 for the
+           rest, so starting at -25.25 when centered, vertical center is
+           -0.16667. */
+        if(data.renderAddOnly) {
+            if(data.flags >= RendererFlag::GlyphPositionsClusters)
+                CORRADE_COMPARE_AS(renderer.glyphPositions().prefix(5), Containers::arrayView<Vector2>({
+                    {-25.25f, -0.5f},
+                    {-23.75f, -1.0f},
+                    {-22.25f, -0.5f},
+                    {-20.75f, -0.3333333f}, /* Second part starts here */
+                    {-18.75f, -1.0f},
+                }), TestSuite::Compare::Container);
+            CORRADE_COMPARE_AS(renderer.vertexPositions().prefix(5*4), Containers::arrayView<Vector2>({
+                {-25.25f, -0.5f},
+                {-24.25f, -0.5f},
+                {-25.25f,  1.5f},
+                {-24.25f,  1.5f},
+
+                {-23.75f, -1.0f},
+                {-21.75f, -1.0f},
+                {-23.75f,  1.0f},
+                {-21.75f,  1.0f},
+
+                {-22.25f, -0.5f},
+                {-20.25f, -0.5f},
+                {-22.25f,  0.5f},
+                {-20.25f,  0.5f},
+
+                {-20.75f,      -0.3333333f}, /* d, 1x2 times 1.333 */
+                {-19.4166667f, -0.3333333f},
+                {-20.75f,       2.3333333f},
+                {-19.4166667f,  2.3333333f},
+
+                {-18.75f,      -1.0f},       /* e, 2x2 times 1.333 */
+                {-16.0833333f, -1.0f},
+                {-18.75f,       1.6666667f},
+                {-16.0833333f,  1.6666667f}
+            }), TestSuite::Compare::Container);
+        /* Otherwise the first part is the same as already finalized above, and
+           the second part is 23 letters with advance 2.0, so starting at -23
+           when centered */
+        } else {
+            if(data.flags >= RendererFlag::GlyphPositionsClusters)
+                CORRADE_COMPARE_AS(renderer.glyphPositions().prefix(5), Containers::arrayView<Vector2>({
+                    {-2.25f, -0.25f},
+                    {-0.75f, -0.75f},
+                    { 0.75f, -0.25f},
+                    {-23.0f, -0.3333333f}, /* Second part starts here */
+                    {-21.0f, -1.0f},
+                }), TestSuite::Compare::Container);
+            CORRADE_COMPARE_AS(renderer.vertexPositions().prefix(5*4), Containers::arrayView<Vector2>({
+                {-2.25f, -0.25f},
+                {-1.25f, -0.25f},
+                {-2.25f,  1.75f},
+                {-1.25f,  1.75f},
+
+                {-0.75f, -0.75f},
+                { 1.25f, -0.75f},
+                {-0.75f,  1.25f},
+                { 1.25f,  1.25f},
+
+                { 0.75f, -0.25f},
+                { 2.75f, -0.25f},
+                { 0.75f,  0.75f},
+                { 2.75f,  0.75f},
+
+                {-23.0f,       -0.3333333f}, /* d, 1x2 times 1.333 */
+                {-21.6666667f, -0.3333333f},
+                {-23.0f,        2.3333333f},
+                {-21.6666667f,  2.3333333f},
+
+                {-21.0f,       -1.0f},       /* e, 2x2 times 1.333 */
+                {-18.3333333f, -1.0f},
+                {-21.0f,        1.6666667f},
+                {-18.3333333f,  1.6666667f}
+            }), TestSuite::Compare::Container);
+        }
+        if(data.flags >= RendererFlag::GlyphPositionsClusters)
+            CORRADE_COMPARE_AS(renderer.glyphClusters().prefix(5), Containers::arrayView<UnsignedInt>({
+                10, 11, 12, 10, 11
+            }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(renderer.runScales(), Containers::arrayView({
+            1.0f,
+            4.0f/3.0f,
+            4.0f/3.0f
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(renderer.runEnds(), Containers::arrayView({
+            3u,
+            11u,
+            26u
+        }), TestSuite::Compare::Container);
+        if(!TextureCoordinateTraits<TextureCoordinates>::HasArrayGlyphCache)
+            CORRADE_COMPARE_AS(renderer.vertexTextureCoordinates().prefix(5*4), Containers::arrayView<Vector2>({
+                {0.75f,   0.5f},
+                {0.8125f, 0.5f},
+                {0.75f,   0.625f},
+                {0.8125f, 0.625f},
+
+                {0.75f,   0.75f},
+                {0.875f,  0.75f},
+                {0.75f,   0.875f},
+                {0.875f,  0.875f},
+
+                {0.5f,    0.75f},
+                {0.625f,  0.75f},
+                {0.5f,    0.8125f},
+                {0.625f,  0.8125f},
+
+                {0.75f,   0.5f}, /* d, offset (3/4, 2/4) */
+                {0.8125f, 0.5f},
+                {0.75f,   0.625f},
+                {0.8125f, 0.625f},
+
+                {0.75f,   0.75f}, /* e, offset (3/4, 3/4) */
+                {0.875f,  0.75f},
+                {0.75f,   0.875f},
+                {0.875f,  0.875f},
+            }), TestSuite::Compare::Container);
+        else {
+            Float last = TextureCoordinateTraits<TextureCoordinates>::GlyphCacheArraySize - 1;
+            Float mid = TextureCoordinateTraits<TextureCoordinates>::GlyphCacheArraySize/2;
+            CORRADE_COMPARE_AS(renderer.vertexTextureArrayCoordinates().prefix(5*4), Containers::arrayView<Vector3>({
+                {0.75f,   0.5f,    last},
+                {0.8125f, 0.5f,    last},
+                {0.75f,   0.625f,  last},
+                {0.8125f, 0.625f,  last},
+
+                {0.75f,   0.75f,   0.0f},
+                {0.875f,  0.75f,   0.0f},
+                {0.75f,   0.875f,  0.0f},
+                {0.875f,  0.875f,  0.0f},
+
+                {0.5f,    0.75f,   mid},
+                {0.625f,  0.75f,   mid},
+                {0.5f,    0.8125f, mid},
+                {0.625f,  0.8125f, mid},
+
+                {0.75f,   0.5f,    last},
+                {0.8125f, 0.5f,    last},
+                {0.75f,   0.625f,  last},
+                {0.8125f, 0.625f,  last},
+
+                {0.75f,   0.75f,   0.0f},
+                {0.875f,  0.75f,   0.0f},
+                {0.75f,   0.875f,  0.0f},
+                {0.875f,  0.875f,  0.0f},
+            }), TestSuite::Compare::Container);
+        }
+    }
+}
+
+void RendererTest::allocateDifferentIndexType() {
+    auto&& data = AllocateDifferentIndexTypeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* See also allocateDifferentIndexType() for consequences of reserve() or
+       setIndexType() that don't depend on the allocator  */
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    Renderer renderer{glyphCache};
+
+    /* Initial index type and capacity from which the actual used type is
+       determined */
+    if(data.indexTypeFirst)
+        renderer.setIndexType(*data.indexTypeFirst);
+    renderer.reserve(data.reserveFirst, 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), data.reserveFirst);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.reserveFirst);
+    CORRADE_COMPARE(renderer.indexType(), data.expectedIndexTypeFirst);
+
+    /* Second reserve, index type change or clear which may change the type */
+    if(data.reserveSecond)
+        renderer.reserve(data.reserveSecond, 0);
+    else if(data.indexTypeSecond)
+        renderer.setIndexType(*data.indexTypeSecond);
+    else if(data.clear)
+        renderer.clear();
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+    CORRADE_COMPARE(renderer.indexType(), data.expectedIndexTypeSecond);
+    CORRADE_COMPARE(renderer.glyphCapacity(), data.expectedCapacitySecond);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.expectedIndexCapacitySecond);
+
+    /* Verify the index contents get updated if the operation changes the type.
+       Since it's all just reserve(), the indices() give back an empty array so
+       we have to fake the view. */
+    if(renderer.indexType() == MeshIndexType::UnsignedByte)
+        CORRADE_COMPARE_AS(Containers::arrayView(renderer.indices<UnsignedByte>().data(), 5*6), Containers::arrayView<UnsignedByte>({
+            0, 1, 2, 2, 1, 3,
+            4, 5, 6, 6, 5, 7,
+            8, 9, 10, 10, 9, 11,
+            12, 13, 14, 14, 13, 15,
+            16, 17, 18, 18, 17, 19
+        }), TestSuite::Compare::Container);
+    else if(renderer.indexType() == MeshIndexType::UnsignedShort)
+        CORRADE_COMPARE_AS(Containers::arrayView(renderer.indices<UnsignedShort>().data(), 5*6), Containers::arrayView<UnsignedShort>({
+            0, 1, 2, 2, 1, 3,
+            4, 5, 6, 6, 5, 7,
+            8, 9, 10, 10, 9, 11,
+            12, 13, 14, 14, 13, 15,
+            16, 17, 18, 18, 17, 19
+        }), TestSuite::Compare::Container);
+    else if(renderer.indexType() == MeshIndexType::UnsignedInt)
+        CORRADE_COMPARE_AS(Containers::arrayView(renderer.indices<UnsignedInt>().data(), 5*6), Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 2, 1, 3,
+            4, 5, 6, 6, 5, 7,
+            8, 9, 10, 10, 9, 11,
+            12, 13, 14, 14, 13, 15,
+            16, 17, 18, 18, 17, 19
+        }), TestSuite::Compare::Container);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+}
+
+void RendererTest::allocateIndexAllocator() {
+    auto&& data = AllocateIndexAllocatorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+    glyphCache.addFont(1, &font);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return text.size();
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            /* Zero the IDs to not hit an OOB assert in the glyph cache */
+            for(UnsignedInt& id: ids)
+                id = 0;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+            /* The data don't matter in this case */
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            /* The data don't matter in this case */
+        }
+    } shaper{font};
+
+    struct Allocation {
+        const void* expectedData;
+
+        UnsignedInt expectedViewSize;
+        UnsignedInt expectedSize;
+
+        Containers::ArrayView<char> indices;
+        int called = 0;
+    } allocation;
+
+    Renderer renderer{glyphCache, nullptr, nullptr, nullptr, nullptr, [](void* state, UnsignedInt size, Containers::ArrayView<char>& indices){
+        Allocation& allocation = *static_cast<Allocation*>(state);
+        CORRADE_COMPARE(size, allocation.expectedSize);
+        CORRADE_COMPARE(indices.data(), allocation.expectedData);
+        CORRADE_COMPARE(indices.size(), allocation.expectedViewSize);
+
+        indices = allocation.indices;
+        ++allocation.called;
+    }, &allocation, nullptr, nullptr};
+
+    /* Capture correct function name */
+    CORRADE_VERIFY(true);
+
+    /* Setting index type with no capacity yet should not call the allocator */
+    if(data.indexType)  {
+        renderer.setIndexType(*data.indexType);
+        CORRADE_COMPARE(renderer.indexType(), data.indexType);
+        CORRADE_COMPARE(allocation.called, 0);
+    }
+
+    /* Initially it should pass all null views */
+    allocation.expectedViewSize = 0;
+    allocation.expectedData = nullptr;
+
+    /* Reserving with 0 should be a no-op */
+    renderer.reserve(0, 0);
+    CORRADE_COMPARE(allocation.called, 0);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    CORRADE_COMPARE(renderer.indices().size()[0], 0);
+    CORRADE_COMPARE(renderer.indices().data(), nullptr);
+
+    /* Rendering an empty text should be a no-op as well */
+    if(data.render) {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.render(shaper, 0.0f, "");
+        CORRADE_COMPARE(allocation.called, 0);
+        CORRADE_COMPARE(renderer.glyphCount(), 0);
+        CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+        CORRADE_COMPARE(renderer.runCount(), 0);
+        CORRADE_COMPARE(renderer.runCapacity(), 0);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+        CORRADE_COMPARE(renderer.indices().size()[0], 0);
+        CORRADE_COMPARE(renderer.indices().data(), nullptr);
+    }
+
+    /* Reserve an initial size to have somewhere to render to, pass each view
+       the same size. Using a heap allocation to not go over limited stack
+       sizes on Emscripten etc */
+    Containers::Array<char> indices{NoInit, 20000*6*4};
+    allocation.expectedViewSize = 0;
+    allocation.expectedSize = data.reserve*6*meshIndexTypeSize(data.expectedIndexType);
+    allocation.indices = indices.prefix(data.reserve*6*meshIndexTypeSize(data.expectedIndexType));
+    {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.reserve(data.reserve, 0);
+    }
+    CORRADE_COMPARE(allocation.called, 1);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), data.reserve);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.reserve);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.reserve);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+
+    /* Rendering with enough capacity shouldn't reallocate anything */
+    if(data.render) {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.add(shaper, 0.0f, "abc");
+        if(data.renderAddOnly) {
+            CORRADE_VERIFY(renderer.isRendering());
+            CORRADE_COMPARE(renderer.glyphCount(), 0);
+            CORRADE_COMPARE(renderer.runCount(), 0);
+            CORRADE_COMPARE(renderer.indices().size(), (Containers::Size2D{0, meshIndexTypeSize(data.expectedIndexType)}));
+        } else {
+            renderer.render();
+            CORRADE_VERIFY(!renderer.isRendering());
+            CORRADE_COMPARE(renderer.glyphCount(), 3);
+            CORRADE_COMPARE(renderer.runCount(), 1);
+            CORRADE_COMPARE(renderer.indices().size(), (Containers::Size2D{3*6, meshIndexTypeSize(data.expectedIndexType)}));
+        }
+        CORRADE_COMPARE(allocation.called, 1);
+        CORRADE_COMPARE(renderer.glyphCapacity(), data.reserve);
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.reserve);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.reserve);
+        CORRADE_COMPARE(renderer.runCapacity(), 1);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 1);
+        /* No need to verify the actual contents, just that the view didn't
+           change since last time */
+        CORRADE_COMPARE(renderer.indices().data(), indices);
+    }
+
+    /* Reserve / render / set index type second time. Pass with a size that's
+       not a multiple of 6 times type size, it should round that down. */
+    allocation.expectedData = indices;
+    /* Using a heap allocation to not go over limited stack sizes on
+       Emscripten etc */
+    Containers::Array<char> indices2{NoInit, 20000*6*4};
+    allocation.indices = indices2.prefix(data.indicesSize);
+    /* Since the index buffer is populated at allocation time already, unless
+       the type changes, next time the size is excluding the previous
+       allocation regardless of whether render() was called */
+    if(data.expectedSecondIndexType == data.expectedIndexType) {
+        allocation.expectedViewSize = 3*6*meshIndexTypeSize(data.expectedSecondIndexType);
+        allocation.expectedSize = (data.secondReserve - 3)*6*meshIndexTypeSize(data.expectedSecondIndexType);
+    } else {
+        allocation.expectedViewSize = 0;
+        allocation.expectedSize = data.expectedCapacity*6*meshIndexTypeSize(data.expectedSecondIndexType);
+    }
+    if(data.render) {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.render(shaper, 0.0f, "defghijklmnopqrstuvwxyz");
+        CORRADE_COMPARE(renderer.glyphCount(), 26);
+        CORRADE_COMPARE(renderer.runCount(), 2);
+        CORRADE_COMPARE(renderer.runCapacity(), 2);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 26);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 2);
+    } else if(data.secondReserve) {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.reserve(data.secondReserve, 0);
+        CORRADE_COMPARE(renderer.glyphCount(), 0);
+        CORRADE_COMPARE(renderer.runCount(), 0);
+        CORRADE_COMPARE(renderer.runCapacity(), 0);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    } else if(data.secondIndexType) {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.setIndexType(*data.secondIndexType);
+        CORRADE_COMPARE(renderer.glyphCount(), 0);
+        CORRADE_COMPARE(renderer.runCount(), 0);
+        CORRADE_COMPARE(renderer.runCapacity(), 0);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    }
+    /* The other two are using builtin allocators, which give back exactly what
+       requested */
+    CORRADE_COMPARE(renderer.glyphCapacity(), data.expectedCapacity);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.expectedIndexCapacity);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.expectedCapacity);
+
+    /* If it shouldn't reallocate, the views should stay the same as before,
+       otherwise they should be what was passed above. The allocator is assumed
+       to perform the data copy, the one in this test deliberately doesn't. */
+    if(data.expectNoReallocation) {
+        CORRADE_COMPARE(allocation.called, 1);
+        CORRADE_COMPARE(renderer.indices().data(), indices);
+    } else {
+        CORRADE_COMPARE(allocation.called, 2);
+        CORRADE_COMPARE(renderer.indices().data(), indices2);
+    }
+}
+
+void RendererTest::allocateIndexAllocatorInvalid() {
+    auto&& data = AllocateIndexAllocatorInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+    glyphCache.addFont(1, &font);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return text.size();
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            /* Zero the IDs to not hit an OOB assert in the glyph cache */
+            for(UnsignedInt& id: ids)
+                id = 0;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+            /* The data don't matter in this case */
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            /* The data don't matter in this case */
+        }
+    } shaper{font};
+
+    struct Allocation {
+        char indices[20*6*4];
+
+        UnsignedInt size;
+    } allocation;
+    /* For the initial render(). If index type is meant to be set later, count
+       just the default UnsignedByte indices. */
+    allocation.size = 10*6*(data.setIndexType ? 1 : meshIndexTypeSize(data.indexType));
+
+    Renderer renderer{glyphCache, nullptr, nullptr, nullptr, nullptr, [](void* state, UnsignedInt, Containers::ArrayView<char>& indices){
+        Allocation& allocation = *static_cast<Allocation*>(state);
+
+        indices = Containers::arrayView(allocation.indices).prefix(allocation.size);
+    }, &allocation, nullptr, nullptr};
+
+    /* Set index type initially if not meant to be updated later */
+    if(!data.setIndexType)
+        renderer.setIndexType(data.indexType);
+
+    /* Render something to have a non-zero glyph count */
+    renderer.render(shaper, 0.0f, "abcdefghij");
+    CORRADE_COMPARE(renderer.glyphCount(), 10);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 10);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 10);
+
+    /* Next reserve / setIndexType / render should be with these */
+    allocation.size = data.size;
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        if(data.render)
+            renderer.render(shaper, 0.0f, "klmnopq");
+        else if(data.setIndexType)
+            renderer.setIndexType(data.indexType);
+        else
+            renderer.reserve(17, 0);
+        CORRADE_COMPARE_AS(out, data.expected,
+            TestSuite::Compare::String);
+    }
+
+    /* Just to verify it's okay when the sizes are exactly right. Note that,
+       compared to RendererCore::render(), the above passed partially with the
+       extra glyphs, so we now need 19 instead of 17. */
+    allocation.size = 19*6*meshIndexTypeSize(data.indexType);
+    if(data.render) {
+        renderer.render(shaper, 0.0f, "rs");
+        CORRADE_COMPARE(renderer.glyphCount(), 19);
+    } else {
+        renderer.reserve(19, 0);
+        CORRADE_COMPARE(renderer.glyphCount(), 10);
+    }
+    CORRADE_COMPARE(renderer.glyphCapacity(), 19);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 19);
+}
+
+void RendererTest::allocateIndexAllocatorMaxIndexCountForType() {
+    auto&& data = AllocateIndexAllocatorMaxIndexCountForTypeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    Containers::Array<char> indices{NoInit, 100*1024*2};
+    Renderer renderer{glyphCache, nullptr, nullptr, nullptr, nullptr, [](void* state, UnsignedInt, Containers::ArrayView<char>& indices){
+        indices = *static_cast<Containers::Array<char>*>(state);
+    }, &indices, nullptr, nullptr};
+    renderer.setIndexType(data.indexType);
+
+    renderer.reserve(1, 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 1);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.expected);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 1);
+}
+
+void RendererTest::allocateVertexAllocator() {
+    auto&& data = AllocateVertexAllocatorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16, data.glyphCacheArraySize}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+    glyphCache.addFont(1, &font);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return text.size();
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            /* Zero the IDs to not hit an OOB assert in the glyph cache */
+            for(UnsignedInt& id: ids)
+                id = 0;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+            /* The data don't matter in this case */
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            /* The data don't matter in this case */
+        }
+    } shaper{font};
+
+    struct Allocation {
+        const Vector2* expectedVertexPositionData;
+        const void* expectedVertexTextureCoordinateData;
+
+        UnsignedInt expectedViewSize;
+        UnsignedInt expectedVertexCount;
+
+        Containers::StridedArrayView1D<Vector2> vertexPositions;
+        Containers::StridedArrayView1D<Vector2> vertexTextureCoordinates;
+        int called = 0;
+    } allocation;
+
+    Renderer renderer{glyphCache, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, [](void* state, UnsignedInt vertexCount, Containers::StridedArrayView1D<Vector2>& vertexPositions, Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates){
+        Allocation& allocation = *static_cast<Allocation*>(state);
+        CORRADE_COMPARE(vertexCount, allocation.expectedVertexCount);
+        CORRADE_COMPARE(vertexPositions.data(), allocation.expectedVertexPositionData);
+        CORRADE_COMPARE(vertexPositions.size(), allocation.expectedViewSize);
+        CORRADE_COMPARE(vertexTextureCoordinates.data(), allocation.expectedVertexTextureCoordinateData);
+        CORRADE_COMPARE(vertexTextureCoordinates.size(), allocation.expectedViewSize);
+
+        vertexPositions = allocation.vertexPositions;
+        vertexTextureCoordinates = allocation.vertexTextureCoordinates;
+        ++allocation.called;
+    }, &allocation};
+
+    /* Capture correct function name */
+    CORRADE_VERIFY(true);
+
+    /* Initially it should pass all null views */
+    allocation.expectedViewSize = 0;
+    allocation.expectedVertexPositionData = nullptr;
+    allocation.expectedVertexTextureCoordinateData = nullptr;
+
+    /* Reserving with 0 should be a no-op */
+    renderer.reserve(0, 0);
+    CORRADE_COMPARE(allocation.called, 0);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+    CORRADE_COMPARE(renderer.vertexPositions().data(), nullptr);
+    if(data.glyphCacheArraySize == 1) {
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+        CORRADE_COMPARE(renderer.vertexTextureCoordinates().data(), nullptr);
+    } else {
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+        CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().data(), nullptr);
+    }
+
+    /* Rendering an empty text should be a no-op as well */
+    if(data.render) {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.render(shaper, 0.0f, "");
+        CORRADE_COMPARE(allocation.called, 0);
+        CORRADE_COMPARE(renderer.glyphCount(), 0);
+        CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+        CORRADE_COMPARE(renderer.runCount(), 0);
+        CORRADE_COMPARE(renderer.runCapacity(), 0);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+        CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+        CORRADE_COMPARE(renderer.vertexPositions().data(), nullptr);
+        if(data.glyphCacheArraySize == 1) {
+            CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+            CORRADE_COMPARE(renderer.vertexTextureCoordinates().data(), nullptr);
+        } else {
+            CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+            CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().data(), nullptr);
+        }
+    }
+
+    /* Reserve an initial size to have somewhere to render to, pass each view
+       the same size */
+    Vector2 vertexPositions[32*4];
+    Vector3 vertexTextureCoordinates[32*4];
+    allocation.expectedViewSize = 0;
+    allocation.expectedVertexCount = data.reserve*4;
+    allocation.vertexPositions = Containers::arrayView(vertexPositions)
+        .prefix(data.reserve*4);
+    allocation.vertexTextureCoordinates = Containers::stridedArrayView(vertexTextureCoordinates)
+        .prefix(data.reserve*4)
+        .slice(&Vector3::xy);
+    {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.reserve(data.reserve, 0);
+    }
+    CORRADE_COMPARE(allocation.called, 1);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.glyphCapacity(), data.reserve);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.reserve);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.reserve);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+
+    /* Rendering with enough capacity shouldn't reallocate anything */
+    if(data.render) {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        renderer.add(shaper, 0.0f, "abc");
+        if(data.renderAddOnly) {
+            CORRADE_VERIFY(renderer.isRendering());
+            CORRADE_COMPARE(renderer.glyphCount(), 0);
+            CORRADE_COMPARE(renderer.runCount(), 0);
+            CORRADE_COMPARE(renderer.vertexPositions().size(), 0);
+            if(data.glyphCacheArraySize == 1)
+                CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 0);
+            else
+                CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 0);
+        } else {
+            renderer.render();
+            CORRADE_VERIFY(!renderer.isRendering());
+            CORRADE_COMPARE(renderer.glyphCount(), 3);
+            CORRADE_COMPARE(renderer.runCount(), 1);
+            CORRADE_COMPARE(renderer.vertexPositions().size(), 3*4);
+            if(data.glyphCacheArraySize == 1)
+                CORRADE_COMPARE(renderer.vertexTextureCoordinates().size(), 3*4);
+            else
+                CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().size(), 3*4);
+        }
+        CORRADE_COMPARE(allocation.called, 1);
+        CORRADE_COMPARE(renderer.glyphCapacity(), data.reserve);
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.reserve);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.reserve);
+        CORRADE_COMPARE(renderer.runCapacity(), 1);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 1);
+        /* No need to verify the actual contents, just that the views didn't
+           change since last time */
+        CORRADE_COMPARE(renderer.vertexPositions().data(), vertexPositions);
+        if(data.glyphCacheArraySize == 1)
+            CORRADE_COMPARE(renderer.vertexTextureCoordinates().data(), vertexTextureCoordinates);
+        else
+            CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().data(), vertexTextureCoordinates);
+    }
+
+    /* Reserve / render second time. Pass each with a different size, it should
+       pick the smallest as capacity, and with a size that's not a multiple of
+       4, it should round that down. */
+    allocation.expectedVertexPositionData = vertexPositions;
+    allocation.expectedVertexTextureCoordinateData = vertexTextureCoordinates;
+    Vector2 vertexPositions2[32*4];
+    Vector3 vertexTextureCoordinates2[32*4];
+    allocation.vertexPositions = Containers::arrayView(vertexPositions2)
+        .prefix(data.positionSize);
+    allocation.vertexTextureCoordinates = Containers::stridedArrayView(vertexTextureCoordinates2)
+        .prefix(data.textureCoordinateSize)
+        .slice(&Vector3::xy);
+    if(data.render) {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        /* If only add() was called before, there are no vertex data to
+           preserve from previous allocations */
+        if(data.renderAddOnly) {
+            allocation.expectedViewSize = 0;
+            allocation.expectedVertexCount = data.secondReserve*4;
+        } else {
+            allocation.expectedViewSize = 3*4;
+            allocation.expectedVertexCount = (data.secondReserve - 3)*4;
+        }
+        renderer.render(shaper, 0.0f, "defghijklmnopqrstuvwxyz");
+        CORRADE_COMPARE(renderer.glyphCount(), 26);
+        CORRADE_COMPARE(renderer.runCount(), 2);
+        CORRADE_COMPARE(renderer.runCapacity(), 2);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 26);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 2);
+    } else {
+        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        allocation.expectedViewSize = 0;
+        allocation.expectedVertexCount = data.secondReserve*4;
+        renderer.reserve(data.secondReserve, 0);
+        CORRADE_COMPARE(renderer.glyphCount(), 0);
+        CORRADE_COMPARE(renderer.runCount(), 0);
+        CORRADE_COMPARE(renderer.runCapacity(), 0);
+        CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+        CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    }
+    /* The other two are using builtin allocators, which give back exactly what
+       requested */
+    CORRADE_COMPARE(renderer.glyphCapacity(), 26);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 26);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.expectedCapacity);
+
+    /* If it shouldn't reallocate, the views should stay the same as before,
+       otherwise they should be what was passed above. The allocator is assumed
+       to perform the data copy, the one in this test deliberately doesn't. */
+    if(data.expectNoReallocation) {
+        CORRADE_COMPARE(allocation.called, 1);
+        CORRADE_COMPARE(renderer.vertexPositions().data(), vertexPositions);
+        if(data.glyphCacheArraySize == 1)
+            CORRADE_COMPARE(renderer.vertexTextureCoordinates().data(), vertexTextureCoordinates);
+        else
+            CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().data(), vertexTextureCoordinates);
+    } else {
+        CORRADE_COMPARE(allocation.called, 2);
+        CORRADE_COMPARE(renderer.vertexPositions().data(), vertexPositions2);
+        if(data.glyphCacheArraySize == 1)
+            CORRADE_COMPARE(renderer.vertexTextureCoordinates().data(), vertexTextureCoordinates2);
+        else
+            CORRADE_COMPARE(renderer.vertexTextureArrayCoordinates().data(), vertexTextureCoordinates2);
+    }
+}
+
+void RendererTest::allocateVertexAllocatorInvalid() {
+    auto&& data = AllocateVertexAllocatorInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+    glyphCache.addFont(1, &font);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return text.size();
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            /* Zero the IDs to not hit an OOB assert in the glyph cache */
+            for(UnsignedInt& id: ids)
+                id = 0;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+            /* The data don't matter in this case */
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            /* The data don't matter in this case */
+        }
+    } shaper{font};
+
+    struct Allocation {
+        Vector2 vertexPositions[20*4];
+        Vector2 vertexTextureCoordinates[20*4];
+
+        /* For the initial render() */
+        UnsignedInt vertexPositionSize = 10*4;
+        UnsignedInt vertexTextureCoordinateSize = 10*4;
+    } allocation;
+
+    Renderer renderer{glyphCache, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, [](void* state, UnsignedInt, Containers::StridedArrayView1D<Vector2>& vertexPositions, Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates){
+        Allocation& allocation = *static_cast<Allocation*>(state);
+
+        vertexPositions = Containers::arrayView(allocation.vertexPositions).prefix(allocation.vertexPositionSize);
+        vertexTextureCoordinates = Containers::arrayView(allocation.vertexTextureCoordinates).prefix(allocation.vertexTextureCoordinateSize);
+    }, &allocation};
+
+    /* Render something to have a non-zero glyph count */
+    renderer.render(shaper, 0.0f, "abcdefghij");
+    CORRADE_COMPARE(renderer.glyphCount(), 10);
+    CORRADE_COMPARE(renderer.glyphCapacity(), 10);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 10);
+
+    /* Next reserve / render should be with these */
+    allocation.vertexPositionSize = data.positionSize;
+    allocation.vertexTextureCoordinateSize = data.textureCoordinateSize;
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        if(data.render)
+            renderer.render(shaper, 0.0f, "klmnopq");
+        else
+            renderer.reserve(17, 0);
+        CORRADE_COMPARE_AS(out, data.expected,
+            TestSuite::Compare::String);
+    }
+
+    /* Just to verify it's okay when the sizes are exactly right. Note that,
+       compared to RendererCore::render(), the above passed partially with the
+       extra glyphs, so we now need 19 instead of 17. */
+    allocation.vertexPositionSize = 19*4;
+    allocation.vertexTextureCoordinateSize = 19*4;
+    if(data.render) {
+        renderer.render(shaper, 0.0f, "rs");
+        CORRADE_COMPARE(renderer.glyphCount(), 19);
+    } else {
+        renderer.reserve(19, 0);
+        CORRADE_COMPARE(renderer.glyphCount(), 10);
+    }
+    CORRADE_COMPARE(renderer.glyphCapacity(), 19);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 19);
+}
+
+void RendererTest::allocateVertexAllocatorNotEnoughStrideForArrayGlyphCache() {
+    auto&& data = AllocateVertexAllocatorNotEnoughStrideForArrayGlyphCacheData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16, 5}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+    glyphCache.addFont(1, &font);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return text.size();
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            /* Zero the IDs to not hit an OOB assert in the glyph cache */
+            for(UnsignedInt& id: ids)
+                id = 0;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+            /* The data don't matter in this case */
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            /* The data don't matter in this case */
+        }
+    } shaper{font};
+
+    struct Allocation {
+        Vector2 vertexPositions[11*4]; /* large enough also for the rest */
+        Containers::StridedArrayView1D<Vector2> vertexTextureCoordinates;
+    } allocation;
+
+    Vector2 vertexTextureCoordinates[5*4];
+    if(data.flipped)
+        allocation.vertexTextureCoordinates = Containers::stridedArrayView(vertexTextureCoordinates).flipped<0>();
+    else
+        allocation.vertexTextureCoordinates = vertexTextureCoordinates;
+
+    Renderer renderer{glyphCache, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, [](void* state, UnsignedInt, Containers::StridedArrayView1D<Vector2>& vertexPositions, Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates){
+        Allocation& allocation = *static_cast<Allocation*>(state);
+
+        vertexPositions = allocation.vertexPositions;
+        vertexTextureCoordinates = allocation.vertexTextureCoordinates;
+    }, &allocation};
+
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        if(data.render) {
+            renderer.render(shaper, 0.0f, "abcde");
+        } else {
+            renderer.reserve(5, 0);
+        }
+        CORRADE_COMPARE_AS(out, data.expected,
+            TestSuite::Compare::String);
+    }
+
+    /* Just to verify it's okay when the stride is exactly enough */
+    Vector3 vertexTextureArrayCoordinates[8*4];
+    allocation.vertexTextureCoordinates = Containers::stridedArrayView(vertexTextureArrayCoordinates).slice(&Vector3::xy);
+    if(data.render) {
+        renderer.render(shaper, 0.0f, "fgh");
+    } else {
+        renderer.reserve(8, 0);
+    }
+    CORRADE_COMPARE(renderer.glyphCapacity(), 8);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 8);
+
+    /* And flipped stride as well */
+    Vector3 vertexTextureArrayCoordinates2[11*4];
+    allocation.vertexTextureCoordinates = Containers::stridedArrayView(vertexTextureArrayCoordinates2).slice(&Vector3::xy).flipped<0>();
+    if(data.render) {
+        renderer.render(shaper, 0.0f, "ijk");
+    } else {
+        renderer.reserve(11, 0);
+    }
+    CORRADE_COMPARE(renderer.glyphCapacity(), 11);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 11);
 }
 
 void RendererTest::addSingleLine() {
@@ -4196,6 +6425,273 @@ void RendererTest::multipleBlocks() {
     }), TestSuite::Compare::Container);
 }
 
+template<class T> void RendererTest::indicesVertices() {
+    auto&& data = IndicesVerticesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Verifies various corner cases related to index and vertex data
+       population, except for allocator behavior which is tested in allocate(),
+       allocateIndexAllocator() and allocateVertexAllocator() already */
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    /* Set padding to zero for easier dummy glyph addition below */
+    } glyphCache{PixelFormat::R8Unorm, {16, 16, data.glyphCacheArraySize}, {}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Properties doOpenFile(Containers::StringView, Float size) override {
+            _opened = true;
+            /* The size is used to scale advances, ascent & descent is used to
+               align the block. Line height is used for multi-line text which
+               we don't test here, glyph count is overriden in addFont()
+               below. */
+            return {size, 2.0f*size, -1.0f*size, 10000.0f, 0};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font1, font2;
+    /* The same font open twice with a different size, and the same glyphs
+       being in different places */
+    font1.openFile("", 1.0f);
+    font2.openFile("", 0.5f);
+    UnsignedInt font1Id = glyphCache.addFont(5, &font1);
+    UnsignedInt font2Id = glyphCache.addFont(5, &font2);
+    /* Glyphs, in shuffled order to not have their IDs match the clusters,
+       deliberately with glyph offsets to verify those get correctly used as
+       well */
+    glyphCache.addGlyph(font1Id, 4, {0, 1},     /* c, h */
+        data.glyphCacheArraySize/2,
+        Range2Di::fromSize({8, 12}, {2, 1}));
+    glyphCache.addGlyph(font1Id, 0, {2, 0},     /* a, f */
+        data.glyphCacheArraySize - 1,
+        Range2Di::fromSize({12, 8}, {1, 2}));
+    glyphCache.addGlyph(font1Id, 2, {0, 2},     /* b, g */
+        0,
+        Range2Di::fromSize({12, 12}, {2, 2}));
+    glyphCache.addGlyph(font2Id, 2, {-1, 0},    /* e */
+        data.glyphCacheArraySize*3/4,
+        Range2Di::fromSize({8, 8}, {1, 1}));
+    glyphCache.addGlyph(font2Id, 0, {-1, -1},   /* d */
+        data.glyphCacheArraySize - 1,
+        Range2Di::fromSize({4, 8}, {2, 1}));
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange>) override {
+            _begin = begin;
+            return end - begin;
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            for(UnsignedInt i = 0; i != ids.size(); ++i)
+                ids[i] = i*2;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            for(UnsignedInt i = 0; i != offsets.size(); ++i) {
+                advances[i] = {3.0f*font().size(), 0.0f};
+                /* Every third is moved -4 on X, every odd 0.5 on Y */
+                offsets[i] = {i % 3 ? 0.0f : -4.0f*font().size(),
+                              i % 2 ? 0.5f*font().size() : 0.0f};
+            }
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>& clusters) const override {
+            for(UnsignedInt i = 0; i != clusters.size(); ++i)
+                /* Just to have something non-trivial in the output */
+                clusters[i] = 10*_begin + i;
+        }
+
+        private:
+            UnsignedInt _begin;
+    } shaper1{font1}, shaper2{font2};
+
+    struct Allocation {
+        struct Glyph {
+            Vector2 position;
+            Vector2 advance;
+            UnsignedInt id;
+            UnsignedInt cluster;
+        } glyphs[8];
+    } allocation;
+
+    /* Verify that the vertex allocator doesn't assume the memory was already
+       allocated by a builtin glyph allocation if a custom one is used. There
+       could be + for the lambda to turn it into a function pointer to avoid ?:
+       getting confused, but that doesn't work on MSVC 2015 so instead it's the
+       nullptr being cast. */
+    Renderer renderer{glyphCache,
+        data.customGlyphAllocator ? [](void* state, UnsignedInt, Containers::StridedArrayView1D<Vector2>& glyphPositions, Containers::StridedArrayView1D<UnsignedInt>& glyphIds, Containers::StridedArrayView1D<UnsignedInt>* glyphClusters, Containers::StridedArrayView1D<Vector2>& glyphAdvances){
+            Allocation& allocation = *static_cast<Allocation*>(state);
+
+            glyphPositions = Containers::stridedArrayView(allocation.glyphs).slice(&Allocation::Glyph::position);
+            glyphIds = Containers::stridedArrayView(allocation.glyphs).slice(&Allocation::Glyph::id);
+            if(glyphClusters)
+                *glyphClusters = Containers::stridedArrayView(allocation.glyphs).slice(&Allocation::Glyph::cluster);
+            glyphAdvances = Containers::stridedArrayView(allocation.glyphs).slice(&Allocation::Glyph::advance);
+        } : static_cast<void(*)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&)>(nullptr), &allocation,
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, data.flags};
+
+    /* Attempt to preserve part or all to verify it doesn't cause any strange
+       subsequent data corruption */
+    if(data.reserve)
+        renderer.reserve(data.reserve, 0);
+
+    renderer
+        /* Alignment tested sufficiently elsewhere, opt for simplicity here.
+           Same with newlines and such, no need to further complicate this. */
+        .setAlignment(Alignment::LineLeft)
+        .setIndexType(IndexTraits<T>::type())
+        /* Using different overloads to add pieces with different font and
+           scale combinations */
+        .add(shaper1, 0.5f, "__abc_", 2, 5)         /* scale is 0.5 */
+        .add(shaper2, 2.0f, "de", {})               /* scale is 4.0 */
+        .add(shaper1, 1.0f, "___fgh__", 3, 6, {});  /* scale is 1.0 */
+    CORRADE_COMPARE(renderer.render(), Containers::pair(
+        /* The ascent / descent is (2, -1) and max scaling is 4*0.5 */
+        Range2D{{0.0f, -2.0f}, {25.5f, 4.0f}}, Range1Dui{0, 3}));
+    CORRADE_COMPARE(renderer.glyphCount(), 8);
+
+    /* There should be no surprises for runs, just verifying that these match
+       expectations */
+    CORRADE_COMPARE_AS(renderer.runScales(), Containers::arrayView({
+        0.5f, 4.0f, 1.0f
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(renderer.runEnds(), Containers::arrayView({
+        3u, 5u, 8u
+    }), TestSuite::Compare::Container);
+
+    /* If enabled, these shouldn't get corrupted when vertex data get
+       generated, no matter how the allocation is done */
+    if(data.flags >= RendererFlag::GlyphPositionsClusters) {
+        CORRADE_COMPARE_AS(renderer.glyphPositions(), Containers::arrayView<Vector2>({
+         /*  posi  shaper  shaper         font shape
+             tion  offset  offset         size scale */
+            { 0.0f - 2.0f, 0.0f},   /* a,      *0.5 */
+            { 1.5f,        0.25f},  /* b,      *0.5 */
+            { 3.0f,        0.0f},   /* c,      *0.5 */
+
+            { 4.5f - 8.0f, 0.0f},   /* d, *0.5 *4.0 */
+            {10.5f,        1.0f},   /* e, *0.5 *4.0 */
+
+            {16.5f - 4.0f, 0.0f},   /* f,      *1.0 */
+            {19.5f,        0.5f},   /* g,      *1.0 */
+            {22.5f,        0.0f},   /* h,      *1.0 */
+        }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(renderer.glyphClusters(), Containers::arrayView({
+            20u, 21u, 22u,
+            0u, 1u,
+            30u, 31u, 32u
+        }), TestSuite::Compare::Container);
+    }
+
+    CORRADE_COMPARE_AS(renderer.vertexPositions(), Containers::arrayView<Vector2>({
+     /*  posi  cache  shaper  posi cache  shaper
+         tion  offset offset  tion offset offset */
+        { 0.0f + 1.0f - 2.0f, 0.0f},                /* a, 1x2, +(2, 0), *0.5 */
+        { 0.5f + 1.0f - 2.0f, 0.0f},
+        { 0.0f + 1.0f - 2.0f, 1.0f},
+        { 0.5f + 1.0f - 2.0f, 1.0f},
+
+        { 1.5f,               0.0f + 1.0f + 0.25f}, /* b, 2x2, +(0, 2), *0.5 */
+        { 2.5f,               0.0f + 1.0f + 0.25f},
+        { 1.5f,               1.0f + 1.0f + 0.25f},
+        { 2.5f,               1.0f + 1.0f + 0.25f},
+
+        { 3.0f,               0.0f + 0.5f},         /* c, 2x1, +(0, 1), *0.5 */
+        { 4.0f,               0.0f + 0.5f},
+        { 3.0f,               0.5f + 0.5f},
+        { 4.0f,               0.5f + 0.5f},
+
+        { 4.5f - 4.0f - 8.0f, 0.0f - 4.0f},         /* d, 2x1, -(1, 1), *0.5*4.0 */
+        {12.5f - 4.0f - 8.0f, 0.0f - 4.0f},
+        { 4.5f - 4.0f - 8.0f, 4.0f - 4.0f},
+        {12.5f - 4.0f - 8.0f, 4.0f - 4.0f},
+
+        {10.5f - 4.0f,        0.0f        + 1.0f},  /* e, 1x1, -(1, 0), *0.5*4.0 */
+        {14.5f - 4.0f,        0.0f        + 1.0f},
+        {10.5f - 4.0f,        4.0f        + 1.0f},
+        {14.5f - 4.0f,        4.0f        + 1.0f},
+
+        {16.5f + 2.0f - 4.0f, 0.0f},                /* f, 1x2, +(2, 0), *1.0 */
+        {17.5f + 2.0f - 4.0f, 0.0f},
+        {16.5f + 2.0f - 4.0f, 2.0f},
+        {17.5f + 2.0f - 4.0f, 2.0f},
+
+        {19.5f,               0.0f + 2.0f + 0.5f},  /* g, 2x2, +(0, 2), *1.0 */
+        {21.5f,               0.0f + 2.0f + 0.5f},
+        {19.5f,               2.0f + 2.0f + 0.5f},
+        {21.5f,               2.0f + 2.0f + 0.5f},
+
+        {22.5f,               0.0f + 1.0f},         /* h, 2x1, +(0, 1), *1.0 */
+        {24.5f,               0.0f + 1.0f},
+        {22.5f,               1.0f + 1.0f},
+        {24.5f,               1.0f + 1.0f},
+    }), TestSuite::Compare::Container);
+
+    Vector3 expectedTextureCoordinates[]{
+        {0.75f,   0.5f,    Float(data.glyphCacheArraySize - 1)}, /* a */
+        {0.8125f, 0.5f,    Float(data.glyphCacheArraySize - 1)},
+        {0.75f,   0.625f,  Float(data.glyphCacheArraySize - 1)},
+        {0.8125f, 0.625f,  Float(data.glyphCacheArraySize - 1)},
+
+        {0.75f,   0.75f,   0.0f},                                /* b */
+        {0.875f,  0.75f,   0.0f},
+        {0.75f,   0.875f,  0.0f},
+        {0.875f,  0.875f,  0.0f},
+
+        {0.5f,    0.75f,   Float(data.glyphCacheArraySize/2)},   /* c */
+        {0.625f,  0.75f,   Float(data.glyphCacheArraySize/2)},
+        {0.5f,    0.8125f, Float(data.glyphCacheArraySize/2)},
+        {0.625f,  0.8125f, Float(data.glyphCacheArraySize/2)},
+
+        {0.25f,   0.5f,    Float(data.glyphCacheArraySize - 1)}, /* d */
+        {0.375f,  0.5f,    Float(data.glyphCacheArraySize - 1)},
+        {0.25f,   0.5625f, Float(data.glyphCacheArraySize - 1)},
+        {0.375f,  0.5625f, Float(data.glyphCacheArraySize - 1)},
+
+        {0.5f,    0.5f,    Float(data.glyphCacheArraySize*3/4)}, /* e */
+        {0.5625f, 0.5f,    Float(data.glyphCacheArraySize*3/4)},
+        {0.5f,    0.5625f, Float(data.glyphCacheArraySize*3/4)},
+        {0.5625f, 0.5625f, Float(data.glyphCacheArraySize*3/4)},
+
+        {0.75f,   0.5f,    Float(data.glyphCacheArraySize - 1)}, /* f (a) */
+        {0.8125f, 0.5f,    Float(data.glyphCacheArraySize - 1)},
+        {0.75f,   0.625f,  Float(data.glyphCacheArraySize - 1)},
+        {0.8125f, 0.625f,  Float(data.glyphCacheArraySize - 1)},
+
+        {0.75f,   0.75f,   0.0f},                                /* g (b) */
+        {0.875f,  0.75f,   0.0f},
+        {0.75f,   0.875f,  0.0f},
+        {0.875f,  0.875f,  0.0f},
+
+        {0.5f,    0.75f,   Float(data.glyphCacheArraySize/2)},   /* h (c) */
+        {0.625f,  0.75f,   Float(data.glyphCacheArraySize/2)},
+        {0.5f,    0.8125f, Float(data.glyphCacheArraySize/2)},
+        {0.625f,  0.8125f, Float(data.glyphCacheArraySize/2)},
+    };
+    if(data.glyphCacheArraySize == 1) CORRADE_COMPARE_AS(
+        renderer.vertexTextureCoordinates(),
+        Containers::stridedArrayView(expectedTextureCoordinates).slice(&Vector3::xy),
+        TestSuite::Compare::Container);
+    else CORRADE_COMPARE_AS(
+        renderer.vertexTextureArrayCoordinates(),
+        Containers::stridedArrayView(expectedTextureCoordinates),
+        TestSuite::Compare::Container);
+}
+
 void RendererTest::clearResetCore() {
     auto&& data = ClearResetCoreData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -4535,6 +7031,390 @@ void RendererTest::clearResetCoreAllocators() {
 
     /* Other resetting behavior is sufficiently tested by clearResetCore()
        already */
+}
+
+void RendererTest::clearReset() {
+    auto&& data = ClearResetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Properties doOpenFile(Containers::StringView, Float size) override {
+            _opened = true;
+            /* The size is used to scale advances. Ascent & descent is used
+               just for vertical rect size which isn't needed as we can check
+               just that the horizontal size got reset. Line height is used to
+               test that line advance is correctly reset as well. Glyph count
+               is overriden in addFont() below. */
+            return {size, 0.0f, 0.0f, 2.0f, 0};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+    font.openFile("", 1.0f);
+    glyphCache.addFont(1, &font);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange>) override {
+            return end - begin;
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            /* Zero the IDs to not hit an OOB assert in the glyph cache */
+            for(UnsignedInt& id: ids)
+                id = 0;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            for(UnsignedInt i = 0; i != offsets.size(); ++i) {
+                advances[i] = {1.0f, 0.0f};
+                offsets[i] = {};
+            }
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            /* The data don't matter in this case */
+        }
+    } shaper{font};
+
+    Renderer renderer{glyphCache, data.flags};
+
+    /* Clearing right from the initial state should be a no-op */
+    if(data.reset)
+        renderer.reset();
+    else
+        renderer.clear();
+    CORRADE_COMPARE(renderer.glyphCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_VERIFY(!renderer.isRendering());
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+
+    /* Set a non-default index type to verify it doesn't get reset with
+       reset(). All other cases of index type change after clear() are
+       otherwise tested in allocateDifferentIndexType() already. */
+    renderer.setIndexType(MeshIndexType::UnsignedShort);
+
+    /* Fill the renderer with something */
+    renderer
+        .setCursor({100.0f, 50.0f})
+        .add(shaper, 1.0f, "ab\nc");
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 1);
+    if(data.renderAddOnly) {
+        CORRADE_VERIFY(renderer.isRendering());
+        /* Index and vertex buffers are allocated only when render() is
+           called */
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+        CORRADE_COMPARE(renderer.glyphCount(), 0);
+        CORRADE_COMPARE(renderer.runCount(), 0);
+    } else {
+        renderer.render();
+        CORRADE_VERIFY(!renderer.isRendering());
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), 3);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), 3);
+        CORRADE_COMPARE(renderer.glyphCount(), 3);
+        CORRADE_COMPARE(renderer.runCount(), 1);
+        /* Verify initial index values to be sure that the offset doesn't leak
+           to after clear() */
+        CORRADE_COMPARE_AS(renderer.indices<UnsignedShort>(), Containers::arrayView<UnsignedShort>({
+            0, 1, 2, 2, 1, 3,
+            4, 5, 6, 6, 5, 7,
+            8, 9, 10, 10, 9, 11
+        }), TestSuite::Compare::Container);
+    }
+    CORRADE_COMPARE(renderer.glyphCapacity(), 3);
+    CORRADE_COMPARE(renderer.runCapacity(), 1);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 1);
+
+    /* Reset should behave like RendererCore, plus resetting also the index /
+       vertex state */
+    if(data.reset)
+        renderer.reset();
+    else
+        renderer.clear();
+    CORRADE_COMPARE(renderer.glyphCapacity(), 3);
+    /* Index and vertex buffers are allocated only when render() is called. For
+       the builtin allocator however, if glyph positions and clusters aren't
+       needed, the vertex and glyph data share the same allocation and thus get
+       allocated in add() already. */
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.renderAddOnly ? 0 : 3);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), data.renderAddOnly && data.flags >= RendererFlag::GlyphPositionsClusters ? 0 : 3);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.runCapacity(), 1);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    CORRADE_VERIFY(!renderer.isRendering());
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+    if(data.reset) {
+        CORRADE_COMPARE(renderer.cursor(), Vector2{});
+    } else {
+        CORRADE_COMPARE(renderer.cursor(), (Vector2{100.0f, 50.0f}));
+    }
+    CORRADE_COMPARE(renderer.indexType(), MeshIndexType::UnsignedShort);
+
+    /* Rendering should work the same way after a clear / reset. The Renderer
+       wrappers delegate to RendererCore, which is tested in clearResetCore()
+       already, so just verify that the extra state isn't leaking in any
+       way. */
+    renderer
+        /* Using the same alignment as in clearReserCore() to have the same
+           output rect */
+        .setAlignment(Alignment::LineRight)
+        .setCursor({-50.0f, 100.0f});
+    CORRADE_COMPARE(renderer.render(shaper, 1.0f, "a\nbc"), Containers::pair(
+        Range2D::fromSize({-52.0f, 98.0f}, {2.0f, 2.0f}), Range1Dui{0, 1}));
+    CORRADE_COMPARE(renderer.glyphCapacity(), 3);
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), 3);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 3);
+    CORRADE_COMPARE(renderer.glyphCount(), 3);
+    CORRADE_COMPARE(renderer.runCapacity(), 1);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 1);
+    CORRADE_COMPARE(renderer.runCount(), 1);
+    CORRADE_COMPARE_AS(renderer.indices<UnsignedShort>(), Containers::arrayView<UnsignedShort>({
+        0, 1, 2, 2, 1, 3,
+        4, 5, 6, 6, 5, 7,
+        8, 9, 10, 10, 9, 11
+    }), TestSuite::Compare::Container);
+}
+
+void RendererTest::clearResetAllocators() {
+    auto&& data = ClearResetData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Properties doOpenFile(Containers::StringView, Float size) override {
+            _opened = true;
+            /* The size is used to scale advances, ascent, descent and line
+               height is used for vertical alignment which we don't need and
+               can stay zero. Glyph count is overriden in addFont() below. */
+            return {size, 0.0f, 0.0f, 0.0f, 0};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+    font.openFile("", 1.0f);
+    glyphCache.addFont(1, &font);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
+            return text.size();
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
+            /* Zero the IDs to not hit an OOB assert in the glyph cache */
+            for(UnsignedInt& id: ids)
+                id = 0;
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            for(UnsignedInt i = 0; i != offsets.size(); ++i) {
+                advances[i] = {1.0f, 0.0f};
+                offsets[i] = {};
+            }
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            /* The data don't matter in this case */
+        }
+    } shaper{font};
+
+    struct Allocation {
+        Vector2 glyphPositions[20];
+        UnsignedInt glyphIds[18]; /* deliberately smaller */
+        UnsignedInt glyphClusters[20];
+        Vector2 glyphAdvances[20];
+
+        Float runScales[4];
+        UnsignedInt runEnds[3]; /* deliberately smaller */
+
+        char indices[22*6*2 + 9]; /* deliberately not a multiple of 6 shorts */
+
+        Vector2 vertexPositions[20*4];
+        Vector2 vertexTextureCoordinates[19*4 + 2]; /* deliberately smaller, gets rounded to multiple of 4 */
+
+        UnsignedInt expectedGlyphCount,
+            expectedRunCount,
+            expectedIndexSize,
+            expectedVertexCount;
+        int glyphCalled = 0,
+            runCalled = 0,
+            indexCalled = 0,
+            vertexCalled = 0;
+    } allocation;
+
+    /* Capture correct function name */
+    CORRADE_VERIFY(true);
+
+    Renderer renderer{glyphCache, [](void* state, UnsignedInt glyphCount, Containers::StridedArrayView1D<Vector2>& glyphPositions, Containers::StridedArrayView1D<UnsignedInt>& glyphIds, Containers::StridedArrayView1D<UnsignedInt>* glyphClusters, Containers::StridedArrayView1D<Vector2>& glyphAdvances){
+        Allocation& allocation = *static_cast<Allocation*>(state);
+        CORRADE_COMPARE(glyphCount, allocation.expectedGlyphCount);
+        CORRADE_COMPARE(glyphPositions.size(), 0);
+        CORRADE_COMPARE(glyphIds.size(), 0);
+        if(glyphClusters)
+            CORRADE_COMPARE(glyphClusters->size(), 0);
+        CORRADE_COMPARE(glyphAdvances.size(), 0);
+
+        glyphPositions = allocation.glyphPositions;
+        glyphIds = allocation.glyphIds;
+        if(glyphClusters)
+            *glyphClusters = allocation.glyphClusters;
+        glyphAdvances = allocation.glyphAdvances;
+        ++allocation.glyphCalled;
+    }, &allocation, [](void* state, UnsignedInt runCount, Containers::StridedArrayView1D<Float>& runScales, Containers::StridedArrayView1D<UnsignedInt>& runEnds) {
+        Allocation& allocation = *static_cast<Allocation*>(state);
+        CORRADE_COMPARE(runCount, allocation.expectedRunCount);
+        CORRADE_COMPARE(runScales.size(), 0);
+        CORRADE_COMPARE(runEnds.size(), 0);
+
+        runScales = allocation.runScales;
+        runEnds = allocation.runEnds;
+        ++allocation.runCalled;
+    }, &allocation, [](void* state, UnsignedInt size, Containers::ArrayView<char>& indices) {
+        Allocation& allocation = *static_cast<Allocation*>(state);
+        CORRADE_COMPARE(size, allocation.expectedIndexSize);
+        CORRADE_COMPARE(indices.size(), 0);
+
+        indices = allocation.indices;
+        ++allocation.indexCalled;
+    }, &allocation, [](void* state, UnsignedInt vertexCount, Containers::StridedArrayView1D<Vector2>& vertexPositions, Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates) {
+        Allocation& allocation = *static_cast<Allocation*>(state);
+        CORRADE_COMPARE(vertexCount, allocation.expectedVertexCount);
+        CORRADE_COMPARE(vertexPositions.size(), 0);
+        CORRADE_COMPARE(vertexTextureCoordinates.size(), 0);
+
+        vertexPositions = allocation.vertexPositions;
+        vertexTextureCoordinates = allocation.vertexTextureCoordinates;
+        ++allocation.vertexCalled;
+    }, &allocation, data.flags};
+    /* Set an index type that isn't just 1-byte to verify there are no
+       calculations happening that would accidentally omit the type size */
+    renderer.setIndexType(MeshIndexType::UnsignedShort);
+
+    allocation.expectedGlyphCount = 3;
+    allocation.expectedRunCount = 1;
+    allocation.expectedIndexSize = 3*6*2;
+    allocation.expectedVertexCount = 3*4;
+    renderer.add(shaper, 1.0f, "abc");
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 1);
+    if(data.renderAddOnly) {
+        CORRADE_VERIFY(renderer.isRendering());
+        /* Index and vertex buffers are allocated only when render() is called */
+        CORRADE_COMPARE(allocation.indexCalled, 0);
+        CORRADE_COMPARE(allocation.vertexCalled, 0);
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), 0);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), 0);
+        CORRADE_COMPARE(renderer.glyphCount(), 0);
+        CORRADE_COMPARE(renderer.runCount(), 0);
+    } else {
+        renderer.render();
+        CORRADE_VERIFY(!renderer.isRendering());
+        CORRADE_COMPARE(allocation.indexCalled, 1);
+        CORRADE_COMPARE(allocation.vertexCalled, 1);
+        /* Minimum of all returned view sizes */
+        CORRADE_COMPARE(renderer.glyphIndexCapacity(), 22);
+        CORRADE_COMPARE(renderer.glyphVertexCapacity(), 19);
+        CORRADE_COMPARE(renderer.glyphCount(), 3);
+        CORRADE_COMPARE(renderer.runCount(), 1);
+    }
+    CORRADE_COMPARE(allocation.glyphCalled, 1);
+    CORRADE_COMPARE(allocation.runCalled, 1);
+    /* Minimum of all returned view sizes */
+    CORRADE_COMPARE(renderer.glyphCapacity(), 18);
+    CORRADE_COMPARE(renderer.runCapacity(), 3);
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 1);
+
+    /* Clearing should call the allocator with 0, and then calculate the
+       capacity the same way as before. The capacity calculation was tested
+       sufficiently in allocateAllocator() already, and as clear() uses the
+       same helper internally, we just test a single case of one array being
+       shorter. */
+    allocation.expectedGlyphCount = 0;
+    allocation.expectedRunCount = 0;
+    allocation.expectedIndexSize = 0;
+    allocation.expectedVertexCount = 0;
+    if(data.reset)
+        renderer.reset();
+    else
+        renderer.clear();
+    CORRADE_COMPARE(allocation.glyphCalled, 2);
+    CORRADE_COMPARE(allocation.runCalled, 2);
+    /* The index allocator doesn't get called because it doesn't make sense to
+       repopulate it with the exact same contents on every clear() */
+    CORRADE_COMPARE(allocation.indexCalled, data.renderAddOnly ? 0 : 1);
+    CORRADE_COMPARE(allocation.vertexCalled, data.renderAddOnly ? 1 : 2);
+    CORRADE_COMPARE(renderer.glyphCount(), 0);
+    CORRADE_COMPARE(renderer.runCount(), 0);
+    /* Minimum of all returned view sizes */
+    CORRADE_COMPARE(renderer.glyphCapacity(), 18);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 19);
+    /* Stays untouched */
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.renderAddOnly ? 0 : 22);
+    CORRADE_COMPARE(renderer.runCapacity(), 3);
+    CORRADE_VERIFY(!renderer.isRendering());
+    CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
+    CORRADE_COMPARE(renderer.renderingRunCount(), 0);
+
+    /* Clearing again should not result in anything different, but the
+       allocators, except for index allocator, get called again */
+    if(data.reset)
+        renderer.reset();
+    else
+        renderer.clear();
+    CORRADE_COMPARE(allocation.glyphCalled, 3);
+    CORRADE_COMPARE(allocation.runCalled, 3);
+    CORRADE_COMPARE(allocation.indexCalled, data.renderAddOnly ? 0 : 1);
+    CORRADE_COMPARE(allocation.vertexCalled, data.renderAddOnly ? 2 : 3);
+    /* Minimum of all returned view sizes */
+    CORRADE_COMPARE(renderer.glyphCapacity(), 18);
+    CORRADE_COMPARE(renderer.glyphVertexCapacity(), 19);
+    /* Stays untouched */
+    CORRADE_COMPARE(renderer.glyphIndexCapacity(), data.renderAddOnly ? 0 : 22);
+    CORRADE_COMPARE(renderer.runCapacity(), 3);
+
+    /* Other resetting behavior is sufficiently tested by clearReset() and
+       clearResetCore() already. Index type (and contents) update after clear
+       is tested in allocateDifferentIndexType(). */
 }
 
 #ifdef MAGNUM_TARGET_GL

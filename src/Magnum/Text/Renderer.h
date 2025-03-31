@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::RendererCore, @ref Magnum::Text::AbstractRenderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::glyphQuadBounds(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto(), @ref Magnum::Text::glyphRangeForBytes()
+ * @brief Class @ref Magnum::Text::RendererCore, @ref Magnum::Text::Renderer, @ref Magnum::Text::AbstractRenderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D, function @ref Magnum::Text::renderLineGlyphPositionsInto(), @ref Magnum::Text::renderGlyphQuadsInto(), @ref Magnum::Text::glyphQuadBounds(), @ref Magnum::Text::alignRenderedLine(), @ref Magnum::Text::alignRenderedBlock(), @ref Magnum::Text::renderGlyphQuadIndicesInto(), @ref Magnum::Text::glyphRangeForBytes()
  */
 
 #include <initializer_list>
@@ -67,6 +67,9 @@ enum class RendererCoreFlag: UnsignedByte {
      * text selection and editing purposes.
      */
     GlyphClusters = 1 << 0,
+
+    /* Additions to this enum have to be propagated to RendererFlag and the
+       mask in RendererCore::flag() */
 };
 
 /**
@@ -415,9 +418,13 @@ class MAGNUM_TEXT_EXPORT RendererCore {
          * With @p runRange being for example the second value returned by
          * @ref render(), returns a begin and end glyph offset for given run
          * range, which can then be used to index the @ref glyphPositions(),
-         * @ref glyphIds() and @ref glyphClusters() views. Expects that both
-         * the min and max @p runRange value are less than or equal to
-         * @ref renderingRunCount().
+         * @ref glyphIds() and @ref glyphClusters() views; when multipled by
+         * @cpp 6 @ce to index the @ref Renderer::indices() view and when
+         * multiplied by @cpp 4 @ce to index the @ref Renderer::vertexPositions()
+         * and @relativeref{Renderer,vertexTextureCoordinates()} /
+         * @relativeref{Renderer,vertexTextureArrayCoordinates()} views.
+         * Expects that both the min and max @p runRange value are less than or
+         * equal to @ref renderingRunCount().
          *
          * Note that the returned value is not guaranteed to be meaningful if
          * custom run allocator is used, as the user code is free to perform
@@ -554,7 +561,11 @@ class MAGNUM_TEXT_EXPORT RendererCore {
          * @ref glyphsForRuns() to convert the returned run range to a begin
          * and end glyph offset, which can be then used to index the
          * @ref glyphPositions(), @ref glyphIds() and @ref glyphClusters()
-         * views.
+         * views; when multipled by @cpp 6 @ce to index the
+         * @ref Renderer::indices() view and when multiplied by @cpp 4 @ce to
+         * index the @ref Renderer::vertexPositions() and
+         * @relativeref{Renderer,vertexTextureCoordinates()} /
+         * @relativeref{Renderer,vertexTextureArrayCoordinates()} views.
          *
          * The rendered glyph range is not touched or used by the renderer in
          * any way afterwards. If the renderer was created with custom
@@ -600,7 +611,10 @@ class MAGNUM_TEXT_EXPORT RendererCore {
         struct AllocatorState;
         Containers::Pointer<State> _state;
 
-        /* Called by reset() */
+        /* Delegated to by Renderer constructors */
+        explicit MAGNUM_TEXT_LOCAL RendererCore(Containers::Pointer<State>&& state);
+
+        /* Called by reset() and Renderer::reset() */
         MAGNUM_TEXT_LOCAL void resetInternal();
 
     private:
@@ -617,6 +631,450 @@ class MAGNUM_TEXT_EXPORT RendererCore {
             #endif
             UnsignedInt totalRunCount);
         MAGNUM_TEXT_LOCAL void alignAndFinishLine();
+};
+
+/**
+@brief Text renderer flag
+@m_since_latest
+
+A superset of @ref RendererCoreFlag.
+@see @ref RendererFlags, @ref Renderer
+*/
+enum class RendererFlag: UnsignedByte {
+    /**
+     * Populate glyph cluster info in @ref Renderer::glyphPositions() and
+     * @ref Renderer::glyphClusters() for text selection and editing purposes.
+     *
+     * Compared to @ref RendererCore and @ref RendererCoreFlag::GlyphClusters,
+     * the @ref Renderer by default queries glyph positions to a temporary
+     * location that's later overwritten by quad vertex positions to save
+     * memory so this flag includes both clusters and positions.
+     */
+    GlyphPositionsClusters = Int(RendererCoreFlag::GlyphClusters)
+};
+
+/**
+ * @debugoperatorenum{RendererFlag}
+ * @m_since_latest
+ */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, RendererFlag value);
+
+/**
+@brief Text renderer flags
+@m_since_latest
+
+A superset of @ref RendererCoreFlags.
+@see @ref Renderer
+*/
+typedef Containers::EnumSet<RendererFlag> RendererFlags;
+
+CORRADE_ENUMSET_OPERATORS(RendererFlags)
+
+/**
+ * @debugoperatorenum{RendererFlags}
+ * @m_since_latest
+ */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, RendererFlags value);
+
+/**
+@brief Text renderer
+@m_since_latest
+*/
+class MAGNUM_TEXT_EXPORT Renderer: public RendererCore {
+    public:
+        /**
+         * @brief Construct
+         * @param glyphCache    Glyph cache to use
+         * @param flags         Opt-in feature flags
+         *
+         * By default, the renderer allocates the memory for glyph, run, index
+         * and vertex data internally. Use the overload below to supply
+         * external allocators.
+         * @todoc the damn thing can't link to functions taking functions
+         */
+        explicit Renderer(const AbstractGlyphCache& glyphCache, RendererFlags flags = {}): Renderer{glyphCache, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, flags} {}
+
+        /**
+         * @brief Construct with external allocators
+         * @param glyphCache        Glyph cache to use for glyph ID mapping
+         * @param glyphAllocator    Glyph allocator function or @cpp nullptr @ce
+         * @param glyphAllocatorState  State pointer to pass to @p glyphAllocator
+         * @param runAllocator      Run allocator function or @cpp nullptr @ce
+         * @param runAllocatorState  State pointer to pass to @p runAllocator
+         * @param indexAllocator   Index allocator function or @cpp nullptr @ce
+         * @param indexAllocatorState  State pointer to pass to @p indexAllocator
+         * @param vertexAllocator   Vertex allocator function or @cpp nullptr @ce
+         * @param vertexAllocatorState  State pointer to pass to @p vertexAllocator
+         * @param flags             Opt-in feature flags
+         *
+         * The @p glyphAllocator gets called with desired @p glyphCount every
+         * time @ref glyphCount() reaches @ref glyphCapacity(). Size of
+         * passed-in @p glyphPositions, @p glyphIds and @p glyphClusters views
+         * matches @ref glyphCount(). The @p glyphAdvances view is a temporary
+         * storage with contents that don't need to be preserved on
+         * reallocation and is thus passed in empty. If the renderer wasn't
+         * constructed with @ref RendererFlag::GlyphPositionsClusters, the
+         * @p glyphClusters is @cpp nullptr @ce to indicate it's not meant to
+         * be allocated. The allocator is expected to replace all passed views
+         * with new views that are larger by *at least* @p glyphCount, pointing
+         * to a reallocated memory with contents from the original view
+         * preserved. Initially @ref glyphCount() is @cpp 0 @ce and the views
+         * are all passed in empty, every subsequent time the views match a
+         * prefix of views previously returned by the allocator. To save
+         * memory, the renderer guarantees that @p glyphIds and
+         * @p glyphClusters are only filled once @p glyphAdvances were merged
+         * into @p glyphPositions. In other words, the @p glyphAdvances can
+         * alias a suffix of @p glyphIds and @p glyphClusters.
+         *
+         * The @p runAllocator gets called with desired @p runCount every time
+         * @ref runCount() reaches @ref runCapacity(). Size of passed-in
+         * @p runScales and @p runEnds views matches @ref runCount(). The
+         * allocator is expected to replace the views with new views that are
+         * larger by *at least* @p runCount, pointing to a reallocated memory
+         * with contents from the original views preserved. Initially
+         * @ref runCount() is @cpp 0 @ce and the views are passed in empty,
+         * every subsequent time the views match a prefix of views previously
+         * returned by the allocator.
+         *
+         * The @p indexAllocator gets called with desired @p size every time
+         * @ref glyphCapacity() increases. Size of passed-in @p indices array
+         * either matches @ref glyphCapacity() times @cpp 6 @ce times size of
+         * @ref indexType() if the index type stays the same, or is empty if
+         * the index type changes (and the whole index array is going to
+         * get rebuilt with a different type, thus no contents need to be
+         * preserved). The allocator is expected to replace the passed view
+         * with a new view that's larger by *at least* @p size, pointing to a
+         * reallocated memory with contents from the original view preserved.
+         * Initially @ref glyphCapacity() is @cpp 0 @ce and the view is passed
+         * in empty, every subsequent time the view matches a prefix of the
+         * view previously returned by the allocator.
+         *
+         * The @p vertexAllocator gets called with @p vertexCount every time
+         * @ref glyphCount() reaches @ref glyphCapacity(). Size of passed-in
+         * @p vertexPositions and @p vertexTextureCoordinates views matches
+         * @ref glyphCount() times @cpp 4 @ce. The allocator is expected to
+         * replace the views with new views that are larger by *at least*
+         * @p vertexCount, pointing to a reallocated memory with contents from
+         * the original views preserved. Initially @ref glyphCount() is
+         * @cpp 0 @ce and the views are passed in empty, every subsequent time
+         * the views match a prefix of views previously returned by the
+         * allocator. If the @p glyphCache is an array, the allocator is
+         * expected to (re)allocate @p vertexTextureCoordinates for a
+         * @relativeref{Magnum,Vector3} type even though the view points to
+         * just the first two components of each texture coordinates.
+         *
+         * The renderer always requests only exactly the desired size and the
+         * growth strategy is up to the allocators themselves --- the returned
+         * glyph and run views can be larger than requested and aren't all
+         * required to all have the same size. The minimum of size increases
+         * across all views is then treated as the new @ref glyphCapacity(),
+         * @ref glyphIndexCapacity(), @ref glyphVertexCapacity() and
+         * @ref runCapacity().
+         *
+         * As a special case, when @ref clear() or @ref reset() is called, the
+         * allocators are called with empty views and @p glyphCount /
+         * @p runCount / @p size / @p vertexCount being @cpp 0 @ce. This is to
+         * allow the allocators to perform any needed reset as well.
+         *
+         * If @p glyphAllocator, @p runAllocator, @p indexAllocator or
+         * @p vertexAllocator is @cpp nullptr @ce, @p glyphAllocatorState,
+         * @p runAllocatorState, @p indexAllocatorState or
+         * @p vertexAllocatorState is ignored and default builtin allocator get
+         * used for either. Passing @cpp nullptr @ce for all is equivalent to
+         * calling the @ref Renderer(const AbstractGlyphCache&, RendererFlags)
+         * constructor.
+         */
+        explicit Renderer(const AbstractGlyphCache& glyphCache, void(*glyphAllocator)(void* state, UnsignedInt glyphCount, Containers::StridedArrayView1D<Vector2>& glyphPositions, Containers::StridedArrayView1D<UnsignedInt>& glyphIds, Containers::StridedArrayView1D<UnsignedInt>* glyphClusters, Containers::StridedArrayView1D<Vector2>& glyphAdvances), void* glyphAllocatorState, void(*runAllocator)(void* state, UnsignedInt runCount, Containers::StridedArrayView1D<Float>& runScales, Containers::StridedArrayView1D<UnsignedInt>& runEnds), void* runAllocatorState, void(*indexAllocator)(void* state, UnsignedInt size, Containers::ArrayView<char>& indices), void* indexAllocatorState, void(*vertexAllocator)(void* state, UnsignedInt vertexCount, Containers::StridedArrayView1D<Vector2>& vertexPositions, Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates), void* vertexAllocatorState, RendererFlags flags = {});
+
+        /**
+         * @brief Construct without creating the internal state
+         * @m_since_latest
+         *
+         * The constructed instance is equivalent to moved-from state, i.e. no
+         * APIs can be safely called on the object. Useful in cases where you
+         * will overwrite the instance later anyway. Move another object over
+         * it to make it useful.
+         *
+         * Note that this is a low-level and a potentially dangerous API, see
+         * the documentation of @ref NoCreate for alternatives.
+         */
+        explicit Renderer(NoCreateT) noexcept: RendererCore{NoCreate} {}
+
+        /** @brief Copying is not allowed */
+        Renderer(Renderer&) = delete;
+
+        /**
+         * @brief Move constructor
+         *
+         * Performs a destructive move, i.e. the original object isn't usable
+         * afterwards anymore.
+         */
+        Renderer(Renderer&&) noexcept;
+
+        ~Renderer();
+
+        /** @brief Copying is not allowed */
+        Renderer& operator=(Renderer&) = delete;
+
+        /** @brief Move assignment */
+        Renderer& operator=(Renderer&&) noexcept;
+
+        /** @brief Flags */
+        RendererFlags flags() const;
+
+        /**
+         * @brief Glyph index capacity
+         *
+         * Describes how many glyphs can be rendered into the index buffer. The
+         * actual index count is six times the capacity.
+         * @see @ref glyphCapacity(), @ref glyphVertexCapacity(),
+         *      @ref glyphCount(), @ref runCapacity(), @ref reserve()
+         */
+        UnsignedInt glyphIndexCapacity() const;
+
+        /**
+         * @brief Glyph vertex capacity
+         *
+         * Describes how many glyphs can be rendered into the vertex buffer.
+         * The actual vertex count is four times the capacity.
+         * @see @ref glyphCapacity(), @ref glyphIndexCapacity(),
+         *      @ref glyphCount(), @ref runCapacity(), @ref reserve()
+         */
+        UnsignedInt glyphVertexCapacity() const;
+
+        /**
+         * @brief Index type
+         *
+         * The smallest type that can describe vertices for all
+         * @ref glyphCapacity() glyphs and isn't smaller than what was set in
+         * @ref setIndexType(). Initially set to
+         * @ref MeshIndexType::UnsignedByte, a lerger type is automatically
+         * switched to once the capacity exceeds @cpp 64 @ce and @cpp 16384 @ce
+         * glyphs.
+         */
+        MeshIndexType indexType() const;
+
+        /**
+         * @brief Set index type
+         * @return Reference to self (for method chaining)
+         *
+         * Sets the smallest possible index type to be used. Initially
+         * @ref MeshIndexType::UnsignedByte, a larger type is automatically
+         * switched to once @ref glyphCapacity() exceeds @cpp 64 @ce and
+         * @cpp 16384 @ce glyphs. Set to a larger type if you want it to be
+         * used even if the glyph capacity is smaller. Setting it back to a
+         * smaller type afterwards uses the type only if the glyph capacity
+         * allows it.
+         */
+        Renderer& setIndexType(MeshIndexType atLeast);
+
+        /**
+         * @brief Glyph positions
+         *
+         * Expects that the renderer was constructed with
+         * @ref RendererFlag::GlyphPositionsClusters. The returned view has a
+         * size of @ref glyphCount(). Note that the contents are not guaranteed
+         * to be meaningful if custom glyph allocator is used, as the user code
+         * is free to perform subsequent operations on those.
+         */
+        Containers::StridedArrayView1D<const Vector2> glyphPositions() const;
+
+        /**
+         * @brief Glyph IDs are not accessible
+         *
+         * Unlike with @ref RendererCore, to save memory, glyph IDs are
+         * retrieved only to a temporary location to produce glyph quads and
+         * are subsequently overwritten by vertex data.
+         */
+        Containers::StridedArrayView1D<const UnsignedInt> glyphIds() const = delete;
+
+        /**
+         * @brief Glyph cluster IDs
+         *
+         * Expects that the renderer was constructed with
+         * @ref RendererFlag::GlyphPositionsClusters. The returned view has a
+         * size of @ref glyphCount(). Note that the contents are not guaranteed
+         * to be meaningful if custom glyph allocator is used, as the user code
+         * is free to perform subsequent operations on those.
+         */
+        Containers::StridedArrayView1D<const UnsignedInt> glyphClusters() const;
+
+        /**
+         * @brief Type-erased glyph quad indices
+         *
+         * The returned view is contiguous with a size of @ref glyphCount()
+         * times @cpp 6 @ce, the second dimension having a size of
+         * @ref indexType(). The values index the  @ref vertexPositions() and
+         * @ref vertexTextureCoordinates() / @ref vertexTextureArrayCoordinates()
+         * arrays. Note that the contents are not guaranteed to be meaningful
+         * if custom index allocator is used, as the user code is free to
+         * perform subsequent operations on those.
+         *
+         * Use the templated overload below to get the indices in a concrete
+         * type.
+         */
+        Containers::StridedArrayView2D<const char> indices() const;
+
+        /**
+         * @brief Glyph quad indices
+         *
+         * Expects that @p T is either @relativeref{Magnum,UnsignedByte},
+         * @relativeref{Magnum,UnsignedShort} or
+         * @relativeref{Magnum,UnsignedInt} and matches @ref indexType(). The
+         * returned view has a size of @ref glyphCount() times @cpp 6 @ce. Note
+         * that the contents are not guaranteed to be meaningful if custom
+         * index allocator is used, as the user code is free to perform
+         * subsequent operations on those.
+         *
+         * Use the non-templated overload above to get a type-erased view on
+         * the indices.
+         */
+        template<class T> Containers::ArrayView<const T> indices() const;
+
+        /**
+         * @brief Vertex positions
+         *
+         * The returned view has a size of @ref glyphCount() times @cpp 4 @ce.
+         * Note that the contents are not guaranteed to be meaningful if custom
+         * vertex allocator is used, as the user code is free to perform
+         * subsequent operations on those.
+         */
+        Containers::StridedArrayView1D<const Vector2> vertexPositions() const;
+
+        /**
+         * @brief Vertex texture coordinates
+         *
+         * Expects that the renderer was constructed with a non-array
+         * @ref AbstractGlyphCache, i.e. with a depth equal to @cpp 1 @ce.
+         * The returned view has a size of @ref glyphCount() times @cpp 4 @ce.
+         * Note that the contents are not guaranteed to be meaningful if custom
+         * vertex allocator is used, as the user code is free to perform
+         * subsequent operations on those.
+         */
+        Containers::StridedArrayView1D<const Vector2> vertexTextureCoordinates() const;
+
+        /**
+         * @brief Vertex texture array coordinates
+         *
+         * Expects that the renderer was constructed with an array
+         * @ref AbstractGlyphCache, i.e. with a depth larger than @cpp 1 @ce.
+         * The returned view has a size of @ref glyphCount() times @cpp 4 @ce.
+         * Note that the contents are not guaranteed to be meaningful if custom
+         * vertex allocator is used, as the user code is free to perform
+         * subsequent operations on those.
+         */
+        Containers::StridedArrayView1D<const Vector3> vertexTextureArrayCoordinates() const;
+
+        /**
+         * @brief Reserve capacity for given glyph count
+         * @return Reference to self (for method chaining)
+         *
+         * Calls @ref RendererCore::reserve() and additionally reserves
+         * capacity also for the corresponding index and vertex memory. Note
+         * that while reserved index and vertex capacity is derived from
+         * @p glyphCapacity and @ref indexType(), their actually allocated
+         * capacity doesn't need to match @ref glyphCapacity() and is exposed
+         * through @ref glyphIndexCapacity() and @ref glyphVertexCapacity().
+         * @see @ref glyphCount(), @ref runCapacity(), @ref runCount()
+         */
+        Renderer& reserve(UnsignedInt glyphCapacity, UnsignedInt runCapacity);
+
+        /**
+         * @brief Clear rendered glyphs, runs and vertices
+         * @return Reference to self (for method chaining)
+         *
+         * Calls @ref RendererCore::clear(). The @ref glyphCount() and
+         * @ref runCount() becomes @cpp 0 @ce after this call and any
+         * in-progress rendering is discarded, making @ref isRendering() return
+         * @cpp false @ce. If custom glyph, run or vertex allocators are used,
+         * they get called with empty views and zero sizes. Custom index
+         * allocator isn't called however, as the index buffer only needs
+         * updating when its capacity isn't large enough.
+         *
+         * Depending on allocator used, @ref glyphCapacity(),
+         * @ref glyphVertexCapacity() and @ref runCapacity() may stay non-zero.
+         * The @ref cursor(), @ref alignment(), @ref lineAdvance() and
+         * @ref layoutDirection() are left untouched, use @ref reset() to reset
+         * those to their default values as well.
+         */
+        Renderer& clear();
+
+        /**
+         * @brief Reset internal renderer state
+         * @return Reference to self (for method chaining)
+         *
+         * Calls @ref clear(), and additionally @ref cursor(),
+         * @ref alignment(), @ref lineAdvance() and @ref layoutDirection() are
+         * reset to their default values. Apart from @ref glyphCapacity(),
+         * @ref glyphVertexCapacity() and @ref runCapacity() which may stay
+         * non-zero depending on allocator used, and @ref glyphIndexCapacity()
+         * plus @ref indexType() which are left untouched, the instance is
+         * equivalent to a default-constructed state.
+         */
+        Renderer& reset();
+
+        /**
+         * @brief Wrap up rendering of all text added so far
+         *
+         * Calls @ref RendererCore::render() and populates also index and
+         * vertex data, subsequently available through @ref indices(),
+         * @ref vertexPositions() and @ref vertexTextureCoordinates() /
+         * @ref vertexTextureArrayCoordinates().
+         *
+         * The function uses @ref renderGlyphQuadsInto() and
+         * @ref renderGlyphQuadIndicesInto() internally, see their
+         * documentation for more information.
+         */
+        Containers::Pair<Range2D, Range1Dui> render();
+
+        /* Overloads to remove a WTF factor from method chaining order, and to
+           ensure our render() is called instead of RenderCore::render() */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        Renderer& setCursor(const Vector2& cursor) {
+            return static_cast<Renderer&>(RendererCore::setCursor(cursor));
+        }
+        Renderer& setAlignment(Alignment alignment) {
+            return static_cast<Renderer&>(RendererCore::setAlignment(alignment));
+        }
+        Renderer& setLineAdvance(Float advance) {
+            return static_cast<Renderer&>(RendererCore::setLineAdvance(advance));
+        }
+        Renderer& setLayoutDirection(LayoutDirection direction) {
+            return static_cast<Renderer&>(RendererCore::setLayoutDirection(direction));
+        }
+
+        Renderer& add(AbstractShaper& shaper, Float size, Containers::StringView text, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange> features);
+        Renderer& add(AbstractShaper& shaper, Float size, Containers::StringView text, UnsignedInt begin, UnsignedInt end);
+        Renderer& add(AbstractShaper& shaper, Float size, Containers::StringView text, UnsignedInt begin, UnsignedInt end, std::initializer_list<FeatureRange> features);
+        Renderer& add(AbstractShaper& shaper, Float size, Containers::StringView text, Containers::ArrayView<const FeatureRange> features);
+        Renderer& add(AbstractShaper& shaper, Float size, Containers::StringView text);
+        Renderer& add(AbstractShaper& shaper, Float size, Containers::StringView text, std::initializer_list<FeatureRange> features);
+
+        Containers::Pair<Range2D, Range1Dui> render(AbstractShaper& shaper, Float size, Containers::StringView text, Containers::ArrayView<const FeatureRange> features);
+        Containers::Pair<Range2D, Range1Dui> render(AbstractShaper& shaper, Float size, Containers::StringView text);
+        Containers::Pair<Range2D, Range1Dui> render(AbstractShaper& shaper, Float size, Containers::StringView text, std::initializer_list<FeatureRange> features);
+        #endif
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        struct State;
+
+    private:
+        /* While the allocators get just size to grow by, these functions get
+           the total count */
+        MAGNUM_TEXT_LOCAL void allocateIndices(
+            #ifndef CORRADE_NO_ASSERT
+            const char* messagePrefix,
+            #endif
+            UnsignedInt totalGlyphCount);
+        MAGNUM_TEXT_LOCAL void allocateVertices(
+            #ifndef CORRADE_NO_ASSERT
+            const char* messagePrefix,
+            #endif
+            UnsignedInt totalGlyphCount);
 };
 
 /**

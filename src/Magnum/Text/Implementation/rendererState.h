@@ -32,13 +32,15 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
+#include "Magnum/Mesh.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Text/Alignment.h"
 #include "Magnum/Text/Direction.h"
 
 namespace Magnum { namespace Text {
 
-/* Is inherited by RendererCore::AllocatorState to avoid extra allocations */
+/* Is inherited by RendererCore::AllocatorState, Renderer::State and then
+   RendererGL::State to avoid extra allocations for each class' state */
 struct RendererCore::State {
     /* Gets called by RendererCore only if both allocators are specified by the
        user. If not, AllocatorState is constructed instead. */
@@ -117,6 +119,49 @@ struct RendererCore::AllocatorState: RendererCore::State {
     Containers::Array<char> glyphData;
     Containers::Array<char> runData;
 };
+
+/** @todo this includes the glyphData + runData (+ indexData, vertexData)
+    members even when they're unused because custom allocators are used, have
+    some templated RendererCore::AllocatorState that inherits either the
+    RendererCore::State or Renderer::State and adds one or more of those based
+    on what all builtin allocators are used? or am I overdoing it for measly 96
+    byte savings? */
+struct Renderer::State: RendererCore::AllocatorState {
+    /* Defined in Renderer.cpp because it needs access to default allocator
+       implementations */
+    explicit State(const AbstractGlyphCache& glyphCache, void(*glyphAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<UnsignedInt>&, Containers::StridedArrayView1D<UnsignedInt>*, Containers::StridedArrayView1D<Vector2>&), void* glyphAllocatorState, void(*const runAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Float>&, Containers::StridedArrayView1D<UnsignedInt>&), void* runAllocatorState, void(*indexAllocator)(void*, UnsignedInt, Containers::ArrayView<char>&), void* indexAllocatorState, void(*vertexAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&), void* vertexAllocatorState, RendererFlags flags);
+
+    void(*const indexAllocator)(void*, UnsignedInt, Containers::ArrayView<char>&);
+    void* const indexAllocatorState;
+    void(*const vertexAllocator)(void*, UnsignedInt, Containers::StridedArrayView1D<Vector2>&, Containers::StridedArrayView1D<Vector2>&);
+    void* const vertexAllocatorState;
+
+    MeshIndexType minIndexType = MeshIndexType::UnsignedByte;
+    MeshIndexType indexType = MeshIndexType::UnsignedByte;
+    Containers::ArrayView<char> indices;
+    Containers::StridedArrayView1D<Vector2> vertexPositions;
+    /* If using an array glyph cache, it can be cast to Vector3 */
+    Containers::StridedArrayView1D<Vector2> vertexTextureCoordinates;
+
+    /* Used only if the builtin vertex allocator is used */
+    Containers::Array<char> indexData;
+    Containers::Array<char> vertexData;
+};
+
+namespace Implementation {
+
+/* Not used in the state structs above but needed by Renderer */
+struct Vertex {
+    Vector2 position;
+    Vector2 textureCoordinates;
+};
+
+struct VertexArray {
+    Vector2 position;
+    Vector3 textureCoordinates;
+};
+
+}
 
 }}
 
