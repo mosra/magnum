@@ -31,7 +31,6 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/Triple.h>
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/FunctionsBatch.h"
