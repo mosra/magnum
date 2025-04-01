@@ -1986,6 +1986,8 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const AbstractGlyphCache&
     _mesh.setPrimitive(MeshPrimitive::Triangles);
 }
 
+AbstractRenderer::AbstractRenderer(AbstractRenderer&&) noexcept = default;
+
 AbstractRenderer::~AbstractRenderer() = default;
 
 template<UnsignedInt dimensions> BasicRenderer<dimensions>::BasicRenderer(AbstractFont& font, const AbstractGlyphCache& cache, const Float size, const Alignment alignment): AbstractRenderer(font, cache, size, alignment) {

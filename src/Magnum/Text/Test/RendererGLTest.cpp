@@ -33,6 +33,7 @@
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -76,6 +77,10 @@ struct RendererGLTest: GL::OpenGLTester {
     void renderTeardown();
     void renderClearReset();
     void renderIndexTypeChanged();
+
+    template<UnsignedInt dimensions> void constructND();
+    template<UnsignedInt dimensions> void constructNDCopy();
+    template<UnsignedInt dimensions> void constructNDMove();
 
     void renderMesh();
     void renderMeshIndexType();
@@ -220,7 +225,14 @@ RendererGLTest::RendererGLTest() {
         &RendererGLTest::renderSetup,
         &RendererGLTest::renderTeardown);
 
-    addTests({&RendererGLTest::renderMesh,
+    addTests({&RendererGLTest::constructND<2>,
+              &RendererGLTest::constructND<3>,
+              &RendererGLTest::constructNDCopy<2>,
+              &RendererGLTest::constructNDCopy<3>,
+              &RendererGLTest::constructNDMove<2>,
+              &RendererGLTest::constructNDMove<3>,
+
+              &RendererGLTest::renderMesh,
               &RendererGLTest::renderMeshIndexType,
               &RendererGLTest::mutableText,
 
@@ -900,6 +912,68 @@ GlyphCacheGL testGlyphCache(AbstractFont& font) {
     cache.addGlyph(fontId, 9, {5, 5}, {{10, 10}, {20, 20}});
 
     return cache;
+}
+
+template<UnsignedInt dimensions> void RendererGLTest::constructND() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    TestFont font;
+    font.openFile({}, 0.5f);
+    glyphCache.addFont(3, &font);
+
+    BasicRenderer<dimensions> a{font, glyphCache, 3.0f};
+    CORRADE_COMPARE(a.capacity(), 0);
+    CORRADE_COMPARE(a.fontSize(), 3.0f);
+    CORRADE_COMPARE(a.rectangle(), Range2D{});
+    CORRADE_VERIFY(a.indexBuffer().id());
+    CORRADE_VERIFY(a.vertexBuffer().id());
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::vertex_array_object>(),
+            "There's no way to know if the mesh was initialized without" << GL::Extensions::ARB::vertex_array_object::string() << Debug::nospace << ".");
+        #elif defined(MAGNUM_TARGET_GLES2)
+        CORRADE_EXPECT_FAIL_IF(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::vertex_array_object>(),
+            "There's no way to know if the mesh was initialized without" << GL::Extensions::OES::vertex_array_object::string() << Debug::nospace << ".");
+        #endif
+        CORRADE_VERIFY(a.mesh().id());
+    }
+}
+
+template<UnsignedInt dimensions> void RendererGLTest::constructNDCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_VERIFY(!std::is_copy_constructible<BasicRenderer<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<BasicRenderer<dimensions>>{});
+}
+
+template<UnsignedInt dimensions> void RendererGLTest::constructNDMove() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+
+    TestFont font;
+    font.openFile({}, 0.5f);
+    glyphCache.addFont(3, &font);
+
+    BasicRenderer<dimensions> a{font, glyphCache, 3.0f};
+
+    BasicRenderer<dimensions> b = Utility::move(a);
+    CORRADE_COMPARE(b.fontSize(), 3.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<BasicRenderer<dimensions>>::value);
+    /* Because it contains reference members. Not going to fix this, just
+       pinning down existing behavior. */
+    CORRADE_VERIFY(!std::is_move_assignable<BasicRenderer<dimensions>>{});
 }
 
 void RendererGLTest::renderMesh() {

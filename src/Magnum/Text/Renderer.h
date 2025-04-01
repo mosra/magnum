@@ -1426,6 +1426,20 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          */
         static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, Alignment alignment = Alignment::LineLeft);
 
+        /** @brief Copying is not allowed */
+        AbstractRenderer(AbstractRenderer&) = delete;
+
+        /** @brief Move constructor */
+        AbstractRenderer(AbstractRenderer&&) noexcept;
+
+        /** @brief Copying is not allowed */
+        AbstractRenderer& operator=(AbstractRenderer&) = delete;
+
+        /** @brief Move assignment is not allowed */
+        /* Because it contains reference members. Not going to fix this, just
+           pinning down existing behavior. */
+        AbstractRenderer& operator=(AbstractRenderer&&) = delete;
+
         /**
          * @brief Capacity for rendered glyphs
          *
