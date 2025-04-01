@@ -81,6 +81,9 @@ struct RendererGLTest: GL::OpenGLTester {
     void renderMeshIndexType();
     void mutableText();
 
+    void arrayGlyphCache();
+    void fontNotFoundInCache();
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
@@ -219,7 +222,10 @@ RendererGLTest::RendererGLTest() {
 
     addTests({&RendererGLTest::renderMesh,
               &RendererGLTest::renderMeshIndexType,
-              &RendererGLTest::mutableText});
+              &RendererGLTest::mutableText,
+
+              &RendererGLTest::arrayGlyphCache,
+              &RendererGLTest::fontNotFoundInCache});
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -1067,6 +1073,53 @@ void RendererGLTest::mutableText() {
         Vector2{ 9.0f,  9.0f} + offset, {1.0f, 1.0f},
     }), TestSuite::Compare::Container);
     #endif
+}
+
+void RendererGLTest::arrayGlyphCache() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    TestFont font;
+    font.openFile({}, 0.5f);
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } cache{PixelFormat::R8Unorm, {100, 100, 3}};
+
+    GL::Buffer buffer;
+
+    Containers::String out;
+    Error redirectError{&out};
+    Renderer2D::render(font, cache, 1.0f, "", buffer, buffer, GL::BufferUsage::StaticDraw);
+    Renderer2D{font, cache, 1.0f};
+    CORRADE_COMPARE(out,
+        "Text::Renderer: array glyph caches are not supported\n"
+        "Text::AbstractRenderer: array glyph caches are not supported\n");
+}
+
+void RendererGLTest::fontNotFoundInCache() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    TestFont font;
+    font.openFile({}, 0.5f);
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } cache{PixelFormat::R8Unorm, {100, 100}};
+    cache.addFont(34);
+    cache.addFont(25);
+
+    GL::Buffer buffer;
+
+    Containers::String out;
+    Error redirectError{&out};
+    Renderer2D::render(font, cache, 1.0f, "", buffer, buffer, GL::BufferUsage::StaticDraw);
+    Renderer2D{font, cache, 1.0f};
+    CORRADE_COMPARE(out,
+        "Text::Renderer: font not found among 2 fonts in passed glyph cache\n"
+        "Text::AbstractRenderer: font not found among 2 fonts in passed glyph cache\n");
 }
 
 }}}}

@@ -1974,6 +1974,14 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const AbstractGlyphCache&
     }
     #endif
 
+    /* These two are done in renderVerticesInternal() as well, but it makes
+       sense to verify the same here already, not only once .render() is
+       called */
+    CORRADE_ASSERT(cache.size().z() == 1,
+        "Text::AbstractRenderer: array glyph caches are not supported", );
+    CORRADE_ASSERT(cache.findFont(font),
+        "Text::AbstractRenderer: font not found among" << cache.fontCount() << "fonts in passed glyph cache", );
+
     /* Vertex buffer configuration depends on dimension count, done in subclass */
     _mesh.setPrimitive(MeshPrimitive::Triangles);
 }

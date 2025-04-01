@@ -1664,6 +1664,9 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT BasicRenderer: public 
          * @param cache         Glyph cache
          * @param size          Font size
          * @param alignment     Text alignment
+         *
+         * Expects that @p font is present in @p cache and that @p cache isn't
+         * an array.
          */
         explicit BasicRenderer(AbstractFont& font, const AbstractGlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
         BasicRenderer(AbstractFont&, AbstractGlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
