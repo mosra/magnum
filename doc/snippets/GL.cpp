@@ -329,12 +329,10 @@ struct Foo {
     void setSomeBuffer(GLuint) {}
     GLuint someBuffer() { return {}; }
 } externalLib;
-char someData[1];
 /* [opengl-wrapping-transfer] */
 /* Transferring the instance to external library */
 {
-    GL::Buffer buffer;
-    buffer.setData(someData, GL::BufferUsage::StaticDraw);
+    GL::Buffer buffer = DOXYGEN_ELLIPSIS(GL::Buffer{});
     GLuint id = buffer.release();
     externalLib.setSomeBuffer(id); /* The library is responsible for deletion */
 }

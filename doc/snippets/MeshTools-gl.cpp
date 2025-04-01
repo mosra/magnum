@@ -158,12 +158,9 @@ UnsignedInt indexStart, indexEnd;
 std::tie(indexData, indexType, indexStart, indexEnd) =
     MeshTools::compressIndices(indices);
 
-GL::Buffer indexBuffer;
-indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
-
 GL::Mesh mesh;
 mesh.setCount(indices.size())
-    .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
+    .setIndexBuffer(GL::Buffer{indexData}, 0, indexType, indexStart, indexEnd);
 /* [compressIndices-stl] */
 }
 CORRADE_IGNORE_DEPRECATED_POP
