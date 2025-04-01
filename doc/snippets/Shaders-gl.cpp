@@ -88,33 +88,24 @@ using namespace Magnum::Math::Literals;
    avoid -Wmisssing-prototypes */
 void mainShadersGL();
 void mainShadersGL() {
-/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
-   on GCC 4.8 in the [60] array */
-#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [shaders-setup] */
-struct Vertex {
+struct {
     Vector3 position;
     Vector3 normal;
     Vector2 textureCoordinates;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::PhongGL::Position{},
-    Shaders::PhongGL::Normal{},
-    Shaders::PhongGL::TextureCoordinates{})
-     //...
-     ;
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::PhongGL::Position{},
+        Shaders::PhongGL::Normal{},
+        Shaders::PhongGL::TextureCoordinates{})
+    .setCount(Containers::arraySize(vertices));
 /* [shaders-setup] */
 }
-#endif
 
 {
 GL::Mesh mesh;
@@ -268,12 +259,14 @@ struct {
      0x3bd267_rgbf},
 };
 
-GL::Mesh sphereInstanced{DOXYGEN_ELLIPSIS()};
-sphereInstanced.addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
-    Shaders::PhongGL::TransformationMatrix{},
-    Shaders::PhongGL::NormalMatrix{},
-    Shaders::PhongGL::Color3{});
-sphereInstanced.setInstanceCount(3);
+GL::Mesh sphereInstanced;
+sphereInstanced
+    DOXYGEN_ELLIPSIS()
+    .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+        Shaders::PhongGL::TransformationMatrix{},
+        Shaders::PhongGL::NormalMatrix{},
+        Shaders::PhongGL::Color3{})
+    .setInstanceCount(3);
 
 Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
     .setFlags(Shaders::PhongGL::Flag::InstancedTransformation|
@@ -449,28 +442,20 @@ Shaders::MeshVisualizerGL3D meshVisualizer{std::move(meshVisualizerState)};
 /* [shaders-async] */
 }
 
-/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
-   on GCC 4.8 in the [60] array */
-#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [DistanceFieldVectorGL-usage1] */
-struct Vertex {
+struct {
     Vector2 position;
     Vector2 textureCoordinates;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::DistanceFieldVectorGL2D::Position{},
-    Shaders::DistanceFieldVectorGL2D::TextureCoordinates{})
-    // ...
-    ;
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::DistanceFieldVectorGL2D::Position{},
+        Shaders::DistanceFieldVectorGL2D::TextureCoordinates{})
+    .setCount(Containers::arraySize(vertices));
 /* [DistanceFieldVectorGL-usage1] */
 }
 
@@ -489,7 +474,6 @@ shader.setColor(0x2f83cc_rgbf)
     .draw(mesh);
 /* [DistanceFieldVectorGL-usage2] */
 }
-#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 {
@@ -526,25 +510,18 @@ shader
 }
 #endif
 
-/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
-   on GCC 4.8 in the [60] array */
-#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [FlatGL-usage-colored1] */
-struct Vertex {
+struct {
     Vector3 position;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    //...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0, Shaders::FlatGL3D::Position{})
-    // ...
-    ;
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::FlatGL3D::Position{})
+    .setCount(Containers::arraySize(vertices));
 /* [FlatGL-usage-colored1] */
 
 /* [FlatGL-usage-colored2] */
@@ -561,23 +538,18 @@ shader.setColor(0x2f83cc_rgbf)
 
 {
 /* [FlatGL-usage-textured1] */
-struct Vertex {
+struct {
     Vector3 position;
     Vector2 textureCoordinates;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::FlatGL3D::Position{},
-    Shaders::FlatGL3D::TextureCoordinates{})
-    // ...
-    ;
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::FlatGL3D::Position{},
+        Shaders::FlatGL3D::TextureCoordinates{})
+    .setCount(Containers::arraySize(vertices));
 /* [FlatGL-usage-textured1] */
 
 /* [FlatGL-usage-textured2] */
@@ -591,7 +563,6 @@ shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
     .draw(mesh);
 /* [FlatGL-usage-textured2] */
 }
-#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 {
@@ -609,7 +580,7 @@ framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color)
 Shaders::FlatGL3D shader{Shaders::FlatGL3D::Configuration{}
     .setFlags(Shaders::FlatGL3D::Flag::ObjectId)};
 
-// ...
+DOXYGEN_ELLIPSIS()
 
 framebuffer.mapForDraw({
         {Shaders::FlatGL3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
@@ -640,13 +611,13 @@ struct {
     {Matrix4::translation({1.0f, 2.0f, 0.0f}), 0xff3333_rgbf},
     {Matrix4::translation({2.0f, 1.0f, 0.0f}), 0x33ff33_rgbf},
     {Matrix4::translation({3.0f, 0.0f, 1.0f}), 0x3333ff_rgbf},
-    // ...
+    DOXYGEN_ELLIPSIS()
 };
 
-mesh.setInstanceCount(Containers::arraySize(instanceData))
-    .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+mesh.addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
         Shaders::FlatGL3D::TransformationMatrix{},
-        Shaders::FlatGL3D::Color3{});
+        Shaders::FlatGL3D::Color3{})
+    .setInstanceCount(Containers::arraySize(instanceData));
 /* [FlatGL-usage-instancing] */
 }
 
@@ -775,36 +746,31 @@ shader
 {
 GL::Mesh mesh;
 /* [MeshVisualizerGL2D-usage-instancing] */
-Matrix3 instancedTransformations[] {
+Matrix3 instancedTransformations[]{
     Matrix3::translation({1.0f, 2.0f}),
     Matrix3::translation({2.0f, 1.0f}),
     Matrix3::translation({3.0f, 0.0f}),
-    // ...
+    DOXYGEN_ELLIPSIS()
 };
 
-mesh.setInstanceCount(Containers::arraySize(instancedTransformations))
-    .addVertexBufferInstanced(GL::Buffer{instancedTransformations}, 1, 0,
-        Shaders::MeshVisualizerGL2D::TransformationMatrix{});
+mesh.addVertexBufferInstanced(GL::Buffer{instancedTransformations}, 1, 0,
+        Shaders::MeshVisualizerGL2D::TransformationMatrix{})
+    .setInstanceCount(Containers::arraySize(instancedTransformations));
 /* [MeshVisualizerGL2D-usage-instancing] */
 }
 
-/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
-   on GCC 4.8 in the [60] array */
-#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [MeshVisualizerGL3D-usage-geom1] */
-struct Vertex {
+struct {
     Vector3 position;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizerGL3D::Position{});
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::MeshVisualizerGL3D::Position{})
+    .setCount(Containers::arraySize(vertices));
 /* [MeshVisualizerGL3D-usage-geom1] */
 
 /* [MeshVisualizerGL3D-usage-geom2] */
@@ -823,7 +789,7 @@ shader.setColor(0x2f83cc_rgbf)
 /* [MeshVisualizerGL3D-usage-geom2] */
 
 /* [MeshVisualizerGL3D-usage-no-geom-old] */
-Containers::Array<Float> vertexIndex{Containers::arraySize(data)};
+Containers::Array<Float> vertexIndex{Containers::arraySize(vertices)};
 std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
 GL::Buffer vertexIndices;
@@ -832,31 +798,24 @@ vertexIndices.setData(vertexIndex, GL::BufferUsage::StaticDraw);
 mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizerGL3D::VertexIndex{});
 /* [MeshVisualizerGL3D-usage-no-geom-old] */
 }
-#endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
-   on GCC 4.8 in the [60] array */
-#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [MeshVisualizerGL3D-usage-tbn1] */
-struct Vertex {
+struct {
     Vector3 position;
     Vector4 tangent;
     Vector3 normal;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::MeshVisualizerGL3D::Position{},
-    Shaders::MeshVisualizerGL3D::Tangent4{},
-    Shaders::MeshVisualizerGL3D::Normal{});
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::MeshVisualizerGL3D::Position{},
+        Shaders::MeshVisualizerGL3D::Tangent4{},
+        Shaders::MeshVisualizerGL3D::Normal{})
+    .setCount(Containers::arraySize(vertices));
 /* [MeshVisualizerGL3D-usage-tbn1] */
 
 /* [MeshVisualizerGL3D-usage-tbn2] */
@@ -875,12 +834,11 @@ shader.setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
 /* [MeshVisualizerGL3D-usage-tbn2] */
 }
 #endif
-#endif
 
 {
 /* [MeshVisualizerGL3D-usage-no-geom1] */
-Containers::StridedArrayView1D<const UnsignedInt> indices;
-Containers::StridedArrayView1D<const Vector3> indexedPositions;
+Containers::StridedArrayView1D<const UnsignedInt> indices = DOXYGEN_ELLIPSIS({});
+Containers::StridedArrayView1D<const Vector3> indexedPositions = DOXYGEN_ELLIPSIS({});
 
 /* De-indexing the position array */
 GL::Buffer vertices{MeshTools::duplicate(indices, indexedPositions)};
@@ -982,41 +940,37 @@ GL::Mesh mesh;
 struct {
     Matrix4 transformation;
     Matrix3x3 normal;
-} instanceData[] {
+} instanceData[]{
     {Matrix4::translation({1.0f, 2.0f, 0.0f}), {}},
     {Matrix4::translation({2.0f, 1.0f, 0.0f}), {}},
     {Matrix4::translation({3.0f, 0.0f, 1.0f}), {}},
-    // ...
+    DOXYGEN_ELLIPSIS()
 };
 for(auto& instance: instanceData)
     instance.normal = instance.transformation.normalMatrix();
 
-mesh.setInstanceCount(Containers::arraySize(instanceData))
-    .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+mesh.addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
         Shaders::MeshVisualizerGL3D::TransformationMatrix{},
-        Shaders::MeshVisualizerGL3D::NormalMatrix{});
+        Shaders::MeshVisualizerGL3D::NormalMatrix{})
+    .setInstanceCount(Containers::arraySize(instanceData));
 /* [MeshVisualizerGL3D-usage-instancing] */
 }
 #endif
 
-#if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [PhongGL-usage-colored1] */
-struct Vertex {
+struct {
     Vector3 position;
     Vector3 normal;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::PhongGL::Position{},
-    Shaders::PhongGL::Normal{});
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::PhongGL::Position{},
+        Shaders::PhongGL::Normal{})
+    .setCount(Containers::arraySize(vertices));
 /* [PhongGL-usage-colored1] */
 
 /* [PhongGL-usage-colored2] */
@@ -1036,23 +990,20 @@ shader.setDiffuseColor(0x2f83cc_rgbf)
 
 {
 /* [PhongGL-usage-texture1] */
-struct Vertex {
+struct {
     Vector3 position;
     Vector3 normal;
     Vector2 textureCoordinates;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::PhongGL::Position{},
-    Shaders::PhongGL::Normal{},
-    Shaders::PhongGL::TextureCoordinates{});
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::PhongGL::Position{},
+        Shaders::PhongGL::Normal{},
+        Shaders::PhongGL::TextureCoordinates{})
+    .setCount(Containers::arraySize(vertices));
 /* [PhongGL-usage-texture1] */
 
 /* [PhongGL-usage-texture2] */
@@ -1069,7 +1020,6 @@ shader.bindTextures(nullptr, &diffuseTexture, &specularTexture, nullptr)
     .draw(mesh);
 /* [PhongGL-usage-texture2] */
 }
-#endif
 
 {
 /* [PhongGL-usage-lights] */
@@ -1130,7 +1080,7 @@ struct {
     {Matrix4::translation({1.0f, 2.0f, 0.0f})*Matrix4::rotationX(90.0_degf), {}},
     {Matrix4::translation({2.0f, 1.0f, 0.0f})*Matrix4::rotationY(90.0_degf), {}},
     {Matrix4::translation({3.0f, 0.0f, 1.0f})*Matrix4::rotationZ(90.0_degf), {}},
-    // ...
+    DOXYGEN_ELLIPSIS()
 };
 for(auto& instance: instanceData)
     instance.normal = instance.transformation.normalMatrix();
@@ -1188,21 +1138,18 @@ shader
 #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [VectorGL-usage1] */
-struct Vertex {
+struct {
     Vector2 position;
     Vector2 textureCoordinates;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::VectorGL2D::Position{},
-    Shaders::VectorGL2D::TextureCoordinates{});
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::VectorGL2D::Position{},
+        Shaders::VectorGL2D::TextureCoordinates{})
+    .setCount(Containers::arraySize(vertices));
 /* [VectorGL-usage1] */
 
 /* [VectorGL-usage2] */
@@ -1253,21 +1200,18 @@ shader
 #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
 {
 /* [VertexColorGL-usage1] */
-struct Vertex {
+struct {
     Vector3 position;
     Color3 color;
+} vertices[]{
+    DOXYGEN_ELLIPSIS({})
 };
-Vertex data[60]{
-    // ...
-};
-
-GL::Buffer vertices;
-vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::VertexColorGL3D::Position{},
-    Shaders::VertexColorGL3D::Color3{});
+mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+        Shaders::VertexColorGL3D::Position{},
+        Shaders::VertexColorGL3D::Color3{})
+    .setCount(Containers::arraySize(vertices));
 /* [VertexColorGL-usage1] */
 
 /* [VertexColorGL-usage2] */
