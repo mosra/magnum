@@ -166,9 +166,7 @@ DistanceFieldGL::DistanceFieldGL(const UnsignedInt radius): _state{new State{rad
             {-1.0f, -3.0f},
             { 3.0f,  1.0f}
         };
-        GL::Buffer buffer;
-        buffer.setData(triangle, GL::BufferUsage::StaticDraw);
-        _state->mesh.addVertexBuffer(Utility::move(buffer), 0, DistanceFieldShader::Position());
+        _state->mesh.addVertexBuffer(GL::Buffer{triangle}, 0, DistanceFieldShader::Position());
     }
 }
 
