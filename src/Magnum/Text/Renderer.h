@@ -37,20 +37,14 @@
 #include "Magnum/Text/Text.h"
 #include "Magnum/Text/visibility.h"
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Utility/StlForwardTuple.h>
 #include <Corrade/Utility/StlForwardVector.h>
 #include <Corrade/Utility/StlForwardString.h>
 
-#include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/GL/Buffer.h"
-#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/Text/Alignment.h"
-
-#ifdef CORRADE_TARGET_EMSCRIPTEN
-#include <Corrade/Containers/Array.h>
-#endif
 #endif
 
 namespace Magnum { namespace Text {
@@ -1737,20 +1731,51 @@ shaper features used.
 */
 MAGNUM_TEXT_EXPORT Containers::Pair<UnsignedInt, UnsignedInt> glyphRangeForBytes(const Containers::StridedArrayView1D<const UnsignedInt>& clusters, UnsignedInt begin, UnsignedInt end);
 
-#ifdef MAGNUM_TARGET_GL
+/* As the deprecated AbstractRenderer relies on GL functionality, it'd be
+   ideally put into RendererGL.h, but that'd be a breaking change as existing
+   code expects it in Renderer.h. OTOH, the implementation is in RendererGL.cpp
+   to avoid including GL headers and nasty STL things in Renderer.cpp as
+   well. */
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 /**
-@brief Base for OpenGL text renderers
+@brief OpenGL text renderer
+@m_deprecated_since_latest Use @ref Renderer or @ref RendererGL instead, which
+    expose a superset of the functionality through a more efficient interface.
+    It doesn't distinguish between 2D and 3D anymore as the original
+    implementation had two-component vertex positions in 3D as well. If you
+    really need a third coordinate for transforming individual glyphs, use a
+    @ref Text-Renderer-allocators "custom Renderer vertex allocator".
 
-Not meant to be used directly, see the @ref BasicRenderer class for more
-information.
+Lays out the text into mesh using given font. Use of ligatures, kerning etc.
+depends on features supported by particular font and its layouter.
+
+@section Text-BasicRenderer-usage Usage
+
+Immutable text (e.g. menu items, credits) can be simply rendered using static
+methods, returning result either as data arrays or as fully configured mesh.
+The text can be then drawn as usual by configuring the shader and drawing the
+mesh:
+
+@snippet Text-gl.cpp Renderer2D-usage1
+
+See @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, Alignment)
+and @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, GL::Buffer&, GL::Buffer&, GL::BufferUsage, Alignment)
+for more information.
+
+While this method is sufficient for one-shot rendering of static texts, for
+mutable texts (e.g. FPS counters, chat messages) there is another approach
+that doesn't recreate everything on each text change:
+
+@snippet Text-gl.cpp Renderer2D-usage2
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 
-@see @ref Renderer2D, @ref Renderer3D
+@see @ref Renderer2D, @ref Renderer3D, @ref AbstractFont,
+    @ref Shaders::VectorGL, @ref Shaders::DistanceFieldVectorGL
 */
-class MAGNUM_TEXT_EXPORT AbstractRenderer {
+class CORRADE_DEPRECATED("use Renderer or RendererGL instead") MAGNUM_TEXT_EXPORT AbstractRenderer {
     public:
         /**
          * @brief Render text
@@ -1766,165 +1791,6 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          */
         static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, Alignment alignment = Alignment::LineLeft);
 
-        /** @brief Copying is not allowed */
-        AbstractRenderer(AbstractRenderer&) = delete;
-
-        /** @brief Move constructor */
-        AbstractRenderer(AbstractRenderer&&) noexcept;
-
-        /** @brief Copying is not allowed */
-        AbstractRenderer& operator=(AbstractRenderer&) = delete;
-
-        /** @brief Move assignment is not allowed */
-        /* Because it contains reference members. Not going to fix this, just
-           pinning down existing behavior. */
-        AbstractRenderer& operator=(AbstractRenderer&&) = delete;
-
-        /**
-         * @brief Capacity for rendered glyphs
-         *
-         * @see @ref reserve()
-         */
-        UnsignedInt capacity() const { return _capacity; }
-
-        /**
-         * @brief Font size in points
-         * @m_since_latest
-         */
-        Float fontSize() const { return _fontSize; }
-
-        /** @brief Rectangle spanning the rendered text */
-        Range2D rectangle() const { return _rectangle; }
-
-        /** @brief Vertex buffer */
-        GL::Buffer& vertexBuffer() { return _vertexBuffer; }
-
-        /** @brief Index buffer */
-        GL::Buffer& indexBuffer() { return _indexBuffer; }
-
-        /** @brief Mesh */
-        GL::Mesh& mesh() { return _mesh; }
-
-        /**
-         * @brief Reserve capacity for rendered glyphs
-         *
-         * Reallocates memory in buffers to hold @p glyphCount glyphs and
-         * prefills index buffer. Consider using appropriate @p vertexBufferUsage
-         * if the text will be changed frequently. Index buffer is changed
-         * only by calling this function, thus @p indexBufferUsage generally
-         * doesn't need to be so dynamic if the capacity won't be changed much.
-         *
-         * Initially zero capacity is reserved.
-         * @see @ref capacity()
-         */
-        void reserve(UnsignedInt glyphCount, GL::BufferUsage vertexBufferUsage, GL::BufferUsage indexBufferUsage);
-
-        /**
-         * @brief Render text
-         *
-         * Renders the text to vertex buffer, reusing index buffer already
-         * filled with @ref reserve(). Rectangle spanning the rendered text is
-         * available through @ref rectangle().
-         *
-         * Initially no text is rendered.
-         * @attention The capacity must be large enough to contain all glyphs,
-         *      see @ref reserve() for more information.
-         */
-        void render(const std::string& text);
-
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
-    private:
-    #endif
-        explicit MAGNUM_TEXT_LOCAL AbstractRenderer(AbstractFont& font, const AbstractGlyphCache& cache, Float size, Alignment alignment);
-
-        ~AbstractRenderer();
-
-        GL::Mesh _mesh;
-        GL::Buffer _vertexBuffer, _indexBuffer;
-        #ifdef CORRADE_TARGET_EMSCRIPTEN
-        Containers::Array<UnsignedByte> _vertexBufferData, _indexBufferData;
-        #endif
-
-    private:
-        AbstractFont& font;
-        const AbstractGlyphCache& cache;
-        Float _fontSize;
-        Alignment _alignment;
-        UnsignedInt _capacity;
-        Range2D _rectangle;
-
-        #if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
-        typedef void*(*BufferMapImplementation)(GL::Buffer&, GLsizeiptr);
-        static MAGNUM_TEXT_LOCAL void* bufferMapImplementationFull(GL::Buffer& buffer, GLsizeiptr length);
-        static MAGNUM_TEXT_LOCAL void* bufferMapImplementationRange(GL::Buffer& buffer, GLsizeiptr length);
-        static BufferMapImplementation bufferMapImplementation;
-        #else
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        static
-        #else
-        MAGNUM_TEXT_LOCAL
-        #endif
-        void* bufferMapImplementation(GL::Buffer& buffer, GLsizeiptr length);
-        #endif
-
-        #if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
-        typedef void(*BufferUnmapImplementation)(GL::Buffer&);
-        static MAGNUM_TEXT_LOCAL void bufferUnmapImplementationDefault(GL::Buffer& buffer);
-        static MAGNUM_TEXT_LOCAL BufferUnmapImplementation bufferUnmapImplementation;
-        #else
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        static
-        #else
-        MAGNUM_TEXT_LOCAL
-        #endif
-        void bufferUnmapImplementation(GL::Buffer& buffer);
-        #endif
-};
-
-/**
-@brief OpenGL text renderer
-
-Lays out the text into mesh using given font. Use of ligatures, kerning etc.
-depends on features supported by particular font and its layouter.
-
-@section Text-BasicRenderer-usage Usage
-
-Immutable text (e.g. menu items, credits) can be simply rendered using static
-methods, returning result either as data arrays or as fully configured mesh.
-The text can be then drawn as usual by configuring the shader and drawing the
-mesh:
-
-@snippet Text-gl.cpp BasicRenderer-usage1
-
-See @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, Alignment)
-and @ref render(AbstractFont&, const AbstractGlyphCache&, Float, const std::string&, GL::Buffer&, GL::Buffer&, GL::BufferUsage, Alignment)
-for more information.
-
-While this method is sufficient for one-shot rendering of static texts, for
-mutable texts (e.g. FPS counters, chat messages) there is another approach
-that doesn't recreate everything on each text change:
-
-@snippet Text-gl.cpp BasicRenderer-usage2
-
-@section Text-BasicRenderer-required-opengl-functionality Required OpenGL functionality
-
-Mutable text rendering requires @gl_extension{ARB,map_buffer_range} on desktop
-OpenGL (also part of OpenGL ES 3.0). If @gl_extension{EXT,map_buffer_range} is not
-available in ES 2.0, at least @gl_extension{OES,mapbuffer} must be supported for
-asynchronous buffer updates. There is no similar extension in WebGL, thus plain
-(and slow) buffer updates are used there.
-
-@note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
-
-@see @ref Renderer2D, @ref Renderer3D, @ref AbstractFont,
-    @ref Shaders::VectorGL, @ref Shaders::DistanceFieldVectorGL
-*/
-template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT BasicRenderer: public AbstractRenderer {
-    public:
         /**
          * @brief Render text
          * @param font          Font
@@ -1933,7 +1799,8 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT BasicRenderer: public 
          * @param text          Text to render
          * @param vertexBuffer  Buffer where to store vertices
          * @param indexBuffer   Buffer where to store indices
-         * @param usage         Usage of vertex and index buffer
+         * @param usage         Ignored, provided just for backward
+         *      compatibility
          * @param alignment     Text alignment
          *
          * Returns a mesh prepared for use with @ref Shaders::VectorGL or
@@ -1953,31 +1820,130 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT BasicRenderer: public 
          * Expects that @p font is present in @p cache and that @p cache isn't
          * an array.
          */
-        explicit BasicRenderer(AbstractFont& font, const AbstractGlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
-        BasicRenderer(AbstractFont&, AbstractGlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
+        explicit AbstractRenderer(AbstractFont& font, const AbstractGlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
+        explicit AbstractRenderer(AbstractFont&, AbstractGlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        using AbstractRenderer::render;
-        #endif
+        /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
+        AbstractRenderer(AbstractRenderer&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /**
+         * @brief Move constructor
+         *
+         * Performs a destructive move, i.e. the original object isn't usable
+         * afterwards anymore.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
+        AbstractRenderer(AbstractRenderer&&) noexcept;
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        ~AbstractRenderer();
+
+        /** @brief Copying is not allowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
+        AbstractRenderer& operator=(AbstractRenderer&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /** @brief Move assignment is not allowed */
+        /* Because it contains reference members. Not going to fix this, just
+           pinning down existing behavior. */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
+        AbstractRenderer& operator=(AbstractRenderer&&) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /**
+         * @brief Capacity for rendered glyphs
+         *
+         * @see @ref reserve()
+         */
+        UnsignedInt capacity() const;
+
+        /**
+         * @brief Font size in points
+         * @m_since_latest
+         */
+        Float fontSize() const { return _fontSize; }
+
+        /** @brief Rectangle spanning the rendered text */
+        Range2D rectangle() const { return _rectangle; }
+
+        /** @brief Vertex buffer */
+        GL::Buffer& vertexBuffer();
+
+        /** @brief Index buffer */
+        GL::Buffer& indexBuffer();
+
+        /** @brief Mesh */
+        GL::Mesh& mesh();
+
+        /**
+         * @brief Reserve capacity for rendered glyphs
+         *
+         * Reallocates memory in buffers to hold @p glyphCount glyphs and
+         * prefills index buffer. The @p vertexBufferUsage and
+         * @p indexBufferUsage parameters are ignored and provided just for
+         * backward compatibility.
+         *
+         * Initially zero capacity is reserved.
+         * @see @ref capacity()
+         */
+        void reserve(UnsignedInt glyphCount, GL::BufferUsage vertexBufferUsage, GL::BufferUsage indexBufferUsage);
+
+        /**
+         * @brief Render text
+         *
+         * Renders the text to vertex buffer, reusing index buffer already
+         * filled with @ref reserve(). Rectangle spanning the rendered text is
+         * available through @ref rectangle().
+         *
+         * Initially no text is rendered.
+         */
+        void render(const std::string& text);
+
+    private:
+        /* Cannot be a base because RendererGL is defined in another header,
+           and making a cyclic dependency between the two for *all* users is
+           worse than one extra allocation for just some */
+        Containers::Pointer<RendererGL> _renderer;
+        AbstractFont& _font;
+        Float _fontSize;
+        Range2D _rectangle;
 };
 
 /**
 @brief Two-dimensional text renderer
+@m_deprecated_since_latest Use @ref Renderer or @ref RendererGL instead, which
+    expose a superset of the functionality through a more efficient interface.
+    It doesn't distinguish between 2D and 3D anymore as the original
+    implementation had two-component vertex positions in 3D as well. If you
+    really need a third coordinate for transforming individual glyphs, use a
+    @ref Text-Renderer-allocators "custom Renderer vertex allocator".
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-typedef BasicRenderer<2> Renderer2D;
+CORRADE_IGNORE_DEPRECATED_PUSH /* idiotic MSVC warns for deprecated APIs using deprecated APIs */
+typedef CORRADE_DEPRECATED("use Renderer or RendererGL instead") AbstractRenderer Renderer2D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Three-dimensional text renderer
+@m_deprecated_since_latest Use @ref Renderer or @ref RendererGL instead, which
+    expose a superset of the functionality through a more efficient interface.
+    It doesn't distinguish between 2D and 3D anymore as the original
+    implementation had two-component vertex positions in 3D as well. If you
+    really need a third coordinate for transforming individual glyphs, use a
+    @ref Text-Renderer-allocators "custom Renderer vertex allocator".
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-typedef BasicRenderer<3> Renderer3D;
+CORRADE_IGNORE_DEPRECATED_PUSH /* idiotic MSVC warns for deprecated APIs using deprecated APIs */
+typedef CORRADE_DEPRECATED("use Renderer or RendererGL instead") AbstractRenderer Renderer3D;
+CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 }}

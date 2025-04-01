@@ -641,8 +641,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *      @ref AbstractShaper class instead.
          *
          * Note that the layouters support rendering of single-line text only.
-         * See @ref BasicRenderer "Renderer*D" class for more advanced text
-         * layouting. Expects that a font is opened.
+         * See @ref AbstractRenderer class for more advanced text layouting.
+         * Expects that a font is opened.
          * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
         CORRADE_DEPRECATED("use createShaper() instead") Containers::Pointer<AbstractLayouter> layout(const AbstractGlyphCache& cache, Float size, Containers::StringView text);

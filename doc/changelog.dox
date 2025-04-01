@@ -1590,6 +1590,14 @@ See also:
     @ref TextureTools::DistanceFieldGL along with correspondingly renamed
     headers, to make room for implementations with other backends such as
     Vulkan
+-   The @cpp Text::AbstractRenderer @ce class and the
+    @cpp Text::Renderer2D @ce and @cpp Text::Renderer3D @ce typedefs are
+    deprecated in favor of @ref Text::Renderer and @ref Text::RendererGL
+    instead, which expose a superset of the functionality through a more
+    efficient interface. The new API doesn't distinguish between 2D and 3D
+    anymore as the original implementation had two-component vertex positions
+    in 3D as well. If you really need a third coordinate for transforming
+    individual glyphs, use a @ref Text-Renderer-allocators "custom Renderer vertex allocator".
 -   @cpp Trade::AbstractMaterialData @ce as well as its containing header
     `Magnum/Trade/AbstractMaterialData.h` is now a deprecated alias to the new
     and more flexible @ref Trade::MaterialData.
@@ -1991,11 +1999,13 @@ See also:
     -   The @ref Text::AbstractGlyphCache::image() query now returns a
         @ref MutableImageView3D instead of an @ref Image2D in order to support
         incremental population and texture arrays
--   The @cpp Text::Renderer @ce class template was renamed to
-    @ref Text::BasicRenderer in order to make room for a new, more flexible
-    implementation. The assumption is that most existing code uses it through
-    the @ref Text::Renderer2D and @ref Text::Renderer3D typedefs and thus it
-    shouldn't result in any breakage.
+-   The @cpp Text::Renderer @ce class template is now gone and its
+    functionality was merged to the now-deprecated @ref Text::AbstractRenderer
+    class. The assumption is that most existing code uses it through the
+    @ref Text::Renderer2D and @ref Text::Renderer3D typedefs and thus it
+    shouldn't result in any breakage, and the original implementation didn't
+    distinguish between 2D and 3D anyway, having two-component vertex positions
+    in 3D as well.
 -   The @ref Text::Alignment left, right, top and middle values now work with
     the font metrics and cursor position instead of glyph bounding rectangles,
     as that's the more commonly expected behavior. The original behavior with

@@ -69,11 +69,14 @@ typedef CORRADE_DEPRECATED("use GlyphCacheGL instead") GlyphCacheGL GlyphCache;
 #ifndef MAGNUM_TARGET_GLES2
 class GlyphCacheArrayGL;
 #endif
-class AbstractRenderer;
-template<UnsignedInt> class BasicRenderer;
-typedef BasicRenderer<2> Renderer2D;
-typedef BasicRenderer<3> Renderer3D;
 class RendererGL;
+#ifdef MAGNUM_BUILD_DEPRECATED
+class CORRADE_DEPRECATED("use Renderer or RendererGL instead") AbstractRenderer;
+CORRADE_IGNORE_DEPRECATED_PUSH /* idiotic MSVC warns for deprecated APIs using deprecated APIs */
+typedef CORRADE_DEPRECATED("use Renderer or RendererGL instead") AbstractRenderer Renderer2D;
+typedef CORRADE_DEPRECATED("use Renderer or RendererGL instead") AbstractRenderer Renderer3D;
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 #endif
 
 }}

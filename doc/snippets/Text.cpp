@@ -49,6 +49,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Range.h"
+#include "Magnum/Text/Alignment.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/AbstractGlyphCache.h"

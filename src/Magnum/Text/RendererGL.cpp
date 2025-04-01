@@ -29,6 +29,8 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/StringView.h>
 
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/Shaders/GenericGL.h" /* no link-time dependency here */
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Text/Implementation/rendererState.h"
@@ -43,6 +45,18 @@
    count. */
 #if (defined(CORRADE_TARGET_GCC) && __GNUC__ <= 8) || defined(CORRADE_TARGET_DINKUMWARE)
 #include "Magnum/Text/Feature.h"
+#endif
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <string>
+#include <tuple>
+#include <vector>
+#include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Utility/Algorithms.h>
+
+#include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/AbstractShaper.h"
 #endif
 
 namespace Magnum { namespace Text {
@@ -302,5 +316,136 @@ Containers::Pair<Range2D, Range1Dui> RendererGL::render(AbstractShaper& shaper, 
 Containers::Pair<Range2D, Range1Dui> RendererGL::render(AbstractShaper& shaper, const Float size, const Containers::StringView text, const std::initializer_list<FeatureRange> features) {
     return render(shaper, size, text, Containers::arrayView(features));
 }
+
+/* The deprecated AbstractRenderer is defined in Renderer.h but the
+   implementation is here to avoid including GL headers in Renderer.cpp as
+   well. Additionally, since I need to include the nasty STL stuff for the GL
+   implementation here anyway, the non-GL part is put here too, again to not
+   have `#include <tuple>` and such in more places than strictly necessary. */
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> AbstractRenderer::render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
+    /* This was originally added as a runtime error into plugin implementations
+       during the transition period for the new AbstractGlyphCache API, now
+       it's an assert in the transition period for the new Renderer API.
+       Shouldn't get triggered by existing code that uses the old Renderer2D/3D
+       API with 2D caches. */
+    CORRADE_ASSERT(cache.size().z() == 1,
+        "Text::AbstractRenderer::render(): array glyph caches are not supported", {});
+
+    Renderer renderer{cache};
+    renderer
+        .setIndexType(MeshIndexType::UnsignedInt)
+        .setAlignment(alignment)
+        /* Yes, this allocates a shaper every time. The old implementation,
+           when ported to the new AbstractShaper, did so as well, so this
+           doesn't make it any worse. */
+        .add(*font.createShaper(), size, text);
+
+    Range2D rectangle = renderer.render().first();
+
+    /* 🤮 */
+    std::vector<UnsignedInt> indices(renderer.glyphCount()*6);
+    std::vector<Vector2> positions(renderer.glyphCount()*4);
+    std::vector<Vector2> textureCoordinates(renderer.glyphCount()*4);
+    Utility::copy(renderer.indices<UnsignedInt>(), indices);
+    Utility::copy(renderer.vertexPositions(), positions);
+    Utility::copy(renderer.vertexTextureCoordinates(), textureCoordinates);
+
+    return std::make_tuple(Utility::move(positions), Utility::move(textureCoordinates), Utility::move(indices), rectangle);
+}
+
+std::tuple<GL::Mesh, Range2D> AbstractRenderer::render(AbstractFont& font, const AbstractGlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage, Alignment alignment) {
+    /* This was originally added as a runtime error into plugin implementations
+       during the transition period for the new AbstractGlyphCache API, now
+       it's an assert in the transition period for the new Renderer API.
+       Shouldn't get triggered by existing code that uses the old Renderer2D/3D
+       API with 2D caches. */
+    CORRADE_ASSERT(cache.size().z() == 1,
+        "Text::AbstractRenderer::render(): array glyph caches are not supported", (std::tuple<GL::Mesh, Range2D>{}));
+
+    RendererGL renderer{cache};
+    renderer
+        /* The old implementation defaulted to 8-bit indices while the new uses
+           16-bit, preserve the old behavior */
+        .setIndexType(MeshIndexType::UnsignedByte)
+        .setAlignment(alignment)
+        .add(*font.createShaper(), size, text);
+
+    Range2D rectangle = renderer.render().first();
+
+    RendererGL::State& state = static_cast<RendererGL::State&>(*renderer._state);
+    GL::Mesh mesh = Utility::move(state.mesh);
+    vertexBuffer = Utility::move(state.vertices);
+    indexBuffer = Utility::move(state.indices);
+
+    return std::make_tuple(Utility::move(mesh), rectangle);
+}
+
+AbstractRenderer::AbstractRenderer(AbstractFont& font, const AbstractGlyphCache& cache, const Float size, const Alignment alignment): _font(font), _fontSize{size} {
+    /* This was originally added as a runtime error into plugin implementations
+       during the transition period for the new AbstractGlyphCache API, now
+       it's an assert in the transition period for the new Renderer API.
+       Shouldn't get triggered by existing code that uses the old Renderer2D/3D
+       API with 2D caches. */
+    CORRADE_ASSERT(cache.size().z() == 1,
+        "Text::AbstractRenderer: array glyph caches are not supported", );
+    /* Without this, the assert would fire only once .render() is called. The
+       root cause is in the constructor call, so fire it here already. */
+    CORRADE_ASSERT(cache.findFont(font),
+        "Text::AbstractRenderer: font not found among" << cache.fontCount() << "fonts in passed glyph cache", );
+
+    /* Construct the renderer only after the above asserts, so an assertion in
+       RendererGL about array glyph caches not being supported on ES2 doesn't
+       fire before ours */
+    _renderer.emplace(cache);
+
+    (*_renderer)
+        .setAlignment(alignment)
+        /* The old implementation defaulted to 8-bit indices while the new uses
+           16-bit, preserve the old behavior */
+        .setIndexType(MeshIndexType::UnsignedByte);
+}
+
+CORRADE_IGNORE_DEPRECATED_PUSH /* idiotic MSVC warns for deprecated APIs using deprecated APIs */
+AbstractRenderer::AbstractRenderer(AbstractRenderer&&) noexcept = default;
+CORRADE_IGNORE_DEPRECATED_POP
+
+AbstractRenderer::~AbstractRenderer() = default;
+
+UnsignedInt AbstractRenderer::capacity() const {
+    return _renderer->glyphCapacity();
+}
+
+CORRADE_IGNORE_DEPRECATED_PUSH /* idiotic MSVC warns for deprecated API *implementations*, but only sometimes! */
+GL::Buffer& AbstractRenderer::indexBuffer() {
+    return static_cast<RendererGL::State&>(*_renderer->_state).indices;
+}
+CORRADE_IGNORE_DEPRECATED_POP
+
+CORRADE_IGNORE_DEPRECATED_PUSH /* idiotic MSVC warns for deprecated API *implementations*, but only sometimes! */
+GL::Buffer& AbstractRenderer::vertexBuffer() {
+    return static_cast<RendererGL::State&>(*_renderer->_state).vertices;
+}
+CORRADE_IGNORE_DEPRECATED_POP
+
+CORRADE_IGNORE_DEPRECATED_PUSH /* idiotic MSVC warns for deprecated API *implementations*, but only sometimes! */
+GL::Mesh& AbstractRenderer::mesh() {
+    return _renderer->mesh();
+}
+CORRADE_IGNORE_DEPRECATED_POP
+
+void AbstractRenderer::reserve(const UnsignedInt glyphCount, GL::BufferUsage, GL::BufferUsage) {
+    _renderer->reserve(glyphCount, 0);
+}
+
+void AbstractRenderer::render(const std::string& text) {
+    _rectangle = (*_renderer)
+        .clear()
+        /* Yes, this allocates a shaper every time. The old implementation,
+           when ported to the new AbstractShaper, did so as well, so this
+           doesn't make it any worse. */
+        .render(*_font.createShaper(), _fontSize, text).first();
+}
+#endif
 
 }}

@@ -24,16 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <tuple>
-#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -42,19 +38,30 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/DebugTools/CompareImage.h"
-#include "Magnum/GL/Context.h"
-#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/Shaders/VectorGL.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractShaper.h"
+#include "Magnum/Text/Alignment.h"
 #include "Magnum/Text/GlyphCacheGL.h"
 #include "Magnum/Text/RendererGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <string>
+#include <tuple>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Format.h>
+
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#endif
 
 #include "configure.h"
 
@@ -78,16 +85,18 @@ struct RendererGLTest: GL::OpenGLTester {
     void renderClearReset();
     void renderIndexTypeChanged();
 
-    template<UnsignedInt dimensions> void constructND();
-    template<UnsignedInt dimensions> void constructNDCopy();
-    template<UnsignedInt dimensions> void constructNDMove();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void deprecatedConstruct();
+    void deprecatedConstructCopy();
+    void deprecatedConstructMove();
 
-    void renderMesh();
-    void renderMeshIndexType();
-    void mutableText();
+    void deprecatedRenderMesh();
+    void deprecatedRenderMeshIndexType();
+    void deprecatedMutableText();
 
-    void arrayGlyphCache();
-    void fontNotFoundInCache();
+    void deprecatedArrayGlyphCache();
+    void deprecatedFontNotFoundInCache();
+    #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -225,19 +234,18 @@ RendererGLTest::RendererGLTest() {
         &RendererGLTest::renderSetup,
         &RendererGLTest::renderTeardown);
 
-    addTests({&RendererGLTest::constructND<2>,
-              &RendererGLTest::constructND<3>,
-              &RendererGLTest::constructNDCopy<2>,
-              &RendererGLTest::constructNDCopy<3>,
-              &RendererGLTest::constructNDMove<2>,
-              &RendererGLTest::constructNDMove<3>,
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&RendererGLTest::deprecatedConstruct,
+              &RendererGLTest::deprecatedConstructCopy,
+              &RendererGLTest::deprecatedConstructMove,
 
-              &RendererGLTest::renderMesh,
-              &RendererGLTest::renderMeshIndexType,
-              &RendererGLTest::mutableText,
+              &RendererGLTest::deprecatedRenderMesh,
+              &RendererGLTest::deprecatedRenderMeshIndexType,
+              &RendererGLTest::deprecatedMutableText,
 
-              &RendererGLTest::arrayGlyphCache,
-              &RendererGLTest::fontNotFoundInCache});
+              &RendererGLTest::deprecatedArrayGlyphCache,
+              &RendererGLTest::deprecatedFontNotFoundInCache});
+    #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -840,11 +848,12 @@ void RendererGLTest::renderIndexTypeChanged() {
         (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 struct TestShaper: AbstractShaper {
     using AbstractShaper::AbstractShaper;
 
-    UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
-        return text.size();
+    UnsignedInt doShape(Containers::StringView, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange>) override {
+        return end - begin;
     }
 
     void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
@@ -914,9 +923,7 @@ GlyphCacheGL testGlyphCache(AbstractFont& font) {
     return cache;
 }
 
-template<UnsignedInt dimensions> void RendererGLTest::constructND() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
+void RendererGLTest::deprecatedConstruct() {
     struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
@@ -927,12 +934,14 @@ template<UnsignedInt dimensions> void RendererGLTest::constructND() {
     font.openFile({}, 0.5f);
     glyphCache.addFont(3, &font);
 
-    BasicRenderer<dimensions> a{font, glyphCache, 3.0f};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    AbstractRenderer a{font, glyphCache, 3.0f};
     CORRADE_COMPARE(a.capacity(), 0);
     CORRADE_COMPARE(a.fontSize(), 3.0f);
     CORRADE_COMPARE(a.rectangle(), Range2D{});
     CORRADE_VERIFY(a.indexBuffer().id());
     CORRADE_VERIFY(a.vertexBuffer().id());
+    CORRADE_IGNORE_DEPRECATED_POP
     {
         #ifndef MAGNUM_TARGET_GLES
         CORRADE_EXPECT_FAIL_IF(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::vertex_array_object>(),
@@ -941,20 +950,20 @@ template<UnsignedInt dimensions> void RendererGLTest::constructND() {
         CORRADE_EXPECT_FAIL_IF(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::vertex_array_object>(),
             "There's no way to know if the mesh was initialized without" << GL::Extensions::OES::vertex_array_object::string() << Debug::nospace << ".");
         #endif
+        CORRADE_IGNORE_DEPRECATED_PUSH
         CORRADE_VERIFY(a.mesh().id());
+        CORRADE_IGNORE_DEPRECATED_POP
     }
 }
 
-template<UnsignedInt dimensions> void RendererGLTest::constructNDCopy() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    CORRADE_VERIFY(!std::is_copy_constructible<BasicRenderer<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<BasicRenderer<dimensions>>{});
+void RendererGLTest::deprecatedConstructCopy() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!std::is_copy_constructible<AbstractRenderer>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<AbstractRenderer>{});
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-template<UnsignedInt dimensions> void RendererGLTest::constructNDMove() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
+void RendererGLTest::deprecatedConstructMove() {
     struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
@@ -965,20 +974,20 @@ template<UnsignedInt dimensions> void RendererGLTest::constructNDMove() {
     font.openFile({}, 0.5f);
     glyphCache.addFont(3, &font);
 
-    BasicRenderer<dimensions> a{font, glyphCache, 3.0f};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    AbstractRenderer a{font, glyphCache, 3.0f};
 
-    BasicRenderer<dimensions> b = Utility::move(a);
+    AbstractRenderer b = Utility::move(a);
     CORRADE_COMPARE(b.fontSize(), 3.0f);
 
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<BasicRenderer<dimensions>>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<AbstractRenderer>::value);
     /* Because it contains reference members. Not going to fix this, just
        pinning down existing behavior. */
-    CORRADE_VERIFY(!std::is_move_assignable<BasicRenderer<dimensions>>{});
+    CORRADE_VERIFY(!std::is_move_assignable<AbstractRenderer>{});
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-void RendererGLTest::renderMesh() {
-    /* Like render(middle center), but with a mesh output instead of data */
-
+void RendererGLTest::deprecatedRenderMesh() {
     TestFont font;
     font.openFile({}, 0.5f);
     GlyphCacheGL cache = testGlyphCache(font);
@@ -990,8 +999,10 @@ void RendererGLTest::renderMesh() {
     GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array},
         indexBuffer{GL::Buffer::TargetHint::ElementArray};
     Range2D bounds;
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::tie(mesh, bounds) = Renderer3D::render(font, cache,
         0.25f, "abc", vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw, Alignment::MiddleCenter);
+    CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Alignment offset */
@@ -1031,7 +1042,7 @@ void RendererGLTest::renderMesh() {
     #endif
 }
 
-void RendererGLTest::renderMeshIndexType() {
+void RendererGLTest::deprecatedRenderMeshIndexType() {
     #ifndef MAGNUM_TARGET_GLES
     TestFont font;
     font.openFile({}, 0.5f);
@@ -1047,8 +1058,10 @@ void RendererGLTest::renderMeshIndexType() {
        texture coordinates, each float is four bytes; six indices per glyph. */
 
     /* 8-bit indices (exactly 256 vertices) */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::tie(mesh, std::ignore) = Renderer3D::render(font, cache,
         1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
+    CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
     Containers::Array<char> indicesByte = indexBuffer.data();
     CORRADE_COMPARE(vertexBuffer.size(), 256*(2 + 2)*4);
@@ -1061,8 +1074,10 @@ void RendererGLTest::renderMeshIndexType() {
         }), TestSuite::Compare::Container);
 
     /* 16-bit indices (260 vertices) */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::tie(mesh, std::ignore) = Renderer3D::render(font, cache,
         1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
+    CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
     Containers::Array<char> indicesShort = indexBuffer.data();
     CORRADE_COMPARE(vertexBuffer.size(), 260*(2 + 2)*4);
@@ -1078,35 +1093,29 @@ void RendererGLTest::renderMeshIndexType() {
     #endif
 }
 
-void RendererGLTest::mutableText() {
-    #ifndef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::map_buffer_range>())
-        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() << "is not supported.");
-    #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::map_buffer_range>() &&
-       !GL::Context::current().isExtensionSupported<GL::Extensions::OES::mapbuffer>())
-        CORRADE_SKIP("No required extension is supported");
-    #endif
-
-    /* Like render(middle center) and renderMesh(), but modifying an instance
-       instead of rendering once */
-
+void RendererGLTest::deprecatedMutableText() {
     TestFont font;
     font.openFile({}, 0.5f);
     GlyphCacheGL cache = testGlyphCache(font);
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Renderer2D renderer(font, cache, 0.25f, Alignment::MiddleCenter);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
     CORRADE_COMPARE(renderer.fontSize(), 0.25f);
     CORRADE_COMPARE(renderer.rectangle(), Range2D());
+    CORRADE_IGNORE_DEPRECATED_POP
 
     /* Reserve some capacity */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     renderer.reserve(4, GL::BufferUsage::DynamicDraw, GL::BufferUsage::DynamicDraw);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 4);
+    CORRADE_IGNORE_DEPRECATED_POP
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Containers::Array<char> indices = renderer.indexBuffer().data();
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices).prefix(24),
         Containers::arrayView<UnsignedByte>({
              0,  1,  2,  2,  1,  3,
@@ -1117,19 +1126,25 @@ void RendererGLTest::mutableText() {
     #endif
 
     /* Render text */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     renderer.render("abc");
+    CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Alignment offset */
     const Vector2 offset{-1.5f, -0.5f};
 
     /* Updated bounds and mesh vertex count */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(renderer.rectangle(), (Range2D{{0.0f, -1.25f}, {3.0f, 2.25f}}.translated(offset)));
     CORRADE_COMPARE(renderer.mesh().count(), 3*6);
+    CORRADE_IGNORE_DEPRECATED_POP
 
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Containers::Array<char> vertices = renderer.vertexBuffer().data();
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(vertices).prefix(2*4*3), Containers::arrayView<Vector2>({
         Vector2{ 2.5f,  5.5f} + offset, {0.0f, 0.0f},
         Vector2{12.5f,  5.5f} + offset, {1.0f, 0.0f},
@@ -1150,12 +1165,14 @@ void RendererGLTest::mutableText() {
 
     /* Rendering again replaces previous contents. I.e., if rendering an empty
        string, it makes the output empty. */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     renderer.render("");
-    CORRADE_COMPARE(renderer.rectangle(), (Range2D{{0.0f, -1.75f}, {0.0f, 1.75f}}));
+    CORRADE_COMPARE(renderer.rectangle(), Range2D{});
     CORRADE_COMPARE(renderer.mesh().count(), 0);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-void RendererGLTest::arrayGlyphCache() {
+void RendererGLTest::deprecatedArrayGlyphCache() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
@@ -1168,16 +1185,21 @@ void RendererGLTest::arrayGlyphCache() {
 
     GL::Buffer buffer;
 
+    /* This used to fire with the old internals and the new internals support
+       arrays but the user may still attempt to use the deprecated class with
+       an array-unaware shader, which should still be caught like before. */
     Containers::String out;
     Error redirectError{&out};
-    Renderer2D::render(font, cache, 1.0f, "", buffer, buffer, GL::BufferUsage::StaticDraw);
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Renderer2D{font, cache, 1.0f};
+    Renderer2D::render(font, cache, 1.0f, "", buffer, buffer, GL::BufferUsage::StaticDraw);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out,
-        "Text::Renderer: array glyph caches are not supported\n"
-        "Text::AbstractRenderer: array glyph caches are not supported\n");
+        "Text::AbstractRenderer: array glyph caches are not supported\n"
+        "Text::AbstractRenderer::render(): array glyph caches are not supported\n");
 }
 
-void RendererGLTest::fontNotFoundInCache() {
+void RendererGLTest::deprecatedFontNotFoundInCache() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
@@ -1193,14 +1215,21 @@ void RendererGLTest::fontNotFoundInCache() {
 
     GL::Buffer buffer;
 
+    /* The first delegates to RendererCore so just verify that nothing strange
+       happens during delegation, in the second case the constructor should
+       fire already because it's better than doing that only once .render() is
+       called */
     Containers::String out;
     Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Renderer2D::render(font, cache, 1.0f, "", buffer, buffer, GL::BufferUsage::StaticDraw);
     Renderer2D{font, cache, 1.0f};
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out,
-        "Text::Renderer: font not found among 2 fonts in passed glyph cache\n"
+        "Text::RendererCore::add(): shaper font not found among 2 fonts in associated glyph cache\n"
         "Text::AbstractRenderer: font not found among 2 fonts in passed glyph cache\n");
 }
+#endif
 
 }}}}
 

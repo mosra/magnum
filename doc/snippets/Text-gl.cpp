@@ -24,14 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <tuple>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/GL/MeshView.h"
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/Shaders/VectorGL.h"
@@ -40,6 +39,14 @@
 #include "Magnum/Text/AbstractShaper.h"
 #include "Magnum/Text/DistanceFieldGlyphCacheGL.h"
 #include "Magnum/Text/RendererGL.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <string>
+#include <tuple>
+
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Mesh.h"
+#endif
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
@@ -199,12 +206,14 @@ shader
 /* [Renderer-usage-blocks-draw] */
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 {
 /* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
    the font pointer. I don't care, I just want you to check compilation errors,
    not more! */
 PluginManager::Manager<Text::AbstractFont> manager;
-/* [BasicRenderer-usage1] */
+CORRADE_IGNORE_DEPRECATED_PUSH
+/* [Renderer2D-usage1] */
 /* Font instance, received from a plugin manager */
 Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
 
@@ -236,9 +245,11 @@ shader
     .setColor(0xffffff_rgbf)
     .bindVectorTexture(cache.texture())
     .draw(mesh);
-/* [BasicRenderer-usage1] */
+/* [Renderer2D-usage1] */
+CORRADE_IGNORE_DEPRECATED_POP
 
-/* [BasicRenderer-usage2] */
+CORRADE_IGNORE_DEPRECATED_PUSH
+/* [Renderer2D-usage2] */
 /* Initialize the renderer and reserve memory for enough glyphs */
 Text::Renderer2D renderer{*font, cache, 12.0f, Text::Alignment::LineCenter};
 renderer.reserve(32, GL::BufferUsage::DynamicDraw, GL::BufferUsage::StaticDraw);
@@ -251,6 +262,8 @@ shader.setTransformationProjectionMatrix(projectionMatrix)
     .setColor(0xffffff_rgbf)
     .bindVectorTexture(cache.texture())
     .draw(renderer.mesh());
-/* [BasicRenderer-usage2] */
+/* [Renderer2D-usage2] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 }

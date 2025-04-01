@@ -34,6 +34,7 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/GL.h"
 #include "Magnum/Text/Renderer.h"
 
 namespace Magnum { namespace Text {
@@ -240,6 +241,13 @@ class MAGNUM_TEXT_EXPORT RendererGL: public Renderer {
 
     private:
         struct State;
+
+        /* Needs to extract the GL::Buffer instances from inside */
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        friend AbstractRenderer;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 };
 
 }}

@@ -24,9 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <tuple>
-#include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
@@ -43,12 +40,20 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Text/AbstractShaper.h"
+#include "Magnum/Text/Alignment.h"
 #include "Magnum/Text/Direction.h"
 #include "Magnum/Text/Feature.h"
 #include "Magnum/Text/Renderer.h"
+
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+#include <string>
+#include <tuple>
+#include <vector>
+#endif
 
 namespace Magnum { namespace Text { namespace Test { namespace {
 
@@ -144,13 +149,13 @@ struct RendererTest: TestSuite::Tester {
     void clearReset();
     void clearResetAllocators();
 
-    #ifdef MAGNUM_TARGET_GL
-    void renderData();
+    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+    void deprecatedRenderData();
 
-    void multiline();
+    void deprecatedMultiline();
 
-    void arrayGlyphCache();
-    void fontNotFoundInCache();
+    void deprecatedArrayGlyphCache();
+    void deprecatedFontNotFoundInCache();
     #endif
 };
 
@@ -1466,13 +1471,13 @@ const struct {
     {"reset while in progress", {}, true, true},
 };
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 const struct {
     TestSuite::TestCaseDescriptionSourceLocation name;
     Alignment alignment;
     ShapeDirection shapeDirection;
     Vector2 offset;
-} RenderDataData[]{
+} DeprecatedRenderDataData[]{
     /* Not testing all combinations, just making sure that each horizontal,
        vertical, glyph bounds and integer variant is covered */
     {"line left",
@@ -1578,7 +1583,7 @@ const struct {
     /* The Y offset value could be calculated, but this is easier to grasp and
        makes it possible to test overrideable line height later, for example */
     Vector2 offset0, offset1, offset2;
-} MultilineData[]{
+} DeprecatedMultilineData[]{
     {"line left", Alignment::LineLeft,
         {0.0f, -0.0f},
         {0.0f, -4.0f},
@@ -1797,15 +1802,15 @@ RendererTest::RendererTest() {
                        &RendererTest::clearResetAllocators},
         Containers::arraySize(ClearResetData));
 
-    #ifdef MAGNUM_TARGET_GL
-    addInstancedTests({&RendererTest::renderData},
-        Containers::arraySize(RenderDataData));
+    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+    addInstancedTests({&RendererTest::deprecatedRenderData},
+        Containers::arraySize(DeprecatedRenderDataData));
 
-    addInstancedTests({&RendererTest::multiline},
-        Containers::arraySize(MultilineData));
+    addInstancedTests({&RendererTest::deprecatedMultiline},
+        Containers::arraySize(DeprecatedMultilineData));
 
-    addTests({&RendererTest::arrayGlyphCache,
-              &RendererTest::fontNotFoundInCache});
+    addTests({&RendererTest::deprecatedArrayGlyphCache,
+              &RendererTest::deprecatedFontNotFoundInCache});
     #endif
 }
 
@@ -7467,9 +7472,9 @@ void RendererTest::clearResetAllocators() {
        is tested in allocateDifferentIndexType(). */
 }
 
-#ifdef MAGNUM_TARGET_GL
-void RendererTest::renderData() {
-    auto&& data = RenderDataData[testCaseInstanceId()];
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+void RendererTest::deprecatedRenderData() {
+    auto&& data = DeprecatedRenderDataData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     TestFont font;
@@ -7484,7 +7489,9 @@ void RendererTest::renderData() {
     std::vector<Vector2> textureCoordinates;
     std::vector<UnsignedInt> indices;
     Range2D bounds;
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::tie(positions, textureCoordinates, indices, bounds) = AbstractRenderer::render(font, cache, 0.25f, "abc", data.alignment);
+    CORRADE_IGNORE_DEPRECATED_POP
 
     /* Three glyphs, three quads -> 12 vertices, 18 indices */
     CORRADE_COMPARE(positions.size(), 12);
@@ -7571,15 +7578,15 @@ void RendererTest::renderData() {
     }), TestSuite::Compare::Container);
 }
 
-void RendererTest::multiline() {
-    auto&& data = MultilineData[testCaseInstanceId()];
+void RendererTest::deprecatedMultiline() {
+    auto&& data = DeprecatedMultilineData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     struct Shaper: AbstractShaper {
         using AbstractShaper::AbstractShaper;
 
-        UnsignedInt doShape(Containers::StringView text, UnsignedInt, UnsignedInt, Containers::ArrayView<const FeatureRange>) override {
-            return text.size();
+        UnsignedInt doShape(Containers::StringView, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange>) override {
+            return end - begin;
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
@@ -7638,8 +7645,10 @@ void RendererTest::multiline() {
     Range2D rectangle;
     std::vector<UnsignedInt> indices;
     std::vector<Vector2> positions, textureCoordinates;
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::tie(positions, textureCoordinates, indices, rectangle) = Renderer2D::render(font,
         cache, 0.25f, "abcd\nef\n\nghi", data.alignment);
+    CORRADE_IGNORE_DEPRECATED_POP
 
     /* We're rendering text at 0.25f size and the font is scaled to 0.5f, so
        the line advance should be 8.0f*0.25f/0.5f = 4.0f */
@@ -7726,7 +7735,7 @@ void RendererTest::multiline() {
     }), TestSuite::Compare::Container);
 }
 
-void RendererTest::arrayGlyphCache() {
+void RendererTest::deprecatedArrayGlyphCache() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
@@ -7737,13 +7746,17 @@ void RendererTest::arrayGlyphCache() {
         GlyphCacheFeatures doFeatures() const override { return {}; }
     } cache{PixelFormat::R8Unorm, {100, 100, 3}};
 
+    /* The function returns two-component texture coordinates so it can't be
+       done any other way even though the new internals support it */
     Containers::String out;
     Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     AbstractRenderer::render(font, cache, 0.25f, "abc");
-    CORRADE_COMPARE(out, "Text::Renderer: array glyph caches are not supported\n");
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out, "Text::AbstractRenderer::render(): array glyph caches are not supported\n");
 }
 
-void RendererTest::fontNotFoundInCache() {
+void RendererTest::deprecatedFontNotFoundInCache() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     TestFont font;
@@ -7753,10 +7766,14 @@ void RendererTest::fontNotFoundInCache() {
     cache.addFont(34);
     cache.addFont(25);
 
+    /* It delegates to RendererCore so just verify that nothing strange happens
+       during delegation */
     Containers::String out;
     Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     AbstractRenderer::render(font, cache, 0.25f, "abc");
-    CORRADE_COMPARE(out, "Text::Renderer: font not found among 2 fonts in passed glyph cache\n");
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out, "Text::RendererCore::add(): shaper font not found among 2 fonts in associated glyph cache\n");
 }
 #endif
 
