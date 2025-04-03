@@ -98,6 +98,66 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, RendererCoreFlags value);
 /**
 @brief Text renderer core
 @m_since_latest
+
+Implements essential logic for rendering text formed from multiple runs, lines
+and fonts, providing access to glyph positions, glyph IDs and glyph cluster
+information that can be subsequently used to show the text on the screen and
+perform cursor or selection placement.
+
+See the higher-level @ref Renderer subclass for full usage documentation ---
+the input interface is mostly the same between the two, with just the output
+being something else. The rest of this documentation thus only highlights the
+differences between the two. For lowest-level functionality see the
+@ref AbstractShaper class, which exposes text shaping capabilities implemented
+directly by particular font plugins.
+
+@section Text-RendererCore-usage Usage
+
+A @ref RendererCore instance is created and populated the same way as a
+@ref Renderer or @ref RendererGL, with @ref add() and @ref render() behaving
+exactly the same:
+
+@snippet Text.cpp RendererCore-usage
+
+Once rendered, the @ref glyphPositions() and @ref glyphIds() views provide
+access to rendered glyph data, and @ref runScales() with @ref runEnds()
+describe which scale is applied to particular glyph ranges in order to place
+the glyphs at given positions apprpriately scaled. You can then use the
+low-level @ref renderGlyphQuadsInto() utility to create textured quads, or feed
+the data to some entirely different system that renders the text without
+needing textured quads at all.
+
+@snippet Text.cpp RendererCore-usage-quads
+
+@section Text-RendererCore-clusters Mapping between input text and shaped glyphs
+
+For implementing text selection or editing, if
+@ref RendererCoreFlag::GlyphClusters is enabled on @ref RendererCore
+construction, the renderer exposes also the glyph cluster information for each
+run via @ref glyphClusters(). See the @ref Text-Renderer-clusters "relevant Renderer documentation"
+for a detailed explanation of how the data get used.
+
+@section Text-RendererCore-allocators Providing custom glyph and run data allocators
+
+For more control over memory allocations or for very customized use, it's
+possible to hook up custom allocators for glyph and run data. For example, if
+you always use the @ref RendererCore to render only up to a fixed amount of
+glyphs, you can direct it to statically sized arrays:
+
+@snippet Text.cpp RendererCore-allocators-static
+
+A behavior worth mentioning is that on @ref clear() or @ref reset() the
+allocators get called with the count being @cpp 0 @ce, which can be used to
+"redirect" the allocation to some entirely different memory. That allows you to
+use a single renderer instance to independently render and replace several
+different text blocks, instead of having a dedicated renderer instance for each
+or having to copy the rendered data out every time:
+
+@snippet Text.cpp RendererCore-allocators-redirect
+
+Expected allocator behavior is fully documented in the @ref RendererCore()
+constructor, note especially the special casing for glyph advances. The
+@ref Text-Renderer-allocators "Renderer subclass then provides two additional allocator hooks for index and vertex data."
 */
 class MAGNUM_TEXT_EXPORT RendererCore {
     public:
@@ -683,6 +743,286 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, RendererFlags value);
 /**
 @brief Text renderer
 @m_since_latest
+
+Implements logic for rendering text formed from multiple runs, lines and fonts,
+resulting in a textured quad mesh, optionally with glyph cluster information
+that can be used to perform cursor and selection placement. You'll likely use
+the renderer through the @ref RendererGL subclass, which directly populates a
+@ref GL::Mesh instance with the rendered data.
+
+The @ref RendererCore base implements just glyph positioning and layout, to be
+used in scenarios where forming textured quads is deferred to later or not
+needed at all. For lowest-level functionality see the @ref AbstractShaper
+class, which exposes text shaping capabilities implemented directly by
+particular font plugins.
+
+@section Text-Renderer-usage Usage
+
+Assuming you'll want to subsequently render the text with OpenGL, construct the
+renderer using the @ref RendererGL subclass and an OpenGL glyph cache
+implementation, such as a @ref GlyphCacheGL.
+
+@snippet Text-gl.cpp Renderer-usage-construct
+
+Before rendering with a particular @ref AbstractFont, the glyph cache has to be
+filled with desired glyphs from it, if not done already, as shown below. The
+@ref AbstractFont class documentation shows additional ways how to fill the
+glyph cache.
+
+@snippet Text.cpp Renderer-usage-fill
+
+To render a text, pass an @ref AbstractShaper instance created from the font
+together with desired font size and actual text to
+@ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "render()":
+
+@snippet Text.cpp Renderer-usage-render
+
+Once rendered, the @ref RendererGL::mesh() contains the rendered glyphs as
+textured quads. The mesh can be drawn using @ref Shaders::VectorGL together
+with binding @ref GlyphCacheGL::texture() for drawing. Usually you'll also want
+to set up @ref GL::Renderer::Feature::Blending "alpha blending" so overlapping
+glyph quads don't cut into each other. Assuming the drawing is performed in a
+@ref Platform::Sdl2Application "Platform::*Application" subclass, the code
+below sets up the drawing that the font pixel size matches the window pixels by
+specifying @ref Platform::Sdl2Application::windowSize()  "Platform::*Application::windowSize()"
+as the projection size, and it appears in the center of the window. With
+@ref GlyphCacheArrayGL or @ref DistanceFieldGlyphCacheGL the drawing setup is
+slightly different, see their documentation for examples.
+
+@snippet Text-gl.cpp Renderer-usage-draw
+
+If you use just the base @ref Renderer, the rendered index and vertex data are
+exposed through @ref indices(), @ref vertexPositions() and
+@ref vertexTextureCoordinates() / @ref vertexTextureArrayCoordinates(), which
+you can pass to a custom renderer, for example. Likewise, the glyph cache can
+be a custom @ref AbstractGlyphCache subclass that uploads the rasterized glyph
+data to a texture in a custom renderer. For more control over data layout in
+custom use cases see the @ref Text-Renderer-allocators section down below.
+
+@subsection Text-Renderer-usage-layout-options Cursor, alignment and other layouting options
+
+Internally, the renderer splits the passed text to individual lines and shapes
+each separately, placing them together at a concrete cursor position with
+specific alignment and line advance. The initial cursor position is at
+@cpp {0.0f, 0.0f} @ce with a @ref Text::Alignment::MiddleCenter and line
+advance matching @ref AbstractFont::lineHeight(). This can be overriden using
+@ref setCursor(), @ref setAlignment() and @ref setLineAdvance() before
+rendering a particular piece of text. The following snippet renders the same
+text as above but wrapped to two lines, aligned to bottom right and positioned
+ten pixels from the bottom right corner of the window:
+
+@snippet Text.cpp Renderer-usage-layout-options
+
+The renderer supports only horizontal text layout right now. The
+@ref setLayoutDirection() API is currently just a placeholder for when vertical
+layout is supported in the future as well.
+
+@subsection Text-Renderer-usage-shape-properties Font script, language and shaping direction
+
+The @ref AbstractShaper instance contains internal font-specific state used for
+actual text shaping. If you create an instance and reuse it multiple times
+instead of creating it on the fly, it allows the implementation to
+@ref Text-AbstractShaper-instances "reuse allocated resources". It's also
+possible to call @ref AbstractShaper::setScript(),
+@relativeref{AbstractShaper,setLanguage()} and
+@relativeref{AbstractShaper,setDirection()} on the instance if at least some
+properties of the input text are known, which can make the shaping process
+faster, or help in cases the properties can't be unambiguously detected from
+the input:
+
+@snippet Text.cpp Renderer-usage-shape-properties
+
+The @ref Text-AbstractShaper-usage-properties "AbstractShaper documentation"
+has additional info about how the shaping properties are handled and how to
+check what's supported by a particular font plugin.
+
+@subsection Text-Renderer-usage-shape-features Font features
+
+The last argument to @ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "render()"
+allows enabling and disabling typographic features. For example, assuming the
+font would support small capitals (and the particular @ref AbstractFont plugin
+would recognize and use the feature), we could render the "world" part with
+small caps, resulting in "Hello, ᴡᴏʀʟᴅ!":
+
+@snippet Text.cpp Renderer-usage-shape-features
+
+The behavior is equivalent to font features passed to @ref AbstractShaper::shape(),
+see the @ref Text-AbstractShaper-usage-features "AbstractShaper documentation"
+for further details.
+
+@subsection Text-Renderer-usage-blocks Rendering multiple text blocks
+
+Each call to @ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "render()"
+doesn't replace the previously rendered but *appends* to it, starting again
+from the position specified with @ref setCursor(). Ultimately that means you
+can render multiple blocks of text into the same mesh. The following snippet
+places the two parts of the text to bottom left and bottom right window
+corners:
+
+@snippet Text.cpp Renderer-usage-blocks
+
+Then you can either draw everything at once, with the same shader setup as
+listed above, or draw particular parts with different settings. For that, the
+@ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "render()"
+function returns two values --- a bounding box that can be used for various
+placement and alignment purposes, and a range of text *runs* the rendered text
+spans. A run is a range of glyphs together with an associated scale, and the
+run offsets can be converted to glyph offsets using @ref glyphsForRuns().
+Glyph offsets then directly correspond to vertex and index offsets, as each
+glyph is a quad consisting of four vertices and six indices. The following code
+draws each of the two pieces with a different color by making temporary
+@ref GL::MeshView instances spanning just the corresponding glyph range:
+
+@snippet Text-gl.cpp Renderer-usage-blocks-draw
+
+Finally, @ref clear() discards all text rendered so far, meaning that the next
+@ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "render()"
+will start from an empty state. The @ref reset() function additionally resets
+also all other state like cursor position and alignment to default values.
+
+@subsection Text-Renderer-usage-runs Rendering multiple text runs together
+
+Besides rendering the whole text at once with a single font, it's possible to
+render different parts of the text with different fonts, sizes or even just
+differently configured shaper instances. This is done by using @ref add(),
+which, compared to @ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "render()", continues shaping where
+the previous @ref add() ended instead of going back to the cursor specified
+with @ref setCursor(). When done, a call to the parameter-less @ref render()
+performs final alignment and wraps up the rendering. In the following snippet,
+a bold font is used to render the "world" part:
+
+@snippet Text.cpp Renderer-usage-runs
+
+Fonts can be switched anywhere, not just at word boundaries. However, to make
+use of the full shaping capabilities of a certain font implementation, it's
+recommended to supply the text with additional context so the shaper can
+perform kerning, glyph substitution and other operations even across the
+individual pieces. This is done by passing the whole text every time and
+specifying the range to shape by a begin and end *byte* offset into it,
+allowing the shaper to peek outside of the actually shaped piece of text:
+
+@snippet Text.cpp Renderer-usage-runs-begin-end
+
+@section Text-Renderer-usage-font-size Font size
+
+So far, for simplicity, the snippets above passed @ref AbstractFont::size() to
+@ref render() or @ref add(), making the text rendered at exactly the size the
+font glyphs were rasterized into the cache. The size at which the glyphs are
+rasterized into the cache and the size at which a text is drawn on the screen
+don't have to match, however.
+
+When rendering the text, there are two common approaches --- either setting up
+the size to match a global user interface scale, or having the text size
+proportional to the window size. The first approach is what's shown in the
+above snippets, with a projection that matches @ref Platform::Sdl2Application::windowSize() "Platform::*Application::windowSize()",
+and results in e.g. a 12 pt font matching a 12 pt font in other applications.
+With the regular @ref GlyphCacheGL / @ref GlyphCacheArrayGL, an even crisper
+result may be achieved by doubly supersampling the rasterized font compared to
+the size it's drawn at, which is shown in the following snippet. Additional
+considerations for proper DPI awareness are described further below.
+
+@snippet Text.cpp Renderer-dpi-supersampling
+
+The second approach, with text size being relative to the window size, is for
+cases where the text is meant to match surrounding art, such as in a game menu.
+In this case the projection size is usually something arbitrary that doesn't
+match window pixels, and the text point size then has to be relative to that.
+For this use case a @ref DistanceFieldGlyphCacheGL is the better match, as it
+can provide text at different sizes without the scaling causing blurriness or
+aliased edges. See its documentation for details about picking the right font
+size and other parameters for best results.
+
+@subsection Text-Renderer-usage-font-size-dpi DPI awareness
+
+To achieve crisp rendering and/or text size matching other applications on
+HiDPI displays, additional steps need to be taken. There are two separate
+concepts for DPI-aware rendering:
+
+-   Interface size --- size at which the interface elements are positioned on
+    the screen. Often, for simplicity, the interface is using some "virtual
+    units", so a 12 pt font is still a 12 pt font independently of how the
+    interface is scaled compared to actual display properties (for example by
+    setting a global 150% scale in the desktop environment, or by zooming a
+    browser window). The size passed to @ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "render()"
+    or @ref add() should match these virtual units.
+-   Framebuffer size --- how many pixels is actually there. If a 192 DPI
+    display has a 200% interface scale, a 12 pt font would be 32 pixels. But if
+    it only has a 150% scale, all interface elements will be smaller, and a 12
+    pt font would be only 24 pixels. The size used by the @ref AbstractFont and
+    @ref GlyphCacheGL should be chosen with respect to the actual physical
+    pixels.
+
+When using for example @ref Platform::Sdl2Application or other `*Application`
+implementations, you usually have three values at your disposal ---
+@ref Platform::Sdl2Application::windowSize() "windowSize()",
+@ref Platform::Sdl2Application::framebufferSize() "framebufferSize()" and
+@ref Platform::Sdl2Application::dpiScaling() "dpiScaling()". Their relation is
+documented thoroughly in @ref Platform-Sdl2Application-dpi, for this particular
+case a scaled interface size, used instead of window size for the projection,
+would be calculated like this:
+
+@snippet Text.cpp Renderer-dpi-interface-size
+
+And a multiplier for the @ref AbstractFont and @ref GlyphCacheGL font size like
+this. The @ref render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "render()"
+or @ref add() keeps using the size without this multiplier.
+
+@snippet Text.cpp Renderer-dpi-size-multiplier
+
+@section Text-Renderer-performance Rendering and mesh drawing performance
+
+To avoid repeated reallocations when rendering a larger chunk of text, when the
+text is combined of many small runs or when rendering many separate text blocks
+together, call @ref reserve() with expected glyph and run count.
+
+For the mesh the @ref Renderer by default uses @ref MeshIndexType::UnsignedByte,
+and changes it to a larger type each time the @ref glyphCapacity() exceeds the
+range representable in given type. Call @ref setIndexType() if you want to use
+a larger type right from the start even if the glyph capacity doesn't need it.
+In case of @ref RendererGL, @ref MeshIndexType::UnsignedShort is used by
+default instead, as 8-bit indices are discouraged on contemporary GPUs.
+
+@todo update this once @ref AbstractShaper has @ref reserve() as well
+
+@section Text-Renderer-clusters Mapping between input text and shaped glyphs
+
+For implementing text selection or editing, if
+@ref RendererFlag::GlyphPositionsClusters is enabled on @ref Renderer
+construction, the renderer exposes also glyph position and cluster information
+for each run via @ref glyphPositions() and @ref glyphClusters(). The clusters
+are used the same way @ref Text-AbstractShaper-clusters "as described in the AbstractShaper documentation",
+but additionally with mapping a particular text run to a concrete range of
+glyphs for which to query the runs:
+
+@snippet Text.cpp Renderer-clusters
+
+When using @ref RendererGL, the flag is
+@ref RendererGLFlag::GlyphPositionsClusters instead, for @ref RendererCore it's
+just @ref RendererCoreFlag::GlyphClusters as glyph positions are available
+always.
+
+@section Text-Renderer-allocators Providing custom index and vertex data allocators
+
+If you're using @ref Renderer directly and not the @ref RendererGL subclass,
+it's possible to hook up custom allocators for index and vertex data. Let's say
+that you want to have per-vertex colors in addition to positions and texture
+coordinates. The text renderer produces position and texture coordinate data
+inside @ref render() and colors get filled in after, by querying the vertex
+range corresponding to the produced glyph run produced using
+@ref glyphsForRuns():
+
+@snippet Text.cpp Renderer-allocators-vertex
+
+In case of indices you can for example use a single statically-allocated memory
+across all renderers, to avoid each allocating its own copy:
+
+@snippet Text.cpp Renderer-allocators-index
+
+Expected allocator behavior is fully documented in the @ref Renderer()
+constructor, note especially the differences when array glyph caches are used.
+The @ref Text-RendererCore-allocators section in the @ref RendererCore
+documentation shows more use cases with examples for the remaining two
+allocators.
 */
 class MAGNUM_TEXT_EXPORT Renderer: public RendererCore {
     public:
@@ -1567,75 +1907,6 @@ mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
 
 @snippet Text-gl.cpp BasicRenderer-usage2
-
-@subsection Text-BasicRenderer-usage-font-size Font size
-
-As mentioned in @ref Text-AbstractFont-font-size "AbstractFont class documentation",
-the size at which the font is loaded is decoupled from the size at which a
-concrete text is rendered. In particular, with a concrete projection matrix,
-the size you pass to either @ref render() or to the @ref BasicRenderer()
-constructor will always result in the same size of the rendered text,
-independently of the size the font was loaded in. Size of the loaded font is
-the size at which the glyphs get prerendered into the glyph cache, affecting
-visual quality.
-
-When rendering the text, there are two common approaches --- either setting up
-the size to match a global user interface scale, or having the text size
-proportional to the window size. The first approach results in e.g. a 12 pt
-font matching a 12 pt font in other applications, and is what's shown in the
-above snippets. The most straightforward way to achieve that is to set up the
-projection matrix size to match actual window pixels, such as @ref Platform::Sdl2Application::windowSize() "Platform::*Application::windowSize()".
-If using the regular @ref GlyphCacheGL, for best visual quality it should be
-created with the @ref AbstractFont loaded at the same size as the text to be
-rendered, although often a double supersampling achieves a crisper result.
-I.e., loading the font with 24 pt, but rendering with 12 pt. See below for
-@ref Text-BasicRenderer-usage-font-size-dpi "additional considerations for proper DPI awareness".
-
-The second approach, with text size being relative to the window size, is for
-cases where the text is meant to match surrounding art, such as in a game menu.
-In this case the projection size is usually something arbitrary that doesn't
-match window pixels, and the text point size then has to be relative to that.
-For this use case a @ref DistanceFieldGlyphCacheGL is the better match, as it
-can provide text at different sizes with minimal quality loss. See its
-documentation for details about picking the right font size and other
-parameters for best results.
-
-@subsection Text-BasicRenderer-usage-font-size-dpi DPI awareness
-
-To achieve crisp rendering and/or text size matching other applications on
-HiDPI displays, additional steps need to be taken. There are two separate
-concepts for DPI-aware rendering:
-
--   Interface size --- size at which the interface elements are positioned on
-    the screen. Often, for simplicity, the interface is using some "virtual
-    units", so a 12 pt font is still a 12 pt font independently of how the
-    interface is scaled compared to actual display properties (for example by
-    setting a global 150% scale in the desktop environment, or by zooming a
-    browser window). The size used by the @ref BasicRenderer "Renderer*D"
-    should match these virtual units.
--   Framebuffer size --- how many pixels is actually there. If a 192 DPI
-    display has a 200% interface scale, a 12 pt font would be 32 pixels. But if
-    it only has a 150% scale, all interface elements will be smaller, and a 12
-    pt font would be only 24 pixels. The size used by the @ref AbstractFont and
-    @ref GlyphCacheGL should be chosen with respect to the actual physical
-    pixels.
-
-When using for example @ref Platform::Sdl2Application or other `*Application`
-implementations, you usually have three values at your disposal ---
-@ref Platform::Sdl2Application::windowSize() "windowSize()",
-@ref Platform::Sdl2Application::framebufferSize() "framebufferSize()" and
-@ref Platform::Sdl2Application::dpiScaling() "dpiScaling()". Their relation is
-documented thoroughly in @ref Platform-Sdl2Application-dpi, for this particular
-case a scaled interface size, used instead of window size for the projection,
-would be calculated like this:
-
-@snippet Text-gl.cpp BasicRenderer-dpi-interface-size
-
-And a multiplier for the @ref AbstractFont and @ref GlyphCacheGL font size like
-this. The @ref BasicRenderer "Renderer*D" keeps using the size without this
-multiplier.
-
-@snippet Text-gl.cpp BasicRenderer-dpi-size-multiplier
 
 @section Text-BasicRenderer-required-opengl-functionality Required OpenGL functionality
 

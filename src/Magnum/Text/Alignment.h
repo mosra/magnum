@@ -86,9 +86,8 @@ respectively, if @ref ShapeDirection::LeftToRight is passed to
 @ref ShapeDirection::RightToLeft is set (or detected for
 @ref ShapeDirection::Unspecified), they're swapped, i.e. `*Begin` becomes
 `*Right` and `*End` becomes `*Left`.
-@see @ref BasicRenderer::render() "Renderer*D::render()",
-    @ref BasicRenderer::BasicRenderer() "Renderer*D::Renderer*D()",
-    @see @ref alignmentForDirection()
+@see @ref Renderer::render(AbstractShaper&, Float, Containers::StringView, Containers::ArrayView<const FeatureRange>) "Renderer::render()",
+    @ref Renderer::add(), @ref alignmentForDirection()
 */
 enum class Alignment: UnsignedByte {
     /**

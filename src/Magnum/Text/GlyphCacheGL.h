@@ -48,10 +48,10 @@ namespace Magnum { namespace Text {
 
 Implementation of an @ref AbstractGlyphCache backed by a @ref GL::Texture2D.
 See the @ref AbstractGlyphCache class documentation for information about
-setting up an instance of this class and filling it with glyphs. See the
-@ref DistanceFieldGlyphCacheGL subclass for a variant that adds distance field
-processing on top, @ref GlyphCacheArrayGL is then using a @ref GL::Texture2DArray
-instead.
+setting up an instance of this class, filling it with glyphs and drawing the
+text with it. See the @ref DistanceFieldGlyphCacheGL subclass for a variant
+that adds distance field processing on top, @ref GlyphCacheArrayGL is then
+using a @ref GL::Texture2DArray instead.
 
 @section Text-GlyphCacheGL-internal-format Internal texture format
 
@@ -211,10 +211,17 @@ Implementation of an @ref AbstractGlyphCache backed by a
 @ref GL::Texture2DArray, other than that equivalent to @ref GlyphCacheGL. See
 the @ref AbstractGlyphCache class documentation for information about setting
 up a glyph cache instance and filling it with glyphs, and @ref GlyphCacheGL for
-details on how the internal texture format is picked. The usage differs from
+details on how the internal texture format is picked. The setup differs from
 @ref GlyphCacheGL only in specifying one extra dimension for size:
 
 @snippet Text-gl.cpp GlyphCacheArrayGL-usage
+
+Assuming a @ref RendererGL is used with this cache for rendering the text, its
+@relativeref{RendererGL,mesh()} can be then drawn using @ref Shaders::VectorGL
+that has @ref Shaders::VectorGL::Flag::TextureArrays enabled, together with
+binding @ref texture() for drawing:
+
+@snippet Text-gl.cpp GlyphCacheArrayGL-usage-draw
 
 @requires_gl30 Extension @gl_extension{EXT,texture_array}
 @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.

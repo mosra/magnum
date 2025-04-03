@@ -96,6 +96,11 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, RendererGLFlags value);
 @brief OpenGL text renderer
 @m_since_latest
 
+Specialization of a @ref Renderer that uploads index and vertex data to a
+@ref GL::Mesh. See the @ref Renderer class documentation for information about
+setting up an instance of this class, filling it with data and drawing the text
+with it.
+
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.

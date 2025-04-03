@@ -55,13 +55,21 @@
 #include "Magnum/Text/AbstractShaper.h"
 #include "Magnum/Text/Direction.h"
 #include "Magnum/Text/Feature.h"
+#include "Magnum/Text/Renderer.h"
 #include "Magnum/Text/Script.h"
 #include "Magnum/TextureTools/Atlas.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
+
+namespace {
+    Vector2i windowSize() { return {}; }
+    Vector2i framebufferSize() { return {}; }
+    Vector2 dpiScaling() { return {}; }
+}
 
 namespace MyNamespace {
 
@@ -317,10 +325,7 @@ PluginManager::Manager<Text::AbstractFont> manager;
 Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
 Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
 
-/* Set text properties and shape it */
-shaper->setScript(Text::Script::Latin);
-shaper->setDirection(Text::ShapeDirection::LeftToRight);
-shaper->setLanguage("en");
+/* Shape a piece of text */
 shaper->shape("Hello, world!");
 
 /* Get the glyph info back */
@@ -336,6 +341,13 @@ shaper->glyphOffsetsAdvancesInto(
     stridedArrayView(glyphs).slice(&GlyphInfo::offset),
     stridedArrayView(glyphs).slice(&GlyphInfo::advance));
 /* [AbstractShaper-shape] */
+
+/* [AbstractShaper-shape-properties] */
+shaper->setScript(Text::Script::Latin);
+shaper->setDirection(Text::ShapeDirection::LeftToRight);
+shaper->setLanguage("en");
+shaper->shape("Hello, world!");
+/* [AbstractShaper-shape-properties] */
 }
 
 {
@@ -369,10 +381,11 @@ Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
 Containers::Pointer<Text::AbstractShaper> boldShaper = boldFont->createShaper();
 DOXYGEN_ELLIPSIS()
 
+Containers::StringView text = "Hello, world!";
 Containers::Array<GlyphInfo> glyphs;
 
 /* Shape "Hello, " with a regular font */
-shaper->shape("Hello, world!", 0, 7);
+shaper->shape(text, 0, 7);
 Containers::StridedArrayView1D<GlyphInfo> glyphs1 =
     arrayAppend(glyphs, NoInit, shaper->glyphCount());
 shaper->glyphIdsInto(
@@ -382,7 +395,7 @@ shaper->glyphOffsetsAdvancesInto(
     glyphs1.slice(&GlyphInfo::advance));
 
 /* Append "world" shaped with a bold font */
-boldShaper->shape("Hello, world!", 7, 12);
+boldShaper->shape(text, 7, 12);
 Containers::StridedArrayView1D<GlyphInfo> glyphs2 =
     arrayAppend(glyphs, NoInit, boldShaper->glyphCount());
 shaper->glyphIdsInto(
@@ -392,7 +405,7 @@ shaper->glyphOffsetsAdvancesInto(
     glyphs2.slice(&GlyphInfo::advance));
 
 /* Finally shape "!" with a regular font again */
-shaper->shape("Hello, world!", 12, 13);
+shaper->shape(text, 12, 13);
 Containers::StridedArrayView1D<GlyphInfo> glyphs3 =
     arrayAppend(glyphs, NoInit, shaper->glyphCount());
 shaper->glyphIdsInto(
@@ -410,7 +423,7 @@ shaper->glyphOffsetsAdvancesInto(
 PluginManager::Manager<Text::AbstractFont> manager;
 Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("SomethingWhatever");
 Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
-/* [AbstractShaper-shape-clusters] */
+/* [AbstractShaper-shape-clusters-to-bytes] */
 Containers::StringView text = DOXYGEN_ELLIPSIS({});
 
 shaper->shape(text);
@@ -420,8 +433,364 @@ Containers::Array<UnsignedInt> clusters{NoInit, shaper->glyphCount()};
 shaper->glyphClustersInto(clusters);
 
 Containers::StringView selection = text.slice(clusters[2], clusters[5]);
-/* [AbstractShaper-shape-clusters] */
-static_cast<void>(selection);
+/* [AbstractShaper-shape-clusters-to-bytes] */
+
+/* [AbstractShaper-shape-bytes-to-clusters] */
+Containers::Pair<UnsignedInt, UnsignedInt> selectionGlyphs =
+    Text::glyphRangeForBytes(clusters, selection.begin() - text.begin(),
+                                       selection.end() - text.begin());
+/* [AbstractShaper-shape-bytes-to-clusters] */
+static_cast<void>(selectionGlyphs);
 }
 
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("");
+Containers::Pointer<Text::AbstractShaper> shaperPointer = font->createShaper();
+Text::AbstractShaper& shaper = *shaperPointer;
+Float size{};
+/* [RendererCore-usage] */
+Text::RendererCore renderer{cache};
+
+renderer.render(shaper, size, "Hello, world!");
+/* [RendererCore-usage] */
+
+/* [RendererCore-usage-quads] */
+Range1Dui runs = renderer.render(DOXYGEN_ELLIPSIS(shaper, size, "Hello, world!")).second();
+
+struct Vertex {
+    Vector2 position;
+    Vector2 textureCoordinates; /* or Vector3 for an array glyph cache */
+};
+Containers::Array<Vertex> vertices;
+for(UnsignedInt run = runs.min(); run != runs.max(); ++run) {
+    Range1Dui glyphs = renderer.glyphsForRuns({run, run + 1});
+    Containers::StridedArrayView1D<Vertex> runVertices =
+        arrayAppend(vertices, NoInit, glyphs.size());
+    Text::renderGlyphQuadsInto(renderer.glyphCache(),
+        renderer.runScales()[run],
+        renderer.glyphPositions().slice(glyphs.min(), glyphs.max()),
+        renderer.glyphIds().slice(glyphs.min(), glyphs.max()),
+        runVertices.slice(&Vertex::position),
+        runVertices.slice(&Vertex::textureCoordinates));
+}
+/* [RendererCore-usage-quads] */
+}
+
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+/* [RendererCore-allocators-static] */
+struct Glyph {
+    Vector2 position;
+    UnsignedInt id;
+    Vector2 advance;
+} glyphs[256];
+struct Run {
+    Float scale;
+    UnsignedInt end;
+} runs[16];
+
+Text::RendererCore renderer{cache,
+    [](void* state, UnsignedInt glyphCount,
+       Containers::StridedArrayView1D<Vector2>& glyphPositions,
+       Containers::StridedArrayView1D<UnsignedInt>& glyphIds,
+       Containers::StridedArrayView1D<UnsignedInt>*,
+       Containers::StridedArrayView1D<Vector2>& glyphAdvances
+    ) {
+        Containers::ArrayView<Glyph> glyphs = *static_cast<Glyph(*)[256]>(state);
+        CORRADE_INTERNAL_ASSERT(glyphCount <= glyphs.size());DOXYGEN_IGNORE(static_cast<void>(glyphCount));
+        glyphPositions = stridedArrayView(glyphs).slice(&Glyph::position);
+        glyphIds = stridedArrayView(glyphs).slice(&Glyph::id);
+        glyphAdvances = stridedArrayView(glyphs).slice(&Glyph::advance);
+    }, glyphs,
+    [](void* state, UnsignedInt runCount,
+       Containers::StridedArrayView1D<Float>& runScales,
+       Containers::StridedArrayView1D<UnsignedInt>& runEnds
+    ) {
+        Containers::ArrayView<Run> runs = *static_cast<Run(*)[16]>(state);
+        CORRADE_INTERNAL_ASSERT(runCount <= runs.size());DOXYGEN_IGNORE(static_cast<void>(runCount));
+        runScales = Containers::stridedArrayView(runs).slice(&Run::scale);
+        runEnds = Containers::stridedArrayView(runs).slice(&Run::end);
+    }, runs
+};
+/* [RendererCore-allocators-static] */
+}
+
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+struct Glyph {
+    Vector2 position;
+    UnsignedInt id;
+    Vector2 advance;
+};
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("");
+Containers::Pointer<Text::AbstractShaper> shaperPointer = font->createShaper();
+Text::AbstractShaper& shaper = *shaperPointer;
+Float size{};
+/* [RendererCore-allocators-redirect] */
+struct Allocation {
+    UnsignedInt current = 0;
+    /* Using just a fixed set of texts for brevity */
+    Containers::Array<Glyph> texts[5];
+} allocation;
+
+Text::RendererCore renderer{cache,
+    [](void* state, UnsignedInt glyphCount,
+       Containers::StridedArrayView1D<Vector2>& glyphPositions,
+       Containers::StridedArrayView1D<UnsignedInt>& glyphIds,
+       Containers::StridedArrayView1D<UnsignedInt>*,
+       Containers::StridedArrayView1D<Vector2>& glyphAdvances
+    ) {
+        auto& allocation = *static_cast<Allocation*>(state);
+        Containers::Array<Glyph>& glyphs = allocation.texts[allocation.current];
+        if(glyphCount > glyphs.size())
+            arrayResize(glyphs, glyphCount);
+
+        glyphPositions = stridedArrayView(glyphs).slice(&Glyph::position);
+        glyphIds = stridedArrayView(glyphs).slice(&Glyph::id);
+        glyphAdvances = stridedArrayView(glyphs).slice(&Glyph::advance);
+    }, &allocation,
+    /* Text runs use the renderer's default allocator */
+    nullptr, nullptr
+};
+
+DOXYGEN_ELLIPSIS()
+
+/* Updating text 3 */
+allocation.current = 3;
+renderer
+    .clear()
+    .render(shaper, size, "Hello, world!");
+
+/* Updating text 1 */
+allocation.current = 1;
+renderer
+    .clear()
+    .render(shaper, size, "This doesn't replace text 3!");
+/* [RendererCore-allocators-redirect] */
+}
+
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+PluginManager::Manager<Text::AbstractFont> manager;
+/* [Renderer-usage-fill] */
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
+
+if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
+                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                "0123456789?!:;,. "))
+    Fatal{} << "Glyph cache too small to fit all characters";
+/* [Renderer-usage-fill] */
+
+Text::Renderer renderer{cache};
+/* [Renderer-usage-render] */
+renderer.render(*font->createShaper(), font->size(), "Hello, world!");
+/* [Renderer-usage-render] */
+
+/* [Renderer-usage-layout-options] */
+renderer
+    .setCursor({+windowSize().x()*0.5f - 10.0f,
+                -windowSize().y()*0.5f + 10.0f})
+    .setAlignment(Text::Alignment::BottomRight)
+    .render(*font->createShaper(), font->size(), "Hello,\nworld!");
+/* [Renderer-usage-layout-options] */
+
+/* [Renderer-usage-shape-properties] */
+Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
+shaper->setScript(Text::Script::Latin);
+shaper->setLanguage("en");
+shaper->setDirection(Text::ShapeDirection::LeftToRight);
+
+renderer.render(*shaper, shaper->font().size(), "Hello, world!");
+/* [Renderer-usage-shape-properties] */
+
+/* [Renderer-usage-shape-features] */
+renderer.render(*shaper, shaper->font().size(), "Hello, world!", {
+    {Text::Feature::SmallCapitals, 7, 12}
+});
+/* [Renderer-usage-shape-features] */
+
+{
+Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
+/* [Renderer-usage-blocks] */
+renderer
+    .setCursor({-windowSize().x()*0.5f + 10.0f,
+                -windowSize().y()*0.5f + 10.0f})
+    .setAlignment(Text::Alignment::BottomLeft)
+    .render(*shaper, shaper->font().size(), "Hello,");
+
+renderer
+    .setCursor({+windowSize().x()*0.5f - 10.0f,
+                -windowSize().y()*0.5f + 10.0f})
+    .setAlignment(Text::Alignment::BottomRight)
+    .render(*shaper, shaper->font().size(), "world!");
+/* [Renderer-usage-blocks] */
+}
+
+{
+Containers::Pointer<Text::AbstractFont> boldFont = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
+/* [Renderer-usage-runs] */
+Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
+Containers::Pointer<Text::AbstractShaper> boldShaper = boldFont->createShaper();
+DOXYGEN_ELLIPSIS()
+
+renderer
+    .add(*shaper, shaper->font().size(), "Hello, ")
+    .add(*boldShaper, boldShaper->font().size(), "world")
+    .add(*shaper, shaper->font().size(), "!")
+    .render();
+/* [Renderer-usage-runs] */
+
+/* [Renderer-usage-runs-begin-end] */
+Containers::StringView text = "Hello, world!";
+
+renderer
+    .add(*shaper, shaper->font().size(), text, 0, 7)
+    .add(*boldShaper, boldShaper->font().size(), text, 7, 12)
+    .add(*shaper, shaper->font().size(), text, 12, 13)
+    .render();
+/* [Renderer-usage-runs-begin-end] */
+}
+}
+
+{
+PluginManager::Manager<Text::AbstractFont> manager;
+Float size{};
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+Text::Renderer renderer{cache};
+/* [Renderer-dpi-supersampling] */
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
+if(!font->openFile("font.ttf", size*2.0f)) /* Supersample 2x */
+    DOXYGEN_ELLIPSIS({})
+
+DOXYGEN_ELLIPSIS()
+renderer.render(*font->createShaper(), size, DOXYGEN_ELLIPSIS(""));
+/* [Renderer-dpi-supersampling] */
+}
+
+{
+/* [Renderer-dpi-interface-size] */
+Vector2 interfaceSize = Vector2{windowSize()}/dpiScaling();
+/* [Renderer-dpi-interface-size] */
+/* [Renderer-dpi-size-multiplier] */
+Float sizeMultiplier =
+    (Vector2{framebufferSize()}*dpiScaling()/Vector2{windowSize()}).max();
+/* [Renderer-dpi-size-multiplier] */
+static_cast<void>(interfaceSize);
+static_cast<void>(sizeMultiplier);
+}
+
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("");
+Containers::StringView text;
+/* [Renderer-clusters] */
+Text::Renderer renderer{cache, Text::RendererFlag::GlyphPositionsClusters};
+
+Range1Dui runs = renderer.render(DOXYGEN_ELLIPSIS(*font->createShaper(), 0.0f), text).second();
+Range1Dui glyphs = renderer.glyphsForRuns(runs);
+Containers::StridedArrayView1D<const UnsignedInt> clusters =
+    renderer.glyphClusters().slice(glyphs.min(), glyphs.max());
+
+/* Input text corresponding to glyphs 2 to 5 */
+Containers::StringView selection = text.slice(clusters[2], clusters[5]);
+
+/* Or glyphs corresponding to a concrete text selection */
+Containers::Pair<UnsignedInt, UnsignedInt> selectionGlyphs =
+    Text::glyphRangeForBytes(clusters, selection.begin() - text.begin(),
+                                       selection.end() - text.begin());
+/* [Renderer-clusters] */
+static_cast<void>(selectionGlyphs);
+}
+
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+/* [Renderer-allocators-vertex] */
+struct Vertex {
+    Vector2 position;
+    Vector2 textureCoordinates;
+    Color4 color;
+};
+Containers::Array<Vertex> vertices;
+
+Text::Renderer renderer{cache,
+    /* Glyphs, runs and indices use renderer's default allocators */
+    nullptr, nullptr,
+    nullptr, nullptr,
+    nullptr, nullptr,
+    [](void* state, UnsignedInt vertexCount,
+       Containers::StridedArrayView1D<Vector2>& vertexPositions,
+       Containers::StridedArrayView1D<Vector2>& vertexTextureCoordinates
+    ) {
+        auto& vertices = *static_cast<Containers::Array<Vertex>*>(state);
+        if(vertexCount > vertices.size())
+            arrayResize(vertices, vertexCount);
+
+        vertexPositions = stridedArrayView(vertices).slice(&Vertex::position);
+        vertexTextureCoordinates =
+            stridedArrayView(vertices).slice(&Vertex::textureCoordinates);
+    }, &vertices
+};
+
+/* Render a text and fill vertex colors. Each glyph quad is four vertices. */
+Range1Dui runs = renderer.render(DOXYGEN_ELLIPSIS()).second();
+Range1Dui glyphs = renderer.glyphsForRuns(runs);
+for(Vertex& vertex: vertices.slice(glyphs.min()*4, glyphs.max()*4))
+    vertex.color = 0x3bd267_rgbf;
+/* [Renderer-allocators-vertex] */
+}
+
+{
+struct: Text::AbstractGlyphCache {
+    using Text::AbstractGlyphCache::AbstractGlyphCache;
+
+    Text::GlyphCacheFeatures doFeatures() const override { return {}; }
+} cache{PixelFormat::R8Unorm, Vector2i{256}};
+/* [Renderer-allocators-index] */
+/* A 2-byte index type can index at most 65k vertices, which is enough for 16k
+   glyph quads, and each glyph quad needs six indices */
+char indices[2*16384*6];
+
+Text::Renderer renderer{cache,
+    nullptr, nullptr,
+    nullptr, nullptr,
+    [](void* state, UnsignedInt size, Containers::ArrayView<char>& indices) {
+        indices = *static_cast<char(*)[2*16384*6]>(state);
+        CORRADE_INTERNAL_ASSERT(size <= indices.size());DOXYGEN_IGNORE(static_cast<void>(size));
+    }, indices,
+    nullptr, nullptr
+};
+/* [Renderer-allocators-index] */
+}
 }

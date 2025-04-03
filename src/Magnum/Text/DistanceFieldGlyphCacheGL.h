@@ -71,9 +71,18 @@ channels.
 
 @snippet Text-gl.cpp DistanceFieldGlyphCacheGL-usage
 
-See the @ref BasicRenderer "Renderer*D" class for information about text
-rendering. The @ref AbstractGlyphCache base class has more information about
-general glyph cache usage.
+As long as the cache size allows, you can call
+@ref AbstractFont::fillGlyphCache() multiple times with additional glyphs and
+other fonts, each time the input will be incrementally converted to a distance
+field texture. See the @ref Text-AbstractFont-glyph-cache "AbstractFont documentation"
+for more options for glyph cache filling. The @ref AbstractGlyphCache base
+class has more information about general glyph cache usage. Finally, assuming a
+@ref RendererGL is used with this cache for rendering the text, its
+@relativeref{RendererGL,mesh()} can be then drawn using
+@ref Shaders::DistanceFieldVectorGL, together with binding @ref texture() for
+drawing:
+
+@snippet Text-gl.cpp DistanceFieldGlyphCacheGL-usage-draw
 
 @section Text-DistanceFieldGlyphCacheGL-internal-format Internal texture format
 

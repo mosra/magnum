@@ -459,6 +459,9 @@ See also:
 -   Reworked @ref Text::AbstractGlyphCache on top of
     @ref TextureTools::AtlasLandfill allowing more efficient and incremental
     glyph packing together with support for texture arrays
+-   New @ref Text::Renderer, @ref Text::RendererGL and @ref Text::RendererCore
+    classes that provide high-level multi-line and multi-font text rendering
+    functionality
 -   New @ref Text::renderLineGlyphPositionsInto(),
     @ref Text::renderGlyphQuadsInto(), @ref Text::glyphQuadBounds(),
     @ref Text::alignRenderedLine(), @ref Text::alignRenderedBlock() and

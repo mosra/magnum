@@ -44,9 +44,11 @@ namespace Magnum { namespace Text {
 @brief Base for text shapers
 @m_since_latest
 
-Returned from @ref AbstractFont::createShaper(), provides an interface for
-* *shaping* text with the @ref AbstractFont it originated from. Meant to be
-(privately) subclassed by @ref AbstractFont plugin implementations.
+Returned from @ref AbstractFont::createShaper(), provides a low-level interface
+for *shaping* text with the @ref AbstractFont it originated from. Meant to be
+(privately) subclassed by @ref AbstractFont plugin implementations. For common
+text rendering you'll likely want to use the high-level @ref Renderer, which
+then invokes @ref AbstractShaper internally.
 
 * *Shaping* is a process of converting a sequence of Unicode codepoints to a
 visual form, i.e. a list of glyphs of a particular font, their offsets and horizontal or vertical advances. Shaping is often not a 1:1 mapping from
@@ -69,27 +71,38 @@ shaped text.
 
 @snippet Text.cpp AbstractShaper-shape
 
-For best results, it's recommended to call (a subset of) @ref setScript(),
-@ref setLanguage() and @ref setDirection() if at least some properties of the
-input text are known, as shown above. Without these, the font plugin may
-attempt to autodetect the properties, which might not always give a correct
-result. If a particular font plugin doesn't implement given script, language or
+@subsection Text-AbstractShaper-usage-properties Specifying shaping properties
+
+By default, and depending on the font plugin capabilities, the shaper
+autodetects the script, language and direction of the shaped text. It's
+possible to call (a subset of) @ref setScript(), @ref setLanguage() and
+@ref setDirection() if at least some properties of the input text are known,
+which can make the shaping process faster, or help in cases the properties
+can't be unambiguously detected from the input:
+
+@snippet Text.cpp AbstractShaper-shape-properties
+
+If a particular font plugin doesn't implement given script, language or
 direction or if it doesn't have any special handling for it, given function
 will return @cpp false @ce. The @ref script() const, @ref language() const and
 @ref direction() const can be used to inspect results of autodetection after
-@ref shape() has been called. The set of supported scripts, languages and
-directions and exact behavior for unsupported values is plugin-specific --- it
-may for example choose a fallback instead, or it may ignore the setting
-altogeter. See documentation of particular @ref AbstractFont subclasses for
-more information.
+@ref shape() has been called. Setting @ref Script::Unspecified, an empty
+language string and @ref ShapeDirection::Unspecified makes the implementation
+go back to autodetection for the next shaping operation.
+
+The set of supported scripts, languages and directions and exact behavior for
+unsupported values is plugin-specific --- it may for example choose a fallback
+instead, or it may ignore the setting altogeter. See documentation of
+particular @ref AbstractFont subclasses for more information.
 
 @subsection Text-AbstractShaper-usage-features Enabling and disabling typographic features
 
 In the above snippet, the whole text is shaped using typographic features that
-are default in the font. For example, assuming the font would support small
-capitals (and the particular @ref AbstractFont plugin would recognize and use
-the feature), we could render the "world" part with small caps, resulting in
-"Hello, ᴡᴏʀʟᴅ!".
+are default in the font. The last argument to @ref shape() takes a list of
+@ref FeatureRange items to override those. For example, assuming the font would
+support small capitals (and the particular @ref AbstractFont plugin would
+recognize and use the feature), we could render the "world" part with small
+caps, resulting in "Hello, ᴡᴏʀʟᴅ!".
 
 @snippet Text.cpp AbstractShaper-shape-features
 
@@ -100,25 +113,24 @@ argument. The range, if present, is always given in *bytes* of the UTF-8 input.
 Capabilities of typographic features are rather broad, see the @ref Feature
 enum and documentation linked from it for exhaustive information.
 
-@subsection Text-AbstractShaper-usage-multiple Combining different shapers
+@section Text-AbstractShaper-multiple Combining different shapers
 
-Sometimes it's desirable to render different parts of the text with different
-fonts, not just different features of the same font. A variation of the above
-example could be rendering the "world" part with a bold font:
+If it's desirable to render different parts of the text with different fonts,
+the output from multiple shapers can be combined togeter. The following code is
+a variation of the above example, shaping the "world" part with a bold font,
+although in a quite verbose way compared to
+@ref Text-Renderer-usage-runs "the same achieved with the high-level Renderer":
 
 @snippet Text.cpp AbstractShaper-shape-multiple
 
 The resulting `glyphs` array is usable the same way as in the above case, with
 a difference that the glyph IDs have to be looked up in an
 @ref AbstractGlyphCache with a font ID corresponding to the range they're in.
-Also note that the whole text is passed every time and a begin & end is
-specified for it instead of passing just the slice alone. While possibly not
-having any visible effect in this particular case, in general it allows the
-shaper to make additional decisions based on surrounding context, for example
-picking glyphs that are better connected to their neighbors in handwriting
-fonts.
+Similarly as with the linked higher-level example, the whole text is passed
+every time and a begin & end is specified for it instead of passing just the
+slice alone, to allow the shaper to get additional context if needed.
 
-@subsection Text-AbstractShaper-usage-instances Managing multiple instances
+@section Text-AbstractShaper-instances Managing multiple instances
 
 As shown above, a particular @ref AbstractShaper instance is reusable, i.e.
 it's possible to call @ref shape() (and potentially also @ref setScript(),
@@ -134,7 +146,7 @@ every time. Or for example have a few persistent @ref AbstractShaper instances
 for dynamic text that changes every frame, or have dedicated preconfigured
 per-font, per-script or per-language instances.
 
-@subsection Text-AbstractShaper-usage-clusters Mapping between input text and shaped glyphs
+@section Text-AbstractShaper-clusters Mapping between input text and shaped glyphs
 
 For implementing text selection or editing, mapping from screen position to
 concrete glyphs can be done using the advances returned from
@@ -145,16 +157,20 @@ rarely a 1:1 mapping from the shaped glyphs back to the input text.
 
 The mapping from glyph IDs to bytes of the text passed to @ref shape() can be
 retrieved using @ref glyphClustersInto(). In the following example, a range
-between glyphs 2 and 5 is mapped to the input text bytes, for example to copy
-it as a selection to clipboard:
+between glyphs @cpp 2 @ce and @cpp 5 @ce is mapped to the input text bytes, for
+example to copy it as a selection to clipboard:
 
-@snippet Text.cpp AbstractShaper-shape-clusters
+@snippet Text.cpp AbstractShaper-shape-clusters-to-bytes
 
 In the other direction, picking a range of glyphs corresponding to a range of
-input bytes, involves finding cluster IDs with a lower and upper bound for
-given byte positions. See the documentation of @ref glyphClustersInto() for
-concrete examples of how retrieved cluster IDs may look like depending on what
-operations the shaper performs.
+input bytes, involves finding cluster IDs matching given byte positions, which
+is doable with the @ref glyphRangeForBytes() utility:
+
+@snippet Text.cpp AbstractShaper-shape-bytes-to-clusters
+
+See the documentation of @ref glyphClustersInto() for concrete examples of how
+retrieved cluster IDs may look like depending on what operations the shaper
+performs.
 
 @section Text-AbstractShaper-subclassing Subclassing
 
@@ -299,7 +315,7 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          * @p text this allows the implementation to perform shaping aware of
          * surrounding context, such as picking correct glyphs for beginning,
          * middle or end of a word or a paragraph.
-         * @see @ref Text-AbstractShaper-usage-multiple
+         * @see @ref Text-AbstractShaper-multiple
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         UnsignedInt shape(Containers::StringView text, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange> features = {});

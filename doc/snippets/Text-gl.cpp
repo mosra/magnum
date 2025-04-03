@@ -32,10 +32,14 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/GL/MeshView.h"
+#include "Magnum/GL/Renderer.h"
 #include "Magnum/Shaders/VectorGL.h"
+#include "Magnum/Shaders/DistanceFieldVectorGL.h"
 #include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/AbstractShaper.h"
 #include "Magnum/Text/DistanceFieldGlyphCacheGL.h"
-#include "Magnum/Text/Renderer.h"
+#include "Magnum/Text/RendererGL.h"
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
@@ -44,8 +48,6 @@ using namespace Magnum::Math::Literals;
 
 namespace {
     Vector2i windowSize() { return {}; }
-    Vector2i framebufferSize() { return {}; }
-    Vector2 dpiScaling() { return {}; }
 }
 
 /* Make sure the name doesn't conflict with any other snippets to avoid linker
@@ -73,6 +75,17 @@ if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 /* [AbstractGlyphCache-usage-construct] */
 Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};
 /* [AbstractGlyphCache-usage-construct] */
+
+/* [AbstractGlyphCache-usage-draw] */
+Text::RendererGL renderer{cache};
+DOXYGEN_ELLIPSIS()
+
+Shaders::VectorGL2D shader;
+shader
+    DOXYGEN_ELLIPSIS()
+    .bindVectorTexture(cache.texture())
+    .draw(renderer.mesh());
+/* [AbstractGlyphCache-usage-draw] */
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -87,6 +100,19 @@ if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                                 "0123456789?!:;,. "))
     Fatal{} << "Glyph cache too small to fit all characters";
 /* [GlyphCacheArrayGL-usage] */
+
+/* [GlyphCacheArrayGL-usage-draw] */
+Text::RendererGL renderer{cache};
+DOXYGEN_ELLIPSIS()
+
+Shaders::VectorGL2D shader{Shaders::VectorGL2D::Configuration{}
+    .setFlags(Shaders::VectorGL2D::Flag::TextureArrays)
+};
+shader
+    DOXYGEN_ELLIPSIS()
+    .bindVectorTexture(cache.texture())
+    .draw(renderer.mesh());
+/* [GlyphCacheArrayGL-usage-draw] */
 }
 #endif
 
@@ -105,6 +131,72 @@ if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                                 "0123456789?!:;,. "))
     Fatal{} << "Glyph cache too small to fit all characters";
 /* [DistanceFieldGlyphCacheGL-usage] */
+
+/* [DistanceFieldGlyphCacheGL-usage-draw] */
+Text::RendererGL renderer{cache};
+DOXYGEN_ELLIPSIS()
+
+Shaders::DistanceFieldVectorGL2D shader;
+shader
+    DOXYGEN_ELLIPSIS()
+    .bindVectorTexture(cache.texture())
+    .draw(renderer.mesh());
+/* [DistanceFieldGlyphCacheGL-usage-draw] */
+}
+
+{
+/* [Renderer-usage-construct] */
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};
+DOXYGEN_ELLIPSIS()
+
+Text::RendererGL renderer{cache};
+/* [Renderer-usage-construct] */
+
+/* [Renderer-usage-draw] */
+GL::Renderer::enable(GL::Renderer::Feature::Blending);
+GL::Renderer::setBlendFunction(
+    GL::Renderer::BlendFunction::One,
+    GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+
+Shaders::VectorGL2D shader;
+shader
+    .setTransformationProjectionMatrix(Matrix3::projection(Vector2{windowSize()}))
+    .bindVectorTexture(cache.texture())
+    .draw(renderer.mesh());
+/* [Renderer-usage-draw] */
+}
+
+{
+
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("");
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};
+Text::RendererGL renderer{cache};
+Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
+Shaders::VectorGL2D shader;
+/* [Renderer-usage-blocks-draw] */
+Range1Dui helloRuns = renderer
+    DOXYGEN_ELLIPSIS()
+    .render(*shaper, shaper->font().size(), "Hello,").second();
+Range1Dui helloGlyphs = renderer.glyphsForRuns(helloRuns);
+
+Range1Dui worldRuns = renderer
+    DOXYGEN_ELLIPSIS()
+    .render(*shaper, shaper->font().size(), "world!").second();
+Range1Dui worldGlyphs = renderer.glyphsForRuns(worldRuns);
+
+shader
+    .setTransformationProjectionMatrix(Matrix3::projection(Vector2{windowSize()}))
+    .bindVectorTexture(cache.texture())
+    .setColor(0x3bd267_rgbf)
+    .draw(GL::MeshView{renderer.mesh()}
+        .setIndexOffset(helloGlyphs.min()*6)
+        .setCount(helloGlyphs.size()*6))
+    .setColor(0x2f83cc_rgbf)
+    .draw(GL::MeshView{renderer.mesh()}
+        .setIndexOffset(worldGlyphs.min()*6)
+        .setCount(worldGlyphs.size()*6));
+/* [Renderer-usage-blocks-draw] */
 }
 
 {
@@ -161,17 +253,4 @@ shader.setTransformationProjectionMatrix(projectionMatrix)
     .draw(renderer.mesh());
 /* [BasicRenderer-usage2] */
 }
-
-{
-/* [BasicRenderer-dpi-interface-size] */
-Vector2 interfaceSize = Vector2{windowSize()}/dpiScaling();
-/* [BasicRenderer-dpi-interface-size] */
-/* [BasicRenderer-dpi-size-multiplier] */
-Float sizeMultiplier =
-    (Vector2{framebufferSize()}*dpiScaling()/Vector2{windowSize()}).max();
-/* [BasicRenderer-dpi-size-multiplier] */
-static_cast<void>(interfaceSize);
-static_cast<void>(sizeMultiplier);
-}
-
 }

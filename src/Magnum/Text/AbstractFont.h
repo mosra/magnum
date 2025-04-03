@@ -102,8 +102,9 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontFeatures value);
 /**
 @brief Base for font plugins
 
-Provides interface for opening fonts, filling a glyph cache and layouting the
-glyphs.
+Provides interface for opening font files, filling a glyph cache with
+rasterized glyphs and shaping a Unicode text into a sequence of glyph IDs and
+their positions.
 
 @section Text-AbstractFont-usage Usage
 
@@ -124,9 +125,8 @@ that the characters won't all fit, which should be checked by the application:
 See @ref plugins for more information about general plugin usage and the list
 of @m_class{m-doc} <a href="#derived-classes">derived classes</a> for available
 font plugins. See @ref AbstractGlyphCache for more information about glyph
-caches, @ref BasicRenderer "Renderer*D" for high-level text rendering, and
-@ref AbstractShaper for low-level access to the font text shaping
-functionality.
+caches, @ref Renderer for high-level text rendering, and @ref AbstractShaper
+for low-level access to the font text shaping functionality.
 
 @section Text-AbstractFont-font-size Font size
 
@@ -140,16 +140,18 @@ properties are specified *in pixels* in @ref lineHeight(), @ref ascent() and
 @ref descent().
 
 The font size used when opening the font affects how large the glyphs will be
-when rendered into the glyph cache. Actual text rendering with
-@ref BasicRenderer "Renderer*D" however uses its own font size, and the
-rendered size is then additionally depending on the actual projection used.
+when rasterized into the glyph cache. Actual text rendering with @ref Renderer
+then uses its own font size, and the actual size that's visible on the screen
+is then additionally depending on the actual projection used when drawing the
+rendered mesh.
+
 This decoupling of font sizes is useful for example in case of
 @ref DistanceFieldGlyphCacheGL, where a single prerendered glyph size can be
 used to render arbitrarily large font sizes without becoming blurry or jaggy.
 When not using a distance field glyph cache, it's usually desirable to have the
 font size and the actual rendered size match. See
-@ref Text-BasicRenderer-usage-font-size "the Renderer*D documentation" for
-further information about picking font sizes.
+@ref Text-Renderer-usage-font-size "the Renderer documentation" for further
+information about picking font sizes.
 
 @section Text-AbstractFont-glyph-cache Glyph cache filling options
 

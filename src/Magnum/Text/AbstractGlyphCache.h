@@ -134,7 +134,12 @@ won't all fit, which should be checked by the application:
 As long as the cache size allows, you can call
 @ref AbstractFont::fillGlyphCache() multiple times with additional glyphs and
 other fonts. See the @ref Text-AbstractFont-glyph-cache "AbstractFont documentation"
-for more options for glyph cache filling.
+for more options for glyph cache filling. Finally, assuming a @ref RendererGL
+is used with this cache for rendering the text, its
+@relativeref{RendererGL,mesh()} can be then drawn using @ref Shaders::VectorGL,
+together with binding @ref GlyphCacheGL::texture() for drawing:
+
+@snippet Text-gl.cpp AbstractGlyphCache-usage-draw
 
 @section Text-AbstractGlyphCache-filling Filling the glyph cache directly
 
