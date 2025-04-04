@@ -2044,12 +2044,14 @@ void AbstractRenderer::render(const std::string& text) {
     CORRADE_ASSERT(glyphCount <= _capacity,
         "Text::Renderer::render(): capacity" << _capacity << "too small to render" << glyphCount << "glyphs", );
 
-    /* Interleave the data into mapped buffer*/
-    Containers::ArrayView<Vertex> vertices(static_cast<Vertex*>(bufferMapImplementation(_vertexBuffer,
-        vertexCount*sizeof(Vertex))), vertexCount);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vertices);
-    std::copy(vertexData.begin(), vertexData.end(), vertices.begin());
-    bufferUnmapImplementation(_vertexBuffer);
+    /* Interleave the data into mapped buffer, if there are any glyphs */
+    if(vertexCount) {
+        Containers::ArrayView<Vertex> vertices(static_cast<Vertex*>(bufferMapImplementation(_vertexBuffer,
+            vertexCount*sizeof(Vertex))), vertexCount);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(vertices);
+        std::copy(vertexData.begin(), vertexData.end(), vertices.begin());
+        bufferUnmapImplementation(_vertexBuffer);
+    }
 
     /* Update index count */
     _mesh.setCount(indexCount);

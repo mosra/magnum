@@ -1147,6 +1147,12 @@ void RendererGLTest::mutableText() {
         Vector2{ 9.0f,  9.0f} + offset, {1.0f, 1.0f},
     }), TestSuite::Compare::Container);
     #endif
+
+    /* Rendering again replaces previous contents. I.e., if rendering an empty
+       string, it makes the output empty. */
+    renderer.render("");
+    CORRADE_COMPARE(renderer.rectangle(), (Range2D{{0.0f, -1.75f}, {0.0f, 1.75f}}));
+    CORRADE_COMPARE(renderer.mesh().count(), 0);
 }
 
 void RendererGLTest::arrayGlyphCache() {
