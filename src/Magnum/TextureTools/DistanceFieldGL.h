@@ -56,6 +56,10 @@ You can also use the @ref magnum-distancefieldconverter "magnum-distancefieldcon
 utility to do distance field conversion on command-line. This functionality is
 also used inside the @ref magnum-fontconverter "magnum-fontconverter" utility.
 
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @section TextureTools-DistanceFieldGL-algorithm The algorithm
 
 For each pixel inside the @p output sub-rectangle the algorithm looks at
@@ -78,10 +82,6 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
 
 @attention This is a GPU-only implementation, so it expects an active GL
     context.
-
-@note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
 */
 class MAGNUM_TEXTURETOOLS_EXPORT DistanceFieldGL {
     public:

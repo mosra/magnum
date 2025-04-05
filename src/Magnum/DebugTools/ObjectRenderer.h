@@ -32,6 +32,9 @@
  */
 #endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/Resource.h"
 #include "Magnum/DebugTools/DebugTools.h"
 #include "Magnum/DebugTools/visibility.h"
@@ -39,7 +42,6 @@
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
 
-#ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
 /**
@@ -116,10 +118,22 @@ template<UnsignedInt dimensions> class ObjectRenderer: public SceneGraph::Drawab
         Resource<GL::Mesh> _mesh;
 };
 
-/** @brief Two-dimensional object renderer */
+/**
+@brief Two-dimensional object renderer
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+*/
 typedef ObjectRenderer<2> ObjectRenderer2D;
 
-/** @brief Three-dimensional object renderer */
+/**
+@brief Three-dimensional object renderer
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+*/
 typedef ObjectRenderer<3> ObjectRenderer3D;
 
 }}

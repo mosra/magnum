@@ -32,6 +32,9 @@
  */
 #endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/ResourceManager.h"
 
 #include "Magnum/Magnum.h"
@@ -50,7 +53,6 @@
 #include "Magnum/GL/MeshView.h"
 #endif
 
-#ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
 /**

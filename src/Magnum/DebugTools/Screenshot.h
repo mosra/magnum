@@ -26,10 +26,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Function @ref Magnum::DebugTools::screenshot()
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/PluginManager/PluginManager.h>
 
 #include "Magnum/Magnum.h"
@@ -70,6 +75,10 @@ map the detected pixel format back to a generic format, if either the
 @ref Trade::AnyImageConverter "AnyImageConverter" or the corresponding plugin
 for given file format could not be loaded, or if the file saving fails (for
 example due to unsupported pixel format). A message is printed in each case.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, Containers::StringView filename);
 
@@ -79,6 +88,10 @@ bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, C
 Useful in case you already have an instance of the converter plugin manager in
 your application or if you intend to save screenshots often, as the operation
 doesn't involve costly dynamic library loading and unloading on every call.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, Containers::StringView filename);
 
@@ -93,6 +106,10 @@ Similar to @ref screenshot(GL::AbstractFramebuffer&, PixelFormat, Containers::St
 but with an explicit pixel format. Useful in cases where the driver-suggested
 pixel format is not desired, however note that supplying a format that's
 incompatible with the framebuffer may result in GL errors.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, PixelFormat format, Containers::StringView filename);
 
@@ -102,9 +119,16 @@ bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, P
 Useful in case you already have an instance of the converter plugin manager in
 your application or if you intend to save screenshots often, as the operation
 doesn't involve costly dynamic library loading and unloading on every call.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, PixelFormat format, Containers::StringView filename);
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

@@ -32,6 +32,9 @@
  */
 #endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/Resource.h"
 #include "Magnum/DebugTools/DebugTools.h"
 #include "Magnum/DebugTools/visibility.h"
@@ -40,7 +43,6 @@
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
 
-#ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
 /**
@@ -145,10 +147,22 @@ template<UnsignedInt dimensions> class ForceRenderer: public SceneGraph::Drawabl
         Resource<GL::Mesh> _mesh;
 };
 
-/** @brief Two-dimensional force renderer */
+/**
+@brief Two-dimensional force renderer
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+*/
 typedef ForceRenderer<2> ForceRenderer2D;
 
-/** @brief Three-dimensional force renderer */
+/**
+@brief Three-dimensional force renderer
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+*/
 typedef ForceRenderer<3> ForceRenderer3D;
 
 }}

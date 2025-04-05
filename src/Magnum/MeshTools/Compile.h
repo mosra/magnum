@@ -26,9 +26,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Function @ref Magnum::MeshTools::compile()
  */
+#endif
 
 #include "Magnum/configure.h"
 
@@ -49,6 +51,10 @@ namespace Magnum { namespace MeshTools {
 /**
 @brief Mesh compilation flag
 @m_since{2019,10}
+
+@note This enum is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @see @ref CompileFlags, @ref compile(const Trade::MeshData&, CompileFlags)
 */
@@ -88,6 +94,10 @@ enum class CompileFlag: UnsignedByte {
 /**
 @brief Mesh compilation flags
 @m_since{2019,10}
+
+@note This enum set is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @see @ref compile(const Trade::MeshData&, CompileFlags)
 */
@@ -205,6 +215,10 @@ Compared to @ref compile(const Trade::MeshData&, CompileFlags), this function
 implicitly enables the @ref CompileFlag::NoWarnOnCustomAttributes flag,
 assuming that custom attributes and attributes with implementation-specific
 formats are explicitly handled on the application side.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer& indices, GL::Buffer& vertices);
 

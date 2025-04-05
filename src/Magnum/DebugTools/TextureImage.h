@@ -32,11 +32,13 @@
  */
 #endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/Magnum.h"
 #include "Magnum/DebugTools/visibility.h"
 #include "Magnum/GL/GL.h"
 
-#ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
 /**
