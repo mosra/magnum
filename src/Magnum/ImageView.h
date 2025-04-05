@@ -424,13 +424,21 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * there's no concept of 2D arrays of 1D images. Use the @p flags
          * parameter to add arbitrary other flags.
          */
-        template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other, ImageFlags<dimensions> flags = {}) noexcept;
+        template<UnsignedInt otherDimensions
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<(otherDimensions < dimensions), int>::type = 0
+            #endif
+        > /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Convert a mutable view to a const one
          * @m_since{2019,10}
          */
-        template<class U, class = typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value>::type> /*implicit*/ ImageView(const ImageView<dimensions, U>& other) noexcept;
+        template<class U
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value, int>::type = 0
+            #endif
+        > /*implicit*/ ImageView(const ImageView<dimensions, U>& other) noexcept;
 
         /**
          * @brief Layout flags
@@ -830,13 +838,21 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * there's no concept of 2D arrays of 1D images. Use the @p flags
          * parameter to add arbitrary other flags.
          */
-        template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other, ImageFlags<dimensions> flags = {}) noexcept;
+        template<UnsignedInt otherDimensions
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<(otherDimensions < dimensions), int>::type = 0
+            #endif
+        > /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other, ImageFlags<dimensions> flags = {}) noexcept;
 
         /**
          * @brief Convert a mutable view to a const one
          * @m_since{2019,10}
          */
-        template<class U, class = typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value>::type> /*implicit*/ CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept;
+        template<class U
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value, int>::type = 0
+            #endif
+        > /*implicit*/ CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept;
 
         /**
          * @brief Layout flags
@@ -994,8 +1010,8 @@ template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dim
         "format types larger than 32bits are not supported");
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* it complains otherwise. why? don't know, don't want to know */
-template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, class> ImageView<dimensions, T>::ImageView(const ImageView<otherDimensions, T>& other, const ImageFlags<dimensions> flags) noexcept:
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, typename std::enable_if<(otherDimensions < dimensions), int>::type> ImageView<dimensions, T>::ImageView(const ImageView<otherDimensions, T>& other, const ImageFlags<dimensions> flags) noexcept:
     _storage{other._storage},
     _format{other._format},
     _formatExtra{other._formatExtra},
@@ -1004,9 +1020,9 @@ template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, 
     _flags{ImageFlag<dimensions>(UnsignedShort(other._flags)&~UnsignedShort(ImageFlag2D::Array))|flags},
     _size{Math::Vector<dimensions, Int>::pad(other._size, 1)},
     _data{other._data} {}
-#endif
 
-template<UnsignedInt dimensions, class T> template<class U, class> ImageView<dimensions, T>::ImageView(const ImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _formatExtra{other._formatExtra}, _pixelSize{other._pixelSize}, _flags{other._flags}, _size{other._size}, _data{other._data} {}
+template<UnsignedInt dimensions, class T> template<class U, typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value, int>::type> ImageView<dimensions, T>::ImageView(const ImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _formatExtra{other._formatExtra}, _pixelSize{other._pixelSize}, _flags{other._flags}, _size{other._size}, _data{other._data} {}
+#endif
 
 template<UnsignedInt dimensions, class T> template<class U> inline  CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, UnsignedInt(format), size, data, flags} {
     static_assert(sizeof(U) <= 4,
@@ -1018,17 +1034,17 @@ template<UnsignedInt dimensions, class T> template<class U> inline CompressedIma
         "format types larger than 32bits are not supported");
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT /* it complains otherwise. why? don't know, don't want to know */
-template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, class> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<otherDimensions, T>& other, const ImageFlags<dimensions> flags) noexcept:
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, typename std::enable_if<(otherDimensions < dimensions), int>::type> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<otherDimensions, T>& other, const ImageFlags<dimensions> flags) noexcept:
     _storage{other._storage},
     _format{other._format},
     /* Removing the Array bit and transferring the rest, as documented */
     _flags{ImageFlag<dimensions>(UnsignedShort(other._flags)&~UnsignedShort(ImageFlag2D::Array))|flags},
     _size{Math::Vector<dimensions, Int>::pad(other._size, 1)},
     _data{other._data} {}
-#endif
 
-template<UnsignedInt dimensions, class T> template<class U, class> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _flags{other._flags}, _size{other._size}, _data{other._data} {}
+template<UnsignedInt dimensions, class T> template<class U, typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value, int>::type> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _flags{other._flags}, _size{other._size}, _data{other._data} {}
+#endif
 
 }
 

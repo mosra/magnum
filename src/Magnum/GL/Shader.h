@@ -716,8 +716,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         #else
         /* Otherwise passing a char* is ambiguous between this and the
            StringView overload. Sigh, C++. */
-        template<class U, class = typename std::enable_if<std::is_same<U&&, Containers::String&&>::value>::type>
-        Shader& addSource(U&& source) {
+        template<class U, typename std::enable_if<std::is_same<U&&, Containers::String&&>::value, int>::type = 0> Shader& addSource(U&& source) {
             return addSourceInternal(Utility::move(source));
         }
         #endif

@@ -199,7 +199,7 @@ TextureArray: public AbstractTexture {
          * @requires_gles Texture views are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 2, int>::type = 0>
         #endif
         static TextureArray<dimensions> view(CubeMapTexture& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layerOffset, Int layerCount);
 
@@ -220,7 +220,7 @@ TextureArray: public AbstractTexture {
          * @requires_gles Texture views are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 2, int>::type = 0>
         #endif
         static TextureArray<dimensions> view(CubeMapTextureArray& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layerOffset, Int layerCount);
         #endif

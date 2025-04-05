@@ -144,7 +144,7 @@ template<UnsignedInt dimensions, class T> class Range {
         constexpr /*implicit*/ Range(const VectorType& min, const VectorType& max) noexcept: _min{min}, _max{max} {}
         /** @overload */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 1>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 1, int>::type = 0>
         #endif
         constexpr /*implicit*/ Range(const Vector<dimensions, T>& min, const Vector<dimensions, T>& max) noexcept: _min{Implementation::RangeTraits<dimensions, T>::fromVector(min)}, _max{Implementation::RangeTraits<dimensions, T>::fromVector(max)} {}
 
@@ -161,7 +161,7 @@ template<UnsignedInt dimensions, class T> class Range {
 
         /** @overload */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d != 1>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d != 1, int>::type = 0>
         #endif
         constexpr /*implicit*/ Range(const Containers::Pair<Vector<dimensions, T>, Vector<dimensions, T>>& minmax) noexcept: _min{minmax.first()}, _max{minmax.second()} {}
 
@@ -311,7 +311,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * @m_since_latest
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d != 1>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d != 1, int>::type = 0>
         #endif
         Range<dimensions, T> scaled(T scaling) const {
             return {_min*scaling, _max*scaling};
@@ -334,7 +334,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * @m_since_latest
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d != 1>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d != 1, int>::type = 0>
         #endif
         Range<dimensions, T> scaledFromCenter(T scaling) const {
             /* Can't use *T(0.5) because that won't work for integers */

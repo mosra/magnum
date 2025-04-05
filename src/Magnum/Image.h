@@ -358,9 +358,9 @@ template<UnsignedInt dimensions> class Image {
         template<class T
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* Otherwise this catches too much, resulting in weird errors */
-            , class = typename std::enable_if<std::is_enum<T>::value || std::is_integral<T>::value>::type
+            , typename std::enable_if<std::is_enum<T>::value || std::is_integral<T>::value, int>::type = 0
             #endif
-            > /*implicit*/ Image(T format) noexcept: Image{{}, format} {}
+        > /*implicit*/ Image(T format) noexcept: Image{{}, format} {}
 
         /** @brief Copying is not allowed */
         Image(const Image<dimensions>&) = delete;

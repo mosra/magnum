@@ -152,7 +152,11 @@ template<class T> class AbstractResourceLoader {
         }
 
         /** @overload */
-        template<class U, class = typename std::enable_if<!std::is_same<typename std::decay<U>::type, std::nullptr_t>::value>::type> void set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
+        template<class U
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_same<typename std::decay<U>::type, std::nullptr_t>::value, int>::type = 0
+            #endif
+        > void set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
             set(key, new typename std::decay<U>::type(std::forward<U>(data)), state, policy);
         }
 
@@ -172,7 +176,11 @@ template<class T> class AbstractResourceLoader {
         }
 
         /** @overload */
-        template<class U, class = typename std::enable_if<!std::is_same<typename std::decay<U>::type, std::nullptr_t>::value>::type> void set(ResourceKey key, U&& data) {
+        template<class U
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_same<typename std::decay<U>::type, std::nullptr_t>::value, int>::type = 0
+            #endif
+        > void set(ResourceKey key, U&& data) {
             set(key, new typename std::decay<U>::type(std::forward<U>(data)));
         }
 

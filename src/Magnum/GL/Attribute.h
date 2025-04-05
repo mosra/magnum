@@ -786,18 +786,18 @@ MAGNUM_GL_EXPORT bool hasVertexFormat(Magnum::VertexFormat format);
 
 namespace Implementation {
 
-template<UnsignedInt location, class T> constexpr DynamicAttribute::Kind kindFor(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, typename GL::Attribute<location, T>::DataOptions>::type options) {
+template<UnsignedInt location, class T, typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, int>::type = 0> constexpr DynamicAttribute::Kind kindFor(typename GL::Attribute<location, T>::DataOptions options) {
     return options & GL::Attribute<location, T>::DataOption::Normalized ?
         DynamicAttribute::Kind::GenericNormalized : DynamicAttribute::Kind::Generic;
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt location, class T> constexpr DynamicAttribute::Kind kindFor(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, typename GL::Attribute<location, T>::DataOptions>::type) {
+template<UnsignedInt location, class T, typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, int>::type = 0> constexpr DynamicAttribute::Kind kindFor(typename GL::Attribute<location, T>::DataOptions) {
     return DynamicAttribute::Kind::Integral;
 }
 
 #ifndef MAGNUM_TARGET_GLES
-template<UnsignedInt location, class T> constexpr DynamicAttribute::Kind kindFor(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, typename GL::Attribute<location, T>::DataOptions>::type) {
+template<UnsignedInt location, class T, typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, int>::type = 0> constexpr DynamicAttribute::Kind kindFor(typename GL::Attribute<location, T>::DataOptions) {
     return DynamicAttribute::Kind::Long;
 }
 #endif

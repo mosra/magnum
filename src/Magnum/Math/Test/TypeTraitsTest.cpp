@@ -359,10 +359,10 @@ template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
 }
 
 /* Argh! Why there is no standard std::abs() for unsigned types? */
-template<class T, class U = typename std::enable_if<std::is_unsigned<T>::value>::type> T abs(T value) {
+template<class T, typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0> T abs(T value) {
     return value;
 }
-template<class T, class U = T, class V = typename std::enable_if<!std::is_unsigned<T>::value>::type> T abs(T value) {
+template<class T, typename std::enable_if<!std::is_unsigned<T>::value, int>::type = 0> T abs(T value) {
     return std::abs(value);
 }
 

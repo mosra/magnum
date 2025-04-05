@@ -50,7 +50,7 @@ namespace Implementation {
    resolution (the functions would otherwise need to be de-inlined to break
    cyclic dependencies) */
 struct AttributeCount {
-    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&...
+    template<class T, class ...U, typename std::enable_if<!std::is_convertible<T, std::size_t>::value, int>::type = 0> std::size_t operator()(const T& first, const U&...
         #ifndef CORRADE_NO_ASSERT
         next
         #endif
@@ -90,7 +90,7 @@ template<class T> constexpr std::size_t typeSize() {
 /* Stride, taking gaps into account. It must be in the structure, same reason
    as above */
 struct Stride {
-    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T&, const U&... next) const {
+    template<class T, class ...U, typename std::enable_if<!std::is_convertible<T, std::size_t>::value, int>::type = 0> std::size_t operator()(const T&, const U&... next) const {
         return typeSize<T>() + Stride{}(next...);
     }
     template<class... T> std::size_t operator()(std::size_t gap, const T&... next) const {
@@ -100,7 +100,7 @@ struct Stride {
 };
 
 /* Copy data to the buffer */
-template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOneInterleaved(std::size_t stride, char* startingOffset, const T& attributeList) {
+template<class T, typename std::enable_if<!std::is_convertible<T, std::size_t>::value, int>::type = 0> std::size_t writeOneInterleaved(std::size_t stride, char* startingOffset, const T& attributeList) {
     auto it = attributeList.begin();
     for(std::size_t i = 0; i != attributeList.size(); ++i, ++it)
         std::memcpy(startingOffset + i*stride, reinterpret_cast<const char*>(&*it), typeSize<T>());
@@ -150,7 +150,7 @@ would be 21 bytes, causing possible performance loss.
 template<class T, class ...U
     #ifndef DOXYGEN_GENERATING_OUTPUT
     /* So it doesn't clash with the MeshData variant */
-    , class = typename std::enable_if<Utility::IsIterable<T>::value>::type
+    , typename std::enable_if<Utility::IsIterable<T>::value, int>::type = 0
     #endif
 > Containers::Array<char> interleave(const T& first, const U&... next)
 {

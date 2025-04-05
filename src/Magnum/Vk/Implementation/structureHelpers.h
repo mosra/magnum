@@ -101,7 +101,7 @@ template<class T> inline const void** structureFind(const void*& next, const T& 
 
 class AnyStructure {
     public:
-        template<class T, class = typename std::enable_if<IsVulkanStructure<T>::value>::type> /*implicit*/ AnyStructure(const T& structure): _structure{reinterpret_cast<const VkBaseOutStructure*>(&structure)} {}
+        template<class T, typename std::enable_if<IsVulkanStructure<T>::value, int>::type = 0> /*implicit*/ AnyStructure(const T& structure): _structure{reinterpret_cast<const VkBaseOutStructure*>(&structure)} {}
 
         /*implicit*/ operator const VkBaseOutStructure&() const { return *_structure; }
 

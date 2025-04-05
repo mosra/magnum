@@ -161,7 +161,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both AbstractFeature and
            AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> AbstractFeature(U& object): AbstractFeature(static_cast<AbstractObject<dimensions, T>&>(object)) {}
+        template<class U, typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value, int>::type = 0> AbstractFeature(U& object): AbstractFeature(static_cast<AbstractObject<dimensions, T>&>(object)) {}
         #endif
 
         virtual ~AbstractFeature() = 0;

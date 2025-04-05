@@ -165,7 +165,7 @@ MultisampleTexture: public AbstractTexture {
          *      @gl_extension{EXT,texture_view}
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 2, int>::type = 0>
         #endif
         static MultisampleTexture<dimensions> view(MultisampleTexture2DArray& original, TextureFormat internalFormat, Int layer);
 
@@ -186,7 +186,7 @@ MultisampleTexture: public AbstractTexture {
          *      @gl_extension{EXT,texture_view}
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 3, int>::type = 0>
         #endif
         static MultisampleTexture<dimensions> view(MultisampleTexture2DArray& original, TextureFormat internalFormat, Int layerOffset, Int layerCount);
 
@@ -252,7 +252,7 @@ MultisampleTexture: public AbstractTexture {
          * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 2, int>::type = 0>
         #endif
         void bindImage(Int imageUnit, ImageAccess access, ImageFormat format) {
             bindImageInternal(imageUnit, 0, false, 0, access, format);
@@ -279,7 +279,7 @@ MultisampleTexture: public AbstractTexture {
          *      multisample 2D array textures.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 3, int>::type = 0>
         #endif
         void bindImage(Int imageUnit, Int layer, ImageAccess access, ImageFormat format) {
             bindImageInternal(imageUnit, 0, false, layer, access, format);
@@ -305,7 +305,7 @@ MultisampleTexture: public AbstractTexture {
          *      multisample 2D array textures.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 3, int>::type = 0>
         #endif
         void bindImageLayered(Int imageUnit, ImageAccess access, ImageFormat format) {
             bindImageInternal(imageUnit, 0, true, 0, access, format);

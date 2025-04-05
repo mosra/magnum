@@ -88,13 +88,11 @@ template<class T> class CubicHermite {
          * Enabled only on vector underlying types. See
          * @ref Bezier::fromCubicHermite() for the inverse operation.
          */
-        template<UnsignedInt dimensions, class U> static
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        CubicHermite<T>
-        #else
-        typename std::enable_if<std::is_base_of<Vector<dimensions, U>, T>::value, CubicHermite<T>>::type
-        #endif
-        fromBezier(const CubicBezier<dimensions, U>& a, const CubicBezier<dimensions, U>& b) {
+        template<UnsignedInt dimensions, class U
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_base_of<Vector<dimensions, U>, T>::value, int>::type = 0
+            #endif
+        > static CubicHermite<T> fromBezier(const CubicBezier<dimensions, U>& a, const CubicBezier<dimensions, U>& b) {
             return CORRADE_CONSTEXPR_DEBUG_ASSERT(a[3] == b[0],
                 "Math::CubicHermite::fromBezier(): segments are not adjacent"),
                 CubicHermite<T>{3*(a[3] - a[2]), a[3], 3*(b[1] - a[3])};
@@ -124,7 +122,10 @@ template<class T> class CubicHermite {
          * @ref outTangent() is constructed as zero. Enabled only for complex
          * and quaternion types.
          */
-        template<class U = T, class = typename std::enable_if<std::is_constructible<U, IdentityInitT>::value>::type> constexpr explicit CubicHermite(IdentityInitT) noexcept: _inTangent{ZeroInit}, _point{IdentityInit}, _outTangent{ZeroInit} {}
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U = T, typename std::enable_if<std::is_constructible<U, IdentityInitT>::value, int>::type = 0>
+        #endif
+        constexpr explicit CubicHermite(IdentityInitT) noexcept: _inTangent{ZeroInit}, _point{IdentityInit}, _outTangent{ZeroInit} {}
 
         /** @brief Construct a cubic Hermite spline point without initializing its contents */
         explicit CubicHermite(Magnum::NoInitT) noexcept: CubicHermite{Magnum::NoInit, typename std::conditional<std::is_constructible<T, Magnum::NoInitT>::value, Magnum::NoInitT*, void*>::type{}} {}

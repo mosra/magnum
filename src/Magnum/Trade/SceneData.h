@@ -2528,7 +2528,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref field(SceneField) const, @ref mutableField(UnsignedInt),
          *      @ref fieldArraySize()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> field(UnsignedInt id) const;
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView1D<const T> field(UnsignedInt id) const;
 
         /**
          * @brief Data for given array field in a concrete type
@@ -2541,7 +2545,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref fieldArraySize(UnsignedInt) const for given field. For
          * non-array fields the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> field(UnsignedInt id) const;
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> field(UnsignedInt id) const;
 
         /**
          * @brief Mutable data for given field in a concrete type
@@ -2551,7 +2559,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * Expects that the scene is mutable.
          * @see @ref dataFlags()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<T> mutableField(UnsignedInt id);
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView1D<T> mutableField(UnsignedInt id);
 
         /**
          * @brief Mutable data for given array field in a concrete type
@@ -2564,7 +2576,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref fieldArraySize(UnsignedInt) const for given field. For
          * non-array fields the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableField(UnsignedInt id);
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableField(UnsignedInt id);
 
         /**
          * @brief Data for given named field
@@ -2608,7 +2624,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @see @ref hasField(), @ref field(UnsignedInt) const,
          *      @ref mutableField(SceneField)
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> field(SceneField name) const;
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView1D<const T> field(SceneField name) const;
 
         /**
          * @brief Data for given named array field in a concrete type
@@ -2621,7 +2641,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref fieldArraySize(SceneField) const for given field. For non-array
          * fields the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> field(SceneField name) const;
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> field(SceneField name) const;
 
         /**
          * @brief Mutable data for given named field
@@ -2631,7 +2655,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * Expects that the scene is mutable.
          * @see @ref dataFlags()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<T> mutableField(SceneField name);
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView1D<T> mutableField(SceneField name);
 
         /**
          * @brief Mutable data for given named array field in a concrete type
@@ -2644,7 +2672,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref fieldArraySize(SceneField) const for given field. For non-array
          * fields the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableField(SceneField name);
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableField(SceneField name);
 
         /**
          * @brief Contents of given bit field
@@ -4265,7 +4297,8 @@ template<class T> bool SceneData::checkFieldTypeCompatibility(const SceneFieldDa
 }
 #endif
 
-template<class T, class> Containers::StridedArrayView1D<const T> SceneData::field(const UnsignedInt id) const {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<const T> SceneData::field(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = field(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -4276,7 +4309,7 @@ template<class T, class> Containers::StridedArrayView1D<const T> SceneData::fiel
     return Containers::arrayCast<1, const T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> SceneData::field(const UnsignedInt id) const {
+template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> SceneData::field(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = field(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -4287,7 +4320,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
 
-template<class T, class> Containers::StridedArrayView1D<T> SceneData::mutableField(const UnsignedInt id) {
+template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<T> SceneData::mutableField(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableField(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -4298,7 +4331,7 @@ template<class T, class> Containers::StridedArrayView1D<T> SceneData::mutableFie
     return Containers::arrayCast<1, T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> SceneData::mutableField(const UnsignedInt id) {
+template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> SceneData::mutableField(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableField(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -4309,7 +4342,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
 
-template<class T, class> Containers::StridedArrayView1D<const T> SceneData::field(const SceneField name) const {
+template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<const T> SceneData::field(const SceneField name) const {
     const UnsignedInt fieldId = findFieldIdInternal(name);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::field(): field" << name << "not found", {});
@@ -4323,7 +4356,7 @@ template<class T, class> Containers::StridedArrayView1D<const T> SceneData::fiel
     return Containers::arrayCast<1, const T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> SceneData::field(const SceneField name) const {
+template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> SceneData::field(const SceneField name) const {
     const UnsignedInt fieldId = findFieldIdInternal(name);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::field(): field" << name << "not found", {});
@@ -4337,7 +4370,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
 
-template<class T, class> Containers::StridedArrayView1D<T> SceneData::mutableField(const SceneField name) {
+template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<T> SceneData::mutableField(const SceneField name) {
     const UnsignedInt fieldId = findFieldIdInternal(name);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::mutableField(): field" << name << "not found", {});
@@ -4351,7 +4384,7 @@ template<class T, class> Containers::StridedArrayView1D<T> SceneData::mutableFie
     return Containers::arrayCast<1, T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> SceneData::mutableField(const SceneField name) {
+template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> SceneData::mutableField(const SceneField name) {
     const UnsignedInt fieldId = findFieldIdInternal(name);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::mutableField(): field" << name << "not found", {});
@@ -4364,6 +4397,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
+#endif
 
 }}
 

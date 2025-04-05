@@ -214,7 +214,11 @@ class MAGNUM_VK_EXPORT InstanceExtension {
         constexpr Containers::StringView string() const { return _string; }
 
         /** @brief Construct from a compile-time instance extension */
-        template<class E, class = typename std::enable_if<Implementation::IsInstanceExtension<E>::value>::type> constexpr /*implicit*/ InstanceExtension(const E&): _index{E::InstanceIndex}, _requiredVersion{E::requiredVersion()}, _coreVersion{E::coreVersion()}, _string{E::string()} {}
+        template<class E
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<Implementation::IsInstanceExtension<E>::value, int>::type = 0
+            #endif
+        > constexpr /*implicit*/ InstanceExtension(const E&): _index{E::InstanceIndex}, _requiredVersion{E::requiredVersion()}, _coreVersion{E::coreVersion()}, _string{E::string()} {}
 
     private:
         std::size_t _index;
@@ -253,7 +257,11 @@ class MAGNUM_VK_EXPORT Extension {
 
         /** @brief Construct from a compile-time device extension */
         /** @todo prohibit conversion from GL/AL extensions also? */
-        template<class E, class = typename std::enable_if<Implementation::IsExtension<E>::value>::type> constexpr /*implicit*/ Extension(const E&): _index{E::Index}, _requiredVersion{E::requiredVersion()}, _coreVersion{E::coreVersion()}, _string{E::string()} {}
+        template<class E
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<Implementation::IsExtension<E>::value, int>::type = 0
+            #endif
+        > constexpr /*implicit*/ Extension(const E&): _index{E::Index}, _requiredVersion{E::requiredVersion()}, _coreVersion{E::coreVersion()}, _string{E::string()} {}
 
     private:
         std::size_t _index;

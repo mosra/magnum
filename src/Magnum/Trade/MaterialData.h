@@ -1408,7 +1408,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          */
         template<class T
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            , class = typename std::enable_if<!std::is_convertible<const T&, Containers::StringView>::value && !std::is_convertible<const T&, Containers::ArrayView<const void>>::value>::type
+            , typename std::enable_if<!std::is_convertible<const T&, Containers::StringView>::value && !std::is_convertible<const T&, Containers::ArrayView<const void>>::value, int>::type = 0
             #endif
         > constexpr /*implicit*/ MaterialAttributeData(Containers::StringView name, const T& value) noexcept;
 
@@ -1447,7 +1447,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* "Sure can't be constexpr" overloads to avoid going through the
            *insane* overload puzzle when not needed */
-        template<class T, class = typename std::enable_if<!std::is_convertible<const T&, Containers::StringView>::value && !std::is_convertible<const T&, Containers::ArrayView<const void>>::value>::type> /*implicit*/ MaterialAttributeData(const char* name, const T& value) noexcept: MaterialAttributeData{name, Implementation::MaterialAttributeTypeFor<T>::type(), sizeof(T), &value} {}
+        template<class T, typename std::enable_if<!std::is_convertible<const T&, Containers::StringView>::value && !std::is_convertible<const T&, Containers::ArrayView<const void>>::value, int>::type = 0> /*implicit*/ MaterialAttributeData(const char* name, const T& value) noexcept: MaterialAttributeData{name, Implementation::MaterialAttributeTypeFor<T>::type(), sizeof(T), &value} {}
         /*implicit*/ MaterialAttributeData(const char* name, Containers::StringView value) noexcept: MaterialAttributeData{name, MaterialAttributeType::String, 0, &value} {}
         #endif
 
@@ -1466,7 +1466,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          */
         template<class T
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            , class = typename std::enable_if<!std::is_convertible<const T&, Containers::StringView>::value>::type
+            , typename std::enable_if<!std::is_convertible<const T&, Containers::StringView>::value, int>::type = 0
             #endif
         > /*implicit*/ MaterialAttributeData(MaterialAttribute name, const T& value) noexcept: MaterialAttributeData{name, Implementation::MaterialAttributeTypeFor<T>::type(), &value} {}
 
@@ -1677,18 +1677,18 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
 
             constexpr explicit Storage(Containers::StringView name, Containers::StringView value) noexcept: s{MaterialAttributeType::String, name, value} {}
 
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 1, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _1{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 4 && !std::is_pointer<T>::value, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _4{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 8 && !Math::IsVector<T>::value && !std::is_pointer<T>::value, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _8{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 8 && Math::IsVector<T>::value && !std::is_pointer<T>::value, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _8v{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 1, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _1{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 4 && !std::is_pointer<T>::value, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _4{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 8 && !Math::IsVector<T>::value && !std::is_pointer<T>::value, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _8{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 8 && Math::IsVector<T>::value && !std::is_pointer<T>::value, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _8v{type, name, value} {}
             constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const void* value) noexcept: p{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 12, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _12{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 16 && Math::IsVector<T>::value, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _16{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 16 && !Math::IsVector<T>::value, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _16m{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 24, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _24{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 32, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _32{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 36, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _36{type, name, value} {}
-            template<class T> constexpr explicit Storage(typename std::enable_if<sizeof(T) == 48, MaterialAttributeType>::type type, Containers::StringView name, const T& value) noexcept: _48{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 12, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _12{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 16 && Math::IsVector<T>::value, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _16{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 16 && !Math::IsVector<T>::value, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _16m{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 24, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _24{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 32, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _32{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 36, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _36{type, name, value} {}
+            template<class T, typename std::enable_if<sizeof(T) == 48, int>::type = 0> constexpr explicit Storage(MaterialAttributeType type, Containers::StringView name, const T& value) noexcept: _48{type, name, value} {}
 
             MaterialAttributeType type;
             char data[Implementation::MaterialAttributeDataSize];
@@ -3563,7 +3563,7 @@ namespace Implementation {
 /* The 2 extra bytes are for a null byte after the name and a type */
 template<class T
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    , class
+    , typename std::enable_if<!std::is_convertible<const T&, Containers::StringView>::value && !std::is_convertible<const T&, Containers::ArrayView<const void>>::value, int>::type
     #endif
 > constexpr MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const T& value) noexcept:
     _data{Implementation::MaterialAttributeTypeFor<T>::type(), (

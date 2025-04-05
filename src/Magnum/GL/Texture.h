@@ -196,7 +196,7 @@ Texture: public AbstractTexture {
          * @requires_gles Texture views are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d <= 2>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d <= 2, int>::type = 0>
         #endif
         static Texture<dimensions> view(TextureArray<dimensions>& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layer);
 
@@ -217,7 +217,7 @@ Texture: public AbstractTexture {
          * @requires_gles Texture views are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 2, int>::type = 0>
         #endif
         static Texture<dimensions> view(CubeMapTexture& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layer);
 
@@ -238,7 +238,7 @@ Texture: public AbstractTexture {
          * @requires_gles Texture views are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 2, int>::type = 0>
         #endif
         static Texture<dimensions> view(CubeMapTextureArray& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layer);
         #endif
@@ -320,7 +320,7 @@ Texture: public AbstractTexture {
          * @requires_gles Shader image load/store is not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 1 || d == 2>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 1 || d == 2, int>::type = 0>
         #endif
         void bindImage(Int imageUnit, Int level, ImageAccess access, ImageFormat format) {
             bindImageInternal(imageUnit, level, false, 0, access, format);
@@ -348,7 +348,7 @@ Texture: public AbstractTexture {
          * @requires_gles Shader image load/store is not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 3, int>::type = 0>
         #endif
         void bindImage(Int imageUnit, Int level, Int layer, ImageAccess access, ImageFormat format) {
             bindImageInternal(imageUnit, level, false, layer, access, format);
@@ -375,7 +375,7 @@ Texture: public AbstractTexture {
          * @requires_gles Shader image load/store is not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        template<UnsignedInt d = dimensions, typename std::enable_if<d == 3, int>::type = 0>
         #endif
         void bindImageLayered(Int imageUnit, Int level, ImageAccess access, ImageFormat format) {
             bindImageInternal(imageUnit, level, true, 0, access, format);

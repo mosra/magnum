@@ -112,18 +112,25 @@ template<std::size_t size> class BitVector {
          * @param first Value for first 8bit segment
          * @param next  Values for next Bbit segments
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...T> constexpr /*implicit*/ BitVector(UnsignedByte first, T... next) noexcept;
-        #else
-        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> constexpr /*implicit*/ BitVector(UnsignedByte first, T... next) noexcept: _data{first, UnsignedByte(next)...} {}
-        #endif
+        template<class ...T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            /* For some reason MSVC 2015 and 2017 doesn't understand the value
+               parameter here, only a type parameter. Don't need to prevent any
+               ambiguity with this constructor so it's fine. */
+            #ifndef CORRADE_MSVC2017_COMPATIBILITY
+            , typename std::enable_if<sizeof...(T)+1 == DataSize, int>::type = 0
+            #else
+            , class = typename std::enable_if<sizeof...(T)+1 == DataSize>::type
+            #endif
+            #endif
+        > constexpr /*implicit*/ BitVector(UnsignedByte first, T... next) noexcept: _data{first, UnsignedByte(next)...} {}
 
         /** @brief Construct a bit vector with one value for all fields */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit BitVector(T value) noexcept;
-        #else
-        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BitVector(T value) noexcept: BitVector(typename Containers::Implementation::GenerateSequence<DataSize>::Type{}, value ? FullSegmentMask : 0) {}
-        #endif
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_same<bool, T>::value && size != 1, int>::type = 0
+            #endif
+        > constexpr explicit BitVector(T value) noexcept: BitVector(typename Containers::Implementation::GenerateSequence<DataSize>::Type{}, value ? FullSegmentMask : 0) {}
 
         /** @brief Construct a bit vector from external representation */
         template<class U, class = decltype(Implementation::BitVectorConverter<size, U>::from(std::declval<U>()))> constexpr explicit BitVector(const U& other) noexcept: BitVector{Implementation::BitVectorConverter<size, U>::from(other)} {}

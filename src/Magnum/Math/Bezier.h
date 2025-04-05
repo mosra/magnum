@@ -119,11 +119,9 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * inverse operation.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt order_ = order> static typename std::enable_if<order_ == 3, Bezier<order, dimensions, T>>::type
-        #else
-        static Bezier<order, dimensions, T>
+        template<UnsignedInt order_ = order, typename std::enable_if<order_ == 3, int>::type = 0>
         #endif
-        fromCubicHermite(const CubicHermite<VectorType>& a, const CubicHermite<VectorType>& b) {
+        static Bezier<order, dimensions, T> fromCubicHermite(const CubicHermite<VectorType>& a, const CubicHermite<VectorType>& b) {
             return {a.point(), a.outTangent()/T(3) - a.point(), b.point() - b.inTangent()/T(3), b.point()};
         }
 

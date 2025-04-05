@@ -82,11 +82,11 @@ template<UnsignedInt dimensions, class T> class CORRADE_DEPRECATED("use Math::Ve
          * @param first     First value
          * @param next      Next values
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> constexpr /*implicit*/ Array(T first, U... next);
-        #else
-        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == dimensions, T>::type> constexpr /*implicit*/ Array(T first, U... next): _data{first, next...} {}
-        #endif
+        template<class ...U
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<sizeof...(U)+1 == dimensions, int>::type = 0
+            #endif
+        > constexpr /*implicit*/ Array(T first, U... next): _data{first, next...} {}
 
         /** @brief Construct array with one value for all fields */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -95,8 +95,7 @@ template<UnsignedInt dimensions, class T> class CORRADE_DEPRECATED("use Math::Ve
         #ifdef CORRADE_TARGET_MSVC /* MSVC warns for the constructor delegation */
         CORRADE_IGNORE_DEPRECATED_PUSH
         #endif
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, T>::type>
-        constexpr /*implicit*/ Array(U value): Array(typename Containers::Implementation::GenerateSequence<dimensions>::Type{}, value) {}
+        template<class U, typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, int>::type = 0> constexpr /*implicit*/ Array(U value): Array(typename Containers::Implementation::GenerateSequence<dimensions>::Type{}, value) {}
         #ifdef CORRADE_TARGET_MSVC
         CORRADE_IGNORE_DEPRECATED_POP
         #endif

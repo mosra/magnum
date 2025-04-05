@@ -734,7 +734,11 @@ template<class K, class V, class R
         /** @brief Convert a mutable view to a const one */
         /* This is the only variant that works on MSVC 2015, std::remove_const
            in the signature didn't work there */
-        template<class K2, class V2, class = typename std::enable_if<std::is_same<const K2, K>::value && std::is_same<const V2, V>::value>::type> /*implicit*/ TrackView(const TrackView<K2, V2, R>& other) noexcept: TrackViewStorage<K>{other._keys, other._values, other._interpolation, other._interpolator, other._before, other._after} {}
+        template<class K2, class V2
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_same<const K2, K>::value && std::is_same<const V2, V>::value, int>::type = 0
+            #endif
+        > /*implicit*/ TrackView(const TrackView<K2, V2, R>& other) noexcept: TrackViewStorage<K>{other._keys, other._values, other._interpolation, other._interpolator, other._before, other._after} {}
 
         /**
          * @brief Interpolation function

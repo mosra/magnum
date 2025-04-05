@@ -313,7 +313,7 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
          * @ref MeshIndexData(std::nullptr_t) constructor.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class T, class = typename std::enable_if<std::is_convertible<T, Containers::ArrayView<const void>>::value>::type> explicit MeshIndexData(MeshIndexType type, T&& data) noexcept;
+        template<class T, typename std::enable_if<std::is_convertible<T, Containers::ArrayView<const void>>::value, int>::type = 0> explicit MeshIndexData(MeshIndexType type, T&& data) noexcept;
         #else
         explicit MeshIndexData(MeshIndexType type, Containers::ArrayView<const void> data) noexcept;
         #endif
@@ -523,7 +523,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
            offset-only constructor (where 0 passed to offset would match with
            std::nullptr_t). 0 as null pointer constant was deprecated in C++11
            already, WHY IS THIS STILL A PROBLEM?! */
-        template<class U, class = typename std::enable_if<std::is_convertible<U, std::nullptr_t>::value && !std::is_convertible<U, std::size_t>::value>::type> explicit MeshAttributeData(MeshAttribute name, VertexFormat format, U, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept: MeshAttributeData{nullptr, name, format, nullptr, arraySize, morphTargetId} {}
+        template<class U, typename std::enable_if<std::is_convertible<U, std::nullptr_t>::value && !std::is_convertible<U, std::size_t>::value, int>::type = 0> explicit MeshAttributeData(MeshAttribute name, VertexFormat format, U, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept: MeshAttributeData{nullptr, name, format, nullptr, arraySize, morphTargetId} {}
         #endif
 
         /**
@@ -1770,7 +1770,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *      @ref isVertexFormatImplementationSpecific(),
          *      @ref attributeArraySize()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> attribute(UnsignedInt id) const;
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView1D<const T> attribute(UnsignedInt id) const;
 
         /**
          * @brief Data for given array attribute in a concrete type
@@ -1782,7 +1786,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attributeArraySize() for given attribute. For non-array
          * attributes the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(UnsignedInt id) const;
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(UnsignedInt id) const;
 
         /**
          * @brief Mutable data for given attribute in a concrete type
@@ -1791,7 +1799,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * Expects that the mesh is mutable.
          * @see @ref vertexDataFlags()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<T> mutableAttribute(UnsignedInt id);
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView1D<T> mutableAttribute(UnsignedInt id);
 
         /**
          * @brief Mutable data for given array attribute in a concrete type
@@ -1803,7 +1815,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attributeArraySize() for given attribute. For non-array
          * attributes the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(UnsignedInt id);
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(UnsignedInt id);
 
         /**
          * @brief Data for given named attribute
@@ -1853,7 +1869,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt, Int),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> attribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView1D<const T> attribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Data for given named array attribute in a concrete type
@@ -1865,7 +1885,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attributeArraySize() for given attribute. For non-array
          * attributes the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Mutable data for given named attribute in a concrete type
@@ -1874,7 +1898,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * returns a mutable view. Expects that the mesh is mutable.
          * @see @ref vertexDataFlags()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<T> mutableAttribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1);
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<!std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView1D<T> mutableAttribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1);
 
         /**
          * @brief Mutable data for given named array attribute in a concrete type
@@ -1886,7 +1914,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attributeArraySize() for given attribute. For non-array
          * attributes the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1);
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_array<T>::value, int>::type = 0
+            #endif
+        > Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1);
 
         /**
          * @brief Indices as 32-bit integers
@@ -2330,7 +2362,7 @@ namespace Implementation {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T, class> MeshIndexData::MeshIndexData(const MeshIndexType type, T&& data) noexcept: _type{type} {
+template<class T, typename std::enable_if<std::is_convertible<T, Containers::ArrayView<const void>>::value, int>::type> MeshIndexData::MeshIndexData(const MeshIndexType type, T&& data) noexcept: _type{type} {
     const Containers::ArrayView<const void> erased = data;
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(type),
         "Trade::MeshIndexData: can't create index data from a contiguous view and an implementation-specific type" << Debug::hex << meshIndexTypeUnwrap(type) << Debug::nospace << ", pass a strided view instead", );
@@ -2737,7 +2769,8 @@ template<class T> bool MeshData::checkVertexFormatCompatibility(const MeshAttrib
 }
 #endif
 
-template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attribute(const UnsignedInt id) const {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<const T> MeshData::attribute(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = attribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -2748,7 +2781,7 @@ template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attri
     return Containers::arrayCast<1, const T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const UnsignedInt id) const {
+template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = attribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -2759,7 +2792,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
 
-template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const UnsignedInt id) {
+template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableAttribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -2770,7 +2803,7 @@ template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttr
     return Containers::arrayCast<1, T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const UnsignedInt id) {
+template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableAttribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -2781,7 +2814,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
 
-template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<const T> MeshData::attribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
     const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
     #ifndef CORRADE_NO_ASSERT
     if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
@@ -2798,7 +2831,7 @@ template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attri
     return Containers::arrayCast<1, const T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
     const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
     #ifndef CORRADE_NO_ASSERT
     if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
@@ -2815,7 +2848,7 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
 
-template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) {
+template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) {
     const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
     #ifndef CORRADE_NO_ASSERT
     if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
@@ -2833,7 +2866,7 @@ template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttr
     return Containers::arrayCast<1, T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) {
+template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) {
     const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
     #ifndef CORRADE_NO_ASSERT
     if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
@@ -2850,6 +2883,7 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
+#endif
 
 }}
 

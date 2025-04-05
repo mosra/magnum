@@ -911,7 +911,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         template<class ...T
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* So it doesn't clash with the DynamicAttribute overload */
-            , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
+            , typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value, int>::type = 0
             #endif
         > Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), 0, attributes...);
@@ -952,7 +952,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         template<class ...T
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* So it doesn't clash with the DynamicAttribute overload */
-            , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
+            , typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value, int>::type = 0
             #endif
         > Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), divisor, attributes...);
@@ -996,7 +996,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         template<class ...T
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* So it doesn't clash with the DynamicAttribute overload */
-            , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
+            , typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value, int>::type = 0
             #endif
         > Mesh& addVertexBuffer(Buffer&& buffer, GLintptr offset, const T&... attributes) {
             addVertexBuffer<T...>(buffer, offset, attributes...);
@@ -1015,7 +1015,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         template<class ...T
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* So it doesn't clash with the DynamicAttribute overload */
-            , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
+            , typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value, int>::type = 0
             #endif
         > Mesh& addVertexBufferInstanced(Buffer&& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
             addVertexBufferInstanced<T...>(buffer, divisor, offset, attributes...);
@@ -1224,7 +1224,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         }
         void addVertexBufferInternal(Buffer&, GLintptr, GLsizei, GLuint) {}
 
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
+        template<UnsignedInt location, class T, typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, int>::type = 0> void addVertexAttribute(Buffer& buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             for(UnsignedInt i = 0; i != Attribute<location, T>::Vectors; ++i)
                 attributePointerInternal(buffer,
                     location+i,
@@ -1237,7 +1237,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
+        template<UnsignedInt location, class T, typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, int>::type = 0> void addVertexAttribute(Buffer& buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             attributePointerInternal(buffer,
                 location,
                 GLint(attribute.components()),
@@ -1249,7 +1249,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
+        template<UnsignedInt location, class T, typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, int>::type = 0> void addVertexAttribute(Buffer& buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             for(UnsignedInt i = 0; i != Attribute<location, T>::Vectors; ++i)
                 attributePointerInternal(buffer,
                     location+i,

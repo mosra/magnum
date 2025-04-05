@@ -220,12 +220,10 @@ template<class T> class Vector2: public Vector<2, T> {
          *      @ref Vector::operator-() const "operator-() const"
          */
         /* For some reason @ref operator-() const doesn't work since 1.8.17 */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        Vector2<T>
-        #else
-        template<class U = T> typename std::enable_if<std::is_signed<U>::value, Vector2<T>>::type
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U = T, typename std::enable_if<std::is_signed<U>::value, int>::type = 0>
         #endif
-        perpendicular() const { return {-y(), x()}; }
+        Vector2<T> perpendicular() const { return {-y(), x()}; }
 
         /**
          * @brief Aspect ratio
@@ -235,12 +233,10 @@ template<class T> class Vector2: public Vector<2, T> {
          *      a = \frac{v_x}{v_y}
          * @f]
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        T
-        #else
-        template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, T>::type
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U = T, typename std::enable_if<std::is_floating_point<U>::value, int>::type = 0>
         #endif
-        aspectRatio() const { return x()/y(); }
+        T aspectRatio() const { return x()/y(); }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
 

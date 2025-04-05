@@ -178,12 +178,11 @@ template<template<class> class Derived, class T> class Unit {
          * Similar to @ref operator*=(T), except that the multiplication is
          * done in floating-point.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> Unit<Derived, T>&
-        #else
-        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>&>::type
-        #endif
-        operator*=(FloatingPoint number) {
+        template<class FloatingPoint
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, int>::type = 0
+            #endif
+        > Unit<Derived, T>& operator*=(FloatingPoint number) {
             _value = T(_value*number);
             return *this;
         }
@@ -199,12 +198,11 @@ template<template<class> class Derived, class T> class Unit {
            an out-of-class overload wrapped in CORRADE_MSVC2015_COMPATIBILITY
            which is (and the two don't conflict, apparently, so both are
            present) */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> constexpr Unit<Derived, T>
-        #else
-        template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>>::type
-        #endif
-        operator*(FloatingPoint number) const {
+        template<class FloatingPoint, class Integral = T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, int>::type = 0
+            #endif
+        > constexpr Unit<Derived, T> operator*(FloatingPoint number) const {
             return Unit<Derived, T>{T(_value*number)};
         }
 
@@ -214,12 +212,11 @@ template<template<class> class Derived, class T> class Unit {
          *
          * Same as @ref operator*(FloatingPoint) const.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> friend constexpr Unit<Derived, T>
-        #else
-        template<class FloatingPoint, class Integral = T> friend constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>>::type
-        #endif
-        operator*(FloatingPoint number, const Unit<Derived, T>& value) {
+        template<class FloatingPoint
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, int>::type = 0
+            #endif
+        > friend constexpr Unit<Derived, T> operator*(FloatingPoint number, const Unit<Derived, T>& value) {
             return Unit<Derived, T>{T(value._value*number)};
         }
 
@@ -241,12 +238,11 @@ template<template<class> class Derived, class T> class Unit {
          * Similar to @ref operator/=(T), except that the division is done in
          * floating-point.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> Unit<Derived, T>&
-        #else
-        template<class FloatingPoint, class Integral = T> typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>&>::type
-        #endif
-        operator/=(FloatingPoint number) {
+        template<class FloatingPoint
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, int>::type = 0
+            #endif
+        > Unit<Derived, T>& operator/=(FloatingPoint number) {
             _value = T(_value/number);
             return *this;
         }
@@ -258,12 +254,11 @@ template<template<class> class Derived, class T> class Unit {
          * Similar to @ref operator/(T) const, except that the division is done
          * in floating-point.
         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class FloatingPoint> constexpr Unit<Derived, T>
-        #else
-        template<class FloatingPoint, class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, T>>::type
-        #endif
-        operator/(FloatingPoint number) const {
+        template<class FloatingPoint
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , class Integral = T, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, int>::type = 0
+            #endif
+        > constexpr Unit<Derived, T> operator/(FloatingPoint number) const {
             return Unit<Derived, T>{T(_value/number)};
         }
 
@@ -278,12 +273,10 @@ template<template<class> class Derived, class T> class Unit {
          *
          * Enabled only for integral types.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        Unit<Derived, T>&
-        #else
-        template<class Integral = T> typename std::enable_if<std::is_integral<Integral>::value, Unit<Derived, T>&>::type
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class Integral = T, typename std::enable_if<std::is_integral<Integral>::value, int>::type = 0>
         #endif
-        operator%=(Unit<Derived, T> other) {
+        Unit<Derived, T>& operator%=(Unit<Derived, T> other) {
             _value %= other._value;
             return *this;
         }
@@ -294,12 +287,10 @@ template<template<class> class Derived, class T> class Unit {
          *
          * Enabled only for integral types.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr Unit<Derived, T>
-        #else
-        template<class Integral = T> constexpr typename std::enable_if<std::is_integral<Integral>::value, Unit<Derived, T>>::type
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class Integral = T, typename std::enable_if<std::is_integral<Integral>::value, int>::type = 0>
         #endif
-        operator%(Unit<Derived, T> other) const {
+        constexpr Unit<Derived, T> operator%(Unit<Derived, T> other) const {
             return Unit<Derived, T>{_value%other._value};
         }
 
@@ -314,7 +305,7 @@ template<template<class> class Derived, class T> class Unit {
    picked up correctly (and doesn't conflict with the in-class one). See
    UnitTest::multiplyDivideIntegral() for regression tests, the same issue and
    a matching workaround is done in Vector as well. */
-template<template<class> class Derived, class FloatingPoint, class Integral> constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Unit<Derived, Integral>>::type operator*(FloatingPoint number, const Unit<Derived, Integral>& value) {
+template<template<class> class Derived, class FloatingPoint, class Integral, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, int>::type = 0> constexpr Unit<Derived, Integral> operator*(FloatingPoint number, const Unit<Derived, Integral>& value) {
     return value*number;
 }
 #endif

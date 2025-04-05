@@ -405,7 +405,11 @@ Calls @ref TypeTraits<T>::equals() --- using fuzzy compare for floating-point
 types and doing equality comparison on integral types. Scalar complement to
 @ref equal(const Vector<size, T>& a, const Vector<size, T>&).
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type equal(T a, T b) {
+template<class T
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    , typename std::enable_if<IsScalar<T>::value, int>::type = 0
+    #endif
+> inline bool equal(T a, T b) {
     return TypeTraits<T>::equals(a, b);
 }
 
@@ -417,7 +421,11 @@ Calls @ref TypeTraits<T>::equals() --- using fuzzy compare for floating-point
 types and doing equality comparison on integral types. Scalar complement to
 @ref notEqual(const Vector<size, T>& a, const Vector<size, T>&).
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type notEqual(T a, T b) {
+template<class T
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    , typename std::enable_if<IsScalar<T>::value, int>::type = 0
+    #endif
+> inline bool notEqual(T a, T b) {
     return !TypeTraits<T>::equals(a, b);
 }
 

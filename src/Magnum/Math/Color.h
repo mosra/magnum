@@ -48,7 +48,7 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 /* Convert color from HSV */
-template<class T> typename std::enable_if<IsFloatingPoint<T>::value, Color3<T>>::type fromHsv(ColorHsv<T> hsv) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> Color3<T> fromHsv(ColorHsv<T> hsv) {
     /* Remove repeats */
     hsv.hue -= floor(T(hsv.hue)/T(360))*Deg<T>(360);
     if(hsv.hue < Deg<T>(0)) hsv.hue += Deg<T>(360);
@@ -70,7 +70,7 @@ template<class T> typename std::enable_if<IsFloatingPoint<T>::value, Color3<T>>:
         default: CORRADE_INTERNAL_DEBUG_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 }
-template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color3<T>>::type fromHsv(const ColorHsv<typename TypeTraits<T>::FloatingPointType>& hsv) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Color3<T> fromHsv(const ColorHsv<typename TypeTraits<T>::FloatingPointType>& hsv) {
     return pack<Color3<T>>(fromHsv<typename TypeTraits<T>::FloatingPointType>(hsv));
 }
 
@@ -92,54 +92,54 @@ template<class T> Deg<T> hue(const Color3<T>& color, T max, T delta) {
 }
 
 /* Hue, saturation, value for floating-point types */
-template<class T> inline Deg<T> hue(typename std::enable_if<IsFloatingPoint<T>::value, const Color3<T>&>::type color) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline Deg<T> hue(const Color3<T>& color) {
     T max = color.max();
     T delta = max - color.min();
     return hue(color, max, delta);
 }
-template<class T> inline T saturation(typename std::enable_if<IsFloatingPoint<T>::value, const Color3<T>&>::type color) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline T saturation(const Color3<T>& color) {
     T max = color.max();
     T delta = max - color.min();
     return max != T(0) ? delta/max : T(0);
 }
-template<class T> inline T value(typename std::enable_if<IsFloatingPoint<T>::value, const Color3<T>&>::type color) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline T value(const Color3<T>& color) {
     return color.max();
 }
 
 /* Hue, saturation, value for integral types */
-template<class T> inline Deg<typename Color3<T>::FloatingPointType> hue(typename std::enable_if<IsIntegral<T>::value, const Color3<T>&>::type color) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Deg<typename Color3<T>::FloatingPointType> hue(const Color3<T>& color) {
     return hue<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
-template<class T> inline typename Color3<T>::FloatingPointType saturation(typename std::enable_if<IsIntegral<T>::value, const Color3<T>&>::type& color) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline typename Color3<T>::FloatingPointType saturation(const Color3<T>& color) {
     return saturation<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
-template<class T> inline typename Color3<T>::FloatingPointType value(typename std::enable_if<IsIntegral<T>::value, const Color3<T>&>::type color) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline typename Color3<T>::FloatingPointType value(const Color3<T>& color) {
     return unpack<typename Color3<T>::FloatingPointType>(color.max());
 }
 
 /* Convert color to HSV */
-template<class T> inline ColorHsv<T> toHsv(typename std::enable_if<IsFloatingPoint<T>::value, const Color3<T>&>::type color) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline ColorHsv<T> toHsv(const Color3<T>& color) {
     T max = color.max();
     T delta = max - color.min();
 
     return ColorHsv<T>{hue<typename Color3<T>::FloatingPointType>(color, max, delta), max != T(0) ? delta/max : T(0), max};
 }
-template<class T> inline ColorHsv<typename TypeTraits<T>::FloatingPointType> toHsv(typename std::enable_if<IsIntegral<T>::value, const Color3<T>&>::type color) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline ColorHsv<typename TypeTraits<T>::FloatingPointType> toHsv(const Color3<T>& color) {
     return toHsv<typename TypeTraits<T>::FloatingPointType>(unpack<Color3<typename TypeTraits<T>::FloatingPointType>>(color));
 }
 
 /* sRGB -> RGB conversion */
-template<class T> typename std::enable_if<IsFloatingPoint<T>::value, Color3<T>>::type fromSrgb(const Vector3<T>& srgb) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline Color3<T> fromSrgb(const Vector3<T>& srgb) {
     constexpr const T a(T(0.055));
     return lerp(srgb/T(12.92), pow((srgb + Vector3<T>{a})/(T(1.0) + a), T(2.4)), srgb > Vector3<T>(T(0.04045)));
 }
-template<class T> typename std::enable_if<IsFloatingPoint<T>::value, Color4<T>>::type fromSrgbAlpha(const Vector4<T>& srgbAlpha) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline Color4<T> fromSrgbAlpha(const Vector4<T>& srgbAlpha) {
     return {fromSrgb<T>(srgbAlpha.rgb()), srgbAlpha.a()};
 }
-template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color3<T>>::type fromSrgb(const Vector3<typename Color3<T>::FloatingPointType>& srgb) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Color3<T> fromSrgb(const Vector3<typename Color3<T>::FloatingPointType>& srgb) {
     return pack<Color3<T>>(fromSrgb<typename Color3<T>::FloatingPointType>(srgb));
 }
-template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color4<T>>::type fromSrgbAlpha(const Vector4<typename Color4<T>::FloatingPointType>& srgbAlpha) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Color4<T> fromSrgbAlpha(const Vector4<typename Color4<T>::FloatingPointType>& srgbAlpha) {
     return {fromSrgb<T>(srgbAlpha.rgb()), pack<T>(srgbAlpha.a())};
 }
 template<class T, class Integral> inline Color3<T> fromSrgbIntegral(const Vector3<Integral>& srgb) {
@@ -152,23 +152,23 @@ template<class T, class Integral> inline Color4<T> fromSrgbAlphaIntegral(const V
 }
 
 /* Integer linear RGB -> linear RGB conversion */
-template<class T> inline typename std::enable_if<IsFloatingPoint<T>::value, Color3<T>>::type fromLinearRgbInt(UnsignedInt linear) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline Color3<T> fromLinearRgbInt(UnsignedInt linear) {
     return {unpack<T>(UnsignedByte(linear >> 16)),
             unpack<T>(UnsignedByte(linear >> 8)),
             unpack<T>(UnsignedByte(linear))};
 }
-template<class T> inline typename std::enable_if<IsFloatingPoint<T>::value, Color4<T>>::type fromLinearRgbaInt(UnsignedInt linear) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline Color4<T> fromLinearRgbaInt(UnsignedInt linear) {
     return {unpack<T>(UnsignedByte(linear >> 24)),
             unpack<T>(UnsignedByte(linear >> 16)),
             unpack<T>(UnsignedByte(linear >> 8)),
             unpack<T>(UnsignedByte(linear))};
 }
-template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color3<T>>::type fromLinearRgbInt(UnsignedInt linear) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Color3<T> fromLinearRgbInt(UnsignedInt linear) {
     return {pack<T>(unpack<Float>(UnsignedByte(linear >> 16))),
             pack<T>(unpack<Float>(UnsignedByte(linear >> 8))),
             pack<T>(unpack<Float>(UnsignedByte(linear)))};
 }
-template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color4<T>>::type fromLinearRgbaInt(UnsignedInt linear) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Color4<T> fromLinearRgbaInt(UnsignedInt linear) {
     return {pack<T>(unpack<Float>(UnsignedByte(linear >> 24))),
             pack<T>(unpack<Float>(UnsignedByte(linear >> 16))),
             pack<T>(unpack<Float>(UnsignedByte(linear >> 8))),
@@ -176,17 +176,17 @@ template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color4<T>
 }
 
 /* RGB -> sRGB conversion */
-template<class T> Vector3<typename Color3<T>::FloatingPointType> toSrgb(typename std::enable_if<IsFloatingPoint<T>::value, const Color3<T>&>::type rgb) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> Vector3<typename Color3<T>::FloatingPointType> toSrgb(const Color3<T>& rgb) {
     constexpr const T a = T(0.055);
     return lerp(rgb*T(12.92), (T(1.0) + a)*pow(rgb, T(1.0)/T(2.4)) - Vector3<T>{a}, rgb > Vector3<T>(T(0.0031308)));
 }
-template<class T> Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(typename std::enable_if<IsFloatingPoint<T>::value, const Color4<T>&>::type rgba) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(const Color4<T>& rgba) {
     return {toSrgb<T>(rgba.rgb()), rgba.a()};
 }
-template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toSrgb(typename std::enable_if<IsIntegral<T>::value, const Color3<T>&>::type rgb) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Vector3<typename Color3<T>::FloatingPointType> toSrgb(const Color3<T>& rgb) {
     return toSrgb<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(rgb));
 }
-template<class T> inline Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(typename std::enable_if<IsIntegral<T>::value, const Color4<T>&>::type rgba) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(const Color4<T>& rgba) {
     return {toSrgb<T>(rgba.rgb()), unpack<typename Color3<T>::FloatingPointType>(rgba.a())};
 }
 template<class T, class Integral> inline Vector3<Integral> toSrgbIntegral(const Color3<T>& rgb) {
@@ -199,23 +199,23 @@ template<class T, class Integral> inline Vector4<Integral> toSrgbAlphaIntegral(c
 }
 
 /* Linear RGB -> integer linear RGB conversion */
-template<class T> inline typename std::enable_if<IsFloatingPoint<T>::value, UnsignedInt>::type toLinearRgbInt(const Color3<T>& linear) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline UnsignedInt toLinearRgbInt(const Color3<T>& linear) {
     return (pack<UnsignedByte>(linear[0]) << 16) |
            (pack<UnsignedByte>(linear[1]) << 8) |
             pack<UnsignedByte>(linear[2]);
 }
-template<class T> inline typename std::enable_if<IsFloatingPoint<T>::value, UnsignedInt>::type toLinearRgbaInt(const Color4<T>& linear) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> inline UnsignedInt toLinearRgbaInt(const Color4<T>& linear) {
     return (pack<UnsignedByte>(linear[0]) << 24) |
            (pack<UnsignedByte>(linear[1]) << 16) |
            (pack<UnsignedByte>(linear[2]) << 8) |
             pack<UnsignedByte>(linear[3]);
 }
-template<class T> inline typename std::enable_if<IsIntegral<T>::value, UnsignedInt>::type toLinearRgbInt(const Color3<T>& linear) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline UnsignedInt toLinearRgbInt(const Color3<T>& linear) {
     return (pack<UnsignedByte>(unpack<Float>(linear[0])) << 16) |
            (pack<UnsignedByte>(unpack<Float>(linear[1])) << 8) |
             pack<UnsignedByte>(unpack<Float>(linear[2]));
 }
-template<class T> inline typename std::enable_if<IsIntegral<T>::value, UnsignedInt>::type toLinearRgbaInt(const Color4<T>& linear) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline UnsignedInt toLinearRgbaInt(const Color4<T>& linear) {
     return (pack<UnsignedByte>(unpack<Float>(linear[0])) << 24) |
            (pack<UnsignedByte>(unpack<Float>(linear[1])) << 16) |
            (pack<UnsignedByte>(unpack<Float>(linear[2])) << 8) |
@@ -223,7 +223,7 @@ template<class T> inline typename std::enable_if<IsIntegral<T>::value, UnsignedI
 }
 
 /* CIE XYZ -> RGB conversion */
-template<class T> typename std::enable_if<IsFloatingPoint<T>::value, Color3<T>>::type fromXyz(const Vector3<T>& xyz) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> Color3<T> fromXyz(const Vector3<T>& xyz) {
     /* Taken from https://en.wikipedia.org/wiki/Talk:SRGB#Rounded_vs._Exact,
        the rounded matrices from the main article don't round-trip perfectly */
     return Matrix3x3<T>{
@@ -231,12 +231,12 @@ template<class T> typename std::enable_if<IsFloatingPoint<T>::value, Color3<T>>:
         Vector3<T>{T(-329)/T(214), T(1648619)/T(878810), T(-2585)/T(12673)},
         Vector3<T>{T(-1974)/T(3959), T(36519)/T(878810), T(705)/T(667)}}*xyz;
 }
-template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color3<T>>::type fromXyz(const Vector3<typename Color3<T>::FloatingPointType>& xyz) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Color3<T> fromXyz(const Vector3<typename Color3<T>::FloatingPointType>& xyz) {
     return pack<Color3<T>>(fromXyz<typename Color3<T>::FloatingPointType>(xyz));
 }
 
 /* RGB -> CIE XYZ conversion */
-template<class T> Vector3<typename Color3<T>::FloatingPointType> toXyz(typename std::enable_if<IsFloatingPoint<T>::value, const Color3<T>&>::type rgb) {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> Vector3<typename Color3<T>::FloatingPointType> toXyz(const Color3<T>& rgb) {
     /* Taken from https://en.wikipedia.org/wiki/Talk:SRGB#Rounded_vs._Exact,
        the rounded matrices from the main article don't round-trip perfectly */
     return (Matrix3x3<T>{
@@ -244,7 +244,7 @@ template<class T> Vector3<typename Color3<T>::FloatingPointType> toXyz(typename 
         Vector3<T>{T(87881)/T(245763), T(175762)/T(245763), T(87881)/T(737289)},
         Vector3<T>{T(12673)/T(70218), T(12673)/T(175545), T(1001167)/T(1053270)}})*rgb;
 }
-template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toXyz(typename std::enable_if<IsIntegral<T>::value, const Color3<T>&>::type rgb) {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> inline Vector3<typename Color3<T>::FloatingPointType> toXyz(const Color3<T>& rgb) {
     return toXyz<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(rgb));
 }
 
@@ -256,10 +256,10 @@ template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toXyz(ty
    projects created directly using VS (enabled by default since 15.5) but not
    projects using CMake. Not using SFINAE in this case makes it work. Minimal
    repro case here: https://twitter.com/czmosra/status/1039446378248896513 */
-template<class T> constexpr typename std::enable_if<IsFloatingPoint<T>::value, T>::type fullChannel() {
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> constexpr T fullChannel() {
     return T(1.0);
 }
-template<class T> constexpr typename std::enable_if<IsIntegral<T>::value, T>::type fullChannel() {
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> constexpr T fullChannel() {
     return Implementation::bitMax<T>();
 }
 #else

@@ -162,7 +162,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both Drawable and AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> explicit Drawable(U& object): Drawable<dimensions, T>{static_cast<AbstractObject<dimensions, T>&>(object)} {}
+        template<class U, typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value, int>::type = 0> explicit Drawable(U& object): Drawable<dimensions, T>{static_cast<AbstractObject<dimensions, T>&>(object)} {}
         #endif
 
         /**
