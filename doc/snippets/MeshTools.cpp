@@ -181,7 +181,7 @@ Containers::Array<Vector3> positions = mesh.positions3DAsArray();
 /* Deduplicate the positions and create a mapping array */
 Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> out =
     MeshTools::removeDuplicatesFuzzyInPlace(
-        Containers::arrayCast<2, Float>(stridedArrayView(positions)));
+        stridedArrayView(positions).slice(&Vector3::data));
 Containers::Array<UnsignedInt> indexMapping = std::move(out.first());
 arrayResize(positions, out.second());
 
@@ -369,13 +369,22 @@ data = data.prefix(unique.second());
 
 {
 /* [removeDuplicatesFuzzy] */
-Containers::ArrayView<Vector3> positions;
+Containers::StridedArrayView1D<Float> data;
 
 Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> unique =
-    MeshTools::removeDuplicatesFuzzyInPlace(
-        Containers::arrayCast<2, Float>(positions));
-positions = positions.prefix(unique.second());
+    MeshTools::removeDuplicatesFuzzyInPlace(data);
+data = data.prefix(unique.second());
 /* [removeDuplicatesFuzzy] */
+}
+
+{
+/* [removeDuplicatesFuzzy-vector-slice] */
+Containers::StridedArrayView1D<Vector3> positions;
+
+Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> unique =
+    MeshTools::removeDuplicatesFuzzyInPlace(positions.slice(&Vector3::data));
+positions = positions.prefix(unique.second());
+/* [removeDuplicatesFuzzy-vector-slice] */
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

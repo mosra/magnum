@@ -225,6 +225,13 @@ use @ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1
 and friends instead. Use @ref removeDuplicatesFuzzyInPlaceInto() to place the
 indices into existing memory instead of allocating a new array.
 
+Overloads for vector, matrix and other math types are not provided because
+there would be too many variants. Instead you can slice to
+@ref Math::Vector::data(), @ref Math::RectangularMatrix::data() etc., which is
+then convertible to a 2D view:
+
+@snippet MeshTools.cpp removeDuplicatesFuzzy-vector-slice
+
 If you want to remove duplicates in multiple incidental arrays, first remove
 duplicates in each array separately and then combine the resulting index arrays
 back into a single one using @ref combineIndexedAttributes().
