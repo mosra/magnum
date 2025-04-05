@@ -28,11 +28,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::Shaders::PhongGL
  * @m_since_latest
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <initializer_list>
 #include <Corrade/Utility/Move.h>
 
@@ -55,6 +60,10 @@ transformation. Use @ref setProjectionMatrix(). @ref setTransformationMatrix(),
 shader.
 
 @image html shaders-phong.png width=256px
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @section Shaders-PhongGL-colored Colored rendering
 
@@ -2434,5 +2443,8 @@ MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, PhongGL::Flags value);
 CORRADE_ENUMSET_OPERATORS(PhongGL::Flags)
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

@@ -27,11 +27,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::Shaders::FlatGL, typedef @ref Magnum::Shaders::FlatGL2D, @ref Magnum::Shaders::FlatGL3D
  * @m_since_latest
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/Utility/Move.h>
 
 #include "Magnum/DimensionTraits.h"
@@ -84,6 +89,10 @@ Use @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
 @image html shaders-flat.png width=256px
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @section Shaders-FlatGL-colored Colored rendering
 
@@ -1590,12 +1599,20 @@ template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState: public 
 /**
 @brief 2D flat OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef FlatGL<2> FlatGL2D;
 
 /**
 @brief 3D flat OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef FlatGL<3> FlatGL3D;
 
@@ -1613,5 +1630,8 @@ namespace Implementation {
 #endif
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

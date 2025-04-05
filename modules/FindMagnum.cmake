@@ -491,7 +491,10 @@ endif()
 
 set(_MAGNUM_SceneGraph_DEPENDENCIES )
 set(_MAGNUM_SceneTools_DEPENDENCIES Trade)
-set(_MAGNUM_Shaders_DEPENDENCIES GL)
+set(_MAGNUM_Shaders_DEPENDENCIES )
+if(MAGNUM_TARGET_GL)
+    list(APPEND _MAGNUM_Shaders_DEPENDENCIES GL)
+endif()
 
 set(_MAGNUM_Text_DEPENDENCIES TextureTools)
 if(MAGNUM_TARGET_GL)

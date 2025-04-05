@@ -34,7 +34,7 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Shaders/GenericGL.h"

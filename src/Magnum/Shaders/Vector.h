@@ -33,7 +33,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Shaders/VectorGL.h"
@@ -189,7 +189,7 @@ struct VectorMaterialUniform {
     #endif
 };
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 /** @brief @copybrief Shaders::VectorGL
  * @m_deprecated_since_latest Use @ref Shaders::VectorGL "VectorGL" instead.
  */

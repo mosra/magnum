@@ -27,11 +27,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::Shaders::DistanceFieldVectorGL, typedef @ref Magnum::Shaders::DistanceFieldVectorGL2D, @ref Magnum::Shaders::DistanceFieldVectorGL3D
  * @m_since_latest
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/Utility/Move.h>
 
 #include "Magnum/DimensionTraits.h"
@@ -79,6 +84,10 @@ working on the framebuffer, you need to enable
 @ref GL::Renderer::setBlendFunction() for details.
 
 @image html shaders-distancefieldvector.png width=256px
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @section Shaders-DistanceFieldVectorGL-usage Example usage
 
@@ -883,12 +892,20 @@ template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::Compil
 /**
 @brief Two-dimensional distance field vector OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef DistanceFieldVectorGL<2> DistanceFieldVectorGL2D;
 
 /**
 @brief Three-dimensional distance field vector OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef DistanceFieldVectorGL<3> DistanceFieldVectorGL3D;
 
@@ -906,5 +923,8 @@ namespace Implementation {
 #endif
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

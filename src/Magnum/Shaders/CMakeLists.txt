@@ -28,92 +28,103 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/Shaders")
 
-if(NOT MAGNUM_WITH_GL)
-    message(SEND_ERROR "Shaders are available only if MAGNUM_WITH_GL is enabled")
-endif()
-
-if(MAGNUM_TARGET_GLES2)
-    corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gles2.conf)
-else()
-    corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gl.conf)
-endif()
-
-set(MagnumShaders_SRCS
-    ${MagnumShaders_RESOURCES_GL})
+set(MagnumShaders_SRCS )
 
 set(MagnumShaders_GracefulAssert_SRCS
-    DistanceFieldVectorGL.cpp
-    FlatGL.cpp
-    Line.cpp
-    MeshVisualizerGL.cpp
-    PhongGL.cpp
-    VectorGL.cpp
-    VertexColorGL.cpp
-
-    glShaderWrapper.cpp)
+    Line.cpp)
 
 set(MagnumShaders_HEADERS
     DistanceFieldVector.h
-    DistanceFieldVectorGL.h
     Flat.h
-    FlatGL.h
     Generic.h
-    GenericGL.h
     Line.h
     MeshVisualizer.h
-    MeshVisualizerGL.h
     Phong.h
-    PhongGL.h
     Shaders.h
     Vector.h
-    VectorGL.h
-    VertexColorGL.h
 
-    glShaderWrapper.h
     visibility.h)
 
 # Header files to display in project view of IDEs only
 set(MagnumShaders_PRIVATE_HEADERS
     Implementation/lineMiterLimit.h)
 
-if(NOT MAGNUM_TARGET_GLES2)
+if(MAGNUM_TARGET_GL)
+    if(MAGNUM_TARGET_GLES2)
+        corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gles2.conf)
+    else()
+        corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gl.conf)
+    endif()
+
+    list(APPEND MagnumShaders_SRCS
+        ${MagnumShaders_RESOURCES_GL})
+
     list(APPEND MagnumShaders_GracefulAssert_SRCS
-        LineGL.cpp)
+        DistanceFieldVectorGL.cpp
+        FlatGL.cpp
+        MeshVisualizerGL.cpp
+        PhongGL.cpp
+        VectorGL.cpp
+        VertexColorGL.cpp
+
+        glShaderWrapper.cpp)
 
     list(APPEND MagnumShaders_HEADERS
-        LineGL.h)
+        DistanceFieldVectorGL.h
+        FlatGL.h
+        GenericGL.h
+        MeshVisualizerGL.h
+        PhongGL.h
+        VectorGL.h
+        VertexColorGL.h
+
+        glShaderWrapper.h)
+
+    if(NOT MAGNUM_TARGET_GLES2)
+        list(APPEND MagnumShaders_GracefulAssert_SRCS
+            LineGL.cpp)
+
+        list(APPEND MagnumShaders_HEADERS
+            LineGL.h)
+    endif()
+
+    if(MAGNUM_BUILD_DEPRECATED)
+        list(APPEND MagnumShaders_HEADERS
+            VertexColor.h)
+    endif()
 endif()
 
-if(MAGNUM_BUILD_DEPRECATED)
-    list(APPEND MagnumShaders_HEADERS
-        VertexColor.h)
-endif()
-
-# Objects shared between main and test library
-add_library(MagnumShadersObjects OBJECT
-    ${MagnumShaders_SRCS}
-    ${MagnumShaders_HEADERS}
-    ${MagnumShaders_PRIVATE_HEADERS})
-if(MAGNUM_BUILD_STATIC)
-    # On the static build we're importing the resources manually, so no need to
-    # have the implicit initializers as well.
-    set_property(SOURCE ${MagnumShaders_RCS} APPEND PROPERTY COMPILE_DEFINITIONS
-        "CORRADE_AUTOMATIC_INITIALIZER=CORRADE_NOOP"
-        "CORRADE_AUTOMATIC_FINALIZER=CORRADE_NOOP")
-endif()
-target_include_directories(MagnumShadersObjects PUBLIC
-    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumShadersObjects PRIVATE "MagnumShadersObjects_EXPORTS")
-endif()
-if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
-    set_target_properties(MagnumShadersObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+# Objects shared between main and test library. On non-GL builds contains
+# nothing so it's not even defined.
+if(MAGNUM_TARGET_GL)
+    add_library(MagnumShadersObjects OBJECT
+        ${MagnumShaders_SRCS}
+        ${MagnumShaders_HEADERS}
+        ${MagnumShaders_PRIVATE_HEADERS})
+    if(MAGNUM_BUILD_STATIC)
+        # On the static build we're importing the resources manually, so no need to
+        # have the implicit initializers as well.
+        set_property(SOURCE ${MagnumShaders_RCS} APPEND PROPERTY COMPILE_DEFINITIONS
+            "CORRADE_AUTOMATIC_INITIALIZER=CORRADE_NOOP"
+            "CORRADE_AUTOMATIC_FINALIZER=CORRADE_NOOP")
+    endif()
+    target_include_directories(MagnumShadersObjects PUBLIC
+        $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
+    if(NOT MAGNUM_BUILD_STATIC)
+        target_compile_definitions(MagnumShadersObjects PRIVATE "MagnumShadersObjects_EXPORTS")
+    endif()
+    if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
+        set_target_properties(MagnumShadersObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    set(MagnumShadersObjects_OBJECTS $<TARGET_OBJECTS:MagnumShadersObjects>)
+else()
+    set(MagnumShadersObjects_OBJECTS )
 endif()
 
 # Main Shaders library
 add_library(MagnumShaders ${SHARED_OR_STATIC}
-    $<TARGET_OBJECTS:MagnumShadersObjects>
+    ${MagnumShadersObjects_OBJECTS}
     ${MagnumShaders_GracefulAssert_SRCS})
 set_target_properties(MagnumShaders PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT MAGNUM_BUILD_STATIC)
@@ -121,9 +132,10 @@ if(NOT MAGNUM_BUILD_STATIC)
 elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumShaders PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumShaders PUBLIC
-    Magnum
-    MagnumGL)
+target_link_libraries(MagnumShaders PUBLIC Magnum)
+if(MAGNUM_TARGET_GL)
+    target_link_libraries(MagnumShaders PUBLIC MagnumGL)
+endif()
 
 install(TARGETS MagnumShaders
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -134,7 +146,7 @@ install(FILES ${MagnumShaders_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumShadersTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        $<TARGET_OBJECTS:MagnumShadersObjects>
+        ${MagnumShadersObjects_OBJECTS}
         ${MagnumShaders_GracefulAssert_SRCS})
     set_target_properties(MagnumShadersTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumShadersTestLib PRIVATE
@@ -142,9 +154,10 @@ if(MAGNUM_BUILD_TESTS)
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumShadersTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
-    target_link_libraries(MagnumShadersTestLib PUBLIC
-        Magnum
-        MagnumGL)
+    target_link_libraries(MagnumShadersTestLib PUBLIC Magnum)
+    if(MAGNUM_TARGET_GL)
+        target_link_libraries(MagnumShadersTestLib PUBLIC MagnumGL)
+    endif()
 
     add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()

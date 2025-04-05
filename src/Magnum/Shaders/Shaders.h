@@ -32,13 +32,17 @@
 
 #include "Magnum/Types.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Utility/Macros.h>
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace Shaders {
 
+enum class LineCapStyle: UnsignedByte;
+enum class LineJoinStyle: UnsignedByte;
+
+#ifdef MAGNUM_TARGET_GL
 template<UnsignedInt> class DistanceFieldVectorGL;
 typedef DistanceFieldVectorGL<2> DistanceFieldVectorGL2D;
 typedef DistanceFieldVectorGL<3> DistanceFieldVectorGL3D;
@@ -57,12 +61,9 @@ typedef CORRADE_DEPRECATED("use FlatGL2D instead") FlatGL2D Flat2D;
 typedef CORRADE_DEPRECATED("use FlatGL3D instead") FlatGL3D Flat3D;
 #endif
 
-/* Generic is used only statically */
+/* GenericGL is used only statically */
 
 #ifndef MAGNUM_TARGET_GLES2
-enum class LineCapStyle: UnsignedByte;
-enum class LineJoinStyle: UnsignedByte;
-
 template<UnsignedInt> class LineGL;
 typedef LineGL<2> LineGL2D;
 typedef LineGL<3> LineGL3D;
@@ -97,6 +98,7 @@ typedef VertexColorGL<3> VertexColorGL3D;
 template<UnsignedInt dimensions> using VertexColor CORRADE_DEPRECATED_ALIAS("use VertexColorGL instead") = VertexColorGL<dimensions>;
 typedef CORRADE_DEPRECATED("use VertexColorGL2D instead") VertexColorGL2D VertexColor2D;
 typedef CORRADE_DEPRECATED("use VertexColorGL3D instead") VertexColorGL3D VertexColor3D;
+#endif
 #endif
 
 }}

@@ -892,6 +892,9 @@ See also:
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
+-   This library no longer has a hard dependency on OpenGL. If
+    @ref MAGNUM_TARGET_GL is not enabled, this library will contain just
+    uniform struct definitions and related utilities.
 -   In the original implementation of normal mapping in @ref Shaders::PhongGL,
     there shader didn't provide a way to supply bitangent direction, forcing
     users to patch normal maps. This is now possible using newly added

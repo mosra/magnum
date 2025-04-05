@@ -27,11 +27,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::Shaders::MeshVisualizerGL2D, @ref Magnum::Shaders::MeshVisualizerGL3D
  * @m_since_latest
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/Utility/Move.h>
 #include <Corrade/Utility/Utility.h>
 
@@ -179,6 +184,10 @@ appropriate @ref Flag to @ref Configuration::setFlags() --- there's no default
 behavior with nothing enabled. The shader is a 2D variant of
 @ref MeshVisualizerGL3D with mostly identical workflow. See its documentation
 for more information, workflows that differ are shown below.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @section Shaders-MeshVisualizerGL2D-instancing Instanced rendering
 
@@ -1420,6 +1429,10 @@ The shader expects that you enable wireframe visualization, tangent space
 visualization or object/primitive ID visualization by passing an appropriate
 @ref Flag to @ref Configuration::setFlags() --- there's no default behavior
 with nothing enabled.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @section Shaders-MeshVisualizerGL3D-wireframe Wireframe visualization
 
@@ -3420,5 +3433,8 @@ CORRADE_ENUMSET_OPERATORS(MeshVisualizerGL2D::Flags)
 CORRADE_ENUMSET_OPERATORS(MeshVisualizerGL3D::Flags)
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

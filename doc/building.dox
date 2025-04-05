@@ -563,8 +563,7 @@ can specify which parts will be built and which not:
 -   `MAGNUM_WITH_AUDIO` --- Build the @ref Audio library. Depends on
     [OpenAL](https://www.openal.org/), not enabled by default.
 -   `MAGNUM_WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
--   `MAGNUM_WITH_GL` --- Build the @ref GL library. Enabled automatically if
-    `MAGNUM_WITH_SHADERS` is enabled.
+-   `MAGNUM_WITH_GL` --- Build the @ref GL library
 -   `MAGNUM_WITH_MATERIALTOOLS` --- Build the @ref MaterialTools library.
     Enables also building of the @ref Trade library.
 -   `MAGNUM_WITH_MESHTOOLS` --- Build the @ref MeshTools library. Enables also
@@ -574,8 +573,7 @@ can specify which parts will be built and which not:
 -   `MAGNUM_WITH_SCENEGRAPH` --- Build the @ref SceneGraph library
 -   `MAGNUM_WITH_SCENETOOLS` --- Build the @ref SceneTools library. Enables
     also building of the @ref Trade library.
--   `MAGNUM_WITH_SHADERS` --- Build the @ref Shaders library. Enables also
-    building of the @ref GL library.
+-   `MAGNUM_WITH_SHADERS` --- Build the @ref Shaders library
 -   `MAGNUM_WITH_SHADERTOOLS` --- Build the @ref ShaderTools library
 -   `MAGNUM_WITH_TEXT` --- Build the @ref Text library. Enables also building
     of the @ref TextureTools library.

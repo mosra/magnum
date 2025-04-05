@@ -27,11 +27,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Struct @ref Magnum::Shaders::GenericGL, typedef @ref Magnum::Shaders::GenericGL2D, @ref Magnum::Shaders::GenericGL3D
  * @m_since_latest
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Attribute.h"
 #include "Magnum/Shaders/Shaders.h"
 
@@ -632,5 +637,8 @@ typedef CORRADE_DEPRECATED("use GenericGL3D instead") GenericGL3D Generic3D;
 #endif
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

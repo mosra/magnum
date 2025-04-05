@@ -27,11 +27,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::Shaders::VectorGL, typedef @ref Magnum::Shaders::VectorGL2D, @ref Magnum::Shaders::VectorGL3D
  * @m_since_latest
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/Utility/Move.h>
 
 #include "Magnum/DimensionTraits.h"
@@ -77,6 +82,10 @@ Alpha / transparency is supported by the shader implicitly, but to have it
 working on the framebuffer, you need to enable
 @ref GL::Renderer::Feature::Blending and set up the blending function. See
 @ref GL::Renderer::setBlendFunction() for details.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @section Shaders-VectorGL-usage Example usage
 
@@ -837,12 +846,20 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::CompileState: publi
 /**
 @brief Two-dimensional vector OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef VectorGL<2> VectorGL2D;
 
 /**
 @brief Three-dimensional vector OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef VectorGL<3> VectorGL3D;
 
@@ -860,5 +877,8 @@ namespace Implementation {
 #endif
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

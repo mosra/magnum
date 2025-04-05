@@ -27,11 +27,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::Shaders::VertexColorGL, typedef @ref Magnum::Shaders::VertexColorGL2D, @ref Magnum::Shaders::VertexColorGL3D
  * @m_since_latest
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/Utility/Move.h>
 
 #include "Magnum/DimensionTraits.h"
@@ -76,6 +81,10 @@ Alpha / transparency is supported by the shader implicitly, but to have it
 working on the framebuffer, you need to enable
 @ref GL::Renderer::Feature::Blending and set up the blending function. See
 @ref GL::Renderer::setBlendFunction() for details.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @section Shaders-VertexColorGL-example Example usage
 
@@ -558,12 +567,20 @@ template<UnsignedInt dimensions> class VertexColorGL<dimensions>::CompileState: 
 /**
 @brief 2D vertex color OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef VertexColorGL<2> VertexColorGL2D;
 
 /**
 @brief 3D vertex color OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef VertexColorGL<3> VertexColorGL3D;
 
@@ -581,5 +598,8 @@ namespace Implementation {
 #endif
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

@@ -35,7 +35,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Shaders/PhongGL.h"
@@ -549,7 +549,7 @@ struct PhongLightUniform {
     #endif
 };
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 /** @brief @copybrief PhongGL
  * @m_deprecated_since_latest Use @ref PhongGL instead.
  */

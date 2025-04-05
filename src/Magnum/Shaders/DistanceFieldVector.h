@@ -33,7 +33,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Shaders/DistanceFieldVectorGL.h"
@@ -247,7 +247,7 @@ struct DistanceFieldVectorMaterialUniform {
     #endif
 };
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 /** @brief @copybrief DistanceFieldVectorGL
  * @m_deprecated_since_latest Use @ref DistanceFieldVectorGL instead.
  */

@@ -33,7 +33,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Shaders/FlatGL.h"
@@ -274,7 +274,7 @@ struct FlatMaterialUniform {
     #endif
 };
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
 /** @brief @copybrief FlatGL
  * @m_deprecated_since_latest Use @ref FlatGL instead.
  */

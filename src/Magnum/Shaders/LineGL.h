@@ -26,13 +26,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2)
 /** @file
  * @brief Class @ref Magnum::Shaders::LineGL, typedef @ref Magnum::Shaders::LineGL2D, @ref Magnum::Shaders::LineGL3D
  * @m_since_latest
  */
 #endif
 
+#include "Magnum/configure.h"
+
+#if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2)
 #include <Corrade/Utility/Move.h>
 
 #include "Magnum/DimensionTraits.h"
@@ -41,7 +44,6 @@
 #include "Magnum/Shaders/glShaderWrapper.h"
 #include "Magnum/Shaders/visibility.h"
 
-#ifndef MAGNUM_TARGET_GLES2
 namespace Magnum { namespace Shaders {
 
 namespace Implementation {
@@ -71,6 +73,10 @@ styles, and antialiased independently of MSAA being used or not.
 @image html shaders-line.png width=256px
 
 @experimental
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
 @requires_gles30 Requires integer support in shaders which is not available in
@@ -1144,12 +1150,20 @@ template<UnsignedInt dimensions> class LineGL<dimensions>::CompileState: public 
 /**
 @brief 2D line OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef LineGL<2> LineGL2D;
 
 /**
 @brief 3D LineGL OpenGL shader
 @m_since_latest
+
+@note This typedef is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 typedef LineGL<3> LineGL3D;
 
@@ -1173,8 +1187,10 @@ namespace Implementation {
 #endif
 
 }}
-#else
+#elif defined(MAGNUM_TARGET_GLES2)
 #error this header is not available in the OpenGL ES 2.0 / WebGL 1.0 build
+#else
+#error this header is available only in the OpenGL build
 #endif
 
 #endif
