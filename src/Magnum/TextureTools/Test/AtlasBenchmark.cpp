@@ -364,8 +364,8 @@ void AtlasBenchmark::landfill() {
     auto sizes16 = Containers::arrayCast<Vector2s>(*sizeData);
     Containers::Array<Vector2i> sizes{NoInit, sizes16.size()};
     Math::castInto(
-        Containers::arrayCast<2, const Short>(stridedArrayView(sizes16)),
-        Containers::arrayCast<2, Int>(stridedArrayView(sizes)));
+        stridedArrayView(sizes16).slice(&Vector2s::data),
+        stridedArrayView(sizes).slice(&Vector2i::data));
     _sizes = sizes;
 
     AtlasLandfill atlas{data.size};
@@ -396,8 +396,8 @@ void AtlasBenchmark::stbRectPack() {
     auto sizes16 = Containers::arrayCast<Vector2s>(*sizeData);
     Containers::Array<Vector2i> sizes{NoInit, sizes16.size()};
     Math::castInto(
-        Containers::arrayCast<2, const Short>(stridedArrayView(sizes16)),
-        Containers::arrayCast<2, Int>(stridedArrayView(sizes)));
+        stridedArrayView(sizes16).slice(&Vector2s::data),
+        stridedArrayView(sizes).slice(&Vector2i::data));
     _sizes = sizes;
 
     if(data.rotate) for(Vector2i& size: _sizes) {

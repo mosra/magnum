@@ -337,12 +337,12 @@ const Keyframe data[]{
 };
 
 Animation::TrackView<const Float, const Vector2> positions{
-    {data, &data[0].time, Containers::arraySize(data), sizeof(Keyframe)},
-    {data, &data[0].position, Containers::arraySize(data), sizeof(Keyframe)},
+    Containers::stridedArrayView(data).slice(&Keyframe::time),
+    Containers::stridedArrayView(data).slice(&Keyframe::position),
     Math::lerp};
 Animation::TrackView<const Float, const Deg> rotations{
-    {data, &data[0].time, Containers::arraySize(data), sizeof(Keyframe)},
-    {data, &data[0].rotation, Containers::arraySize(data), sizeof(Keyframe)},
+    Containers::stridedArrayView(data).slice(&Keyframe::time),
+    Containers::stridedArrayView(data).slice(&Keyframe::rotation),
     Math::lerp};
 
 Float time = 2.2f;

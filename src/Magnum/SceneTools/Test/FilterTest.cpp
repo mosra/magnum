@@ -513,7 +513,7 @@ void FilterTest::fieldEntries() {
            because items are removed. */
         Trade::SceneFieldData{Trade::sceneFieldCustom(333),
             Containers::arrayView(sceneData->arrayMapping),
-            Containers::arrayCast<2, const Float>(Containers::stridedArrayView(sceneData->array)),
+            Containers::StridedArrayView2D<const Float>{Containers::stridedArrayView(sceneData->array)},
             Trade::SceneFieldFlag::ImplicitMapping},
         /* Bit field. Should cause no assert as it's just passed through. */
         Trade::SceneFieldData{Trade::sceneFieldCustom(15),

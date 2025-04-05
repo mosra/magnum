@@ -1006,13 +1006,10 @@ auto faces = Containers::arrayCast<const Face>(vertexData);
 
 Trade::MeshData data{MeshPrimitive::Faces, std::move(vertexData), {
     Trade::MeshAttributeData{TriangleIds,
-        Containers::StridedArrayView2D<const UnsignedShort>{faces,
-            &faces[0].triangleIds[0],
-            {faces.size(), 15},
-            {sizeof(Face), sizeof(UnsignedShort)}}},
+        Containers::StridedArrayView2D<const UnsignedShort>{
+            stridedArrayView(faces).slice(&Face::triangleIds)}},
     Trade::MeshAttributeData{TriangleCount,
-        Containers::StridedArrayView1D<const UnsignedByte>{faces,
-            &faces[0].triangleCount, faces.size(), sizeof(Face)}}
+        stridedArrayView(faces).slice(&Face::triangleCount)}
 }};
 /* [MeshData-populating-custom] */
 

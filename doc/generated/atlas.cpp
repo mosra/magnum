@@ -130,8 +130,8 @@ int main() {
         auto sizes16 = Containers::arrayCast<Vector2s>(*sizeData);
         Containers::Array<Vector2i> sizes{NoInit, sizes16.size()};
         Math::castInto(
-            Containers::arrayCast<2, const Short>(stridedArrayView(sizes16)),
-            Containers::arrayCast<2, Int>(stridedArrayView(sizes)));
+            stridedArrayView(sizes16).slice(&Vector2s::data),
+            stridedArrayView(sizes).slice(&Vector2i::data));
 
         TextureTools::AtlasLandfill atlas{{512, 512}};
         Containers::Array<Vector2i> offsets{NoInit, sizes.size()};

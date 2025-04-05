@@ -256,7 +256,7 @@ void CombineTest::fields() {
         /* Array field */
         Trade::SceneFieldData{Trade::sceneFieldCustom(15),
             foos.slice(&Foo::mapping),
-            Containers::arrayCast<2, const Int>(foos.slice(&Foo::foo)),
+            Containers::StridedArrayView2D<const Int>{foos.slice(&Foo::foo)},
             Trade::SceneFieldFlag::OrderedMapping},
         /* Empty field */
         Trade::SceneFieldData{Trade::SceneField::Camera, Containers::ArrayView<const UnsignedByte>{}, Containers::ArrayView<const UnsignedShort>{}},
@@ -320,10 +320,10 @@ void CombineTest::fields() {
     /** @todo clean up once it's possible to compare multidimensional
         containers */
     CORRADE_COMPARE_AS(scene.field<Int[]>(3)[0],
-        (Containers::arrayCast<2, const Int>(foos.slice(&Foo::foo)))[0],
+        (Containers::StridedArrayView2D<const Int>{foos.slice(&Foo::foo)})[0],
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.field<Int[]>(3)[1],
-        (Containers::arrayCast<2, const Int>(foos.slice(&Foo::foo)))[1],
+        (Containers::StridedArrayView2D<const Int>{foos.slice(&Foo::foo)})[1],
         TestSuite::Compare::Container);
 
     CORRADE_COMPARE(scene.fieldName(4), Trade::SceneField::Camera);
