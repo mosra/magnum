@@ -1933,12 +1933,7 @@ void AbstractGlyphCacheTest::setProcessedImagePassthrough2DNotImplemented() {
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
         }
-
-        /* The 2D variant shouldn't be called on an array cache */
-        void doSetProcessedImage(const Vector2i&, const ImageView2D&) override {
-            CORRADE_FAIL("This should not be called");
-        }
-    } cache{PixelFormat::R32F, {1024, 512, 8}};
+    } cache{PixelFormat::R32F, {1024, 512}};
 
     Containers::String out;
     Error redirectError{&out};
