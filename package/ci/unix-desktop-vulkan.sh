@@ -17,11 +17,12 @@ cmake .. \
 ninja install
 cd ../..
 
-# Enabling only stuff that's directly affected by Vulkan (which means also
-# parts of Platform, which need Trade for icon import in tests), disabling
-# everything else. On Linux this uses a newer GCC because SwiftShader doesn't
-# compile on 4.8; building of Vulkan Magnum code on GCC 4.8 is tested in the
-# combined GL + Vulkan job.
+# Enabling only libraries that have opt-in GL or Vulkan functionality (and thus
+# should be tested to compile w/ MAGNUM_TARGET_GL disabled), plus dependencies
+# of what's directly affected by Vulkan (which means also Trade for icon import
+# in Platform tests), disabling everything else. On Linux this uses a newer GCC
+# because SwiftShader doesn't compile on 4.8; building of Vulkan Magnum code on
+# GCC 4.8 is tested in the combined GL + Vulkan job.
 #
 # Not using CXXFLAGS in order to avoid affecting dependencies.
 mkdir build && cd build
@@ -37,13 +38,14 @@ cmake .. \
     -DMAGNUM_WITH_DEBUGTOOLS=ON \
     -DMAGNUM_WITH_GL=OFF \
     -DMAGNUM_WITH_MATERIALTOOLS=OFF \
-    -DMAGNUM_WITH_MESHTOOLS=OFF \
-    -DMAGNUM_WITH_PRIMITIVES=OFF \
+    -DMAGNUM_WITH_MESHTOOLS=ON \
+    `# Needed by MeshTools tests` \
+    -DMAGNUM_WITH_PRIMITIVES=ON \
     -DMAGNUM_WITH_SCENEGRAPH=OFF \
     -DMAGNUM_WITH_SCENETOOLS=OFF \
-    -DMAGNUM_WITH_SHADERS=OFF \
-    -DMAGNUM_WITH_TEXT=OFF \
-    -DMAGNUM_WITH_TEXTURETOOLS=OFF \
+    -DMAGNUM_WITH_SHADERS=ON \
+    -DMAGNUM_WITH_TEXT=ON \
+    -DMAGNUM_WITH_TEXTURETOOLS=ON \
     -DMAGNUM_WITH_TRADE=ON \
     -DMAGNUM_WITH_VK=ON \
     -DMAGNUM_WITH_AL_INFO=OFF \
@@ -73,7 +75,14 @@ cmake .. \
     -DMAGNUM_BUILD_VK_TESTS=ON \
     -DMAGNUM_BUILD_DEPRECATED=$BUILD_DEPRECATED \
     -G Ninja
+
 ninja $NINJA_JOBS
+
+# The GL library shouldn't get built by accident
+if ls Debug/lib/libMagnumGL*; then
+    echo "The MagnumGL library was built even though it shouldn't"
+    false
+fi
 
 export VK_ICD_FILENAMES=$HOME/swiftshader/share/vulkan/icd.d/vk_swiftshader_icd.json
 export CORRADE_TEST_COLOR=ON
