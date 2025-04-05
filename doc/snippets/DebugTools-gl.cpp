@@ -216,7 +216,7 @@ ImageView2D expected{PixelFormat::RGB8Unorm, {}};
 /* [CompareImage-pixels-rgb] */
 Image2D image = fb.read(fb.viewport(), {PixelFormat::RGBA8Unorm});
 
-CORRADE_COMPARE_AS(Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
+CORRADE_COMPARE_AS(image.pixels<Color4ub>().slice(&Color4ub::rgb),
     "expected.png", DebugTools::CompareImageToFile);
 /* [CompareImage-pixels-rgb] */
 }

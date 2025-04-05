@@ -322,8 +322,8 @@ data flipped upside down:
 
 For a different scenario, imagine you're comparing data read from a framebuffer
 to a ground truth image. On many systems, internal framebuffer storage has to
-be four-component; however your if your ground truth image is just
-three-component you can cast the pixel data to just a three-component type:
+be four-component; however your if your ground truth image is three-component
+you can slice the pixel data to just the RGB channels:
 
 @snippet DebugTools-gl.cpp CompareImage-pixels-rgb
 
