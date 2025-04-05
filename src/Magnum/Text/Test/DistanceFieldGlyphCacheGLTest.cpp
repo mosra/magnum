@@ -144,6 +144,11 @@ void DistanceFieldGlyphCacheGLTest::construct() {
     DistanceFieldGlyphCacheGL cache{{1024, 2048}, {128, 256}, 16};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(cache.features(), GlyphCacheFeature::ImageProcessing|GlyphCacheFeature::ProcessedImageDownload);
+    #else
+    CORRADE_COMPARE(cache.features(), GlyphCacheFeature::ImageProcessing);
+    #endif
     /* The input format is always single-channel */
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));

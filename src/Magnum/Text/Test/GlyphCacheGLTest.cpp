@@ -148,6 +148,7 @@ void GlyphCacheGLTest::construct() {
     GlyphCacheGL cache{PixelFormat::R8Unorm, {1024, 2048}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(cache.features(), GlyphCacheFeatures{});
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
     CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
@@ -161,6 +162,7 @@ void GlyphCacheGLTest::constructArray() {
     GlyphCacheArrayGL cache{PixelFormat::R8Unorm, {1024, 2048, 7}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(cache.features(), GlyphCacheFeatures{});
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
     CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));

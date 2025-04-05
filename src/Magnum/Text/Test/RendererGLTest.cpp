@@ -53,6 +53,18 @@
 #include "Magnum/Text/RendererGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
+/* Somehow on GCC 4.8 to 7 the {} passed as a default argument for
+   ArrayView<const FeatureRange> causes "error: elements of array 'const class
+   Magnum::Text::FeatureRange [0]' have incomplete type". GCC 9 is fine, no
+   idea about version 8, but including the definition for it as well to be
+   safe. Similar problem happens with MSVC STL, where the initializer_list is
+   implemented as a (begin, end) pair and size() is a difference of those two
+   pointers. Which needs to know the type size to calculate the actual element
+   count. */
+#if (defined(CORRADE_TARGET_GCC) && __GNUC__ <= 8) || defined(CORRADE_TARGET_DINKUMWARE)
+#include "Magnum/Text/Feature.h"
+#endif
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <string>
 #include <tuple>
@@ -277,6 +289,8 @@ void RendererGLTest::construct() {
     CORRADE_COMPARE(renderer.indexType(), data.expectedIndexType);
     CORRADE_COMPARE(renderer.mesh().count(), 0);
     CORRADE_COMPARE(renderer.mesh().indexType(), GL::meshIndexType(data.expectedIndexType));
+    /* Testing the const mesh() overload also */
+    CORRADE_COMPARE(static_cast<const RendererGL&>(renderer).mesh().indexType(), GL::meshIndexType(data.expectedIndexType));
 }
 
 #ifdef MAGNUM_TARGET_GLES2
@@ -526,11 +540,13 @@ void RendererGLTest::renderClearReset() {
             .setCursor({-3.0f, 1.0f})
             .render(shaper, 1.0f, "abc");
 
-        /* This uploads indices if reserve() wasn't called or was too little */
+        /* This uploads indices if reserve() wasn't called or was too little.
+           Using an add() overload + render() to make coverage happier. */
         renderer
             .setAlignment(Alignment::LineRight)
             .setCursor({5.0f, -3.0f})
-            .render(shaper, 2.0f, "de");
+            .add(shaper, 2.0f, "de", 0, 2, {})
+            .render();
 
         /* This may reupload indices if called */
         if(data.indexTypeAfter) {
@@ -807,11 +823,13 @@ void RendererGLTest::renderIndexTypeChanged() {
        change, not 16k */
     renderer.setIndexType(MeshIndexType::UnsignedByte);
 
-    /* 16*16 glyphs. Index type doesn't change yet, only after render(). */
+    /* 16*16 glyphs. Index type doesn't change yet, only after render(). Using
+       yet another add() overload to make coverage happier. */
     renderer
         .setAlignment(Alignment::LineLeft)
         .setCursor({-3.0f, 1.0f})
-        .add(shaper, 1.0f, "0123456789abcdef"_s*16);
+        .add(shaper, 1.0f, "0123456789abcdef"_s*8, {})
+        .add(shaper, 1.0f, "0123456789abcdef"_s*8, 0, 8*16, Containers::ArrayView<const FeatureRange>{});
     CORRADE_COMPARE(renderer.indexType(), MeshIndexType::UnsignedByte);
     CORRADE_COMPARE(renderer.mesh().indexType(), GL::MeshIndexType::UnsignedByte);
 
@@ -822,11 +840,13 @@ void RendererGLTest::renderIndexTypeChanged() {
     CORRADE_COMPARE(renderer.mesh().indexType(), GL::MeshIndexType::UnsignedShort);
 
     /* Just to match the image made in renderClearReset(), nothing else. There
-       should be 256 + 5 glyphs in total. */
+       should be 256 + 5 glyphs in total. Using yet another add() overload +
+       render() just to make coverage happier. */
     renderer
         .setAlignment(Alignment::LineRight)
         .setCursor({5.0f, -3.0f})
-        .render(shaper, 2.0f, "de");
+        .add(shaper, 2.0f, "de", 0, 2)
+        .render();
     CORRADE_COMPARE(renderer.glyphCount(), 256 + 5);
 
     /* Draw just the suffix from the mesh, not everything */
