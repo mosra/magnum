@@ -177,11 +177,14 @@ void PackingBatchTest::unpackUnsignedByte() {
         {0.0f, 1.0f}
     };
 
-    Containers::StridedArrayView1D<Vector2ub> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    unpackInto(Containers::arrayCast<2, UnsignedByte>(src),
-               Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    unpackInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2ub::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -206,11 +209,14 @@ void PackingBatchTest::unpackUnsignedShort() {
         {0.0f, 1.0f}
     };
 
-    Containers::StridedArrayView1D<Vector2us> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    unpackInto(Containers::arrayCast<2, UnsignedShort>(src),
-               Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    unpackInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2us::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -235,11 +241,14 @@ void PackingBatchTest::unpackSignedByte() {
         {-1.0f, -1.0f}
     };
 
-    Containers::StridedArrayView1D<Vector2b> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    unpackInto(Containers::arrayCast<2, Byte>(src),
-               Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    unpackInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2b::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -264,11 +273,14 @@ void PackingBatchTest::unpackSignedShort() {
         {-1.0f, -1.0f}
     };
 
-    Containers::StridedArrayView1D<Vector2s> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    unpackInto(Containers::arrayCast<2, Short>(src),
-               Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    unpackInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2s::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -293,11 +305,14 @@ void PackingBatchTest::packUnsignedByte() {
         {255, 255}
     };
 
-    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2ub> dst{data, &data[0].dst, 3, sizeof(Data)};
-    packInto(Containers::arrayCast<2, Float>(src),
-             Containers::arrayCast<2, UnsignedByte>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    packInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2ub::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -322,11 +337,14 @@ void PackingBatchTest::packUnsignedShort() {
         {65535, 65535}
     };
 
-    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2us> dst{data, &data[0].dst, 3, sizeof(Data)};
-    packInto(Containers::arrayCast<2, Float>(src),
-             Containers::arrayCast<2, UnsignedShort>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    packInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2us::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -351,11 +369,14 @@ void PackingBatchTest::packSignedByte() {
         {127, 127}
     };
 
-    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2b> dst{data, &data[0].dst, 3, sizeof(Data)};
-    packInto(Containers::arrayCast<2, Float>(src),
-             Containers::arrayCast<2, Byte>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    packInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2b::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -380,11 +401,14 @@ void PackingBatchTest::packSignedShort() {
         {32767, 32767}
     };
 
-    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2s> dst{data, &data[0].dst, 3, sizeof(Data)};
-    packInto(Containers::arrayCast<2, Float>(src),
-             Containers::arrayCast<2, Short>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    packInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2s::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -411,13 +435,14 @@ void PackingBatchTest::unpackHalf() {
         {-Constants::inf(), +Constants::inf()}
     };
 
-    Containers::StridedArrayView1D<Vector2us> src{data, &data[0].src,
-        Containers::arraySize(data), sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst,
-        Containers::arraySize(data), sizeof(Data)};
-    unpackHalfInto(Containers::arrayCast<2, UnsignedShort>(src),
-                   Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    unpackHalfInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2us::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -444,13 +469,14 @@ void PackingBatchTest::packHalf() {
         {0xfc00, 0x7c00}
     };
 
-    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src,
-        Containers::arraySize(data), sizeof(Data)};
-    Containers::StridedArrayView1D<Vector2us> dst{data, &data[0].dst,
-        Containers::arraySize(data), sizeof(Data)};
-    packHalfInto(Containers::arrayCast<2, Float>(src),
-                 Containers::arrayCast<2, UnsignedShort>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+    packHalfInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Vector2::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Vector2us::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expected),
         TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
@@ -484,17 +510,25 @@ template<class FloatingPoint, class Integral> void PackingBatchTest::castUnsigne
         {13, 255}
     };
 
-    Containers::StridedArrayView1D<Math::Vector2<Integral>> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Math::Vector2<FloatingPoint>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Containers::arrayCast<2, Integral>(src),
-             Containers::arrayCast<2, FloatingPoint>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedFloatingPoint),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<Integral>::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<FloatingPoint>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expectedFloatingPoint),
         TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Containers::arrayCast<2, FloatingPoint>(dst),
-             Containers::arrayCast<2, Integral>(src));
-    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedIntegral),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<FloatingPoint>::data),
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<Integral>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::src),
+        Containers::stridedArrayView(expectedIntegral),
         TestSuite::Compare::Container);
 }
 
@@ -524,17 +558,25 @@ template<class FloatingPoint, class Integral> void PackingBatchTest::castSignedF
         {13, 127}
     };
 
-    Containers::StridedArrayView1D<Math::Vector2<Integral>> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Math::Vector2<FloatingPoint>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Containers::arrayCast<2, Integral>(src),
-             Containers::arrayCast<2, FloatingPoint>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedFloatingPoint),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<Integral>::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<FloatingPoint>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expectedFloatingPoint),
         TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Containers::arrayCast<2, FloatingPoint>(dst),
-             Containers::arrayCast<2, Integral>(src));
-    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedIntegral),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<FloatingPoint>::data),
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<Integral>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::src),
+        Containers::stridedArrayView(expectedIntegral),
         TestSuite::Compare::Container);
 }
 
@@ -562,17 +604,25 @@ template<class T, class U> void PackingBatchTest::castUnsignedInteger() {
         {13, 255}
     };
 
-    Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Containers::arrayCast<2, T>(src),
-             Containers::arrayCast<2, U>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedTargetType),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<T>::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<U>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expectedTargetType),
         TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Containers::arrayCast<2, U>(dst),
-             Containers::arrayCast<2, T>(src));
-    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedOriginalType),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<U>::data),
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<T>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::src),
+        Containers::stridedArrayView(expectedOriginalType),
         TestSuite::Compare::Container);
 }
 
@@ -600,17 +650,25 @@ template<class T, class U> void PackingBatchTest::castSignedInteger() {
         {13, 127}
     };
 
-    Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Containers::arrayCast<2, T>(src),
-             Containers::arrayCast<2, U>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedTargetType),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<T>::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<U>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expectedTargetType),
         TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Containers::arrayCast<2, U>(dst),
-             Containers::arrayCast<2, T>(src));
-    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedOriginalType),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<U>::data),
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<T>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::src),
+        Containers::stridedArrayView(expectedOriginalType),
         TestSuite::Compare::Container);
 }
 
@@ -635,18 +693,25 @@ template<class T, class U> void PackingBatchTest::castFloatDouble() {
         {T(-119.0), T(22.75)},
         {T(13.0), T(127.5)}
     };
-
-    Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
-    Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Containers::arrayCast<2, T>(src),
-             Containers::arrayCast<2, U>(dst));
-    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedTargetType),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<T>::data),
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<U>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::dst),
+        Containers::stridedArrayView(expectedTargetType),
         TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Containers::arrayCast<2, U>(dst),
-             Containers::arrayCast<2, T>(src));
-    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedOriginalType),
+    castInto(
+        Containers::stridedArrayView(data).slice(&Data::dst)
+            .slice(&Math::Vector2<U>::data),
+        Containers::stridedArrayView(data).slice(&Data::src)
+            .slice(&Math::Vector2<T>::data));
+    CORRADE_COMPARE_AS(
+        Containers::stridedArrayView(data).slice(&Data::src),
+        Containers::stridedArrayView(expectedOriginalType),
         TestSuite::Compare::Container);
 }
 
@@ -660,18 +725,22 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
     Vector3 resultWrongVectorSize[2]{};
     Vector4 resultNonContiguous[2]{};
 
-    auto src = Containers::arrayCast<2, T>(
-        Containers::arrayView(data));
-    auto srcNonContiguous = Containers::arrayCast<2, T>(
-        Containers::arrayView(dataNonContiguous)).every({1, 2});
-    auto dst = Containers::arrayCast<2, Float>(
-        Containers::arrayView(result));
-    auto dstWrongCount = Containers::arrayCast<2, Float>(
-        Containers::arrayView(resultWrongCount));
-    auto dstWrongVectorSize = Containers::arrayCast<2, Float>(
-        Containers::arrayView(resultWrongVectorSize));
-    auto dstNotContiguous = Containers::arrayCast<2, Float>(
-        Containers::arrayView(resultNonContiguous)).every({1, 2});
+    auto src = Containers::stridedArrayView(data)
+        .slice(&Math::Vector2<T>::data);
+    auto srcNonContiguous = Containers::StridedArrayView2D<T>{
+            Containers::stridedArrayView(dataNonContiguous)
+                .slice(&Math::Vector4<T>::data)
+        }.every({1, 2});
+    auto dst = Containers::stridedArrayView(result)
+        .slice(&Vector2::data);
+    auto dstWrongCount = Containers::stridedArrayView(resultWrongCount)
+        .slice(&Vector2::data);
+    auto dstWrongVectorSize = Containers::stridedArrayView(resultWrongVectorSize)
+        .slice(&Vector3::data);
+    auto dstNotContiguous = Containers::StridedArrayView2D<Float>{
+            Containers::stridedArrayView(resultNonContiguous)
+                .slice(&Vector4::data)
+        }.every({1, 2});
 
     Containers::String out;
     Error redirectError{&out};
@@ -704,18 +773,22 @@ void PackingBatchTest::assertionsPackUnpackHalf() {
     Vector3 resultWrongVectorSize[2]{};
     Vector4 resultNonContiguous[2]{};
 
-    auto src = Containers::arrayCast<2, UnsignedShort>(
-        Containers::arrayView(data));
-    auto srcNonContiguous = Containers::arrayCast<2, UnsignedShort>(
-        Containers::arrayView(dataNonContiguous)).every({1, 2});
-    auto dst = Containers::arrayCast<2, Float>(
-        Containers::arrayView(result));
-    auto dstWrongCount = Containers::arrayCast<2, Float>(
-        Containers::arrayView(resultWrongCount));
-    auto dstWrongVectorSize = Containers::arrayCast<2, Float>(
-        Containers::arrayView(resultWrongVectorSize));
-    auto dstNotContiguous = Containers::arrayCast<2, Float>(
-        Containers::arrayView(resultNonContiguous)).every({1, 2});
+    auto src = Containers::stridedArrayView(data)
+        .slice(&Vector2us::data);
+    auto srcNonContiguous = Containers::StridedArrayView2D<UnsignedShort>{
+            Containers::stridedArrayView(dataNonContiguous)
+                .slice(&Vector4us::data)
+        }.every({1, 2});
+    auto dst = Containers::stridedArrayView(result)
+        .slice(&Vector2::data);
+    auto dstWrongCount = Containers::stridedArrayView(resultWrongCount)
+        .slice(&Vector2::data);
+    auto dstWrongVectorSize = Containers::stridedArrayView(resultWrongVectorSize)
+        .slice(&Vector3::data);
+    auto dstNotContiguous = Containers::StridedArrayView2D<Float>{
+            Containers::stridedArrayView(resultNonContiguous)
+                .slice(&Vector4::data)
+        }.every({1, 2});
 
     Containers::String out;
     Error redirectError{&out};
@@ -748,14 +821,16 @@ template<class U, class T> void PackingBatchTest::assertionsCast() {
     Math::Vector3<U> resultWrongVectorSize[2]{};
     Math::Vector4<U> resultNonContiguous[2]{};
 
-    auto src = Containers::arrayCast<2, T>(
-        Containers::arrayView(data));
-    auto dstWrongCount = Containers::arrayCast<2, U>(
-        Containers::arrayView(resultWrongCount));
-    auto dstWrongVectorSize = Containers::arrayCast<2, U>(
-        Containers::arrayView(resultWrongVectorSize));
-    auto dstNotContiguous = Containers::arrayCast<2, U>(
-        Containers::arrayView(resultNonContiguous)).every({1, 2});
+    auto src = Containers::stridedArrayView(data)
+        .slice(&Math::Vector2<T>::data);
+    auto dstWrongCount = Containers::stridedArrayView(resultWrongCount)
+        .slice(&Math::Vector2<U>::data);
+    auto dstWrongVectorSize = Containers::stridedArrayView(resultWrongVectorSize)
+        .slice(&Math::Vector3<U>::data);
+    auto dstNotContiguous = Containers::StridedArrayView2D<U>{
+            Containers::stridedArrayView(resultNonContiguous)
+                .slice(&Math::Vector4<U>::data)
+        }.every({1, 2});
 
     Containers::String out;
     Error redirectError{&out};

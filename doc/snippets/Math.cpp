@@ -24,6 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StridedArrayView.h>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
@@ -34,6 +36,7 @@
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/Half.h"
+#include "Magnum/Math/PackingBatch.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Time.h"
@@ -1268,6 +1271,39 @@ auto b = Math::pack<UnsignedShort, 14>(0.5f); // 8191
 /* [pack] */
 static_cast<void>(a);
 static_cast<void>(b);
+}
+
+{
+/* [unpackInto] */
+const UnsignedByte src[]{DOXYGEN_ELLIPSIS(0)};
+Float dst[Containers::arraySize(src)];
+Math::unpackInto(Containers::stridedArrayView(src),
+                 Containers::stridedArrayView(dst));
+/* [unpackInto] */
+}
+
+{
+/* [unpackInto-vector-slice] */
+Containers::StridedArrayView1D<const Color3ub> src = DOXYGEN_ELLIPSIS({});
+Containers::StridedArrayView1D<Color3> dst = DOXYGEN_ELLIPSIS({});
+Math::unpackInto(src.slice(&Color3ub::data),
+                 dst.slice(&Color3::data));
+/* [unpackInto-vector-slice] */
+}
+
+{
+/* [unpackInto-slice-flatten] */
+Containers::StridedArrayView2D<const Color4ub> src = DOXYGEN_ELLIPSIS({});
+Containers::StridedArrayView2D<Color4> dst = DOXYGEN_ELLIPSIS({});
+Math::unpackInto(src.asContiguous<0>().slice(&Color4ub::data),
+                 dst.asContiguous<0>().slice(&Color4::data));
+/* [unpackInto-slice-flatten] */
+
+/* [unpackInto-slice-loop] */
+for(std::size_t i = 0; i != src.size()[0]; ++i)
+    Math::unpackInto(src[i].slice(&Color4ub::data),
+                     dst[i].slice(&Color4::data));
+/* [unpackInto-slice-loop] */
 }
 
 {

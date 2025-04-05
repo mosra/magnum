@@ -56,6 +56,28 @@ floating-point values in range @f$ [0, 1] @f$. Second dimension is meant to
 contain vector/matrix components, or have a size of 1 for scalars. Expects that
 @p src and @p dst have the same size and that the second dimension in both is
 contiguous.
+
+The function can be called directly with an one-dimensional strided view as
+it's implicitly convertible to a @link Containers::StridedArrayView2D @endlink:
+
+@snippet Math.cpp unpackInto
+
+Overloads for vector, matrix and other math types are not provided because
+there would be too many variants. Instead you can slice to @ref Vector::data(),
+@ref RectangularMatrix::data() etc., which is then convertible to a 2D view:
+
+@snippet Math.cpp unpackInto-vector-slice
+
+For higher dimension count you can flatten the extra dimensions using
+@relativeref{Corrade,Containers::StridedArrayView::asContiguous()} if they're
+contiguous:
+
+@snippet Math.cpp unpackInto-slice-flatten
+
+Or call the function on the nested dimensions in a loop if not:
+
+@snippet Math.cpp unpackInto-slice-loop
+
 @see @ref packInto(), @ref castInto(),
     @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
@@ -77,7 +99,8 @@ Converts integral values from full range of given *signed* integral type to
 floating-point values in range @f$ [-1, 1] @f$. Second dimension is meant to
 contain vector/matrix components, or have a size of 1 for scalars. Expects that
 @p src and @p dst have the same size and that the second dimension in both is
-contiguous.
+contiguous. See the @ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+overload for various examples of how to pass the arguments.
 @see @ref packInto(), @ref castInto(),
     @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
@@ -100,7 +123,8 @@ given *unsigned* integral type or range @f$ [-1, 1] @f$ to full range of
 given *signed* integral type. Second dimension is meant to contain
 vector/matrix components, or have a size of 1 for scalars. Expects that @p src
 and @p dst have the same size and that the second dimension in both is
-contiguous.
+contiguous. See @ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 @attention Conversion result for floating-point numbers outside the normalized
     range is undefined.
@@ -139,7 +163,8 @@ for more information about half floats. Unlike @ref packHalf() this function is
 a faster table-based implementation at the expense of using more memory, thus
 more suitable for batch conversions of large data amounts. Expects that @p src
 and @p dst have the same size and that the second dimension in both is
-contiguous.
+contiguous. See @ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 Algorithm used: *Jeroen van der Zijp -- Fast Half Float Conversions, 2008,
 ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf*
@@ -158,7 +183,8 @@ for more information about half floats. Unlike @ref unpackHalf() this function
 is a faster table-based implementation at the expense of using more memory,
 thus more suitable for batch conversions of large data amounts. Expects that
 @p src and @p dst have the same size and that the second dimension in both is
-contiguous.
+contiguous. See @ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 Algorithm used: *Jeroen van der Zijp -- Fast Half Float Conversions, 2008,
 ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf*
@@ -176,7 +202,9 @@ Unlike @ref packInto(), this function performs only an equivalent of
 @cpp Float(a) @ce over the range, so e.g. @cpp 135 @ce becomes @cpp 135.0f @ce.
 Second dimension is meant to contain vector/matrix components, or have a size
 of 1 for scalars. Expects that @p src and @p dst have the same size and that
-the second dimension in both is contiguous.
+the second dimension in both is contiguous. See
+@ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 @attention Numbers with more than 23 bits of precision will not be represented
     accurately when cast into a @relativeref{Magnum,Float}.
@@ -226,7 +254,9 @@ Unlike @ref packInto(), this function performs only an equivalent of
 @cpp Double(a) @ce over the range, so e.g. @cpp 135 @ce becomes @cpp 135.0 @ce.
 Second dimension is meant to contain vector/matrix components, or have a size
 of 1 for scalars. Expects that @p src and @p dst have the same size and that
-the second dimension in both is contiguous.
+the second dimension in both is contiguous. See
+@ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 @attention Numbers with more than 52 bits of precision will not be represented
     accurately when cast into a @relativeref{Magnum,Double}.
@@ -276,7 +306,9 @@ Unlike @ref packInto(), this function performs only an equivalent of
 @cpp T(a) @ce over the range, so e.g. @cpp 135.0f @ce becomes @cpp 135 @ce.
 Second dimension is meant to contain vector/matrix components, or have a size
 of 1 for scalars. Expects that @p src and @p dst have the same size and that
-the second dimension in both is contiguous.
+the second dimension in both is contiguous. See
+@ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 @attention Fractional part of the @relativeref{Magnum,Float} input will be
     silently discarded when cast into an integer type.
@@ -326,7 +358,9 @@ Unlike @ref packInto(), this function performs only an equivalent of
 @cpp T(a) @ce over the range, so e.g. @cpp 135.0 @ce becomes @cpp 135 @ce.
 Second dimension is meant to contain vector/matrix components, or have a size
 of 1 for scalars. Expects that @p src and @p dst have the same size and that
-the second dimension in both is contiguous.
+the second dimension in both is contiguous. See
+@ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 @attention Fractional part of the @relativeref{Magnum,Double} input will be
     silently discarded when cast into an integer type.
@@ -374,7 +408,9 @@ MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& 
 
 Second dimension is meant to contain vector/matrix components, or have a size
 of 1 for scalars. Expects that @p src and @p dst have the same size and that
-the second dimension in both is contiguous.
+the second dimension in both is contiguous. See
+@ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 @attention Values that don't fit into the resulting type will have undefined
     values.
@@ -531,7 +567,8 @@ This function performs an equivalent of @cpp Double(a) @ce over the range, so
 e.g. @cpp 135.0f @ce becomes @cpp 135.0 @ce. Second dimension is meant to
 contain vector/matrix components, or have a size of 1 for scalars. Expects that
 @p src and @p dst have the same size and that the second dimension in both is
-contiguous.
+contiguous. See @ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 @see @ref castInto(const Containers::StridedArrayView2D<const Double>&, const Containers::StridedArrayView2D<Float>&),
     @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
@@ -548,7 +585,8 @@ This function performs an equivalent of @cpp Float(a) @ce over the range, so
 e.g. @cpp 135.0 @ce becomes @cpp 135.0f @ce. Second dimension is meant to
 contain vector/matrix components, or have a size of 1 for scalars. Expects that
 @p src and @p dst have the same size and that the second dimension in both is
-contiguous.
+contiguous. See @ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 
 @attention Numbers with more than 23 bits of precision will not be represented
     accurately when cast into a @ref Magnum::Float "Float".
@@ -567,7 +605,8 @@ MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& 
 Provided for convenience when writing generic code, delegates to @relativeref{Corrade,Utility::copy()}. Expects that @p src and @p dst have the
 same size, for consistency with other @ref castInto() expects also that the
 second dimension in both is contiguous even though it's not required by
-@relativeref{Corrade,Utility::copy()}.
+@relativeref{Corrade,Utility::copy()}. See @ref unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&)
+for various examples of how to pass the arguments.
 */
 MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedByte>& src, const Containers::StridedArrayView2D<UnsignedByte>& dst);
 
