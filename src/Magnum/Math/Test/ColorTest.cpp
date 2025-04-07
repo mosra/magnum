@@ -128,6 +128,11 @@ struct ColorTest: TestSuite::Tester {
     void fromXyzDefaultAlpha();
     void xyY();
 
+    void premultiplied();
+    template<class T> void premultipliedRoundtrip();
+    void unpremultiplied();
+    template<class T> void unpremultipliedRoundtrip();
+
     void multiplyDivideIntegral();
 
     void strictWeakOrdering();
@@ -172,6 +177,15 @@ using Magnum::ColorHsv;
 using Magnum::Deg;
 
 using namespace Literals;
+
+const struct {
+    Int r, g, b;
+} UnpremultipliedRoundtripData[]{
+    {10, 8, 2}, /* same as in premultipliedRoundtrip() */
+    {4, 5, 0},
+    {9, 6, 7},
+    /** @todo for 1 and 3 it results in less precision, what to do? */
+};
 
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 const struct {
@@ -261,7 +275,17 @@ ColorTest::ColorTest() {
               &ColorTest::fromXyzDefaultAlpha,
               &ColorTest::xyY,
 
-              &ColorTest::multiplyDivideIntegral,
+              &ColorTest::premultiplied,
+              &ColorTest::premultipliedRoundtrip<UnsignedByte>,
+              &ColorTest::premultipliedRoundtrip<UnsignedShort>,
+              &ColorTest::unpremultiplied});
+
+    addInstancedTests<ColorTest>({
+        &ColorTest::unpremultipliedRoundtrip<UnsignedByte>,
+        &ColorTest::unpremultipliedRoundtrip<UnsignedShort>},
+        Containers::arraySize(UnpremultipliedRoundtripData));
+
+    addTests({&ColorTest::multiplyDivideIntegral,
 
               &ColorTest::strictWeakOrdering,
 
@@ -1157,6 +1181,173 @@ void ColorTest::xyY() {
 
     CORRADE_COMPARE(xyzToXyY(xyz), xyY);
     CORRADE_COMPARE(xyYToXyz(xyY), xyz);
+}
+
+void ColorTest::premultiplied() {
+    /* Usual scenario */
+    CORRADE_COMPARE((Color4{0.6f, 0.8f, 0.4f, 0.25f}).premultiplied(), (Color4{0.15f, 0.2f, 0.1f, 0.25f}));
+    /* Slight imprecision with packed types */
+    CORRADE_COMPARE((Color4us{0x9999, 0xcccc, 0x6666, 0x3fff}).premultiplied(), (Color4us{0x2666, 0x3332, 0x1999, 0x3fff}));
+    /* Lol it wants to treat _rgba.premultiplied() as a literal suffix as a
+       whole?! Load-bearing space?! */
+    CORRADE_COMPARE(0x99cc663f_rgba .premultiplied(), 0x2632193f_rgba);
+
+    /* Zero alpha just zeroes out the rest, no special treatment */
+    CORRADE_COMPARE((Color4{0.6f, 0.8f, 0.4f, 0.0f}).premultiplied(), (Color4{0.0f, 0.0f, 0.0f, 0.0f}));
+    CORRADE_COMPARE((Color4us{0, 0, 0, 0}).premultiplied(), (Color4us{0, 0, 0, 0}));
+    CORRADE_COMPARE(0x00000000_rgba .premultiplied(), 0x00000000_rgba);
+
+    /* RGB channels over 1 aren't treated in any special way */
+    CORRADE_COMPARE((Color4{1.6f, 1.8f, 1.4f, 0.25f}).premultiplied(), (Color4{0.4f, 0.45f, 0.35f, 0.25f}));
+    /* (no way to express this with packed types) */
+
+    constexpr Color4 a{0.6f, 0.8f, 0.4f, 0.25f};
+    constexpr Color4 ap = a.premultiplied();
+    CORRADE_COMPARE(ap, (Color4{0.15f, 0.2f, 0.1f, 0.25f}));
+
+    constexpr Color4us b{0x9999, 0xcccc, 0x6666, 0x3fff};
+    constexpr Color4us bp = b.premultiplied();
+    CORRADE_COMPARE(bp, (Color4us{0x2666, 0x3332, 0x1999, 0x3fff}));
+
+    constexpr Color4ub c = 0x99cc663f_rgba;
+    constexpr Color4ub cp = c.premultiplied();
+    CORRADE_COMPARE(cp, 0x2632193f_rgba);
+}
+
+template<class T> void ColorTest::premultipliedRoundtrip() {
+    setTestCaseTemplateName(TypeTraits<T>::name());
+
+    /* Unpacking, premultiplying and packing a color should give the same
+       result as premultiplying a packed color directly. The implementation
+       doesn't use pack() etc to be constexpr so verify the two have the same
+       rounding behavior.
+
+       This only holds for premultiplied(), with unpremultiplied() it doesn't,
+       see unpremultipliedRoundtrip() below. */
+
+    for(UnsignedInt i = 0; i != Implementation::bitMax<T>(); ++i) {
+        CORRADE_ITERATION(Debug::hex << i);
+
+        Math::Color4<T> a{
+            Math::pack<T>(1.0f), /* 0xff or 0xffff */
+            Math::pack<T>(0.8f), /* 0x99 or 0x9999 */
+            Math::pack<T>(0.2f), /* 0x33 or 0x3333 */
+            T(i)};
+        CORRADE_COMPARE(a.premultiplied(), Math::pack<Math::Color4<T>>(Math::unpack<Color4>(a).premultiplied()));
+    }
+}
+
+void ColorTest::unpremultiplied() {
+    /* Usual scenario, inverse of the above */
+    CORRADE_COMPARE((Color4{0.15f, 0.2f, 0.1f, 0.25f}).unpremultiplied(), (Color4{0.6f, 0.8f, 0.4f, 0.25f}));
+    /* Slight imprecision with packed types */
+    CORRADE_COMPARE((Color4us{0x2666, 0x3333, 0x1999, 0x3fff}).unpremultiplied(), (Color4us{0x999a, 0xccce, 0x6665, 0x3fff}));
+    /* Lol a load-bearing space again */
+    CORRADE_COMPARE(0x2633193f_rgba .unpremultiplied(), 0x9ace653f_rgba);
+
+    /* With zero alpha the RGB channels get ignored, no matter what they are */
+    CORRADE_COMPARE((Color4{0.6f, 0.8f, 0.4f, 0.0f}).unpremultiplied(), (Color4{0.0f, 0.0f, 0.0f, 0.0f}));
+    CORRADE_COMPARE((Color4us{0x6666, 0xcccc, 0xffff, 0}).unpremultiplied(), (Color4us{0, 0, 0, 0}));
+    CORRADE_COMPARE(0x33ff9900_rgba .unpremultiplied(), 0x00000000_rgba);
+
+    /* RGB channels over alpha aren't treated in any special way for floats
+       (inverse of what's tested in premultiplied()) */
+    CORRADE_COMPARE((Color4{0.4f, 0.45f, 0.35f, 0.25f}).unpremultiplied(), (Color4{1.6f, 1.8f, 1.4f, 0.25f}));
+    /* For packed types they get individually clamped -- i.e., it's not all of
+       them being set to full channel, only those that overflow */
+    CORRADE_COMPARE((Color4us{0x6666, 0x2666, 0x4000, 0x3fff}).unpremultiplied(), (Color4us{0xffff, 0x999a, 0xffff, 0x3fff}));
+    CORRADE_COMPARE(0x2666193f_rgba .unpremultiplied(), 0x9aff653f_rgba);
+
+    constexpr Color4 ap{0.15f, 0.2f, 0.1f, 0.25f};
+    constexpr Color4 apz{0.15f, 0.2f, 0.1f, 0.0f};
+    constexpr Color4 a = ap.unpremultiplied();
+    constexpr Color4 az = apz.unpremultiplied();
+    CORRADE_COMPARE(a, (Color4{0.6f, 0.8f, 0.4f, 0.25f}));
+    CORRADE_COMPARE(az, (Color4{0.0f, 0.0f, 0.0f, 0.0f}));
+
+    /* Second channel overflows here */
+    constexpr Color4us bp{0x2666, 0x6666, 0x1999, 0x3fff};
+    constexpr Color4us bpz{0x2666, 0x6666, 0x1999, 0};
+    constexpr Color4us b = bp.unpremultiplied();
+    constexpr Color4us bz = bpz.unpremultiplied();
+    CORRADE_COMPARE(b, (Color4us{0x999a, 0xffff, 0x6665, 0x3fff}));
+    CORRADE_COMPARE(bz, (Color4us{0, 0, 0, 0}));
+
+    /* First channel overflows here */
+    constexpr Color4ub cp = 0x6633193f_rgba;
+    constexpr Color4ub cpz = 0x66331900_rgba;
+    constexpr Color4ub c = cp.unpremultiplied();
+    constexpr Color4ub cz = cpz.unpremultiplied();
+    CORRADE_COMPARE(c, 0xffce653f_rgba);
+    CORRADE_COMPARE(cz, 0x00000000_rgba);
+}
+
+/* A variant of packed unpremultiplied() that does a calculation that has
+   exactly the same rounding behavior as unpack() followed by pack(). */
+template<class T> constexpr Math::Color4<T> unpremultipliedPackedExact(const Math::Color4<T>& color) {
+    return color.a() == T(0) ? Math::Color4<T>{} : Math::Color4<T>{
+        T(Implementation::bitMax<T>()*((typename Math::Color4<T>::FloatingPointType(min(color.r(), color.a()))/Implementation::bitMax<T>())/(typename Math::Color4<T>::FloatingPointType(color.a())/Implementation::bitMax<T>())) + typename Math::Color4<T>::FloatingPointType(0.5)),
+        T(Implementation::bitMax<T>()*((typename Math::Color4<T>::FloatingPointType(min(color.g(), color.a()))/Implementation::bitMax<T>())/(typename Math::Color4<T>::FloatingPointType(color.a())/Implementation::bitMax<T>())) + typename Math::Color4<T>::FloatingPointType(0.5)),
+        T(Implementation::bitMax<T>()*((typename Math::Color4<T>::FloatingPointType(min(color.b(), color.a()))/Implementation::bitMax<T>())/(typename Math::Color4<T>::FloatingPointType(color.a())/Implementation::bitMax<T>())) + typename Math::Color4<T>::FloatingPointType(0.5)),
+        color.a()
+    };
+}
+
+template<class T> void ColorTest::unpremultipliedRoundtrip() {
+    auto&& data = UnpremultipliedRoundtripData[testCaseInstanceId()];
+    setTestCaseTemplateName(TypeTraits<T>::name());
+    setTestCaseDescription(Utility::format("{}/10, {}/10, {}/10", data.r, data.g, data.b));
+
+    /* Compared to premultipliedRoundtrip(), the sequence of operations with
+       pack()/unpack() causes extra rounding differences and in general is more
+       complex code. The simpler sequence in unpremultiplied() doesn't lead to
+       more precision always, but only in majority of cases, which is what this
+       test tries to show. */
+
+    UnsignedInt impreciseCount = 0, preciseCount = 0;
+    for(UnsignedInt i = 0; i != Implementation::bitMax<T>(); ++i) {
+        CORRADE_ITERATION(Debug::hex << i);
+
+        Math::Color4<T> ap{T(i*data.r/10),
+                           T(i*data.g/10),
+                           T(i*data.b/10),
+                           T(i)};
+
+        /* It only matches when we replicate the exact sequence of operations */
+        Math::Color4<T> ae = unpremultipliedPackedExact(ap);
+        CORRADE_COMPARE(ae, Math::pack<Math::Color4<T>>(Math::unpack<Color4>(ap).unpremultiplied()));
+
+        /* The unpremultiplied() implementation is at most off-by-one from
+           that. Casting, not unpacking, to a float type so we can compare with
+           a ±1 delta even the boundary values without overflow. */
+        Math::Color4<T> a = ap.unpremultiplied();
+        CORRADE_COMPARE_WITH(Color4{a},
+            Color4{Math::pack<Math::Color4<T>>(Math::unpack<Color4>(ap).unpremultiplied())},
+            TestSuite::Compare::around(Color4{1.0f, 1.0f}));
+
+        /* If they're different, the unpremultiplied() should be always closer
+           to the ideal than unpack() + pack() */
+        if(ae != a) {
+            const Color3 expected{
+                Float(UnsignedInt(Implementation::bitMax<T>())*data.r/10)/Implementation::bitMax<T>(),
+                Float(UnsignedInt(Implementation::bitMax<T>())*data.g/10)/Implementation::bitMax<T>(),
+                Float(UnsignedInt(Implementation::bitMax<T>())*data.b/10)/Implementation::bitMax<T>()};
+            const Float aDelta = (Math::unpack<Color3>(a.rgb()) - expected).dot();
+            const Float aeDelta = (Math::unpack<Color3>(ae.rgb()) - expected).dot();
+
+            if(aDelta > aeDelta)
+                ++impreciseCount;
+            else if(aDelta < aeDelta)
+                ++preciseCount;
+        }
+    }
+
+    if(impreciseCount > preciseCount)
+        CORRADE_FAIL(impreciseCount << "values out of" << Implementation::bitMax<T>() << "were less precise than the pack()/unpack() variant," << preciseCount << "were more precise.");
+    if(impreciseCount)
+        CORRADE_WARN(impreciseCount << "values out of" << Implementation::bitMax<T>() << "were less precise than the pack()/unpack() variant," << preciseCount << "were more precise.");
+    else if(preciseCount)
+        CORRADE_INFO(preciseCount << "values out of" << Implementation::bitMax<T>() << "were more precise than the pack()/unpack() variant.");
 }
 
 void ColorTest::multiplyDivideIntegral() {

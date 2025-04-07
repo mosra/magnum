@@ -262,6 +262,9 @@ See also:
     @ref Math::Color4::fromLinearRgbaInt() as counterparts to
     @ref Math::Color3::fromSrgbInt(), @ref Math::Color4::fromSrgbInt() and
     @ref Math::Color4::fromSrgbAlphaInt() that don't perform a sRGB conversion
+-   Added @ref Math::Color4::premultiplied() and
+    @relativeref{Math::Color4,unpremultiplied()} for converting colors to and
+    from premultiplied alpha representation
 -   New @ref Math::DualComplex::from(const Complex<T>&, const Vector2<T>&) and
     @ref Math::DualQuaternion::from(const Quaternion<T>&, const Vector3<T>&)
     functions mirroring @ref Math::Matrix3::from(const Matrix2x2<T>&, const Vector2<T>&)

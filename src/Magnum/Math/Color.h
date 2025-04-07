@@ -248,6 +248,43 @@ template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> 
     return toXyz<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(rgb));
 }
 
+/* Alpha (un)premultiplication */
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> constexpr Color4<T> premultiplied(const Color4<T>& color) {
+    return {color.rgb()*color.a(), color.a()};
+}
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> constexpr Color4<T> premultiplied(const Color4<T>& color) {
+    /* The + 0.5 is to round the value to nearest integer instead of flooring.
+       Not using round() to have this constexpr. See premultipliedRoundtrip()
+       for a verification this exactly matches pack()/unpack() behavior. */
+    return {
+        T(typename Color4<T>::FloatingPointType(color.r())*color.a()/bitMax<T>() + typename Color4<T>::FloatingPointType(0.5)),
+        T(typename Color4<T>::FloatingPointType(color.g())*color.a()/bitMax<T>() + typename Color4<T>::FloatingPointType(0.5)),
+        T(typename Color4<T>::FloatingPointType(color.b())*color.a()/bitMax<T>() + typename Color4<T>::FloatingPointType(0.5)),
+        color.a()
+    };
+}
+
+template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> constexpr Color4<T> unpremultiplied(const Color4<T>& color) {
+    /* If alpha is zero, zero the RGB channels. Could keep them unchanged, but
+       that would add unnecessary variation to the output. */
+    return {color.a() == T(0) ? Color3<T>{} : color.rgb()/color.a(), color.a()};
+}
+template<class T, typename std::enable_if<IsIntegral<T>::value, int>::type = 0> constexpr Color4<T> unpremultiplied(const Color4<T>& color) {
+    /* Additionally also clamp the RGB channels so the division doesn't go over
+       1, as with the packed type it would result in overflow. The + 0.5 is to
+       round the value to nearest integer instead of flooring. Not using
+       round() to have this constexpr. Unlike premultiplied(), this does *not*
+       match pack()/unpack() behavior as this leads to better precision,
+       statistically speaking. See the unpremultipliedRoundtrip() test for
+       details. */
+    return color.a() == T(0) ? Color4<T>{} : Color4<T>{
+        T(typename Color4<T>::FloatingPointType(min(color.r(), color.a()))*bitMax<T>()/color.a() + typename Color4<T>::FloatingPointType(0.5)),
+        T(typename Color4<T>::FloatingPointType(min(color.g(), color.a()))*bitMax<T>()/color.a() + typename Color4<T>::FloatingPointType(0.5)),
+        T(typename Color4<T>::FloatingPointType(min(color.b(), color.a()))*bitMax<T>()/color.a() + typename Color4<T>::FloatingPointType(0.5)),
+        color.a()
+    };
+}
+
 /* Value for full channel (1.0f for floats, 255 for unsigned byte) */
 #if !defined(CORRADE_MSVC2017_COMPATIBILITY) || defined(CORRADE_MSVC2015_COMPATIBILITY)
 /* MSVC 2017 since 15.8 crashes with the following at a constructor line that
@@ -1202,6 +1239,48 @@ class Color4: public Vector4<T> {
          */
         Vector3<FloatingPointType> toXyz() const {
             return Implementation::toXyz<T>(rgb());
+        }
+
+        /**
+         * @brief Color with premultiplied alpha
+         * @m_since_latest
+         *
+         * The resulting color has RGB channels always less than or equal to
+         * alpha. Note that premultiplication isn't a reversible operation ---
+         * if alpha is zero, RGB channels become zero as well and
+         * @ref unpremultiplied() won't be able to recover the original values
+         * back. @f[
+         *  \boldsymbol{c_\mathrm{premult}} = (\boldsymbol{c_{rgb}} c_a, c_a)
+         * @f]
+         */
+        constexpr Color4<T> premultiplied() const {
+            return Implementation::premultiplied(*this);
+        }
+
+        /**
+         * @brief Color with unpremultiplied alpha
+         * @m_since_latest
+         *
+         * Assuming the input has premultiplied alpha, such as coming from
+         * @ref premultiplied(), returns an unpremultiplied color. Note that
+         * premultiplication isn't a reversible operation --- if alpha is zero,
+         * the RGB channels will be set to zero as well. @f[
+         *      \boldsymbol{c} = \begin{cases}
+         *          \boldsymbol{0}, & {c_\mathrm{premult}}_a = 0 \\
+         *          (\cfrac{\boldsymbol{{c_\mathrm{premult}}_{rgb}}}{c_a}, {c_\mathrm{premult}}_a) & {c_\mathrm{premult}}_a > 0
+         *      \end{cases}
+         * @f]
+         *
+         * Additionally, with packed types such as @ref Color4ub, RGB channels
+         * are clamped to avoid overflow: @f[
+         *      \boldsymbol{c} = \begin{cases}
+         *          \boldsymbol{0}, & {c_\mathrm{premult}}_a = 0 \\
+         *          (\cfrac{\min(\boldsymbol{{c_\mathrm{premult}}_{rgb}}, {c_\mathrm{premult}}_a)}{c_a}, {c_\mathrm{premult}}_a) & {c_\mathrm{premult}}_a > 0
+         *      \end{cases}
+         * @f]
+         */
+        constexpr Color4<T> unpremultiplied() const {
+            return Implementation::unpremultiplied(*this);
         }
 
         /* Overloads to remove WTF-factor from return types */
