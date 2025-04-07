@@ -1202,15 +1202,24 @@ void ColorTest::premultiplied() {
     /* (no way to express this with packed types) */
 
     constexpr Color4 a{0.6f, 0.8f, 0.4f, 0.25f};
-    constexpr Color4 ap = a.premultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4 ap = a.premultiplied();
     CORRADE_COMPARE(ap, (Color4{0.15f, 0.2f, 0.1f, 0.25f}));
 
     constexpr Color4us b{0x9999, 0xcccc, 0x6666, 0x3fff};
-    constexpr Color4us bp = b.premultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4us bp = b.premultiplied();
     CORRADE_COMPARE(bp, (Color4us{0x2666, 0x3332, 0x1999, 0x3fff}));
 
     constexpr Color4ub c = 0x99cc663f_rgba;
-    constexpr Color4ub cp = c.premultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4ub cp = c.premultiplied();
     CORRADE_COMPARE(cp, 0x2632193f_rgba);
 }
 
@@ -1260,24 +1269,42 @@ void ColorTest::unpremultiplied() {
 
     constexpr Color4 ap{0.15f, 0.2f, 0.1f, 0.25f};
     constexpr Color4 apz{0.15f, 0.2f, 0.1f, 0.0f};
-    constexpr Color4 a = ap.unpremultiplied();
-    constexpr Color4 az = apz.unpremultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4 a = ap.unpremultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4 az = apz.unpremultiplied();
     CORRADE_COMPARE(a, (Color4{0.6f, 0.8f, 0.4f, 0.25f}));
     CORRADE_COMPARE(az, (Color4{0.0f, 0.0f, 0.0f, 0.0f}));
 
     /* Second channel overflows here */
     constexpr Color4us bp{0x2666, 0x6666, 0x1999, 0x3fff};
     constexpr Color4us bpz{0x2666, 0x6666, 0x1999, 0};
-    constexpr Color4us b = bp.unpremultiplied();
-    constexpr Color4us bz = bpz.unpremultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4us b = bp.unpremultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4us bz = bpz.unpremultiplied();
     CORRADE_COMPARE(b, (Color4us{0x999a, 0xffff, 0x6665, 0x3fff}));
     CORRADE_COMPARE(bz, (Color4us{0, 0, 0, 0}));
 
     /* First channel overflows here */
     constexpr Color4ub cp = 0x6633193f_rgba;
     constexpr Color4ub cpz = 0x66331900_rgba;
-    constexpr Color4ub c = cp.unpremultiplied();
-    constexpr Color4ub cz = cpz.unpremultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4ub c = cp.unpremultiplied();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* do I care? nah */
+    constexpr
+    #endif
+    Color4ub cz = cpz.unpremultiplied();
     CORRADE_COMPARE(c, 0xffce653f_rgba);
     CORRADE_COMPARE(cz, 0x00000000_rgba);
 }
