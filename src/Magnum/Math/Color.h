@@ -404,12 +404,12 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Create linear RGB color from sRGB representation
          * @param srgb  Color in sRGB color space
          *
-         * Applies inverse sRGB curve onto input, returning the input in linear
-         * RGB color space with D65 illuminant and 2° standard colorimetric
-         * observer. @f[
+         * Applies an inverse [sRGB curve](https://en.wikipedia.org/wiki/SRGB)
+         * onto input, returning the input in linear RGB color space with D65
+         * illuminant and 2° standard colorimetric observer. @f[
          *      \boldsymbol{c}_\mathrm{linear} = \begin{cases}
          *          \dfrac{\boldsymbol{c}_\mathrm{sRGB}}{12.92}, & \boldsymbol{c}_\mathrm{sRGB} \le 0.04045 \\
-         *          \left( \dfrac{\boldsymbol{c}_\mathrm{sRGB} + a}{1 + a} \right)^{2.4}, & \boldsymbol{c}_\mathrm{sRGB} > 0.04045
+         *          \left( \dfrac{\boldsymbol{c}_\mathrm{sRGB} + 0.055}{1 + 0.055} \right)^{2.4}, & \boldsymbol{c}_\mathrm{sRGB} > 0.04045
          *      \end{cases}
          * @f]
          * @see @ref fromSrgb(const Vector3<Integral>&), @ref fromSrgbInt(),
@@ -639,11 +639,12 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Convert to sRGB representation
          *
          * Assuming the color is in linear RGB with D65 illuminant and 2°
-         * standard colorimetric observer, applies sRGB curve onto it,
-         * returning the color represented in sRGB color space: @f[
+         * standard colorimetric observer, applies a
+         * [sRGB curve](https://en.wikipedia.org/wiki/SRGB) onto it, returning
+         * the color represented in sRGB color space: @f[
          *      \boldsymbol{c}_\mathrm{sRGB} = \begin{cases}
-         *          12.92C_\mathrm{linear}, & \boldsymbol{c}_\mathrm{linear} \le 0.0031308 \\
-         *          (1 + a) \boldsymbol{c}_\mathrm{linear}^{1/2.4}-a, & \boldsymbol{c}_\mathrm{linear} > 0.0031308
+         *          12.92 \boldsymbol{c}_\mathrm{linear}, & \boldsymbol{c}_\mathrm{linear} \le 0.0031308 \\
+         *          (1 + 0.055) \boldsymbol{c}_\mathrm{linear}^{1/2.4} - 0.055, & \boldsymbol{c}_\mathrm{linear} > 0.0031308
          *      \end{cases}
          * @f]
          * @see @ref fromSrgb(), @ref toSrgbInt(), @ref Color4::toSrgbAlpha()
