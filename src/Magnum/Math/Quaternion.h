@@ -501,7 +501,7 @@ template<class T> class Quaternion {
          *
          * Returns a four-component vector containing @ref vector() in the XYZ
          * components and @ref scalar() in W: @f[
-         *      v = [q_{V_x}, q_{V_y}, q_{V_z}, s]
+         *      \boldsymbol v = [q_{V_x}, q_{V_y}, q_{V_z}, s]
          * @f]
          * @see @ref Complex::operator Vector2<T>()
          */
@@ -513,7 +513,7 @@ template<class T> class Quaternion {
          *
          * Returns a four-component vector containing @ref scalar() in the X
          * component and @ref vector() in YZW: @f[
-         *      v = [s, q_{V_x}, q_{V_y}, q_{V_z}]
+         *      \boldsymbol v = [s, q_{V_x}, q_{V_y}, q_{V_z}]
          * @f]
          * @see @ref Complex::operator Vector2<T>()
          */
@@ -756,7 +756,7 @@ template<class T> class Quaternion {
          *
          * See @ref transformVectorNormalized(), which is faster for normalized
          * quaternions. @f[
-         *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
+         *      \boldsymbol v' = q\boldsymbol{v}q^{-1} = q [\boldsymbol v, 0] q^{-1}
          * @f]
          * Note that this function will not give the correct result for
          * quaternions created with @ref reflection(), for those use
@@ -782,7 +782,7 @@ template<class T> class Quaternion {
          * @f]
          * Which is equivalent to the common equation (source:
          * https://molecularmusings.wordpress.com/2013/05/24/a-faster-quaternion-vector-multiplication/): @f[
-         *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
+         *      \boldsymbol v' = q\boldsymbol{v}q^{-1} = q\boldsymbol{v}q^* = q [\boldsymbol v, 0] q^*
          * @f]
          * @see @ref isNormalized(), @ref Quaternion(const Vector3<T>&),
          *      @ref vector(), @ref Matrix4::transformVector(),
@@ -798,7 +798,7 @@ template<class T> class Quaternion {
          * Compared to the usual vector transformation performed with
          * rotation quaternions and @ref transformVector(), the reflection is
          * done like this: @f[
-         *      v' = qvq = q [\boldsymbol v, 0] q
+         *      \boldsymbol v' = qvq = q [\boldsymbol v, 0] q
          * @f]
          * You can use @ref reflection() to create a quaternion reflecting
          * along given normal. Note that it's **not possible to combine
@@ -806,7 +806,7 @@ template<class T> class Quaternion {
          * Assuming a (normalized) rotation quaternion @f$ r @f$, a combined
          * rotation and reflection of vector @f$ v @f$ would look like this
          * instead: @f[
-         *      v' = rqvqr^{-1} = rqvqr^* = rq [\boldsymbol v, 0] qr^*
+         *      \boldsymbol v' = rq\boldsymbol{v}qr^{-1} = rq\boldsymbol{v}qr^* = rq [\boldsymbol v, 0] qr^*
          * @f]
          * See also [quaternion reflection at Euclidean Space](https://www.euclideanspace.com/maths/geometry/affine/reflection/quaternion/index.htm).
          * @see @ref Quaternion(const Vector3<T>&), @ref vector(),
