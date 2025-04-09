@@ -62,7 +62,7 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
     UnsignedInt i = 0;
     while(fanningVertex != 0xFFFFFFFFu) {
         /* Reset the candidates for this vertex */
-        arrayResize(candidates, 0);
+        arrayClear(candidates);
 
         /* For all neighbors of fanning vertex */
         for(UnsignedInt ti = neighborOffset[fanningVertex]; ti != neighborOffset[fanningVertex+1]; ++ti) {

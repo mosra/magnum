@@ -1296,9 +1296,8 @@ Context::Configuration::~Configuration() = default;
 
 Context::Configuration& Context::Configuration::operator=(const Configuration& other) {
     _flags = other._flags;
-    arrayResize(_disabledWorkarounds, 0);
-    /** @todo arrayClear(), ffs */
-    arrayResize(_disabledExtensions, NoInit, 0);
+    arrayClear(_disabledWorkarounds);
+    arrayClear(_disabledExtensions);
     addDisabledWorkarounds(other._disabledWorkarounds);
     addDisabledExtensions(other._disabledExtensions);
     return *this;

@@ -206,7 +206,7 @@ Containers::Pointer<AbstractShaper> MagnumFont::doCreateShaper() {
             const Containers::StringView text = textFull.slice(begin, end == ~UnsignedInt{} ? textFull.size() : end);
 
             /* Get glyph codes from characters */
-            arrayResize(_glyphs, 0);
+            arrayClear(_glyphs);
             arrayReserve(_glyphs, text.size());
             for(std::size_t i = 0; i != text.size(); ) {
                 const Containers::Pair<char32_t, std::size_t> codepointNext = Utility::Unicode::nextChar(text, i);

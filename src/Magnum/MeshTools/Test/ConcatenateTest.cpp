@@ -471,9 +471,9 @@ void ConcatenateTest::concatenateInto() {
     Containers::Array<char> vertexData;
     Containers::Array<char> indexData;
     arrayResize(vertexData, DirectInit, (sizeof(Vector2) + sizeof(Vector3))*7, '\xff');
-    arrayResize(vertexData, 0);
+    arrayClear(vertexData);
     arrayResize(indexData, DirectInit, sizeof(UnsignedInt)*9, '\xff');
-    arrayResize(indexData, 0);
+    arrayClear(indexData);
     const void* attributeDataPointer = attributeData;
     const void* vertexDataPointer = vertexData;
     const void* indexDataPointer = indexData;

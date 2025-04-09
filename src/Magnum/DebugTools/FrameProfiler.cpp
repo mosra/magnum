@@ -139,7 +139,7 @@ void FrameProfiler::enable() {
     _beginFrameCalled = false;
     #endif
     _measuredFrameCount = 0;
-    arrayResize(_data, 0);
+    arrayClear(_data);
 
     /* Wipe out no longer relevant moving sums from all measurements, and
        delayed measurement indices as well (tho for these it's not so

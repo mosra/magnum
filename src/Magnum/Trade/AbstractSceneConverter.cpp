@@ -1328,7 +1328,7 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
             }
 
             arrayReserve(levels, levelCount);
-            arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
+            arrayClear(levels);
             for(UnsignedInt j = 0; j != levelCount; ++j) {
                 if((flags() & SceneConverterFlag::Verbose) && levelCount != 1)
                     Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing mesh" << i << "level" << j << "out of" << levelCount;
@@ -1384,7 +1384,7 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
             }
 
             arrayReserve(levels, levelCount);
-            arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
+            arrayClear(levels);
             for(UnsignedInt j = 0; j != levelCount; ++j) {
                 if((flags() & SceneConverterFlag::Verbose) && levelCount != 1)
                     Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 1D image" << i << "level" << j << "out of" << levelCount;
@@ -1437,7 +1437,7 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
             }
 
             arrayReserve(levels, levelCount);
-            arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
+            arrayClear(levels);
             for(UnsignedInt j = 0; j != levelCount; ++j) {
                 if((flags() & SceneConverterFlag::Verbose) && levelCount != 1)
                     Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 2D image" << i << "level" << j << "out of" << levelCount;
@@ -1490,7 +1490,7 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
             }
 
             arrayReserve(levels, levelCount);
-            arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
+            arrayClear(levels);
             for(UnsignedInt j = 0; j != levelCount; ++j) {
                 if((flags() & SceneConverterFlag::Verbose) && levelCount != 1)
                     Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 3D image" << i << "level" << j << "out of" << levelCount;
