@@ -874,7 +874,8 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @ref addFont() call. The @p fontGlyphIds and @p glyphIds views are
          * expected to have the same size. Glyphs for which @ref addGlyph()
          * wasn't called yet have the corresponding @p glyphIds item set to
-         * @cpp 0 @ce.
+         * @cpp 0 @ce. It's possible to pass the same view to both
+         * @p fontGlyphIds and @p glyphIds to perform the operation in-place.
          *
          * The lookup is done with an @f$ \mathcal{O}(n) @f$ complexity with
          * @f$ n @f$ being size of the @p fontGlyphIds array.
