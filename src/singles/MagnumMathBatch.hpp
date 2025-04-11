@@ -24,6 +24,10 @@
     If you need the deinlined symbols to be exported from a shared library,
     `#define MAGNUM_EXPORT` as appropriate.
 
+    v2020.06-3290-g454e9 (2025-04-11)
+    -   Include guard for the implementation part to prevent double definitions
+    -   Cleanup and unification of SFINAE code, it's now done in template args
+        as that's simpler for the compiler
     v2020.06-3128-g47b22 (2025-01-07)
     -   Initial release
 

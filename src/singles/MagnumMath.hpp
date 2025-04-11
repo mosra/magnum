@@ -32,6 +32,11 @@
     `#define MAGNUM_MATH_EIGEN_INTEGRATION` before including the file.
     Including it multiple times with different macros defined works as well.
 
+    v2020.06-3290-g454e9 (2025-04-11)
+    -   New Color4::premultiplied() and unpremultiplied() APIs
+    -   Include guard for the implementation part to prevent double definitions
+    -   Cleanup and unification of SFINAE code, it's now done in template args
+        as that's simpler for the compiler
     v2020.06-3125-g632a2 (2025-01-07)
     -   New Nanoseconds and Seconds types along with _nsec, _usec, _msec and
         _sec literals and opt-in std::chrono compatibility
