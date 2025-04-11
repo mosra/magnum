@@ -891,10 +891,12 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         static void MAGNUM_GL_LOCAL copySub3DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, Int level, const Vector3i& offset);
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         static void MAGNUM_GL_LOCAL invalidateImplementationNoOp(AbstractFramebuffer& self, GLsizei, const GLenum*);
         static void MAGNUM_GL_LOCAL invalidateImplementationDefault(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL invalidateImplementationDSA(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments);
+        #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2

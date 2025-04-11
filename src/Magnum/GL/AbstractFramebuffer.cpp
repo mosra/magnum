@@ -499,18 +499,14 @@ void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, CubeMapTexture
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractFramebuffer::invalidateImplementationNoOp(AbstractFramebuffer&, GLsizei, const GLenum* const) {}
 
 void AbstractFramebuffer::invalidateImplementationDefault(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments) {
     #ifndef MAGNUM_TARGET_GLES2
     glInvalidateFramebuffer(GLenum(self.bindInternal()), count, attachments);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glDiscardFramebufferEXT(GLenum(self.bindInternal()), count, attachments);
     #else
-    static_cast<void>(self);
-    static_cast<void>(count);
-    static_cast<void>(attachments);
-    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glDiscardFramebufferEXT(GLenum(self.bindInternal()), count, attachments);
     #endif
 }
 
@@ -518,6 +514,7 @@ void AbstractFramebuffer::invalidateImplementationDefault(AbstractFramebuffer& s
 void AbstractFramebuffer::invalidateImplementationDSA(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments) {
     glInvalidateNamedFramebufferData(self._id, count, attachments);
 }
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
