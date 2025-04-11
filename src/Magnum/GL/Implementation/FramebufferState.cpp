@@ -183,8 +183,8 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
 
     /* DSA/non-DSA implementation for framebuffer clearing. Yes, it's because
        Intel Windows drivers are shit, and Mesa 24 seems to be stealing bugs
-       from the wrong driver. Doesn't happen on 23 and will hopefully be fixed
-       on 25? */
+       from the wrong driver. Doesn't happen on 23, doesn't seem to happen on
+       25 anymore either. */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
         && (!context.versionString().contains("Mesa 24.") ||

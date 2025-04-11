@@ -433,8 +433,10 @@ constexpr Containers::StringView KnownWorkarounds[]{
    any relevant changelog entry and unfortunately the previous version I had
    was only 23.3.5, so it could be anything in between. My hunch is that it's
    due to some new code that deals with framebuffer compression and which was
-   only correctly cleaned up in the non-DSA code path. Or something. See also
-   "intel-windows-broken-dsa-framebuffer-clear" above. */
+   only correctly cleaned up in the non-DSA code path. Or something. Does not
+   seem to happen on version 25 anymore. It might have been fixed earlier
+   already but enabling it for all version 24 patch versions because that's
+   easiest. See also "intel-windows-broken-dsa-framebuffer-clear" above. */
 "mesa-broken-dsa-framebuffer-clear"_s,
 #endif
 
