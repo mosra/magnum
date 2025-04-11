@@ -67,6 +67,17 @@
 // TODO ColorBatch once it's more useful
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/PackingBatch.h"
-#ifdef MAGNUM_MATH_BATCH_IMPLEMENTATION
+/* The extra guard has to be here to prevent double definitions in cases like
+
+    #define MAGNUM_MATH_BATCH_IMPLEMENTATION
+    #include <MagnumMathBatch.hpp>
+    #include <SomeOtherLib.h>
+
+   where a hypothetical SomeOtherLib.h contains `#include <MagnumMathBatch.hpp>`
+   again. Note that even the stb_* libs don't handle this -- including them
+   twice with the implementation macro defined *will* lead to double
+   definitions. */
+#if defined(MAGNUM_MATH_BATCH_IMPLEMENTATION) && !defined(MagnumMathBatch_hpp_implementation)
+#define MagnumMathBatch_hpp_implementation
 #include "Magnum/Math/PackingBatch.cpp"
 #endif

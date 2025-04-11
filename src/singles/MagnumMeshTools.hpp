@@ -109,7 +109,18 @@ template<class T> using Array4 = StaticArray<4, T>;
 // TODO FlipNormals?
 // TODO GenerateNormals?
 // TODO RemoveDuplicates?
-#ifdef MAGNUM_MESHTOOLS_IMPLEMENTATION
+/* The extra guard has to be here to prevent double definitions in cases like
+
+    #define MAGNUM_MESHTOOLS_IMPLEMENTATION
+    #include <MagnumMeshTools.hpp>
+    #include <SomeOtherLib.h>
+
+   where a hypothetical SomeOtherLib.h contains `#include <MagnumMeshTools.hpp>`
+   again. Note that even the stb_* libs don't handle this -- including them
+   twice with the implementation macro defined *will* lead to double
+   definitions. */
+#if defined(MAGNUM_MESHTOOLS_IMPLEMENTATION) && !defined(MagnumMeshTools_hpp_implementation)
+#define MagnumMeshTools_hpp_implementation
 // {{includes}}
 #if !defined(CORRADE_ASSERT_UNREACHABLE) && !defined(NDEBUG)
 #include <cassert>

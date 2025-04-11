@@ -447,7 +447,17 @@ typedef Math::Frustum<Double> Frustumd;
 // TODO: DynamicMatrixIntegration (separate library because of StridedArrayView)
 #include "Magnum/EigenIntegration/GeometryIntegration.h"
 #endif
-#ifdef MAGNUM_MATH_IMPLEMENTATION
+/* The extra guard has to be here to prevent double definitions in cases like
+
+    #define MAGNUM_MATH_IMPLEMENTATION
+    #include <MagnumMath.hpp>
+    #include <MagnumMathBatch.hpp>
+
+   where MagnumMathBatch.hpp contains `#include <MagnumMath.hpp>` again. Note
+   that even the stb_* libs don't handle this -- including them twice with the
+   implementation macro defined *will* lead to double definitions. */
+#if defined(MAGNUM_MATH_IMPLEMENTATION) && !defined(MagnumMath_hpp_implementation)
+#define MagnumMath_hpp_implementation
 // {{ includes }}
 #include "Magnum/Math/Functions.cpp"
 #include "Magnum/Math/Packing.cpp"
