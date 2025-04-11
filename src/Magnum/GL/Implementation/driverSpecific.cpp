@@ -235,6 +235,25 @@ constexpr Containers::StringView KnownWorkarounds[]{
 "nv-broken-buffer-dsa"_s,
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
+/* On NV drivers (reproducible on both Linux and Windows and versions 570, 537,
+   so likely any version), a call to DSA glInvalidateNamedFramebufferData()
+   invalidates the currently bound *draw* framebuffer instead of the one
+   specified, but only if the framebuffer to be invalidated is currently bound
+   *read* framebuffer (how?! why there is such a weird interaction??).
+
+   In a non-DSA code path, if glInvalidateFramebufferData() is called with
+   GL_READ_FRAMEBUFFER, it still clears the GL_DRAW_FRAMEBUFFER instead. The
+   workaround is thus to not use the strangely cursed DSA code path at all and
+   for the non-DSA code always bind & use GL_DRAW_FRAMEBUFFER.
+
+   The same bug plagues the SubData variant as well, and even the
+   glDiscardFramebufferEXT() from the ancient EXT_discard_framebuffer ES2
+   extension. Fully commented repro case is in the
+   FramebufferGLTest::invalidateAffectsDrawFramebufferNvidia() test. */
+"nv-framebuffer-invalidation-wants-draw-binding"_s,
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 /* SVGA3D (VMware host GL driver) glDrawArrays() draws nothing when the vertex
    buffer memory is initialized using glNamedBufferData() from ARB_DSA. Using

@@ -894,6 +894,9 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         static void MAGNUM_GL_LOCAL invalidateImplementationNoOp(AbstractFramebuffer& self, GLsizei, const GLenum*);
         static void MAGNUM_GL_LOCAL invalidateImplementationDefault(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments);
+        #ifndef MAGNUM_TARGET_WEBGL
+        static void MAGNUM_GL_LOCAL invalidateImplementationNVidiaDrawFramebuffer(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL invalidateImplementationDSA(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments);
         #endif
@@ -902,6 +905,9 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         #ifndef MAGNUM_TARGET_GLES2
         static void MAGNUM_GL_LOCAL invalidateImplementationNoOp(AbstractFramebuffer& self, GLsizei, const GLenum*, const Range2Di&);
         static void MAGNUM_GL_LOCAL invalidateImplementationDefault(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        #ifndef MAGNUM_TARGET_WEBGL
+        static void MAGNUM_GL_LOCAL invalidateImplementationNVidiaDrawFramebuffer(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL invalidateImplementationDSA(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
         #endif

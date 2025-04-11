@@ -510,6 +510,19 @@ void AbstractFramebuffer::invalidateImplementationDefault(AbstractFramebuffer& s
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
+void AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments) {
+    /* See the "nv-framebuffer-invalidation-wants-draw-binding" workaround for
+       details */
+    self.bindInternal(FramebufferTarget::Draw);
+    #ifndef MAGNUM_TARGET_GLES2
+    glInvalidateFramebuffer(GL_DRAW_FRAMEBUFFER, count, attachments);
+    #else
+    glDiscardFramebufferEXT(GL_DRAW_FRAMEBUFFER_APPLE, count, attachments);
+    #endif
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::invalidateImplementationDSA(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments) {
     glInvalidateNamedFramebufferData(self._id, count, attachments);
@@ -523,6 +536,15 @@ void AbstractFramebuffer::invalidateImplementationNoOp(AbstractFramebuffer&, GLs
 void AbstractFramebuffer::invalidateImplementationDefault(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
     glInvalidateSubFramebuffer(GLenum(self.bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
+    /* See the "nv-framebuffer-invalidation-wants-draw-binding" workaround for
+       details */
+    self.bindInternal(FramebufferTarget::Draw);
+    glInvalidateSubFramebuffer(GL_DRAW_FRAMEBUFFER, count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::invalidateImplementationDSA(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {

@@ -391,7 +391,10 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
         extensions[Extensions::ARB::invalidate_subdata::Index] =
                    Extensions::ARB::invalidate_subdata::string();
 
-        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        if((context.detectedDriver() & Context::DetectedDriver::NVidia) && !context.isDriverWorkaroundDisabled("nv-framebuffer-invalidation-wants-draw-binding"_s)) {
+            invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer;
+            invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer;
+        } else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
             /* Extension added above */
             invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDSA;
             invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDSA;
@@ -405,21 +408,34 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
         invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
     }
 
-    /* Framebuffer invalidation implementation on ES2 */
+    /* Framebuffer invalidation implementation on ES2. Yep, this is also
+       affected by the NVidia bug. */
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(context.isExtensionSupported<Extensions::EXT::discard_framebuffer>()) {
         extensions[Extensions::EXT::discard_framebuffer::Index] =
                    Extensions::EXT::discard_framebuffer::string();
 
-        invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+        if((context.detectedDriver() & Context::DetectedDriver::NVidia) && !context.isDriverWorkaroundDisabled("nv-framebuffer-invalidation-wants-draw-binding"_s)) {
+            invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer;
+        } else {
+            invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+        }
     } else {
         invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
     }
 
-    /* Always available on ES3 */
+    /* Always available on ES3, except for NVidia bugs */
     #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
-    invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+    #ifndef MAGNUM_TARGET_WEBGL
+    if((context.detectedDriver() & Context::DetectedDriver::NVidia) && !context.isDriverWorkaroundDisabled("nv-framebuffer-invalidation-wants-draw-binding"_s)) {
+        invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer;
+        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer;
+    } else
+    #endif
+    {
+        invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+    }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

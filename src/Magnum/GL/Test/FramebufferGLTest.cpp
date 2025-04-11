@@ -25,25 +25,28 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/CubeMapTexture.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
-
-#ifndef MAGNUM_TARGET_WEBGL
-#include <Corrade/Containers/String.h>
-#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/BufferImage.h"
@@ -126,6 +129,7 @@ struct FramebufferGLTest: OpenGLTester {
     void clearStencil();
     void clearDepthStencil();
     #endif
+
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void invalidate();
     #endif
@@ -135,6 +139,10 @@ struct FramebufferGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void invalidateSub();
     #endif
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    void invalidateAffectsDrawFramebufferNvidia();
+    #endif
+
     void read();
     void readView();
     void readViewNullptr();
@@ -184,6 +192,18 @@ struct FramebufferGLTest: OpenGLTester {
         TextureFormat rgbaFormatES2, depthStencilFormatES2;
     #endif
 };
+
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+const struct {
+    const char* name;
+    bool sub;
+} InvalidateAffectsDrawFramebufferNvidiaData[]{
+    {"", false},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"sub", true}
+    #endif
+};
+#endif
 
 constexpr struct {
     const char* name;
@@ -276,6 +296,7 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::clearStencil,
               &FramebufferGLTest::clearDepthStencil,
               #endif
+
               #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
               &FramebufferGLTest::invalidate,
               #endif
@@ -285,7 +306,14 @@ FramebufferGLTest::FramebufferGLTest() {
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::invalidateSub,
               #endif
-              &FramebufferGLTest::read,
+              });
+
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    addInstancedTests({&FramebufferGLTest::invalidateAffectsDrawFramebufferNvidia},
+        Containers::arraySize(InvalidateAffectsDrawFramebufferNvidiaData));
+    #endif
+
+    addTests({&FramebufferGLTest::read,
               &FramebufferGLTest::readView,
               &FramebufferGLTest::readViewNullptr,
               &FramebufferGLTest::readViewBadSize,
@@ -341,9 +369,8 @@ FramebufferGLTest::FramebufferGLTest() {
     #endif
 }
 
-#ifndef MAGNUM_TARGET_WEBGL
 using namespace Containers::Literals;
-#endif
+using namespace Math::Literals;
 
 void FramebufferGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
@@ -1508,6 +1535,142 @@ void FramebufferGLTest::invalidateSub() {
                            {{32, 16}, {79, 64}});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+void FramebufferGLTest::invalidateAffectsDrawFramebufferNvidia() {
+    auto&& data = InvalidateAffectsDrawFramebufferNvidiaData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Tests the "nv-framebuffer-invalidation-wants-draw-binding" workaround,
+       see its description for details. */
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
+    #endif
+
+    /* Just the simplest possible shader to draw a square */
+    struct Shader: AbstractShaderProgram {
+        typedef Attribute<0, Vector2> Position;
+
+        explicit Shader() {
+            /* lol yes it's a naming clash here */
+            #if defined(MAGNUM_TARGET_GLES2)
+            GL::Shader vert(Version::GLES200, GL::Shader::Type::Vertex);
+            GL::Shader frag(Version::GLES200, GL::Shader::Type::Fragment);
+            #else
+            GL::Shader vert(Version::GLES300, GL::Shader::Type::Vertex);
+            GL::Shader frag(Version::GLES300, GL::Shader::Type::Fragment);
+            #endif
+
+            vert.addSource(
+                "#if !defined(GL_ES) && __VERSION__ == 120\n"
+                "#define mediump\n"
+                "#endif\n"
+                "#if (defined(GL_ES) && __VERSION__ < 300) || __VERSION__ == 120\n"
+                "#define in attribute\n"
+                "#endif\n"
+                "in mediump vec2 position;\n"
+                "void main() { gl_Position = vec4(position, 0.0, 1.0); }\n"_s);
+            frag.addSource(
+                "#if !defined(GL_ES) && __VERSION__ == 120\n"
+                "#define lowp\n"
+                "#endif\n"
+                "#if (defined(GL_ES) && __VERSION__ < 300) || __VERSION__ == 120\n"
+                "#define color gl_FragColor\n"
+                "#endif\n"
+                "#if (defined(GL_ES) && __VERSION__ >= 300) || (!defined(GL_ES) && __VERSION__ >= 130)\n"
+                "out lowp vec4 color;\n"
+                "#endif\n"
+                "void main() { color = vec4(0.0, 1.0, 1.0, 1.0); }\n"_s);
+
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
+
+            attachShaders({vert, frag});
+            bindAttributeLocation(0, "position");
+
+            CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+        }
+    } shader;
+
+    /* Square that occupies center of the framebuffer */
+    const Vector2 positions[]{
+        /* 3--1
+           | /|
+           |/ |
+           2--0 */
+        { 0.5f, -0.5f},
+        { 0.5f,  0.5f},
+        {-0.5f, -0.5f},
+        {-0.5f,  0.5f}
+    };
+    Mesh square{GL::MeshPrimitive::TriangleStrip};
+    square
+        .addVertexBuffer(GL::Buffer{positions}, 0, Shader::Position{})
+        .setCount(4);
+
+    /* Two color-only framebuffers */
+    Renderbuffer color1, color2;
+    color1.setStorage(RenderbufferFormat::RGBA8, Vector2i(16));
+    color2.setStorage(RenderbufferFormat::RGBA8, Vector2i(16));
+    Framebuffer first{{{}, Vector2i{16}}}, second{{{}, Vector2i{16}}};
+    first.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color1);
+    second.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color2);
+
+    /* To make the first framebuffer bound for reading but not for drawing.
+       If you uncomment the line below to unbind it again after, it works
+       properly (but only with DSA enabled, as otherwise the second.read() will
+       attempt to read from framebuffer 0 and generate an error). If you don't
+       read (and thus don't bind a GL_READ_FRAMEBUFFER at all) at all it works
+       as well. */
+    first.read({{}, {1, 1}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
+    //glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+    /* Clear and bind the second framebuffer for drawing */
+    GL::Renderer::setClearColor(0xff00ff_rgbf);
+    second
+        .clear(GL::FramebufferClear::Color)
+        .bind();
+
+    /* If reading here instead of above, it's broken the same way */
+    //first.read({{}, {1, 1}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
+
+    /* Render to the second framebuffer. In a DSA code path this gets ignored
+       due to the buggy invalidation below, and only the clear above is
+       executed. In other words, the invalidation only affects draws, not
+       clears, so it's not possible to reproduce with just clears. In a non-DSA
+       code path the clear gets ignored as well, for some reason. */
+    shader.draw(square);
+
+    /* The bug causes the invalidation to be called on `second`, not `first`.
+       In the DSA code path glInvalidateNamedFramebufferData() gets the ID of
+       `first` directly, but it choses to use `second` that's currently bound
+       for drawing. In the non-DSA code path the state tracker sees that
+       `first` is currently bound for reading (due to the read() above), so it
+       calls glInvalidateFramebufferData() with GL_READ_FRAMEBUFFER, but the
+       driver ignores that and uses `second` again. Uncommenting the bind(),
+       which binds `first` to the GL_DRAW_FRAMEBUFFER binding, will make it
+       correctly affect the desired framebuffer. */
+    // first.bind();
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.sub) {
+        first.invalidate({Framebuffer::ColorAttachment{0}}, {{}, Vector2i{16}});
+    } else
+    #endif
+    {
+        first.invalidate({Framebuffer::ColorAttachment{0}});
+    }
+
+    /* On the edges should be the clear color (to verify it actually works at
+       all, in the center the rendered square. With the bug, the center will
+       have the clear color as well in the DSA code path, without DSA both the
+       edges and the center will be all zero. */
+    Image2D out = second.read({{}, Vector2i{16}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(out.pixels<Color4ub>()[0][0], 0xff00ff_rgb);
+    CORRADE_COMPARE(out.pixels<Color4ub>()[8][8], 0x00ffff_rgb);
 }
 #endif
 
