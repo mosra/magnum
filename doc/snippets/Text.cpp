@@ -508,7 +508,7 @@ Text::RendererCore renderer{cache,
        Containers::StridedArrayView1D<Vector2>& glyphAdvances
     ) {
         Containers::ArrayView<Glyph> glyphs = *static_cast<Glyph(*)[256]>(state);
-        CORRADE_INTERNAL_ASSERT(glyphCount <= glyphs.size());DOXYGEN_IGNORE(static_cast<void>(glyphCount));
+        CORRADE_INTERNAL_ASSERT(glyphCount <= glyphs.size());DOXYGEN_IGNORE(static_cast<void>(glyphCount);)
         glyphPositions = stridedArrayView(glyphs).slice(&Glyph::position);
         glyphIds = stridedArrayView(glyphs).slice(&Glyph::id);
         glyphAdvances = stridedArrayView(glyphs).slice(&Glyph::advance);
@@ -518,7 +518,7 @@ Text::RendererCore renderer{cache,
        Containers::StridedArrayView1D<UnsignedInt>& runEnds
     ) {
         Containers::ArrayView<Run> runs = *static_cast<Run(*)[16]>(state);
-        CORRADE_INTERNAL_ASSERT(runCount <= runs.size());DOXYGEN_IGNORE(static_cast<void>(runCount));
+        CORRADE_INTERNAL_ASSERT(runCount <= runs.size());DOXYGEN_IGNORE(static_cast<void>(runCount);)
         runScales = Containers::stridedArrayView(runs).slice(&Run::scale);
         runEnds = Containers::stridedArrayView(runs).slice(&Run::end);
     }, runs
