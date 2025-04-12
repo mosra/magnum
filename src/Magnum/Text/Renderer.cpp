@@ -544,11 +544,11 @@ RendererCore& RendererCore::add(AbstractShaper& shaper, const Float size, const 
 
     Containers::StringView line = text.slice(begin, end);
     while(line) {
+        /* Find the next newline. The text to shape is until lineEnd.begin(),
+           the next line (if any) starts at lineEnd.end(). If lineEnd is empty,
+           we reached the end of the input text -- it's *not* an end of the
+           line, because the next add() call may continue with it. */
         const Containers::StringView lineEnd = line.findOr('\n', line.end());
-        /* Comparing like this to avoid an unnecessary memcmp(). If we reach
-           the end of the input text, it's *not* an end of the line, because
-           the next add() call may continue with it. */
-        const bool isEndOfLine = lineEnd.size() == 1 && lineEnd[0] == '\n';
 
         /* If the line is not empty and produced some glyphs, render them */
         if(const UnsignedInt glyphCount = lineEnd.begin() != line.begin() ? shaper.shape(text, line.begin() - text.begin(), lineEnd.begin() - text.begin(), features) : 0) {
@@ -619,7 +619,7 @@ RendererCore& RendererCore::add(AbstractShaper& shaper, const Float size, const 
                ShapeDirection::Unspecified as well. In such case it likely
                returns ShapeDirection::Unspecified too. */
             const ShapeDirection shapeDirection = shaper.direction();
-            if(shapeDirection != ShapeDirection::Unspecified || isEndOfLine)
+            if(shapeDirection != ShapeDirection::Unspecified || lineEnd)
                 state.resolvedAlignment = alignmentForDirection(
                     state.alignment,
                     state.layoutDirection,
@@ -630,7 +630,7 @@ RendererCore& RendererCore::add(AbstractShaper& shaper, const Float size, const 
            independently of whether any glyphs were processed in this
            iteration, as add() can be called with a string that starts with a
            \n, for example. */
-        if(isEndOfLine) {
+        if(lineEnd) {
             /* If there are any glyphs on the current line, either added right
                above or being there from the previous add() call, align them.
                If alignment based on bounds is requested, calculate a special
