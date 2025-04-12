@@ -1134,11 +1134,11 @@ void FrameProfilerTest::gl() {
 
     /* 3/4 frames took 1 ms, the ideal average is 0.75 ms. Can't test upper
        bound because (especially on overloaded CIs) it all takes a magnitude
-       more than expected. Emscripten builds have it as low as 0.5, account for
+       more than expected. Emscripten builds have it as low as 0.4, account for
        that. */
     if(data.values & FrameProfilerGL::Value::CpuDuration) {
         CORRADE_VERIFY(profiler.isMeasurementAvailable(FrameProfilerGL::Value::CpuDuration));
-        CORRADE_COMPARE_AS(profiler.cpuDurationMean(), 0.50*1000*1000,
+        CORRADE_COMPARE_AS(profiler.cpuDurationMean(), 0.40*1000*1000,
             TestSuite::Compare::GreaterOrEqual);
     }
 
