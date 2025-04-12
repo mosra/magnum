@@ -30,6 +30,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/GL/MeshView.h"
 #include "Magnum/GL/Renderer.h"
@@ -171,6 +172,36 @@ shader
     .bindVectorTexture(cache.texture())
     .draw(renderer.mesh());
 /* [Renderer-usage-draw] */
+}
+
+{
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};
+Text::RendererGL renderer{cache};
+/* [Renderer-usage-draw-3d] */
+Matrix4 projection = DOXYGEN_ELLIPSIS({});
+Matrix4 transformation = DOXYGEN_ELLIPSIS({});
+
+Shaders::VectorGL3D shader;
+shader
+    .setTransformationProjectionMatrix(projection*transformation)
+    .bindVectorTexture(cache.texture())
+    .draw(renderer.mesh());
+/* [Renderer-usage-draw-3d] */
+}
+
+{
+Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};
+Text::RendererGL renderer{cache};
+Matrix4 projection, transformation;
+/* [Renderer-usage-draw-3d-screen-space] */
+Shaders::VectorGL2D shader;
+shader
+    .setTransformationProjectionMatrix(
+        Matrix3::projection(Vector2{windowSize()})*
+        Matrix3::translation((projection*transformation).transformPoint({}).xy()))
+    .bindVectorTexture(cache.texture())
+    .draw(renderer.mesh());
+/* [Renderer-usage-draw-3d-screen-space] */
 }
 
 {

@@ -785,6 +785,19 @@ slightly different, see their documentation for examples.
 
 @snippet Text-gl.cpp Renderer-usage-draw
 
+The text is rendered with 2D positions but you can draw it with a 3D shader if
+you want perspective projection applied to it --- the third position coordinate
+will be implicitly @cpp 0.0f @ce in that case:
+
+@snippet Text-gl.cpp Renderer-usage-draw-3d
+
+However, if you want to place the text into 3D space but want it to always face
+the camera and be of the same size regardless of depth, use a 2D shader and
+apply the perspective projection to the 3D position it's being rendered at,
+turning it into a 2D screen-space position:
+
+@snippet Text-gl.cpp Renderer-usage-draw-3d-screen-space
+
 If you use just the base @ref Renderer, the rendered index and vertex data are
 exposed through @ref indices(), @ref vertexPositions() and
 @ref vertexTextureCoordinates() / @ref vertexTextureArrayCoordinates(), which
