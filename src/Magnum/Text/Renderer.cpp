@@ -501,8 +501,11 @@ RendererCore& RendererCore::reset() {
 
 void RendererCore::alignAndFinishLine() {
     State& state = *_state;
-    CORRADE_INTERNAL_DEBUG_ASSERT(state.lineGlyphBegin != state.renderingGlyphCount && state.resolvedAlignment);
+    CORRADE_INTERNAL_DEBUG_ASSERT(state.resolvedAlignment);
 
+    /* Note that the slice can be empty in case we rendered an empty line --
+       we still want to run this code in that case to correctly position the
+       rectangle */
     const Range2D alignedLineRectangle = alignRenderedLine(
         state.lineRectangle,
         state.layoutDirection,
@@ -542,77 +545,91 @@ RendererCore& RendererCore::add(AbstractShaper& shaper, const Float size, const 
             state.renderingLineAdvance = Vector2::yAxis(-font.lineHeight()*scale);
     }
 
+    /* Run through the code at least once even if the line is empty, to ensure
+       font ascent and descent is reflected in the output rectangle in that
+       case */
     Containers::StringView line = text.slice(begin, end);
-    while(line) {
+    for(;;) {
         /* Find the next newline. The text to shape is until lineEnd.begin(),
            the next line (if any) starts at lineEnd.end(). If lineEnd is empty,
            we reached the end of the input text -- it's *not* an end of the
            line, because the next add() call may continue with it. */
         const Containers::StringView lineEnd = line.findOr('\n', line.end());
 
-        /* If the line is not empty and produced some glyphs, render them */
-        if(const UnsignedInt glyphCount = lineEnd.begin() != line.begin() ? shaper.shape(text, line.begin() - text.begin(), lineEnd.begin() - text.begin(), features) : 0) {
-            /* If we need to add more glyphs than what's in the capacity,
-               allocate more */
-            if(state.glyphPositions.size() < state.renderingGlyphCount + glyphCount) {
-                allocateGlyphs(
-                    #ifndef CORRADE_NO_ASSERT
-                    "Text::RendererCore::add():",
-                    #endif
-                    state.renderingGlyphCount + glyphCount);
-                #ifdef CORRADE_GRACEFUL_ASSERT
-                /* For testing only -- if allocation failed, bail */
-                if(state.glyphPositions.size() < state.renderingGlyphCount + glyphCount)
-                    return *this;
+        /* If the line is not empty, shape it */
+        const UnsignedInt glyphCount = lineEnd.begin() != line.begin() ? shaper.shape(text, line.begin() - text.begin(), lineEnd.begin() - text.begin(), features) : 0;
+
+        /* If we need to add more glyphs than what's in the capacity, allocate
+           more */
+        if(state.glyphPositions.size() < state.renderingGlyphCount + glyphCount) {
+            allocateGlyphs(
+                #ifndef CORRADE_NO_ASSERT
+                "Text::RendererCore::add():",
                 #endif
-            }
+                state.renderingGlyphCount + glyphCount);
+            #ifdef CORRADE_GRACEFUL_ASSERT
+            /* For testing only -- if allocation failed, bail */
+            if(state.glyphPositions.size() < state.renderingGlyphCount + glyphCount)
+                return *this;
+            #endif
+        }
 
-            const Containers::StridedArrayView1D<Vector2> glyphOffsetsPositions = state.glyphPositions.sliceSize(state.renderingGlyphCount, glyphCount);
-            /* The glyph advance array may be aliasing IDs and clusters. Pick
-               only a suffix of the same size as the remaining capacity -- that
-               memory is guaranteed to be unused yet. */
-            const std::size_t remainingCapacity = state.glyphPositions.size() - state.renderingGlyphCount;
-            const Containers::StridedArrayView1D<Vector2> glyphAdvances = state.glyphAdvances.sliceSize(state.glyphAdvances.size() - remainingCapacity, glyphCount);
-            shaper.glyphOffsetsAdvancesInto(
-                glyphOffsetsPositions,
-                glyphAdvances);
+        /* Those views will be empty if no glyphs were shaped */
+        const Containers::StridedArrayView1D<Vector2> glyphOffsetsPositions = state.glyphPositions.sliceSize(state.renderingGlyphCount, glyphCount);
+        /* The glyph advance array may be aliasing IDs and clusters. Pick only
+           a suffix of the same size as the remaining capacity -- that memory
+           is guaranteed to be unused yet. */
+        const std::size_t remainingCapacity = state.glyphPositions.size() - state.renderingGlyphCount;
+        const Containers::StridedArrayView1D<Vector2> glyphAdvances = state.glyphAdvances.sliceSize(state.glyphAdvances.size() - remainingCapacity, glyphCount);
 
-            /* Render line glyph positions, aliasing the offsets */
-            const Range2D rectangle = renderLineGlyphPositionsInto(
-                shaper.font(),
-                size,
-                state.layoutDirection,
-                glyphOffsetsPositions,
-                glyphAdvances,
-                state.renderingLineCursor,
-                glyphOffsetsPositions);
+        /* Query glyph advances. If there are none, avoid a virtual call. */
+        if(glyphCount) shaper.glyphOffsetsAdvancesInto(
+            glyphOffsetsPositions,
+            glyphAdvances);
 
-            /* Retrieve the glyph IDs and clusters, convert the glyph IDs to
-               cache-global. Do it only after finalizing the positions so the
-               glyphAdvances array can alias the IDs. */
-            const Containers::StridedArrayView1D<UnsignedInt> glyphIds = state.glyphIds.sliceSize(state.renderingGlyphCount, glyphCount);
+        /* Render line glyph positions, aliasing the offsets. Do this even if
+           there are no glyphs, as we want the rectangle to contain at least
+           font ascent and descent in that case. */
+        const Range2D rectangle = renderLineGlyphPositionsInto(
+            shaper.font(),
+            size,
+            state.layoutDirection,
+            glyphOffsetsPositions,
+            glyphAdvances,
+            state.renderingLineCursor,
+            glyphOffsetsPositions);
+
+        /* Retrieve the glyph IDs and clusters, convert the glyph IDs to
+           cache-global. Do it only after finalizing the positions so the
+           glyphAdvances array can alias the IDs. This doesn't need to be done
+           if there are no glyphs, saving two virtual calls. */
+        const Containers::StridedArrayView1D<UnsignedInt> glyphIds = state.glyphIds.sliceSize(state.renderingGlyphCount, glyphCount);
+        if(glyphCount) {
             shaper.glyphIdsInto(glyphIds);
             state.glyphCache.glyphIdsInto(*glyphCacheFontId, glyphIds, glyphIds);
             if(state.flags & RendererCoreFlag::GlyphClusters)
                 shaper.glyphClustersInto(state.glyphClusters.sliceSize(state.renderingGlyphCount, glyphCount));
-
-            /* If we're aligning based on glyph bounds, calculate a rectangle
-               from scratch instead of using a rectangle based on advances and
-               font metrics. Join the resulting rectangle with one that's
-               maintained for the line so far. */
-            state.lineRectangle = Math::join(state.lineRectangle,
-                (UnsignedByte(state.alignment) & Implementation::AlignmentGlyphBounds) ?
-                    glyphQuadBounds(state.glyphCache, scale, glyphOffsetsPositions, glyphIds) :
-                    rectangle);
-
-            state.renderingGlyphCount += glyphCount;
         }
 
+        /* If we're aligning based on glyph bounds, calculate a rectangle from
+           scratch instead of using a rectangle based on advances and font
+           metrics. Join the resulting rectangle with one that's maintained for
+           the line so far. Again do this even if there are no glyphs, as we
+           want the rectangle to contain at least font ascent and descent in
+           that case. */
+        state.lineRectangle = Math::join(state.lineRectangle,
+            (UnsignedByte(state.alignment) & Implementation::AlignmentGlyphBounds) ?
+                glyphQuadBounds(state.glyphCache, scale, glyphOffsetsPositions, glyphIds) :
+                rectangle);
+
+        state.renderingGlyphCount += glyphCount;
+
         /* If the alignment isn't resolved yet and the shaper detected any
-           usable direction (or we're at the end of the line where we need
-           it), resolve it. If there's no usable direction detected yet, maybe
-           it will be next time. */
-        if(!state.resolvedAlignment) {
+           usable direction from passed glyphs (or we're at the end of the line
+           where we need it), resolve it. If there's no usable direction
+           detected yet, maybe it will be next time. If there are no glyphs and
+           we don't need it yet, avoid the virtual calls. */
+        if(!state.resolvedAlignment && (glyphCount || lineEnd)) {
             /* In this case it may happen that we query direction on a shaper
                for which shape() wasn't called yet, for example if shaping a
                text starting with \n and the previous text shaping gave back
@@ -635,13 +652,25 @@ RendererCore& RendererCore::add(AbstractShaper& shaper, const Float size, const 
                above or being there from the previous add() call, align them.
                If alignment based on bounds is requested, calculate a special
                rectangle for it. */
-            if(state.lineGlyphBegin != state.renderingGlyphCount)
+            if(state.lineRectangle != Range2D{})
                 alignAndFinishLine();
 
             /* Move the cursor for the next line */
             state.renderingLineStart += state.renderingLineAdvance;
             state.renderingLineCursor = state.renderingLineStart;
         }
+
+        /* If there's no newline found after, we have nothing to do in the next
+           iteration and can break out of the loop. This also handles the case
+           of completely empty input -- it enters the loop exactly once. If
+           there is a newline, at this point the current line should be already
+           finished by alignAndFinishLine() above. Same assert is in render()
+           below. */
+        if(!lineEnd)
+            break;
+        else CORRADE_INTERNAL_DEBUG_ASSERT(
+            state.lineGlyphBegin == state.renderingGlyphCount &&
+            state.lineRectangle == Range2D{});
 
         /* For the next iteration cut away everything that got processed,
            including the \n */
@@ -709,9 +738,9 @@ Containers::Pair<Range2D, Range1Dui> RendererCore::render() {
             state.layoutDirection,
             ShapeDirection::Unspecified);
 
-    /* Align the last unfinished line. In most cases there will be, unless the
-       last text passed to add() was ending with a \n. */
-    if(state.lineGlyphBegin != state.renderingGlyphCount)
+    /* Align the last unfinished line. In most cases there will be, unless
+       render() was called from an empty state. */
+    if(state.lineRectangle != Range2D{})
         alignAndFinishLine();
 
     /* Align the block. Now it's respecting the alignment relative to the
@@ -730,8 +759,8 @@ Containers::Pair<Range2D, Range1Dui> RendererCore::render() {
         i += state.cursor;
 
     /* Reset all block-related state, marking the renderer as not in progress
-       anymore. Line-related state should be reset after the alignLine() above
-       already. */
+       anymore. Line-related state should be reset after the
+       alignAndFinishLine() above already. */
     const UnsignedInt blockRunBegin = state.blockRunBegin;
     state.rendering = false;
     state.resolvedAlignment = {};

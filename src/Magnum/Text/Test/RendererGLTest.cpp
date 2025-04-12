@@ -1187,7 +1187,7 @@ void RendererGLTest::deprecatedMutableText() {
        string, it makes the output empty. */
     CORRADE_IGNORE_DEPRECATED_PUSH
     renderer.render("");
-    CORRADE_COMPARE(renderer.rectangle(), Range2D{});
+    CORRADE_COMPARE(renderer.rectangle(), (Range2D{{0.0f, -1.75f}, {0.0f, 1.75f}}));
     CORRADE_COMPARE(renderer.mesh().count(), 0);
     CORRADE_IGNORE_DEPRECATED_POP
 }

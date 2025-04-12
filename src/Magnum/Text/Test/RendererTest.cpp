@@ -141,6 +141,7 @@ struct RendererTest: TestSuite::Tester {
     void addFontNotFoundInCache();
 
     void multipleBlocks();
+    void emptyLines();
 
     template<class T> void indicesVertices();
 
@@ -1124,12 +1125,13 @@ const struct {
         first ----  second -------  first */
         4, 6, 2, 1, 13, 11, 13, 11, 7, 8
     }},
-    /* Empty parts have their font metrics ignored */
+    /* Empty part font metrics are considered as well. See the emptyLines()
+       test for extended verification. */
     {"an empty part with taller font", {InPlaceInit, {
         {3, 5, 1.0f},
         {5, 5, 10.0f},
         {5, 8, 1.0f},
-    }}, {}, Alignment::LineRight, ShapeDirection{}, 0, false, 24.0f, {InPlaceInit, {
+    }}, {}, Alignment::LineRight, ShapeDirection{}, 0, false, 120.0f, {InPlaceInit, {
         {1.0f, 4},
         {1.0f, 10},
     }}, {
@@ -1787,6 +1789,8 @@ RendererTest::RendererTest() {
 
     addInstancedTests({&RendererTest::multipleBlocks},
         Containers::arraySize(MultipleBlocksData));
+
+    addTests({&RendererTest::emptyLines});
 
     addInstancedTests<RendererTest>({
         &RendererTest::indicesVertices<UnsignedByte>,
@@ -6468,6 +6472,150 @@ void RendererTest::multipleBlocks() {
         9u,
         12u
     }), TestSuite::Compare::Container);
+}
+
+void RendererTest::emptyLines() {
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Properties doOpenFile(Containers::StringView, Float) override {
+            _opened = true;
+            return {4.0f, 5.0f, -3.0f, 8.0f, 0};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {
+            CORRADE_FAIL("This shouldn't be called");
+        }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool _opened = false;
+    } font1;
+    font1.openFile({}, 0.0f);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Properties doOpenFile(Containers::StringView, Float) override {
+            _opened = true;
+            return {6.0f, 1.0f, -2.0f, 12.0f, 0};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {
+            CORRADE_FAIL("This shouldn't be called");
+        }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool _opened = false;
+    } font2;
+    font2.openFile({}, 0.0f);
+
+    struct: AbstractShaper {
+        using AbstractShaper::AbstractShaper;
+
+        UnsignedInt doShape(Containers::StringView, UnsignedInt begin, UnsignedInt end, Containers::ArrayView<const FeatureRange>) override {
+            return end - begin;
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {
+            CORRADE_FAIL("This shouldn't be called");
+        }
+        void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {
+            CORRADE_FAIL("This shouldn't be called");
+        }
+        void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}
+    } shaper1{font1}, shaper2{font2};
+
+    struct: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+    } glyphCache{PixelFormat::R8Unorm, {16, 16}};
+    glyphCache.addFont(1, &font1);
+    glyphCache.addFont(1, &font2);
+
+    RendererCore renderer{glyphCache};
+
+    renderer.setCursor({-100.0f, 300.0f});
+
+    /* Just a render() call alone will produce an empty rect at the cursor */
+    CORRADE_COMPARE(
+        renderer.render(),
+        Containers::pair(Range2D{{-100.0f, 300.0f}, {-100.0f, 300.0f}}, Range1Dui{}));
+
+    /* Empty text produces a rectangle spanning just the ascent (2.0*5) and
+       descent (-2.0*3) */
+    CORRADE_COMPARE(
+        renderer
+            .setAlignment(Alignment::LineLeft)
+            .render(shaper1, 8.0f, ""),
+        Containers::pair(Range2D{{-100.0f, 294.0f}, {-100.0f, 310.0f}}, Range1Dui{}));
+
+    /* Empty text from two fonts takes the max. The first font has bigger
+       ascent (0.5*5), the second font has bigger descent (-2.0*2). */
+    CORRADE_COMPARE(
+        renderer
+            .add(shaper1, 2.0f, "")
+            .add(shaper2, 12.0f, "")
+            .render(),
+        Containers::pair(Range2D{{-100.0f, 296.0f}, {-100.0f, 302.5f}}, Range1Dui{}));
+
+    /* Same, just different order and alignment to top instead of line */
+    CORRADE_COMPARE(
+        renderer
+            .setAlignment(Alignment::TopLeft)
+            .add(shaper2, 12.0f, "")
+            .add(shaper1, 2.0f, "")
+            .render(),
+        Containers::pair(Range2D{{-100.0f, 293.5f}, {-100.0f, 300.0f}}, Range1Dui{}));
+
+    /* Another empty lines with a single font takes into account the line
+       advance (1.5*8). Resetting the alignment back to line for easier testing
+       but using direction-aware one to verify it's correctly resolved in this
+       case as well. */
+    CORRADE_COMPARE(
+        renderer
+            .setAlignment(Alignment::LineBegin)
+            .render(shaper1, 6.0f, "\n"),
+        Containers::pair(Range2D{{-100.0f, 295.5f - 12.0f}, {-100.0f, 307.5f}}, Range1Dui{}));
+
+    /* Multiple lines should cause multiple advances. Horizontal alignment has
+       no effect on this. */
+    CORRADE_COMPARE(
+        renderer
+            .setAlignment(Alignment::LineRight)
+            .render(shaper1, 6.0f, "\n\n\n\n"),
+        Containers::pair(Range2D{{-100.0f, 295.5f - 4*12.0f}, {-100.0f, 307.5f}}, Range1Dui{}));
+
+    /* Two lines with different fonts should take ascent of the first font (5),
+       line advance of the first font (8) and descent of the second font (-2)
+       into account. Ascent of the second font is 1, which should thus not
+       affect the first line. */
+    CORRADE_COMPARE(
+        renderer
+            .add(shaper1, 4.0f, "")
+            .add(shaper2, 6.0f, "\n")
+            .render(),
+        Containers::pair(Range2D{{-100.0f, 298.0f - 8.0f}, {-100.0f, 305.0f}}, Range1Dui{}));
+
+    /* With the order swapped, the second run should contribute to the first
+       line ascent as well, changing it from 1 to 5. Second line descent is
+       then -3, line advance is taken from the other font as well. */
+    CORRADE_COMPARE(
+        renderer
+            .add(shaper2, 6.0f, "")
+            .add(shaper1, 4.0f, "\n")
+            .render(),
+        Containers::pair(Range2D{{-100.0f, 297.0f - 12.0f}, {-100.0f, 305.0f}}, Range1Dui{}));
 }
 
 template<class T> void RendererTest::indicesVertices() {
