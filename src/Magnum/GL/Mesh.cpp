@@ -1177,6 +1177,16 @@ void Mesh::attributePointerImplementationVAODSA(Mesh& self, AttributeLayout&& at
 
     glVertexArrayAttribBinding(self._id, attribute.location, attribute.location);
     CORRADE_INTERNAL_ASSERT(attributeStride != 0);
+    /* Note that this assumes the buffer is already created (glCreateBuffers(),
+       not glBindBuffer()), if empty, otherwise a GL error or a crash later at
+       draw may occur. See MeshGLTest::addEmptyBuffer() for a repro case,
+       especially important in relation to workarounds that disable DSA for
+       buffers but not meshes. In case of "nv-broken-buffer-dsa" DSA is still
+       used for buffer creation so that's fine, in case of
+       "intel-windows-crazy-broken-buffer-dsa" there's also an accompanying
+       "intel-windows-crazy-broken-vao-dsa" that disables VAO DSA code paths as
+       well so that's fine too. Similar case is with
+       glVertexArrayElementBuffer() below. */
     glVertexArrayVertexBuffer(self._id, attribute.location, attribute.buffer.id(), attributeOffset, attributeStride);
 
     if(attribute.divisor)
@@ -1294,6 +1304,16 @@ void Mesh::bindIndexBufferImplementationVAO(Mesh& self, Buffer& buffer) {
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::bindIndexBufferImplementationVAODSA(Mesh& self, Buffer& buffer) {
+    /* Note that this assumes the buffer is already created (glCreateBuffers(),
+       not glBindBuffer()), if empty, otherwise a GL error or a crash later at
+       draw may occur. See MeshGLTest::addEmptyBuffer() for a repro case,
+       especially important in relation to workarounds that disable DSA for
+       buffers but not meshes. In case of "nv-broken-buffer-dsa" DSA is still
+       used for buffer creation so that's fine, in case of
+       "intel-windows-crazy-broken-buffer-dsa" there's also an accompanying
+       "intel-windows-crazy-broken-vao-dsa" that disables VAO DSA code paths as
+       well so that's fine too. Similar case is with
+       glVertexArrayVertexBuffer() above. */
     glVertexArrayElementBuffer(self._id, buffer.id());
 }
 #endif

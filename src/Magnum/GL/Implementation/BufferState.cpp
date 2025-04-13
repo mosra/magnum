@@ -100,23 +100,46 @@ BufferState::BufferState(Context& context, Containers::StaticArrayView<Implement
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
         context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-buffer-dsa"_s))
         #endif
-        && (!(context.detectedDriver() & Context::DetectedDriver::NVidia) ||
-        context.isDriverWorkaroundDisabled("nv-broken-buffer-dsa"_s))
     ) {
         extensions[Extensions::ARB::direct_state_access::Index] =
                    Extensions::ARB::direct_state_access::string();
 
+        /* Using the glCreateBuffer() API even with the "nv-broken-buffer-dsa"
+           workaround as otherwise the mesh VAO + DSA code paths can cause GL
+           errors or even crashes if attempting to attach empty index or vertex
+           buffers -- i.e., glGenBuffers() doesn't actually create the buffer,
+           so attempting to call glVertexArrayElementBuffer() with such a
+           buffer leads to a GL error, and then (once filling the buffer)
+           drawing such a mesh leads to a crash because it's trying to fetch
+           the indices from CPU-side null pointer.
+
+           See the MeshGLTest::addEmptyBuffer() test for a repro case. */
         createImplementation = &Buffer::createImplementationDSA;
-        copyImplementation = &Buffer::copyImplementationDSA;
-        storageImplementation = &Buffer::storageImplementationDSA;
-        getParameterImplementation = &Buffer::getParameterImplementationDSA;
-        getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
-        dataImplementation = &Buffer::dataImplementationDSA;
-        subDataImplementation = &Buffer::subDataImplementationDSA;
-        mapImplementation = &Buffer::mapImplementationDSA;
-        mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
-        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
-        unmapImplementation = &Buffer::unmapImplementationDSA;
+
+        if(!(context.detectedDriver() & Context::DetectedDriver::NVidia) ||
+        context.isDriverWorkaroundDisabled("nv-broken-buffer-dsa"_s)) {
+            copyImplementation = &Buffer::copyImplementationDSA;
+            storageImplementation = &Buffer::storageImplementationDSA;
+            getParameterImplementation = &Buffer::getParameterImplementationDSA;
+            getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
+            dataImplementation = &Buffer::dataImplementationDSA;
+            subDataImplementation = &Buffer::subDataImplementationDSA;
+            mapImplementation = &Buffer::mapImplementationDSA;
+            mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
+            flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
+            unmapImplementation = &Buffer::unmapImplementationDSA;
+        } else {
+            copyImplementation = &Buffer::copyImplementationDefault;
+            storageImplementation = &Buffer::storageImplementationDefault;
+            getParameterImplementation = &Buffer::getParameterImplementationDefault;
+            getSubDataImplementation = &Buffer::getSubDataImplementationDefault;
+            dataImplementation = &Buffer::dataImplementationDefault;
+            subDataImplementation = &Buffer::subDataImplementationDefault;
+            mapImplementation = &Buffer::mapImplementationDefault;
+            mapRangeImplementation = &Buffer::mapRangeImplementationDefault;
+            flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
+            unmapImplementation = &Buffer::unmapImplementationDefault;
+        }
     } else
     #endif
     {
