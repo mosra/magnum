@@ -406,6 +406,7 @@ constexpr struct {
     {"", false, false, false},
     {"move indices", true, true, false},
     {"move vertices", false, false, true},
+    {"move vertices, indexed", true, false, true},
     {"move both", true, true, true}
 };
 
