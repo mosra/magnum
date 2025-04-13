@@ -143,6 +143,8 @@ struct MeshGLTest: OpenGLTester {
     template<class T> void setIndexBufferTransferOwnership();
     template<class T> void setIndexBufferRangeTransferOwnership();
 
+    void addEmptyBuffer();
+
     void setIndexOffset();
 
     void indexTypeSetIndexOffsetNotIndexed();
@@ -233,6 +235,14 @@ struct MeshGLTest: OpenGLTester {
     void multiDrawInstancedBaseInstanceNoExtensionAvailable();
     #endif
     #endif
+};
+
+const struct {
+    const char* name;
+    bool indexed;
+} AddEmptyBufferData[]{
+    {"", false},
+    {"indexed", true},
 };
 
 const struct {
@@ -637,9 +647,12 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setIndexBufferTransferOwnership<GL::MeshIndexType>,
               &MeshGLTest::setIndexBufferTransferOwnership<Magnum::MeshIndexType>,
               &MeshGLTest::setIndexBufferRangeTransferOwnership<GL::MeshIndexType>,
-              &MeshGLTest::setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>,
+              &MeshGLTest::setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>});
 
-              &MeshGLTest::setIndexOffset,
+    addInstancedTests({&MeshGLTest::addEmptyBuffer},
+        Containers::arraySize(AddEmptyBufferData));
+
+    addTests({&MeshGLTest::setIndexOffset,
 
               &MeshGLTest::indexTypeSetIndexOffsetNotIndexed,
 
@@ -2681,6 +2694,49 @@ template<class T> void MeshGLTest::setIndexBufferRangeTransferOwnership() {
     }
 
     CORRADE_VERIFY(!glIsBuffer(id));
+}
+
+void MeshGLTest::addEmptyBuffer() {
+    auto&& data = AddEmptyBufferData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Tests that adding completely empty buffers (so, in some cases not even
+       created yet, just glGenBuffers()'d) works */
+
+    Buffer vertices{Buffer::TargetHint::Array};
+    Buffer indices{NoCreate};
+    if(data.indexed)
+        indices = Buffer{Buffer::TargetHint::ElementArray};
+
+    /* Verifying two separate attributes while just one is used to ensure the
+       handling isn't somehow special for the second one */
+    Mesh mesh;
+    mesh.addVertexBuffer(vertices, 0,
+            Attribute<0, Float>{},
+            Attribute<1, Float>{})
+        .setCount(0);
+
+    if(data.indexed)
+        mesh.setIndexBuffer(indices, 0, MeshIndexType::UnsignedInt);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* This should do nothing */
+    FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"};
+    shader.draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Filling the buffers and drawing again should also behave. Not interested
+       in the output, just that it doesn't generate any GL errors and doesn't
+       crash either. */
+    vertices.setData({Vector2{}, Vector2{}, Vector2{}});
+    if(data.indexed)
+        indices.setData({0u, 1u, 2u});
+    mesh.setCount(3);
+    shader.draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void MeshGLTest::setIndexOffset() {
