@@ -346,6 +346,51 @@ class AndroidApplication {
 
         /** @{ @name Screen handling */
 
+        /**
+         * @brief Recreate the OpenGL context
+         *
+         * returns @cpp false @ce if the context cannot be created,
+         * @cpp true @ce otherwise.
+         */
+        bool reactivateContext();
+
+        /**
+         * @brief Pause the OpenGL context
+         * 
+         * 
+         */
+        void pauseContext();
+
+        /**
+         * @brief Pause the Application
+         *
+         * Called when the application is attempted to be terminated or sent to the background
+         */
+        virtual void pauseApplication();
+
+        /**
+         * @brief Resume the Application
+         *
+         * Called when the application comes back to the foreground
+         */
+        virtual void resumeApplication();
+
+        /**
+         * @brief OpenGL surface useability
+         *
+         * returns @cpp false @ce if the surface is not available for rendering
+         * @cpp true @ce otherwise.
+         */
+        bool hasValidSurface();
+
+        /**
+         * @brief Application focus
+         *
+         * returns @cpp false @ce if the application is not focused.
+         * @cpp true @ce otherwise.
+         */
+        bool hasFocus();
+
     public:
         /**
          * @brief Window size
@@ -563,6 +608,11 @@ class AndroidApplication {
         EGLDisplay _display;
         EGLSurface _surface;
         EGLContext _glContext;
+
+        GLConfiguration _glConfiguration;
+
+        bool _application_has_valid_surface = false;
+        bool _application_has_focus = false;
 
         /* We have no way to query previous pointer positions, so we have to
            maintain them like this. For pointers capable of hover (mouse, pen)
