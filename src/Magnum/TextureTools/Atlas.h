@@ -226,6 +226,20 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          */
         explicit AtlasLandfill(const Vector2i& size);
 
+        /**
+         * @brief Construct without creating the internal state
+         * @m_since_latest
+         *
+         * The constructed instance is equivalent to moved-from state, i.e. no
+         * APIs can be safely called on the object. Useful in cases where you
+         * will overwrite the instance later anyway. Move another object over
+         * it to make it useful.
+         *
+         * Note that this is a low-level and a potentially dangerous API, see
+         * the documentation of @ref NoCreate for alternatives.
+         */
+        explicit AtlasLandfill(NoCreateT) noexcept;
+
         /** @brief Copying is not allowed */
         AtlasLandfill(const AtlasLandfill&) = delete;
 

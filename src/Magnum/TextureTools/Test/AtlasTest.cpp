@@ -53,6 +53,7 @@ struct AtlasTest: TestSuite::Tester {
 
     void landfillConstruct();
     void landfillConstructInvalidSize();
+    void landfillConstructNoCreate();
     void landfillConstructCopy();
     void landfillConstructMove();
 
@@ -504,6 +505,7 @@ AtlasTest::AtlasTest() {
 
               &AtlasTest::landfillConstruct,
               &AtlasTest::landfillConstructInvalidSize,
+              &AtlasTest::landfillConstructNoCreate,
               &AtlasTest::landfillConstructCopy,
               &AtlasTest::landfillConstructMove,
 
@@ -612,6 +614,16 @@ void AtlasTest::landfillConstructInvalidSize() {
         "TextureTools::AtlasLandfill: expected a single array slice for unbounded height, got {16, 0, 16}\n"
         "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got {16, 65537, 16}\n",
         TestSuite::Compare::String);
+}
+
+void AtlasTest::landfillConstructNoCreate() {
+    AtlasLandfill a{NoCreate};
+
+    /* Shouldn't crash */
+    CORRADE_VERIFY(true);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, AtlasLandfill>::value);
 }
 
 void AtlasTest::landfillConstructCopy() {

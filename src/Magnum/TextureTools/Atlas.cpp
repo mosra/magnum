@@ -214,6 +214,8 @@ AtlasLandfill::AtlasLandfill(const Vector3i& size):_state{InPlaceInit} {
 
 AtlasLandfill::AtlasLandfill(const Vector2i& size): AtlasLandfill{{size, 1}} {}
 
+AtlasLandfill::AtlasLandfill(NoCreateT) noexcept {}
+
 AtlasLandfill::AtlasLandfill(AtlasLandfill&&) noexcept = default;
 
 AtlasLandfill::~AtlasLandfill() = default;
