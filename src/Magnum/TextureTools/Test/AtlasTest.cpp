@@ -51,13 +51,18 @@ struct AtlasTest: TestSuite::Tester {
     void debugLandfillFlag();
     void debugLandfillFlags();
 
+    void landfillConstruct();
+    void landfillConstructInvalidSize();
+    void landfillConstructCopy();
+    void landfillConstructMove();
+
+    void landfillSetFlagsInvalid();
+
     void landfillFullFit();
     void landfill();
     void landfillIncremental();
     void landfillPadded();
     void landfillNoFit();
-    void landfillCopy();
-    void landfillMove();
 
     void landfillArrayFullFit();
     void landfillArray();
@@ -65,8 +70,6 @@ struct AtlasTest: TestSuite::Tester {
     void landfillArrayPadded();
     void landfillArrayNoFit();
 
-    void landfillInvalidSize();
-    void landfillSetFlagsInvalid();
     void landfillAddMissingRotations();
     void landfillAddInvalidViewSizes();
     void landfillAddTwoComponentForArray();
@@ -499,6 +502,13 @@ AtlasTest::AtlasTest() {
     addTests({&AtlasTest::debugLandfillFlag,
               &AtlasTest::debugLandfillFlags,
 
+              &AtlasTest::landfillConstruct,
+              &AtlasTest::landfillConstructInvalidSize,
+              &AtlasTest::landfillConstructCopy,
+              &AtlasTest::landfillConstructMove,
+
+              &AtlasTest::landfillSetFlagsInvalid,
+
               &AtlasTest::landfillFullFit});
 
     addInstancedTests({&AtlasTest::landfill},
@@ -507,8 +517,6 @@ AtlasTest::AtlasTest() {
     addTests({&AtlasTest::landfillIncremental,
               &AtlasTest::landfillPadded,
               &AtlasTest::landfillNoFit,
-              &AtlasTest::landfillCopy,
-              &AtlasTest::landfillMove,
 
               &AtlasTest::landfillArrayFullFit});
 
@@ -519,8 +527,6 @@ AtlasTest::AtlasTest() {
               &AtlasTest::landfillArrayPadded,
               &AtlasTest::landfillArrayNoFit,
 
-              &AtlasTest::landfillInvalidSize,
-              &AtlasTest::landfillSetFlagsInvalid,
               &AtlasTest::landfillAddMissingRotations,
               &AtlasTest::landfillAddInvalidViewSizes,
               &AtlasTest::landfillAddTwoComponentForArray,
@@ -568,6 +574,84 @@ void AtlasTest::debugLandfillFlags() {
     Containers::String out;
     Debug{&out} << (AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::NarrowestFirst|AtlasLandfillFlag(0xdead0000)) << AtlasLandfillFlags{};
     CORRADE_COMPARE(out, "TextureTools::AtlasLandfillFlag::RotateLandscape|TextureTools::AtlasLandfillFlag::NarrowestFirst|TextureTools::AtlasLandfillFlag(0xdead0000) TextureTools::AtlasLandfillFlags{}\n");
+}
+
+void AtlasTest::landfillConstruct() {
+    AtlasLandfill a{{16, 24}};
+    AtlasLandfill b{{16, 24, 8}};
+    CORRADE_COMPARE(a.size(), (Vector3i{16, 24, 1}));
+    CORRADE_COMPARE(b.size(), (Vector3i{16, 24, 8}));
+    CORRADE_COMPARE(a.filledSize(), (Vector3i{16, 0, 1}));
+    CORRADE_COMPARE(b.filledSize(), (Vector3i{16, 24, 0}));
+    CORRADE_COMPARE(a.flags(), AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst);
+    CORRADE_COMPARE(b.flags(), AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst);
+    CORRADE_COMPARE(a.padding(), Vector2i{});
+    CORRADE_COMPARE(b.padding(), Vector2i{});
+}
+
+void AtlasTest::landfillConstructInvalidSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* These are fine */
+    AtlasLandfill{{16, 0}};
+    AtlasLandfill{{16, 65536}};
+    AtlasLandfill{{16, 16, 0}};
+    AtlasLandfill{{16, 65536, 16}};
+
+    Containers::String out;
+    Error redirectError{&out};
+    AtlasLandfill{{0, 16}};
+    AtlasLandfill{{16, 65537}};
+    AtlasLandfill{{0, 16, 16}};
+    AtlasLandfill{{16, 0, 16}};
+    AtlasLandfill{{16, 65537, 16}};
+    CORRADE_COMPARE_AS(out,
+        "TextureTools::AtlasLandfill: expected non-zero width, got {0, 16, 1}\n"
+        "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got {16, 65537, 1}\n"
+        "TextureTools::AtlasLandfill: expected non-zero width, got {0, 16, 16}\n"
+        "TextureTools::AtlasLandfill: expected a single array slice for unbounded height, got {16, 0, 16}\n"
+        "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got {16, 65537, 16}\n",
+        TestSuite::Compare::String);
+}
+
+void AtlasTest::landfillConstructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<AtlasLandfill>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<AtlasLandfill>{});
+}
+
+void AtlasTest::landfillConstructMove() {
+    AtlasLandfill a{{16, 24, 8}};
+
+    Vector3i offsets[2];
+    UnsignedByte rotations[1];
+    CORRADE_VERIFY(a.add({{12, 17}, {5, 12}}, offsets, Containers::MutableBitArrayView{rotations, 0, 2}));
+
+    AtlasLandfill b = Utility::move(a);
+    CORRADE_COMPARE(b.size(), (Vector3i{16, 24, 8}));
+    CORRADE_COMPARE(b.filledSize(), (Vector3i{16, 24, 2}));
+
+    AtlasLandfill c{{16, 12, 1}};
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.size(), (Vector3i{16, 24, 8}));
+    CORRADE_COMPARE(c.filledSize(), (Vector3i{16, 24, 2}));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<AtlasLandfill>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<AtlasLandfill>::value);
+}
+
+void AtlasTest::landfillSetFlagsInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    AtlasLandfill atlas{{16, 16}};
+
+    Containers::String out;
+    Error redirectError{&out};
+    atlas.setFlags(AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape);
+    atlas.setFlags(AtlasLandfillFlag::WidestFirst|AtlasLandfillFlag::NarrowestFirst);
+    CORRADE_COMPARE_AS(out,
+        "TextureTools::AtlasLandfill::setFlags(): only one of RotatePortrait and RotateLandscape can be set\n"
+        "TextureTools::AtlasLandfill::setFlags(): only one of WidestFirst and NarrowestFirst can be set\n",
+        TestSuite::Compare::String);
 }
 
 void AtlasTest::landfillFullFit() {
@@ -789,31 +873,6 @@ void AtlasTest::landfillNoFit() {
     CORRADE_COMPARE(atlas.add(LandfillSizes, offsets, rotations), Containers::NullOpt);
 }
 
-void AtlasTest::landfillCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<AtlasLandfill>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<AtlasLandfill>{});
-}
-
-void AtlasTest::landfillMove() {
-    AtlasLandfill a{{16, 24, 8}};
-
-    Vector3i offsets[2];
-    UnsignedByte rotations[1];
-    CORRADE_VERIFY(a.add({{12, 17}, {5, 12}}, offsets, Containers::MutableBitArrayView{rotations, 0, 2}));
-
-    AtlasLandfill b = Utility::move(a);
-    CORRADE_COMPARE(b.size(), (Vector3i{16, 24, 8}));
-    CORRADE_COMPARE(b.filledSize(), (Vector3i{16, 24, 2}));
-
-    AtlasLandfill c{{16, 12, 1}};
-    c = Utility::move(b);
-    CORRADE_COMPARE(c.size(), (Vector3i{16, 24, 8}));
-    CORRADE_COMPARE(c.filledSize(), (Vector3i{16, 24, 2}));
-
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<AtlasLandfill>::value);
-    CORRADE_VERIFY(std::is_nothrow_move_assignable<AtlasLandfill>::value);
-}
-
 void AtlasTest::landfillArrayFullFit() {
     /* Trivial case to verify there are no off-by-one errors that would prevent
        a tight fit */
@@ -1033,46 +1092,6 @@ void AtlasTest::landfillArrayNoFit() {
         Containers::MutableBitArrayView rotations{rotationData, 0, Containers::arraySize(LandfillArraySizes)};
         CORRADE_COMPARE(atlas.add(LandfillArraySizes, offsets, rotations), (Range3Di{{}, {6, 6, 3}}));
     }
-}
-
-void AtlasTest::landfillInvalidSize() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    /* These are fine */
-    AtlasLandfill{{16, 0}};
-    AtlasLandfill{{16, 65536}};
-    AtlasLandfill{{16, 16, 0}};
-    AtlasLandfill{{16, 65536, 16}};
-
-    Containers::String out;
-    Error redirectError{&out};
-    AtlasLandfill{{0, 16}};
-    AtlasLandfill{{16, 65537}};
-    AtlasLandfill{{0, 16, 16}};
-    AtlasLandfill{{16, 0, 16}};
-    AtlasLandfill{{16, 65537, 16}};
-    CORRADE_COMPARE_AS(out,
-        "TextureTools::AtlasLandfill: expected non-zero width, got {0, 16, 1}\n"
-        "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got {16, 65537, 1}\n"
-        "TextureTools::AtlasLandfill: expected non-zero width, got {0, 16, 16}\n"
-        "TextureTools::AtlasLandfill: expected a single array slice for unbounded height, got {16, 0, 16}\n"
-        "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got {16, 65537, 16}\n",
-        TestSuite::Compare::String);
-}
-
-void AtlasTest::landfillSetFlagsInvalid() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    AtlasLandfill atlas{{16, 16}};
-
-    Containers::String out;
-    Error redirectError{&out};
-    atlas.setFlags(AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape);
-    atlas.setFlags(AtlasLandfillFlag::WidestFirst|AtlasLandfillFlag::NarrowestFirst);
-    CORRADE_COMPARE_AS(out,
-        "TextureTools::AtlasLandfill::setFlags(): only one of RotatePortrait and RotateLandscape can be set\n"
-        "TextureTools::AtlasLandfill::setFlags(): only one of WidestFirst and NarrowestFirst can be set\n",
-        TestSuite::Compare::String);
 }
 
 void AtlasTest::landfillAddMissingRotations() {
