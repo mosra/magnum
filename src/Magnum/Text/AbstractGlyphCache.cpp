@@ -71,14 +71,7 @@ Debug& operator<<(Debug& debug, const GlyphCacheFeatures value) {
 }
 
 struct AbstractGlyphCache::State {
-    explicit State(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): image{format, size, Containers::Array<char>{ValueInit, 4*((pixelFormatSize(format)*size.x() + 3)/4)*size.y()*size.z()}}, atlas{size}, processedFormat{processedFormat}, processedSize{processedSize}, padding{padding} {
-        /* Flags are currently cleared as well, will be enabled back in a later
-           step once the behavior is specified (with negative ranges) and
-           Math::join() is fixed to handle those correctly. */
-        atlas.setPadding(padding)
-             .clearFlags(TextureTools::AtlasLandfillFlag::RotatePortrait|
-                         TextureTools::AtlasLandfillFlag::RotateLandscape);
-    }
+    explicit State(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding);
 
     Image3D image;
     TextureTools::AtlasLandfill atlas;
@@ -122,22 +115,29 @@ struct AbstractGlyphCache::State {
     Containers::Array<UnsignedShort> fontGlyphMapping;
 };
 
-AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding) {
+AbstractGlyphCache::State::State(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): image{format, size, Containers::Array<char>{ValueInit, 4*((pixelFormatSize(format)*size.x() + 3)/4)*size.y()*size.z()}}, atlas{NoCreate}, processedFormat{processedFormat}, processedSize{processedSize}, padding{padding} {
     CORRADE_ASSERT(size.product(),
         "Text::AbstractGlyphCache: expected non-zero size, got" << Debug::packed << size, );
     CORRADE_ASSERT(processedSize.product(),
         "Text::AbstractGlyphCache: expected non-zero processed size, got" << Debug::packed << processedSize, );
 
-    /* Creating the state only after the assert as the AtlasLandfill would
-       assert on zero size as well */
-    _state.emplace(format, size, processedFormat, processedSize, padding);
+    /* Creating the AtlasLandfill only after the assert as it'd assert on zero
+       size too. Flags are currently cleared as well, will be enabled back in a
+       later step once the behavior is specified (with negative ranges) and
+       Math::join() is fixed to handle those correctly. */
+    (atlas = TextureTools::AtlasLandfill{size})
+        .setPadding(padding)
+        .clearFlags(TextureTools::AtlasLandfillFlag::RotatePortrait|
+                    TextureTools::AtlasLandfillFlag::RotateLandscape);
 
     /* Default invalid glyph -- empty / zero-area */
-    arrayAppend(_state->glyphs, InPlaceInit);
+    arrayAppend(glyphs, InPlaceInit);
 
     /* There are no fonts yet */
-    arrayAppend(_state->fonts, InPlaceInit, 0u, nullptr);
+    arrayAppend(fonts, InPlaceInit, 0u, nullptr);
 }
+
+AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): _state{InPlaceInit, format, size, processedFormat, processedSize, padding} {}
 
 AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize): AbstractGlyphCache{format, size, processedFormat, processedSize, Vector2i{1}} {}
 
