@@ -34,6 +34,7 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #endif
+#include "Magnum/GL/Framebuffer.h"
 #if !defined(CORRADE_NO_ASSERT) || defined(MAGNUM_BUILD_DEPRECATED)
 #include "Magnum/GL/PixelFormat.h"
 #endif
@@ -48,6 +49,8 @@ struct DistanceFieldGlyphCacheGL::State: GlyphCacheGL::State {
     explicit State(const Vector2i& size, const Vector2i& processedSize, UnsignedInt radius);
 
     TextureTools::DistanceFieldGL distanceField;
+    GL::Texture2D input{NoCreate};
+    GL::Framebuffer output{NoCreate};
 };
 
 DistanceFieldGlyphCacheGL::State::State(const Vector2i& size, const Vector2i& processedSize, const UnsignedInt radius): GlyphCacheGL::State{
@@ -105,12 +108,27 @@ GlyphCacheFeatures DistanceFieldGlyphCacheGL::doFeatures() const {
 void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     auto& state = static_cast<State&>(*_state);
 
-    GL::Texture2D input;
-    input.setWrapping(GL::SamplerWrapping::ClampToEdge)
-        /* Use nearest filter to avoid minor rounding errors on ES2 compared to
-           texelFetch() on ES3+ */
-        .setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
-        .setMagnificationFilter(GL::SamplerFilter::Nearest);
+    /* Create the input texture and output framebuffer if not already. Not done
+       unconditionally during construction because the application may for
+       example only ever call setProcessedImage(), for which none of this is
+       needed. Also not creating just temporary instances (or using the
+       DistanceFieldGL overload taking an output texture instead of a
+       framebuffer) to reduce overhead when the cache gets populated
+       incrementally many times. */
+    if(!state.input.id()) {
+        (state.input = GL::Texture2D{})
+            .setWrapping(GL::SamplerWrapping::ClampToEdge)
+            /* Use nearest filter to avoid minor rounding errors on ES2 compared to
+            texelFetch() on ES3+ */
+            .setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+            .setMagnificationFilter(GL::SamplerFilter::Nearest);
+    }
+    if(!state.output.id()) {
+        /* The viewport size gets set by DistanceFieldGL anyway, no need to
+           specify it here */
+        (state.output = GL::Framebuffer{{}})
+            .attachTexture(GL::Framebuffer::ColorAttachment{0}, state.texture, 0);
+    }
 
     /* The constructor already checked that the ratio is an integer multiple,
        so this division should lead to no information loss */
@@ -127,8 +145,8 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageVi
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::unpack_subimage>())
     #endif
     {
-        input.setImage(0, GL::textureFormat(image.format()), ImageView2D{image.format(), size().xy(), image.data()});
-        state.distanceField(input, texture(), {{}, size().xy()/ratio}, size().xy());
+        state.input.setImage(0, GL::textureFormat(image.format()), ImageView2D{image.format(), size().xy(), image.data()});
+        state.distanceField(state.input, texture(), {{}, size().xy()/ratio}, size().xy());
         #ifdef MAGNUM_TARGET_WEBGL
         static_cast<void>(offset);
         #endif
@@ -167,8 +185,8 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageVi
             paddedMaxRounded - paddedMinRounded,
             image.data()};
 
-        input.setImage(0, GL::textureFormat(paddedImage.format()), paddedImage);
-        state.distanceField(input, texture(), Range2Di::fromSize(paddedMinRounded/ratio, paddedImage.size()/ratio), paddedImage.size());
+        state.input.setImage(0, GL::textureFormat(paddedImage.format()), paddedImage);
+        state.distanceField(state.input, state.output, Range2Di::fromSize(paddedMinRounded/ratio, paddedImage.size()/ratio), paddedImage.size());
     }
     #endif
 }
