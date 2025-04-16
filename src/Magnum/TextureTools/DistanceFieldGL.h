@@ -184,8 +184,12 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceFieldGL {
          *      on desktop GL the information is gathered automatically using
          *      @ref GL::Texture2D::imageSize().
          *
-         * Creates a framebuffer with @p output attached and calls
-         * @ref operator()(GL::Texture2D&, GL::Framebuffer&, const Range2Di&, const Vector2i&).
+         * Convenience variant of @ref operator()(GL::Texture2D&, GL::Framebuffer&, const Range2Di&, const Vector2i&)
+         * that creates a temporary framebuffer with @p output attached and
+         * destroys it again after the operation. Meant to be used for one-off
+         * operations, for repeated use it's recommended to create a
+         * framebuffer on the application side and pass it instead of a texture
+         * to avoid unnecessary OpenGL state changes.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i& imageSize
