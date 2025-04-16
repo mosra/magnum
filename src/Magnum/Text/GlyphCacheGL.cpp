@@ -32,18 +32,17 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
-#include "Magnum/GL/TextureFormat.h"
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if (!defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))) || defined(MAGNUM_BUILD_DEPRECATED)
 #include "Magnum/PixelFormat.h"
 #endif
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
-#include "Magnum/PixelFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #endif
 #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/PixelFormat.h"
 #endif
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Text/Implementation/glyphCacheGLState.h"
 
 namespace Magnum { namespace Text {
