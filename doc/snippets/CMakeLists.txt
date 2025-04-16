@@ -94,7 +94,8 @@ if(MAGNUM_WITH_GL)
         GL.cpp
         MeshTools-gl.cpp
         Shaders-gl.cpp
-        Text-gl.cpp)
+        Text-gl.cpp
+        TextureTools-gl.cpp)
     target_link_libraries(snippets-GL PRIVATE MagnumGL)
     if(CORRADE_TESTSUITE_TEST_TARGET)
         add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-GL)
