@@ -44,17 +44,18 @@
 #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/PixelFormat.h"
 #endif
+#include "Magnum/Text/Implementation/glyphCacheGLState.h"
 
 namespace Magnum { namespace Text {
 
-GlyphCacheGL::GlyphCacheGL(const PixelFormat format, const Vector2i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{format, size, processedFormat, processedSize, padding} {
+GlyphCacheGL::State::State(const PixelFormat format, const Vector2i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache::State{format, {size, 1}, processedFormat, processedSize, padding} {
     #ifndef MAGNUM_TARGET_GLES
     if(processedFormat == PixelFormat::R8Unorm)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
     #endif
 
     /* Initialize the texture */
-    _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
+    texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear);
 
@@ -81,13 +82,15 @@ GlyphCacheGL::GlyphCacheGL(const PixelFormat format, const Vector2i& size, const
        textureFormat == GL::TextureFormat::SRGB ||
        textureFormat == GL::TextureFormat::RGBA ||
        textureFormat == GL::TextureFormat::SRGBAlpha)
-        _texture.setImage(0, textureFormat, ImageView2D{pixelFormat, GL::PixelType::UnsignedByte, processedSize});
+        texture.setImage(0, textureFormat, ImageView2D{pixelFormat, GL::PixelType::UnsignedByte, processedSize});
     else
-        _texture.setStorage(1, textureFormat, processedSize);
+        texture.setStorage(1, textureFormat, processedSize);
     #else
-    _texture.setStorage(1, GL::textureFormat(processedFormat), processedSize);
+    texture.setStorage(1, GL::textureFormat(processedFormat), processedSize);
     #endif
 }
+
+GlyphCacheGL::GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{Containers::pointer<State>(format, size, processedFormat, processedSize, padding)} {}
 
 GlyphCacheGL::GlyphCacheGL(const PixelFormat format, const Vector2i& size, const Vector2i& padding): GlyphCacheGL{format, size, format, size, padding} {}
 
@@ -104,11 +107,19 @@ GlyphCacheGL::GlyphCacheGL(const Vector2i& size, const Vector2i& padding): Glyph
 GlyphCacheGL::GlyphCacheGL(const Vector2i& size, const Vector2i& processedSize, const Vector2i& padding): GlyphCacheGL{PixelFormat::R8Unorm, size, PixelFormat::R8Unorm, processedSize, padding} {}
 #endif
 
-GlyphCacheGL::GlyphCacheGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate}, _texture{NoCreate} {}
+GlyphCacheGL::GlyphCacheGL(Containers::Pointer<State>&& state) noexcept: AbstractGlyphCache{Utility::move(state)} {}
+
+GlyphCacheGL::GlyphCacheGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate} {}
+
+GL::Texture2D& GlyphCacheGL::texture() {
+    return static_cast<State&>(*_state).texture;
+}
 
 GlyphCacheFeatures GlyphCacheGL::doFeatures() const { return {}; }
 
 void GlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) {
+    auto& state = static_cast<State&>(*_state);
+
     CORRADE_ASSERT(format() == processedFormat() && size() == processedSize(),
         "Text::GlyphCacheGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size", );
 
@@ -126,11 +137,11 @@ void GlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) 
            formatExtra() and everything else from the view afterwards. */
         #ifndef MAGNUM_TARGET_WEBGL
         if(image.format() == PixelFormat::R8Unorm && GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
-            _texture.setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte, size().xy(), image.data()});
+            state.texture.setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte, size().xy(), image.data()});
         } else
         #endif
         {
-            _texture.setSubImage(0, {}, ImageView2D{image.format(), size().xy(), image.data()});
+            state.texture.setSubImage(0, {}, ImageView2D{image.format(), size().xy(), image.data()});
         }
         #ifdef MAGNUM_TARGET_WEBGL
         static_cast<void>(offset);
@@ -146,11 +157,11 @@ void GlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) 
            format is Red instead of Luminance */
         #ifdef MAGNUM_TARGET_GLES2
         if(image.format() == PixelFormat::R8Unorm && GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
-            _texture.setSubImage(0, offset, ImageView2D{image.storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, image.size(), image.data()});
+            state.texture.setSubImage(0, offset, ImageView2D{image.storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, image.size(), image.data()});
         } else
         #endif
         {
-            _texture.setSubImage(0, offset, image);
+            state.texture.setSubImage(0, offset, image);
         }
     }
     #endif
@@ -172,33 +183,39 @@ void GlyphCacheGL::doSetProcessedImage(const Vector2i& offset, const ImageView2D
     }
     #endif
 
-    texture().setSubImage(0, offset, imageToUse);
+    static_cast<State&>(*_state).texture.setSubImage(0, offset, imageToUse);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 Image3D GlyphCacheGL::doProcessedImage() {
-    Image2D out = _texture.image(0, PixelFormat::R8Unorm);
+    Image2D out = static_cast<State&>(*_state).texture.image(0, PixelFormat::R8Unorm);
     return Image3D{out.format(), {out.size(), 1}, out.release()};
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-GlyphCacheArrayGL::GlyphCacheArrayGL(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{format, size, processedFormat, processedSize, padding} {
+GlyphCacheArrayGL::State::State(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache::State{format, size, processedFormat, processedSize, padding} {
     #ifndef MAGNUM_TARGET_GLES
     if(processedFormat == PixelFormat::R8Unorm)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
     #endif
 
     /* Initialize the texture */
-    _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
+    texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setStorage(1, GL::textureFormat(processedFormat), {processedSize, size.z()});
 }
 
+GlyphCacheArrayGL::GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{Containers::pointer<State>(format, size, processedFormat, processedSize, padding)} {}
+
 GlyphCacheArrayGL::GlyphCacheArrayGL(const PixelFormat format, const Vector3i& size, const Vector2i& padding): GlyphCacheArrayGL{format, size, format, size.xy(), padding} {}
 
-GlyphCacheArrayGL::GlyphCacheArrayGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate}, _texture{NoCreate} {}
+GlyphCacheArrayGL::GlyphCacheArrayGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate} {}
+
+GL::Texture2DArray& GlyphCacheArrayGL::texture() {
+    return static_cast<State&>(*_state).texture;
+}
 
 GlyphCacheFeatures GlyphCacheArrayGL::doFeatures() const { return {}; }
 
@@ -206,7 +223,7 @@ void GlyphCacheArrayGL::doSetImage(const Vector3i& offset, const ImageView3D& im
     CORRADE_ASSERT(format() == processedFormat() && size() == processedSize(),
         "Text::GlyphCacheArrayGL::flushImage(): subclass expected to provide a doSetImage() implementation to handle different processed format or size", );
 
-    _texture.setSubImage(0, offset, image);
+    static_cast<State&>(*_state).texture.setSubImage(0, offset, image);
 }
 #endif
 

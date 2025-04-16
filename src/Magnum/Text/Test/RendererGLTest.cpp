@@ -45,6 +45,10 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
+#endif
 #include "Magnum/Shaders/VectorGL.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractShaper.h"

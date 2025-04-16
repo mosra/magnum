@@ -980,6 +980,17 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
         CORRADE_DEPRECATED("use glyph() instead") std::pair<Vector2i, Range2Di> operator[](UnsignedInt glyphId) const;
         #endif
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        struct State;
+        Containers::Pointer<State> _state;
+
+        /* Used by GlyphCacheGL, GlyphCacheArrayGL */
+        explicit AbstractGlyphCache(Containers::Pointer<State>&& state) noexcept;
+
     private:
         /** @brief Implementation for @ref features() */
         virtual GlyphCacheFeatures doFeatures() const = 0;
@@ -1040,8 +1051,6 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          */
         virtual void doSetProcessedImage(const Vector2i& offset, const ImageView2D& image);
 
-        struct State;
-        Containers::Pointer<State> _state;
 };
 
 }}

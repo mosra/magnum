@@ -34,10 +34,8 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/GL/Texture.h"
-#ifndef MAGNUM_TARGET_GLES2
-#include "Magnum/GL/TextureArray.h"
-#endif
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 
 namespace Magnum { namespace Text {
@@ -154,7 +152,7 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
         explicit GlyphCacheGL(NoCreateT) noexcept;
 
         /** @brief Cache texture */
-        GL::Texture2D& texture() { return _texture; }
+        GL::Texture2D& texture();
 
     protected:
         /**
@@ -188,7 +186,10 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
     #else
     protected:
     #endif
-        GL::Texture2D _texture;
+        struct State;
+
+        /* Used by DistanceFieldGlyphCacheGL */
+        explicit GlyphCacheGL(Containers::Pointer<State>&& state) noexcept;
 
     private:
         MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
@@ -286,14 +287,14 @@ class MAGNUM_TEXT_EXPORT GlyphCacheArrayGL: public AbstractGlyphCache {
         explicit GlyphCacheArrayGL(NoCreateT) noexcept;
 
         /** @brief Cache texture */
-        GL::Texture2DArray& texture() { return _texture; }
+        GL::Texture2DArray& texture();
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #else
     protected:
     #endif
-        GL::Texture2DArray _texture;
+        struct State;
 
     private:
         MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;

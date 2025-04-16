@@ -35,7 +35,6 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/Text/GlyphCacheGL.h"
-#include "Magnum/TextureTools/DistanceFieldGL.h"
 
 namespace Magnum { namespace Text {
 
@@ -154,9 +153,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheGL: public GlyphCacheGL {
          * texture.
          * @m_deprecated_since_latest Use @ref processedSize() instead.
          */
-        CORRADE_DEPRECATED("use processedSize() instead") Vector2i distanceFieldTextureSize() const {
-            return processedSize().xy();
-        }
+        CORRADE_DEPRECATED("use processedSize() instead") Vector2i distanceFieldTextureSize() const;
 
         /**
          * @brief Set a distance field cache image
@@ -171,10 +168,10 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheGL: public GlyphCacheGL {
         #endif
 
     private:
+        struct State;
+
         MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
         MAGNUM_TEXT_LOCAL void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
-
-        TextureTools::DistanceFieldGL _distanceField;
 };
 
 }}

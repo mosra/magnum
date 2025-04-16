@@ -61,6 +61,7 @@ set(MagnumText_HEADERS
 
 set(MagnumText_PRIVATE_HEADERS
     Implementation/printFourCC.h
+    Implementation/abstractGlyphCacheState.h
     Implementation/rendererState.h)
 
 if(MAGNUM_TARGET_GL)
@@ -72,6 +73,8 @@ if(MAGNUM_TARGET_GL)
         DistanceFieldGlyphCacheGL.h
         GlyphCacheGL.h
         RendererGL.h)
+    list(APPEND MagnumText_PRIVATE_HEADERS
+        Implementation/glyphCacheGLState.h)
     if(MAGNUM_BUILD_DEPRECATED)
         list(APPEND MagnumText_HEADERS
             DistanceFieldGlyphCache.h

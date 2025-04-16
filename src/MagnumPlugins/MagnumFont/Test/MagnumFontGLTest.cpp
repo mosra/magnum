@@ -38,6 +38,7 @@
 #endif
 #include "Magnum/Math/Range.h"
 #include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Texture.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/GlyphCacheGL.h"
 #include "Magnum/Trade/AbstractImporter.h"

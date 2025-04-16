@@ -42,6 +42,10 @@
 #include "Magnum/GL/PixelFormat.h"
 #endif
 #include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
+#endif
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
