@@ -26,18 +26,15 @@
 
 #include "AbstractGlyphCache.h"
 
-#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Triple.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/Triple.h>
 
-#include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
-#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/TextureTools/Atlas.h"
+#include "Magnum/Text/Implementation/abstractGlyphCacheState.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/ArrayViewStl.h>
@@ -70,51 +67,6 @@ Debug& operator<<(Debug& debug, const GlyphCacheFeatures value) {
     });
 }
 
-struct AbstractGlyphCache::State {
-    explicit State(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding);
-
-    Image3D image;
-    TextureTools::AtlasLandfill atlas;
-
-    PixelFormat processedFormat;
-    Vector2i processedSize;
-    Vector2i padding;
-
-    /* 0/4 bytes free */
-
-    /* First element is glyph position relative to a point on the baseline,
-       second layer in the texture atlas, third a region in the atlas
-       slice. Index of the item is ID of the glyph in the cache, refered to
-       from the fontGlyphMapping array. Index 0 is reserved for an invalid
-       glyph. */
-    Containers::Array<Containers::Triple<Vector2i, Int, Range2Di>> glyphs;
-    /* `fontRanges[i]` to `fontRanges[i + 1]` is the range in
-       `fontGlyphMapping` containing a mapping for glyphs from font `i`,
-       `fontGlyphMapping[fontRanges[i]] + j` is then mapping from glyph ID `j`
-       from font `i` to index in the `glyphs` array, or is 0 if given
-       glyph isn't present in the cache (which then maps to the invalid
-       glyph). */
-    struct Font {
-        UnsignedInt offset;
-        /* 4 bytes free on 64b, but not so critical I think */
-        const AbstractFont* pointer;
-    };
-    Containers::Array<Font> fonts;
-    /* With an assumption that majority of font glyphs get put into a cache,
-       this achieves O(1) mapping from a font ID + font-specific glyph ID pair
-       to a cache-global glyph ID with far less overhead than a hashmap would,
-       and much less memory used as well compared to storing a key, value and a
-       hash for each mapping entry.
-
-       Another assumption is that there's no more than 64k glyphs in total,
-       which makes the mapping save half memory compared to storing 32-bit
-       ints. 64K glyphs is enough to fill a 4K texture with 16x16 glyphs, which
-       seems enough for now. It however might get reached at some point in
-       practice, in which case the type would simply get changed to a 32-bit
-       one (and the assertion in addGlyph() then removed). */
-    Containers::Array<UnsignedShort> fontGlyphMapping;
-};
-
 AbstractGlyphCache::State::State(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): image{format, size, Containers::Array<char>{ValueInit, 4*((pixelFormatSize(format)*size.x() + 3)/4)*size.y()*size.z()}}, atlas{NoCreate}, processedFormat{processedFormat}, processedSize{processedSize}, padding{padding} {
     CORRADE_ASSERT(size.product(),
         "Text::AbstractGlyphCache: expected non-zero size, got" << Debug::packed << size, );
@@ -137,6 +89,8 @@ AbstractGlyphCache::State::State(const PixelFormat format, const Vector3i& size,
     arrayAppend(fonts, InPlaceInit, 0u, nullptr);
 }
 
+AbstractGlyphCache::State::~State() = default;
+
 AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): _state{InPlaceInit, format, size, processedFormat, processedSize, padding} {}
 
 AbstractGlyphCache::AbstractGlyphCache(const PixelFormat format, const Vector3i& size, const PixelFormat processedFormat, const Vector2i& processedSize): AbstractGlyphCache{format, size, processedFormat, processedSize, Vector2i{1}} {}
@@ -158,6 +112,8 @@ AbstractGlyphCache::AbstractGlyphCache(const Vector2i& size, const Vector2i& pad
 
 AbstractGlyphCache::AbstractGlyphCache(const Vector2i& size): AbstractGlyphCache{PixelFormat::R8Unorm, size, Vector2i{1}} {}
 #endif
+
+AbstractGlyphCache::AbstractGlyphCache(Containers::Pointer<State>&& state) noexcept: _state{Utility::move(state)} {}
 
 AbstractGlyphCache::AbstractGlyphCache(NoCreateT) noexcept {}
 

@@ -39,11 +39,19 @@
 #endif
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Range.h"
+#include "Magnum/Text/Implementation/glyphCacheGLState.h"
+#include "Magnum/TextureTools/DistanceFieldGL.h"
 
 namespace Magnum { namespace Text {
 
-DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(const Vector2i& size, const Vector2i& processedSize, const UnsignedInt radius):
-    GlyphCacheGL{PixelFormat::R8Unorm, size,
+struct DistanceFieldGlyphCacheGL::State: GlyphCacheGL::State {
+    explicit State(const Vector2i& size, const Vector2i& processedSize, UnsignedInt radius);
+
+    TextureTools::DistanceFieldGL distanceField;
+};
+
+DistanceFieldGlyphCacheGL::State::State(const Vector2i& size, const Vector2i& processedSize, const UnsignedInt radius):
+    GlyphCacheGL::State{PixelFormat::R8Unorm, size,
         #if !defined(MAGNUM_TARGET_GLES) || !defined(MAGNUM_TARGET_GLES2)
         PixelFormat::R8Unorm,
         #else
@@ -58,7 +66,7 @@ DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(const Vector2i& size, const
             PixelFormat::RGBA8Unorm,
         #endif
         processedSize, Vector2i(radius)},
-    _distanceField{radius}
+    distanceField{radius}
 {
     /* Replicating the assertion from TextureTools::DistanceFieldGL so it gets
        checked during construction already instead of only later during the
@@ -76,7 +84,15 @@ DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(const Vector2i& size, const
     #endif
 }
 
-DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(NoCreateT) noexcept: GlyphCacheGL{NoCreate}, _distanceField{NoCreate} {}
+DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(const Vector2i& size, const Vector2i& processedSize, UnsignedInt radius): GlyphCacheGL{Containers::pointer<State>(size, processedSize, radius)} {}
+
+DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(NoCreateT) noexcept: GlyphCacheGL{NoCreate} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Vector2i DistanceFieldGlyphCacheGL::distanceFieldTextureSize() const {
+    return processedSize().xy();
+}
+#endif
 
 GlyphCacheFeatures DistanceFieldGlyphCacheGL::doFeatures() const {
     return GlyphCacheFeature::ImageProcessing
@@ -87,6 +103,8 @@ GlyphCacheFeatures DistanceFieldGlyphCacheGL::doFeatures() const {
 }
 
 void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) {
+    auto& state = static_cast<State&>(*_state);
+
     GL::Texture2D input;
     input.setWrapping(GL::SamplerWrapping::ClampToEdge)
         /* Use nearest filter to avoid minor rounding errors on ES2 compared to
@@ -110,7 +128,7 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageVi
     #endif
     {
         input.setImage(0, GL::textureFormat(image.format()), ImageView2D{image.format(), size().xy(), image.data()});
-        _distanceField(input, texture(), {{}, size().xy()/ratio}, size().xy());
+        state.distanceField(input, texture(), {{}, size().xy()/ratio}, size().xy());
         #ifdef MAGNUM_TARGET_WEBGL
         static_cast<void>(offset);
         #endif
@@ -150,7 +168,7 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageVi
             image.data()};
 
         input.setImage(0, GL::textureFormat(paddedImage.format()), paddedImage);
-        _distanceField(input, texture(), Range2Di::fromSize(paddedMinRounded/ratio, paddedImage.size()/ratio), paddedImage.size());
+        state.distanceField(input, texture(), Range2Di::fromSize(paddedMinRounded/ratio, paddedImage.size()/ratio), paddedImage.size());
     }
     #endif
 }

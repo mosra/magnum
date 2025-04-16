@@ -43,6 +43,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/PixelFormat.h"
+#include "Magnum/GL/Texture.h"
 #include "Magnum/Text/DistanceFieldGlyphCacheGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
