@@ -34,7 +34,9 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/Math/Vector2.h"
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Math/Vector2.h" /* default argument in deprecated APIs */
+#endif
 #include "Magnum/GL/GL.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 
@@ -96,7 +98,13 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
          * @p format and @p size, use @ref AbstractGlyphCache(PixelFormat, const Vector3i&, PixelFormat, const Vector2i&, const Vector2i&)
          * to specify different values.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, const Vector2i& padding = Vector2i{1});
+        #else
+        /* To avoid a Vector2 include */
+        explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, const Vector2i& padding);
+        explicit GlyphCacheGL(PixelFormat format, const Vector2i& size);
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -179,7 +187,13 @@ class MAGNUM_TEXT_EXPORT GlyphCacheGL: public AbstractGlyphCache {
          * into account.
          * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
+        #else
+        /* To avoid a Vector2 include */
+        explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding);
+        explicit GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize);
+        #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -247,7 +261,13 @@ class MAGNUM_TEXT_EXPORT GlyphCacheArrayGL: public AbstractGlyphCache {
          * @p format and @p size, use @ref AbstractGlyphCache(PixelFormat, const Vector3i&, PixelFormat, const Vector2i&, const Vector2i&)
          * to specify different values.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, const Vector2i& padding = Vector2i{1});
+        #else
+        /* To avoid a Vector2 include */
+        explicit GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, const Vector2i& padding);
+        explicit GlyphCacheArrayGL(PixelFormat format, const Vector3i& size);
+        #endif
 
         /**
          * @brief Construct with a specific processed format and size
@@ -268,7 +288,13 @@ class MAGNUM_TEXT_EXPORT GlyphCacheArrayGL: public AbstractGlyphCache {
          * has @p processedSize.
          * @see @ref AbstractGlyphCache(PixelFormat, const Vector2i&, const Vector2i&)
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding = Vector2i{1});
+        #else
+        /* To avoid a Vector2 include */
+        explicit GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding);
+        explicit GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize);
+        #endif
 
         /**
          * @brief Construct without creating the internal state and the OpenGL texture object

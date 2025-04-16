@@ -35,6 +35,7 @@
 #if (!defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))) || defined(MAGNUM_BUILD_DEPRECATED)
 #include "Magnum/PixelFormat.h"
 #endif
+#include "Magnum/Math/Vector2.h"
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -91,7 +92,11 @@ GlyphCacheGL::State::State(const PixelFormat format, const Vector2i& size, const
 
 GlyphCacheGL::GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{Containers::pointer<State>(format, size, processedFormat, processedSize, padding)} {}
 
+GlyphCacheGL::GlyphCacheGL(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheGL{format, size, processedFormat, processedSize, Vector2i{1}} {}
+
 GlyphCacheGL::GlyphCacheGL(const PixelFormat format, const Vector2i& size, const Vector2i& padding): GlyphCacheGL{format, size, format, size, padding} {}
+
+GlyphCacheGL::GlyphCacheGL(const PixelFormat format, const Vector2i& size): GlyphCacheGL{format, size, Vector2i{1}} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* The unconditional Optional unwrap in these two may assert in rare cases.
@@ -208,7 +213,11 @@ GlyphCacheArrayGL::State::State(const PixelFormat format, const Vector3i& size, 
 
 GlyphCacheArrayGL::GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): AbstractGlyphCache{Containers::pointer<State>(format, size, processedFormat, processedSize, padding)} {}
 
+GlyphCacheArrayGL::GlyphCacheArrayGL(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheArrayGL{format, size, processedFormat, processedSize, Vector2i{1}} {}
+
 GlyphCacheArrayGL::GlyphCacheArrayGL(const PixelFormat format, const Vector3i& size, const Vector2i& padding): GlyphCacheArrayGL{format, size, format, size.xy(), padding} {}
+
+GlyphCacheArrayGL::GlyphCacheArrayGL(const PixelFormat format, const Vector3i& size): GlyphCacheArrayGL{format, size, Vector2i{1}} {}
 
 GlyphCacheArrayGL::GlyphCacheArrayGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate} {}
 
