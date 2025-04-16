@@ -73,7 +73,8 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
         /* ES2 on iOS (apparently independent on the device) has only 8 texture
            units, so be careful to not step over that. ES3 on the same has 16.
            Not using the default (0) because this shader is quite specific.
-           Unit 6 is used by Shaders::Vector and Shaders::DistanceFieldVector. */
+           Unit 6 is used by Shaders::VectorGL and
+           Shaders::DistanceFieldVectorGL. */
         enum: Int { TextureUnit = 7 };
 
         Int _imageSizeInvertedUniform{0};
