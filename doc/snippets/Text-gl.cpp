@@ -131,9 +131,9 @@ shader
 PluginManager::Manager<Text::AbstractFont> manager;
 /* [DistanceFieldGlyphCacheGL-usage] */
 Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
-font->openFile("font.ttf", 96.0f);
+font->openFile("font.ttf", 48.0f);
 
-Text::DistanceFieldGlyphCacheGL cache{Vector2i{1024}, Vector2i{128}, 12};
+Text::DistanceFieldGlyphCacheGL cache{{512, 512}, {128, 128}, 12};
 if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                 "0123456789?!:;,. "))
