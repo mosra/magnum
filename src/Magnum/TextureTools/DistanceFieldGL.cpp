@@ -150,7 +150,7 @@ struct DistanceFieldGL::State {
     GL::Mesh mesh;
 };
 
-DistanceFieldGL::DistanceFieldGL(const UnsignedInt radius): _state{new State{radius}} {
+DistanceFieldGL::DistanceFieldGL(const UnsignedInt radius): _state{InPlaceInit, radius} {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::framebuffer_object);
     #endif
