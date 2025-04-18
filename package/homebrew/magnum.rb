@@ -15,6 +15,11 @@ class Magnum < Formula
     # 2020.06 has the options unprefixed, current master has them prefixed.
     # Options not present in 2020.06 are prefixed always.
     option_prefix = build.head? ? 'MAGNUM_' : ''
+    # 2020.06 has CMake 3.5 as minimum required for backwards compatibility
+    # purposes, but it works with any newer. CMake 4.0 removed compatibility
+    # with it and suggests this as an override.
+    # TODO remove once a new release is finally made
+    extra_cmake_args = build.head? ? [] : ['-DCMAKE_POLICY_VERSION_MINIMUM=3.5']
 
     system "mkdir build"
     cd "build" do
@@ -26,7 +31,7 @@ class Magnum < Formula
         # add this, which ultimately results in `-DCMAKE_FIND_FRAMEWORK=FIRST`
         # being passed to CMake. No idea what's going on, the regular CI build
         # outside of Homebrew (although with CMake 3.26) doesn't need that.
-        *std_cmake_args(find_framework: "FIRST"),
+        *(std_cmake_args(find_framework: "FIRST") + extra_cmake_args),
         # Without this, ARM builds will try to look for dependencies in
         # /usr/local/lib and /usr/lib (which are the default locations) instead
         # of /opt/homebrew/lib which is dedicated for ARM binaries. Please
