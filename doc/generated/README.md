@@ -41,3 +41,17 @@ output is put into `doc/` directory. The executable requires two textures:
 Apply `pngcrush` to the result for smaller file sizes:
 
     for f in $(ls shaders-*.png); do pngcrush -ow $f; done
+
+### Distance field vector images
+
+Similarly as above, just with slightly different parameters. The
+`distancefield-src.png` is generated as full-page PNG output at 192 DPI
+(512x512) from `vector.svg`, the `distancefield-dst.png` is then converted with
+
+```bash
+magnum-distancefieldconverter distancefield-src.png distancefield-dst.png --output-size "128 128" --radius 24
+```
+
+This is chosen so it corresponds to the `TextureTools::DistanceFieldGL` doc
+snippet where it takes a 256x256 image and converts it to 64x64 with a radius
+12, but is scaled twice to look better on HiDPI displays.
