@@ -68,15 +68,18 @@ namespace Implementation {
 @m_since_latest
 
 Renders vector graphics in a form of signed distance field. See
-@ref TextureTools::DistanceFieldGL for more information and @ref VectorGL for a
-simpler variant of this shader. Note that the final rendered outlook will
-greatly depend on radius of input distance field and value passed to
-@ref setSmoothness(). You need to provide @ref Position and
-@ref TextureCoordinates attributes in your triangle mesh and call at least
-@ref bindVectorTexture(). By default, the shader renders the distance field
-texture with a white color in an identity transformation, use
-@ref setTransformationProjectionMatrix(), @ref setColor() and others to
-configure the shader.
+@ref TextureTools::DistanceFieldGL for a way to generate distance field
+textures to use with this shader and for more information about choosing the
+parameters for conversion and rendering. The @ref VectorGL shader is then a
+variant of this shader that doesn't use a distance field texture but rather the
+original input directly.
+
+You need to provide @ref Position and @ref TextureCoordinates attributes in
+your triangle mesh and call at least @ref bindVectorTexture(). By default, the
+shader renders the distance field texture with a white color in an identity
+transformation, use @ref setTransformationProjectionMatrix(), @ref setColor()
+and others to configure the shader. Edge smoothness can be controlled using
+@ref setSmoothness().
 
 Alpha / transparency is supported by the shader implicitly, but to have it
 working on the framebuffer, you need to enable
