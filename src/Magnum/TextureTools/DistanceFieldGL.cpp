@@ -143,19 +143,19 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
 }
 
 struct DistanceFieldGL::State {
-    explicit State(UnsignedInt radius): shader{radius}, radius{radius} {}
+    explicit State(UnsignedInt radius);
 
     DistanceFieldShader shader;
     UnsignedInt radius;
     GL::Mesh mesh;
 };
 
-DistanceFieldGL::DistanceFieldGL(const UnsignedInt radius): _state{InPlaceInit, radius} {
+DistanceFieldGL::State::State(const UnsignedInt radius): shader{radius}, radius{radius} {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::framebuffer_object);
     #endif
 
-    _state->mesh.setPrimitive(GL::MeshPrimitive::Triangles)
+    mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3);
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -167,9 +167,11 @@ DistanceFieldGL::DistanceFieldGL(const UnsignedInt radius): _state{InPlaceInit, 
             {-1.0f, -3.0f},
             { 3.0f,  1.0f}
         };
-        _state->mesh.addVertexBuffer(GL::Buffer{triangle}, 0, DistanceFieldShader::Position());
+        mesh.addVertexBuffer(GL::Buffer{triangle}, 0, DistanceFieldShader::Position());
     }
 }
+
+DistanceFieldGL::DistanceFieldGL(UnsignedInt radius): _state{InPlaceInit, radius} {}
 
 DistanceFieldGL::DistanceFieldGL(NoCreateT) noexcept {}
 
