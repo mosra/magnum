@@ -36,9 +36,9 @@
 #ifdef MAGNUM_TARGET_GLES
 #include "Magnum/DebugTools/TextureImage.h"
 #endif
-#if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
+#if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/PixelFormat.h"
 #endif
 #include "Magnum/GL/OpenGLTester.h"
@@ -163,6 +163,11 @@ void GlyphCacheGLTest::construct() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void GlyphCacheGLTest::constructArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     GlyphCacheArrayGL cache{PixelFormat::R8Unorm, {1024, 2048, 7}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -190,6 +195,11 @@ void GlyphCacheGLTest::constructNoPadding() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void GlyphCacheGLTest::constructNoPaddingArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     GlyphCacheArrayGL cache{PixelFormat::RGBA8Unorm, {1024, 2048, 7}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -224,6 +234,11 @@ void GlyphCacheGLTest::constructProcessed() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void GlyphCacheGLTest::constructProcessedArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     struct Cache: GlyphCacheArrayGL {
         explicit Cache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): GlyphCacheArrayGL{format, size, processedFormat, processedSize, padding} {}
 
@@ -266,6 +281,11 @@ void GlyphCacheGLTest::constructProcessedNoPadding() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void GlyphCacheGLTest::constructProcessedNoPaddingArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     struct Cache: GlyphCacheArrayGL {
         explicit Cache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheArrayGL{format, size, processedFormat, processedSize} {}
 
@@ -378,6 +398,11 @@ void GlyphCacheGLTest::constructMove() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void GlyphCacheGLTest::constructMoveArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     GlyphCacheArrayGL a{PixelFormat::R8Unorm, {1024, 512, 7}};
 
     GlyphCacheArrayGL b = Utility::move(a);
@@ -484,6 +509,11 @@ void GlyphCacheGLTest::setImage() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void GlyphCacheGLTest::setImageArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
     GlyphCacheArrayGL cache{PixelFormat::RG8Unorm, {8, 8, 4}};
 
     /* Fill the texture with non-zero data to verify the padding gets uploaded
@@ -694,6 +724,11 @@ void GlyphCacheGLTest::flushImageSubclassProcessedFormatSize() {
 #ifndef MAGNUM_TARGET_GLES2
 void GlyphCacheGLTest::flushImageSubclassProcessedFormatSizeArray() {
     CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
 
     struct Cache: GlyphCacheArrayGL {
         explicit Cache(PixelFormat format, const Vector3i& size, PixelFormat processedFormat, const Vector2i& processedSize): GlyphCacheArrayGL{format, size, processedFormat, processedSize} {}
