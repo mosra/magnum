@@ -42,31 +42,31 @@ namespace Magnum { namespace Text {
 @brief OpenGL glyph cache with distance field rendering
 @m_since_latest
 
-Unlike the base @ref GlyphCacheGL, this class converts each binary image to a
-distance field. It's possible to only use this cache for monochrome glyphs as
-the internal texture format is single-channel.
+Extends @ref GlyphCacheGL by processing rendered glyphs to a signed distance
+field texture using @ref TextureTools::DistanceFieldGL, allowing them to be
+drawn at different sizes and with various transformations without aliasing
+artifacts. It's possible to only use this cache for monochrome glyphs as the
+internal texture format is single-channel.
 
 @section Text-DistanceFieldGlyphCacheGL-usage Usage
 
 In order to create a distance field glyph cache, the font has to be loaded at a
 size significantly larger than what the resulting text will be. The distance
-field conversion process then converts the input to a fraction of its size
-again, transferring the the extra spatial resolution to distance values. The
-distance values are then used to render an arbitrarily sized text without it
-being jaggy at small sizes and blurry when large.
+field conversion, then converts the input to a fraction of its size again,
+transferring the the extra spatial resolution to distance values. The distance
+values are then used to render an arbitrarily sized text without it being jaggy
+at small sizes and blurry when large.
 
 The process requires three input parameters, size of the source image, size of
 the resulting glyph cache image and a radius for the distance field creation.
-The ratio between the input and output image size is usually four or eight
-times, and the size of the font should match the larger size. So, for example,
-if a @cpp {128, 128} @ce @ref GlyphCacheGL was filled with a 12 pt font, a
-@cpp {1024, 1024} @ce source image for the distance field should use a 96 pt
-font. The radius should then be chosen so it's at least one or two pixels in
-the scaled-down result, so in this case at least 8. Values less than that will
-result in aliasing artifacts. Very high radius values are needed only if
-outlining, thinning, thickening or shadow effects will be used when rendering,
-using them leads to precision loss when the distance field is stored in 8-bit
-channels.
+Their relation and effect on output quality and memory use is described in
+detail in @ref TextureTools-DistanceFieldGL-parameters "TextureTools::DistanceFieldGL docs".
+In short, the ratio between the input and output image size is usually four or
+eight times, and the size of the font should match the larger size. So, for
+example, if a @cpp {128, 128} @ce @ref GlyphCacheGL would be filled with a 12
+pt font, a @cpp {512, 512} @ce source image for the distance field should use a
+48 pt font. The radius should then be chosen so it's at least one or two pixels
+in the scaled-down result, so in this case at least @cpp 4 @ce:
 
 @snippet Text-gl.cpp DistanceFieldGlyphCacheGL-usage
 
@@ -112,17 +112,18 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheGL: public GlyphCacheGL {
          * @brief Constructor
          * @param size              Size of the source image
          * @param processedSize     Resulting distance field texture size
-         * @param radius            Distance field computation radius
+         * @param radius            Distance field calculation radius
          *
-         * See @ref TextureTools::DistanceField for more information about the
-         * parameters. Size restrictions from it apply here as well, in
+         * See @ref TextureTools::DistanceFieldGL for more information about
+         * the parameters. Size restrictions from it apply here as well, in
          * particular the ratio of @p size and @p processedSize is expected to
          * be a multiple of 2.
          *
          * Sets the @ref processedFormat() to @ref PixelFormat::R8Unorm, if
-         * available. On OpenGL ES 3.0+ and WebGL 2 uses  always. On desktop
-         * OpenGL requires @gl_extension{ARB,texture_rg} (part of OpenGL 3.0),
-         * on ES2 uses  @gl_extension{EXT,texture_rg} if available and uses
+         * available. On OpenGL ES 3.0+ and WebGL 2 uses
+         * @ref PixelFormat::R8Unorm always. On desktop OpenGL requires
+         * @gl_extension{ARB,texture_rg} (part of OpenGL 3.0), on ES2 uses
+         * @gl_extension{EXT,texture_rg} if available and uses
          * @ref PixelFormat::RGB8Unorm as fallback if not, on WebGL 1 uses
          * @ref PixelFormat::RGB8Unorm always.
          */
