@@ -650,12 +650,21 @@ void GlyphCacheGLTest::setImageArray() {
     CORRADE_COMPARE_AS(image0,
         (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData03}),
         DebugTools::CompareImage);
-    CORRADE_COMPARE_AS(image1,
-        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData1}),
-        DebugTools::CompareImage);
-    CORRADE_COMPARE_AS(image2,
-        (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData2}),
-        DebugTools::CompareImage);
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(GL::Context::current().detectedDriver() >= GL::Context::DetectedDriver::SwiftShader,
+            "SwiftShader is trash and doesn't implement reading from non-zero array layers.");
+        #endif
+        CORRADE_COMPARE_AS(image1,
+            (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData1}),
+            DebugTools::CompareImage);
+        CORRADE_COMPARE_AS(image2,
+            (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData2}),
+            DebugTools::CompareImage);
+    }
+    /* This is broken on SwiftShader too, returning the first layer (or all
+       zeros) but since we expect the same as first layer (which is all zeros),
+       it passes */
     CORRADE_COMPARE_AS(image3,
         (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData03}),
         DebugTools::CompareImage);
