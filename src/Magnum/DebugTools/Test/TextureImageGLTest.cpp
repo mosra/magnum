@@ -79,33 +79,52 @@ struct TextureImageGLTest: GL::OpenGLTester {
     #endif
 };
 
+const struct {
+    const char* name;
+    Int level, sizeMultiplier;
+} LevelData[]{
+    {"", 0, 1},
+    {"non-zero level", 3, 16},
+};
+
 TextureImageGLTest::TextureImageGLTest() {
-    addTests({&TextureImageGLTest::subImage2D,
-              &TextureImageGLTest::subImage2DNotReadable,
+    addInstancedTests({&TextureImageGLTest::subImage2D},
+        Containers::arraySize(LevelData));
+
+    addTests({&TextureImageGLTest::subImage2DNotReadable,
               #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
               &TextureImageGLTest::subImage2DBuffer,
               &TextureImageGLTest::subImage2DBufferNotReadable,
               #endif
-              &TextureImageGLTest::subImage2DGeneric,
+              });
 
-              &TextureImageGLTest::subImageCube,
-              &TextureImageGLTest::subImageCubeNotReadable,
+    addInstancedTests({&TextureImageGLTest::subImage2DGeneric,
+
+                       &TextureImageGLTest::subImageCube},
+        Containers::arraySize(LevelData));
+
+    addTests({&TextureImageGLTest::subImageCubeNotReadable,
               #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
               &TextureImageGLTest::subImageCubeBuffer,
               &TextureImageGLTest::subImageCubeBufferNotReadable,
               #endif
-
-              #ifndef MAGNUM_TARGET_GLES2
-              &TextureImageGLTest::subImage2DUInt,
-              &TextureImageGLTest::subImage2DFloat,
-              &TextureImageGLTest::subImage2DFloatGeneric,
-              &TextureImageGLTest::subImage2DHalf,
-              &TextureImageGLTest::subImage2DHalfGeneric,
-              #endif
               });
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&TextureImageGLTest::subImage2DUInt,
+                       &TextureImageGLTest::subImage2DFloat,
+                       &TextureImageGLTest::subImage2DFloatGeneric,
+                       &TextureImageGLTest::subImage2DHalf,
+                       &TextureImageGLTest::subImage2DHalfGeneric},
+        Containers::arraySize(LevelData));
+    #endif
 }
 
 using namespace Math::Literals;
+
+/* Zero data large enough to fill the base level in case the test is reading a
+   non-zero level */
+constexpr char DataZero[2*2*4*8*8]{};
 
 constexpr UnsignedByte Data2D[] = { 0x00, 0x01, 0x02, 0x03,
                                     0x04, 0x05, 0x06, 0x07,
@@ -113,16 +132,29 @@ constexpr UnsignedByte Data2D[] = { 0x00, 0x01, 0x02, 0x03,
                                     0x0c, 0x0d, 0x0e, 0x0f };
 
 void TextureImageGLTest::subImage2D() {
-    GL::Texture2D texture;
-    texture.setImage(0,
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        GL::TextureFormat::RGBA8,
-        #else
-        GL::TextureFormat::RGBA,
-        #endif
-        ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D});
+    auto&& data = LevelData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
-    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    constexpr GL::TextureFormat format = GL::TextureFormat::RGBA8;
+    #else
+    constexpr GL::TextureFormat format = GL::TextureFormat::RGBA;
+    #endif
+
+    GL::Texture2D texture;
+
+    /* If reading a non-zero level, need to fill all others levels, including
+       the final 1x1 level, to have the texture framebuffer-complete */
+    if(data.level != 0) for(Int i = 0; i != data.level + 2; ++i) {
+        if(i == data.level)
+            continue;
+
+        texture.setImage(i, format, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{1}*(1 << (data.level - i + 1)), DataZero});
+    }
+
+    texture.setImage(data.level, format, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D});
+
+    Image2D image = textureSubImage(texture, data.level, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::RGBA));
@@ -210,16 +242,29 @@ void TextureImageGLTest::subImage2DBufferNotReadable() {
 #endif
 
 void TextureImageGLTest::subImage2DGeneric() {
-    GL::Texture2D texture;
-    texture.setImage(0,
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        GL::TextureFormat::RGBA8,
-        #else
-        GL::TextureFormat::RGBA,
-        #endif
-        ImageView2D{PixelFormat::RGBA8Unorm, Vector2i{2}, Data2D});
+    auto&& data = LevelData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
-    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::RGBA8Unorm});
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    constexpr GL::TextureFormat format = GL::TextureFormat::RGBA8;
+    #else
+    constexpr GL::TextureFormat format = GL::TextureFormat::RGBA;
+    #endif
+
+    GL::Texture2D texture;
+
+    /* If reading a non-zero level, need to fill all others levels, including
+       the final 1x1 level, to have the texture framebuffer-complete */
+    if(data.level != 0) for(Int i = 0; i != data.level + 2; ++i) {
+        if(i == data.level)
+            continue;
+
+        texture.setImage(i, format, ImageView2D{PixelFormat::RGBA8Unorm, Vector2i{1}*(1 << (data.level - i + 1)), DataZero});
+    }
+
+    texture.setImage(data.level, format, ImageView2D{PixelFormat::RGBA8Unorm, Vector2i{2}, Data2D});
+
+    Image2D image = textureSubImage(texture, data.level, {{}, Vector2i{2}}, {PixelFormat::RGBA8Unorm});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
@@ -230,7 +275,8 @@ void TextureImageGLTest::subImage2DGeneric() {
 }
 
 void TextureImageGLTest::subImageCube() {
-    ImageView2D view{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
+    auto&& data = LevelData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     constexpr GL::TextureFormat format = GL::TextureFormat::RGBA8;
@@ -239,14 +285,34 @@ void TextureImageGLTest::subImageCube() {
     #endif
 
     GL::CubeMapTexture texture;
-    texture.setImage(GL::CubeMapCoordinate::PositiveX, 0, format, view)
-           .setImage(GL::CubeMapCoordinate::NegativeX, 0, format, view)
-           .setImage(GL::CubeMapCoordinate::PositiveY, 0, format, view)
-           .setImage(GL::CubeMapCoordinate::NegativeY, 0, format, view)
-           .setImage(GL::CubeMapCoordinate::PositiveZ, 0, format, view)
-           .setImage(GL::CubeMapCoordinate::NegativeZ, 0, format, view);
 
-    Image2D image = textureSubImage(texture, GL::CubeMapCoordinate::PositiveX, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
+    /* If reading a non-zero level, need to fill all others levels, including
+       the final 1x1 level, to have the texture framebuffer-complete */
+    if(data.level != 0) for(Int i = 0; i != data.level + 2; ++i) {
+        if(i == data.level)
+            continue;
+
+        ImageView2D view{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{1}*(1 << (data.level - i + 1)), DataZero};
+        texture
+            .setImage(GL::CubeMapCoordinate::PositiveX, i, format, view)
+            .setImage(GL::CubeMapCoordinate::NegativeX, i, format, view)
+            .setImage(GL::CubeMapCoordinate::PositiveY, i, format, view)
+            .setImage(GL::CubeMapCoordinate::NegativeY, i, format, view)
+            .setImage(GL::CubeMapCoordinate::PositiveZ, i, format, view)
+            .setImage(GL::CubeMapCoordinate::NegativeZ, i, format, view);
+    }
+
+    ImageView2D view{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
+
+    texture
+        .setImage(GL::CubeMapCoordinate::PositiveX, data.level, format, view)
+        .setImage(GL::CubeMapCoordinate::NegativeX, data.level, format, view)
+        .setImage(GL::CubeMapCoordinate::PositiveY, data.level, format, view)
+        .setImage(GL::CubeMapCoordinate::NegativeY, data.level, format, view)
+        .setImage(GL::CubeMapCoordinate::PositiveZ, data.level, format, view)
+        .setImage(GL::CubeMapCoordinate::NegativeZ, data.level, format, view);
+
+    Image2D image = textureSubImage(texture, GL::CubeMapCoordinate::PositiveX, data.level, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::RGBA));
@@ -364,15 +430,20 @@ constexpr UnsignedInt Data2DUInt[] = { 0xcafebabe,
                                        0xdeadbabe };
 
 void TextureImageGLTest::subImage2DUInt() {
+    auto&& data = LevelData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_integer>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_integer::string() << "is not supported.");
     #endif
 
     GL::Texture2D texture;
-    texture.setImage(0, GL::TextureFormat::R32UI, ImageView2D{GL::PixelFormat::RedInteger, GL::PixelType::UnsignedInt, Vector2i{2}, Data2DUInt});
+    texture
+        .setStorage(data.level + 1, GL::TextureFormat::R32UI, Vector2i{2}*data.sizeMultiplier)
+        .setSubImage(data.level, {}, ImageView2D{GL::PixelFormat::RedInteger, GL::PixelType::UnsignedInt, Vector2i{2}, Data2DUInt});
 
-    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RedInteger, GL::PixelType::UnsignedInt});
+    Image2D image = textureSubImage(texture, data.level, {{}, Vector2i{2}}, {GL::PixelFormat::RedInteger, GL::PixelType::UnsignedInt});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::RedInteger));
@@ -389,16 +460,19 @@ constexpr Float Data2DFloat[] = { 1.0f,
                                   1.41421f };
 
 void TextureImageGLTest::subImage2DFloat() {
+    auto&& data = LevelData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     GL::Texture2D texture;
     texture
         /* If I don't set min filter, SwiftShader will return all zeros. ARM
            Mali G71 (on Huawei P10) needs the mag filter as well. */
         .setMinificationFilter(GL::SamplerFilter::Nearest)
         .setMagnificationFilter(GL::SamplerFilter::Nearest)
-        .setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
-        .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
+        .setStorage(data.level + 1, GL::TextureFormat::R32F, Vector2i{2}*data.sizeMultiplier)
+        .setSubImage(data.level, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
 
-    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::Red, GL::PixelType::Float});
+    Image2D image = textureSubImage(texture, data.level, {{}, Vector2i{2}}, {GL::PixelFormat::Red, GL::PixelType::Float});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::Red));
@@ -410,16 +484,19 @@ void TextureImageGLTest::subImage2DFloat() {
 }
 
 void TextureImageGLTest::subImage2DFloatGeneric() {
+    auto&& data = LevelData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     GL::Texture2D texture;
     texture
         /* If I don't set min filter, SwiftShader will return all zeros. ARM
            Mali G71 (on Huawei P10) needs the mag filter as well. */
         .setMinificationFilter(GL::SamplerFilter::Nearest)
         .setMagnificationFilter(GL::SamplerFilter::Nearest)
-        .setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
-        .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
+        .setStorage(data.level + 1, GL::TextureFormat::R32F, Vector2i{2}*data.sizeMultiplier)
+        .setSubImage(data.level, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
 
-    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::R32F});
+    Image2D image = textureSubImage(texture, data.level, {{}, Vector2i{2}}, {PixelFormat::R32F});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), PixelFormat::R32F);
@@ -436,12 +513,15 @@ const Half Data2DHalf[] = { 1.0_h,
                             1.41421_h };
 
 void TextureImageGLTest::subImage2DHalf() {
+    auto&& data = LevelData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     GL::Texture2D texture;
     texture
-        .setStorage(1, GL::TextureFormat::R16F, Vector2i{2})
-        .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Half, Vector2i{2}, Data2DHalf});
+        .setStorage(data.level + 1, GL::TextureFormat::R16F, Vector2i{2}*data.sizeMultiplier)
+        .setSubImage(data.level, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Half, Vector2i{2}, Data2DHalf});
 
-    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::Red, GL::PixelType::Half});
+    Image2D image = textureSubImage(texture, data.level, {{}, Vector2i{2}}, {GL::PixelFormat::Red, GL::PixelType::Half});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::Red));
@@ -453,12 +533,15 @@ void TextureImageGLTest::subImage2DHalf() {
 }
 
 void TextureImageGLTest::subImage2DHalfGeneric() {
+    auto&& data = LevelData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     GL::Texture2D texture;
     texture
-        .setStorage(1, GL::TextureFormat::R16F, Vector2i{2})
-        .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Half, Vector2i{2}, Data2DHalf});
+        .setStorage(data.level + 1, GL::TextureFormat::R16F, Vector2i{2}*data.sizeMultiplier)
+        .setSubImage(data.level, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Half, Vector2i{2}, Data2DHalf});
 
-    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::R16F});
+    Image2D image = textureSubImage(texture, data.level, {{}, Vector2i{2}}, {PixelFormat::R16F});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE(image.format(), PixelFormat::R16F);
@@ -468,7 +551,6 @@ void TextureImageGLTest::subImage2DHalfGeneric() {
         Containers::arrayView(Data2DHalf),
         TestSuite::Compare::Container);
 }
-
 #endif
 
 }}}}
