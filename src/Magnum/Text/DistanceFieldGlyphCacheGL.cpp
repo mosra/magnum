@@ -102,7 +102,11 @@ GlyphCacheFeatures DistanceFieldGlyphCacheGL::doFeatures() const {
         ;
 }
 
-void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) {
+void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)) && !defined(CORRADE_NO_ASSERT)
+    offset
+    #endif
+, const ImageView2D& image) {
     auto& state = static_cast<State&>(*_state);
 
     GL::Texture2D input;
@@ -129,9 +133,6 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageVi
     {
         input.setImage(0, GL::textureFormat(image.format()), ImageView2D{image.format(), size().xy(), image.data()});
         state.distanceField(input, texture(), {{}, size().xy()/ratio}, size().xy());
-        #ifdef MAGNUM_TARGET_WEBGL
-        static_cast<void>(offset);
-        #endif
     }
     #ifndef MAGNUM_TARGET_WEBGL
     else
@@ -142,9 +143,6 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i& offset, const ImageVi
         /* The image range was already expanded to include the padding in
            flushImage() */
         CORRADE_INTERNAL_ASSERT(image.storage().skip().xy() == offset);
-        #ifdef CORRADE_NO_ASSERT
-        static_cast<void>(offset);
-        #endif
         const Vector2i paddedMin = image.storage().skip().xy();
         const Vector2i paddedMax = image.size() + image.storage().skip().xy();
 
