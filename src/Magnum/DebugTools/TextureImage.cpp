@@ -71,12 +71,12 @@ class FloatReinterpretShader: public GL::AbstractShaderProgram {
 
         FloatReinterpretShader& setTexture(GL::Texture2D& texture, Int level) {
             texture.bind(0);
-            setUniform(levelUniform, level);
+            setUniform(_levelUniform, level);
             return *this;
         }
 
     private:
-        Int levelUniform;
+        Int _levelUniform;
 };
 
 FloatReinterpretShader::FloatReinterpretShader() {
@@ -103,7 +103,7 @@ FloatReinterpretShader::FloatReinterpretShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    levelUniform = uniformLocation("level"_s);
+    _levelUniform = uniformLocation("level"_s);
     setUniform(uniformLocation("textureData"_s), 0);
 }
 
