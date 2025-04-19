@@ -385,7 +385,7 @@ void DistanceFieldGLTest::formatNotDrawable() {
     #ifdef MAGNUM_TARGET_GLES2
     output.setImage(0, GL::TextureFormat::Luminance, ImageView2D{GL::PixelFormat::Luminance, GL::PixelType::UnsignedByte, Vector2i{4}});
     #else
-    output.setImage(0, GL::TextureFormat::RGB9E5, ImageView2D{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{4}});
+    output.setStorage(1, GL::TextureFormat::RGB9E5, {4, 4});
     #endif
 
     DistanceFieldGL distanceField{4};
