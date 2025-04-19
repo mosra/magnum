@@ -811,7 +811,7 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(cols, rows, ...)   \
+#define _MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(cols, rows, ...)  \
     static __VA_ARGS__& from(T* data) {                                     \
         return *reinterpret_cast<__VA_ARGS__*>(data);                       \
     }                                                                       \
@@ -866,7 +866,7 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<
 /* Unlike with Vector, these are kept non-member and non-friend as it'd mean
    too many macro combinations otherwise */
 
-#define MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(...)                          \
+#define _MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(...)                         \
     template<std::size_t size, class T> inline __VA_ARGS__ operator*(typename std::common_type<T>::type number, const __VA_ARGS__& matrix) { \
         return number*static_cast<const Math::RectangularMatrix<size, size, T>&>(matrix); \
     }                                                                       \
@@ -877,7 +877,7 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<
         return Math::RectangularMatrix<1, size, T>(vector)*matrix;          \
     }
 
-#define MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(size, Type)                  \
+#define _MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(size, Type)                 \
     template<class T> inline Type<T> operator*(typename std::common_type<T>::type number, const Type<T>& matrix) { \
         return number*static_cast<const Math::RectangularMatrix<size, size, T>&>(matrix); \
     }                                                                       \

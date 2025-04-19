@@ -1159,7 +1159,7 @@ class MAGNUM_GL_EXPORT Context::Configuration {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Type)       \
+#define _MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Type)      \
     Type& addDisabledWorkarounds(const Containers::StringIterable& workarounds) { \
         GL::Context::Configuration::addDisabledWorkarounds(workarounds);    \
         return *this;                                                       \

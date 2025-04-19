@@ -575,7 +575,7 @@ template<class T> class BasicMat2: public Math::Matrix<2, T> {
     public:
         template<class ...U> constexpr BasicMat2(U&&... args): Math::Matrix<2, T>{args...} {}
 
-        MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(2, BasicMat2, BasicVec2)
+        _MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(2, BasicMat2, BasicVec2)
 };
 
 typedef BasicVec2<Float> Vec2;

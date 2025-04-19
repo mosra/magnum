@@ -764,11 +764,11 @@ template<class T> class Color3: public Vector3<T> {
             return Implementation::toXyz<T>(*this);
         }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Color3)
+        _MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Color3)
 };
 
 #ifdef CORRADE_MSVC2015_COMPATIBILITY
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
+_MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
 #endif
 
 /**
@@ -1292,11 +1292,11 @@ class Color4: public Vector4<T> {
         constexpr const Color3<T> rgb() const { return xyz(); }
         #endif
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Color4)
+        _MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Color4)
 };
 
 #ifdef CORRADE_MSVC2015_COMPATIBILITY
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Color4)
+_MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Color4)
 #endif
 
 /** @relatesalso Color3

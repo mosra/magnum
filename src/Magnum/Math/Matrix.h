@@ -307,7 +307,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         Matrix<size, T> transposed() const {
             return RectangularMatrix<size, size, T>::transposed();
         }
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, Matrix<size, T>)
+        _MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, Matrix<size, T>)
         #endif
 
     private:
@@ -352,10 +352,10 @@ additional functions for transformations in 3D.
 template<class T> using Matrix4x4 = Matrix<4, T>;
 #endif
 
-MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(Matrix<size, T>)
+_MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(Matrix<size, T>)
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(size, Type, VectorType)       \
+#define _MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(size, Type, VectorType)      \
     VectorType<T>& operator[](std::size_t col) {                            \
         return static_cast<VectorType<T>&>(Matrix<size, T>::operator[](col)); \
     }                                                                       \

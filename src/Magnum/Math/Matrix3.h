@@ -747,12 +747,12 @@ template<class T> class Matrix3: public Matrix3x3<T> {
             return ((*this)*Vector3<T>(vector, T(1))).xy();
         }
 
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(3, 3, Matrix3<T>)
-        MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(3, Matrix3, Vector3)
+        _MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(3, 3, Matrix3<T>)
+        _MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(3, Matrix3, Vector3)
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(3, Matrix3)
+_MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(3, Matrix3)
 #endif
 
 template<class T> Matrix3<T> Matrix3<T>::rotation(const Rad<T> angle) {
