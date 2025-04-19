@@ -641,6 +641,8 @@ See also:
 -   @ref DebugTools::textureSubImage() now checks that the framebuffer is
     complete before attempting to read from it to avoid silent failures when
     the texture format isn't framebuffer readable
+-   Added a @ref DebugTools::textureSubImage() overload for
+    @ref GL::Texture2DArray
 
 @subsubsection changelog-latest-changes-gl GL library
 

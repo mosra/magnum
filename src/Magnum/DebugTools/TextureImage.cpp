@@ -34,6 +34,9 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
+#endif
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
 #include <Corrade/Containers/Iterable.h>
@@ -234,6 +237,41 @@ GL::BufferImage2D textureSubImage(GL::Texture2D& texture, const Int level, const
     CORRADE_IGNORE_DEPRECATED_PUSH
     textureSubImage(texture, level, range, image, usage);
     CORRADE_IGNORE_DEPRECATED_POP
+    return Utility::move(image);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void textureSubImage(GL::Texture2DArray& texture, const Int level, const Int layer, const Range2Di& range, Image2D& image) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>()) {
+        /* Make a temporary Image3D out of the input Image2D, read the pixels
+           into it, and then move its ownership back to the Image2D */
+        /** @todo have this on the Image APIs itself, in particular a
+            rvalue-only ability to "updimension", and similarly a rvalue-only
+            dimension slice */
+        Vector2i size = image.size();
+        Containers::Array<char> data = image.release();
+        Image3D image3{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), {size, 1}, Utility::move(data)};
+        texture.subImage(level, {{range.min(), layer}, {range.max(), layer + 1}}, image3);
+        Vector3i size3 = image3.size();
+        Containers::Array<char> data3 = image3.release();
+        image = Image2D{image3.storage(), image3.format(), image3.formatExtra(), image3.pixelSize(), size3.xy(), Utility::move(data3)};
+        return;
+    }
+    #endif
+
+    GL::Framebuffer fb{range};
+    fb.attachTextureLayer(GL::Framebuffer::ColorAttachment{0}, texture, level, layer);
+
+    CORRADE_ASSERT(fb.checkStatus(GL::FramebufferTarget::Read) == GL::Framebuffer::Status::Complete,
+        "DebugTools::textureSubImage(): texture format not framebuffer-readable:" << fb.checkStatus(GL::FramebufferTarget::Read), );
+
+    fb.read(range, image);
+}
+
+Image2D textureSubImage(GL::Texture2DArray& texture, const Int level, const Int layer, const Range2Di& range, Image2D&& image) {
+    textureSubImage(texture, level, layer, range, image);
     return Utility::move(image);
 }
 #endif
