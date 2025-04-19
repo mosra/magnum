@@ -1341,7 +1341,7 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(size, Type_)                  \
+#define _MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(size, Type_)                 \
     static Type_<T>& from(T* data) {                                        \
         return *reinterpret_cast<Type_<T>*>(data);                          \
     }                                                                       \
@@ -1530,7 +1530,7 @@ template<std::size_t size, class FloatingPoint, class Integral, typename std::en
     return vector*scalar;
 }
 
-#define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                   \
+#define _MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                 \
     template<class FloatingPoint, class Integral, typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, int>::type = 0> constexpr Type<Integral> operator*(FloatingPoint scalar, const Type<Integral>& vector) { \
         return vector*scalar;                                               \
     }

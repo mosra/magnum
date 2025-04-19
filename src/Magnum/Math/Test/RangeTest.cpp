@@ -968,7 +968,7 @@ template<class T> class BasicRect: public Math::Range<2, T> {
     public:
         template<class ...U> constexpr BasicRect(U&&... args): Math::Range<2, T>{args...} {}
 
-        MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(2, BasicRect, Vector2)
+        _MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(2, BasicRect, Vector2)
 };
 
 typedef BasicRect<Int> Recti;

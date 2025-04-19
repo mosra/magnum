@@ -258,11 +258,11 @@ template<class T> class Vector4: public Vector<4, T> {
             return {Vector<4, T>::_data[0], Vector<4, T>::_data[1]};
         }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Vector4)
+        _MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Vector4)
 };
 
 #ifdef CORRADE_MSVC2015_COMPATIBILITY
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Vector4)
+_MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Vector4)
 #endif
 
 /** @relatesalso Vector4

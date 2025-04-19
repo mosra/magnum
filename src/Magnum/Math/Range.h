@@ -395,7 +395,7 @@ template<UnsignedInt dimensions, class T> class Range {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(dimensions, Type, VectorType)  \
+#define _MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(dimensions, Type, VectorType)  \
     static Type<T> fromSize(const VectorType<T>& min, const VectorType<T>& size) { \
         return Range<dimensions, T>::fromSize(min, size);                   \
     }                                                                       \
@@ -581,7 +581,7 @@ template<class T> class Range2D: public Range<2, T> {
             return (Range<2, T>::min().y() + Range<2, T>::max().y())/T(2);
         }
 
-        MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(2, Range2D, Vector2)
+        _MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(2, Range2D, Vector2)
 };
 
 /**
@@ -780,7 +780,7 @@ template<class T> class Range3D: public Range<3, T> {
             return (Range<3, T>::min().z() + Range<3, T>::max().z())/T(2);
         }
 
-        MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(3, Range3D, Vector3)
+        _MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(3, Range3D, Vector3)
 };
 
 /** @relatesalso Range

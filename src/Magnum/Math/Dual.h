@@ -344,7 +344,7 @@ template<class T, class U
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(Type, Underlying, Multiplicable) \
+#define _MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(Type, Underlying, Multiplicable) \
     Type<T> operator+() const {                                             \
         return Math::Dual<Underlying<T>>::operator+();                      \
     }                                                                       \
@@ -379,7 +379,7 @@ template<class T, class U
     }
 
 /* DualComplex needs its own special implementation of multiplication/division */
-#define MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(Type, Underlying) \
+#define _MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(Type, Underlying) \
     template<class U> Type<T> operator*(const Math::Dual<U>& other) const { \
         return Math::Dual<Underlying<T>>::operator*(other);                 \
     }                                                                       \
@@ -393,7 +393,7 @@ template<class T, class U
         return Math::Dual<Underlying<T>>::operator/(other);                 \
     }
 
-#define MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(Type, Underlying, Multiplicable) \
+#define _MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(Type, Underlying, Multiplicable) \
     template<class T> inline Type<T> operator*(const Math::Dual<Multiplicable>& a, const Type<T>& b) { \
         return a*static_cast<const Math::Dual<Underlying<T>>&>(b);          \
     }                                                                       \

@@ -1192,12 +1192,12 @@ template<class T> class Matrix4: public Matrix4x4<T> {
             return transformed.xyz()/transformed.w();
         }
 
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(4, 4, Matrix4<T>)
-        MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(4, Matrix4, Vector4)
+        _MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(4, 4, Matrix4<T>)
+        _MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(4, Matrix4, Vector4)
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(4, Matrix4)
+_MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(4, Matrix4)
 #endif
 
 template<class T> Matrix4<T> Matrix4<T>::rotation(const Rad<T> angle, const Vector3<T>& normalizedAxis) {

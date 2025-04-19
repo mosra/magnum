@@ -401,12 +401,12 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
             return Vector2<T>(((*this)*DualComplex<T>(vector)).dual());
         }
 
-        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualComplex, Vector2, T)
-        /* Not using MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(), as
+        _MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualComplex, Vector2, T)
+        /* Not using _MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(), as
            we have special multiplication/division implementation */
 };
 
-MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualComplex, Vector2, T)
+_MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualComplex, Vector2, T)
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{DualComplex} */

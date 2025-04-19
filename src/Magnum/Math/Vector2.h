@@ -238,14 +238,14 @@ template<class T> class Vector2: public Vector<2, T> {
         #endif
         T aspectRatio() const { return x()/y(); }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
+        _MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
 
     private:
         template<class U> friend U cross(const Vector2<U>&, const Vector2<U>&);
 };
 
 #ifdef CORRADE_MSVC2015_COMPATIBILITY
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, Vector2)
+_MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, Vector2)
 #endif
 
 namespace Implementation {

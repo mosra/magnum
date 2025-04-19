@@ -896,11 +896,11 @@ template<class T> class BasicVec2: public Math::Vector<2, T> {
     public:
         template<class ...U> constexpr BasicVec2(U&&... args): Math::Vector<2, T>{args...} {}
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, BasicVec2)
+        _MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, BasicVec2)
 };
 
 #ifdef CORRADE_MSVC2015_COMPATIBILITY
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, BasicVec2)
+_MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, BasicVec2)
 #endif
 
 typedef BasicVec2<Float> Vec2;

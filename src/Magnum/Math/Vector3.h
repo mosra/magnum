@@ -276,14 +276,14 @@ template<class T> class Vector3: public Vector<3, T> {
             return {Vector<3, T>::_data[0], Vector<3, T>::_data[1]};
         }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Vector3)
+        _MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Vector3)
 
     private:
         template<class U> friend Vector3<U> cross(const Vector3<U>&, const Vector3<U>&);
 };
 
 #ifdef CORRADE_MSVC2015_COMPATIBILITY
-MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Vector3)
+_MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Vector3)
 #endif
 
 #ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
