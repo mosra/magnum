@@ -104,6 +104,24 @@ const struct {
         true, {128, 96}, {64, 32}, false, false},
 };
 
+#ifndef MAGNUM_TARGET_WEBGL
+const struct {
+    const char* name;
+    GL::TextureFormat format;
+} BenchmarkData[]{
+    /* On ES2 the format selection is too annoying, just skip the variants
+       altogether and pick *some* format in the function itself */
+    #ifdef MAGNUM_TARGET_GLES2
+    {"", GL::TextureFormat{}},
+    #else
+    {"R8 output", GL::TextureFormat::R8},
+    {"RGB8 output", GL::TextureFormat::RGB8},
+    {"RGBA8 output", GL::TextureFormat::RGBA8},
+    {"R16 output", GL::TextureFormat::R16},
+    #endif
+};
+#endif
+
 DistanceFieldGLTest::DistanceFieldGLTest() {
     addTests({&DistanceFieldGLTest::construct,
               &DistanceFieldGLTest::constructCopy,
@@ -116,7 +134,9 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
               &DistanceFieldGLTest::sizeRatioNotMultipleOfTwo});
 
     #ifndef MAGNUM_TARGET_WEBGL
-    addBenchmarks({&DistanceFieldGLTest::benchmark}, 10, BenchmarkType::GpuTime);
+    addInstancedBenchmarks({&DistanceFieldGLTest::benchmark}, 10,
+        Containers::arraySize(BenchmarkData),
+        BenchmarkType::GpuTime);
     #endif
 
     /* Load the plugin directly from the build tree. Otherwise it's either
@@ -468,6 +488,9 @@ void DistanceFieldGLTest::sizeRatioNotMultipleOfTwo() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 void DistanceFieldGLTest::benchmark() {
+    auto&& data = BenchmarkData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifdef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::disjoint_timer_query>())
         CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query::string() << "is not supported, can't benchmark");
@@ -507,8 +530,10 @@ void DistanceFieldGLTest::benchmark() {
         input.setSubImage(0, {}, *inputImage);
     #endif
 
+    /* On ES2 the format selection is too annoying, just skip the variants
+       altogether and pick *some* format in the function itself */
     #ifndef MAGNUM_TARGET_GLES2
-    const GL::TextureFormat outputFormat = GL::TextureFormat::R8;
+    const GL::TextureFormat outputFormat = data.format;
     #else
     GL::TextureFormat outputFormat;
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
