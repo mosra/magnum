@@ -166,7 +166,7 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
             image.data()};
 
         input.setImage(0, GL::textureFormat(paddedImage.format()), paddedImage);
-        state.distanceField(input, texture(), Range2Di::fromSize(paddedMinRounded/ratio, paddedImage.size()/ratio), paddedImage.size());
+        state.distanceField(input, texture(), {paddedMinRounded/ratio, paddedMaxRounded/ratio}, paddedImage.size());
     }
     #endif
 }
