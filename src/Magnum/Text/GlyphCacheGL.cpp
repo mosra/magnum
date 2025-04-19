@@ -192,7 +192,7 @@ void GlyphCacheGL::doSetProcessedImage(const Vector2i& offset, const ImageView2D
 
 #ifndef MAGNUM_TARGET_GLES
 Image3D GlyphCacheGL::doProcessedImage() {
-    Image2D out = static_cast<State&>(*_state).texture.image(0, PixelFormat::R8Unorm);
+    Image2D out = static_cast<State&>(*_state).texture.image(0, processedFormat());
     return Image3D{out.format(), {out.size(), 1}, out.release()};
 }
 #endif
