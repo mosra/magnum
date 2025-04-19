@@ -79,6 +79,45 @@ Convenience alternative to the above, example usage:
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D&& image);
 
+#ifndef MAGNUM_TARGET_GLES2
+/**
+@brief Read a range of given texture array layer mip level to an image
+@m_since_latest
+
+Emulates @ref GL::Texture2DArray::subImage() on OpenGL ES and WebGL platforms
+by creating a framebuffer object and using @ref GL::Framebuffer::read(). On
+desktop OpenGL, if @gl_extension{ARB,get_texture_sub_image} is available, it's
+just an alias to @ref GL::Texture2DArray::subImage().
+
+The function expects that @p texture has a @ref GL::TextureFormat that's
+framebuffer-readable and that the @ref GL::PixelFormat and @ref GL::PixelType
+combination or the generic @relativeref{Magnum,PixelFormat} is compatible with
+it.
+@requires_gl30 Extension @gl_extension{EXT,texture_array}
+@requires_gles30 Array textures are not available in OpenGL ES 2.0.
+@requires_webgl20 Array textures are not available in WebGL 1.0.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
+*/
+MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2DArray& texture, Int level, Int layer, const Range2Di& range, Image2D& image);
+
+/**
+@brief Read a range of given texture mip level to an image
+@m_since_latest
+
+Convenience alternative to the above, example usage:
+
+@snippet DebugTools-gl.cpp textureSubImage-array-rvalue
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
+*/
+MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::Texture2DArray& texture, Int level, Int layer, const Range2Di& range, Image2D&& image);
+#endif
+
 /**
 @brief Read a range of given cube map texture coordinate mip level to an image
 @m_since_latest

@@ -41,6 +41,9 @@
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/CubeMapTexture.h"
 #include "Magnum/GL/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
+#endif
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/SceneGraph/Drawable.h"
@@ -181,6 +184,18 @@ GL::BufferImage2D image = DebugTools::textureSubImage(texture, 0, rect,
     {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [textureSubImage-2D-rvalue-buffer] */
 CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Texture2DArray texture;
+Range2Di rect;
+Int layer{};
+/* [textureSubImage-array-rvalue] */
+Image2D image = DebugTools::textureSubImage(texture, 0, layer, rect,
+    {PixelFormat::RGBA8Unorm});
+/* [textureSubImage-array-rvalue] */
 }
 #endif
 

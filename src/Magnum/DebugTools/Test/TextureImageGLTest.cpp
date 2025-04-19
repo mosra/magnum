@@ -37,6 +37,9 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
+#endif
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Range.h"
@@ -62,6 +65,15 @@ struct TextureImageGLTest: GL::OpenGLTester {
     void subImage2DBufferNotReadable();
     #endif
     void subImage2DGeneric();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void subImage2DArray();
+    void subImage2DArrayNotReadable();
+    /* Unlike Texture2D the Texture2DArray overload has no codepath to
+       reinterpret float formats as integer, so no *Generic() test (that
+       verifies correct detection for generic formats as well) needs to
+       exist */
+    #endif
 
     void subImageCube();
     void subImageCubeNotReadable();
@@ -91,6 +103,16 @@ const struct {
     {"non-zero level", 3, 16},
 };
 
+const struct {
+    const char* name;
+    Int level, layer, sizeMultiplier;
+} LevelLayerData[]{
+    {"", 0, 0, 1},
+    {"non-zero level", 3, 0, 16},
+    {"non-zero layer", 0, 2, 1},
+    {"non-zero level and layer", 3, 2, 16},
+};
+
 TextureImageGLTest::TextureImageGLTest() {
     addInstancedTests({&TextureImageGLTest::subImage2D},
         Containers::arraySize(LevelData));
@@ -102,9 +124,17 @@ TextureImageGLTest::TextureImageGLTest() {
               #endif
               });
 
-    addInstancedTests({&TextureImageGLTest::subImage2DGeneric,
+    addInstancedTests({&TextureImageGLTest::subImage2DGeneric},
+        Containers::arraySize(LevelData));
 
-                       &TextureImageGLTest::subImageCube},
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&TextureImageGLTest::subImage2DArray},
+        Containers::arraySize(LevelLayerData));
+
+    addTests({&TextureImageGLTest::subImage2DArrayNotReadable});
+    #endif
+
+    addInstancedTests({&TextureImageGLTest::subImageCube},
         Containers::arraySize(LevelData));
 
     addTests({&TextureImageGLTest::subImageCubeNotReadable,
@@ -277,6 +307,52 @@ void TextureImageGLTest::subImage2DGeneric() {
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
         Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void TextureImageGLTest::subImage2DArray() {
+    auto&& data = LevelLayerData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    GL::Texture2DArray texture;
+    texture
+        .setStorage(data.level + 1, GL::TextureFormat::RGBA8, {Vector2i{2}*data.sizeMultiplier, data.layer + 1})
+        .setSubImage(data.level, {0, 0, data.layer}, ImageView2D{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D});
+
+    Image2D image = textureSubImage(texture, data.level, data.layer, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::RGBA));
+    CORRADE_COMPARE(GL::PixelType(image.formatExtra()), GL::PixelType::UnsignedByte);
+    CORRADE_COMPARE(image.pixelSize(), 4);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(Data2D), TestSuite::Compare::Container);
+}
+
+void TextureImageGLTest::subImage2DArrayNotReadable() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_shared_exponent>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_shared_exponent::string() << "not supported, can't test");
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(GL::Extensions::ARB::get_texture_sub_image::string() << "supported, can't test");
+    #endif
+
+    GL::Texture2DArray texture;
+    texture.setImage(0, GL::TextureFormat::RGB9E5, ImageView2D{GL::PixelFormat::RGB, GL::PixelType::UnsignedInt5999Rev, Vector2i{2}, Data2D});
+
+    Containers::String out;
+    Error redirectError{&out};
+    /* The read type doesn't have to match, it doesn't get that far */
+    textureSubImage(texture, 0, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(out, "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::Unsupported\n");
+    #else
+    CORRADE_COMPARE(out, "DebugTools::textureSubImage(): texture format not framebuffer-readable: GL::Framebuffer::Status::IncompleteAttachment\n");
+    #endif
+}
+#endif
 
 void TextureImageGLTest::subImageCube() {
     auto&& data = LevelData[testCaseInstanceId()];
