@@ -574,13 +574,20 @@ void GlyphCacheGLTest::setImageArray() {
     /* The actual texture has just the slice updated, the rest stays. On GLES
        we cannot really verify that the size matches, but at least
        something. */
-    #ifdef MAGNUM_TARGET_GLES
-    /** @todo implement; blocked on Image being able to allocate and slice
-        itself so I don't need to implement & test all that from scratch just
-        for that one utility */
-    CORRADE_SKIP("Cannot verify texture contents because DebugTools::textureSubImage() isn't implemented for texture arrays yet");
-    #else
+    #ifndef MAGNUM_TARGET_GLES
     Image3D image = cache.texture().image(0, {PixelFormat::RG8Unorm});
+    /** @todo ugh have slicing on images directly already, and 3D image
+        comparison */
+    ImageView2D image0{image.format(), image.size().xy(), image.data()};
+    ImageView2D image1{image.format(), image.size().xy(), image.data().exceptPrefix(1*sliceSize)};
+    ImageView2D image2{image.format(), image.size().xy(), image.data().exceptPrefix(2*sliceSize)};
+    ImageView2D image3{image.format(), image.size().xy(), image.data().exceptPrefix(3*sliceSize)};
+    #else
+    Image2D image0 = DebugTools::textureSubImage(cache.texture(), 0, 0, {{}, {8, 8}}, {PixelFormat::RG8Unorm});
+    Image2D image1 = DebugTools::textureSubImage(cache.texture(), 0, 1, {{}, {8, 8}}, {PixelFormat::RG8Unorm});
+    Image2D image2 = DebugTools::textureSubImage(cache.texture(), 0, 2, {{}, {8, 8}}, {PixelFormat::RG8Unorm});
+    Image2D image3 = DebugTools::textureSubImage(cache.texture(), 0, 3, {{}, {8, 8}}, {PixelFormat::RG8Unorm});
+    #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     const UnsignedByte expectedTextureData03[]{
@@ -640,21 +647,18 @@ void GlyphCacheGLTest::setImageArray() {
         0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
             0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
     };
-    /** @todo ugh have slicing on images directly already, and 3D image
-        comparison */
-    CORRADE_COMPARE_AS((ImageView2D{image.format(), image.size().xy(), image.data()}),
+    CORRADE_COMPARE_AS(image0,
         (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData03}),
         DebugTools::CompareImage);
-    CORRADE_COMPARE_AS((ImageView2D{image.format(), image.size().xy(), image.data().exceptPrefix(1*sliceSize)}),
+    CORRADE_COMPARE_AS(image1,
         (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData1}),
         DebugTools::CompareImage);
-    CORRADE_COMPARE_AS((ImageView2D{image.format(), image.size().xy(), image.data().exceptPrefix(2*sliceSize)}),
+    CORRADE_COMPARE_AS(image2,
         (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData2}),
         DebugTools::CompareImage);
-    CORRADE_COMPARE_AS((ImageView2D{image.format(), image.size().xy(), image.data().exceptPrefix(3*sliceSize)}),
+    CORRADE_COMPARE_AS(image3,
         (ImageView2D{PixelFormat::RG8Unorm, {8, 8}, expectedTextureData03}),
         DebugTools::CompareImage);
-    #endif
 }
 #endif
 
