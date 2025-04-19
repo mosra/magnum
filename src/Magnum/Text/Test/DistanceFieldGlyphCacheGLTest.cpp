@@ -142,7 +142,7 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
 }
 
 void DistanceFieldGlyphCacheGLTest::construct() {
-    DistanceFieldGlyphCacheGL cache{{1024, 2048}, {128, 256}, 16};
+    DistanceFieldGlyphCacheGL cache{{256, 512}, {64, 128}, 16};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -152,7 +152,7 @@ void DistanceFieldGlyphCacheGLTest::construct() {
     #endif
     /* The input format is always single-channel */
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
     /* The processed format is RGBA if it'd have to be Luminance */
     #ifdef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_WEBGL
@@ -170,9 +170,9 @@ void DistanceFieldGlyphCacheGLTest::construct() {
         CORRADE_COMPARE(cache.processedFormat(), PixelFormat::R8Unorm);
     }
     #endif
-    CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 1}));
+    CORRADE_COMPARE(cache.processedSize(), (Vector3i{64, 128, 1}));
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{64, 128}));
     #endif
 }
 
@@ -207,14 +207,14 @@ void DistanceFieldGlyphCacheGLTest::constructCopy() {
 }
 
 void DistanceFieldGlyphCacheGLTest::constructMove() {
-    DistanceFieldGlyphCacheGL a{{1024, 512}, {128, 64}, 3};
+    DistanceFieldGlyphCacheGL a{{256, 512}, {64, 64}, 3};
 
     DistanceFieldGlyphCacheGL b = Utility::move(a);
-    CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(b.size(), (Vector3i{256, 512, 1}));
 
     DistanceFieldGlyphCacheGL c{{2, 4}, {1, 2}, 1};
     c = Utility::move(b);
-    CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(c.size(), (Vector3i{256, 512, 1}));
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<DistanceFieldGlyphCacheGL>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<DistanceFieldGlyphCacheGL>::value);

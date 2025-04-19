@@ -149,15 +149,15 @@ GlyphCacheGLTest::GlyphCacheGLTest() {
 }
 
 void GlyphCacheGLTest::construct() {
-    GlyphCacheGL cache{PixelFormat::R8Unorm, {1024, 2048}, {3, 2}};
+    GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 512}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.features(), GlyphCacheFeatures{});
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
     CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{1024, 2048}));
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{256, 512}));
     #endif
 }
 
@@ -168,28 +168,28 @@ void GlyphCacheGLTest::constructArray() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    GlyphCacheArrayGL cache{PixelFormat::R8Unorm, {1024, 2048, 7}, {3, 2}};
+    GlyphCacheArrayGL cache{PixelFormat::R8Unorm, {256, 512, 7}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.features(), GlyphCacheFeatures{});
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 7}));
     CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{256, 512, 7}));
     #endif
 }
 #endif
 
 void GlyphCacheGLTest::constructNoPadding() {
-    GlyphCacheGL cache{PixelFormat::RGBA8Unorm, {1024, 2048}};
+    GlyphCacheGL cache{PixelFormat::RGBA8Unorm, {256, 512}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.format(), PixelFormat::RGBA8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
     CORRADE_COMPARE(cache.padding(), Vector2i{1});
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{1024, 2048}));
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{256, 512}));
     #endif
 }
 
@@ -200,14 +200,14 @@ void GlyphCacheGLTest::constructNoPaddingArray() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    GlyphCacheArrayGL cache{PixelFormat::RGBA8Unorm, {1024, 2048, 7}};
+    GlyphCacheArrayGL cache{PixelFormat::RGBA8Unorm, {256, 512, 7}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.format(), PixelFormat::RGBA8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 7}));
     CORRADE_COMPARE(cache.padding(), Vector2i{1});
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{256, 512, 7}));
     #endif
 }
 #endif
@@ -219,11 +219,11 @@ void GlyphCacheGLTest::constructProcessed() {
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
         }
-    } cache{PixelFormat::R8Unorm, {1024, 2048}, PixelFormat::RGBA8Unorm, {128, 256}, {3, 2}};
+    } cache{PixelFormat::R8Unorm, {256, 512}, PixelFormat::RGBA8Unorm, {128, 256}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
     CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 1}));
     CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
@@ -245,11 +245,11 @@ void GlyphCacheGLTest::constructProcessedArray() {
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
         }
-    } cache{PixelFormat::R8Unorm, {1024, 2048, 7}, PixelFormat::RGBA8Unorm, {128, 256}, {3, 2}};
+    } cache{PixelFormat::R8Unorm, {256, 512, 7}, PixelFormat::RGBA8Unorm, {128, 256}, {3, 2}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 7}));
     CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 7}));
     CORRADE_COMPARE(cache.padding(), (Vector2i{3, 2}));
@@ -266,11 +266,11 @@ void GlyphCacheGLTest::constructProcessedNoPadding() {
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
         }
-    } cache{PixelFormat::R8Unorm, {1024, 2048}, PixelFormat::RGBA8Unorm, {128, 256}};
+    } cache{PixelFormat::R8Unorm, {256, 512}, PixelFormat::RGBA8Unorm, {128, 256}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
     CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 1}));
     CORRADE_COMPARE(cache.padding(), Vector2i{1});
@@ -292,11 +292,11 @@ void GlyphCacheGLTest::constructProcessedNoPaddingArray() {
         GlyphCacheFeatures doFeatures() const override {
             return GlyphCacheFeature::ImageProcessing;
         }
-    } cache{PixelFormat::R8Unorm, {1024, 2048, 7}, PixelFormat::RGBA8Unorm, {128, 256}};
+    } cache{PixelFormat::R8Unorm, {256, 512, 7}, PixelFormat::RGBA8Unorm, {128, 256}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(cache.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 7}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 7}));
     CORRADE_COMPARE(cache.processedFormat(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(cache.processedSize(), (Vector3i{128, 256, 7}));
     CORRADE_COMPARE(cache.padding(), Vector2i{1});
@@ -309,25 +309,25 @@ void GlyphCacheGLTest::constructProcessedNoPaddingArray() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 void GlyphCacheGLTest::constructDeprecated() {
     CORRADE_IGNORE_DEPRECATED_PUSH
-    GlyphCacheGL cache{{1024, 2048}};
+    GlyphCacheGL cache{{256, 512}};
     CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{1024, 2048}));
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{256, 512}));
     #endif
 }
 
 void GlyphCacheGLTest::constructDeprecatedProcessed() {
     CORRADE_IGNORE_DEPRECATED_PUSH
-    GlyphCacheGL cache{{1024, 2048}, {128, 256}, {}};
+    GlyphCacheGL cache{{256, 512}, {64, 128}, {}};
     CORRADE_IGNORE_DEPRECATED_POP
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CORRADE_COMPARE(cache.size(), (Vector3i{1024, 2048, 1}));
+    CORRADE_COMPARE(cache.size(), (Vector3i{256, 512, 1}));
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{128, 256}));
+    CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{64, 128}));
     #endif
 }
 
@@ -381,16 +381,16 @@ void GlyphCacheGLTest::constructCopyArray() {
 #endif
 
 void GlyphCacheGLTest::constructMove() {
-    GlyphCacheGL a{PixelFormat::R8Unorm, {1024, 512}};
+    GlyphCacheGL a{PixelFormat::R8Unorm, {256, 512}};
 
     GlyphCacheGL b = Utility::move(a);
     CORRADE_COMPARE(b.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(b.size(), (Vector3i{256, 512, 1}));
 
     GlyphCacheGL c{PixelFormat::RGBA8Unorm, {2, 3}};
     c = Utility::move(b);
     CORRADE_COMPARE(c.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 1}));
+    CORRADE_COMPARE(c.size(), (Vector3i{256, 512, 1}));
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<GlyphCacheGL>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<GlyphCacheGL>::value);
@@ -403,16 +403,16 @@ void GlyphCacheGLTest::constructMoveArray() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    GlyphCacheArrayGL a{PixelFormat::R8Unorm, {1024, 512, 7}};
+    GlyphCacheArrayGL a{PixelFormat::R8Unorm, {256, 512, 7}};
 
     GlyphCacheArrayGL b = Utility::move(a);
     CORRADE_COMPARE(b.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(b.size(), (Vector3i{1024, 512, 7}));
+    CORRADE_COMPARE(b.size(), (Vector3i{256, 512, 7}));
 
     GlyphCacheArrayGL c{PixelFormat::RGBA8Unorm, {2, 3, 3}};
     c = Utility::move(b);
     CORRADE_COMPARE(c.format(), PixelFormat::R8Unorm);
-    CORRADE_COMPARE(c.size(), (Vector3i{1024, 512, 7}));
+    CORRADE_COMPARE(c.size(), (Vector3i{256, 512, 7}));
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<GlyphCacheArrayGL>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<GlyphCacheArrayGL>::value);
