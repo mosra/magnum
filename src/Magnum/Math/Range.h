@@ -477,6 +477,9 @@ template<class T> class Range2D: public Range<2, T> {
          */
         constexpr /*implicit*/ Range2D(const Containers::Pair<Vector<2, T>, Vector<2, T>>& minmax) noexcept: Range<2, T>{minmax.first(), minmax.second()} {}
 
+        /* Cannot have a constructor from X and Y range as
+           Range2D{{0, 1}, {2, 3}} would then be ambiguous :/ */
+
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range2D(const Range2D<U>& other) noexcept: Range<2, T>(other) {}
 
@@ -608,6 +611,13 @@ template<class T> class Range3D: public Range<3, T> {
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range3D(const Vector3<T>& min, const Vector3<T>& max) noexcept: Range<3, T>(min, max) {}
+
+        /* A Range2D  constructor from X and Y range would cause
+           Range2D{{0, 1}, {2, 3}} to be ambiguous, thus for consistency
+           there's no Range3D constructor from a X, Y and Z range even though
+           it wouldn't be ambiguous. Similarly there is no constructor from a
+           XY and Z range because then Range3D{{}, {1, 2}} would be ambiguous
+           as well :/ */
 
         /**
          * @brief Construct a range from a pair of minimal and maximal coordinates
