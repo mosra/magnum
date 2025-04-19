@@ -69,6 +69,10 @@ struct TextureImageGLTest: GL::OpenGLTester {
     void subImageCubeBuffer();
     void subImageCubeBufferNotReadable();
     #endif
+    /* Unlike Texture2D the CubeMapTexture overload has no codepath to
+       reinterpret float formats as integer, so no *Generic() test (that
+       verifies correct detection for generic formats as well) needs to
+       exist */
 
     #ifndef MAGNUM_TARGET_GLES2
     void subImage2DUInt();
