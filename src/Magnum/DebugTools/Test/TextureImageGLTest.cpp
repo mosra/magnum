@@ -324,8 +324,15 @@ void TextureImageGLTest::subImage2DArray() {
     CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::RGBA));
     CORRADE_COMPARE(GL::PixelType(image.formatExtra()), GL::PixelType::UnsignedByte);
     CORRADE_COMPARE(image.pixelSize(), 4);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
-        Containers::arrayView(Data2D), TestSuite::Compare::Container);
+
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(data.layer != 0 && GL::Context::current().detectedDriver() >= GL::Context::DetectedDriver::SwiftShader,
+            "SwiftShader is trash and doesn't implement reading from non-zero array layers.");
+        #endif
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+            Containers::arrayView(Data2D), TestSuite::Compare::Container);
+    }
 }
 
 void TextureImageGLTest::subImage2DArrayNotReadable() {
@@ -558,9 +565,16 @@ void TextureImageGLTest::subImage2DFloat() {
     CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::Red));
     CORRADE_COMPARE(GL::PixelType(image.formatExtra()), GL::PixelType::Float);
     CORRADE_COMPARE(image.pixelSize(), 4);
-    CORRADE_COMPARE_AS(Containers::arrayCast<Float>(image.data()),
-        Containers::arrayView(Data2DFloat),
-        TestSuite::Compare::Container);
+
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(data.level != 0 && GL::Context::current().detectedDriver() >= GL::Context::DetectedDriver::SwiftShader,
+            "SwiftShader is trash and doesn't implement texelFetch() from non-zero levels.");
+        #endif
+        CORRADE_COMPARE_AS(Containers::arrayCast<Float>(image.data()),
+            Containers::arrayView(Data2DFloat),
+            TestSuite::Compare::Container);
+    }
 }
 
 void TextureImageGLTest::subImage2DFloatGeneric() {
@@ -582,9 +596,16 @@ void TextureImageGLTest::subImage2DFloatGeneric() {
     CORRADE_COMPARE(image.format(), PixelFormat::R32F);
     CORRADE_COMPARE(image.formatExtra(), 0);
     CORRADE_COMPARE(image.pixelSize(), 4);
-    CORRADE_COMPARE_AS(Containers::arrayCast<Float>(image.data()),
-        Containers::arrayView(Data2DFloat),
-        TestSuite::Compare::Container);
+
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(data.level != 0 && GL::Context::current().detectedDriver() >= GL::Context::DetectedDriver::SwiftShader,
+            "SwiftShader is trash and doesn't implement texelFetch() from non-zero levels.");
+        #endif
+        CORRADE_COMPARE_AS(Containers::arrayCast<Float>(image.data()),
+            Containers::arrayView(Data2DFloat),
+            TestSuite::Compare::Container);
+    }
 }
 
 const Half Data2DHalf[] = { 1.0_h,
