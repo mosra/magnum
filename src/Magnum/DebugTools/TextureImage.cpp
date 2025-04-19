@@ -239,6 +239,12 @@ GL::BufferImage2D textureSubImage(GL::Texture2D& texture, const Int level, const
 #endif
 
 void textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, Image2D& image) {
+    /* Compared to textureSubImage(GL::CubeMapTexture&, ..., Image3D&), here's
+       no ARB_get_texture_sub_image code path because it only works with 3D
+       images */
+    /** @todo implement a Image3D variant with this extension used once
+        convenient Image slicing and direct allocation is done */
+
     GL::Framebuffer fb{range};
     fb.attachCubeMapTexture(GL::Framebuffer::ColorAttachment{0}, texture, coordinate, level);
 
