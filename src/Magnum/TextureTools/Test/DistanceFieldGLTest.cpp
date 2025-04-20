@@ -81,27 +81,35 @@ using namespace Math::Literals;
 
 const struct {
     const char* name;
-    bool framebuffer;
+    bool framebuffer, implicitOutputSize;
     Vector2i size;
     Vector2i offset;
     bool flipX, flipY;
 } RunData[]{
     {"texture output",
-        false, {64, 64}, {}, false, false},
+        false, false, {64, 64}, {}, false, false},
     {"texture output, flipped on X",
-        false, {64, 64}, {}, true, false},
+        false, false, {64, 64}, {}, true, false},
     {"texture output, flipped on Y",
-        false, {64, 64}, {}, false, true},
+        false, false, {64, 64}, {}, false, true},
     {"texture output, with offset",
-        false, {128, 96}, {64, 32}, false, false},
+        false, false, {128, 96}, {64, 32}, false, false},
+    #ifndef MAGNUM_TARGET_GLES
+    {"texture output with implicit size",
+        false, true, {64, 64}, {}, false, false},
+    #endif
     {"framebuffer output",
-        true, {64, 64}, {}, false, false},
+        true, false, {64, 64}, {}, false, false},
     {"framebuffer output, flipped on X",
-        true, {64, 64}, {}, true, false},
+        true, false, {64, 64}, {}, true, false},
     {"framebuffer output, flipped on Y",
-        true, {64, 64}, {}, false, true},
+        true, false, {64, 64}, {}, false, true},
     {"framebuffer output, with offset",
-        true, {128, 96}, {64, 32}, false, false},
+        true, false, {128, 96}, {64, 32}, false, false},
+    #ifndef MAGNUM_TARGET_GLES
+    {"framebuffer output with implicit size",
+        true, true, {64, 64}, {}, false, false},
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -279,17 +287,25 @@ void DistanceFieldGLTest::run() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     if(data.framebuffer) {
-        distanceField(input, outputFramebuffer, Range2Di::fromSize(data.offset, Vector2i{64})
-            #ifdef MAGNUM_TARGET_GLES
-            , inputImage->size()
-            #endif
-            );
+        #ifndef MAGNUM_TARGET_GLES
+        if(data.implicitOutputSize)
+            distanceField(input, outputFramebuffer,
+                Range2Di::fromSize(data.offset, Vector2i{64}));
+        else
+        #endif
+            distanceField(input, outputFramebuffer,
+                Range2Di::fromSize(data.offset, Vector2i{64}),
+                inputImage->size());
     } else {
-        distanceField(input, outputTexture, Range2Di::fromSize(data.offset, Vector2i{64})
-            #ifdef MAGNUM_TARGET_GLES
-            , inputImage->size()
-            #endif
-            );
+        #ifndef MAGNUM_TARGET_GLES
+        if(data.implicitOutputSize)
+            distanceField(input, outputTexture,
+                Range2Di::fromSize(data.offset, Vector2i{64}));
+        else
+        #endif
+            distanceField(input, outputTexture,
+                Range2Di::fromSize(data.offset, Vector2i{64}),
+                inputImage->size());
     }
 
     /* The viewport should stay as it was before */

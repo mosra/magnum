@@ -231,9 +231,9 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceFieldGL {
          * @param input         Input texture
          * @param output        Output framebuffer
          * @param rectangle     Rectangle in the output where to render
-         * @param imageSize     Input texture size. Needed only for OpenGL ES,
-         *      on desktop GL the size is queried automatically using
-         *      @ref GL::Texture2D::imageSize() and this parameter is ignored.
+         * @param imageSize     Input texture size. Mandatory on OpenGL ES and
+         *      WebGL, on desktop GL if left at default the size is internally
+         *      queried using @ref GL::Texture2D::imageSize() instead.
          * @m_since_latest
          *
          * The @p output texture is expected to have a framebuffer-drawable
@@ -274,9 +274,9 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceFieldGL {
          * @param input         Input texture
          * @param output        Output texture
          * @param rectangle     Rectangle in the output where to render
-         * @param imageSize     Input texture size. Needed only for OpenGL ES,
-         *      on desktop GL the information is gathered automatically using
-         *      @ref GL::Texture2D::imageSize().
+         * @param imageSize     Input texture size. Mandatory on OpenGL ES and
+         *      WebGL, on desktop GL if left at default the size is internally
+         *      queried using @ref GL::Texture2D::imageSize() instead.
          *
          * Convenience variant of @ref operator()(GL::Texture2D&, GL::Framebuffer&, const Range2Di&, const Vector2i&)
          * that creates a temporary framebuffer with @p output attached and

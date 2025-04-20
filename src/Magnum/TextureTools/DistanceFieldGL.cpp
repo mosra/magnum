@@ -183,15 +183,13 @@ DistanceFieldGL& DistanceFieldGL::operator=(DistanceFieldGL&&) noexcept = defaul
 
 UnsignedInt DistanceFieldGL::radius() const { return _state->radius; }
 
-void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i&
-    #ifdef MAGNUM_TARGET_GLES
-    imageSize
-    #endif
-) {
+void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i& imageSize) {
     /** @todo Disable depth test, blending and then enable it back (if was previously) */
 
+    Vector2i imageSizeToUse = imageSize;
     #ifndef MAGNUM_TARGET_GLES
-    Vector2i imageSize = input.imageSize(0);
+    if(imageSizeToUse.isZero())
+        imageSizeToUse = input.imageSize(0);
     #endif
 
     CORRADE_ASSERT(output.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete,
@@ -200,9 +198,9 @@ void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Framebuffer& output, 
     /* The shader assumes that the ratio between the output and input is a
        multiple of 2, causing output pixel *centers* to be aligned with input
        pixel *edges* */
-    CORRADE_ASSERT(imageSize % rectangle.size() == Vector2i{0} &&
-                   (imageSize/rectangle.size()) % 2 == Vector2i{0},
-        "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got" << Debug::packed << imageSize << "and" << Debug::packed << rectangle.size(), );
+    CORRADE_ASSERT(imageSizeToUse % rectangle.size() == Vector2i{0} &&
+                   (imageSizeToUse/rectangle.size()) % 2 == Vector2i{0},
+        "TextureTools::DistanceFieldGL: expected input and output size ratio to be a multiple of 2, got" << Debug::packed << imageSizeToUse << "and" << Debug::packed << rectangle.size(), );
 
     /* Save existing viewport to restore it back after */
     const Range2Di previousViewport = output.viewport();
@@ -213,7 +211,7 @@ void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Framebuffer& output, 
 
     _state->shader
         .bindTexture(input)
-        .setImageSizeInverted(1.0f/Vector2(imageSize))
+        .setImageSizeInverted(1.0f/Vector2{imageSizeToUse})
         .draw(_state->mesh);
 
     /* Restore the previous viewport */
@@ -226,19 +224,11 @@ void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Framebuffer& output, 
 }
 #endif
 
-void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i&
-    #ifdef MAGNUM_TARGET_GLES
-    imageSize
-    #endif
-) {
+void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i& imageSize) {
     GL::Framebuffer framebuffer{rectangle};
     framebuffer.attachTexture(GL::Framebuffer::ColorAttachment(0), output, 0);
 
-    operator()(input, framebuffer, rectangle
-        #ifdef MAGNUM_TARGET_GLES
-        , imageSize
-        #endif
-        );
+    operator()(input, framebuffer, rectangle, imageSize);
 }
 
 #ifndef MAGNUM_TARGET_GLES
