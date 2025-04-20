@@ -109,6 +109,11 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
 , const ImageView2D& image) {
     auto& state = static_cast<State&>(*_state);
 
+    /* Creating a temporary input texture that's deleted right after because I
+       assume it's better than having a persistent one which would just occupy
+       memory that was only ever used once. This way it can also be scaled to
+       just exactly the input size being processed, not the whole unprocessed
+       cache size, which can be quite big. */
     GL::Texture2D input;
     input
         /* In order to have correctly processed output, the input has to be
@@ -171,6 +176,10 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
             paddedMaxRounded - paddedMinRounded,
             image.data()};
 
+        /** @todo investigate if using setStorage() + setSubImage() is any
+            faster or better, the assumption is that since the texture is
+            temporary it doesn't matter much anyway; similarly with the
+            temporary framebuffer created inside */
         input.setImage(0, GL::textureFormat(paddedImage.format()), paddedImage);
         state.distanceField(input, texture(), {paddedMinRounded/ratio, paddedMaxRounded/ratio}, paddedImage.size());
     }
