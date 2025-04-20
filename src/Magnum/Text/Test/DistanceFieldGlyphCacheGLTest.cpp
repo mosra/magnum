@@ -545,10 +545,16 @@ void DistanceFieldGlyphCacheGLTest::setImageArray() {
 
     /* The format may be three-component, consider just the first channel */
     Containers::StridedArrayView3D<const char> pixels = actual.pixels();
-    CORRADE_COMPARE_WITH((Containers::arrayCast<2, const UnsignedByte>(pixels.prefix({pixels.size()[0], pixels.size()[1], 1})).exceptPrefix(data.offset)),
-        Utility::Path::join(TEXTURETOOLS_DISTANCEFIELDGLTEST_DIR, "output.tga"),
-        /* Same threshold as in TextureTools DistanceFieldGLTest */
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(data.sourceOffset.z() != 0 && GL::Context::current().detectedDriver() >= GL::Context::DetectedDriver::SwiftShader,
+            "SwiftShader is trash and doesn't implement reading from non-zero array layers.");
+        #endif
+        CORRADE_COMPARE_WITH((Containers::arrayCast<2, const UnsignedByte>(pixels.prefix({pixels.size()[0], pixels.size()[1], 1})).exceptPrefix(data.offset)),
+            Utility::Path::join(TEXTURETOOLS_DISTANCEFIELDGLTEST_DIR, "output.tga"),
+            /* Same threshold as in TextureTools DistanceFieldGLTest */
+            (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
+    }
 }
 #endif
 
@@ -603,8 +609,14 @@ void DistanceFieldGlyphCacheGLTest::setImageEdgeClamp() {
 
     /* On the left side the pixels should be completely zero, without the right
        side leaking for example due to accidental repeat clamp */
-    CORRADE_COMPARE(dst[0][0], '\x00');
-    CORRADE_COMPARE(dst[1][0], '\x00');
+    {
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+        CORRADE_EXPECT_FAIL_IF(GL::Context::current().detectedDriver() >= GL::Context::DetectedDriver::SwiftShader,
+            "SwiftShader is trash and wraps around out-of-bounds texelFetch().");
+        #endif
+        CORRADE_COMPARE(dst[0][0], '\x00');
+        CORRADE_COMPARE(dst[1][0], '\x00');
+    }
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -652,8 +664,14 @@ void DistanceFieldGlyphCacheGLTest::setImageEdgeClampArray() {
 
     /* On the left side the pixels should be completely zero, without the right
        side leaking for example due to accidental repeat clamp */
-    CORRADE_COMPARE(dst[0][0], '\x00');
-    CORRADE_COMPARE(dst[1][0], '\x00');
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(GL::Context::current().detectedDriver() >= GL::Context::DetectedDriver::SwiftShader,
+            "SwiftShader is trash and wraps around out-of-bounds texelFetch().");
+        #endif
+        CORRADE_COMPARE(dst[0][0], '\x00');
+        CORRADE_COMPARE(dst[1][0], '\x00');
+    }
 }
 #endif
 

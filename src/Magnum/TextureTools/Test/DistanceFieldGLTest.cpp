@@ -412,6 +412,10 @@ void DistanceFieldGLTest::run() {
     else
         pixels = Containers::arrayCast<2, UnsignedByte>(pixels3);
 
+    #ifdef MAGNUM_TARGET_GLES
+    CORRADE_EXPECT_FAIL_IF(data.layer != 0 && GL::Context::current().detectedDriver() >= GL::Context::DetectedDriver::SwiftShader,
+        "SwiftShader is trash and doesn't implement reading from non-zero array layers.");
+    #endif
     CORRADE_COMPARE_WITH(
         pixels,
         Utility::Path::join(_testDir, "output.tga"),
