@@ -62,6 +62,7 @@ struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
     void constructMove();
 
     void setImage();
+    void setImageEdgeClamp();
 
     void setProcessedImage();
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -123,6 +124,8 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
 
     addInstancedTests({&DistanceFieldGlyphCacheGLTest::setImage},
         Containers::arraySize(SetImageData));
+
+    addTests({&DistanceFieldGlyphCacheGLTest::setImageEdgeClamp});
 
     #ifndef MAGNUM_BUILD_DEPRECATED
     addTests({&DistanceFieldGlyphCacheGLTest::setProcessedImage});
@@ -292,6 +295,61 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
         Utility::Path::join(TEXTURETOOLS_DISTANCEFIELDGLTEST_DIR, "output.tga"),
         /* Same threshold as in TextureTools DistanceFieldGLTest */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
+}
+
+void DistanceFieldGlyphCacheGLTest::setImageEdgeClamp() {
+    /* Verifies that the input texture filtering clamp is set to edge to not
+       have content from one side leak to another when the data don't have
+       enough padding. Affects only the non-texelFetch() codepath, texel
+       fetches return zero for out-of-bounds reads. Well, assuming robustness
+       enabled, at least. */
+
+    DistanceFieldGlyphCacheGL cache{{8, 4}, {4, 2}, 4};
+
+    /* Make the right edge all white */
+    Containers::StridedArrayView2D<UnsignedByte> src = cache.image().pixels<UnsignedByte>()[0];
+    src[0][7] = '\xff';
+    src[1][7] = '\xff';
+    src[2][7] = '\xff';
+    src[3][7] = '\xff';
+    cache.flushImage({{}, {8, 4}});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* On GLES processedImage() isn't implemented as it'd mean creating a
+       temporary framebuffer. Do it via DebugTools here instead, we cannot
+       really verify that the size matches, but at least something. */
+    #ifndef MAGNUM_TARGET_GLES
+    Image3D actual3 = cache.processedImage();
+    /** @todo ugh have slicing on images directly already */
+    MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, {4, 2}}, cache.processedFormat());
+    #else
+    /* On ES2, R8Unorm maps to Luminance, but here it's actually Red if
+       EXT_texture_rg is supported */
+    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, {{}, {4, 2}},
+        #ifndef MAGNUM_TARGET_WEBGL
+        cache.processedFormat() == PixelFormat::R8Unorm ?
+            Image2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte} :
+        #endif
+            Image2D{cache.processedFormat()}
+    );
+    #endif
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* The format may be three-component, consider just the first channel */
+    Containers::StridedArrayView3D<const char> dst3 = actual.pixels();
+    Containers::StridedArrayView2D<const UnsignedByte> dst = Containers::arrayCast<2, const UnsignedByte>(dst3.prefix({dst3.size()[0], dst3.size()[1], 1}));
+
+    /* On the right side the pixels should be non-zero to verify processing got
+       done at all */
+    CORRADE_VERIFY(dst[0][3] > 0);
+    CORRADE_VERIFY(dst[1][3] > 0);
+
+    /* On the left side the pixels should be completely zero, without the right
+       side leaking for example due to accidental repeat clamp */
+    CORRADE_COMPARE(dst[0][0], '\x00');
+    CORRADE_COMPARE(dst[1][0], '\x00');
 }
 
 void DistanceFieldGlyphCacheGLTest::setProcessedImage() {

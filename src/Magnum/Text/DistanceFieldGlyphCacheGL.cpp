@@ -110,7 +110,13 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
     auto& state = static_cast<State&>(*_state);
 
     GL::Texture2D input;
-    input.setWrapping(GL::SamplerWrapping::ClampToEdge)
+    input
+        /* In order to have correctly processed output, the input has to be
+           sufficiently padded. But in case it isn't and texelFetch() isn't
+           used, which clamps out-of-range reads to zero implicitly, clamp the
+           out-of-range reads to the edge instead of repeat to avoid even worse
+           artifacts. */
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
         /* Use nearest filter to avoid minor rounding errors on ES2 compared to
            texelFetch() on ES3+ */
         .setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
