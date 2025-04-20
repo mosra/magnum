@@ -109,6 +109,8 @@ const struct {
     bool glPixelFormat;
 } SetProcessedImageData[]{
     {"", false, false},
+    {"using deprecated API", true, false},
+    {"using deprecated API and GL-specific pixel format", true, true},
 };
 #endif
 
