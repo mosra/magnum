@@ -237,4 +237,19 @@ void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2D& output, co
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2DArray& output, const Int layer, const Range2Di& rectangle, const Vector2i& imageSize) {
+    GL::Framebuffer framebuffer{rectangle};
+    framebuffer.attachTextureLayer(GL::Framebuffer::ColorAttachment{0}, output, 0, layer);
+
+    operator()(input, framebuffer, rectangle, imageSize);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void DistanceFieldGL::operator()(GL::Texture2D& input, GL::Texture2DArray& output, const Int layer, const Range2Di& rectangle) {
+    return operator()(input, output, layer, rectangle, {});
+}
+#endif
+#endif
+
 }}

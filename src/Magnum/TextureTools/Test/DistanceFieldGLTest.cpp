@@ -47,6 +47,9 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/TextureArray.h"
+#endif
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/TextureTools/DistanceFieldGL.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -81,34 +84,45 @@ using namespace Math::Literals;
 
 const struct {
     const char* name;
-    bool framebuffer, implicitOutputSize;
+    bool framebuffer, implicitOutputSize, array;
+    Int layer;
     Vector2i size;
     Vector2i offset;
     bool flipX, flipY;
 } RunData[]{
     {"texture output",
-        false, false, {64, 64}, {}, false, false},
+        false, false, false, 0, {64, 64}, {}, false, false},
     {"texture output, flipped on X",
-        false, false, {64, 64}, {}, true, false},
+        false, false, false, 0, {64, 64}, {}, true, false},
     {"texture output, flipped on Y",
-        false, false, {64, 64}, {}, false, true},
+        false, false, false, 0, {64, 64}, {}, false, true},
     {"texture output, with offset",
-        false, false, {128, 96}, {64, 32}, false, false},
+        false, false, false, 0, {128, 96}, {64, 32}, false, false},
     #ifndef MAGNUM_TARGET_GLES
     {"texture output with implicit size",
-        false, true, {64, 64}, {}, false, false},
+        false, true, false, 0, {64, 64}, {}, false, false},
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    {"texture array output, first layer",
+        false, false, true, 0, {64, 64}, {}, false, false},
+    {"texture array output, arbitrary layer",
+        false, false, true, 3, {64, 64}, {}, false, false},
+    #ifndef MAGNUM_TARGET_GLES
+    {"texture array output with implicit size, arbitrary layer",
+        false, true, true, 3, {64, 64}, {}, false, false},
+    #endif
     #endif
     {"framebuffer output",
-        true, false, {64, 64}, {}, false, false},
+        true, false, false, 0, {64, 64}, {}, false, false},
     {"framebuffer output, flipped on X",
-        true, false, {64, 64}, {}, true, false},
+        true, false, false, 0, {64, 64}, {}, true, false},
     {"framebuffer output, flipped on Y",
-        true, false, {64, 64}, {}, false, true},
+        true, false, false, 0, {64, 64}, {}, false, true},
     {"framebuffer output, with offset",
-        true, false, {128, 96}, {64, 32}, false, false},
+        true, false, false, 0, {128, 96}, {64, 32}, false, false},
     #ifndef MAGNUM_TARGET_GLES
     {"framebuffer output with implicit size",
-        true, true, {64, 64}, {}, false, false},
+        true, true, false, 0, {64, 64}, {}, false, false},
     #endif
 };
 
@@ -262,16 +276,34 @@ void DistanceFieldGLTest::run() {
     #endif
     const GL::PixelType outputPixelType = GL::PixelType::UnsignedByte;
 
-    GL::Texture2D outputTexture;
-    outputTexture.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
-        .setMagnificationFilter(GL::SamplerFilter::Nearest)
-        .setStorage(1, outputTextureFormat, data.size);
+    GL::Texture2D outputTexture{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::Texture2DArray outputTextureArray{NoCreate};
+    if(data.array) {
+        outputTextureArray = GL::Texture2DArray{};
+        outputTextureArray.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+            .setMagnificationFilter(GL::SamplerFilter::Nearest)
+            .setStorage(1, outputTextureFormat, {data.size, data.layer + 1});
 
-    /* Fill the texture with some data to verify they don't affect the output
-       and aren't accidentally overwritten when running on just a
-       subrectangle */
-    outputTexture.setSubImage(0, {}, ImageView2D{outputPixelFormat, outputPixelType, data.size,
-    Containers::Array<char>{DirectInit, std::size_t(data.size.product()*GL::pixelFormatSize(outputPixelFormat, outputPixelType)), '\x66'}});
+        /* Fill the texture with some data to verify they don't affect the
+           output and aren't accidentally overwritten when running on just a
+           subrectangle */
+        outputTextureArray.setSubImage(0, {}, ImageView2D{outputPixelFormat, outputPixelType, data.size,
+        Containers::Array<char>{DirectInit, std::size_t(data.size.product()*(data.layer + 1)*GL::pixelFormatSize(outputPixelFormat, outputPixelType)), '\x66'}});
+    } else
+    #endif
+    {
+        outputTexture = GL::Texture2D{};
+        outputTexture.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+            .setMagnificationFilter(GL::SamplerFilter::Nearest)
+            .setStorage(1, outputTextureFormat, data.size);
+
+        /* Fill the texture with some data to verify they don't affect the
+           output and aren't accidentally overwritten when running on just a
+           subrectangle */
+        outputTexture.setSubImage(0, {}, ImageView2D{outputPixelFormat, outputPixelType, data.size,
+        Containers::Array<char>{DirectInit, std::size_t(data.size.product()*GL::pixelFormatSize(outputPixelFormat, outputPixelType)), '\x66'}});
+    }
 
     GL::Framebuffer outputFramebuffer{NoCreate};
     if(data.framebuffer) {
@@ -296,7 +328,21 @@ void DistanceFieldGLTest::run() {
             distanceField(input, outputFramebuffer,
                 Range2Di::fromSize(data.offset, Vector2i{64}),
                 inputImage->size());
-    } else {
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(data.array) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(data.implicitOutputSize)
+            distanceField(input, outputTextureArray, data.layer,
+                Range2Di::fromSize(data.offset, Vector2i{64}));
+        else
+        #endif
+            distanceField(input, outputTextureArray, data.layer,
+                Range2Di::fromSize(data.offset, Vector2i{64}),
+                inputImage->size());
+    } else
+    #endif
+    {
         #ifndef MAGNUM_TARGET_GLES
         if(data.implicitOutputSize)
             distanceField(input, outputTexture,
@@ -327,14 +373,24 @@ void DistanceFieldGLTest::run() {
     /* Verify that the other data weren't overwritten if processing just a
        subrange -- it should still have the original data kept */
     if(data.offset.product()) {
-        DebugTools::textureSubImage(outputTexture, 0, Range2Di::fromSize({}, Vector2i{1}), *actualOutputImage);
+        #ifndef MAGNUM_TARGET_GLES2
+        if(data.array)
+            DebugTools::textureSubImage(outputTextureArray, 0, data.layer, Range2Di::fromSize({}, Vector2i{1}), *actualOutputImage);
+        else
+        #endif
+            DebugTools::textureSubImage(outputTexture, 0, Range2Di::fromSize({}, Vector2i{1}), *actualOutputImage);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
 
         CORRADE_COMPARE(actualOutputImage->data()[0], '\x66');
     }
 
-    DebugTools::textureSubImage(outputTexture, 0, Range2Di::fromSize(data.offset, Vector2i{64}), *actualOutputImage);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.array)
+        DebugTools::textureSubImage(outputTextureArray, 0, data.layer, Range2Di::fromSize(data.offset, Vector2i{64}), *actualOutputImage);
+    else
+    #endif
+        DebugTools::textureSubImage(outputTexture, 0, Range2Di::fromSize(data.offset, Vector2i{64}), *actualOutputImage);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

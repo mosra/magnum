@@ -296,6 +296,40 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceFieldGL {
         #endif
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Calculate distance field to a texture array layer
+         * @param input         Input texture
+         * @param output        Output texture
+         * @param layer         Layer in the output where to render
+         * @param rectangle     Rectangle in the output where to render
+         * @param imageSize     Input texture size. Mandatory on OpenGL ES and
+         *      WebGL, on desktop GL if left at default the size is internally
+         *      queried using @ref GL::Texture2D::imageSize() instead.
+         * @m_since_latest
+         *
+         * Convenience variant of @ref operator()(GL::Texture2D&, GL::Framebuffer&, const Range2Di&, const Vector2i&)
+         * that creates a temporary framebuffer with @p output @p layer
+         * attached and destroys it again after the operation.
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
+         * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void operator()(GL::Texture2D& input, GL::Texture2DArray& output, Int layer, const Range2Di& rectangle, const Vector2i& imageSize
+            #ifndef MAGNUM_TARGET_GLES
+            = {}
+            #endif
+        );
+        #else
+        /* To avoid having to include Vector2 */
+        void operator()(GL::Texture2D& input, GL::Texture2DArray& output, Int layer, const Range2Di& rectangle, const Vector2i& imageSize);
+        #ifndef MAGNUM_TARGET_GLES
+        void operator()(GL::Texture2D& input, GL::Texture2DArray& output, Int layer, const Range2Di& rectangle);
+        #endif
+        #endif
+        #endif
+
     private:
         struct State;
         Containers::Pointer<State> _state;

@@ -491,6 +491,8 @@ See also:
     easier ability to download the resulting image on OpenGL ES platforms;
     the @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     utility thus now compiles and works on OpenGL ES 3+ as well
+-   Added a @ref TextureTools::DistanceFieldGL::operator()() overload taking a
+    @ref GL::TextureArray as an output
 
 @subsubsection changelog-latest-new-trade Trade library
 
