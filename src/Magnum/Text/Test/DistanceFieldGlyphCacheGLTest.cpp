@@ -252,16 +252,11 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
             ImageView2D{cache.processedFormat(), data.size, zeros}
     );
 
-    Containers::StridedArrayView3D<const char> src = inputImage->pixels();
-    /* Test also uploading under an offset. The cache might be three-component
-       in some cases, slice the destination view to just the first component */
-    /** @todo actually the input can be just luminance, only the destination
-        cannot -- fix by dropping the dependency on GlyphCache and creating the
-        texture directly */
-    Utility::copy(src, cache.image().pixels()[0].sliceSize({
+    Containers::StridedArrayView2D<const UnsignedByte> src = inputImage->pixels<UnsignedByte>();
+    /* Test also uploading under an offset */
+    Utility::copy(src, cache.image().pixels<UnsignedByte>()[0].sliceSize({
         std::size_t(data.sourceOffset.y()),
-        std::size_t(data.sourceOffset.x()),
-        0}, src.size()));
+        std::size_t(data.sourceOffset.x())}, src.size()));
     cache.flushImage(data.flushRange);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
