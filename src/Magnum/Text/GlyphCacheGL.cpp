@@ -219,6 +219,8 @@ GlyphCacheArrayGL::GlyphCacheArrayGL(const PixelFormat format, const Vector3i& s
 
 GlyphCacheArrayGL::GlyphCacheArrayGL(const PixelFormat format, const Vector3i& size): GlyphCacheArrayGL{format, size, Vector2i{1}} {}
 
+GlyphCacheArrayGL::GlyphCacheArrayGL(Containers::Pointer<State>&& state) noexcept: AbstractGlyphCache{Utility::move(state)} {}
+
 GlyphCacheArrayGL::GlyphCacheArrayGL(NoCreateT) noexcept: AbstractGlyphCache{NoCreate} {}
 
 GL::Texture2DArray& GlyphCacheArrayGL::texture() {
@@ -233,6 +235,16 @@ void GlyphCacheArrayGL::doSetImage(const Vector3i& offset, const ImageView3D& im
 
     static_cast<State&>(*_state).texture.setSubImage(0, offset, image);
 }
+
+void GlyphCacheArrayGL::doSetProcessedImage(const Vector3i& offset, const ImageView3D& image) {
+    static_cast<State&>(*_state).texture.setSubImage(0, offset, image);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+Image3D GlyphCacheArrayGL::doProcessedImage() {
+    return static_cast<State&>(*_state).texture.image(0, processedFormat());
+}
+#endif
 #endif
 
 }}

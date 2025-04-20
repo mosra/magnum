@@ -71,9 +71,9 @@ essentially for free.
 You can use the @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
 utility to perform distance field conversion on a command line. Distance field
 textures can be rendered with @ref Shaders::DistanceFieldVectorGL, this
-functionality is also used to implement @ref Text::DistanceFieldGlyphCacheGL
-for text rendering, which is then exposed in the
-@ref magnum-fontconverter "magnum-fontconverter" utility.
+functionality is also used to implement @ref Text::DistanceFieldGlyphCacheGL /
+@ref Text::DistanceFieldGlyphCacheArrayGL for text rendering, which is then
+exposed in the @ref magnum-fontconverter "magnum-fontconverter" utility.
 
 Algorithm based on: *Chris Green - Improved Alpha-Tested Magnification for
 Vector Textures and Special Effects, SIGGRAPH 2007,

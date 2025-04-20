@@ -109,8 +109,9 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& output, GlyphCacheFeatures value);
 A GPU-API-agnostic base for glyph caches, supporting multiple fonts and both 2D
 and 2D array textures. Provides a common interface for adding fonts, glyph
 properties, uploading glyph data and retrieving glyph properties back, the
-@ref GlyphCacheGL, @ref GlyphCacheArrayGL and @ref DistanceFieldGlyphCacheGL
-subclasses then provide concrete implementations backed with an OpenGL texture.
+@ref GlyphCacheGL, @ref GlyphCacheArrayGL, @ref DistanceFieldGlyphCacheGL and
+@ref DistanceFieldGlyphCacheArrayGL subclasses then provide concrete
+implementations backed with an OpenGL texture.
 
 @section Text-AbstractGlyphCache-usage Basic usage
 
@@ -204,8 +205,8 @@ letters *j* or *q* that reach below the baseline).
 
 Important is to call @ref flushImage() at the end, which makes the glyph cache
 update its actual GPU-side texture based on what area of the image was updated.
-In case of @ref DistanceFieldGlyphCacheGL for example it also triggers distance
-field generation for given area.
+In case of @ref DistanceFieldGlyphCacheGL / @ref DistanceFieldGlyphCacheArrayGL
+for example it also triggers distance field generation for given area.
 
 If the images put into the cache are meant to be used with general meshes, the
 @ref TextureTools::atlasTextureCoordinateTransformation() function can be used

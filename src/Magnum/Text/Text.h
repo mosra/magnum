@@ -67,6 +67,7 @@ typedef CORRADE_DEPRECATED("use DistanceFieldGlyphCacheGL instead") DistanceFiel
 typedef CORRADE_DEPRECATED("use GlyphCacheGL instead") GlyphCacheGL GlyphCache;
 #endif
 #ifndef MAGNUM_TARGET_GLES2
+class DistanceFieldGlyphCacheArrayGL;
 class GlyphCacheArrayGL;
 #endif
 class RendererGL;

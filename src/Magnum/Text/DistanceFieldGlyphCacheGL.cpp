@@ -102,6 +102,28 @@ GlyphCacheFeatures DistanceFieldGlyphCacheGL::doFeatures() const {
         ;
 }
 
+namespace {
+
+Range2Di paddedImageRange(const Vector3i& cacheSize, const Vector2i& imageOffset, const Vector2i& imageSize, const Vector2i& ratio) {
+    const Vector2i paddedMin = imageOffset;
+    const Vector2i paddedMax = imageOffset + imageSize;
+
+    /* TextureTools::DistanceFieldGL expects the input size and output
+       rectangle size ratio to be a multiple of 2 in order for the shader to
+       perform pixel addressing correctly. That might not always be the case
+       with the rectangle passed to flushImage(), so round the paddedMin *down*
+       to a multiple of the ratio and paddedMax *up* to a multiple of the
+       ratio. */
+    const Vector2i paddedMinRounded = ratio*(paddedMin/ratio);
+    const Vector2i paddedMaxRounded = ratio*((paddedMax + ratio - Vector2i{1})/ratio);
+    /* As the size is also a multiple of ratio, the resulting size should not
+       get larger */
+    CORRADE_INTERNAL_ASSERT(paddedMaxRounded <= cacheSize.xy());
+    return {paddedMinRounded, paddedMaxRounded};
+}
+
+}
+
 void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)) && !defined(CORRADE_NO_ASSERT)
     offset
@@ -154,26 +176,12 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
         /* The image range was already expanded to include the padding in
            flushImage() */
         CORRADE_INTERNAL_ASSERT(image.storage().skip().xy() == offset);
-        const Vector2i paddedMin = image.storage().skip().xy();
-        const Vector2i paddedMax = image.size() + image.storage().skip().xy();
-
-        /* TextureTools::DistanceFieldGL expects the input size and output
-           rectangle size ratio to be a multiple of 2 in order for the shader
-           to perform pixel addressing correctly. That might not always be the
-           case with the rectangle passed to flushImage(), so round the
-           paddedMin *down* to a multiple of the ratio and paddedMax *up* to a
-           multiple of the ratio. */
-        const Vector2i paddedMinRounded = ratio*(paddedMin/ratio);
-        const Vector2i paddedMaxRounded = ratio*((paddedMax + ratio - Vector2i{1})/ratio);
-        /* As the size is also a multiple of ratio, the resulting size should
-           not get larger. */
-        CORRADE_INTERNAL_ASSERT(paddedMaxRounded <= size().xy());
-
+        const Range2Di paddedRange = paddedImageRange(size(), image.storage().skip().xy(), image.size(), ratio);
         const ImageView2D paddedImage{
             PixelStorage{image.storage()}
-                .setSkip({paddedMinRounded, image.storage().skip().z()}),
+                .setSkip({paddedRange.min(), image.storage().skip().z()}),
             image.format(),
-            paddedMaxRounded - paddedMinRounded,
+            paddedRange.size(),
             image.data()};
 
         /** @todo investigate if using setStorage() + setSubImage() is any
@@ -181,7 +189,7 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
             temporary it doesn't matter much anyway; similarly with the
             temporary framebuffer created inside */
         input.setImage(0, GL::textureFormat(paddedImage.format()), paddedImage);
-        state.distanceField(input, texture(), {paddedMinRounded/ratio, paddedMaxRounded/ratio}, paddedImage.size());
+        state.distanceField(input, texture(), {paddedRange.min()/ratio, paddedRange.max()/ratio}, paddedRange.size());
     }
     #endif
 }
@@ -202,6 +210,119 @@ void DistanceFieldGlyphCacheGL::setDistanceFieldImage(const Vector2i& offset, co
     }
 
     setProcessedImage(offset, imageToUse);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+struct DistanceFieldGlyphCacheArrayGL::State: GlyphCacheArrayGL::State {
+    explicit State(const Vector3i& size, const Vector2i& processedSize, UnsignedInt radius);
+
+    TextureTools::DistanceFieldGL distanceField;
+};
+
+DistanceFieldGlyphCacheArrayGL::State::State(const Vector3i& size, const Vector2i& processedSize, const UnsignedInt radius):
+    GlyphCacheArrayGL::State{
+        PixelFormat::R8Unorm, size, PixelFormat::R8Unorm,
+        processedSize, Vector2i(radius)},
+    distanceField{radius}
+{
+    /* Replicating the assertion from TextureTools::DistanceFieldGL so it gets
+       checked during construction already instead of only later during the
+       setImage() call */
+    CORRADE_ASSERT(size.xy() % processedSize == Vector2i{0} &&
+                   (size.xy()/processedSize) % 2 == Vector2i{0},
+        "Text::DistanceFieldGlyphCacheArrayGL: expected source and processed size ratio to be a multiple of 2, got" << Debug::packed << size.xy() << "and" << Debug::packed << processedSize, );
+}
+
+DistanceFieldGlyphCacheArrayGL::DistanceFieldGlyphCacheArrayGL(const Vector3i& size, const Vector2i& processedSize, UnsignedInt radius): GlyphCacheArrayGL{Containers::pointer<State>(size, processedSize, radius)} {}
+
+DistanceFieldGlyphCacheArrayGL::DistanceFieldGlyphCacheArrayGL(NoCreateT) noexcept: GlyphCacheArrayGL{NoCreate} {}
+
+GlyphCacheFeatures DistanceFieldGlyphCacheArrayGL::doFeatures() const {
+    return GlyphCacheFeature::ImageProcessing
+        #ifndef MAGNUM_TARGET_GLES
+        |GlyphCacheFeature::ProcessedImageDownload
+        #endif
+        ;
+}
+
+void DistanceFieldGlyphCacheArrayGL::doSetImage(const Vector3i& offset, const ImageView3D& image) {
+    auto& state = static_cast<State&>(*_state);
+
+    /* Like with DistanceFieldGlyphCacheGL above, the assumption is that a
+       temporary texture instance is better than a persistent one */
+    GL::Texture2D input;
+    input
+        /* Unlike with DistanceFieldGlyphCacheGL, neither wrapping nor nearest
+           filter should be needed as we always use texelFetch(), but use it
+           for consistency. The Base mipmap setting is however for some reason
+           needed even for texelFetch() as with Nearest / Linear it results in
+           zero output (likely due to setImage() being used below instead of
+           setStorage()?). */
+        /** @todo might want to clear this up once setStorage() is used? */
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest);
+
+    /* The constructor already checked that the ratio is an integer multiple,
+       so this division should lead to no information loss */
+    CORRADE_INTERNAL_ASSERT(size().xy() % processedSize().xy() == Vector2i{0});
+    const Vector2i ratio = size().xy()/processedSize().xy();
+
+    /* Upload the input texture and create a distance field from it */
+
+    /* The image range was already expanded to include the padding in
+       flushImage() */
+    CORRADE_INTERNAL_ASSERT(image.storage().skip().xy() == offset.xy());
+    const Range2Di paddedRange = paddedImageRange(size(), image.storage().skip().xy(), image.size().xy(), ratio);
+    const ImageView3D paddedImage{
+        PixelStorage{image.storage()}
+            .setSkip({paddedRange.min(), image.storage().skip().z()}),
+        image.format(),
+        {paddedRange.size(), image.size().z()},
+        image.data()};
+
+    /* Properties needed for slicing the image to individual layers below */
+    /** @todo clean this up once Image APIs stop being shit */
+    const std::size_t firstLayerOffset = paddedImage.dataProperties().first.z();
+    const std::size_t layerStride = paddedImage.dataProperties().second.xy().product();
+
+    /* Cycle through all layers, for each upload slice of the input image,
+       attach the corresponding output texture array layer to the framebuffer
+       and run the distance field processing. Yes, this means a separate GPU
+       call for each layer, but:
+
+        -   The processing has to be done layer by layer anyway, as drawing to
+            multiple layers at once is only possible with geometry shaders or
+            image load/store. GS isn't available on WebGL or other ES3
+            platforms we care about and generally has perf pitfalls unless a
+            GS passthrough extension is available, which is basically just on
+            NVidia. Image load/store is available only where compute is, so
+            also just ES3.1+ or desktop, and generally fragment shader
+            processing is always faster because the invocations are done in a
+            more cache friendly manner than with compute. With compute one
+            *can* emulate such behavior by hand, but it sidesteps the GPU's
+            builtin implementation, likely always only playing catch up.
+        -   Because only a single input layer is uploaded at a time, the GPU
+            memory use is reduced compared to allocating the whole input
+            texture array and then uploading and processing just a part. */
+    for(Int i = 0; i != image.size().z(); ++i) {
+        /** @todo like with DistanceFieldGlyphCacheGL above, investigate if
+            using setStorage() + setSubImage() or a persistent framebuffer
+            instance is any faster than this */
+        input.setImage(0, GL::textureFormat(paddedImage.format()), ImageView2D{
+            /* Ideally, with a sane API, I wouldn't need to reset the Z skip to
+               0 and offset the data pointer, but with 2D images GL ignores the
+               Z skip */
+            /** @todo clean up all this once this useless GL-shaped API is
+                dropped */
+            PixelStorage{paddedImage.storage()}
+                .setSkip({paddedRange.min(), 0}),
+            paddedImage.format(),
+            paddedImage.size().xy(),
+            paddedImage.data().exceptPrefix(firstLayerOffset + i*layerStride)});
+        state.distanceField(input, texture(), offset.z() + i, {paddedRange.min()/ratio, paddedRange.max()/ratio}, paddedRange.size());
+    }
 }
 #endif
 

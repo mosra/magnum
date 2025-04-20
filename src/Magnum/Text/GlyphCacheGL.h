@@ -226,8 +226,10 @@ Implementation of an @ref AbstractGlyphCache backed by a
 @ref GL::Texture2DArray, other than that equivalent to @ref GlyphCacheGL. See
 the @ref AbstractGlyphCache class documentation for information about setting
 up a glyph cache instance and filling it with glyphs, and @ref GlyphCacheGL for
-details on how the internal texture format is picked. The setup differs from
-@ref GlyphCacheGL only in specifying one extra dimension for size:
+details on how the internal texture format is picked. See the
+@ref DistanceFieldGlyphCacheArrayGL subclass for a variant that adds distance
+field processing on top. The setup differs from @ref GlyphCacheGL only in
+specifying one extra dimension for size:
 
 @snippet Text-gl.cpp GlyphCacheArrayGL-usage
 
@@ -322,10 +324,19 @@ class MAGNUM_TEXT_EXPORT GlyphCacheArrayGL: public AbstractGlyphCache {
     #endif
         struct State;
 
+        /* Used by DistanceFieldGlyphCacheArrayGL */
+        explicit GlyphCacheArrayGL(Containers::Pointer<State>&& state) noexcept;
+
     private:
         MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
         /* These are not MAGNUM_TEXT_LOCAL because the test makes a subclass */
         void doSetImage(const Vector3i& offset, const ImageView3D& image) override;
+        /* Used if a subclass advertises GlyphCacheFeature::ImageProcessing /
+           ProcessedImageDownload in its doFeatures() */
+        void doSetProcessedImage(const Vector3i& offset, const ImageView3D& image) override;
+        #ifndef MAGNUM_TARGET_GLES
+        Image3D doProcessedImage() override;
+        #endif
 };
 #endif
 

@@ -34,10 +34,17 @@ struct DistanceFieldGlyphCacheGL_Test: TestSuite::Tester {
     explicit DistanceFieldGlyphCacheGL_Test();
 
     void constructNoCreate();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructNoCreateArray();
+    #endif
 };
 
 DistanceFieldGlyphCacheGL_Test::DistanceFieldGlyphCacheGL_Test() {
-    addTests({&DistanceFieldGlyphCacheGL_Test::constructNoCreate});
+    addTests({&DistanceFieldGlyphCacheGL_Test::constructNoCreate,
+              #ifndef MAGNUM_TARGET_GLES2
+              &DistanceFieldGlyphCacheGL_Test::constructNoCreateArray
+              #endif
+              });
 }
 
 void DistanceFieldGlyphCacheGL_Test::constructNoCreate() {
@@ -49,6 +56,18 @@ void DistanceFieldGlyphCacheGL_Test::constructNoCreate() {
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoCreateT, DistanceFieldGlyphCacheGL>::value);
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void DistanceFieldGlyphCacheGL_Test::constructNoCreateArray() {
+    DistanceFieldGlyphCacheArrayGL cache{NoCreate};
+
+    /* Shouldn't crash or try to acces GL */
+    CORRADE_VERIFY(true);
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DistanceFieldGlyphCacheArrayGL>::value);
+}
+#endif
 
 }}}}
 

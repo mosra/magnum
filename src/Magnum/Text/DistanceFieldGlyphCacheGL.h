@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::DistanceFieldGlyphCacheGL
+ * @brief Class @ref Magnum::Text::DistanceFieldGlyphCacheGL, @ref Magnum::Text::DistanceFieldGlyphCacheArrayGL
  * @m_since_latest
  */
 
@@ -174,6 +174,85 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheGL: public GlyphCacheGL {
         MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
         MAGNUM_TEXT_LOCAL void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
 };
+
+#ifndef MAGNUM_TARGET_GLES2
+/**
+@brief OpenGL array glyph cache with distance field rendering
+@m_since_latest
+
+Like @ref DistanceFieldGlyphCacheGL, but backed by a @ref GL::Texture2DArray
+instead of @ref GL::Texture2D. See the @ref AbstractGlyphCache class
+documentation for information about setting up a glyph cache instance and
+filling it with glyphs, and @ref DistanceFieldGlyphCacheGL for details specific
+to distance field processing and used internal texture format. The setup
+differs from @ref DistanceFieldGlyphCacheGL only in specifying one extra
+dimension for size:
+
+@snippet Text-gl.cpp DistanceFieldGlyphCacheArrayGL-usage
+
+Assuming a @ref RendererGL is used with this cache for rendering the text, its
+@relativeref{RendererGL,mesh()} can be then drawn using
+@ref Shaders::DistanceFieldVectorGL that has
+@ref Shaders::DistanceFieldVectorGL::Flag::TextureArrays enabled, together with
+binding @ref texture() for drawing:
+
+@snippet Text-gl.cpp DistanceFieldGlyphCacheArrayGL-usage-draw
+
+@requires_gl30 Extension @gl_extension{EXT,texture_array}
+@requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
+@requires_webgl20 Texture arrays are not available in WebGL 1.0.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+*/
+class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheArrayGL: public GlyphCacheArrayGL {
+    public:
+        /**
+         * @brief Constructor
+         * @param size              Size of the source image
+         * @param processedSize     Resulting distance field texture size.
+         *      Depth of the resulting texture is @cpp size.z() @ce.
+         * @param radius            Distance field calculation radius
+         *
+         * See @ref TextureTools::DistanceFieldGL for more information about
+         * the parameters. Size restrictions from it apply here as well, in
+         * particular the ratio of @cpp size.xy() @ce and @p processedSize is
+         * expected to be a multiple of 2.
+         *
+         * Sets the @ref processedFormat() to @ref PixelFormat::R8Unorm, if
+         * available. On OpenGL ES 3.0+ and WebGL 2 uses
+         * @ref PixelFormat::R8Unorm always. On desktop OpenGL requires
+         * @gl_extension{ARB,texture_rg} (part of OpenGL 3.0), on ES2 uses
+         * @gl_extension{EXT,texture_rg} if available and uses
+         * @ref PixelFormat::RGB8Unorm as fallback if not, on WebGL 1 uses
+         * @ref PixelFormat::RGB8Unorm always.
+         */
+        explicit DistanceFieldGlyphCacheArrayGL(const Vector3i& size, const Vector2i& processedSize, UnsignedInt radius);
+
+        /**
+         * @brief Construct without creating the internal state and the OpenGL texture object
+         * @m_since_latest
+         *
+         * The constructed instance is equivalent to moved-from state, i.e. no
+         * APIs can be safely called on the object. Useful in cases where you
+         * will overwrite the instance later anyway. Move another object over
+         * it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
+         */
+        explicit DistanceFieldGlyphCacheArrayGL(NoCreateT) noexcept;
+
+    private:
+        struct State;
+
+        MAGNUM_TEXT_LOCAL GlyphCacheFeatures doFeatures() const override;
+        MAGNUM_TEXT_LOCAL void doSetImage(const Vector3i& offset, const ImageView3D& image) override;
+};
+#endif
 
 }}
 #else

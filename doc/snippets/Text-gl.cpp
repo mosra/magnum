@@ -152,6 +152,35 @@ shader
 /* [DistanceFieldGlyphCacheGL-usage-draw] */
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+PluginManager::Manager<Text::AbstractFont> manager;
+/* [DistanceFieldGlyphCacheArrayGL-usage] */
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
+font->openFile("font.ttf", 48.0f);
+
+Text::DistanceFieldGlyphCacheArrayGL cache{{512, 512, 4}, {128, 128}, 12};
+if(!font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
+                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                "0123456789?!:;,. "))
+    Fatal{} << "Glyph cache too small to fit all characters";
+/* [DistanceFieldGlyphCacheArrayGL-usage] */
+
+/* [DistanceFieldGlyphCacheArrayGL-usage-draw] */
+Text::RendererGL renderer{cache};
+DOXYGEN_ELLIPSIS()
+
+Shaders::DistanceFieldVectorGL2D shader{
+    Shaders::DistanceFieldVectorGL2D::Configuration{}
+        .setFlags(Shaders::DistanceFieldVectorGL2D::Flag::TextureArrays)};
+shader
+    DOXYGEN_ELLIPSIS()
+    .bindVectorTexture(cache.texture())
+    .draw(renderer.mesh());
+/* [DistanceFieldGlyphCacheArrayGL-usage-draw] */
+}
+#endif
+
 {
 /* [Renderer-usage-construct] */
 Text::GlyphCacheGL cache{PixelFormat::R8Unorm, {256, 256}};

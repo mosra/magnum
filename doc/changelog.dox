@@ -468,6 +468,10 @@ See also:
 -   New @ref Text::Renderer, @ref Text::RendererGL and @ref Text::RendererCore
     classes that provide high-level multi-line and multi-font text rendering
     functionality
+-   New @ref Text::GlyphCacheArrayGL and
+    @ref Text::DistanceFieldGlyphCacheArrayGL classes that make use of
+    @ref GL::Texture2DArray instead of @ref GL::Texture2D to support larger
+    cache sizes without hitting texture size limits
 -   New @ref Text::renderLineGlyphPositionsInto(),
     @ref Text::renderGlyphQuadsInto(), @ref Text::glyphQuadBounds(),
     @ref Text::alignRenderedLine(), @ref Text::alignRenderedBlock() and
