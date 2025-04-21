@@ -252,7 +252,7 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
 }
 
 void DistanceFieldGlyphCacheGLTest::construct() {
-    DistanceFieldGlyphCacheGL cache{{256, 512}, {64, 128}, 16};
+    DistanceFieldGlyphCacheGL cache{{256, 512}, {64, 128}, 13};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -284,6 +284,7 @@ void DistanceFieldGlyphCacheGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{64, 128}));
     #endif
+    CORRADE_COMPARE(cache.radius(), 13);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -293,7 +294,7 @@ void DistanceFieldGlyphCacheGLTest::constructArray() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    DistanceFieldGlyphCacheArrayGL cache{{256, 512, 7}, {64, 128}, 16};
+    DistanceFieldGlyphCacheArrayGL cache{{256, 512, 7}, {64, 128}, 17};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -309,6 +310,7 @@ void DistanceFieldGlyphCacheGLTest::constructArray() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector3i{64, 128, 7}));
     #endif
+    CORRADE_COMPARE(cache.radius(), 17);
 }
 #endif
 

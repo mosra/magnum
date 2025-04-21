@@ -88,6 +88,10 @@ DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(const Vector2i& size, const
 
 DistanceFieldGlyphCacheGL::DistanceFieldGlyphCacheGL(NoCreateT) noexcept: GlyphCacheGL{NoCreate} {}
 
+UnsignedInt DistanceFieldGlyphCacheGL::radius() const {
+    return static_cast<const State&>(*_state).distanceField.radius();
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 Vector2i DistanceFieldGlyphCacheGL::distanceFieldTextureSize() const {
     return processedSize().xy();
@@ -237,6 +241,10 @@ DistanceFieldGlyphCacheArrayGL::State::State(const Vector3i& size, const Vector2
 DistanceFieldGlyphCacheArrayGL::DistanceFieldGlyphCacheArrayGL(const Vector3i& size, const Vector2i& processedSize, UnsignedInt radius): GlyphCacheArrayGL{Containers::pointer<State>(size, processedSize, radius)} {}
 
 DistanceFieldGlyphCacheArrayGL::DistanceFieldGlyphCacheArrayGL(NoCreateT) noexcept: GlyphCacheArrayGL{NoCreate} {}
+
+UnsignedInt DistanceFieldGlyphCacheArrayGL::radius() const {
+    return static_cast<const State&>(*_state).distanceField.radius();
+}
 
 GlyphCacheFeatures DistanceFieldGlyphCacheArrayGL::doFeatures() const {
     return GlyphCacheFeature::ImageProcessing

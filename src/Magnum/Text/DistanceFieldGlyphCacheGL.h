@@ -147,6 +147,12 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheGL: public GlyphCacheGL {
          */
         explicit DistanceFieldGlyphCacheGL(NoCreateT) noexcept;
 
+        /**
+         * @brief Distance field calculation radius
+         * @m_since_latest
+         */
+        UnsignedInt radius() const;
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Distance field texture size
@@ -246,6 +252,9 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheArrayGL: public GlyphCacheArrayG
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit DistanceFieldGlyphCacheArrayGL(NoCreateT) noexcept;
+
+        /** @brief Distance field calculation radius */
+        UnsignedInt radius() const;
 
     private:
         struct State;
