@@ -45,8 +45,10 @@ namespace Magnum { namespace Text {
 Extends @ref GlyphCacheGL by processing rendered glyphs to a signed distance
 field texture using @ref TextureTools::DistanceFieldGL, allowing them to be
 drawn at different sizes and with various transformations without aliasing
-artifacts. It's possible to only use this cache for monochrome glyphs as the
-internal texture format is single-channel.
+artifacts. @ref DistanceFieldGlyphCacheArrayGL is then using a
+@ref GL::Texture2DArray instead of a @ref GL::Texture2D. It's possible to only
+use this cache for monochrome glyphs as the internal texture format is
+single-channel.
 
 @section Text-DistanceFieldGlyphCacheGL-usage Usage
 
@@ -232,7 +234,6 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCacheArrayGL: public GlyphCacheArrayG
 
         /**
          * @brief Construct without creating the internal state and the OpenGL texture object
-         * @m_since_latest
          *
          * The constructed instance is equivalent to moved-from state, i.e. no
          * APIs can be safely called on the object. Useful in cases where you

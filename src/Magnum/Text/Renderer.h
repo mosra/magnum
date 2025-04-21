@@ -780,8 +780,9 @@ glyph quads don't cut into each other. Assuming the drawing is performed in a
 below sets up the drawing that the font pixel size matches the window pixels by
 specifying @ref Platform::Sdl2Application::windowSize()  "Platform::*Application::windowSize()"
 as the projection size, and it appears in the center of the window. With
-@ref GlyphCacheArrayGL or @ref DistanceFieldGlyphCacheGL the drawing setup is
-slightly different, see their documentation for examples.
+@ref GlyphCacheArrayGL, @ref DistanceFieldGlyphCacheGL or
+@ref DistanceFieldGlyphCacheArrayGL the drawing setup is slightly different,
+see their documentation for examples.
 
 @snippet Text-gl.cpp Renderer-usage-draw
 
@@ -934,10 +935,11 @@ The second approach, with text size being relative to the window size, is for
 cases where the text is meant to match surrounding art, such as in a game menu.
 In this case the projection size is usually something arbitrary that doesn't
 match window pixels, and the text point size then has to be relative to that.
-For this use case a @ref DistanceFieldGlyphCacheGL is the better match, as it
-can provide text at different sizes without the scaling causing blurriness or
-aliased edges. See its documentation for details about picking the right font
-size and other parameters for best results.
+For this use case a @ref DistanceFieldGlyphCacheGL /
+@ref DistanceFieldGlyphCacheArrayGL is the better match, as it can provide text
+at different sizes without the scaling causing blurriness or aliased edges. See
+its documentation for details about picking the right font size and other
+parameters for best results.
 
 @subsection Text-Renderer-usage-font-size-dpi DPI awareness
 
