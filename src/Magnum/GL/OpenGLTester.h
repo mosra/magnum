@@ -139,12 +139,24 @@ If @gl_extension{ARB,timer_query} desktop extension (part of OpenGL 3.3),
 available, GPU time benchmarks will get automatically skipped, producing a
 @cb{.ansi} [1;39mSKIP @ce message on the output.
 
+@subsection GL-OpenGLTester-benchmarks-frequency-scaling Preventing GPU frequency scaling
+
 Note that GPUs are subject to the same frequency scaling as CPUs, and depending
 on the vendor and driver the variance may be so high that the measurements are
 useless. This is particlarly the case with Intel integrated GPUs, which heavily
 downclock for power saving, and do so independently on the CPU power mode. On
-Linux it's possible to tune the behavior by setting the min and max frequency
-to the same value, for example:
+Linux it's possible to tune the behavior using [Intel GPU tools](https://gitlab.freedesktop.org/drm/igt-gpu-tools),
+available as a `intel-gpu-tools` package on ArchLinux and Ubuntu, and
+`igt-gpu-tools` on Fedora. Run the following as root:
+
+@code{.sh}
+intel_gpu_frequency --max
+@endcode
+
+You can reset back to the default behavior with
+@cb{.sh} intel_gpu_frequency --defaults @ce. Without these tools available,
+it's possible to achieve similar results using low-level tunables in `/sys`, by
+setting the min and max frequency to the same value, for example:
 
 @m_class{m-console-wrap}
 
@@ -208,6 +220,7 @@ class OpenGLTester: public TestSuite::Tester {
              * extension or @gl_extension{EXT,disjoint_timer_query_webgl2}
              * WebGL 2 extension is not available, GPU time benchmarks will get
              * automatically skipped.
+             * @see @ref GL-OpenGLTester-benchmarks-frequency-scaling
              */
             GpuTime = 32
         };
