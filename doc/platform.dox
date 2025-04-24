@@ -259,10 +259,12 @@ and feature detection. The instance must be alive for whole application
 lifetime. Example @cpp main() @ce function with manual initialization is in the
 following code listing.
 
-@note Fully contained application using with manual Magnum initialization on
-    top of Qt toolkit is available in `base-qt` branch of
-    [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap/tree/base-qt)
-    repository. Similar project, but for wxWidgets and gtkmm are in the
+@note A fully contained application with manual Magnum initialization on top of
+    the Qt toolkit is available in the
+    [base-qt5](https://github.com/mosra/magnum-bootstrap/tree/base-qt5) /
+    [base-qt6](https://github.com/mosra/magnum-bootstrap/tree/base-qt6)
+    branches of the Magnum Bootstrap repository. Similar project, but for
+    wxWidgets and gtkmm are in the
     [base-wxwidgets](https://github.com/mosra/magnum-bootstrap/tree/base-wxwidgets)
     and [base-gtkmm](https://github.com/mosra/magnum-bootstrap/tree/base-gtkmm)
     branches.
