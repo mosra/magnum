@@ -125,6 +125,8 @@ constexpr struct {
     {"Sillicon Graphics BW", "pixar.bw", false, "SgiImporter"},
     {"Sillicon Graphics RGB", "pixar.rgb", false, "SgiImporter"},
     {"Sillicon Graphics RGBA", "pixar.rgba", false, "SgiImporter"},
+    {"SVG", "lion.svg", false, "SvgImporter"},
+    {"SVGZ", "lion.svgz", false, "SvgImporter"},
     {"TIFF", "image.tiff", false, "TiffImporter"},
     {"TIFF, 3-character extension", "image.tif", false, "TiffImporter"},
     {"TIFF data", "image.tiff", true, "TiffImporter"},

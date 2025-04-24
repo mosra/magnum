@@ -141,6 +141,9 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
             normalizedExtension == ".rgb"_s ||
             normalizedExtension == ".rgba"_s)
         plugin = "SgiImporter"_s;
+    else if(normalizedExtension == ".svg"_s ||
+            normalizedExtension == ".svgz"_s)
+        plugin = "SvgImporter"_s;
     else if(normalizedExtension == ".tif"_s ||
             normalizedExtension == ".tiff"_s)
         plugin = "TiffImporter"_s;

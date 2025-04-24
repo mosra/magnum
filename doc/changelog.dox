@@ -996,6 +996,7 @@ See also:
 -   Recognizing 3MF, VRM and USD files in @relativeref{Trade,AnySceneImporter}
 -   Recognizing OpenVDB files in @relativeref{Trade,AnyImageImporter} and
     @relativeref{Trade,AnyImageConverter}
+-   Recognizing SVG file extension in @relativeref{Trade,AnyImageImporter}
 -   @ref Audio::AnyImporter "AnyAudioImporter",
     @relativeref{Trade,AnyImageImporter}, @relativeref{Trade,AnyImageConverter},
     @relativeref{Trade,AnySceneImporter}, @relativeref{Trade,AnySceneConverter}

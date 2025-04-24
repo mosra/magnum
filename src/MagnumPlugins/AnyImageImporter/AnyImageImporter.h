@@ -94,6 +94,8 @@ Supported formats:
 -   Adobe Photoshop (`*.psd`), loaded with any plugin that provides `PsdImporter`
 -   Silicon Graphics (`*.sgi`, `*.bw`, `*.rgb`, `*.rgba`), loaded with any
     plugin that provides `SgiImporter`
+-   Scalable Vector Graphics (`*.svg`, `*.svgz`), loaded with any plugin that
+    provides `SvgImporter`
 -   Tagged Image File Format (`*.tif`, `*.tiff` or data with corresponding
     signature), loaded with any plugin that provides `TiffImporter`
 -   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst` or data with
