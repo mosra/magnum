@@ -264,6 +264,28 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
+<th rowspan="3">SVG<br/>(`*.svg`, `*.svgz`)</th>
+<td rowspan="3">`SvgImporter`</td>
+<td>@relativeref{Trade,LunaSvgImporter}</td>
+<td class="m-text-center m-danger">@ref Trade-LunaSvgImporter-behavior "severe"</td>
+<td class="m-text-center m-warning">external, tiny</td>
+<td class="m-text-center m-success">MIT</td>
+</tr>
+<tr>
+<td>@relativeref{Trade,PlutoSvgImporter}</td>
+<td class="m-text-center m-danger">@ref Trade-PlutoSvgImporter-behavior "severe"</td>
+<td class="m-text-center m-warning">external, tiny</td>
+<td class="m-text-center m-success">MIT</td>
+</tr>
+<tr>
+<td>@relativeref{Trade,ResvgImporter}</td>
+<td class="m-text-center m-danger">@ref Trade-ResvgImporter-behavior "severe"</td>
+<td class="m-text-center m-danger">external</td>
+<td class="m-text-center m-success">Apache-2.0/MIT</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
 <th rowspan="3">Truevision TGA<br/>(`*.tga`, `*.vda`, `*.icb`, `*.vst`)</th>
 <td rowspan="3">`TgaImporter`</td>
 <td>@ref Trade::TgaImporter "TgaImporter"</td>
