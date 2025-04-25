@@ -130,12 +130,15 @@ struct VectorTest: TestSuite::Tester {
    namespace */
 using Magnum::Constants;
 using Magnum::Rad;
+using Magnum::BitVector3;
+using Magnum::BitVector4;
 typedef Vector<2, Float> Vector2;
 typedef Vector<2, Half> Vector2h;
 typedef Vector<3, Float> Vector3;
 typedef Vector<4, Float> Vector4;
 typedef Vector<4, Half> Vector4h;
 typedef Vector<4, Int> Vector4i;
+typedef Vector<3, Int> Vector3i;
 typedef Vector<2, Int> Vector2i;
 
 using namespace Literals;
@@ -221,7 +224,7 @@ void VectorTest::constructFromData() {
 }
 
 void VectorTest::constructPad() {
-    constexpr Vector<2, Float> a{1.0f, -1.0f};
+    constexpr Vector2 a{1.0f, -1.0f};
     constexpr Vector4 b = Vector4::pad(a);
     constexpr Vector4 c = Vector4::pad(a, 5.0f);
     CORRADE_COMPARE(b, Vector4(1.0f, -1.0f, 0.0f, 0.0f));
@@ -430,8 +433,8 @@ void VectorTest::isZeroFloat() {
 }
 
 void VectorTest::isZeroInteger() {
-    CORRADE_VERIFY(!Math::Vector<3, Int>{0, 1, 0}.isZero());
-    CORRADE_VERIFY(Math::Vector<3, Int>{0, 0, 0}.isZero());
+    CORRADE_VERIFY(!Vector3i{0, 1, 0}.isZero());
+    CORRADE_VERIFY(Vector3i{0, 0, 0}.isZero());
 }
 
 void VectorTest::isNormalized() {
@@ -474,9 +477,6 @@ void VectorTest::compare() {
 }
 
 void VectorTest::compareComponentWise() {
-    typedef BitVector<3> BitVector3;
-    typedef BitVector<4> BitVector4;
-
     Vector4 a{1.0f, -3.5f, 5.0f, -10.0f};
     Vector4 b{1.0f + TypeTraits<Float>::epsilon()/2, -3.5f, 5.0f - TypeTraits<Float>::epsilon()*2, -10.0f};
     Vector4 c{1.0f + TypeTraits<Float>::epsilon()*2, -3.5f, 5.0f - TypeTraits<Float>::epsilon()*10, -10.0f};
