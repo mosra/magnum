@@ -76,6 +76,7 @@ struct VectorTest: TestSuite::Tester {
 
     void isZeroFloat();
     void isZeroInteger();
+    void isZeroHalf();
     void isNormalized();
 
     void data();
@@ -89,7 +90,9 @@ struct VectorTest: TestSuite::Tester {
     void modulo();
     void bitwise();
 
-    void compare();
+    void compareFloat();
+    void compareInteger();
+    void compareHalf();
     void compareComponentWise();
 
     void dot();
@@ -138,6 +141,7 @@ typedef Vector<3, Float> Vector3;
 typedef Vector<4, Float> Vector4;
 typedef Vector<4, Half> Vector4h;
 typedef Vector<4, Int> Vector4i;
+typedef Vector<3, Half> Vector3h;
 typedef Vector<3, Int> Vector3i;
 typedef Vector<2, Int> Vector2i;
 
@@ -161,6 +165,7 @@ VectorTest::VectorTest() {
 
               &VectorTest::isZeroFloat,
               &VectorTest::isZeroInteger,
+              &VectorTest::isZeroHalf,
               &VectorTest::isNormalized,
 
               &VectorTest::data,
@@ -174,7 +179,9 @@ VectorTest::VectorTest() {
               &VectorTest::modulo,
               &VectorTest::bitwise,
 
-              &VectorTest::compare,
+              &VectorTest::compareFloat,
+              &VectorTest::compareInteger,
+              &VectorTest::compareHalf,
               &VectorTest::compareComponentWise,
 
               &VectorTest::dot,
@@ -437,6 +444,16 @@ void VectorTest::isZeroInteger() {
     CORRADE_VERIFY(Vector3i{0, 0, 0}.isZero());
 }
 
+void VectorTest::isZeroHalf() {
+    /* For half-floats the comparison is exact as the type is so coarse that
+       any fuzzy comparison wouldn't make sense. In other words, even with a
+       component less than 32-bit-float epsilon it's still reported as
+       non-zero. */
+    CORRADE_VERIFY(Float(0.000005_h) < Math::TypeTraits<Float>::epsilon());
+    CORRADE_VERIFY(!Vector3h{0.0_h, 0.000005_h, 0.0_h}.isZero());
+    CORRADE_VERIFY(Vector3h{0.0_h, 0.0_h, 0.0_h}.isZero());
+}
+
 void VectorTest::isNormalized() {
     CORRADE_VERIFY(!Vector3(1.0f, 2.0f, -1.0f).isNormalized());
     CORRADE_VERIFY(Vector3(0.0f, 1.0f, 0.0f).isNormalized());
@@ -468,12 +485,24 @@ void VectorTest::data() {
     CORRADE_COMPARE(Containers::arraySize(ca.data()), 4);
 }
 
-void VectorTest::compare() {
+void VectorTest::compareFloat() {
     CORRADE_VERIFY(Vector4(1.0f, -3.5f, 5.0f, -10.0f) == Vector4(1.0f + TypeTraits<Float>::epsilon()/2, -3.5f, 5.0f, -10.0f));
     CORRADE_VERIFY(Vector4(1.0f, -1.0f, 5.0f, -10.0f) != Vector4(1.0f, -1.0f + TypeTraits<Float>::epsilon()*2, 5.0f, -10.0f));
+}
 
+void VectorTest::compareInteger() {
     CORRADE_VERIFY(Vector4i(1, -3, 5, -10) == Vector4i(1, -3, 5, -10));
     CORRADE_VERIFY(Vector4i(1, -3, 5, -10) != Vector4i(1, -2, 5, -10));
+}
+
+void VectorTest::compareHalf() {
+    /* For half-floats the comparison is exact as the type is so coarse that
+       any fuzzy comparison wouldn't make sense. In other words, even with a
+       component less than 32-bit-float epsilon it's still reported as
+       non-zero. */
+    CORRADE_VERIFY(Float(0.000005_h) < Math::TypeTraits<Float>::epsilon());
+    CORRADE_VERIFY(Vector4h{1.0_h, 0.0_h, -3.5_h, 5.0_h} != Vector4h{1.0_h, 0.000005_h, -3.5_h, 5.0_h});
+    CORRADE_VERIFY(Vector4h{1.0_h, 0.0_h, -3.5_h, 5.0_h} == Vector4h{1.0_h, 0.0_h, -3.5_h, 5.0_h});
 }
 
 void VectorTest::compareComponentWise() {
