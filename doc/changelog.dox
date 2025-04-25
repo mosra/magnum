@@ -1252,6 +1252,10 @@ See also:
     @cpp transformation.rotationScaling().inverted().transposed() @ce every
     time, it's just corrected to return an inverse transpose instead of a
     @ref Math::Matrix::cofactor() of the upper 3x3 matrix.
+-   Changed @ref Math::Vector::isZero() to have exactly the same behavior as
+    comparing to a zero vector, as those operations should be interchangeable.
+    Before the function returned @cpp true @ce for values up to @cpp 0.003f @ce
+    in case of 32-bit floats which was extremely imprecise.
 -   Fixed an assertion when using @ref MeshTools::removeDuplicates() on an
     interleaved @ref Trade::MeshData that included padding at the beginning or
     end of each vertex

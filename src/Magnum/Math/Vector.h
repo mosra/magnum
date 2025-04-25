@@ -81,20 +81,6 @@ namespace Implementation {
         return T((U(1) - t)*a + t*b);
     }
 
-    template<bool integral> struct IsZero;
-    template<> struct IsZero<false> {
-        template<std::size_t size, class T> bool operator()(const Vector<size, T>& vec) const {
-            /* Proper comparison should be with epsilon^2, but the value is not
-               representable in given precision. Comparing to epsilon instead. */
-            return std::abs(vec.dot()) < TypeTraits<T>::epsilon();
-        }
-    };
-    template<> struct IsZero<true> {
-        template<std::size_t size, class T> bool operator()(const Vector<size, T>& vec) const {
-            return vec == Vector<size, T>{};
-        }
-    };
-
     /* Used to make friends to speed up debug builds */
     template<std::size_t, class> struct MatrixDeterminant;
     /* To make gather() / scatter() faster */
@@ -360,13 +346,15 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Whether the vector is zero
          *
-         * @f[
-         *      |\boldsymbol a \cdot \boldsymbol a - 0| < \epsilon^2 \cong \epsilon
-         * @f]
-         * @see @ref dot(), @ref normalized()
+         * Equivalent to @ref operator==() with a default-constructed vector.
+         * Done using @ref TypeTraits::equals(), i.e. with fuzzy compare for
+         * floating-point types.
          */
         bool isZero() const {
-            return Implementation::IsZero<std::is_integral<T>::value>{}(*this);
+            for(std::size_t i = 0; i != size; ++i)
+                if(!TypeTraits<T>::equals(_data[i], T()))
+                    return false;
+            return true;
         }
 
         /**

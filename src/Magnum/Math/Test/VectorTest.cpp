@@ -415,9 +415,18 @@ void VectorTest::convert() {
 }
 
 void VectorTest::isZeroFloat() {
-    CORRADE_VERIFY(!Vector3(0.01f, 0.0f, 0.0f).isZero());
-    CORRADE_VERIFY(Vector3(0.0f, Math::TypeTraits<float>::epsilon()/2.0f, 0.0f).isZero());
+    /* Zero vector is zero */
     CORRADE_VERIFY(Vector3(0.0f, 0.0f, 0.0f).isZero());
+
+    /* Small vector is not */
+    CORRADE_VERIFY(!Vector3(0.01f, 0.0f, 0.0f).isZero());
+
+    /* Should behave the same as comparison to a zero Vector3 */
+    CORRADE_VERIFY(Vector3(0.0f, Math::TypeTraits<float>::epsilon()*0.9f, 0.0f).isZero());
+    CORRADE_VERIFY(Vector3(0.0f, Math::TypeTraits<float>::epsilon()*0.9f, 0.0f) == Vector3{});
+
+    CORRADE_VERIFY(!Vector3(0.0f, Math::TypeTraits<float>::epsilon(), 0.0f).isZero());
+    CORRADE_VERIFY(Vector3(0.0f, Math::TypeTraits<float>::epsilon(), 0.0f) != Vector3{});
 }
 
 void VectorTest::isZeroInteger() {
