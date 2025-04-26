@@ -100,8 +100,6 @@ struct ColorTest: TestSuite::Tester {
 
     void data();
 
-    void literals();
-
     void colors();
 
     void hue();
@@ -122,7 +120,12 @@ struct ColorTest: TestSuite::Tester {
     void integralLinearRgbToIntegral();
     void srgbMonotonic();
     void srgb8bitRoundtrip();
-    void srgbLiterals();
+
+    void literalParsing();
+    void literals();
+    void literalsFloat();
+    void literalsSrgb();
+    void literalsSrgbFloat();
 
     void xyz();
     void fromXyzDefaultAlpha();
@@ -245,8 +248,6 @@ ColorTest::ColorTest() {
 
               &ColorTest::data,
 
-              &ColorTest::literals,
-
               &ColorTest::colors,
 
               &ColorTest::hue,
@@ -269,11 +270,15 @@ ColorTest::ColorTest() {
 
     addRepeatedTests({&ColorTest::srgb8bitRoundtrip}, 256);
 
-    addTests({&ColorTest::srgbLiterals,
-
-              &ColorTest::xyz,
+    addTests({&ColorTest::xyz,
               &ColorTest::fromXyzDefaultAlpha,
               &ColorTest::xyY,
+
+              &ColorTest::literalParsing,
+              &ColorTest::literals,
+              &ColorTest::literalsFloat,
+              &ColorTest::literalsSrgb,
+              &ColorTest::literalsSrgbFloat,
 
               &ColorTest::premultiplied,
               &ColorTest::premultipliedRoundtrip<UnsignedByte>,
@@ -739,29 +744,6 @@ void ColorTest::data() {
     CORRADE_VERIFY(std::is_same<decltype(cc.rgb()), const Color3>::value);
 }
 
-void ColorTest::literals() {
-    CORRADE_COMPARE(0x33b27f_rgb, (Color3ub{0x33, 0xb2, 0x7f}));
-    CORRADE_COMPARE(0x33b27fcc_rgba, (Color4ub{0x33, 0xb2, 0x7f, 0xcc}));
-    CORRADE_COMPARE(0x33b27f_rgbf, (Color3{0.2f, 0.698039f, 0.498039f}));
-    CORRADE_COMPARE(0x33b27fcc_rgbaf, (Color4{0.2f, 0.698039f, 0.498039f, 0.8f}));
-
-    /* As the implementation doesn't delegate into unpack() etc in order to be
-       constexpr, test also boundary values to be sure */
-    CORRADE_COMPARE(0xffffff_rgbf, Color3{1.0f});
-    CORRADE_COMPARE(0x000000_rgbf, Color3{0.0f});
-    CORRADE_COMPARE(0xffffffff_rgbaf, Color4{1.0f});
-    CORRADE_COMPARE(0x00000000_rgbaf, (Color4{0.0f, 0.0f}));
-
-    constexpr Color3ub ca = 0x33b27f_rgb;
-    constexpr Color4ub cb = 0x33b27fcc_rgba;
-    constexpr Color3 cc = 0x33b27f_rgbf;
-    constexpr Color4 cd = 0x33b27fcc_rgbaf;
-    CORRADE_COMPARE(ca, (Color3ub{0x33, 0xb2, 0x7f}));
-    CORRADE_COMPARE(cb, (Color4ub{0x33, 0xb2, 0x7f, 0xcc}));
-    CORRADE_COMPARE(cc, (Color3{0.2f, 0.698039f, 0.498039f}));
-    CORRADE_COMPARE(cd, (Color4{0.2f, 0.698039f, 0.498039f, 0.8f}));
-}
-
 void ColorTest::colors() {
     CORRADE_COMPARE(Color3::red(0.289f), (Color3{0.289f, 0.0f, 0.0f}));
     CORRADE_COMPARE(Color3::green(0.289f), (Color3{0.0f, 0.289f, 0.0f}));
@@ -1106,18 +1088,6 @@ void ColorTest::srgb8bitRoundtrip() {
     CORRADE_COMPARE(Color3::fromSrgbInt(testCaseRepeatId()).toSrgbInt(), testCaseRepeatId());
 }
 
-void ColorTest::srgbLiterals() {
-    constexpr Vector3ub a = 0x33b27f_srgb;
-    CORRADE_COMPARE(a, (Vector3ub{0x33, 0xb2, 0x7f}));
-
-    constexpr Vector4ub b = 0x33b27fcc_srgba;
-    CORRADE_COMPARE(b, (Vector4ub{0x33, 0xb2, 0x7f, 0xcc}));
-
-    /* Not constexpr yet */
-    CORRADE_COMPARE(0x33b27f_srgbf, (Color3{0.0331048f, 0.445201f, 0.212231f}));
-    CORRADE_COMPARE(0x33b27fcc_srgbaf, (Color4{0.0331048f, 0.445201f, 0.212231f, 0.8f}));
-}
-
 void ColorTest::xyz() {
     /* Verified using http://colormine.org/convert/rgb-to-xyz and
        http://www.easyrgb.com/index.php?X=CALC. The results have slight
@@ -1181,6 +1151,157 @@ void ColorTest::xyY() {
 
     CORRADE_COMPARE(xyzToXyY(xyz), xyY);
     CORRADE_COMPARE(xyYToXyz(xyY), xyz);
+}
+
+void ColorTest::literalParsing() {
+    /* The literals are parsed from the actual characters, so verify that it
+       gives the correct output for all boundary characters (0, 9, a, f, A, F).
+       Rotate the literal six times to verify all positions. The _rgbf etc
+       literals use the same helpers so it's only needed to test once. */
+    CORRADE_COMPARE(0x0aFf9a_rgb, Color3ub::fromLinearRgbInt(0x0aFf9A));
+    CORRADE_COMPARE(0xA0aFf9_rgb, Color3ub::fromLinearRgbInt(0xA0aFf9));
+    CORRADE_COMPARE(0x9A0aFf_rgb, Color3ub::fromLinearRgbInt(0x9A0aFf));
+    CORRADE_COMPARE(0xf9A0aF_rgb, Color3ub::fromLinearRgbInt(0xf9A0aF));
+    CORRADE_COMPARE(0xFf9A0a_rgb, Color3ub::fromLinearRgbInt(0xFf9A0a));
+    CORRADE_COMPARE(0xaFf9A0_rgb, Color3ub::fromLinearRgbInt(0xaFf9A0));
+
+    /* Same for four-component colors, this time rotated eight times, with the
+       0-9 and A-F groups never being next to each other. */
+    CORRADE_COMPARE(0x0a7F3f9a_rgba, Color4ub::fromLinearRgbaInt(0x0a7F3f9A));
+    CORRADE_COMPARE(0xA0a7F3f9_rgba, Color4ub::fromLinearRgbaInt(0xA0a7F3f9));
+    CORRADE_COMPARE(0x9A0a7F3f_rgba, Color4ub::fromLinearRgbaInt(0x9A0a7F3f));
+    CORRADE_COMPARE(0xf9A0a7F3_rgba, Color4ub::fromLinearRgbaInt(0xf9A0a7F3));
+    CORRADE_COMPARE(0x3f9A0a7F_rgba, Color4ub::fromLinearRgbaInt(0x3f9A0a7F));
+    CORRADE_COMPARE(0xF3f9A0a7_rgba, Color4ub::fromLinearRgbaInt(0xF3f9A0a7));
+    CORRADE_COMPARE(0x7F3f9A0a_rgba, Color4ub::fromLinearRgbaInt(0x7F3f9A0a));
+    CORRADE_COMPARE(0xa7F3f9A0_rgba, Color4ub::fromLinearRgbaInt(0xa7F3f9A0));
+
+    /* Uppercase X should be allowed too. Using a mixture of characters that
+       wasn't above just to test the rest. */
+    CORRADE_COMPARE(0X4c7Eb6_rgb, Color3ub::fromLinearRgbInt(0x4c7eb6));
+    CORRADE_COMPARE(0XD4c7E5b6_rgba, Color4ub::fromLinearRgbaInt(0xd4c7e5b6));
+
+    /* All-zero literals and leading zeros should be fine */
+    CORRADE_COMPARE(0x000000_rgb, Color3ub::fromLinearRgbInt(0x000000));
+    CORRADE_COMPARE(0x000001_rgb, Color3ub::fromLinearRgbInt(0x000001));
+    CORRADE_COMPARE(0x00000000_rgba, Color4ub::fromLinearRgbaInt(0x00000000));
+    CORRADE_COMPARE(0x00000001_rgba, Color4ub::fromLinearRgbaInt(0x00000001));
+
+    /* All-1 literals should cause no issues either */
+    CORRADE_COMPARE(0xffffff_rgb, Color3ub::fromLinearRgbInt(0xffffff));
+    CORRADE_COMPARE(0xffffffff_rgba, Color4ub::fromLinearRgbaInt(0xffffffff));
+
+    /* Unary plus and minus are not a part of the literal. Can't have a minus
+       for unsigned, so verifying with a float literal instead. */
+    CORRADE_COMPARE(+0x36b27f_rgb, Color3ub::fromLinearRgbInt(0x36b27f));
+    CORRADE_COMPARE(-0x36b27f_rgbf, -Color3::fromLinearRgbInt(0x36b27f));
+    CORRADE_COMPARE(+0x33b27fce_rgba, Color4ub::fromLinearRgbaInt(0x33b27fce));
+    CORRADE_COMPARE(-0x33b27fce_rgbaf, -Color4::fromLinearRgbaInt(0x33b27fce));
+
+    /* These should all fail to compile if uncommented, and the failure should
+       be a single static assert, no other errors like invalid argument count
+       or implicit conversion warnings. Verifying with all literals to test
+       that the error handling isn't omitted in some by accident. */
+    // 0xccf33_rgb;        /* too short 24-bit color */
+    // 0xccff33a_rgbf;     /* too long 24-bit color */
+    // 0xccff33a_srgba;    /* too short 32-bit color */
+    // 0xccff33aa_rgbaf;   /* too long 32-bit color */
+    // 01234567_rgbf;      /* 8-char octal literal (fails due to no 0x) */
+    // 01234.56_rgbf;      /* 8-char float literal (fails due to no 0x) */
+    // .0123456_rgbf;      /* 8-char float literal with leading period */
+    // 0001234567_rgba;    /* 10-char octal literal (fails due to no 0x) */
+    // 012345.678_rgba;    /* 10-char float literal (fails due to no 0x) */
+    // .012345678_rgba;    /* 10-char float literal with leading period */
+    // 0xap3510_srgb;      /* 6-char C++17 hex float literal, p at 1 */
+    // 0xaP3510_srgb;      /* 6-char C++17 hex float literal, P at 1 */
+    // 0x0ap351_rgbf;      /* 6-char C++17 hex float literal, p at 2 */
+    // 0x0aP351_rgbf;      /* 6-char C++17 hex float literal, P at 2 */
+    // 0x10ap35_srgbf;     /* 6-char C++17 hex float literal, p at 3 */
+    // 0x10aP35_srgbf;     /* 6-char C++17 hex float literal, P at 3 */
+    // 0x510ap3_rgb;       /* 6-char C++17 hex float literal, p at 4 */
+    // 0x510aP3_rgb;       /* 6-char C++17 hex float literal, P at 4 */
+    // 0xap375190_rgba;    /* 8-char C++17 hex float literal, p at 1 */
+    // 0xaP375190_rgba;    /* 8-char C++17 hex float literal, P at 1 */
+    // 0x0ap37519_srgbaf;  /* 8-char C++17 hex float literal, p at 2 */
+    // 0x0aP37519_srgbaf;  /* 8-char C++17 hex float literal, P at 2 */
+    // 0x90ap3751_rgbaf;   /* 8-char C++17 hex float literal, p at 3 */
+    // 0x90aP3751_rgbaf;   /* 8-char C++17 hex float literal, P at 3 */
+    // 0x190ap375_srgba;   /* 8-char C++17 hex float literal, p at 4 */
+    // 0x190aP375_srgba;   /* 8-char C++17 hex float literal, P at 4 */
+    // 0x5190ap37_rgba;    /* 8-char C++17 hex float literal, p at 5 */
+    // 0x5190aP37_rgba;    /* 8-char C++17 hex float literal, P at 5 */
+    // 0x75190ap3_srgbaf;  /* 8-char C++17 hex float literal, p at 6 */
+    // 0x75190aP3_srgbaf;  /* 8-char C++17 hex float literal, P at 6 */
+    /* P can't be on the first or last character so the code doesn't test for
+       it there */
+}
+
+void ColorTest::literals() {
+    /* Verifies mainly that the output isn't incorrectly unpacking or
+       something, the actual character parsing is checked thoroughly in
+       literalParsing() above */
+    CORRADE_COMPARE(0x3f568a_rgb, (Color3ub{0x3f, 0x56, 0x8a}));
+    CORRADE_COMPARE(0x3f568a9c_rgba, (Color4ub{0x3f, 0x56, 0x8a, 0x9c}));
+
+    constexpr Color3ub ca = 0x3f568a_rgb;
+    constexpr Color4ub cb = 0x3f568a9c_rgba;
+    CORRADE_COMPARE(ca, (Color3ub{0x3f, 0x56, 0x8a}));
+    CORRADE_COMPARE(cb, (Color4ub{0x3f, 0x56, 0x8a, 0x9c}));
+}
+
+void ColorTest::literalsFloat() {
+    /* Verifies mainly that the output is correctly unpacked, consistent with
+       the runtime API, the actual character parsing is checked thoroughly in
+       literalParsing() above. Comparing to fromIntegralLinearRgb() / unpack()
+       tests as the ground truth. */
+    CORRADE_COMPARE(0xf32a80_rgbf, Color3::fromLinearRgbInt(0xf32a80));
+    CORRADE_COMPARE(0xf32a80_rgbf, (Color3{0.952941f, 0.164706f, 0.501961f}));
+    CORRADE_COMPARE(0xf32a8023_rgbaf, Color4::fromLinearRgbaInt(0xf32a8023));
+    CORRADE_COMPARE(0xf32a8023_rgbaf, (Color4{0.952941f, 0.164706f, 0.501961f, 0.137255f}));
+
+    constexpr Color3 ca = 0xf32a80_rgbf;
+    constexpr Color4 cb = 0xf32a8023_rgbaf;
+    CORRADE_COMPARE(ca, (Color3{0.952941f, 0.164706f, 0.501961f}));
+    CORRADE_COMPARE(cb, (Color4{0.952941f, 0.164706f, 0.501961f, 0.137255f}));
+
+    /* As the implementation doesn't delegate into unpack() etc in order to be
+       constexpr, test also boundary values to be sure */
+    /** @todo is it possible to verify *all* values for roundtrip, without some
+        crazy template madness? */
+    CORRADE_COMPARE(0xffffff_rgbf, Color3{1.0f});
+    CORRADE_COMPARE(0x000000_rgbf, Color3{0.0f});
+    CORRADE_COMPARE(0xffffffff_rgbaf, Color4{1.0f});
+    CORRADE_COMPARE(0x00000000_rgbaf, (Color4{0.0f, 0.0f}));
+}
+
+void ColorTest::literalsSrgb() {
+    /* Should be the same as literals(), just giving back a non-Color type */
+    CORRADE_COMPARE(0x3f568a_srgb, (Vector3ub{0x3f, 0x56, 0x8a}));
+    CORRADE_COMPARE(0x3f568a9c_srgba, (Vector4ub{0x3f, 0x56, 0x8a, 0x9c}));
+
+    constexpr Vector3ub ca = 0x3f568a_srgb;
+    constexpr Vector4ub cb = 0x3f568a9c_srgba;
+    CORRADE_COMPARE(ca, (Vector3ub{0x3f, 0x56, 0x8a}));
+    CORRADE_COMPARE(cb, (Vector4ub{0x3f, 0x56, 0x8a, 0x9c}));
+}
+
+void ColorTest::literalsSrgbFloat() {
+    /* Verifies mainly that the output is correctly unpacked and converted,
+       consistent with the runtime API, the actual character parsing is checked
+       thoroughly in literalParsing() above. Comparing to fromIntegralSrgb()
+       tests as the ground truth. */
+    CORRADE_COMPARE(0xf32a8023_srgbaf, Color4::fromSrgbAlphaInt(0xf32a8023));
+    CORRADE_COMPARE(0xf32a8023_srgbaf, (Color4{0.896269f, 0.0231534f, 0.215861f, 0.137255f}));
+
+    /* These are not constexpr yet */
+
+    /* Test also boundary values to be sure */
+    /** @todo is it possible to verify *all* values for roundtrip, without some
+        crazy template madness? */
+    CORRADE_COMPARE(0xffffff_srgbf, Color3{1.0f});
+    CORRADE_COMPARE(0x000000_srgbf, Color3{0.0f});
+    CORRADE_COMPARE(0xffffffff_srgbaf, Color4{1.0f});
+    CORRADE_COMPARE(0x00000000_srgbaf, (Color4{0.0f, 0.0f}));
 }
 
 void ColorTest::premultiplied() {
