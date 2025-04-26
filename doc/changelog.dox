@@ -307,6 +307,11 @@ See also:
 -   @ref Math::Vector, @ref Math::RectangularMatrix and all their subclasses
     can be now constructed from fixed-size arrays without having to use the
     potentially dangerous and non-constexpr @ref Math::Vector::from() API
+-   New @link Literals::ColorLiterals::operator""_rgbh() _rgbh @endlink,
+    @link Literals::ColorLiterals::operator""_rgbah() _rgbah @endlink,
+    @link Literals::ColorLiterals::operator""_srgbh() _srgbh @endlink and
+    @link Literals::ColorLiterals::operator""_srgbah() _srgbah @endlink
+    literals for convenient @ref Color3h and @ref Color4h creation
 
 @subsubsection changelog-latest-new-materialtools MaterialTools library
 

@@ -119,13 +119,17 @@ would be, such as matrix multiplication. The @ref Matrix2x1, @ref Matrix3x1 and
 
 For easier entering of (s)RGB colors in hexadecimal format there are
 @link Math::Literals::ColorLiterals::operator""_srgb() _srgb @endlink /
-@link Math::Literals::ColorLiterals::operator""_srgbf() _srgbf @endlink,
+@link Math::Literals::ColorLiterals::operator""_srgbf() _srgbf @endlink /
+@link Math::Literals::ColorLiterals::operator""_srgbh() _srgbh @endlink,
 @link Math::Literals::ColorLiterals::operator""_srgba() _srgba @endlink /
-@link Math::Literals::ColorLiterals::operator""_srgbaf() _srgbaf @endlink,
+@link Math::Literals::ColorLiterals::operator""_srgbaf() _srgbaf @endlink /
+@link Math::Literals::ColorLiterals::operator""_srgbah() _srgbah @endlink,
 @link Math::Literals::ColorLiterals::operator""_rgb() _rgb @endlink /
-@link Math::Literals::ColorLiterals::operator""_rgbf() _rgbf @endlink and
+@link Math::Literals::ColorLiterals::operator""_rgbf() _rgbf @endlink /
+@link Math::Literals::ColorLiterals::operator""_rgbh() _rgbh @endlink and
 @link Math::Literals::ColorLiterals::operator""_rgba() _rgba @endlink /
-@link Math::Literals::ColorLiterals::operator""_rgbaf() _rgbaf @endlink
+@link Math::Literals::ColorLiterals::operator""_rgbaf() _rgbaf @endlink /
+@link Math::Literals::ColorLiterals::operator""_rgbah() _rgbah @endlink
 literals in the @ref Math::Literals namespace. See their documentation for more
 information about the differences.
 

@@ -124,8 +124,10 @@ struct ColorTest: TestSuite::Tester {
     void literalParsing();
     void literals();
     void literalsFloat();
+    void literalsHalf();
     void literalsSrgb();
     void literalsSrgbFloat();
+    void literalsSrgbHalf();
 
     void xyz();
     void fromXyzDefaultAlpha();
@@ -277,8 +279,10 @@ ColorTest::ColorTest() {
               &ColorTest::literalParsing,
               &ColorTest::literals,
               &ColorTest::literalsFloat,
+              &ColorTest::literalsHalf,
               &ColorTest::literalsSrgb,
               &ColorTest::literalsSrgbFloat,
+              &ColorTest::literalsSrgbHalf,
 
               &ColorTest::premultiplied,
               &ColorTest::premultipliedRoundtrip<UnsignedByte>,
@@ -1207,10 +1211,10 @@ void ColorTest::literalParsing() {
     // 0xccff33a_srgba;    /* too short 32-bit color */
     // 0xccff33aa_rgbaf;   /* too long 32-bit color */
     // 01234567_rgbf;      /* 8-char octal literal (fails due to no 0x) */
-    // 01234.56_rgbf;      /* 8-char float literal (fails due to no 0x) */
-    // .0123456_rgbf;      /* 8-char float literal with leading period */
-    // 0001234567_rgba;    /* 10-char octal literal (fails due to no 0x) */
-    // 012345.678_rgba;    /* 10-char float literal (fails due to no 0x) */
+    // 01234.56_rgbh;      /* 8-char float literal (fails due to no 0x) */
+    // .0123456_srgbh;     /* 8-char float literal with leading period */
+    // 0001234567_rgbah;   /* 10-char octal literal (fails due to no 0x) */
+    // 012345.678_srgbah;  /* 10-char float literal (fails due to no 0x) */
     // .012345678_rgba;    /* 10-char float literal with leading period */
     // 0xap3510_srgb;      /* 6-char C++17 hex float literal, p at 1 */
     // 0xaP3510_srgb;      /* 6-char C++17 hex float literal, P at 1 */
@@ -1274,6 +1278,27 @@ void ColorTest::literalsFloat() {
     CORRADE_COMPARE(0x00000000_rgbaf, (Color4{0.0f, 0.0f}));
 }
 
+void ColorTest::literalsHalf() {
+    /* Verifies mainly that the output is correctly unpacked, consistent with
+       the runtime API, the actual character parsing is checked thoroughly in
+       literalParsing() above. Comparing to fromIntegralLinearRgb() / unpack()
+       tests as the ground truth. */
+    CORRADE_COMPARE(0xf32a80_rgbh, Color3h{Color3::fromLinearRgbInt(0xf32a80)});
+    CORRADE_COMPARE(0xf32a80_rgbh, (Color3h{0.952941_h, 0.164706_h, 0.501961_h}));
+    CORRADE_COMPARE(0xf32a8023_rgbah, Color4h{Color4::fromLinearRgbaInt(0xf32a8023)});
+    CORRADE_COMPARE(0xf32a8023_rgbah, (Color4h{0.952941_h, 0.164706_h, 0.501961_h, 0.137255_h}));
+
+    /* These are not constexpr yet */
+
+    /* Test also boundary values to be sure */
+    /** @todo is it possible to verify *all* values for roundtrip, without some
+        crazy template madness? */
+    CORRADE_COMPARE(0xffffff_rgbh, Color3h{1.0_h});
+    CORRADE_COMPARE(0x000000_rgbh, Color3h{0.0_h});
+    CORRADE_COMPARE(0xffffffff_rgbah, Color4h{1.0_h});
+    CORRADE_COMPARE(0x00000000_rgbah, (Color4h{0.0_h, 0.0_h}));
+}
+
 void ColorTest::literalsSrgb() {
     /* Should be the same as literals(), just giving back a non-Color type */
     CORRADE_COMPARE(0x3f568a_srgb, (Vector3ub{0x3f, 0x56, 0x8a}));
@@ -1302,6 +1327,25 @@ void ColorTest::literalsSrgbFloat() {
     CORRADE_COMPARE(0x000000_srgbf, Color3{0.0f});
     CORRADE_COMPARE(0xffffffff_srgbaf, Color4{1.0f});
     CORRADE_COMPARE(0x00000000_srgbaf, (Color4{0.0f, 0.0f}));
+}
+
+void ColorTest::literalsSrgbHalf() {
+    /* Verifies mainly that the output is correctly unpacked and converted,
+       consistent with the runtime API, the actual character parsing is checked
+       thoroughly in literalParsing() above. Comparing to fromIntegralSrgb()
+       tests as the ground truth. */
+    CORRADE_COMPARE(0xf32a8023_srgbah, Color4h{Color4::fromSrgbAlphaInt(0xf32a8023)});
+    CORRADE_COMPARE(0xf32a8023_srgbah, (Color4h{0.896269_h, 0.0231534_h, 0.215861_h, 0.137255_h}));
+
+    /* These are not constexpr yet */
+
+    /* Test also boundary values to be sure */
+    /** @todo is it possible to verify *all* values for roundtrip, without some
+        crazy template madness? */
+    CORRADE_COMPARE(0xffffff_srgbh, Color3h{1.0_h});
+    CORRADE_COMPARE(0x000000_srgbh, Color3h{0.0_h});
+    CORRADE_COMPARE(0xffffffff_srgbah, Color4h{1.0_h});
+    CORRADE_COMPARE(0x00000000_srgbah, (Color4h{0.0_h, 0.0_h}));
 }
 
 void ColorTest::premultiplied() {

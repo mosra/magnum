@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Color3, @ref Magnum::Math::Color4, literal @link Magnum::Math::Literals::ColorLiterals::operator""_rgb() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgba() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgbf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgbaf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgb() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgba() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgbf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgbaf() @endlink
+ * @brief Class @ref Magnum::Math::Color3, @ref Magnum::Math::Color4, literal @link Magnum::Math::Literals::ColorLiterals::operator""_rgb() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgba() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgbf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgbaf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgbh() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_rgbah() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgb() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgba() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgbf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgbaf() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgbh() @endlink, @link Magnum::Math::Literals::ColorLiterals::operator""_srgbah() @endlink
  */
 
 /* std::declval() is said to be in <utility> but libstdc++, libc++ and MSVC STL
@@ -339,8 +339,10 @@ value in range @f$ [0.0, 1.0] @f$.
 
 @see @link Literals::ColorLiterals::operator""_rgb() @endlink,
     @link Literals::ColorLiterals::operator""_rgbf() @endlink,
+    @link Literals::ColorLiterals::operator""_rgbh() @endlink,
     @link Literals::ColorLiterals::operator""_srgb() @endlink,
     @link Literals::ColorLiterals::operator""_srgbf() @endlink,
+    @link Literals::ColorLiterals::operator""_srgbh() @endlink,
     @ref Color4, @ref Magnum::Color3, @ref Magnum::Color3h,
     @ref Magnum::Color3ub, @ref Magnum::Color3us
 */
@@ -777,8 +779,10 @@ _MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
 See @ref Color3 for more information.
 @see @link Literals::ColorLiterals::operator""_rgba() @endlink,
     @link Literals::ColorLiterals::operator""_rgbaf() @endlink,
+    @link Literals::ColorLiterals::operator""_rgbah() @endlink,
     @link Literals::ColorLiterals::operator""_srgba() @endlink,
     @link Literals::ColorLiterals::operator""_srgbaf() @endlink,
+    @link Literals::ColorLiterals::operator""_srgbah() @endlink,
     @ref Magnum::Color4, @ref Magnum::Color4h, @ref Magnum::Color4ub,
     @ref Magnum::Color4us
 */
@@ -1460,6 +1464,13 @@ template<class Color, unsigned divisor, unsigned size, char zero = '0', char x =
     };
 }
 
+/* Silly indirection to avoid #include <Magnum/Math/Half.h> for the half-float
+   literals */
+template<std::size_t> struct HalfColor {
+    typedef Color3<Half> Type3;
+    typedef Color4<Half> Type4;
+};
+
 }
 
 /* Unlike STL, where there's e.g. std::literals::string_literals with both
@@ -1503,7 +1514,8 @@ Unpacks the literal into three 8-bit values. Example usage:
     to linear RGB first. To convey such meaning, use the @link operator""_srgb() @endlink
     literal instead.
 
-@see @link operator""_rgba() @endlink, @link operator""_rgbf() @endlink
+@see @link operator""_rgba() @endlink, @link operator""_rgbf() @endlink,
+    @link operator""_rgbh() @endlink
 @m_keywords{_rgb rgb}
 */
 template<char... chars> constexpr Color3<UnsignedByte> operator"" _rgb() {
@@ -1527,7 +1539,8 @@ RGB. Use this literal to document that given value is in sRGB. Example usage:
     representation directly or convert the value using @ref Color3::fromSrgb()
     / @ref Color3::fromSrgbInt().
 
-@see @link operator""_srgba() @endlink, @link operator""_srgbf() @endlink
+@see @link operator""_srgba() @endlink, @link operator""_srgbf() @endlink,
+    @link operator""_srgbh() @endlink
 @m_keywords{_srgb srgb}
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
@@ -1548,7 +1561,8 @@ Unpacks the literal into four 8-bit values. Example usage:
     to linear RGB first. To convey such meaning, use the @link operator""_srgba() @endlink
     literal instead.
 
-@see @link operator""_rgb() @endlink, @link operator""_rgbaf() @endlink
+@see @link operator""_rgb() @endlink, @link operator""_rgbaf() @endlink,
+    @link operator""_rgbah() @endlink
 @m_keywords{_rgba rgba}
 */
 template<char... chars> constexpr Color4<UnsignedByte> operator"" _rgba() {
@@ -1573,7 +1587,8 @@ usage:
     representation directly or convert the value using
     @ref Color4::fromSrgbAlpha() / @ref Color4::fromSrgbAlphaInt().
 
-@see @link operator""_srgb() @endlink, @link operator""_rgbaf() @endlink
+@see @link operator""_srgb() @endlink, @link operator""_rgbaf() @endlink,
+    @link operator""_rgbah() @endlink
 @m_keywords{_srgba srgba}
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
@@ -1595,7 +1610,8 @@ Example usage:
     to linear RGB first. In that case use the @link operator""_srgbf() @endlink
     literal instead.
 
-@see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink
+@see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink,
+    @link operator""_rgbh() @endlink
 @m_keywords{_rgbf rgbf}
 */
 template<char... chars> constexpr Color3<Float> operator"" _rgbf() {
@@ -1611,7 +1627,7 @@ usage:
 @snippet Math.cpp _srgbf
 
 @see @link operator""_srgbaf() @endlink, @link operator""_srgb() @endlink,
-    @link operator""_rgbf() @endlink
+    @link operator""_srgbh() @endlink, @link operator""_rgbf() @endlink
 @m_keywords{_srgbf srgbf}
 */
 template<char... chars> inline Color3<Float> operator"" _srgbf() {
@@ -1631,7 +1647,8 @@ Example usage:
     to linear RGB first. In that case use the @link operator""_srgbaf() @endlink
     literal instead.
 
-@see @link operator""_rgbf() @endlink, @link operator""_rgba() @endlink
+@see @link operator""_rgbf() @endlink, @link operator""_rgba() @endlink,
+    @link operator""_rgbah() @endlink
 @m_keywords{_rgbaf rgbaf}
 */
 template<char... chars> constexpr Color4<Float> operator"" _rgbaf() {
@@ -1647,11 +1664,113 @@ Example usage:
 @snippet Math.cpp _srgbaf
 
 @see @link operator""_srgbf() @endlink, @link operator""_srgba() @endlink,
-    @link operator""_rgbaf() @endlink
+    @link operator""_srgbah() @endlink, @link operator""_rgbaf() @endlink
 @m_keywords{_srgbaf srgbaf}
 */
 template<char... chars> inline Color4<Float> operator"" _srgbaf() {
     return Color4<Float>::fromSrgbAlpha(Implementation::color4Literal<Vector4<UnsignedByte>, 1, sizeof...(chars), chars...>());
+}
+
+/** @relatesalso Magnum::Math::Color3
+@brief Half-float linear RGB literal
+@m_since_latest
+
+Equivalent to calling @ref Color3::fromLinearRgbInt() on the literal value and
+then casting from a float to a half-float type. Example usage:
+
+@snippet Math.cpp _rgbh
+
+@attention 8bit-per-channel colors are commonly treated as being in sRGB color
+    space, which is not directly usable in calculations and has to be converted
+    to linear RGB first. In that case use the @link operator""_srgbh() @endlink
+    literal instead.
+
+@see @link operator""_rgbah() @endlink, @link operator""_rgb() @endlink,
+    @link operator""_rgbf() @endlink
+@m_keywords{_rgbh rgbh}
+*/
+template<char... chars> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Color3<Half> /* to avoid including Half.h */
+#else
+typename Implementation::HalfColor<sizeof...(chars)>::Type3
+#endif
+operator"" _rgbh() {
+    return Color3<Half>{Implementation::color3Literal<Color3<Float>, 255, sizeof...(chars), chars...>()};
+}
+
+/** @relatesalso Magnum::Math::Color3
+@brief Half-float sRGB literal
+@m_since_latest
+
+Equivalent to calling @ref Color3::fromSrgbInt() on the literal value and then
+casting from a float to a half-float type. Example usage:
+
+@snippet Math.cpp _srgbh
+
+@see @link operator""_srgbah() @endlink, @link operator""_srgb() @endlink,
+    @link operator""_srgbf() @endlink, @link operator""_rgbh() @endlink
+@m_keywords{_srgbh srgbh}
+*/
+template<char... chars> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Color3<Half> /* to avoid including Half.h */
+#else
+typename Implementation::HalfColor<sizeof...(chars)>::Type3
+#endif
+operator"" _srgbh() {
+    return Color3<Half>{Color3<Float>::fromSrgb(Implementation::color3Literal<Vector3<UnsignedByte>, 1, sizeof...(chars), chars...>())};
+}
+
+/** @relatesalso Magnum::Math::Color4
+@brief Half-float linear RGBA literal
+@m_since_latest
+
+Equivalent to calling @ref Color4::fromLinearRgbaInt() on the literal value and
+then casting from a float to a half-float type. Example usage:
+
+@snippet Math.cpp _rgbah
+
+@attention 8bit-per-channel colors are commonly treated as being in sRGB color
+    space, which is not directly usable in calculations and has to be converted
+    to linear RGB first. In that case use the @link operator""_srgbah() @endlink
+    literal instead.
+
+@see @link operator""_rgbh() @endlink, @link operator""_rgba() @endlink,
+    @link operator""_rgbaf() @endlink
+@m_keywords{_rgbah rgbah}
+*/
+template<char... chars> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Color4<Half> /* to avoid including Half.h */
+#else
+typename Implementation::HalfColor<sizeof...(chars)>::Type4
+#endif
+operator"" _rgbah() {
+    return Color4<Half>{Implementation::color4Literal<Color4<Float>, 255, sizeof...(chars), chars...>()};
+}
+
+/** @relatesalso Magnum::Math::Color4
+@brief Half-float sRGB + alpha literal
+@m_since_latest
+
+Equivalent to calling @ref Color4::fromSrgbAlphaInt() on the literal value and
+then casting from a float to a half-float type. Example usage:
+
+@snippet Math.cpp _srgbah
+
+@see @link operator""_srgbh() @endlink, @link operator""_srgba() @endlink,
+    @link operator""_srgbaf() @endlink, @link operator""_rgbah() @endlink
+@m_keywords{_srgbah srgbah}
+*/
+template<char... chars> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Color4<Half> /* to avoid including Half.h */
+#else
+typename Implementation::HalfColor<sizeof...(chars)>::Type4
+#endif
+operator"" _srgbah() {
+    return Color4<Half>{Color4<Float>::fromSrgbAlpha(Implementation::color4Literal<Vector4<UnsignedByte>, 1, sizeof...(chars), chars...>())};
 }
 #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
 #pragma clang diagnostic pop

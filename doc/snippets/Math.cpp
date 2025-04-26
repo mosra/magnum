@@ -568,9 +568,11 @@ using namespace Math::Literals;
 
 Color3 a = 0x33b27f_srgbf;      // {0.0331048f, 0.445201f, 0.212231f}
 Color4ub b = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
+Color3h c = 0x33b27f_rgbh;      // {0.2_h, 0.6982_h, 0.498_h}
 /* [types-literals-colors] */
 static_cast<void>(a);
 static_cast<void>(b);
+static_cast<void>(c);
 }
 
 {
@@ -1037,6 +1039,38 @@ static_cast<void>(a);
 using namespace Math::Literals;
 Color4 a = 0x33b27fcc_srgbaf;   // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
 /* [_srgbaf] */
+static_cast<void>(a);
+}
+
+{
+/* [_rgbh] */
+using namespace Math::Literals;
+Color3h a = 0x33b27f_rgbh;      // {0.2_h, 0.6982_h, 0.498_h}
+/* [_rgbh] */
+static_cast<void>(a);
+}
+
+{
+/* [_srgbh] */
+using namespace Math::Literals;
+Color3h a = 0x33b27f_srgbh;     // {0.03311_h, 0.4453_h, 0.2123_h}
+/* [_srgbh] */
+static_cast<void>(a);
+}
+
+{
+/* [_rgbah] */
+using namespace Math::Literals;
+Color4h a = 0x33b27fcc_rgbah;   // {0.2_h, 0.6982_h, 0.498_h, 0.7998_h}
+/* [_rgbah] */
+static_cast<void>(a);
+}
+
+{
+/* [_srgbah] */
+using namespace Math::Literals;
+Color4h a = 0x33b27fcc_srgbah;  // {0.03311_h, 0.4453_h, 0.2123_h, 0.7998_h}
+/* [_srgbah] */
 static_cast<void>(a);
 }
 
