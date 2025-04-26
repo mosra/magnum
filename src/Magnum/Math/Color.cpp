@@ -173,23 +173,12 @@ Containers::Pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> Twe
         return {TweakableState::Error, {}};
     }
 
-    /* According to https://wg21.link/CWG2521, space between "" and literal
-       name is deprecated because _Uppercase or __double names could be treated
-       as reserved depending on whether the space was present or not, and
-       whitespace is not load-bearing in any other contexts. Clang 17+ adds an
-       off-by-default warning for this; GCC 4.8 however *requires* the space
-       there, so until GCC 4.8 support is dropped, we suppress this warning
-       instead of removing the space. */
-    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
-    #endif
+    /* Both the _srgba and _rgba literals return the same value (but a
+       different type) as they're meant mainly for self-documenting purposes.
+       So here's no distinction either, and fromLinearRgbInt() is just
+       splitting up the 24-bit integer to 8-bit parts. */
     return {TweakableState::Success,
-        isSrgb ? Magnum::Math::Literals::operator"" _srgb(result) :
-                 Magnum::Math::Literals::operator"" _rgb(result)};
-    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-    #pragma clang diagnostic pop
-    #endif
+        Magnum::Math::Color3<Magnum::UnsignedByte>::fromLinearRgbInt(result)};
 }
 
 Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>>::parse(const Containers::StringView value) {
@@ -219,23 +208,12 @@ Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> Twe
         return {TweakableState::Error, {}};
     }
 
-    /* According to https://wg21.link/CWG2521, space between "" and literal
-       name is deprecated because _Uppercase or __double names could be treated
-       as reserved depending on whether the space was present or not, and
-       whitespace is not load-bearing in any other contexts. Clang 17+ adds an
-       off-by-default warning for this; GCC 4.8 however *requires* the space
-       there, so until GCC 4.8 support is dropped, we suppress this warning
-       instead of removing the space. */
-    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
-    #endif
+    /* Both the _srgba and _rgba literals return the same value (but a
+       different type) as they're meant mainly for self-documenting purposes.
+       So here's no distinction either, and fromLinearRgbaInt() is just
+       splitting up the 32-bit integer to 8-bit parts. */
     return {TweakableState::Success,
-        isSrgb ? Magnum::Math::Literals::operator"" _srgba(result) :
-                 Magnum::Math::Literals::operator"" _rgba(result)};
-    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-    #pragma clang diagnostic pop
-    #endif
+        Magnum::Math::Color4<Magnum::UnsignedByte>::fromLinearRgbaInt(result)};
 }
 
 Containers::Pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<Magnum::Math::Color3<Magnum::Float>>::parse(const Containers::StringView value) {
@@ -265,23 +243,9 @@ Containers::Pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableP
         return {TweakableState::Error, {}};
     }
 
-    /* According to https://wg21.link/CWG2521, space between "" and literal
-       name is deprecated because _Uppercase or __double names could be treated
-       as reserved depending on whether the space was present or not, and
-       whitespace is not load-bearing in any other contexts. Clang 17+ adds an
-       off-by-default warning for this; GCC 4.8 however *requires* the space
-       there, so until GCC 4.8 support is dropped, we suppress this warning
-       instead of removing the space. */
-    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
-    #endif
-    return {TweakableState::Success,
-        isSrgb ? Magnum::Math::Literals::operator"" _srgbf(result) :
-                 Magnum::Math::Literals::operator"" _rgbf(result)};
-    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-    #pragma clang diagnostic pop
-    #endif
+    return {TweakableState::Success, isSrgb ?
+        Magnum::Math::Color3<Magnum::Float>::fromSrgbInt(result) :
+        Magnum::Math::Color3<Magnum::Float>::fromLinearRgbInt(result)};
 }
 
 Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> TweakableParser<Magnum::Math::Color4<Magnum::Float>>::parse(const Containers::StringView value) {
@@ -311,23 +275,9 @@ Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> TweakableP
         return {TweakableState::Error, {}};
     }
 
-    /* According to https://wg21.link/CWG2521, space between "" and literal
-       name is deprecated because _Uppercase or __double names could be treated
-       as reserved depending on whether the space was present or not, and
-       whitespace is not load-bearing in any other contexts. Clang 17+ adds an
-       off-by-default warning for this; GCC 4.8 however *requires* the space
-       there, so until GCC 4.8 support is dropped, we suppress this warning
-       instead of removing the space. */
-    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
-    #endif
-    return {TweakableState::Success,
-        isSrgb ? Magnum::Math::Literals::operator"" _srgbaf(result) :
-                 Magnum::Math::Literals::operator"" _rgbaf(result)};
-    #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-    #pragma clang diagnostic pop
-    #endif
+    return {TweakableState::Success, isSrgb ?
+        Magnum::Math::Color4<Magnum::Float>::fromSrgbAlphaInt(result) :
+        Magnum::Math::Color4<Magnum::Float>::fromLinearRgbaInt(result)};
 }
 
 }}
