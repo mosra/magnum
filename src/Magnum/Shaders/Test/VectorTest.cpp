@@ -164,7 +164,7 @@ void VectorTest::materialUniformConstructNoInit() {
     /* Testing only some fields, should be enough */
     VectorMaterialUniform a;
     a.color = 0x354565fc_rgbaf;
-    a.backgroundColor = 0x98769facb_rgbaf;
+    a.backgroundColor = 0x98769fac_rgbaf;
 
     new(&a) VectorMaterialUniform{NoInit};
     {
@@ -175,7 +175,7 @@ void VectorTest::materialUniformConstructNoInit() {
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
-        CORRADE_COMPARE(a.backgroundColor, 0x98769facb_rgbaf);
+        CORRADE_COMPARE(a.backgroundColor, 0x98769fac_rgbaf);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<VectorMaterialUniform, NoInitT>::value);
@@ -187,9 +187,9 @@ void VectorTest::materialUniformConstructNoInit() {
 void VectorTest::materialUniformSetters() {
     VectorMaterialUniform a;
     a.setColor(0x354565fc_rgbaf)
-     .setBackgroundColor(0x98769facb_rgbaf);
+     .setBackgroundColor(0x98769fac_rgbaf);
     CORRADE_COMPARE(a.color, 0x354565fc_rgbaf);
-    CORRADE_COMPARE(a.backgroundColor, 0x98769facb_rgbaf);
+    CORRADE_COMPARE(a.backgroundColor, 0x98769fac_rgbaf);
 }
 
 }}}}

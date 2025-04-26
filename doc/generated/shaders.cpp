@@ -134,7 +134,7 @@ int ShaderVisualizer::exec() {
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FramebufferSrgb);
-    GL::Renderer::setClearColor(0x000000_srgbaf);
+    GL::Renderer::setClearColor(0x00000000_srgbaf);
 
     for(auto fun: {&ShaderVisualizer::phong,
                    &ShaderVisualizer::line,

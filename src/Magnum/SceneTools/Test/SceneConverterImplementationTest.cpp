@@ -625,7 +625,7 @@ void SceneConverterImplementationTest::infoMaterials() {
             if(id == 0) return Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
                 {Trade::MaterialAttribute::BaseColor, 0x3bd26799_rgbaf},
                 {Trade::MaterialAttribute::DoubleSided, true},
-                {Trade::MaterialAttribute::EmissiveColor, 0xe9eca_rgbf},
+                {Trade::MaterialAttribute::EmissiveColor, 0x0e9eca_rgbf},
                 {Trade::MaterialAttribute::RoughnessTexture, 67u},
                 {Trade::MaterialAttribute::RoughnessTextureMatrix, Matrix3::translation({0.25f, 0.75f})},
                 {Trade::MaterialAttribute::RoughnessTextureSwizzle, Trade::MaterialTextureSwizzle::B},

@@ -179,7 +179,7 @@ int PrimitiveVisualizer::exec() {
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
-    GL::Renderer::setClearColor(0x000000_srgbaf);
+    GL::Renderer::setClearColor(0x00000000_srgbaf);
     CORRADE_INTERNAL_ASSERT(GL::Renderer::lineWidthRange().contains(2.0f));
     GL::Renderer::setLineWidth(2.0f);
 
