@@ -1404,6 +1404,64 @@ extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const ColorHsv<Float>&);
 #endif
 #endif
 
+namespace Implementation {
+
+/* Color literal parsing code. Not using the operator""(unsigned long long)
+   because this allows for ensuring that it's always hexadecimal and has
+   exactly 6 or 8 digits, avoiding common bugs. Has to be outside of the
+   ColorLiterals namespace because otherwise it leads to ambiguous namespace
+   reference (ugh?).
+
+   The default template arguments and the final variadic argument are here to
+   avoid cascaded errors beyond the static_assert when the literal isn't used
+   with exactly 6+2 chars */
+template<class Color, unsigned divisor, unsigned size, char zero = '0', char x = 'x', char r1 = '0', char r2 = '0', char g1 = '0', char g2 = '0', char b1 = '0', char b2 = '0', char...> constexpr Color color3Literal() {
+    /* The compiler only allows numeric literals, so we only need to verify
+       that it starts with 0x or 0X (and thus isn't octal, binary or decimal)
+       and that there's exactly the amount of digits we want after. There are
+       however also hex float literals such as 0xc.f3P1. The period is optional
+       and the P can be on any position except the first or last, plus it can
+       be both lowercase and uppercase.
+
+       Finally, the most common error is too many or too little characters, so
+       that's the first check here, and it's written like this instead of
+       `size == 2 + 6` so when the compiler prints the error details, it shows
+       up as e.g. "note: the comparison reduces to ‘(7 == 6)’". */
+    static_assert(size - 2 == 6 && zero == '0' && (x|0x20) == 'x' && (r2|0x20) != 'p' && (g1|0x20) != 'p' && (g2|0x20) != 'p' && (b1|0x20) != 'p',
+        "expected a hexadecimal 24-bit color literal");
+    typedef typename Color::Type T;
+    return {
+        /* The unsigned cast needs to be there to avoid warnings with negative
+           shift if any char is a period (with a float or hex float literal).
+           The |0x20 turns uppercase into lowercase, the 'W' is 'a' - 10, just
+           to not repeat it everywhere. */
+        T((unsigned(r1 <= '9' ? r1 - '0' : (r1|0x20) - 'W') << 4)|
+           unsigned(r2 <= '9' ? r2 - '0' : (r2|0x20) - 'W'))/T(divisor),
+        T((unsigned(g1 <= '9' ? g1 - '0' : (g1|0x20) - 'W') << 4)|
+           unsigned(g2 <= '9' ? g2 - '0' : (g2|0x20) - 'W'))/T(divisor),
+        T((unsigned(b1 <= '9' ? b1 - '0' : (b1|0x20) - 'W') << 4)|
+           unsigned(b2 <= '9' ? b2 - '0' : (b2|0x20) - 'W'))/T(divisor)
+    };
+}
+/* Same, just for RGBA, so 8+2 chars */
+template<class Color, unsigned divisor, unsigned size, char zero = '0', char x = 'x', char r1 = '0', char r2 = '0', char g1 = '0', char g2 = '0', char b1 = '0', char b2 = '0', char a1 = '0', char a2 = '0', char...> constexpr Color color4Literal() {
+    static_assert(size - 2 == 8 && zero == '0' && (x|0x20) == 'x' && (r2|0x20) != 'p' && (g1|0x20) != 'p' && (g2|0x20) != 'p' && (b1|0x20) != 'p' && (b2|0x20) != 'p' && (a1|0x20) != 'p',
+        "expected a hexadecimal 32-bit color literal");
+    typedef typename Color::Type T;
+    return {
+        T((unsigned(r1 <= '9' ? r1 - '0' : (r1|0x20) - 'W') << 4)|
+           unsigned(r2 <= '9' ? r2 - '0' : (r2|0x20) - 'W'))/T(divisor),
+        T((unsigned(g1 <= '9' ? g1 - '0' : (g1|0x20) - 'W') << 4)|
+           unsigned(g2 <= '9' ? g2 - '0' : (g2|0x20) - 'W'))/T(divisor),
+        T((unsigned(b1 <= '9' ? b1 - '0' : (b1|0x20) - 'W') << 4)|
+           unsigned(b2 <= '9' ? b2 - '0' : (b2|0x20) - 'W'))/T(divisor),
+        T((unsigned(a1 <= '9' ? a1 - '0' : (a1|0x20) - 'W') << 4)|
+           unsigned(a2 <= '9' ? a2 - '0' : (a2|0x20) - 'W'))/T(divisor)
+    };
+}
+
+}
+
 /* Unlike STL, where there's e.g. std::literals::string_literals with both
    being inline, here's just the second inline because making both would cause
    the literals to be implicitly available to all code in Math. Which isn't
@@ -1448,8 +1506,8 @@ Unpacks the literal into three 8-bit values. Example usage:
 @see @link operator""_rgba() @endlink, @link operator""_rgbf() @endlink
 @m_keywords{_rgb rgb}
 */
-constexpr Color3<UnsignedByte> operator"" _rgb(unsigned long long value) {
-    return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
+template<char... chars> constexpr Color3<UnsignedByte> operator"" _rgb() {
+    return Implementation::color3Literal<Color3<UnsignedByte>, 1, sizeof...(chars), chars...>();
 }
 
 /** @relatesalso Magnum::Math::Color3
@@ -1474,8 +1532,8 @@ RGB. Use this literal to document that given value is in sRGB. Example usage:
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
    multiplicative) semantics of a linear RGB color */
-constexpr Vector3<UnsignedByte> operator"" _srgb(unsigned long long value) {
-    return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
+template<char... chars> constexpr Vector3<UnsignedByte> operator"" _srgb() {
+    return Implementation::color3Literal<Vector3<UnsignedByte>, 1, sizeof...(chars), chars...>();
 }
 
 /** @relatesalso Magnum::Math::Color4
@@ -1493,8 +1551,8 @@ Unpacks the literal into four 8-bit values. Example usage:
 @see @link operator""_rgb() @endlink, @link operator""_rgbaf() @endlink
 @m_keywords{_rgba rgba}
 */
-constexpr Color4<UnsignedByte> operator"" _rgba(unsigned long long value) {
-    return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
+template<char... chars> constexpr Color4<UnsignedByte> operator"" _rgba() {
+    return Implementation::color4Literal<Color4<UnsignedByte>, 1, sizeof...(chars), chars...>();
 }
 
 /** @relatesalso Magnum::Math::Color4
@@ -1520,8 +1578,8 @@ usage:
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
    multiplicative) semantics of a linear RGB color */
-constexpr Vector4<UnsignedByte> operator"" _srgba(unsigned long long value) {
-    return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
+template<char... chars> constexpr Vector4<UnsignedByte> operator"" _srgba() {
+    return Implementation::color4Literal<Vector4<UnsignedByte>, 1, sizeof...(chars), chars...>();
 }
 
 /** @relatesalso Magnum::Math::Color3
@@ -1540,10 +1598,8 @@ Example usage:
 @see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink
 @m_keywords{_rgbf rgbf}
 */
-constexpr Color3<Float> operator"" _rgbf(unsigned long long value) {
-    return {((value >> 16) & 0xff)/255.0f,
-            ((value >>  8) & 0xff)/255.0f,
-            ((value >>  0) & 0xff)/255.0f};
+template<char... chars> constexpr Color3<Float> operator"" _rgbf() {
+    return Implementation::color3Literal<Color3<Float>, 255, sizeof...(chars), chars...>();
 }
 
 /** @relatesalso Magnum::Math::Color3
@@ -1557,8 +1613,8 @@ Calls @ref Color3::fromSrgbInt() on the literal value. Example usage:
     @link operator""_rgbf() @endlink
 @m_keywords{_srgbf srgbf}
 */
-inline Color3<Float> operator"" _srgbf(unsigned long long value) {
-    return Color3<Float>::fromSrgbInt(UnsignedInt(value));
+template<char... chars> inline Color3<Float> operator"" _srgbf() {
+    return Color3<Float>::fromSrgb(Implementation::color3Literal<Vector3<UnsignedByte>, 1, sizeof...(chars), chars...>());
 }
 
 /** @relatesalso Magnum::Math::Color4
@@ -1577,11 +1633,8 @@ Example usage:
 @see @link operator""_rgbf() @endlink, @link operator""_rgba() @endlink
 @m_keywords{_rgbaf rgbaf}
 */
-constexpr Color4<Float> operator"" _rgbaf(unsigned long long value) {
-    return {((value >> 24) & 0xff)/255.0f,
-            ((value >> 16) & 0xff)/255.0f,
-            ((value >>  8) & 0xff)/255.0f,
-            ((value >>  0) & 0xff)/255.0f};
+template<char... chars> constexpr Color4<Float> operator"" _rgbaf() {
+    return Implementation::color4Literal<Color4<Float>, 255, sizeof...(chars), chars...>();
 }
 
 /** @relatesalso Magnum::Math::Color4
@@ -1595,8 +1648,8 @@ Calls @ref Color4::fromSrgbAlphaInt() on the literal value. Example usage:
     @link operator""_rgbaf() @endlink
 @m_keywords{_srgbaf srgbaf}
 */
-inline Color4<Float> operator"" _srgbaf(unsigned long long value) {
-    return Color4<Float>::fromSrgbAlphaInt(UnsignedInt(value));
+template<char... chars> inline Color4<Float> operator"" _srgbaf() {
+    return Color4<Float>::fromSrgbAlpha(Implementation::color4Literal<Vector4<UnsignedByte>, 1, sizeof...(chars), chars...>());
 }
 #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
 #pragma clang diagnostic pop

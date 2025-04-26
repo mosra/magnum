@@ -768,6 +768,9 @@ See also:
     overloads taking a scalar
 -   Added a @ref Math::join(const Range<dimensions, T>&, const Vector<dimensions, T>&)
     overload for joining a range and a point
+-   All color literals are now implemented in a way that checks for them to be
+    hexadecimal and of correct length (6 digits for @ref Math::Color3 and
+    8 digits for @ref Math::Color4) at compile time to prevent common errors
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
