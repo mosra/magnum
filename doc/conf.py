@@ -41,10 +41,10 @@ VERSION_LABELS = True
 # There used to be a Pygments patch that would recognize the suffix as part of
 # the literal, https://github.com/pygments/pygments/pull/1303, but it fell
 # though the cracks and I was unable to resubmit it again. So this patch adds
-# both the color swatch and removes the </span><span class="n> in between.
+# both the color swatch and removes the </span><span class="n"> in between.
 # TODO either resubmit the patch or do this patching also for all others (_deg,
 # _rad, _sec, _nsec, ...)
-_magnum_colors_src = re.compile(r"""<span class="mh">0x(?P<hex>[0-9a-f]{6})(?P<alpha>[0-9a-f]{2})?(</span><span class="n">)?(?P<literal>_s?rgba?f?)</span>""")
+_magnum_colors_src = re.compile(r"""<span class="mh">0x(?P<hex>[0-9a-f]{6})(?P<alpha>[0-9a-f]{2})?(</span><span class="n">)?(?P<literal>_s?rgba?(f|h)?)</span>""")
 _magnum_colors_dst = r"""<span class="mh">0x\g<hex>\g<alpha>\g<literal><span class="m-code-color" style="background-color: #\g<hex>;"></span></span>"""
 
 # Code wrapped in DOXYGEN_ELLIPSIS() will get replaced by an (Unicode) ellipsis
