@@ -1527,7 +1527,7 @@ RGB. Use this literal to document that given value is in sRGB. Example usage:
     representation directly or convert the value using @ref Color3::fromSrgb()
     / @ref Color3::fromSrgbInt().
 
-@see @link operator""_srgba() @endlink, @link operator""_rgb() @endlink
+@see @link operator""_srgba() @endlink, @link operator""_srgbf() @endlink
 @m_keywords{_srgb srgb}
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
@@ -1573,7 +1573,7 @@ usage:
     representation directly or convert the value using
     @ref Color4::fromSrgbAlpha() / @ref Color4::fromSrgbAlphaInt().
 
-@see @link operator""_srgb() @endlink, @link operator""_rgba() @endlink
+@see @link operator""_srgb() @endlink, @link operator""_rgbaf() @endlink
 @m_keywords{_srgba srgba}
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
@@ -1605,7 +1605,8 @@ template<char... chars> constexpr Color3<Float> operator"" _rgbf() {
 /** @relatesalso Magnum::Math::Color3
 @brief Float sRGB literal
 
-Calls @ref Color3::fromSrgbInt() on the literal value. Example usage:
+Equivalent to calling @ref Color3::fromSrgbInt() on the literal value. Example
+usage:
 
 @snippet Math.cpp _srgbf
 
@@ -1640,7 +1641,8 @@ template<char... chars> constexpr Color4<Float> operator"" _rgbaf() {
 /** @relatesalso Magnum::Math::Color4
 @brief Float sRGB + alpha literal
 
-Calls @ref Color4::fromSrgbAlphaInt() on the literal value. Example usage:
+Equivalent to calling @ref Color4::fromSrgbAlphaInt() on the literal value.
+Example usage:
 
 @snippet Math.cpp _srgbaf
 
