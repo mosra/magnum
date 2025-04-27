@@ -128,6 +128,9 @@ struct ColorTest: TestSuite::Tester {
     void literalsSrgb();
     void literalsSrgbFloat();
     void literalsSrgbHalf();
+    /* The template type doesn't matter but it has to be used to trigger the
+       compiler crash, see the definition for details */
+    template<class T> void literalMsvc2019PermissiveCrash();
 
     void xyz();
     void fromXyzDefaultAlpha();
@@ -283,6 +286,9 @@ ColorTest::ColorTest() {
               &ColorTest::literalsSrgb,
               &ColorTest::literalsSrgbFloat,
               &ColorTest::literalsSrgbHalf,
+              /* The template type doesn't matter but it has to be used to
+                 trigger the compiler crash, see the definition for details */
+              &ColorTest::literalMsvc2019PermissiveCrash<void>,
 
               &ColorTest::premultiplied,
               &ColorTest::premultipliedRoundtrip<UnsignedByte>,
@@ -1346,6 +1352,47 @@ void ColorTest::literalsSrgbHalf() {
     CORRADE_COMPARE(0x000000_srgbh, Color3h{0.0_h});
     CORRADE_COMPARE(0xffffffff_srgbah, Color4h{1.0_h});
     CORRADE_COMPARE(0x00000000_srgbah, (Color4h{0.0_h, 0.0_h}));
+}
+
+template<class T> void ColorTest::literalMsvc2019PermissiveCrash() {
+    /* On MSVC 2019 with /permissive- enabled the following line crashes with
+       no output from the compiler if the variadic template implementation of
+       color literals is used. In particular, it only crashes if there's:
+        - a multiplication of a Color3 literal,
+        - that gets implicitly converted to Color4,
+        - that gets called inside a template function, while the template
+          doesn't need to be actually used for anything.
+       This is a trimmed-down case from the ShadersFlatGLTest /
+       ShadersPhongGLTest which were crashing with no message, while here it at
+       least says "fatal error C1903: unable to recover from previous error(s);
+       stopping compilation". */
+
+    /* The same condition is used in Color.h to disable the new implementation.
+       There's no way to detect /permissive- being used (except for the
+       non-preprocessor check used below, see Corrade's configure.h for
+       details) so it's disabled on MSVC 2019 as a whole, for all literals. */
+    #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
+    if(sizeof(1 ? "" : "") == 1)
+        CORRADE_INFO("MSVC 2019 with /permissive- enabled is used");
+    #endif
+
+    /* Listing other literals just to check how many of them are prone to this
+       bug (all four below). Not possible to trigger this with RGBA literals
+       (because for these no conversion happens) or half-float literals
+       (because for these no multiplication is implemented). The new
+       implementation is however disabled for all because there could be other
+       crashy cases I just didn't come across yet. */
+    Color4 a = 0xffff99_rgbf*1.5f;
+    Color4 b = 0xffff99_srgbf*1.5f;
+    Color4ub c = 0xffff99_rgb*0.5f;
+    Color4ub d = 0xffff99_srgb*0.5f;
+    CORRADE_COMPARE(a.max(), 1.5f);
+    CORRADE_COMPARE(b.max(), 1.5f);
+    /* Alpha is set to 255 during conversion. On Android it fails if the color
+       is multiplied by 1.5, I assume because some nasty issue with type
+       conversion and overflow happens? 0.5 works. */
+    CORRADE_COMPARE(c.max(), 255);
+    CORRADE_COMPARE(d.max(), 255);
 }
 
 void ColorTest::premultiplied() {
