@@ -260,7 +260,7 @@ template<class T> class Complex {
         constexpr T imaginary() const { return _imaginary; } /**< @overload */
 
         /**
-         * @brief Convert a complex number to vector
+         * @brief Convert a complex number to a vector
          *
          * @f[
          *      \boldsymbol v = \begin{pmatrix} a \\ b \end{pmatrix}
@@ -541,10 +541,10 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Rotate a vector with the complex number
+         * @brief Rotate a vector with a complex number
          *
          * @f[
-         *      v' = c v = c (v_x + iv_y)
+         *      \boldsymbol{v'} = c \boldsymbol{v} = c (v_x + iv_y)
          * @f]
          * @see @ref Complex(const Vector2<T>&), @ref operator Vector2<T>(),
          *      @ref Matrix3::transformVector()
