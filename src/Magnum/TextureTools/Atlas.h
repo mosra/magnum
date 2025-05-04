@@ -364,7 +364,7 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          *
          * The @p sizes, @p offsets and @p rotations views are expected to have
          * the same size. The @p sizes are all expected to be not larger than
-         * @ref size() after appying padding and then a rotation based on
+         * @ref size() after applying padding and then a rotation based on
          * @ref AtlasLandfillFlag::RotatePortrait or
          * @relativeref{AtlasLandfillFlag,RotateLandscape} being set. If
          * neither @relativeref{AtlasLandfillFlag,RotatePortrait} nor

@@ -541,7 +541,10 @@ class MAGNUM_TEXT_EXPORT RendererCore {
          * Splits @p text into individual lines and shapes each with given
          * @p shaper. Places and aligns the text according to @ref cursor(),
          * @ref alignment() and @ref layoutDirection(), continuing from the
-         * state left after the previous @ref add(), if any.
+         * state left after the previous @ref add(), if any. Expects that
+         * @p shaper font is present in @ref glyphCache(), either added
+         * explicitly via @ref AbstractGlyphCache::addFont() or through
+         * @ref AbstractFont::fillGlyphCache().
          *
          * After calling this function, @ref isRendering() returns
          * @cpp true @ce, @ref renderingGlyphCount() and @ref renderingRunCount()
@@ -565,6 +568,7 @@ class MAGNUM_TEXT_EXPORT RendererCore {
          * overload to pass a string as a whole.
          *
          * The function uses @ref AbstractShaper::shape(),
+         * @ref AbstractGlyphCache::glyphIdsInto(),
          * @ref renderLineGlyphPositionsInto(), @ref alignRenderedLine() and
          * @ref glyphQuadBounds() internally, see their documentation for more
          * information.
@@ -1211,13 +1215,18 @@ class MAGNUM_TEXT_EXPORT Renderer: public RendererCore {
          * @brief Set index type
          * @return Reference to self (for method chaining)
          *
-         * Sets the smallest possible index type to be used. Initially
+         * Expects that rendering is currently not in progress. Sets the
+         * smallest possible index type to be used. Initially
          * @ref MeshIndexType::UnsignedByte, a larger type is automatically
          * switched to once @ref glyphCapacity() exceeds @cpp 64 @ce and
          * @cpp 16384 @ce glyphs. Set to a larger type if you want it to be
          * used even if the glyph capacity is smaller. Setting it back to a
          * smaller type afterwards uses the type only if the glyph capacity
          * allows it.
+         *
+         * Note that the @ref RendererGL subclass changes the default index
+         * type to @ref MeshIndexType::UnsignedShort, as use of 8-bit indices
+         * is discouraged on contemporary GPUs.
          */
         Renderer& setIndexType(MeshIndexType atLeast);
 

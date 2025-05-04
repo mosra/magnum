@@ -99,9 +99,11 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, ShapeDirection value);
 @brief Direction a text is laid out in
 @m_since_latest
 
-@see @ref ShapeDirection
+@see @ref RendererCore::setLayoutDirection(),
+    @ref RendererCore::layoutDirection(), @ref ShapeDirection
 */
 enum class LayoutDirection: UnsignedByte {
+    /** Unspecified */
     Unspecified = 0,
 
     /** Horizontal text with lines advancing from top to bottom */
