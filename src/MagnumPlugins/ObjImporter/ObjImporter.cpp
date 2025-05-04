@@ -61,7 +61,7 @@ struct Mesh {
 
 struct ObjImporter::File {
     std::unordered_map<std::string, UnsignedInt> meshesForName;
-    std::vector<Mesh> meshes;
+    Containers::Array<Mesh> meshes;
     Containers::Pointer<std::istream> in;
 };
 
@@ -138,7 +138,7 @@ void ObjImporter::parseMeshNames() {
     /* The first mesh doesn't have name by default but we might find it later,
        so we need to track whether there are any data before first name */
     bool thisIsFirstMeshAndItHasNoData = true;
-    _file->meshes.emplace_back(Mesh{0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset, std::string{}});
+    arrayAppend(_file->meshes, InPlaceInit, 0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset, std::string{});
 
     while(_file->in->good()) {
         /* The previous object might end at the beginning of this line */
@@ -181,7 +181,7 @@ void ObjImporter::parseMeshNames() {
                    updated later. */
                 if(!name.empty())
                     _file->meshesForName.emplace(name, _file->meshes.size());
-                _file->meshes.emplace_back(Mesh{_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset, Utility::move(name)});
+                arrayAppend(_file->meshes, InPlaceInit, _file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset, Utility::move(name));
             }
 
             continue;
