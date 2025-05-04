@@ -54,13 +54,13 @@ struct Mesh {
     UnsignedInt positionIndexOffset;
     UnsignedInt textureCoordinateIndexOffset;
     UnsignedInt normalIndexOffset;
+    std::string name;
 };
 
 }
 
 struct ObjImporter::File {
     std::unordered_map<std::string, UnsignedInt> meshesForName;
-    std::vector<std::string> meshNames;
     std::vector<Mesh> meshes;
     Containers::Pointer<std::istream> in;
 };
@@ -135,12 +135,10 @@ void ObjImporter::parseMeshNames() {
     UnsignedInt positionIndexOffset = 1;
     UnsignedInt normalIndexOffset = 1;
     UnsignedInt textureCoordinateIndexOffset = 1;
-    _file->meshes.emplace_back(Mesh{0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset});
-
     /* The first mesh doesn't have name by default but we might find it later,
        so we need to track whether there are any data before first name */
     bool thisIsFirstMeshAndItHasNoData = true;
-    _file->meshNames.emplace_back();
+    _file->meshes.emplace_back(Mesh{0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset, std::string{}});
 
     while(_file->in->good()) {
         /* The previous object might end at the beginning of this line */
@@ -169,7 +167,7 @@ void ObjImporter::parseMeshNames() {
                 /* Update its name and add it to name map */
                 if(!name.empty())
                     _file->meshesForName.emplace(name, _file->meshes.size() - 1);
-                _file->meshNames.back() = Utility::move(name);
+                _file->meshes.back().name = Utility::move(name);
 
                 /* Update its begin offset to be more precise */
                 _file->meshes.back().begin = _file->in->tellg();
@@ -183,8 +181,7 @@ void ObjImporter::parseMeshNames() {
                    updated later. */
                 if(!name.empty())
                     _file->meshesForName.emplace(name, _file->meshes.size());
-                _file->meshNames.emplace_back(Utility::move(name));
-                _file->meshes.emplace_back(Mesh{_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset});
+                _file->meshes.emplace_back(Mesh{_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset, Utility::move(name)});
             }
 
             continue;
@@ -230,7 +227,7 @@ Int ObjImporter::doMeshForName(const Containers::StringView name) {
 }
 
 Containers::String ObjImporter::doMeshName(UnsignedInt id) {
-    return _file->meshNames[id];
+    return _file->meshes[id].name;
 }
 
 namespace {
