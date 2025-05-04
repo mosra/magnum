@@ -46,10 +46,22 @@
 
 namespace Magnum { namespace Trade {
 
+namespace {
+
+struct Mesh {
+    std::streampos begin;
+    std::streampos end;
+    UnsignedInt positionIndexOffset;
+    UnsignedInt textureCoordinateIndexOffset;
+    UnsignedInt normalIndexOffset;
+};
+
+}
+
 struct ObjImporter::File {
     std::unordered_map<std::string, UnsignedInt> meshesForName;
     std::vector<std::string> meshNames;
-    std::vector<std::tuple<std::streampos, std::streampos, UnsignedInt, UnsignedInt, UnsignedInt>> meshes;
+    std::vector<Mesh> meshes;
     Containers::Pointer<std::istream> in;
 };
 
@@ -123,7 +135,7 @@ void ObjImporter::parseMeshNames() {
     UnsignedInt positionIndexOffset = 1;
     UnsignedInt normalIndexOffset = 1;
     UnsignedInt textureCoordinateIndexOffset = 1;
-    _file->meshes.emplace_back(0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset);
+    _file->meshes.emplace_back(Mesh{0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset});
 
     /* The first mesh doesn't have name by default but we might find it later,
        so we need to track whether there are any data before first name */
@@ -160,19 +172,19 @@ void ObjImporter::parseMeshNames() {
                 _file->meshNames.back() = Utility::move(name);
 
                 /* Update its begin offset to be more precise */
-                std::get<0>(_file->meshes.back()) = _file->in->tellg();
+                _file->meshes.back().begin = _file->in->tellg();
 
             /* Otherwise this is a name of new mesh */
             } else {
                 /* Set end of the previous one */
-                std::get<1>(_file->meshes.back()) = end;
+                _file->meshes.back().end = end;
 
                 /* Save name and offset of the new one. The end offset will be
                    updated later. */
                 if(!name.empty())
                     _file->meshesForName.emplace(name, _file->meshes.size());
                 _file->meshNames.emplace_back(Utility::move(name));
-                _file->meshes.emplace_back(_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset);
+                _file->meshes.emplace_back(Mesh{_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset});
             }
 
             continue;
@@ -207,7 +219,7 @@ void ObjImporter::parseMeshNames() {
     /* Set end of the last object */
     _file->in->clear();
     _file->in->seekg(0, std::ios::end);
-    std::get<1>(_file->meshes.back()) = _file->in->tellg();
+    _file->meshes.back().end = _file->in->tellg();
 }
 
 UnsignedInt ObjImporter::doMeshCount() const { return _file->meshes.size(); }
@@ -239,10 +251,8 @@ template<class T> bool checkAndDuplicateInto(const Containers::StridedArrayView1
 
 Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) {
     /* Seek the file, set mesh parsing parameters */
-    std::streampos begin, end;
-    UnsignedInt positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset;
-    std::tie(begin, end, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset) = _file->meshes[id];
-    _file->in->seekg(begin);
+    const Mesh& mesh = _file->meshes[id];
+    _file->in->seekg(mesh.begin);
 
     Containers::Optional<MeshPrimitive> primitive;
     Containers::Array<Vector3> positions;
@@ -253,7 +263,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
     Containers::Array<Vector3ui> indices;
     std::size_t textureCoordinateIndexCount = 0, normalIndexCount = 0;
 
-    try { while(_file->in->good() && _file->in->tellg() < end) {
+    try { while(_file->in->good() && _file->in->tellg() < mesh.end) {
         /* Ignore comments */
         if(_file->in->peek() == '#') {
             ignoreLine(*_file->in);
@@ -367,17 +377,17 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
                 Vector3ui index;
 
                 /* Position indices */
-                index[0] = std::stoul(indexStrings[0]) - positionIndexOffset;
+                index[0] = std::stoul(indexStrings[0]) - mesh.positionIndexOffset;
 
                 /* Texture coordinates */
                 if(indexStrings.size() == 2 || (indexStrings.size() == 3 && !indexStrings[1].empty())) {
-                    index[2] = std::stoul(indexStrings[1]) - textureCoordinateIndexOffset;
+                    index[2] = std::stoul(indexStrings[1]) - mesh.textureCoordinateIndexOffset;
                     ++textureCoordinateIndexCount;
                 }
 
                 /* Normal indices */
                 if(indexStrings.size() == 3) {
-                    index[1] = std::stoul(indexStrings[2]) - normalIndexOffset;
+                    index[1] = std::stoul(indexStrings[2]) - mesh.normalIndexOffset;
                     ++normalIndexCount;
                 }
 
@@ -459,7 +469,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
     {
         Containers::StridedArrayView1D<Vector3> view{vertexData,
             reinterpret_cast<Vector3*>(vertexData.data()), vertexCount, stride};
-        if(!checkAndDuplicateInto(indicesPerAttribute[0].prefix(vertexCount), positions, view, positionIndexOffset))
+        if(!checkAndDuplicateInto(indicesPerAttribute[0].prefix(vertexCount), positions, view, mesh.positionIndexOffset))
             return Containers::NullOpt;
         attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Position, view};
         offset += sizeof(Vector3);
@@ -467,7 +477,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
     if(normalIndexCount) {
         Containers::StridedArrayView1D<Vector3> view{vertexData,
             reinterpret_cast<Vector3*>(vertexData.data() + offset), vertexCount, stride};
-        if(!checkAndDuplicateInto(indicesPerAttribute[1].prefix(vertexCount), normals, view, normalIndexOffset))
+        if(!checkAndDuplicateInto(indicesPerAttribute[1].prefix(vertexCount), normals, view, mesh.normalIndexOffset))
             return Containers::NullOpt;
         attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Normal, view};
         offset += sizeof(Vector3);
@@ -475,7 +485,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
     if(textureCoordinateIndexCount) {
         Containers::StridedArrayView1D<Vector2> view{vertexData,
             reinterpret_cast<Vector2*>(vertexData.data() + offset), vertexCount, stride};
-        if(!checkAndDuplicateInto(indicesPerAttribute[2].prefix(vertexCount), textureCoordinates, view, textureCoordinateIndexOffset))
+        if(!checkAndDuplicateInto(indicesPerAttribute[2].prefix(vertexCount), textureCoordinates, view, mesh.textureCoordinateIndexOffset))
             return Containers::NullOpt;
         attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::TextureCoordinates, view};
         offset += sizeof(Vector2);
