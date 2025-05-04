@@ -905,6 +905,13 @@ void GlfwApplication::exit(int exitCode) {
     if(_window) glfwSetWindowShouldClose(_window, true);
 }
 
+bool GlfwApplication::isKeyPressed(const Key key) {
+    /* Documentation says GLFW_KEY_UNKNOWN is not valid for glfwGetKey() */
+    if(key == Key::Unknown)
+        return false;
+    return glfwGetKey(_window, int(key)) == GLFW_PRESS;
+}
+
 namespace {
 
 constexpr Int CursorMap[] {

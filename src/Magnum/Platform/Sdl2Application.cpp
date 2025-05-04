@@ -1306,6 +1306,16 @@ bool Sdl2Application::mainLoopIteration() {
     return !(_flags & Flag::Exit);
 }
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+bool Sdl2Application::isKeyPressed(const Key key) {
+    int count;
+    const Uint8* const state = SDL_GetKeyboardState(&count);
+    const SDL_Scancode scancode = SDL_GetScancodeFromKey(SDL_Keycode(key));
+    CORRADE_INTERNAL_DEBUG_ASSERT(scancode < count);
+    return state[scancode];
+}
+#endif
+
 namespace {
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN

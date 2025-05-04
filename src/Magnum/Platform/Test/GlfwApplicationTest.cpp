@@ -39,8 +39,8 @@
 
 namespace Magnum { namespace Platform {
 
-/* These cannot be in an anonymous namespace as enumSetDebugOutput() below
-   wouldn't be able to pick them up */
+/* These cannot be in an anonymous namespace as enumSetDebugOutput() / Key
+   below wouldn't be able to pick them up */
 
 static Debug& operator<<(Debug& debug, Application::Modifier value) {
     debug << "Modifier" << Debug::nospace;
@@ -57,99 +57,7 @@ static Debug& operator<<(Debug& debug, Application::Modifier value) {
     return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
 }
 
-static Debug& operator<<(Debug& debug, Application::Pointer value) {
-    debug << "Pointer" << Debug::nospace;
-
-    switch(value) {
-        #define _c(value) case Application::Pointer::value: return debug << "::" #value;
-        _c(MouseLeft)
-        _c(MouseMiddle)
-        _c(MouseRight)
-        _c(MouseButton4)
-        _c(MouseButton5)
-        _c(MouseButton6)
-        _c(MouseButton7)
-        _c(MouseButton8)
-        #undef _c
-    }
-
-    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-CORRADE_UNUSED static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value) {
-    debug << "Button" << Debug::nospace;
-
-    switch(value) {
-        #define _c(value) case Application::MouseMoveEvent::Button::value: return debug << "::" #value;
-        _c(Left)
-        _c(Middle)
-        _c(Right)
-        #undef _c
-    }
-
-    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
-
-namespace Test { namespace {
-
-Debug& operator<<(Debug& debug, Application::Modifiers value) {
-    return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
-        Application::Modifier::Shift,
-        Application::Modifier::Ctrl,
-        Application::Modifier::Alt,
-        Application::Modifier::Super
-    });
-}
-
-Debug& operator<<(Debug& debug, Application::Pointers value) {
-    return Containers::enumSetDebugOutput(debug, value, "Pointers{}", {
-        Application::Pointer::MouseLeft,
-        Application::Pointer::MouseMiddle,
-        Application::Pointer::MouseRight,
-        Application::Pointer::MouseButton4,
-        Application::Pointer::MouseButton5,
-        Application::Pointer::MouseButton6,
-        Application::Pointer::MouseButton7,
-        Application::Pointer::MouseButton8,
-    });
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
-    debug << "Button" << Debug::nospace;
-
-    switch(value) {
-        #define _c(value) case Application::MouseEvent::Button::value: return debug << "::" #value;
-        _c(Left)
-        _c(Middle)
-        _c(Right)
-        _c(Button4)
-        _c(Button5)
-        _c(Button6)
-        _c(Button7)
-        _c(Button8)
-        #undef _c
-    }
-
-    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Buttons value) {
-    return Containers::enumSetDebugOutput(debug, value, "Buttons{}", {
-        Application::MouseMoveEvent::Button::Left,
-        Application::MouseMoveEvent::Button::Middle,
-        Application::MouseMoveEvent::Button::Right,
-    });
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
-
-Debug& operator<<(Debug& debug, const Application::Key value) {
+static Debug& operator<<(Debug& debug, const Application::Key value) {
     debug << "Key" << Debug::nospace;
 
     switch(value) {
@@ -270,6 +178,98 @@ Debug& operator<<(Debug& debug, const Application::Key value) {
     return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
 }
 
+static Debug& operator<<(Debug& debug, Application::Pointer value) {
+    debug << "Pointer" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::Pointer::value: return debug << "::" #value;
+        _c(MouseLeft)
+        _c(MouseMiddle)
+        _c(MouseRight)
+        _c(MouseButton4)
+        _c(MouseButton5)
+        _c(MouseButton6)
+        _c(MouseButton7)
+        _c(MouseButton8)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_UNUSED static Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Button value) {
+    debug << "Button" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::MouseMoveEvent::Button::value: return debug << "::" #value;
+        _c(Left)
+        _c(Middle)
+        _c(Right)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+namespace Test { namespace {
+
+Debug& operator<<(Debug& debug, Application::Modifiers value) {
+    return Containers::enumSetDebugOutput(debug, value, "Modifiers{}", {
+        Application::Modifier::Shift,
+        Application::Modifier::Ctrl,
+        Application::Modifier::Alt,
+        Application::Modifier::Super
+    });
+}
+
+Debug& operator<<(Debug& debug, Application::Pointers value) {
+    return Containers::enumSetDebugOutput(debug, value, "Pointers{}", {
+        Application::Pointer::MouseLeft,
+        Application::Pointer::MouseMiddle,
+        Application::Pointer::MouseRight,
+        Application::Pointer::MouseButton4,
+        Application::Pointer::MouseButton5,
+        Application::Pointer::MouseButton6,
+        Application::Pointer::MouseButton7,
+        Application::Pointer::MouseButton8,
+    });
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseEvent::Button value) {
+    debug << "Button" << Debug::nospace;
+
+    switch(value) {
+        #define _c(value) case Application::MouseEvent::Button::value: return debug << "::" #value;
+        _c(Left)
+        _c(Middle)
+        _c(Right)
+        _c(Button4)
+        _c(Button5)
+        _c(Button6)
+        _c(Button7)
+        _c(Button8)
+        #undef _c
+    }
+
+    return debug << "(" << Debug::nospace << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+CORRADE_UNUSED Debug& operator<<(Debug& debug, Application::MouseMoveEvent::Buttons value) {
+    return Containers::enumSetDebugOutput(debug, value, "Buttons{}", {
+        Application::MouseMoveEvent::Button::Left,
+        Application::MouseMoveEvent::Button::Middle,
+        Application::MouseMoveEvent::Button::Right,
+    });
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
 using namespace Containers::Literals;
 using namespace Math::Literals;
 
@@ -293,6 +293,10 @@ struct GlfwApplicationTest: Platform::Application {
     void drawEvent() override {
         Debug{} << "draw";
         swapBuffers();
+
+        /* Invalid keys are tested in the constructor */
+        if(isKeyPressed(Key::M))
+            Debug{} << Key::M << "is pressed";
 
         if(_redraw)
             redraw();
@@ -458,6 +462,9 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         importer->openData(rs.getRaw("icon-32.tga")) && (image32 = importer->image2D(0)) &&
         importer->openData(rs.getRaw("icon-64.tga")) && (image64 = importer->image2D(0))) setWindowIcon({*image16, *image32, *image64});
     else Warning{} << "Can't load the plugin / images, not setting window icon";
+
+    /* This shouldn't blow up */
+    CORRADE_INTERNAL_ASSERT(!isKeyPressed(Key::Unknown) && !isKeyPressed(Key(0x7fffffff)));
 }
 
 }}}}

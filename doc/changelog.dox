@@ -882,6 +882,9 @@ See also:
     @relativeref{Platform::Sdl2Application,scanCodeToKey()} and
     @ref Platform::GlfwApplication::keyToScanCode() helpers for key / scan code
     conversion outside of event handlers
+-   Added @ref Platform::Sdl2Application::isKeyPressed() and
+    @ref Platform::GlfwApplication::isKeyPressed() for immediate key state
+    queries
 -   Updated @ref Platform::AndroidApplication to not use a deprecated API that
     was removed in NDK 27 ([mosra/magnum#659](https://github.com/mosra/magnum/pull/659))
 

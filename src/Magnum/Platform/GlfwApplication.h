@@ -649,11 +649,30 @@ class GlfwApplication {
 
         /** @{ @name Keyboard handling */
 
+    public:
+        /**
+         * @brief Whether a key is pressed
+         * @m_since_latest
+         *
+         * If a key is pressed, i.e. @ref keyPressEvent() with given @p key was
+         * fired but not a @ref keyReleaseEvent() yet, the function returns
+         * @cpp true @ce. For unknown @ref Key values returns @cpp false @ce.
+         *
+         * This function only queries immediate keyboard state at given point
+         * in time, which means that if a particular key got pressed and
+         * released again in between calls to this function, it will not be
+         * reported as pressed. To avoid losing key presses, prefer to get
+         * keyboard press and release events through @ref keyPressEvent() and
+         * @ref keyReleaseEvent() instead if possible.
+         */
+        bool isKeyPressed(Key key);
+
+    private:
         /**
          * @brief Key press event
          *
          * Called when a key is pressed. Default implementation does nothing.
-         * @see @ref platform-windowed-key-events
+         * @see @ref platform-windowed-key-events, @ref isKeyPressed()
          */
         virtual void keyPressEvent(KeyEvent& event);
 
@@ -661,7 +680,7 @@ class GlfwApplication {
          * @brief Key release event
          *
          * Called when a key is released. Default implementation does nothing.
-         * @see @ref platform-windowed-key-events
+         * @see @ref platform-windowed-key-events, @ref isKeyPressed()
          */
         virtual void keyReleaseEvent(KeyEvent& event);
 
@@ -1061,7 +1080,8 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::Modifiers)
 @brief Key
 @m_since_latest
 
-@see @ref KeyEvent::key(), @ref platform-windowed-key-events
+@see @ref KeyEvent::key(), @ref isKeyPressed(), @ref keyToScanCode(),
+    @ref platform-windowed-key-events
 */
 enum class GlfwApplication::Key: Int {
     Unknown = GLFW_KEY_UNKNOWN,         /**< Unknown key */

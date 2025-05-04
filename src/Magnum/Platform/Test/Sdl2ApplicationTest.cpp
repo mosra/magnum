@@ -334,6 +334,12 @@ struct Sdl2ApplicationTest: Platform::Application {
         GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
         #endif
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /* Invalid keys are tested in the constructor */
+        if(isKeyPressed(Key::M))
+            Debug{} << Key::M << "is pressed";
+        #endif
+
         swapBuffers();
 
         if(_redraw)
@@ -577,6 +583,11 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     #else
     Debug{} << "SDL too old, can't set window icon";
     #endif
+    #endif
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* This shouldn't blow up */
+    CORRADE_INTERNAL_ASSERT(!isKeyPressed(Key::Unknown) && !isKeyPressed(Key(0x7fffffff)));
     #endif
 }
 
