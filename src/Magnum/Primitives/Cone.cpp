@@ -36,7 +36,7 @@ namespace Magnum { namespace Primitives {
 
 Trade::MeshData coneSolid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const ConeFlags flags) {
     CORRADE_ASSERT(rings >= 1 && segments >= 3,
-        "Primitives::coneSolid(): at least one ring and three segments expected",
+        "Primitives::coneSolid(): expected at least one ring and three segments but got" << rings << "and" << segments,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::Spheroid cone{segments, Implementation::Spheroid::Flag(UnsignedByte(flags))};
@@ -67,7 +67,7 @@ Trade::MeshData coneSolid(const UnsignedInt rings, const UnsignedInt segments, c
 
 Trade::MeshData coneWireframe(const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(segments >= 4 && segments%4 == 0,
-        "Primitives::coneWireframe(): multiples of 4 segments expected",
+        "Primitives::coneWireframe(): expected multiples of 4 segments but got" << segments,
         (Trade::MeshData{MeshPrimitive::Lines, 0}));
 
     Implementation::WireframeSpheroid cone{segments/4};

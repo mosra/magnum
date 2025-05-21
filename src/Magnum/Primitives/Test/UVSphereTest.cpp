@@ -24,8 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Primitives/UVSphere.h"
@@ -38,7 +40,10 @@ struct UVSphereTest: TestSuite::Tester {
 
     void solidWithoutTextureCoordinates();
     void solidWithTextureCoordinatesOrTangents();
+    void solidInvalid();
+
     void wireframe();
+    void wireframeInvalid();
 };
 
 constexpr struct {
@@ -56,7 +61,10 @@ UVSphereTest::UVSphereTest() {
     addInstancedTests({&UVSphereTest::solidWithTextureCoordinatesOrTangents},
         Containers::arraySize(TextureCoordinatesOrTangentsData));
 
-    addTests({&UVSphereTest::wireframe});
+    addTests({&UVSphereTest::solidInvalid,
+
+              &UVSphereTest::wireframe,
+              &UVSphereTest::wireframeInvalid});
 }
 
 void UVSphereTest::solidWithoutTextureCoordinates() {
@@ -182,6 +190,22 @@ void UVSphereTest::solidWithTextureCoordinatesOrTangents() {
     }), TestSuite::Compare::Container);
 }
 
+void UVSphereTest::solidInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::uvSphereSolid(2, 3);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::uvSphereSolid(1, 3);
+    Primitives::uvSphereSolid(2, 2);
+    CORRADE_COMPARE_AS(out,
+        "Primitives::uvSphereSolid(): expected at least two rings and three segments but got 1 and 3\n"
+        "Primitives::uvSphereSolid(): expected at least two rings and three segments but got 2 and 2\n",
+        TestSuite::Compare::String);
+}
+
 void UVSphereTest::wireframe() {
     Trade::MeshData sphere = uvSphereWireframe(6, 8);
 
@@ -240,6 +264,27 @@ void UVSphereTest::wireframe() {
         17, 21, 18, 22, 19, 23, 20, 24,
         21, 25, 22, 25, 23, 25, 24, 25
     }), TestSuite::Compare::Container);
+}
+
+void UVSphereTest::wireframeInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::uvSphereWireframe(2, 4);
+    Primitives::uvSphereWireframe(4, 16);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::uvSphereWireframe(3, 4);
+    Primitives::uvSphereWireframe(0, 4);
+    Primitives::uvSphereWireframe(2, 9);
+    Primitives::uvSphereWireframe(2, 0);
+    CORRADE_COMPARE_AS(out,
+        "Primitives::uvSphereWireframe(): expected multiples of 2 rings and multiples of 4 segments but got 3 and 4\n"
+        "Primitives::uvSphereWireframe(): expected multiples of 2 rings and multiples of 4 segments but got 0 and 4\n"
+        "Primitives::uvSphereWireframe(): expected multiples of 2 rings and multiples of 4 segments but got 2 and 9\n"
+        "Primitives::uvSphereWireframe(): expected multiples of 2 rings and multiples of 4 segments but got 2 and 0\n",
+        TestSuite::Compare::String);
 }
 
 }}}}

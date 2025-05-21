@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
@@ -38,10 +39,14 @@ struct CircleTest: TestSuite::Tester {
     explicit CircleTest();
 
     void solid2D();
+    void solid2DInvalid();
     void solid3D();
+    void solid3DInvalid();
 
     void wireframe2D();
+    void wireframe2DInvalid();
     void wireframe3D();
+    void wireframe3DInvalid();
 };
 
 constexpr struct {
@@ -66,11 +71,17 @@ CircleTest::CircleTest() {
     addInstancedTests({&CircleTest::solid2D},
         Containers::arraySize(Solid2DData));
 
+    addTests({&CircleTest::solid2DInvalid});
+
     addInstancedTests({&CircleTest::solid3D},
         Containers::arraySize(Solid3DData));
 
+    addTests({&CircleTest::solid3DInvalid});
+
     addTests({&CircleTest::wireframe2D,
-              &CircleTest::wireframe3D});
+              &CircleTest::wireframe2DInvalid,
+              &CircleTest::wireframe3D,
+              &CircleTest::wireframe3DInvalid});
 }
 
 void CircleTest::solid2D() {
@@ -100,6 +111,18 @@ void CircleTest::solid2D() {
             {1.0f, 0.5f}
         }), TestSuite::Compare::Container);
     } else CORRADE_VERIFY(!circle.hasAttribute(Trade::MeshAttribute::TextureCoordinates));
+}
+
+void CircleTest::solid2DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::circle2DSolid(3);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::circle2DSolid(2);
+    CORRADE_COMPARE(out, "Primitives::circle2DSolid(): expected at least three segments but got 2\n");
 }
 
 void CircleTest::solid3D() {
@@ -172,6 +195,18 @@ void CircleTest::solid3D() {
     }
 }
 
+void CircleTest::solid3DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::circle3DSolid(3);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::circle3DSolid(2);
+    CORRADE_COMPARE(out, "Primitives::circle3DSolid(): expected at least three segments but got 2\n");
+}
+
 void CircleTest::wireframe2D() {
     Trade::MeshData circle = Primitives::circle2DWireframe(8);
 
@@ -186,6 +221,18 @@ void CircleTest::wireframe2D() {
     }), TestSuite::Compare::Container);
 }
 
+void CircleTest::wireframe2DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::circle2DWireframe(3);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::circle2DWireframe(2);
+    CORRADE_COMPARE(out, "Primitives::circle2DWireframe(): expected at least three segments but got 2\n");
+}
+
 void CircleTest::wireframe3D() {
     Trade::MeshData circle = Primitives::circle3DWireframe(8);
 
@@ -198,6 +245,18 @@ void CircleTest::wireframe3D() {
         {-1.0f,  0.0f, 0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f},
         { 0.0f, -1.0f, 0.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f}
     }), TestSuite::Compare::Container);
+}
+
+void CircleTest::wireframe3DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::circle3DWireframe(3);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::circle3DWireframe(2);
+    CORRADE_COMPARE(out, "Primitives::circle3DWireframe(): expected at least three segments but got 2\n");
 }
 
 }}}}

@@ -32,7 +32,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumPrimitives_EXPORTS
+    #if defined(MagnumPrimitives_EXPORTS) || defined(MagnumPrimitivesObjects_EXPORTS)
         #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_IMPORT

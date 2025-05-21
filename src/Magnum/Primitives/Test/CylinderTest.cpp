@@ -24,8 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Primitives/Cylinder.h"
@@ -40,7 +42,10 @@ struct CylinderTest: TestSuite::Tester {
     void solidWithCaps();
     void solidWithTextureCoordinatesOrTangents();
     void solidWithTextureCoordinatesOrTangentsAndCaps();
+    void solidInvalid();
+
     void wireframe();
+    void wireframeInvalid();
 };
 
 constexpr struct {
@@ -61,7 +66,10 @@ CylinderTest::CylinderTest() {
         &CylinderTest::solidWithTextureCoordinatesOrTangentsAndCaps},
         Containers::arraySize(TextureCoordinatesOrTangentsData));
 
-    addTests({&CylinderTest::wireframe});
+    addTests({&CylinderTest::solidInvalid,
+
+              &CylinderTest::wireframe,
+              &CylinderTest::wireframeInvalid});
 }
 
 void CylinderTest::solidWithoutAnything() {
@@ -441,6 +449,22 @@ void CylinderTest::solidWithTextureCoordinatesOrTangentsAndCaps() {
     }), TestSuite::Compare::Container);
 }
 
+void CylinderTest::solidInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::cylinderSolid(1, 3, 1.0f);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::cylinderSolid(0, 3, 1.0f);
+    Primitives::cylinderSolid(1, 2, 1.0f);
+    CORRADE_COMPARE_AS(out,
+        "Primitives::cylinderSolid(): expected at least one ring and three segments but got 0 and 3\n"
+        "Primitives::cylinderSolid(): expected at least one ring and three segments but got 1 and 2\n",
+        TestSuite::Compare::String);
+}
+
 void CylinderTest::wireframe() {
     Trade::MeshData cylinder = cylinderWireframe(2, 8, 0.5f);
 
@@ -491,6 +515,25 @@ void CylinderTest::wireframe() {
         16, 20, 17, 21, 18, 22, 19, 23,
         20, 17, 21, 18, 22, 19, 23, 16
     }), TestSuite::Compare::Container);
+}
+
+void CylinderTest::wireframeInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::cylinderWireframe(1, 4, 1.0f);
+    Primitives::cylinderWireframe(1, 16, 1.0f);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::cylinderWireframe(0, 4, 1.0f);
+    Primitives::cylinderWireframe(1, 9, 1.0f);
+    Primitives::cylinderWireframe(1, 0, 1.0f);
+    CORRADE_COMPARE_AS(out,
+        "Primitives::cylinderWireframe(): expected at least one ring and multiples of 4 segments but got 0 and 4\n"
+        "Primitives::cylinderWireframe(): expected at least one ring and multiples of 4 segments but got 1 and 9\n"
+        "Primitives::cylinderWireframe(): expected at least one ring and multiples of 4 segments but got 1 and 0\n",
+        TestSuite::Compare::String);
 }
 
 }}}}

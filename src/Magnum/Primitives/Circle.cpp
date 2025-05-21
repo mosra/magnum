@@ -50,7 +50,7 @@ constexpr Trade::MeshAttributeData AttributeData2DTextureCoords[]{
 }
 
 Trade::MeshData circle2DSolid(const UnsignedInt segments, const Circle2DFlags flags) {
-    CORRADE_ASSERT(segments >= 3, "Primitives::circle2DSolid(): segments must be >= 3",
+    CORRADE_ASSERT(segments >= 3, "Primitives::circle2DSolid(): expected at least three segments but got" << segments,
         (Trade::MeshData{MeshPrimitive::TriangleFan, 0}));
 
     /* Allocate interleaved array for all vertex data */
@@ -98,7 +98,7 @@ CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 Trade::MeshData circle2DWireframe(const UnsignedInt segments) {
-    CORRADE_ASSERT(segments >= 3, "Primitives::circle2DWireframe(): segments must be >= 3",
+    CORRADE_ASSERT(segments >= 3, "Primitives::circle2DWireframe(): expected at least three segments but got" << segments,
         (Trade::MeshData{MeshPrimitive::LineLoop, 0}));
 
     Containers::Array<char> vertexData{segments*sizeof(Vector2)};
@@ -117,7 +117,7 @@ Trade::MeshData circle2DWireframe(const UnsignedInt segments) {
 }
 
 Trade::MeshData circle3DSolid(const UnsignedInt segments, const Circle3DFlags flags) {
-    CORRADE_ASSERT(segments >= 3, "Primitives::circle3DSolid(): segments must be >= 3",
+    CORRADE_ASSERT(segments >= 3, "Primitives::circle3DSolid(): expected at least three segments but got" << segments,
         (Trade::MeshData{MeshPrimitive::TriangleFan, 0}));
 
     /* Calculate attribute count and vertex size */
@@ -219,7 +219,7 @@ constexpr Trade::MeshAttributeData AttributeData3DWireframe[]{
 }
 
 Trade::MeshData circle3DWireframe(const UnsignedInt segments) {
-    CORRADE_ASSERT(segments >= 3, "Primitives::circle3DWireframe(): segments must be >= 3",
+    CORRADE_ASSERT(segments >= 3, "Primitives::circle3DWireframe(): expected at least three segments but got" << segments,
         (Trade::MeshData{MeshPrimitive::LineLoop, 0}));
 
     Containers::Array<char> vertexData{segments*sizeof(Vector3)};

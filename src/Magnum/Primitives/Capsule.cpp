@@ -38,7 +38,7 @@ namespace Magnum { namespace Primitives {
 
 Trade::MeshData capsule2DWireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const Float halfLength) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1,
-        "Primitives::capsule2DWireframe(): at least one hemisphere ring and one cylinder ring expected",
+        "Primitives::capsule2DWireframe(): expected at least one hemisphere ring and one cylinder ring but got" << hemisphereRings << "and" << cylinderRings,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Containers::Array<Vector2> vertexData;
@@ -109,7 +109,7 @@ Trade::MeshData capsule2DWireframe(const UnsignedInt hemisphereRings, const Unsi
 
 Trade::MeshData capsule3DSolid(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength, const CapsuleFlags flags) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3,
-        "Primitives::capsule3DSolid(): at least one hemisphere ring, one cylinder ring and three segments expected",
+        "Primitives::capsule3DSolid(): expected at least one hemisphere ring, one cylinder ring and three segments but got" << hemisphereRings << Debug::nospace << "," << cylinderRings << "and" << segments,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::Spheroid capsule{segments, Implementation::Spheroid::Flag(UnsignedByte(flags))};
@@ -153,7 +153,7 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 Trade::MeshData capsule3DWireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0,
-        "Primitives::capsule3DWireframe(): at least one hemisphere and cylinder ring and multiples of 4 segments expected",
+        "Primitives::capsule3DWireframe(): expected at least one hemisphere ring, one cylinder ring and multiples of 4 segments but got" << hemisphereRings << Debug::nospace << "," << cylinderRings << "and" << segments,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::WireframeSpheroid capsule(segments/4);

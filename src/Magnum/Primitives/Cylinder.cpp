@@ -36,7 +36,7 @@ namespace Magnum { namespace Primitives {
 
 Trade::MeshData cylinderSolid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const CylinderFlags flags) {
     CORRADE_ASSERT(rings >= 1 && segments >= 3,
-        "Primitives::cylinderSolid(): at least one ring and three segments expected",
+        "Primitives::cylinderSolid(): expected at least one ring and three segments but got" << rings << "and" << segments,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::Spheroid cylinder{segments, Implementation::Spheroid::Flag(UnsignedByte(flags))};
@@ -74,7 +74,7 @@ Trade::MeshData cylinderSolid(const UnsignedInt rings, const UnsignedInt segment
 
 Trade::MeshData cylinderWireframe(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(rings >= 1 && segments >= 4 && segments%4 == 0,
-        "Primitives::cylinderWireframe(): at least one ring and multiples of 4 segments expected",
+        "Primitives::cylinderWireframe(): expected at least one ring and multiples of 4 segments but got" << rings << "and" << segments,
         (Trade::MeshData{MeshPrimitive::Lines, 0}));
 
     Implementation::WireframeSpheroid cylinder(segments/4);

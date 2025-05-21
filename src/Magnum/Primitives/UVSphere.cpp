@@ -36,7 +36,7 @@ namespace Magnum { namespace Primitives {
 
 Trade::MeshData uvSphereSolid(const UnsignedInt rings, const UnsignedInt segments, const UVSphereFlags flags) {
     CORRADE_ASSERT(rings >= 2 && segments >= 3,
-        "Primitives::uvSphereSolid(): at least two rings and three segments expected",
+        "Primitives::uvSphereSolid(): expected at least two rings and three segments but got" << rings << "and" << segments,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::Spheroid sphere(segments, Implementation::Spheroid::Flag(UnsignedByte(flags)));
@@ -71,7 +71,7 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 Trade::MeshData uvSphereWireframe(const UnsignedInt rings, const UnsignedInt segments) {
     CORRADE_ASSERT(rings >= 2 && rings%2 == 0 && segments >= 4 && segments%4 == 0,
-        "Primitives::uvSphereWireframe(): multiples of 2 rings and multiples of 4 segments expected",
+        "Primitives::uvSphereWireframe(): expected multiples of 2 rings and multiples of 4 segments but got" << rings << "and" << segments,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::WireframeSpheroid sphere(segments/4);

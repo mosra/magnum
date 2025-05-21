@@ -30,22 +30,24 @@ set(CMAKE_FOLDER "Magnum/Primitives")
 
 set(MagnumPrimitives_SRCS
     Axis.cpp
-    Capsule.cpp
-    Circle.cpp
     Crosshair.cpp
-    Cone.cpp
     Cube.cpp
-    Cylinder.cpp
     Gradient.cpp
     Grid.cpp
     Icosphere.cpp
     Line.cpp
     Plane.cpp
     Square.cpp
-    UVSphere.cpp
 
     Implementation/Spheroid.cpp
     Implementation/WireframeSpheroid.cpp)
+
+set(MagnumPrimitives_GracefulAssert_SRCS
+    Capsule.cpp
+    Circle.cpp
+    Cone.cpp
+    Cylinder.cpp
+    UVSphere.cpp)
 
 set(MagnumPrimitives_HEADERS
     Axis.h
@@ -70,11 +72,23 @@ set(MagnumPrimitives_PRIVATE_HEADERS
     Implementation/Spheroid.h
     Implementation/WireframeSpheroid.h)
 
-# Primitives library
-add_library(MagnumPrimitives ${SHARED_OR_STATIC}
+# Objects shared between main and test library
+add_library(MagnumPrimitivesObjects OBJECT
     ${MagnumPrimitives_SRCS}
     ${MagnumPrimitives_HEADERS}
     ${MagnumPrimitives_PRIVATE_HEADERS})
+target_include_directories(MagnumPrimitivesObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+if(NOT MAGNUM_BUILD_STATIC)
+    target_compile_definitions(MagnumPrimitivesObjects PRIVATE "MagnumPrimitivesObjects_EXPORTS")
+endif()
+if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
+    set_target_properties(MagnumPrimitivesObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
+# Primitives library
+add_library(MagnumPrimitives ${SHARED_OR_STATIC}
+    $<TARGET_OBJECTS:MagnumPrimitivesObjects>
+    ${MagnumPrimitives_GracefulAssert_SRCS})
 set_target_properties(MagnumPrimitives PROPERTIES
     DEBUG_POSTFIX "-d")
 if(NOT MAGNUM_BUILD_STATIC)
@@ -94,6 +108,21 @@ install(TARGETS MagnumPrimitives
 install(FILES ${MagnumPrimitives_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Primitives)
 
 if(MAGNUM_BUILD_TESTS)
+    # Library with graceful assert for testing
+    add_library(MagnumPrimitivesTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        $<TARGET_OBJECTS:MagnumPrimitivesObjects>
+        ${MagnumPrimitives_GracefulAssert_SRCS})
+    set_target_properties(MagnumPrimitivesTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    target_compile_definitions(MagnumPrimitivesTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumPrimitives_EXPORTS")
+    if(MAGNUM_BUILD_STATIC_PIC)
+        set_target_properties(MagnumPrimitivesTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumPrimitivesTestLib PUBLIC
+        Magnum
+        MagnumMeshTools
+        MagnumTrade)
+
     add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 

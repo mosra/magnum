@@ -24,8 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Trade/MeshData.h"
@@ -37,10 +39,14 @@ struct CapsuleTest: TestSuite::Tester {
     explicit CapsuleTest();
 
     void wireframe2D();
+    void wireframe2DInvalid();
 
     void solid3DWithoutTextureCoordinates();
     void solid3DWithTextureCoordinatesOrTangents();
+    void solid3DInvalid();
+
     void wireframe3D();
+    void wireframe3DInvalid();
 };
 
 constexpr struct {
@@ -54,12 +60,15 @@ constexpr struct {
 
 CapsuleTest::CapsuleTest() {
     addTests({&CapsuleTest::wireframe2D,
+              &CapsuleTest::wireframe2DInvalid,
               &CapsuleTest::solid3DWithoutTextureCoordinates});
 
     addInstancedTests({&CapsuleTest::solid3DWithTextureCoordinatesOrTangents},
         Containers::arraySize(TextureCoordinatesOrTangentsData));
 
-    addTests({&CapsuleTest::wireframe3D});
+    addTests({&CapsuleTest::solid3DInvalid,
+              &CapsuleTest::wireframe3D,
+              &CapsuleTest::wireframe3DInvalid});
 }
 
 void CapsuleTest::wireframe2D() {
@@ -108,6 +117,22 @@ void CapsuleTest::wireframe2D() {
 
         13, 15, 14, 15
     }), TestSuite::Compare::Container);
+}
+
+void CapsuleTest::wireframe2DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::capsule2DWireframe(1, 1, 1.0f);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::capsule2DWireframe(0, 1, 1.0f);
+    Primitives::capsule2DWireframe(1, 0, 1.0f);
+    CORRADE_COMPARE_AS(out,
+        "Primitives::capsule2DWireframe(): expected at least one hemisphere ring and one cylinder ring but got 0 and 1\n"
+        "Primitives::capsule2DWireframe(): expected at least one hemisphere ring and one cylinder ring but got 1 and 0\n",
+        TestSuite::Compare::String);
 }
 
 void CapsuleTest::solid3DWithoutTextureCoordinates() {
@@ -195,6 +220,24 @@ void CapsuleTest::solid3DWithoutTextureCoordinates() {
         16, 17, 20, 16, 20, 19, 17, 18, 21, 17, 21, 20, 18, 16, 19, 18, 19, 21,
         19, 20, 22, 20, 21, 22, 21, 19, 22
     }), TestSuite::Compare::Container);
+}
+
+void CapsuleTest::solid3DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::capsule3DSolid(1, 1, 3, 1.0f);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::capsule3DSolid(0, 1, 3, 1.0f);
+    Primitives::capsule3DSolid(1, 0, 3, 1.0f);
+    Primitives::capsule3DSolid(1, 1, 2, 1.0f);
+    CORRADE_COMPARE_AS(out,
+        "Primitives::capsule3DSolid(): expected at least one hemisphere ring, one cylinder ring and three segments but got 0, 1 and 3\n"
+        "Primitives::capsule3DSolid(): expected at least one hemisphere ring, one cylinder ring and three segments but got 1, 0 and 3\n"
+        "Primitives::capsule3DSolid(): expected at least one hemisphere ring, one cylinder ring and three segments but got 1, 1 and 2\n",
+        TestSuite::Compare::String);
 }
 
 void CapsuleTest::solid3DWithTextureCoordinatesOrTangents() {
@@ -394,6 +437,27 @@ void CapsuleTest::wireframe3D() {
         21, 29, 22, 30, 23, 31, 24, 32,
         29, 33, 30, 33, 31, 33, 32, 33
     }), TestSuite::Compare::Container);
+}
+
+void CapsuleTest::wireframe3DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is fine */
+    Primitives::capsule3DWireframe(1, 1, 4, 1.0f);
+    Primitives::capsule3DWireframe(1, 1, 16, 1.0f);
+
+    Containers::String out;
+    Error redirectError{&out};
+    Primitives::capsule3DWireframe(0, 1, 4, 1.0f);
+    Primitives::capsule3DWireframe(1, 0, 4, 1.0f);
+    Primitives::capsule3DWireframe(1, 1, 9, 1.0f);
+    Primitives::capsule3DWireframe(1, 1, 0, 1.0f);
+    CORRADE_COMPARE_AS(out,
+        "Primitives::capsule3DWireframe(): expected at least one hemisphere ring, one cylinder ring and multiples of 4 segments but got 0, 1 and 4\n"
+        "Primitives::capsule3DWireframe(): expected at least one hemisphere ring, one cylinder ring and multiples of 4 segments but got 1, 0 and 4\n"
+        "Primitives::capsule3DWireframe(): expected at least one hemisphere ring, one cylinder ring and multiples of 4 segments but got 1, 1 and 9\n"
+        "Primitives::capsule3DWireframe(): expected at least one hemisphere ring, one cylinder ring and multiples of 4 segments but got 1, 1 and 0\n",
+        TestSuite::Compare::String);
 }
 
 }}}}
