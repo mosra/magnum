@@ -207,10 +207,10 @@ class AbstractXApplication {
          * @param configuration     Application configuration
          * @param glConfiguration   OpenGL context configuration
          *
-         * Must be called only if the context wasn't created by the constructor
-         * itself, i.e. when passing @ref NoCreate to it. Error message is
-         * printed and the program exits if the context cannot be created, see
-         * @ref tryCreate() for an alternative.
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself, i.e. when passing @ref NoCreate to it. Error
+         * message is printed and the program exits if the context cannot be
+         * created, see @ref tryCreate() for an alternative.
          */
         void create(const Configuration& configuration, const GLConfiguration& glConfiguration);
 

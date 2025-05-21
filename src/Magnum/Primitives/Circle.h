@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::circle2DSolid(), @ref Magnum::Primitives::circle2DWireframe(), @ref Magnum::Primitives::circle3DSolid(), @ref Magnum::Primitives::circle3DWireframe()
+ * @brief Enum @ref Magnum::Primitives::Circle2DFlag, @ref Magnum::Primitives::Circle3DFlag, enum set @ref Magnum::Primitives::Circle2DFlags, @ref Magnum::Primitives::Circle3DFlags, function @ref Magnum::Primitives::circle2DSolid(), @ref Magnum::Primitives::circle2DWireframe(), @ref Magnum::Primitives::circle3DSolid(), @ref Magnum::Primitives::circle3DWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -72,7 +72,8 @@ enum class CORRADE_DEPRECATED_ENUM("use Circle2DFlags or Circle3DFlags instead")
 
 /**
 @brief Solid 2D circle
-@param segments     Number of segments. Must be greater or equal to @cpp 3 @ce.
+@param segments     Number of segments. Expected to be greater or equal to
+    @cpp 3 @ce.
 @param flags        Flags
 @m_since{2020,06}
 
@@ -101,7 +102,7 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Wireframe 2D circle
-@param segments         Number of segments. Must be greater or equal to
+@param segments         Number of segments. Expected to be greater or equal to
     @cpp 3 @ce.
 
 Circle with radius @cpp 1.0f @ce, centered at origin. Non-indexed
@@ -144,7 +145,8 @@ CORRADE_ENUMSET_OPERATORS(Circle3DFlags)
 
 /**
 @brief Solid 3D circle
-@param segments     Number of segments. Must be greater or equal to @cpp 3 @ce.
+@param segments     Number of segments. Expected to be greater or equal to
+    @cpp 3 @ce.
 @param flags        Flags
 @m_since{2020,06}
 
@@ -174,7 +176,8 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Wireframe 3D circle
-@param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
+@param segments  Number of segments. Expected to be greater or equal to
+    @cpp 3 @ce.
 
 Circle on the XY plane with radius @cpp 1.0f @ce, centered at origin.
 Non-indexed @ref MeshPrimitive::LineLoop with @ref VertexFormat::Vector2

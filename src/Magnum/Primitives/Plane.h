@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::planeSolid(), @ref Magnum::Primitives::planeWireframe()
+ * @brief Enum @ref Magnum::Primitives::PlaneFlag, enum set @ref Magnum::Primitives::PlaneFlags, function @ref Magnum::Primitives::planeSolid(), @ref Magnum::Primitives::planeWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>

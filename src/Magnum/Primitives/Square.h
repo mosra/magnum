@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::squareSolid(), @ref Magnum::Primitives::squareWireframe()
+ * @brief Enum @ref Magnum::Primitives::SquareFlag, enum set @ref Magnum::Primitives::SquareFlags, function @ref Magnum::Primitives::squareSolid(), @ref Magnum::Primitives::squareWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>

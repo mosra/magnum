@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::uvSphereSolid(), @ref Magnum::Primitives::uvSphereWireframe()
+ * @brief Enum @ref Magnum::Primitives::UVSphereFlag, enum set @ref Magnum::Primitives::UVSphereFlags, function @ref Magnum::Primitives::uvSphereSolid(), @ref Magnum::Primitives::uvSphereWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -68,9 +68,9 @@ CORRADE_ENUMSET_OPERATORS(UVSphereFlags)
 
 /**
 @brief Solid 3D UV sphere
-@param rings            Number of (face) rings. Must be larger or equal to
-    @cpp 2 @ce.
-@param segments         Number of (face) segments. Must be larger or
+@param rings            Number of (face) rings. Expected to be larger or equal
+    to @cpp 2 @ce.
+@param segments         Number of (face) segments. Expected to be larger or
     equal to @cpp 3 @ce.
 @param flags            Flags
 @m_since{2020,06}
@@ -110,10 +110,10 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Wireframe 3D UV sphere
-@param rings            Number of (line) rings. Must be larger or equal to
-    @cpp 2 @ce and multiple of @cpp 2 @ce.
-@param segments         Number of (line) segments. Must be larger or equal to
-    @cpp 4 @ce and multiple of @cpp 4 @ce.
+@param rings            Number of (line) rings. Expected to be larger or equal
+    to @cpp 2 @ce and multiple of @cpp 2 @ce.
+@param segments         Number of (line) segments. Expected to be larger or
+    equal to @cpp 4 @ce and multiple of @cpp 4 @ce.
 
 Sphere of radius @cpp 1.0f @ce, centered at origin. @ref MeshPrimitive::Lines
 with @ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3

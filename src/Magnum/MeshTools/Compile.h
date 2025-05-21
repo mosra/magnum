@@ -28,7 +28,7 @@
 
 #ifdef MAGNUM_TARGET_GL
 /** @file
- * @brief Function @ref Magnum::MeshTools::compile()
+ * @brief Enum @ref Magnum::MeshTools::CompileFlag, enum set @ref Magnum::MeshTools::CompileFlags, function @ref Magnum::MeshTools::compile(), @ref Magnum::MeshTools::compiledPerVertexJointCount()
  */
 #endif
 

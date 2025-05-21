@@ -169,8 +169,8 @@ template<UnsignedInt location, class T> class Attribute {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Four components with BGRA ordering. Only for four-component
-             * float vector type. Must be used along with @ref DataType::UnsignedByte
-             * and @ref DataOption::Normalized.
+             * float vector type. Must be used along with
+             * @ref DataType::UnsignedByte and @ref DataOption::Normalized.
              * @m_keywords{GL_BGRA}
              * @requires_gl32 Extension @gl_extension{ARB,vertex_array_bgra}
              * @requires_gl Only RGBA component ordering is supported in OpenGL

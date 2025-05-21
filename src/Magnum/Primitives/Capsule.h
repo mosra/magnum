@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::capsule2DWireframe(), @ref Magnum::Primitives::capsule3DSolid(), @ref Magnum::Primitives::capsule3DWireframe()
+ * @brief Enum @ref Magnum::Primitives::CapsuleFlag, enum set @ref Magnum::Primitives::CapsuleFlags, function @ref Magnum::Primitives::capsule2DWireframe(), @ref Magnum::Primitives::capsule3DSolid(), @ref Magnum::Primitives::capsule3DWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -40,11 +40,11 @@ namespace Magnum { namespace Primitives {
 
 /**
 @brief Wireframe 2D capsule
-@param hemisphereRings Number of (line) rings for each hemisphere. Must be
-    larger or equal to @cpp 1 @ce.
-@param cylinderRings Number of (line) rings for cylinder. Must be larger or
-    equal to @cpp 1 @ce.
-@param halfLength    Half the length of cylinder part
+@param hemisphereRings Number of (line) rings for each hemisphere. Expected to
+    be larger or equal to @cpp 1 @ce.
+@param cylinderRings Number of (line) rings for cylinder. Expected to be larger
+    or equal to @cpp 1 @ce.
+@param halfLength    Half the length of the cylinder part
 
 Cylinder of radius @cpp 1.0f @ce along the Y axis, centered at origin, with
 hemispheres instead of caps. @ref MeshPrimitive::Lines with
@@ -88,13 +88,13 @@ CORRADE_ENUMSET_OPERATORS(CapsuleFlags)
 
 /**
 @brief Solid 3D capsule
-@param hemisphereRings  Number of (face) rings for each hemisphere. Must be
+@param hemisphereRings  Number of (face) rings for each hemisphere. Expected to
+    be larger or equal to @cpp 1 @ce.
+@param cylinderRings    Number of (face) rings for cylinder. Expected to be
     larger or equal to @cpp 1 @ce.
-@param cylinderRings    Number of (face) rings for cylinder. Must be larger or
-    equal to @cpp 1 @ce.
-@param segments         Number of (face) segments. Must be larger or equal to
-    @cpp 3 @ce.
-@param halfLength       Half the length of cylinder part
+@param segments         Number of (face) segments. Expected to be larger or
+    equal to @cpp 3 @ce.
+@param halfLength       Half the length of the cylinder part
 @param flags            Flags
 @m_since{2020,06}
 
@@ -138,13 +138,13 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Wireframe 3D capsule
-@param hemisphereRings  Number of (line) rings for each hemisphere. Must be
+@param hemisphereRings  Number of (line) rings for each hemisphere. Expected to
+    be larger or equal to @cpp 1 @ce.
+@param cylinderRings    Number of (line) rings for cylinder. Expected to be
     larger or equal to @cpp 1 @ce.
-@param cylinderRings    Number of (line) rings for cylinder. Must be larger or
-    equal to @cpp 1 @ce.
-@param segments         Number of line segments. Must be larger or equal to
-    @cpp 4 @ce and multiple of @cpp 4 @ce.
-@param halfLength       Half the length of cylinder part
+@param segments         Number of line segments. Expected to be larger or equal
+    to @cpp 4 @ce and multiple of @cpp 4 @ce.
+@param halfLength       Half the length of the cylinder part
 
 Cylinder of radius @cpp 1.0f @ce along the Y axis, centered at origin, with
 hemispheres instead of caps. @ref MeshPrimitive::Lines with

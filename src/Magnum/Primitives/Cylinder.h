@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::cylinderSolid(), @ref Magnum::Primitives::cylinderWireframe()
+ * @brief Enum @ref Magnum::Primitives::CylinderFlag, enum set @ref Magnum::Primitives::CylinderFlags, function @ref Magnum::Primitives::cylinderSolid(), @ref Magnum::Primitives::cylinderWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -81,10 +81,10 @@ CORRADE_ENUMSET_OPERATORS(CylinderFlags)
 
 /**
 @brief Solid 3D cylinder
-@param rings        Number of (face) rings. Must be larger or equal to
+@param rings        Number of (face) rings. Expected to be larger or equal to
     @cpp 1 @ce.
-@param segments     Number of (face) segments. Must be larger or equal to
-    @cpp 3 @ce.
+@param segments     Number of (face) segments. Expected to be larger or equal
+    to @cpp 3 @ce.
 @param halfLength   Half the cylinder length
 @param flags        Flags
 
@@ -108,10 +108,10 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cylinderSolid(UnsignedInt rings, Unsign
 
 /**
 @brief Wireframe 3D cylinder
-@param rings        Number of (line) rings. Must be larger or equal to
+@param rings        Number of (line) rings. Expected to be larger or equal to
     @cpp 1 @ce.
-@param segments     Number of (line) segments. Must be larger or equal to
-    @cpp 4 @ce and multiple of @cpp 4 @ce.
+@param segments     Number of (line) segments. Expected to be larger or equal
+    to @cpp 4 @ce and multiple of @cpp 4 @ce.
 @param halfLength   Half the cylinder length
 
 Cylinder of radius @cpp 1.0f @ce along the Y axis, centerd at origin.

@@ -492,10 +492,10 @@ class EmscriptenApplication {
          * @param configuration     Application configuration
          * @param glConfiguration   WebGL context configuration
          *
-         * Must be called only if the context wasn't created by the constructor
-         * itself, i.e. when passing @ref NoCreate to it. Error message is
-         * printed and the program exits if the context cannot be created, see
-         * @ref tryCreate() for an alternative.
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself, i.e. when passing @ref NoCreate to it. Error
+         * message is printed and the program exits if the context cannot be
+         * created, see @ref tryCreate() for an alternative.
          *
          * @note This function is available only if Magnum is compiled with
          *      @ref MAGNUM_TARGET_GL enabled (done by default). See

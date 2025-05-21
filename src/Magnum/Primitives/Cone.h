@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::coneSolid(), @ref Magnum::Primitives::coneWireframe()
+ * @brief Enum @ref Magnum::Primitives::ConeFlag, enum set @ref Magnum::Primitives::ConeFlags, function @ref Magnum::Primitives::coneSolid(), @ref Magnum::Primitives::coneWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -82,10 +82,10 @@ CORRADE_ENUMSET_OPERATORS(ConeFlags)
 
 /**
 @brief Solid 3D cone
-@param rings        Number of (face) rings. Must be larger or equal to
+@param rings        Number of (face) rings. Expected to be larger or equal to
     @cpp 1 @ce.
-@param segments     Number of (face) segments. Must be larger or equal to
-    @cpp 3 @ce.
+@param segments     Number of (face) segments. Expected to be larger or equal
+    to @cpp 3 @ce.
 @param halfLength   Half the cone length
 @param flags        Flags
 
@@ -109,8 +109,8 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData coneSolid(UnsignedInt rings, UnsignedIn
 
 /**
 @brief Wireframe 3D cone
-@param segments     Number of (line) segments. Must be larger or equal to
-    @cpp 4 @ce and multiple of @cpp 4 @ce.
+@param segments     Number of (line) segments. Expected to be larger or equal
+    to @cpp 4 @ce and multiple of @cpp 4 @ce.
 @param halfLength   Half the cone length
 
 Cone of radius @cpp 1.0f @ce along the Y axis, centered at origin.

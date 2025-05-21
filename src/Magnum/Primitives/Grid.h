@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::grid3DSolid(), @ref Magnum::Primitives::grid3DWireframe()
+ * @brief Enum @ref Magnum::Primitives::GridFlag, enum set @ref Magnum::Primitives::GridFlags, function @ref Magnum::Primitives::grid3DSolid(), @ref Magnum::Primitives::grid3DWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>

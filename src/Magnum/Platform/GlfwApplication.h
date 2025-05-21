@@ -381,10 +381,10 @@ class GlfwApplication {
          * @param configuration     Application configuration
          * @param glConfiguration   OpenGL context configuration
          *
-         * Must be called only if the context wasn't created by the constructor
-         * itself, i.e. when passing @ref NoCreate to it. Error message is
-         * printed and the program exits if the context cannot be created, see
-         * @ref tryCreate() for an alternative.
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself, i.e. when passing @ref NoCreate to it. Error
+         * message is printed and the program exits if the context cannot be
+         * created, see @ref tryCreate() for an alternative.
          *
          * On desktop GL, if version is not specified in @p glConfiguration,
          * the application first tries to create core context (OpenGL 3.2+) and
