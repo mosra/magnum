@@ -70,7 +70,7 @@ set(MagnumMeshTools_HEADERS
 
     visibility.h)
 
-set(MagnumMeshTools_INTERNAL_HEADERS
+set(MagnumMeshTools_PRIVATE_HEADERS
     Implementation/remapAttributeData.h
     Implementation/Tipsify.h)
 
@@ -107,7 +107,7 @@ endif()
 add_library(MagnumMeshToolsObjects OBJECT
     ${MagnumMeshTools_SRCS}
     ${MagnumMeshTools_HEADERS}
-    ${MagnumMeshTools_INTERNAL_HEADERS})
+    ${MagnumMeshTools_PRIVATE_HEADERS})
 target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
     target_compile_definitions(MagnumMeshToolsObjects PRIVATE "MagnumMeshToolsObjects_EXPORTS")

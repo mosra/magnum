@@ -72,13 +72,13 @@ if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumMath_HEADERS BoolVector.h)
 endif()
 
-set(MagnumMath_INTERNAL_HEADERS
+set(MagnumMath_PRIVATE_HEADERS
     Implementation/halfTables.hpp)
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumMath SOURCES
     ${MagnumMath_HEADERS}
-    ${MagnumMath_INTERNAL_HEADERS})
+    ${MagnumMath_PRIVATE_HEADERS})
 
 install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math)
 
