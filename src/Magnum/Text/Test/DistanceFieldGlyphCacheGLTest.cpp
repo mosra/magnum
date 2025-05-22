@@ -570,7 +570,7 @@ void DistanceFieldGlyphCacheGLTest::setImageEdgeClamp() {
     DistanceFieldGlyphCacheGL cache{{8, 4}, {4, 2}, 4};
 
     /* Make the right edge all white */
-    Containers::StridedArrayView2D<UnsignedByte> src = cache.image().pixels<UnsignedByte>()[0];
+    Containers::StridedArrayView2D<char> src = cache.image().pixels<char>()[0];
     src[0][7] = '\xff';
     src[1][7] = '\xff';
     src[2][7] = '\xff';
@@ -635,7 +635,7 @@ void DistanceFieldGlyphCacheGLTest::setImageEdgeClampArray() {
     DistanceFieldGlyphCacheArrayGL cache{{8, 4, 1}, {4, 2}, 4};
 
     /* Make the right edge all white */
-    Containers::StridedArrayView2D<UnsignedByte> src = cache.image().pixels<UnsignedByte>()[0];
+    Containers::StridedArrayView2D<char> src = cache.image().pixels<char>()[0];
     src[0][7] = '\xff';
     src[1][7] = '\xff';
     src[2][7] = '\xff';
