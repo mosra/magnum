@@ -614,6 +614,7 @@ renderer
     .render(*font->createShaper(), font->size(), "Hello,\nworld!");
 /* [Renderer-usage-layout-options] */
 
+{
 /* [Renderer-usage-shape-properties] */
 Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
 shaper->setScript(Text::Script::Latin);
@@ -628,6 +629,7 @@ renderer.render(*shaper, shaper->font().size(), "Hello, world!", {
     {Text::Feature::SmallCapitals, 7, 12}
 });
 /* [Renderer-usage-shape-features] */
+}
 
 {
 Containers::Pointer<Text::AbstractShaper> shaper = font->createShaper();
