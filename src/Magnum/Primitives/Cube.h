@@ -38,7 +38,7 @@
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 3D cube flag
+@brief Cube flag
 @m_since_latest
 
 @see @ref CubeFlags, @ref cubeSolid()
@@ -124,10 +124,10 @@ enum class CubeFlag: UnsignedByte {
 };
 
 /**
-@brief 3D cube flags
+@brief Cube flags
 @m_since_latest
 
-@see @ref circle2DSolid()
+@see @ref cubeSolid()
 */
 typedef Containers::EnumSet<CubeFlag> CubeFlags;
 
@@ -138,10 +138,10 @@ CORRADE_ENUMSET_OPERATORS(CubeFlags)
 
 2x2x2 cube, centered at origin. @ref MeshPrimitive::Triangles with
 @ref MeshIndexType::UnsignedShort indices, interleaved
-@ref VertexFormat::Vector3 positions and flat @ref VertexFormat::Vector3
-normals. If no @p flags are passed, the returned instance references
-@ref Trade::DataFlag::Global data --- pass the mesh through
-@ref MeshTools::copy() to get a mutable copy, if needed.
+@ref VertexFormat::Vector3 positions, flat @ref VertexFormat::Vector3 normals, optional @ref VertexFormat::Vector4 tangents and optional
+@ref VertexFormat::Vector2 texture coordinates. If no @p flags are passed, the
+returned instance references @ref Trade::DataFlag::Global data --- pass the
+mesh through @ref MeshTools::copy() to get a mutable copy, if needed.
 
 @image html primitives-cubesolid.png width=256px
 
