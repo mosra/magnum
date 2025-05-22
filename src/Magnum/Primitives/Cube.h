@@ -27,8 +27,10 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::cubeSolid(), @ref Magnum::Primitives::cubeSolidStrip(), @ref Magnum::Primitives::cubeWireframe()
+ * @brief Enum @ref Magnum::Primitives::CubeFlag, enum set @ref Magnum::Primitives::CubeFlags, function @ref Magnum::Primitives::cubeSolid(), @ref Magnum::Primitives::cubeSolidStrip(), @ref Magnum::Primitives::cubeWireframe()
  */
+
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
@@ -36,19 +38,128 @@
 namespace Magnum { namespace Primitives {
 
 /**
+@brief 3D cube flag
+@m_since_latest
+
+@see @ref CubeFlags, @ref cubeSolid()
+*/
+enum class CubeFlag: UnsignedByte {
+    /**
+     * Texture coordinates with a single image used for all faces, oriented in
+     * a way that makes the image upright and not mirrored if looking from the
+     * default +Z direction. Useful if all faces are meant to look the same.
+     * Mutually exclusive with other `TextureCoordinates*` flags.
+     *
+     * @htmlinclude primitives-cube-all-same.svg
+     */
+    TextureCoordinatesAllSame = 1 << 1,
+
+    /**
+     * Texture coordinates with +X, +Y, +Z faces in the top row and -X, -Y and
+     * -Z in the bottom row, oriented in a way that makes the image upright and
+     * not mirrored if looking from the default +Z direction. Useful to have a
+     * different texture for each face but still make use of the whole texture
+     * area with no wasted space. Mutually exclusive with other
+     * `TextureCoordinates*` flags.
+     *
+     * @htmlinclude primitives-cube-positive-up-negative-down.svg
+     */
+    TextureCoordinatesPositiveUpNegativeDown = 2 << 1,
+
+    /**
+     * Texture coordinates with both upper and lower face going from -X.
+     * Mutually exclusive with other `TextureCoordinates*` flags.
+     *
+     * @htmlinclude primitives-cube-negative-x-up-negative-x-down.svg
+     */
+    TextureCoordinatesNegativeXUpNegativeXDown = 3 << 1,
+
+    /**
+     * Texture coordinates with upper face going from -X and lower face from
+     * +Z. Mutually exclusive with other `TextureCoordinates*` flags.
+     *
+     * @htmlinclude primitives-cube-negative-x-up-positive-z-down.svg
+     */
+    TextureCoordinatesNegativeXUpPositiveZDown = 4 << 1,
+
+    /**
+     * Texture coordinates with upper face going from -X and lower face from
+     * +X. Mutually exclusive with other `TextureCoordinates*` flags.
+     *
+     * @htmlinclude primitives-cube-negative-x-up-positive-x-down.svg
+     */
+    TextureCoordinatesNegativeXUpPositiveXDown = 5 << 1,
+
+    /**
+     * Texture coordinates with upper face going from -X and lower face from
+     * -Z. Mutually exclusive with other `TextureCoordinates*` flags.
+     *
+     * @htmlinclude primitives-cube-negative-x-up-negative-z-down.svg
+     */
+    TextureCoordinatesNegativeXUpNegativeZDown = 6 << 1,
+
+    /**
+     * Texture coordinates with both upper face lower face going from +Z.
+     * Mutually exclusive with other `TextureCoordinates*` flags.
+     *
+     * @htmlinclude primitives-cube-positive-z-up-positive-z-down.svg
+     */
+    TextureCoordinatesPositiveZUpPositiveZDown = 7 << 1,
+
+    /**
+     * Texture coordinates with upper face going from +Z and lower face from
+     * +X. Mutually exclusive with other `TextureCoordinates*` flags.
+     *
+     * @htmlinclude primitives-cube-positive-z-up-positive-x-down.svg
+     */
+    TextureCoordinatesPositiveZUpPositiveXDown = 8 << 1,
+
+    /**
+     * Generate four-component tangents. The last component can be used to
+     * reconstruct a bitangent as described in the documentation of
+     * @ref Trade::MeshAttribute::Tangent. Requires one of the
+     * `TextureCoordinates*` to be set in order to know the tangent direction.
+     */
+    Tangents = 1 << 0,
+};
+
+/**
+@brief 3D cube flags
+@m_since_latest
+
+@see @ref circle2DSolid()
+*/
+typedef Containers::EnumSet<CubeFlag> CubeFlags;
+
+CORRADE_ENUMSET_OPERATORS(CubeFlags)
+
+/**
 @brief Solid 3D cube
 
 2x2x2 cube, centered at origin. @ref MeshPrimitive::Triangles with
 @ref MeshIndexType::UnsignedShort indices, interleaved
 @ref VertexFormat::Vector3 positions and flat @ref VertexFormat::Vector3
-normals. The returned instance references @ref Trade::DataFlag::Global data ---
-pass the mesh through @ref MeshTools::copy() to get a mutable copy, if needed.
+normals. If no @p flags are passed, the returned instance references
+@ref Trade::DataFlag::Global data --- pass the mesh through
+@ref MeshTools::copy() to get a mutable copy, if needed.
 
 @image html primitives-cubesolid.png width=256px
 
-@see @ref cubeSolidStrip(), @ref cubeWireframe()
+Expects that at most one `TextureCoordinates*` @ref CubeFlag is set. If
+@ref CubeFlag::Tangents is set, expects that exactly one `TextureCoordinates*`
+@ref CubeFlag is set as well. Rotate or mirror the resulting mesh texture
+coordinates, positions or both to create remaining texture mapping variants.
+
+@see @ref cubeSolidStrip(), @ref cubeWireframe(), @ref MeshTools::transform3D(),
+    @ref MeshTools::transformTextureCoordinates2D()
 */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Trade::MeshData cubeSolid(CubeFlags flags = {});
+#else
+/* Make it possible to DCE the texture / tangent logic if no flags are used */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cubeSolid();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cubeSolid(CubeFlags flags);
+#endif
 
 /**
 @brief Solid 3D cube as a single strip

@@ -36,6 +36,10 @@ namespace {
 
 /* not 8-bit because GPUs (and Vulkan) don't like it nowadays */
 constexpr UnsignedShort IndicesSolid[]{
+    /* 3--2
+       | /|
+       |/ |
+       0--1 */
      0,  1,  2,  0,  2,  3, /* +Z */
      4,  5,  6,  4,  6,  7, /* +X */
      8,  9, 10,  8, 10, 11, /* +Y */
@@ -47,34 +51,44 @@ constexpr struct VertexSolid {
     Vector3 position;
     Vector3 normal;
 } VerticesSolid[]{
+    /*    11----10        23 14----15
+         /  +Y  /  6      /| |      |
+        8------9 / |    22 | |  -Z  |
+       3------2 7  |    |-X| |      |
+       |      | |+X|    | 20 13----12
+       |  +Z  | |  5    | / 16----17
+       |      | | /     21 /  -Y  /
+       0------1 4         19----18    */
+
+    /* 0, +Z */
     {{-1.0f, -1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}},
     {{ 1.0f, -1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}},
-    {{ 1.0f,  1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}}, /* +Z */
+    {{ 1.0f,  1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}},
     {{-1.0f,  1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}},
-
+    /* 4, +X */
     {{ 1.0f, -1.0f,  1.0f}, { 1.0f,  0.0f,  0.0f}},
     {{ 1.0f, -1.0f, -1.0f}, { 1.0f,  0.0f,  0.0f}},
-    {{ 1.0f,  1.0f, -1.0f}, { 1.0f,  0.0f,  0.0f}}, /* +X */
+    {{ 1.0f,  1.0f, -1.0f}, { 1.0f,  0.0f,  0.0f}},
     {{ 1.0f,  1.0f,  1.0f}, { 1.0f,  0.0f,  0.0f}},
-
+    /* 8, +Y */
     {{-1.0f,  1.0f,  1.0f}, { 0.0f,  1.0f,  0.0f}},
     {{ 1.0f,  1.0f,  1.0f}, { 0.0f,  1.0f,  0.0f}},
-    {{ 1.0f,  1.0f, -1.0f}, { 0.0f,  1.0f,  0.0f}}, /* +Y */
+    {{ 1.0f,  1.0f, -1.0f}, { 0.0f,  1.0f,  0.0f}},
     {{-1.0f,  1.0f, -1.0f}, { 0.0f,  1.0f,  0.0f}},
-
+    /* 12, -Z */
     {{ 1.0f, -1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}},
     {{-1.0f, -1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}},
-    {{-1.0f,  1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}}, /* -Z */
+    {{-1.0f,  1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}},
     {{ 1.0f,  1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}},
-
+    /* 16, -Y */
     {{-1.0f, -1.0f, -1.0f}, { 0.0f, -1.0f,  0.0f}},
     {{ 1.0f, -1.0f, -1.0f}, { 0.0f, -1.0f,  0.0f}},
-    {{ 1.0f, -1.0f,  1.0f}, { 0.0f, -1.0f,  0.0f}}, /* -Y */
+    {{ 1.0f, -1.0f,  1.0f}, { 0.0f, -1.0f,  0.0f}},
     {{-1.0f, -1.0f,  1.0f}, { 0.0f, -1.0f,  0.0f}},
-
+    /* 20, -X */
     {{-1.0f, -1.0f, -1.0f}, {-1.0f,  0.0f,  0.0f}},
     {{-1.0f, -1.0f,  1.0f}, {-1.0f,  0.0f,  0.0f}},
-    {{-1.0f,  1.0f,  1.0f}, {-1.0f,  0.0f,  0.0f}}, /* -X */
+    {{-1.0f,  1.0f,  1.0f}, {-1.0f,  0.0f,  0.0f}},
     {{-1.0f,  1.0f, -1.0f}, {-1.0f,  0.0f,  0.0f}}
 };
 constexpr Trade::MeshAttributeData AttributesSolid[]{
@@ -92,6 +106,481 @@ Trade::MeshData cubeSolid() {
     return Trade::MeshData{MeshPrimitive::Triangles,
         Trade::DataFlag::Global, IndicesSolid, Trade::MeshIndexData{IndicesSolid},
         Trade::DataFlag::Global, VerticesSolid, Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
+}
+
+namespace {
+
+/* GCC 4.8 dies with "error: array must be initialized with a brace-enclosed
+   initializer" if it's `constexpr Vector2 TextureCoordinates[][24]`. Turning
+   the second dimension into a struct seems to work around the problem. */
+/** @todo drop once GCC 4.8 is gone */
+constexpr struct {
+    Vector2 v[24];
+} TextureCoordinates[]{
+    /* All same
+       3--2
+       |  |
+       0--1 */
+    {{/* 0, +Z */
+      {0.0f, 0.0f},
+      {1.0f, 0.0f},
+      {1.0f, 1.0f},
+      {0.0f, 1.0f},
+      /* 4, +X */
+      {0.0f, 0.0f},
+      {1.0f, 0.0f},
+      {1.0f, 1.0f},
+      {0.0f, 1.0f},
+      /* 8, +Y */
+      {0.0f, 0.0f},
+      {1.0f, 0.0f},
+      {1.0f, 1.0f},
+      {0.0f, 1.0f},
+      /* 12, -Z */
+      {0.0f, 0.0f},
+      {1.0f, 0.0f},
+      {1.0f, 1.0f},
+      {0.0f, 1.0f},
+      /* 16, -Y */
+      {0.0f, 0.0f},
+      {1.0f, 0.0f},
+      {1.0f, 1.0f},
+      {0.0f, 1.0f},
+      /* 20, -X */
+      {0.0f, 0.0f},
+      {1.0f, 0.0f},
+      {1.0f, 1.0f},
+      {0.0f, 1.0f}}},
+    /* Positive up, negative down
+       +----+----3----2 1.0
+       | +X | +Y | +Z |
+       +----+----0----1 0.5
+       | -X | -Y | -Z |
+       +----+----+----+ 0.0
+     0.0 0.333  0.667 1.0  */
+    {{/* 0, +Z */
+      {2.0f/3.0f, 0.5f},
+      {3.0f/3.0f, 0.5f},
+      {3.0f/3.0f, 1.0f},
+      {2.0f/3.0f, 1.0f},
+      /* 4, +X */
+      {0.0f/3.0f, 0.5f},
+      {1.0f/3.0f, 0.5f},
+      {1.0f/3.0f, 1.0f},
+      {0.0f/3.0f, 1.0f},
+      /* 8, +Y */
+      {1.0f/3.0f, 0.5f},
+      {2.0f/3.0f, 0.5f},
+      {2.0f/3.0f, 1.0f},
+      {1.0f/3.0f, 1.0f},
+      /* 12, -Z */
+      {2.0f/3.0f, 0.0f},
+      {3.0f/3.0f, 0.0f},
+      {3.0f/3.0f, 0.5f},
+      {2.0f/3.0f, 0.5f},
+      /* 16, -Y */
+      {1.0f/3.0f, 0.0f},
+      {2.0f/3.0f, 0.0f},
+      {2.0f/3.0f, 0.5f},
+      {1.0f/3.0f, 0.5f},
+      /* 20, -X */
+      {0.0f/3.0f, 0.0f},
+      {1.0f/3.0f, 0.0f},
+      {1.0f/3.0f, 0.5f},
+      {0.0f/3.0f, 0.5f}}},
+    /* -X up, -X down
+       +----+                1.0
+       | +Y |
+       A----C----E----G----+ 0.667
+       | -X | +Z | +X | -Z |
+       B----D----F----H----+ 0.333
+       | -Y |
+       +----+                0.0
+      0.0  0.25 0.5  0.75 1.0   */
+    {{/* 0, +Z */
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.50f, 2.0f/3.0f},  /* E */
+      {0.25f, 2.0f/3.0f},  /* C */
+      /* 4, +X */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.75f, 2.0f/3.0f},  /* G */
+      {0.50f, 2.0f/3.0f},  /* E */
+      /* 8, +Y */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.25f, 3.0f/3.0f},
+      {0.00f, 3.0f/3.0f},
+      {0.00f, 2.0f/3.0f},  /* A */
+      /* 12, -Z */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {1.00f, 1.0f/3.0f},
+      {1.00f, 2.0f/3.0f},
+      {0.75f, 2.0f/3.0f},  /* G */
+      /* 16, -Y */
+      {0.00f, 1.0f/3.0f},  /* B */
+      {0.00f, 0.0f/3.0f},
+      {0.25f, 0.0f/3.0f},
+      {0.25f, 1.0f/3.0f},  /* D */
+      /* 20, -X */
+      {0.00f, 1.0f/3.0f},  /* B */
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.00f, 2.0f/3.0f}}},/* A */
+    /* -X up, +Z down
+       +----+
+       | +Y |
+       A----C----E----G----+
+       | -X | +Z | +X | -Z |
+       +----D----F----H----+
+            | -Y |
+            +----+
+      0.0  0.25 0.5 */
+    {{/* 0, +Z */
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.50f, 2.0f/3.0f},  /* E */
+      {0.25f, 2.0f/3.0f},  /* C */
+      /* 4, +X */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.75f, 2.0f/3.0f},  /* G */
+      {0.50f, 2.0f/3.0f},  /* E */
+      /* 8, +Y */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.25f, 3.0f/3.0f},
+      {0.00f, 3.0f/3.0f},
+      {0.00f, 2.0f/3.0f},  /* A */
+      /* 12, -Z */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {1.00f, 1.0f/3.0f},
+      {1.00f, 2.0f/3.0f},
+      {0.75f, 2.0f/3.0f},  /* G */
+      /* 16, -Y */
+      {0.25f, 0.0f/3.0f},
+      {0.50f, 0.0f/3.0f},
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.25f, 1.0f/3.0f},  /* D */
+      /* 20, -X */
+      {0.00f, 1.0f/3.0f},
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.00f, 2.0f/3.0f}}},/* A */
+    /* -X up, +X down
+       +----+
+       | +Y |
+       A----C----E----G----+
+       | -X | +Z | +X | -Z |
+       +----D----F----H----+
+                 | -Y |
+                 +----+
+      0.0       0.5  0.75 */
+    {{/* 0, +Z */
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.50f, 2.0f/3.0f},  /* E */
+      {0.25f, 2.0f/3.0f},  /* C */
+      /* 4, +X */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.75f, 2.0f/3.0f},  /* G */
+      {0.50f, 2.0f/3.0f},  /* E */
+      /* 8, +Y */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.25f, 3.0f/3.0f},
+      {0.00f, 3.0f/3.0f},
+      {0.00f, 2.0f/3.0f},  /* A */
+      /* 12, -Z */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {1.00f, 1.0f/3.0f},
+      {1.00f, 2.0f/3.0f},
+      {0.75f, 2.0f/3.0f},  /* G */
+      /* 16, -Y */
+      {0.75f, 0.0f/3.0f},
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.50f, 0.0f/3.0f},
+      /* 20, -X */
+      {0.00f, 1.0f/3.0f},
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.00f, 2.0f/3.0f}}},/* A */
+    /* -X up, -Z down
+       +----+
+       | +Y |
+       A----C----E----G----+
+       | -X | +Z | +X | -Z |
+       +----D----F----H----B
+                      | -Y |
+                      +----+
+       0.0           0.75 1.0 */
+    {{/* 0, +Z */
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.50f, 2.0f/3.0f},  /* E */
+      {0.25f, 2.0f/3.0f},  /* C */
+      /* 4, +X */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.75f, 2.0f/3.0f},  /* G */
+      {0.50f, 2.0f/3.0f},  /* E */
+      /* 8, +Y */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.25f, 3.0f/3.0f},
+      {0.00f, 3.0f/3.0f},
+      {0.00f, 2.0f/3.0f},  /* A */
+      /* 12, -Z */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {1.00f, 1.0f/3.0f},  /* B */
+      {1.00f, 2.0f/3.0f},
+      {0.75f, 2.0f/3.0f},  /* G */
+      /* 16, -Y */
+      {1.00f, 1.0f/3.0f},  /* B */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.75f, 0.0f/3.0f},
+      {1.00f, 0.0f/3.0f},
+      /* 20, -X */
+      {0.00f, 1.0f/3.0f},
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.00f, 2.0f/3.0f}}},/* A */
+    /* +Z up, +Z down
+            +----+
+            | +Y |
+       +----C----E----G----+
+       | -X | +Z | +X | -Z |
+       +----D----F----H----+
+            | -Y |
+            +----+
+           0.25 0.5 */
+    {{/* 0, +Z */
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.50f, 2.0f/3.0f},  /* E */
+      {0.25f, 2.0f/3.0f},  /* C */
+      /* 4, +X */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.75f, 2.0f/3.0f},  /* G */
+      {0.50f, 2.0f/3.0f},  /* E */
+      /* 8, +Y */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.50f, 2.0f/3.0f},  /* E */
+      {0.50f, 3.0f/3.0f},
+      {0.25f, 3.0f/3.0f},
+      /* 12, -Z */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {1.00f, 1.0f/3.0f},
+      {1.00f, 2.0f/3.0f},
+      {0.75f, 2.0f/3.0f},  /* G */
+      /* 16, -Y */
+      {0.25f, 0.0f/3.0f},
+      {0.50f, 0.0f/3.0f},
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.25f, 1.0f/3.0f},  /* D */
+      /* 20, -X */
+      {0.00f, 1.0f/3.0f},
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.00f, 2.0f/3.0f}}},
+    /* +Z up, +X down
+            +----+
+            | +Y |
+       +----C----E----G----+
+       | -X | +Z | +X | -Z |
+       +----D----F----H----+
+                 | -Y |
+                 +----+
+                0.5  0.75 */
+    {{/* 0, +Z */
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.50f, 2.0f/3.0f},  /* E */
+      {0.25f, 2.0f/3.0f},  /* C */
+      /* 4, +X */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.75f, 2.0f/3.0f},  /* G */
+      {0.50f, 2.0f/3.0f},  /* E */
+      /* 8, +Y */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.50f, 2.0f/3.0f},  /* E */
+      {0.50f, 3.0f/3.0f},
+      {0.25f, 3.0f/3.0f},
+      /* 12, -Z */
+      {0.75f, 1.0f/3.0f},  /* H */
+      {1.00f, 1.0f/3.0f},
+      {1.00f, 2.0f/3.0f},
+      {0.75f, 2.0f/3.0f},  /* G */
+      /* 16, -Y */
+      {0.75f, 0.0f/3.0f},
+      {0.75f, 1.0f/3.0f},  /* H */
+      {0.50f, 1.0f/3.0f},  /* F */
+      {0.50f, 0.0f/3.0f},
+      /* 20, -X */
+      {0.00f, 1.0f/3.0f},
+      {0.25f, 1.0f/3.0f},  /* D */
+      {0.25f, 2.0f/3.0f},  /* C */
+      {0.00f, 2.0f/3.0f}}},
+};
+
+/* The tangent is the same for all four vertices in each face so it's just 6
+   instead of 24. GCC 4.8 dies with "error: array must be initialized with a
+   brace-enclosed initializer" if it's `constexpr Vector4 Tangents[][6]`.
+   Turning the second dimension into a struct seems to work around the
+   problem. */
+/** @todo drop once GCC 4.8 is gone */
+constexpr struct {
+    Vector4 v[6];
+} Tangents[8]{
+    /* All same. Well, tangents are *not* all same in this case. */
+    {{{ 1.0f,  0.0f,  0.0f, 1.0f},  /* +Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* +X */
+      { 1.0f,  0.0f,  0.0f, 1.0f},  /* +Y */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Z */
+      { 1.0f,  0.0f,  0.0f, 1.0f},  /* -Y */
+      { 0.0f,  0.0f,  1.0f, 1.0f}}},/* -X */
+    /* Positive up, negative down */
+    {{{ 1.0f,  0.0f,  0.0f, 1.0f},  /* +Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* +X */
+      { 1.0f,  0.0f,  0.0f, 1.0f},  /* +Y */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Z */
+      { 1.0f,  0.0f,  0.0f, 1.0f},  /* -Y */
+      { 0.0f,  0.0f,  1.0f, 1.0f}}},/* -X */
+    /* -X up, -X down */
+    {{{ 1.0f,  0.0f,  0.0f, 1.0f},  /* +Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* +X */
+      { 0.0f,  0.0f,  1.0f, 1.0f},  /* +Y */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Z */
+      { 0.0f,  0.0f,  1.0f, 1.0f},  /* -Y */
+      { 0.0f,  0.0f,  1.0f, 1.0f}}},/* -X */
+    /* -X up, +Z down */
+    {{{ 1.0f,  0.0f,  0.0f, 1.0f},  /* +Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* +X */
+      { 0.0f,  0.0f,  1.0f, 1.0f},  /* +Y */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Z */
+      { 1.0f,  0.0f,  0.0f, 1.0f},  /* -Y */
+      { 0.0f,  0.0f,  1.0f, 1.0f}}},/* -X */
+    /* -X up, +X down */
+    {{{ 1.0f,  0.0f,  0.0f, 1.0f},  /* +Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* +X */
+      { 0.0f,  0.0f,  1.0f, 1.0f},  /* +Y */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* -Y */
+      { 0.0f,  0.0f,  1.0f, 1.0f}}},/* -X */
+    /* -X up, -Z down */
+    {{{ 1.0f,  0.0f,  0.0f, 1.0f},  /* +Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* +X */
+      { 0.0f,  0.0f,  1.0f, 1.0f},  /* +Y */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Z */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Y */
+      { 0.0f,  0.0f,  1.0f, 1.0f}}},/* -X */
+    /* +Z up, +Z down */
+    {{{ 1.0f,  0.0f,  0.0f, 1.0f},  /* +Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* +X */
+      { 1.0f,  0.0f,  0.0f, 1.0f},  /* +Y */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Z */
+      { 1.0f,  0.0f,  0.0f, 1.0f},  /* -Y */
+      { 0.0f,  0.0f,  1.0f, 1.0f}}},/* -X */
+    /* +Z up, +X down */
+    {{{ 1.0f,  0.0f,  0.0f, 1.0f},  /* +Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* +X */
+      { 1.0f,  0.0f,  0.0f, 1.0f},  /* +Y */
+      {-1.0f,  0.0f,  0.0f, 1.0f},  /* -Z */
+      { 0.0f,  0.0f, -1.0f, 1.0f},  /* -Y */
+      { 0.0f,  0.0f,  1.0f, 1.0f}}},/* -X */
+};
+
+}
+
+Trade::MeshData cubeSolid(const CubeFlags flags) {
+    const UnsignedInt textureCoordinateVariant = UnsignedByte(flags) >> 1;
+    CORRADE_ASSERT(textureCoordinateVariant <= Containers::arraySize(TextureCoordinates),
+        /* Since the enum isn't really a bitflag, implementing a debug printer
+           for it doesn't really make sense anyway. But be at least a bit
+           helpful and print the assumed TextureCoordinates flag value w/o the
+           other bits. */
+        "Primitives::cubeSolid(): unrecognized texture coordinate option" << Debug::hex << UnsignedByte(flags & ~CubeFlag::Tangents), (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_ASSERT(!(flags & CubeFlag::Tangents) || textureCoordinateVariant,
+        "Primitives::cubeSolid(): a texture coordinate option has to be picked if tangents are enabled", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+
+    /* Return the compile-time data if nothing extra is requested */
+    if(!flags)
+        return cubeSolid();
+
+    /* Calculate attribute count and vertex size */
+    std::size_t stride = sizeof(Vector3) + sizeof(Vector3);
+    std::size_t attributeCount = 2;
+    if(flags & CubeFlag::Tangents) {
+        stride += sizeof(Vector4);
+        ++attributeCount;
+    }
+    if(textureCoordinateVariant) {
+        stride += sizeof(Vector2);
+        ++attributeCount;
+    }
+
+    /* Set up the layout */
+    Containers::Array<char> vertexData{NoInit, 24*stride};
+    Containers::Array<Trade::MeshAttributeData> attributeData{attributeCount};
+    std::size_t attributeIndex = 0;
+    std::size_t attributeOffset = 0;
+
+    Containers::StridedArrayView1D<Vector3> positions{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + attributeOffset),
+        24, std::ptrdiff_t(stride)};
+    attributeData[attributeIndex++] = Trade::MeshAttributeData{
+        Trade::MeshAttribute::Position, positions};
+    attributeOffset += sizeof(Vector3);
+
+    Containers::StridedArrayView1D<Vector3> normals{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + sizeof(Vector3)),
+        24, std::ptrdiff_t(stride)};
+    attributeData[attributeIndex++] = Trade::MeshAttributeData{
+        Trade::MeshAttribute::Normal, normals};
+    attributeOffset += sizeof(Vector3);
+
+    Containers::StridedArrayView1D<Vector4> tangents;
+    if(flags & CubeFlag::Tangents) {
+        tangents = Containers::StridedArrayView1D<Vector4>{vertexData,
+            reinterpret_cast<Vector4*>(vertexData.data() + attributeOffset),
+            24, std::ptrdiff_t(stride)};
+        attributeData[attributeIndex++] = Trade::MeshAttributeData{
+            Trade::MeshAttribute::Tangent, tangents};
+        attributeOffset += sizeof(Vector4);
+    }
+
+    Containers::StridedArrayView1D<Vector2> textureCoordinates;
+    if(textureCoordinateVariant) {
+            textureCoordinates = Containers::StridedArrayView1D<Vector2>{vertexData,
+            reinterpret_cast<Vector2*>(vertexData.data() + attributeOffset),
+            24, std::ptrdiff_t(stride)};
+        attributeData[attributeIndex++] = Trade::MeshAttributeData{
+            Trade::MeshAttribute::TextureCoordinates, textureCoordinates};
+        attributeOffset += sizeof(Vector2);
+    }
+
+    CORRADE_INTERNAL_ASSERT(attributeIndex == attributeCount);
+    CORRADE_INTERNAL_ASSERT(attributeOffset == stride);
+
+    /* Fill the data */
+    for(std::size_t i = 0; i != 24; ++i) {
+        positions[i] = VerticesSolid[i].position;
+        normals[i] = VerticesSolid[i].normal;
+    }
+    if(textureCoordinateVariant) {
+        for(std::size_t i = 0; i != 24; ++i)
+            textureCoordinates[i] = TextureCoordinates[textureCoordinateVariant - 1].v[i];
+    }
+    if(flags & CubeFlag::Tangents) {
+        for(std::size_t i = 0; i != 6; ++i)
+            for(std::size_t j = 0; j != 4; ++j)
+                tangents[i*4 + j] = Tangents[textureCoordinateVariant - 1].v[i];
+    }
+
+    return Trade::MeshData{MeshPrimitive::Triangles,
+        Trade::DataFlag::Global, IndicesSolid, Trade::MeshIndexData{IndicesSolid},
+        Utility::move(vertexData), Utility::move(attributeData)};
 }
 
 namespace {

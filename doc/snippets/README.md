@@ -36,3 +36,7 @@ The `doc/artwork/line-quad-data-other.svg` is derived from
 making the canvas smaller, the `doc/artwork/line-quad-data.svg` is then derived
 from `doc/artwork/line-quad-data-other.svg` by removing the "other" layer and
 making the canvas smaller yet again.
+
+### primitives-cube-*.svg
+
+Like above, created from `doc/artwork/primitives-cube.svg`.

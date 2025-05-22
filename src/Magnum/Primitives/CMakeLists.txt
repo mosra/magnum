@@ -31,7 +31,6 @@ set(CMAKE_FOLDER "Magnum/Primitives")
 set(MagnumPrimitives_SRCS
     Axis.cpp
     Crosshair.cpp
-    Cube.cpp
     Gradient.cpp
     Grid.cpp
     Icosphere.cpp
@@ -46,6 +45,7 @@ set(MagnumPrimitives_GracefulAssert_SRCS
     Capsule.cpp
     Circle.cpp
     Cone.cpp
+    Cube.cpp
     Cylinder.cpp
     UVSphere.cpp)
 
