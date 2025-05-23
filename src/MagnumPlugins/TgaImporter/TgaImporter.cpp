@@ -68,12 +68,10 @@ void TgaImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dat
     }
 
     /* Ttake over the existing array or copy the data if we can't */
-    if(dataFlags & (DataFlag::Owned|DataFlag::ExternallyOwned)) {
+    if(dataFlags & (DataFlag::Owned|DataFlag::ExternallyOwned))
         _in = Utility::move(data);
-    } else {
-        _in = Containers::Array<char>{NoInit, data.size()};
-        Utility::copy(data, _in);
-    }
+    else
+        _in = Containers::Array<char>{InPlaceInit, data};
 }
 
 UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
