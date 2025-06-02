@@ -1218,7 +1218,19 @@ template<class Callback, class T> void AbstractConverter::setInputFileCallback(C
     /* Don't try to wrap a null function pointer. Need to cast first because
        MSVC (even 2017) can't apply ! to a lambda. Ugh. */
     const auto callbackPtr = static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, T&)>(callback);
-    if(!callbackPtr) return setInputFileCallback(nullptr);
+    /* With -std=c++17 or higher enabled, GCC says that "warning: the address
+       of <a lambda> will never be NULL". Well of course it won't, but this
+       function can get also a null plain function pointer, it's a goddamn
+       template after all. Shut up. */
+    #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && defined(CORRADE_TARGET_CXX17)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Waddress"
+    #endif
+    if(!callbackPtr)
+        return setInputFileCallback(nullptr);
+    #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && defined(CORRADE_TARGET_CXX17)
+    #pragma GCC diagnostic pop
+    #endif
 
     _inputFileCallbackTemplate = { reinterpret_cast<void(*)()>(callbackPtr), static_cast<const void*>(&userData) };
     setInputFileCallback([](const std::string& filename, const InputFileCallbackPolicy flags, void* const userData) {
