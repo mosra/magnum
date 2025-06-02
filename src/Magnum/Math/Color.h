@@ -1527,11 +1527,11 @@ Unpacks the literal into three 8-bit values. Example usage:
    implementation, so the previous implementation is used instead. See
    ColorTest::literalMsvc2019PermissiveCrash() for details. */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-constexpr Color3<UnsignedByte> operator"" _rgb(unsigned long long value) {
+constexpr Color3<UnsignedByte> operator""_rgb(unsigned long long value) {
     return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 #else
-template<char... chars> constexpr Color3<UnsignedByte> operator"" _rgb() {
+template<char... chars> constexpr Color3<UnsignedByte> operator""_rgb() {
     return Implementation::color3Literal<Color3<UnsignedByte>, 1, sizeof...(chars), chars...>();
 }
 #endif
@@ -1560,11 +1560,11 @@ RGB. Use this literal to document that given value is in sRGB. Example usage:
 /* Output is a Vector3 to hint that it doesn't have any (additive,
    multiplicative) semantics of a linear RGB color. See above for MSVC 2019. */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-constexpr Vector3<UnsignedByte> operator"" _srgb(unsigned long long value) {
+constexpr Vector3<UnsignedByte> operator""_srgb(unsigned long long value) {
     return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 #else
-template<char... chars> constexpr Vector3<UnsignedByte> operator"" _srgb() {
+template<char... chars> constexpr Vector3<UnsignedByte> operator""_srgb() {
     return Implementation::color3Literal<Vector3<UnsignedByte>, 1, sizeof...(chars), chars...>();
 }
 #endif
@@ -1588,11 +1588,11 @@ Unpacks the literal into four 8-bit values. Example usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-constexpr Color4<UnsignedByte> operator"" _rgba(unsigned long long value) {
+constexpr Color4<UnsignedByte> operator""_rgba(unsigned long long value) {
     return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 #else
-template<char... chars> constexpr Color4<UnsignedByte> operator"" _rgba() {
+template<char... chars> constexpr Color4<UnsignedByte> operator""_rgba() {
     return Implementation::color4Literal<Color4<UnsignedByte>, 1, sizeof...(chars), chars...>();
 }
 #endif
@@ -1622,11 +1622,11 @@ usage:
 /* Output is a Vector3 to hint that it doesn't have any (additive,
    multiplicative) semantics of a linear RGB color. See above for MSVC 2019. */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-constexpr Vector4<UnsignedByte> operator"" _srgba(unsigned long long value) {
+constexpr Vector4<UnsignedByte> operator""_srgba(unsigned long long value) {
     return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 #else
-template<char... chars> constexpr Vector4<UnsignedByte> operator"" _srgba() {
+template<char... chars> constexpr Vector4<UnsignedByte> operator""_srgba() {
     return Implementation::color4Literal<Vector4<UnsignedByte>, 1, sizeof...(chars), chars...>();
 }
 #endif
@@ -1651,13 +1651,13 @@ Example usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-constexpr Color3<Float> operator"" _rgbf(unsigned long long value) {
+constexpr Color3<Float> operator""_rgbf(unsigned long long value) {
     return {((value >> 16) & 0xff)/255.0f,
             ((value >>  8) & 0xff)/255.0f,
             ((value >>  0) & 0xff)/255.0f};
 }
 #else
-template<char... chars> constexpr Color3<Float> operator"" _rgbf() {
+template<char... chars> constexpr Color3<Float> operator""_rgbf() {
     return Implementation::color3Literal<Color3<Float>, 255, sizeof...(chars), chars...>();
 }
 #endif
@@ -1677,11 +1677,11 @@ usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-inline Color3<Float> operator"" _srgbf(unsigned long long value) {
+inline Color3<Float> operator""_srgbf(unsigned long long value) {
     return Color3<Float>::fromSrgbInt(UnsignedInt(value));
 }
 #else
-template<char... chars> inline Color3<Float> operator"" _srgbf() {
+template<char... chars> inline Color3<Float> operator""_srgbf() {
     return Color3<Float>::fromSrgb(Implementation::color3Literal<Vector3<UnsignedByte>, 1, sizeof...(chars), chars...>());
 }
 #endif
@@ -1706,14 +1706,14 @@ Example usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-constexpr Color4<Float> operator"" _rgbaf(unsigned long long value) {
+constexpr Color4<Float> operator""_rgbaf(unsigned long long value) {
     return {((value >> 24) & 0xff)/255.0f,
             ((value >> 16) & 0xff)/255.0f,
             ((value >>  8) & 0xff)/255.0f,
             ((value >>  0) & 0xff)/255.0f};
 }
 #else
-template<char... chars> constexpr Color4<Float> operator"" _rgbaf() {
+template<char... chars> constexpr Color4<Float> operator""_rgbaf() {
     return Implementation::color4Literal<Color4<Float>, 255, sizeof...(chars), chars...>();
 }
 #endif
@@ -1733,11 +1733,11 @@ Example usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-inline Color4<Float> operator"" _srgbaf(unsigned long long value) {
+inline Color4<Float> operator""_srgbaf(unsigned long long value) {
     return Color4<Float>::fromSrgbAlphaInt(UnsignedInt(value));
 }
 #else
-template<char... chars> inline Color4<Float> operator"" _srgbaf() {
+template<char... chars> inline Color4<Float> operator""_srgbaf() {
     return Color4<Float>::fromSrgbAlpha(Implementation::color4Literal<Vector4<UnsignedByte>, 1, sizeof...(chars), chars...>());
 }
 #endif
@@ -1763,7 +1763,7 @@ then casting from a float to a half-float type. Example usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above. Deinlined to avoid including Half.h. */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-MAGNUM_EXPORT Color3<Half> operator"" _rgbh(unsigned long long value);
+MAGNUM_EXPORT Color3<Half> operator""_rgbh(unsigned long long value);
 #else
 template<char... chars> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1771,7 +1771,7 @@ Color3<Half> /* to avoid including Half.h */
 #else
 typename Implementation::HalfColor<sizeof...(chars)>::Type3
 #endif
-operator"" _rgbh() {
+operator""_rgbh() {
     return Color3<Half>{Implementation::color3Literal<Color3<Float>, 255, sizeof...(chars), chars...>()};
 }
 #endif
@@ -1792,7 +1792,7 @@ casting from a float to a half-float type. Example usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above. Deinlined to avoid including Half.h. */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-MAGNUM_EXPORT Color3<Half> operator"" _srgbh(unsigned long long value);
+MAGNUM_EXPORT Color3<Half> operator""_srgbh(unsigned long long value);
 #else
 template<char... chars> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1800,7 +1800,7 @@ Color3<Half> /* to avoid including Half.h */
 #else
 typename Implementation::HalfColor<sizeof...(chars)>::Type3
 #endif
-operator"" _srgbh() {
+operator""_srgbh() {
     return Color3<Half>{Color3<Float>::fromSrgb(Implementation::color3Literal<Vector3<UnsignedByte>, 1, sizeof...(chars), chars...>())};
 }
 #endif
@@ -1826,7 +1826,7 @@ then casting from a float to a half-float type. Example usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above. Deinlined to avoid including Half.h. */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-MAGNUM_EXPORT Color4<Half> operator"" _rgbah(unsigned long long value);
+MAGNUM_EXPORT Color4<Half> operator""_rgbah(unsigned long long value);
 #else
 template<char... chars> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1834,7 +1834,7 @@ Color4<Half> /* to avoid including Half.h */
 #else
 typename Implementation::HalfColor<sizeof...(chars)>::Type4
 #endif
-operator"" _rgbah() {
+operator""_rgbah() {
     return Color4<Half>{Implementation::color4Literal<Color4<Float>, 255, sizeof...(chars), chars...>()};
 }
 #endif
@@ -1855,7 +1855,7 @@ then casting from a float to a half-float type. Example usage:
 /* MSVC 2019 with the /permissive- flag crashes with the variadic template
    implementation, see above. Deinlined to avoid including Half.h. */
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
-MAGNUM_EXPORT Color4<Half> operator"" _srgbah(unsigned long long value);
+MAGNUM_EXPORT Color4<Half> operator""_srgbah(unsigned long long value);
 #else
 template<char... chars> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1863,7 +1863,7 @@ Color4<Half> /* to avoid including Half.h */
 #else
 typename Implementation::HalfColor<sizeof...(chars)>::Type4
 #endif
-operator"" _srgbah() {
+operator""_srgbah() {
     return Color4<Half>{Color4<Float>::fromSrgbAlpha(Implementation::color4Literal<Vector4<UnsignedByte>, 1, sizeof...(chars), chars...>())};
 }
 #endif

@@ -316,7 +316,7 @@ fractions of nanoseconds. Usage example:
     @link operator""_sec() @endlink
 @m_keywords{_nsec nsec}
 */
-constexpr Nanoseconds<Long> operator"" _nsec(unsigned long long value) {
+constexpr Nanoseconds<Long> operator""_nsec(unsigned long long value) {
     return Nanoseconds<Long>{Long(value)};
 }
 
@@ -339,7 +339,7 @@ precision on a range of roughly ±8 seconds. For example:
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
 @m_keywords{_usec usec}
 */
-constexpr Nanoseconds<Long> operator"" _usec(long double value) {
+constexpr Nanoseconds<Long> operator""_usec(long double value) {
     return Nanoseconds<Long>{Long(value*1000.0l)};
 }
 
@@ -362,7 +362,7 @@ precision on a range of roughly ±2 hours. For example:
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
 @m_keywords{_msec msec}
 */
-constexpr Nanoseconds<Long> operator"" _msec(long double value) {
+constexpr Nanoseconds<Long> operator""_msec(long double value) {
     return Nanoseconds<Long>{Long(value*1000000.0l)};
 }
 
@@ -385,7 +385,7 @@ precision on a range of roughly ±2 hours. For example:
     @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
 @m_keywords{_sec sec}
 */
-constexpr Nanoseconds<Long> operator"" _sec(long double value) {
+constexpr Nanoseconds<Long> operator""_sec(long double value) {
     return Nanoseconds<Long>{Long(value*1000000000.0l)};
 }
 #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17

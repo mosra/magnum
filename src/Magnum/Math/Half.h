@@ -202,7 +202,7 @@ namespace Literals {
 
 See @ref Half for more information.
 */
-inline Half operator"" _h(long double value) { return Half(Float(value)); }
+inline Half operator""_h(long double value) { return Half(Float(value)); }
 #if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
 #pragma clang diagnostic pop
 #endif

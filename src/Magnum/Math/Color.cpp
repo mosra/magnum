@@ -154,16 +154,16 @@ Debug& operator<<(Debug& debug, const Color4<UnsignedByte>& value) {
 #if defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG_CL) && _MSC_VER >= 1920 && _MSC_VER < 1930
 namespace Literals { inline namespace ColorLiterals {
 
-Color3<Half> operator"" _rgbh(unsigned long long value) {
+Color3<Half> operator""_rgbh(unsigned long long value) {
     return Color3<Half>{Color3<Float>::fromLinearRgbInt(value)};
 }
-Color3<Half> operator"" _srgbh(unsigned long long value) {
+Color3<Half> operator""_srgbh(unsigned long long value) {
     return Color3<Half>{Color3<Float>::fromSrgbInt(value)};
 }
-Color4<Half> operator"" _rgbah(unsigned long long value) {
+Color4<Half> operator""_rgbah(unsigned long long value) {
     return Color4<Half>{Color4<Float>::fromLinearRgbaInt(value)};
 }
-Color4<Half> operator"" _srgbah(unsigned long long value) {
+Color4<Half> operator""_srgbah(unsigned long long value) {
     return Color4<Half>{Color4<Float>::fromSrgbAlphaInt(value)};
 }
 
