@@ -164,10 +164,11 @@ namespace Literals {
    load-bearing in any other contexts. Clang 17+ adds an off-by-default warning
    for this; GCC 4.8 however *requires* the space there, so until GCC 4.8
    support is dropped, we suppress this warning instead of removing the
-   space. */
-#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+   space. GCC 15 now has the same warning but it's enabled by default on
+   -std=c++23. */
+#if (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17) || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 15)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-literal-operator"
 #endif
 /** @relatesalso Magnum::Math::Deg
 @brief Double-precision degree value literal
@@ -192,8 +193,8 @@ Example usage:
 @m_keywords{_degf degf}
 */
 constexpr Deg<Float> operator"" _degf(long double value) { return Deg<Float>(Float(value)); }
-#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-#pragma clang diagnostic pop
+#if (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17) || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 15)
+#pragma GCC diagnostic pop
 #endif
 
 }}
@@ -267,10 +268,11 @@ namespace Literals {
    load-bearing in any other contexts. Clang 17+ adds an off-by-default warning
    for this; GCC 4.8 however *requires* the space there, so until GCC 4.8
    support is dropped, we suppress this warning instead of removing the
-   space. */
-#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+   space. GCC 15 now has the same warning but it's enabled by default on
+   -std=c++23. */
+#if (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17) || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 15)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-literal-operator"
 #endif
 /** @relatesalso Magnum::Math::Rad
 @brief Double-precision radian value literal
@@ -289,8 +291,8 @@ See @link operator""_degf() @endlink for more information.
 @m_keywords{_radf radf}
 */
 constexpr Rad<Float> operator"" _radf(long double value) { return Rad<Float>(Float(value)); }
-#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-#pragma clang diagnostic pop
+#if (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17) || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 15)
+#pragma GCC diagnostic pop
 #endif
 
 }}

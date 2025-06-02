@@ -1502,10 +1502,11 @@ namespace Literals {
    load-bearing in any other contexts. Clang 17+ adds an off-by-default warning
    for this; GCC 4.8 however *requires* the space there, so until GCC 4.8
    support is dropped, we suppress this warning instead of removing the
-   space. */
-#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-literal-operator"
+   space. GCC 15 now has the same warning but it's enabled by default on
+   -std=c++23. */
+#if (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17) || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 15)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-literal-operator"
 #endif
 /** @relatesalso Magnum::Math::Color3
 @brief 8bit-per-channel linear RGB literal
@@ -1867,8 +1868,8 @@ operator"" _srgbah() {
     return Color4<Half>{Color4<Float>::fromSrgbAlpha(Implementation::color4Literal<Vector4<UnsignedByte>, 1, sizeof...(chars), chars...>())};
 }
 #endif
-#if defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17
-#pragma clang diagnostic pop
+#if (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 17) || (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 15)
+#pragma GCC diagnostic pop
 #endif
 
 }}
