@@ -1020,7 +1020,7 @@ See also:
     the target implementation.
 -   @relativeref{Trade,AnyImageImporter} and
     @relativeref{Trade,AnySceneImporter} now can propagate also file callbacks
-    to the concrete plugin.
+    and @ref Trade::AbstractImporter::importerState() to the concrete plugin
 -   @relativeref{Trade,AnyImageConverter} now implements also conversion of 3D
     and multi-level 2D/3D images for formats that support it (such as Basis
     Universal or OpenEXR)

@@ -157,10 +157,11 @@ propagated to the concrete implementation. A warning is emitted in case an
 option set is not present in the default configuration of the target plugin.
 
 Calls to the @ref image1DCount() / @ref image2DCount() / @ref image3DCount(),
-@ref image1DLevelCount() / @ref image2DLevelCount() / @ref image3DLevelCount()
-and @ref image1D() / @ref image2D() / @ref image3D() functions are then proxied
-to the concrete implementation. The @ref close() function closes and discards
-the internally instantiated plugin; @ref isOpened() works as usual.
+@ref image1DLevelCount() / @ref image2DLevelCount() / @ref image3DLevelCount(),
+@ref image1D() / @ref image2D() / @ref image3D() and @ref importerState()
+functions are then proxied to the concrete implementation. The @ref close()
+function closes and discards the internally instantiated plugin;
+@ref isOpened() works as usual.
 
 Besides delegating the flags, the @ref AnyImageImporter itself recognizes
 @ref ImporterFlag::Verbose, printing info about the concrete plugin being used
@@ -212,6 +213,8 @@ class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
         MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage3DCount() const override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage3DLevelCount(UnsignedInt id) override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override;
+
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL const void* doImporterState() const override;
 
         Containers::Pointer<AbstractImporter> _in;
 };

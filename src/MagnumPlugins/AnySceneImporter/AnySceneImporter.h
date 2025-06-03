@@ -164,10 +164,10 @@ the target plugin.
 
 Calls to the @ref animation(), @ref scene(), @ref light(), @ref camera(),
 @ref skin2D(), @ref skin3D(), @ref mesh(), @ref material(), @ref texture(),
-@ref image1D(), @ref image2D(), @ref image3D() and corresponding
-count-/name-related functions are then proxied to the concrete implementation.
-The @ref close() function closes and discards the internally instantiated
-plugin; @ref isOpened() works as usual.
+@ref image1D(), @ref image2D(), @ref image3D(), corresponding
+count-/name-related functions and the @ref importerState() function are then
+proxied to the concrete implementation. The @ref close() function closes and
+discards the internally instantiated plugin; @ref isOpened() works as usual.
 
 While the @ref meshAttributeName(), @ref meshAttributeForName(),
 @ref sceneFieldName() and @ref sceneFieldForName() APIs can be called without a
@@ -301,6 +301,8 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doImage3DForName(Containers::StringView name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doImage3DName(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override;
+
+        MAGNUM_ANYSCENEIMPORTER_LOCAL const void* doImporterState() const override;
 
         Containers::Pointer<AbstractImporter> _in;
 };

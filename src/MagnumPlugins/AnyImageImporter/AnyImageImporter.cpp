@@ -345,6 +345,8 @@ UnsignedInt AnyImageImporter::doImage3DLevelCount(UnsignedInt id) { return _in->
 
 Containers::Optional<ImageData3D> AnyImageImporter::doImage3D(const UnsignedInt id, const UnsignedInt level) { return _in->image3D(id, level); }
 
+const void* AnyImageImporter::doImporterState() const { return _in->importerState(); }
+
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageImporter, Magnum::Trade::AnyImageImporter,

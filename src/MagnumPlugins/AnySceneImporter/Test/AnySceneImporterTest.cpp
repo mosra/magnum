@@ -32,6 +32,7 @@
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/Json.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/Vector3.h"
@@ -106,6 +107,8 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void imageLevels1D();
     void imageLevels2D();
     void imageLevels3D();
+
+    void importerState();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -240,7 +243,9 @@ AnySceneImporterTest::AnySceneImporterTest() {
               &AnySceneImporterTest::images3D,
               &AnySceneImporterTest::imageLevels1D,
               &AnySceneImporterTest::imageLevels2D,
-              &AnySceneImporterTest::imageLevels3D});
+              &AnySceneImporterTest::imageLevels3D,
+
+              &AnySceneImporterTest::importerState});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -889,6 +894,23 @@ void AnySceneImporterTest::imageLevels3D() {
     Containers::Optional<Trade::ImageData3D> image = importer->image3D(1, 2);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), (Vector3i{1, 1, 3}));
+}
+
+void AnySceneImporterTest::importerState() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "meshes.gltf")));
+
+    CORRADE_VERIFY(importer->importerState());
+    CORRADE_COMPARE(static_cast<const Utility::Json*>(importer->importerState())->root()["asset"]["version"].asString(), "2.0");
 }
 
 }}}}

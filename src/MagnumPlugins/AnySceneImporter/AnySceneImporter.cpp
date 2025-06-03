@@ -347,6 +347,8 @@ Int AnySceneImporter::doImage3DForName(const Containers::StringView name) { retu
 Containers::String AnySceneImporter::doImage3DName(const UnsignedInt id) { return _in->image3DName(id); }
 Containers::Optional<ImageData3D> AnySceneImporter::doImage3D(const UnsignedInt id, const UnsignedInt level) { return _in->image3D(id, level); }
 
+const void* AnySceneImporter::doImporterState() const { return _in->importerState(); }
+
 }}
 
 CORRADE_PLUGIN_REGISTER(AnySceneImporter, Magnum::Trade::AnySceneImporter,

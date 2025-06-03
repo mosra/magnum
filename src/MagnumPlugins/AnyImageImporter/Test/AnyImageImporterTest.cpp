@@ -26,9 +26,11 @@
 */
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Format.h>
@@ -69,6 +71,8 @@ struct AnyImageImporterTest: TestSuite::Tester {
     void imageLevels1D();
     void imageLevels2D();
     void imageLevels3D();
+
+    void importerState();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -242,7 +246,9 @@ AnyImageImporterTest::AnyImageImporterTest() {
               &AnyImageImporterTest::images3D,
               &AnyImageImporterTest::imageLevels1D,
               &AnyImageImporterTest::imageLevels2D,
-              &AnyImageImporterTest::imageLevels3D});
+              &AnyImageImporterTest::imageLevels3D,
+
+              &AnyImageImporterTest::importerState});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -651,6 +657,33 @@ void AnyImageImporterTest::imageLevels3D() {
     Containers::Optional<ImageData3D> image = importer->image3D(0, 1);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), (Vector3i{2, 1, 3}));
+}
+
+void AnyImageImporterTest::importerState() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StbImageImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("StbImageImporter plugin can't be loaded.");
+
+    /* Ensure StbImageImporter is picked, and not for example
+       DevIlImageImporter */
+    manager.setPreferredPlugins("GifImporter", {"StbImageImporter"});
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "dispose_bgnd.gif")));
+
+    /* Testing the same as in StbImageImporterTest::animatedGif(). Importer
+       state should expose the delays, in milliseconds. */
+    CORRADE_COMPARE(importer->image2DCount(), 5);
+    CORRADE_VERIFY(importer->importerState());
+    CORRADE_COMPARE_AS(
+        Containers::arrayView(reinterpret_cast<const Int*>(importer->importerState()), importer->image2DCount()),
+        Containers::arrayView<Int>({1000, 1000, 1000, 1000, 1000}),
+        TestSuite::Compare::Container);
 }
 
 }}}}
