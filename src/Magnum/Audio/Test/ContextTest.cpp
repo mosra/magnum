@@ -66,6 +66,8 @@ void ContextTest::constructCopyMove() {
     CORRADE_VERIFY(std::is_move_constructible<Context>{});
     CORRADE_VERIFY(!std::is_copy_assignable<Context>{});
     CORRADE_VERIFY(!std::is_move_assignable<Context>{});
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Context>::value);
 }
 
 void ContextTest::extensions() {
