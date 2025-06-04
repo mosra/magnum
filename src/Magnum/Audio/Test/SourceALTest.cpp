@@ -38,6 +38,8 @@ struct SourceALTest: TestSuite::Tester {
     explicit SourceALTest();
 
     void construct();
+    void constructCopy();
+    void constructMove();
 
     void position();
     void direction();
@@ -60,6 +62,8 @@ SourceALTest::SourceALTest():
     _context{arguments().first(), arguments().second()}
 {
     addTests({&SourceALTest::construct,
+              &SourceALTest::constructCopy,
+              &SourceALTest::constructMove,
 
               &SourceALTest::position,
               &SourceALTest::direction,
@@ -78,6 +82,31 @@ SourceALTest::SourceALTest():
 void SourceALTest::construct() {
     Source source;
     CORRADE_VERIFY(source.id() != 0);
+}
+
+void SourceALTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<Source>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Source>{});
+}
+
+void SourceALTest::constructMove() {
+    Source a;
+    const ALuint id = a.id();
+    CORRADE_VERIFY(a.id() != 0);
+
+    Source b{Utility::move(a)};
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+
+    Source c;
+    const ALuint cId = c.id();
+    c = Utility::move(b);
+    CORRADE_VERIFY(cId != 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Source>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Source>::value);
 }
 
 void SourceALTest::position() {

@@ -72,13 +72,13 @@ class MAGNUM_AUDIO_EXPORT Buffer {
         Buffer(const Buffer&) = delete;
 
         /** @brief Move constructor */
-        Buffer(Buffer&& other);
+        Buffer(Buffer&& other) noexcept;
 
         /** @brief Copying is not allowed */
         Buffer& operator=(const Buffer&) = delete;
 
         /** @brief Move assignment */
-        Buffer& operator=(Buffer&& other);
+        Buffer& operator=(Buffer&& other) noexcept;
 
         /** @brief OpenAL buffer ID */
         ALuint id() const { return _id; }
@@ -228,11 +228,11 @@ class MAGNUM_AUDIO_EXPORT Buffer {
         ALuint _id;
 };
 
-inline Buffer::Buffer(Buffer&& other): _id(other._id) {
+inline Buffer::Buffer(Buffer&& other) noexcept: _id(other._id) {
     other._id = 0;
 }
 
-inline Buffer& Buffer::operator=(Buffer&& other) {
+inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
     using Utility::swap;
     swap(_id, other._id);
     return *this;

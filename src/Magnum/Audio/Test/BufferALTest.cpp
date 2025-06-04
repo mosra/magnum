@@ -41,6 +41,8 @@ struct BufferALTest: TestSuite::Tester {
     explicit BufferALTest();
 
     void construct();
+    void constructCopy();
+    void constructMove();
 
     void properties();
 
@@ -58,6 +60,8 @@ BufferALTest::BufferALTest():
     _context{arguments().first(), arguments().second()}
 {
     addTests({&BufferALTest::construct,
+              &BufferALTest::constructCopy,
+              &BufferALTest::constructMove,
 
               &BufferALTest::properties,
 
@@ -71,6 +75,31 @@ BufferALTest::BufferALTest():
 void BufferALTest::construct() {
     Buffer buf;
     CORRADE_VERIFY(buf.id() != 0);
+}
+
+void BufferALTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<Buffer>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Buffer>{});
+}
+
+void BufferALTest::constructMove() {
+    Buffer a;
+    const ALuint id = a.id();
+    CORRADE_VERIFY(a.id() != 0);
+
+    Buffer b{Utility::move(a)};
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+
+    Buffer c;
+    const ALuint cId = c.id();
+    c = Utility::move(b);
+    CORRADE_VERIFY(cId != 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Buffer>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Buffer>::value);
 }
 
 void BufferALTest::properties() {

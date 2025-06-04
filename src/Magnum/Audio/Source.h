@@ -78,13 +78,13 @@ class MAGNUM_AUDIO_EXPORT Source {
         Source(const Source&) = delete;
 
         /** @brief Move constructor */
-        Source(Source&& other);
+        Source(Source&& other) noexcept;
 
         /** @brief Copying is not allowed */
         Source& operator=(const Source&) = delete;
 
         /** @brief Move assignment */
-        Source& operator=(Source&& other);
+        Source& operator=(Source&& other) noexcept;
 
         /** @brief OpenAL source ID */
         ALuint id() const { return _id; }
@@ -776,11 +776,11 @@ MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Source::State value);
 /** @debugoperatorclassenum{Source,Source::Type} */
 MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Source::Type value);
 
-inline Source::Source(Source&& other): _id(other._id) {
+inline Source::Source(Source&& other) noexcept: _id(other._id) {
     other._id = 0;
 }
 
-inline Source& Source::operator=(Source&& other) {
+inline Source& Source::operator=(Source&& other) noexcept {
     using Utility::swap;
     swap(_id, other._id);
     return *this;
