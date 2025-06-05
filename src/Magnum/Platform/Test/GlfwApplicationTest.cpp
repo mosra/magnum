@@ -323,10 +323,15 @@ struct GlfwApplicationTest: Platform::Application {
             _redraw = !_redraw;
             Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
             if(_redraw) redraw();
-        } else if(event.key() == Key::V) {
+        } else if(event.key() == Key::V && !event.modifiers()) {
             _vsync = !_vsync;
             Debug{} << "vsync" << (_vsync? "on" : "off");
             setSwapInterval(_vsync ? 1 : 0);
+        } else if(event.key() == Key::C && event.modifiers() == Modifier::Ctrl) {
+            Debug{} << "Setting clipboard contents";
+            setClipboardText("this text shouldn't have an exclamation at the end!!"_s.exceptSuffix(2));
+        } else if(event.key() == Key::V && event.modifiers() == Modifier::Ctrl) {
+            Debug{} << "Clipboard contents:" << clipboardText();
         } else if(event.key() == Key::Esc) {
             Debug{} << "stopping text input";
             stopTextInput();

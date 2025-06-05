@@ -382,6 +382,9 @@ See also:
     @relativeref{Platform::Sdl2Application,blurEvent()} to
     @ref Platform::Sdl2Application, @ref Platform::GlfwApplication,
     @ref Platform::EmscriptenApplication and @ref Platform::AndroidApplication
+-   Added @relativeref{Platform::Sdl2Application,clipboardText()} and
+    @relativeref{Platform::Sdl2Application,setClipboardText()} to
+    @ref Platform::Sdl2Application and @ref Platform::GlfwApplication
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 

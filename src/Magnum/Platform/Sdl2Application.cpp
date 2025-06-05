@@ -1454,6 +1454,18 @@ void Sdl2Application::setTextInputRect(const Range2Di& rect) {
     SDL_SetTextInputRect(&r);
 }
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+Containers::String Sdl2Application::clipboardText() {
+    return Containers::String{SDL_GetClipboardText(), [](char* const data, std::size_t) {
+        SDL_free(data);
+    }};
+}
+
+void Sdl2Application::setClipboardText(const Containers::StringView text) {
+    SDL_SetClipboardText(Containers::String::nullTerminatedView(text).data());
+}
+#endif
+
 void Sdl2Application::exitEvent(ExitEvent& event) {
     event.setAccepted();
 }

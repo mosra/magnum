@@ -408,10 +408,15 @@ struct Sdl2ApplicationTest: Platform::Application {
             if(_redraw) redraw();
         }
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        else if(event.key() == Key::V) {
+        else if(event.key() == Key::V && !(event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock))) {
             _vsync = !_vsync;
             Debug{} << "vsync" << (_vsync? "on" : "off");
             setSwapInterval(_vsync ? 1 : 0);
+        } else if(event.key() == Key::C && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {
+            Debug{} << "Setting clipboard contents";
+            setClipboardText("this text shouldn't have an exclamation at the end!!"_s.exceptSuffix(2));
+        } else if(event.key() == Key::V && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {
+            Debug{} << "Clipboard contents:" << clipboardText();
         }
         #endif
         else if(event.key() == Key::Esc) {

@@ -1466,6 +1466,30 @@ class Sdl2Application {
          */
         void setTextInputRect(const Range2Di& rect);
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Current clipboard text
+         * @m_since_latest
+         *
+         * The returned string is in UTF-8. If the clipboard is empty or
+         * contains non-text data (such as an image), the returned string is
+         * empty.
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        Containers::String clipboardText();
+
+        /**
+         * @brief Set current clipboard text
+         * @m_since_latest
+         *
+         * The @p text is expected to be in UTF-8. If it's not
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}, a
+         * null-terminated copy is made before passing it to SDL.
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        void setClipboardText(Containers::StringView text);
+        #endif
+
     private:
         /**
          * @brief Text input event

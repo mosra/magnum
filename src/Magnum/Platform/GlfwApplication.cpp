@@ -1122,6 +1122,14 @@ void GlfwApplication::stopTextInput() {
     _flags &= ~Flag::TextInputActive;
 }
 
+Containers::StringView GlfwApplication::clipboardText() {
+    return glfwGetClipboardString(_window);
+}
+
+void GlfwApplication::setClipboardText(const Containers::StringView text) {
+    glfwSetClipboardString(_window, Containers::String::nullTerminatedView(text).data());
+}
+
 #ifdef MAGNUM_TARGET_GL
 GlfwApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0},

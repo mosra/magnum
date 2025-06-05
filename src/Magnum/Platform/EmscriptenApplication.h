@@ -1103,6 +1103,12 @@ class EmscriptenApplication {
          */
         void setTextInputRect(const Range2Di& rect);
 
+        /* Unlike Sdl2Application and GlfwApplication, here's no clipboard
+           support, because due to security reasons, the browser API is
+           extremely convoluted:
+            https://github.com/pthom/hello_imgui/issues/3
+            https://github.com/emscripten-core/emscripten/pull/19510 */
+
     private:
         /**
          * @brief Text input event

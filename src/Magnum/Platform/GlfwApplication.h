@@ -925,6 +925,29 @@ class GlfwApplication {
          */
         void stopTextInput();
 
+        /**
+         * @brief Current clipboard text
+         * @m_since_latest
+         *
+         * The returned view is in UTF-8, is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * is only guaranteed to be valid until the next call to
+         * @ref clipboardText() or @ref setClipboardText(). If the clipboard is
+         * empty or contains non-text data (such as an image), the returned
+         * view is empty.
+         */
+        Containers::StringView clipboardText();
+
+        /**
+         * @brief Set current clipboard text
+         * @m_since_latest
+         *
+         * The @p text is expected to be in UTF-8. If it's not
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}, a
+         * null-terminated copy is made before passing it to GLFW.
+         */
+        void setClipboardText(Containers::StringView text);
+
     private:
         /**
          * @brief Text input event
