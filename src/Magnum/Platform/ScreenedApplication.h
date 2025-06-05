@@ -43,7 +43,11 @@ namespace Implementation {
 CORRADE_HAS_TYPE(HasKeyEvent, typename T::KeyEvent);
 CORRADE_HAS_TYPE(HasScrollEvent, typename T::ScrollEvent);
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* Ignore macros needed by Emscripten (Clang 21), nothing else warns here for
+   some reason. Not even older Emscripten, not native Clang 19. */
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_HAS_TYPE(HasMouseScrollEvent, typename T::MouseScrollEvent);
+CORRADE_IGNORE_DEPRECATED_POP
 #endif
 CORRADE_HAS_TYPE(HasTextInputEvent, typename T::TextInputEvent);
 CORRADE_HAS_TYPE(HasTextEditingEvent, typename T::TextEditingEvent);
