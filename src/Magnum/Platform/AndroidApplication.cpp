@@ -191,6 +191,8 @@ void AndroidApplication::redraw() {
 }
 
 void AndroidApplication::viewportEvent(ViewportEvent&) {}
+void AndroidApplication::focusEvent(FocusEvent&) {}
+void AndroidApplication::blurEvent(FocusEvent&) {}
 
 namespace {
     struct Data {
@@ -225,9 +227,12 @@ void AndroidApplication::commandEvent(android_app* state, int32_t cmd) {
             break;
 
         case APP_CMD_GAINED_FOCUS:
-        case APP_CMD_LOST_FOCUS:
-            /** @todo Make use of these */
-            break;
+        case APP_CMD_LOST_FOCUS: {
+            FocusEvent e;
+            cmd == APP_CMD_GAINED_FOCUS ?
+                data.instance->focusEvent(e) :
+                data.instance->blurEvent(e);
+        } break;
 
         case APP_CMD_CONFIG_CHANGED: {
             /* This says "the current device configuration has changed", which

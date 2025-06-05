@@ -142,6 +142,13 @@ struct AndroidApplicationTest: Platform::Application {
         Debug{} << "viewport:" << event.windowSize() << event.framebufferSize() << event.dpiScaling();
     }
 
+    void focusEvent(FocusEvent&) override {
+        Debug{} << "application focused";
+    }
+    void blurEvent(FocusEvent&) override {
+        Debug{} << "application blurred";
+    }
+
     /* Set to 0 to test the deprecated mouse events instead */
     #if 1
     void pointerPressEvent(PointerEvent& event) override {

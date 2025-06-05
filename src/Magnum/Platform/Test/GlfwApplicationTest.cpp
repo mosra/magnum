@@ -285,6 +285,13 @@ struct GlfwApplicationTest: Platform::Application {
             << event.dpiScaling();
     }
 
+    void focusEvent(FocusEvent&) override {
+        Debug{} << "window focused";
+    }
+    void blurEvent(FocusEvent&) override {
+        Debug{} << "window blurred";
+    }
+
     void exitEvent(ExitEvent& event) override {
         Debug{} << "application exiting";
         event.setAccepted(); /* Comment-out to test app exit suppression */

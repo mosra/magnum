@@ -378,6 +378,10 @@ See also:
     building upon [mosra/magnum#527](https://github.com/mosra/magnum/pull/527).
     There's also a new @ref Platform::TwoFingerGesture helper for recognition
     of common two-finger gestures for zoom, rotation and pan.
+-   Added @relativeref{Platform::Sdl2Application,focusEvent()} and
+    @relativeref{Platform::Sdl2Application,blurEvent()} to
+    @ref Platform::Sdl2Application, @ref Platform::GlfwApplication,
+    @ref Platform::EmscriptenApplication and @ref Platform::AndroidApplication
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 

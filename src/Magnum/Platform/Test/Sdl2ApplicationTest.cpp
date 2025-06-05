@@ -328,6 +328,13 @@ struct Sdl2ApplicationTest: Platform::Application {
             << event.dpiScaling();
     }
 
+    void focusEvent(FocusEvent&) override {
+        Debug{} << "window focused";
+    }
+    void blurEvent(FocusEvent&) override {
+        Debug{} << "window blurred";
+    }
+
     void drawEvent() override {
         Debug{} << "draw event";
         #ifdef MAGNUM_TARGET_GL

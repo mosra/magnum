@@ -551,6 +551,7 @@ class Sdl2Application {
         #endif
         class ExitEvent;
         class ViewportEvent;
+        class FocusEvent;
         class InputEvent;
         class KeyEvent;
         class PointerEvent;
@@ -1112,6 +1113,26 @@ class Sdl2Application {
          * @see @ref platform-windowed-viewport-events
          */
         virtual void viewportEvent(ViewportEvent& event);
+
+        /**
+         * @brief Window focus event
+         * @m_since_latest
+         *
+         * Called when the window gains (keyboard) input focus. The default
+         * implementation does nothing.
+         */
+        virtual void focusEvent(FocusEvent& event);
+
+        /**
+         * @brief Window blur event
+         * @m_since_latest
+         *
+         * Called when the window loses (keyboard) input focus, which for
+         * example can be used by the application code to discard all
+         * information about currently pressed keys. The default implementation
+         * does nothing.
+         */
+        virtual void blurEvent(FocusEvent& event);
 
         /**
          * @brief Draw event
@@ -2828,6 +2849,42 @@ class Sdl2Application::ViewportEvent {
         const Vector2i _framebufferSize;
         #endif
         const Vector2 _dpiScaling;
+};
+
+/**
+@brief Window focus and blur event
+@m_since_latest
+
+@see @ref focusEvent(), @ref blurEvent()
+*/
+class Sdl2Application::FocusEvent {
+    public:
+        /** @brief Copying is not allowed */
+        FocusEvent(const FocusEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        FocusEvent(FocusEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        FocusEvent& operator=(const FocusEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        FocusEvent& operator=(FocusEvent&&) = delete;
+
+        /**
+         * @brief Underlying SDL event
+         *
+         * Of type `SDL_WINDOWEVENT`
+         * @see @ref Sdl2Application::anyEvent()
+         */
+        const SDL_Event& event() const { return _event; }
+
+    private:
+        friend Sdl2Application;
+
+        explicit FocusEvent(const SDL_Event& event): _event(event) {}
+
+        const SDL_Event& _event;
 };
 
 /**

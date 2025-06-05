@@ -69,6 +69,7 @@
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+struct EmscriptenFocusEvent;
 struct EmscriptenKeyboardEvent;
 struct EmscriptenMouseEvent;
 struct EmscriptenTouchEvent;
@@ -334,6 +335,7 @@ class EmscriptenApplication {
         class Configuration;
         class GLConfiguration;
         class ViewportEvent;
+        class FocusEvent;
         class InputEvent;
         class PointerEvent;
         class PointerMoveEvent;
@@ -667,6 +669,26 @@ class EmscriptenApplication {
          * @see @ref platform-windowed-viewport-events
          */
         virtual void viewportEvent(ViewportEvent& event);
+
+        /**
+         * @brief Canvas focus event
+         * @m_since_latest
+         *
+         * Called when the canvas gains (keyboard) input focus. The default
+         * implementation does nothing.
+         */
+        virtual void focusEvent(FocusEvent& event);
+
+        /**
+         * @brief Canvas blur event
+         * @m_since_latest
+         *
+         * Called when the canvas loses (keyboard) input focus, which for
+         * example can be used by the application code to discard all
+         * information about currently pressed keys. The default implementation
+         * does nothing.
+         */
+        virtual void blurEvent(FocusEvent& event);
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
@@ -1998,6 +2020,37 @@ class EmscriptenApplication::ViewportEvent {
         const Vector2i _framebufferSize;
         #endif
         const Vector2 _dpiScaling, _devicePixelRatio;
+};
+
+/**
+@brief Window focus and blur event
+@m_since_latest
+
+@see @ref focusEvent(), @ref blurEvent()
+*/
+class EmscriptenApplication::FocusEvent {
+    public:
+        /** @brief Copying is not allowed */
+        FocusEvent(const FocusEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        FocusEvent(FocusEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        FocusEvent& operator=(const FocusEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        FocusEvent& operator=(FocusEvent&&) = delete;
+
+        /** @brief Underlying Emscripten event */
+        const EmscriptenFocusEvent& event() const { return _event; }
+
+    private:
+        friend EmscriptenApplication;
+
+        explicit FocusEvent(const EmscriptenFocusEvent& event): _event(event) {}
+
+        const EmscriptenFocusEvent& _event;
 };
 
 /**

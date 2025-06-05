@@ -627,6 +627,17 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         emscripten_set_resize_callback(target, this, false, cb);
     }
 
+    emscripten_set_focus_callback(_canvasTarget.data(), this, false, ([](int, const EmscriptenFocusEvent* event, void* userData) -> EM_BOOL {
+        FocusEvent e{*event};
+        static_cast<EmscriptenApplication*>(userData)->focusEvent(e);
+        return true;
+    }));
+    emscripten_set_blur_callback(_canvasTarget.data(), this, false, ([](int, const EmscriptenFocusEvent* event, void* userData) -> EM_BOOL {
+        FocusEvent e{*event};
+        static_cast<EmscriptenApplication*>(userData)->blurEvent(e);
+        return true;
+    }));
+
     /* Done this way instead of passing the lambda inline so it can have the
        #if inside. Because, apparently, emscripten_set_mousedown_callback() is
        some crazy macro, and I get "warning: embedding a directive within macro
@@ -1040,6 +1051,8 @@ void EmscriptenApplication::setTextInputRect(const Range2Di&) {
 }
 
 void EmscriptenApplication::viewportEvent(ViewportEvent&) {}
+void EmscriptenApplication::focusEvent(FocusEvent&) {}
+void EmscriptenApplication::blurEvent(FocusEvent&) {}
 void EmscriptenApplication::keyPressEvent(KeyEvent&) {}
 void EmscriptenApplication::keyReleaseEvent(KeyEvent&) {}
 

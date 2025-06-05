@@ -1064,6 +1064,11 @@ bool Sdl2Application::mainLoopIteration() {
                         _flags |= Flag::Redraw;
                         #endif
                     } break;
+                    case SDL_WINDOWEVENT_FOCUS_GAINED:
+                    case SDL_WINDOWEVENT_FOCUS_LOST: {
+                        FocusEvent e{event};
+                        event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ? focusEvent(e) : blurEvent(e);
+                    } break;
                     /* Direct everything that wasn't exposed via a callback to
                        anyEvent(), so users can implement event handling for
                        things not present in the Application APIs */
@@ -1466,6 +1471,8 @@ void Sdl2Application::anyEvent(SDL_Event&) {
 }
 
 void Sdl2Application::viewportEvent(ViewportEvent&) {}
+void Sdl2Application::focusEvent(FocusEvent&) {}
+void Sdl2Application::blurEvent(FocusEvent&) {}
 void Sdl2Application::keyPressEvent(KeyEvent&) {}
 void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 

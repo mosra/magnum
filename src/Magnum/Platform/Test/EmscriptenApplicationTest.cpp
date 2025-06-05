@@ -314,6 +314,13 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
     #endif
 
+    void focusEvent(FocusEvent&) override {
+        Debug{} << "canvas focused";
+    }
+    void blurEvent(FocusEvent&) override {
+        Debug{} << "canvas blurred";
+    }
+
     /* Set to 0 to test the deprecated mouse events instead */
     #if 1
     void pointerPressEvent(PointerEvent& event) override {

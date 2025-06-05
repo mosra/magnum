@@ -176,6 +176,7 @@ class GlfwApplication {
         #endif
         class ExitEvent;
         class ViewportEvent;
+        class FocusEvent;
         class InputEvent;
         class KeyEvent;
         class PointerEvent;
@@ -637,6 +638,12 @@ class GlfwApplication {
          * @see @ref platform-windowed-viewport-events
          */
         virtual void viewportEvent(ViewportEvent& event);
+
+        /** @copydoc Sdl2Application::focusEvent() */
+        virtual void focusEvent(FocusEvent& event);
+
+        /** @copydoc Sdl2Application::blurEvent() */
+        virtual void blurEvent(FocusEvent& event);
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
@@ -2110,6 +2117,32 @@ class GlfwApplication::ViewportEvent {
         const Vector2i _framebufferSize;
         #endif
         const Vector2 _dpiScaling;
+};
+
+/**
+@brief Window focus and blur event
+@m_since_latest
+
+@see @ref focusEvent(), @ref blurEvent()
+*/
+class GlfwApplication::FocusEvent {
+    public:
+        /** @brief Copying is not allowed */
+        FocusEvent(const FocusEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        FocusEvent(FocusEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        FocusEvent& operator=(const FocusEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        FocusEvent& operator=(FocusEvent&&) = delete;
+
+    private:
+        friend GlfwApplication;
+
+        explicit FocusEvent() = default;
 };
 
 /**

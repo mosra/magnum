@@ -670,6 +670,12 @@ void GlfwApplication::setupCallbacks() {
         #endif
         app.viewportEvent(e);
     });
+    glfwSetWindowFocusCallback(_window, [](GLFWwindow* const window, const int focused) {
+        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+
+        FocusEvent e;
+        focused ? app.focusEvent(e) : app.blurEvent(e);
+    });
     glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, const int scancode, const int action, const int mods) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
@@ -974,6 +980,8 @@ void GlfwApplication::tickEvent() {
 }
 
 void GlfwApplication::viewportEvent(ViewportEvent&) {}
+void GlfwApplication::focusEvent(FocusEvent&) {}
+void GlfwApplication::blurEvent(FocusEvent&) {}
 void GlfwApplication::keyPressEvent(KeyEvent&) {}
 void GlfwApplication::keyReleaseEvent(KeyEvent&) {}
 

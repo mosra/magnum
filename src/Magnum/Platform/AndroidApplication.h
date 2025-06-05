@@ -206,6 +206,7 @@ class AndroidApplication {
         class Configuration;
         class GLConfiguration;
         class ViewportEvent;
+        class FocusEvent;
         class InputEvent;
         class PointerEvent;
         class PointerMoveEvent;
@@ -430,6 +431,25 @@ class AndroidApplication {
          * @see @ref platform-windowed-viewport-events
          */
         virtual void viewportEvent(ViewportEvent& event);
+
+        /**
+         * @brief Application focus event
+         * @m_since_latest
+         *
+         * Called when the application gains focus. The default implementation
+         * does nothing.
+         */
+        virtual void focusEvent(FocusEvent& event);
+
+        /**
+         * @brief Application blur event
+         * @m_since_latest
+         *
+         * Called when the application loses focus, which may be happening for
+         * example together with the application getting suspended to
+         * background. The default implementation does nothing.
+         */
+        virtual void blurEvent(FocusEvent& event);
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
@@ -947,6 +967,32 @@ class AndroidApplication::ViewportEvent {
         explicit ViewportEvent(const Vector2i& windowSize): _windowSize{windowSize} {}
 
         const Vector2i _windowSize;
+};
+
+/**
+@brief Window focus and blur event
+@m_since_latest
+
+@see @ref focusEvent(), @ref blurEvent()
+*/
+class AndroidApplication::FocusEvent {
+    public:
+        /** @brief Copying is not allowed */
+        FocusEvent(const FocusEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        FocusEvent(FocusEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        FocusEvent& operator=(const FocusEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        FocusEvent& operator=(FocusEvent&&) = delete;
+
+    private:
+        friend AndroidApplication;
+
+        explicit FocusEvent() = default;
 };
 
 /**
