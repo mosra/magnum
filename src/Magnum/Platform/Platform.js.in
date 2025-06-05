@@ -26,7 +26,7 @@
 
 /* JavaScript called by C++ code in EmscriptenApplication and Sdl2Application.
    Doing it this way instead of having it inline with EM_ASM(), because this
-   provides an actually usable way of expressing  dependencies. With EM_ASM()
+   provides an actually usable way of expressing dependencies. With EM_ASM()
    one would instead have to pass
     -s EXPORTED_FUNCTIONS=[...]
    to the linker, and OF COURSE there still isn't a way to combine multiple of
@@ -141,7 +141,6 @@ mergeInto(LibraryManager.library, {
         };
         window.requestAnimationFrame(drawEvent);
     },
-
 });
 
 // kate: hl javascript

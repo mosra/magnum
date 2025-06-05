@@ -59,7 +59,8 @@ function createMagnumModule(init) {
 
         setStatus: function(message) {
             /* Emscripten calls setStatus("") after a timeout even if the app
-                aborts. That would erase the crash message, so don't allow that */
+               aborts. That would erase the crash message, so don't allow
+               that. */
             if(module.status && module.status.innerHTML != "Oops :(")
                 module.status.innerHTML = message;
         },
@@ -101,7 +102,8 @@ function createMagnumModule(init) {
     /* Let the user-supplied object overwrite all the above */
     Object.assign(module, init);
 
-    /* We can do this here because at this point `module.status` should be correct */
+    /* We can do this here because at this point `module.status` should be
+       correct */
     module.setStatus("Downloading...");
 
     return module;
