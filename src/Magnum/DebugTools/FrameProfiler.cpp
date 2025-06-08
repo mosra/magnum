@@ -27,13 +27,11 @@
 #include "FrameProfiler.h"
 
 #include <chrono>
-#include <sstream>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h> /** @todo drop once Debug is stream-free */
 #include <Corrade/Utility/Format.h>
 
 #include "Magnum/Math/Functions.h"
@@ -383,10 +381,19 @@ void FrameProfiler::printStatisticsInternal(Debug& out) const {
 }
 
 Containers::String FrameProfiler::statistics() const {
-    std::ostringstream out;
-    Debug d{&out, Debug::Flag::NoNewlineAtTheEnd|Debug::Flag::DisableColors};
-    printStatisticsInternal(d);
-    return out.str();
+    Containers::String out;
+    /* While both GCC and Clang do the right thing here and call Debug
+       destructor before the String destructor, causing the printed contents to
+       be correctly flushed, MSVC doesn't, leading to the output being empty.
+       This only seems to be fixed with MSVC 2022 and /permissive-, without the
+       flag it's broken too. No idea what's going on, maybe it's some stupid
+       interaction of return value move elision and the other destructor or
+       whatever. Ugh. */
+    {
+        Debug d{&out, Debug::Flag::NoNewlineAtTheEnd|Debug::Flag::DisableColors};
+        printStatisticsInternal(d);
+    }
+    return out;
 }
 
 void FrameProfiler::printStatistics(const UnsignedInt frequency) const {
