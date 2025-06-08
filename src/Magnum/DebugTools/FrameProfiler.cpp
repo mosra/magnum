@@ -714,17 +714,15 @@ DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerG
 Containers::String ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(const DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags) {
     Containers::String out;
 
+    /* Create an array of strings where each is non-empty only if given bit is
+       set and then join them together to have just one allocation */
+    const char* names[Containers::arraySize(DebugTools::FrameProfilerGLValueNames)]{};
     for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i) {
-        const auto bit = DebugTools::FrameProfilerGL::Value(1 << i);
-        if(value & bit) {
-            /** @todo ugh, one allocation per bit, fix when growable String is
-                a thing ... or maybe some "get set bits" utility and then call
-                join just once? */
-            out = " "_s.joinWithoutEmptyParts({out, DebugTools::FrameProfilerGLValueNames[i]});
-        }
+        if(value & DebugTools::FrameProfilerGL::Value(1 << i))
+            names[i] = DebugTools::FrameProfilerGLValueNames[i];
     }
 
-    return out;
+    return " "_s.joinWithoutEmptyParts(names);
 }
 
 DebugTools::FrameProfilerGL::Values ConfigurationValue<DebugTools::FrameProfilerGL::Values>::fromString(const Containers::StringView value, ConfigurationValueFlags) {
