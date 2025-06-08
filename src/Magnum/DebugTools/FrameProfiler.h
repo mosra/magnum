@@ -497,8 +497,8 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler::Measurement {
         } _query;
         void* _state;
         Units _units;
-        /* Set to 0 to distinguish immediate measurements (first
-           constructor), however always used as max(_delay, 1) */
+        /* Set to 0 to distinguish immediate measurements (first constructor),
+           however always used as max(_delay, 1) */
         UnsignedInt _delay;
 
         UnsignedInt _current{};

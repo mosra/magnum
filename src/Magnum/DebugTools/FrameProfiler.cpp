@@ -99,7 +99,7 @@ FrameProfiler& FrameProfiler::operator=(FrameProfiler&& other) noexcept {
         if(measurement._state == &other) measurement._state = this;
 
     /* And the same the other way to avoid the other instance accidentally
-       affecting out measurements */
+       affecting our measurements */
     for(Measurement& measurement: other._measurements)
         if(measurement._state == this) measurement._state = &other;
 
@@ -186,7 +186,7 @@ void FrameProfiler::endFrame() {
     if(++_measuredFrameCount <= _maxFrameCount)
         arrayAppend(_data, NoInit, _measurements.size());
 
-    /* Wrap up measurements for this frame  */
+    /* Wrap up measurements for this frame */
     for(std::size_t i = 0; i != _measurements.size(); ++i) {
         Measurement& measurement = _measurements[i];
         const UnsignedInt measurementDelay = Math::max(1u, measurement._delay);
