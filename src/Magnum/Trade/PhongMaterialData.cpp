@@ -94,7 +94,7 @@ PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientCol
 
     /* Convert back to a non-growable Array as importers don't allow custom
        deleters in plugin implementations */
-    arrayShrink(data, DefaultInit);
+    arrayShrink(data, ValueInit);
     return data;
 }(), importerState} {
     /* The data can't be filled here because it won't be sorted correctly */

@@ -46,9 +46,9 @@ Trade::MaterialData copy(Trade::MaterialData&& material) {
     if(material.attributeDataFlags() >= (Trade::DataFlag::Mutable|Trade::DataFlag::Owned))
         attributes = material.releaseAttributeData();
     else {
-        /* DefaultInit so we don't use a non-default deleter which could cause
+        /* ValueInit so we don't use a non-default deleter which could cause
            problems in plugins */
-        attributes = Containers::Array<Trade::MaterialAttributeData>{DefaultInit, material.attributeData().size()};
+        attributes = Containers::Array<Trade::MaterialAttributeData>{ValueInit, material.attributeData().size()};
         Utility::copy(material.attributeData(), attributes);
     }
 

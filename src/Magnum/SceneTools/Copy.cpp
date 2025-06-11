@@ -83,9 +83,9 @@ Trade::SceneData copy(Trade::SceneData&& scene) {
         a default deleter, but would need to pay attention to not copy items
         to themselves and such */
     } else {
-        /* Using DefaultInit so the array has a default deleter and isn't
+        /* Using ValueInit so the array has a default deleter and isn't
            problematic to use in plugins */
-        fieldData = Containers::Array<Trade::SceneFieldData>{DefaultInit, originalFieldData.size()};
+        fieldData = Containers::Array<Trade::SceneFieldData>{ValueInit, originalFieldData.size()};
         for(std::size_t i = 0; i != originalFieldData.size(); ++i) {
             const Trade::SceneFieldData& originalField = originalFieldData[i];
 

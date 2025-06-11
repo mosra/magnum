@@ -141,9 +141,9 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
         a default deleter, but would need to pay attention to not copy items
         to themselves and such */
     } else {
-        /* Using DefaultInit so the array has a default deleter and isn't
+        /* Using ValueInit so the array has a default deleter and isn't
            problematic to use in plugins */
-        attributeData = Containers::Array<Trade::MeshAttributeData>{DefaultInit, originalAttributeData.size()};
+        attributeData = Containers::Array<Trade::MeshAttributeData>{ValueInit, originalAttributeData.size()};
         for(std::size_t i = 0; i != originalAttributeData.size(); ++i) {
             const Trade::MeshAttributeData& originalAttribute = originalAttributeData[i];
 
