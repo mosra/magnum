@@ -81,7 +81,13 @@ template<class T> class Dual {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit Dual(ZeroInitT) noexcept;
         #else
-        template<class U = T, typename std::enable_if<std::is_standard_layout<U>::value && std::is_trivial<U>::value, int>::type = 0> constexpr explicit Dual(ZeroInitT) noexcept: _real{}, _dual{} {}
+        template<class U = T, typename std::enable_if<
+            #ifdef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+            std::is_standard_layout<U>::value && std::has_trivial_default_constructor<U>::value
+            #else
+            std::is_standard_layout<U>::value && std::is_trivially_constructible<U>::value
+            #endif
+        , int>::type = 0> constexpr explicit Dual(ZeroInitT) noexcept: _real{}, _dual{} {}
         template<class U = T, typename std::enable_if<std::is_constructible<U, ZeroInitT>::value, int>::type = 0>
         constexpr explicit Dual(ZeroInitT) noexcept: _real{ZeroInit}, _dual{ZeroInit} {}
         #endif
@@ -90,7 +96,13 @@ template<class T> class Dual {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit Dual(NoInitT) noexcept;
         #else
-        template<class U = T, typename std::enable_if<std::is_standard_layout<U>::value && std::is_trivial<U>::value, int>::type = 0> explicit Dual(Magnum::NoInitT) noexcept {}
+        template<class U = T, typename std::enable_if<
+            #ifdef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+            std::is_standard_layout<U>::value && std::has_trivial_default_constructor<U>::value
+            #else
+            std::is_standard_layout<U>::value && std::is_trivially_constructible<U>::value
+            #endif
+        , int>::type = 0> explicit Dual(Magnum::NoInitT) noexcept {}
         template<class U = T, typename std::enable_if<std::is_constructible<U, Magnum::NoInitT>::value, int>::type = 0> explicit Dual(Magnum::NoInitT) noexcept: _real{Magnum::NoInit}, _dual{Magnum::NoInit} {}
         #endif
 
