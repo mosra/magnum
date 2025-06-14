@@ -239,7 +239,7 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     #endif
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-        Error() << "Cannot initialize SDL:" << SDL_GetError();
+        Error{} << "Platform::Sdl2Application: could not initialize SDL:" << SDL_GetError();
         std::exit(1);
     }
 
