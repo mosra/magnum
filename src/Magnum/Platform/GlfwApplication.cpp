@@ -95,10 +95,16 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
         .parse(arguments.argc, arguments.argv);
     #endif
 
-    /* Init GLFW */
+    /* GLFW before 3.3 doesn't have glfwGetError(), use glfwSetErrorCallback()
+       even before glfwInit() in that case. It'll be on two lines but better
+       than getting no reason at all. */
+    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 303
     glfwSetErrorCallback([](int, const char* const description) {
-        Error{} << description;
+        Error{} << "Platform::GlfwApplication:" << description;
     });
+    #endif
+
+    /* Init GLFW */
     #ifdef CORRADE_TARGET_APPLE
     /* Don't change current working directory to Resources/ in the app bundle
        on Apple platforms. Not sure why this would be done only on a single
@@ -108,9 +114,25 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, false);
     #endif
     if(!glfwInit()) {
-        Error() << "Could not initialize GLFW";
+        /* On GLFW before 3.3 the error is printed by the callback that's set
+           up above */
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 303
+        Error{} << "Platform::GlfwApplication: could not initialize GLFW";
+        #else
+        const char* error = nullptr;
+        CORRADE_INTERNAL_ASSERT_OUTPUT(glfwGetError(&error) != GLFW_NO_ERROR && error);
+        Error{} << "Platform::GlfwApplication: could not initialize GLFW:" << error;
+        #endif
         std::exit(8);
     }
+
+    /* Set error callback for further errors. On GLFW 3.3+ done after init so
+       we don't print the error message twice. */
+    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+    glfwSetErrorCallback([](int, const char* const description) {
+        Error{} << "Platform::GlfwApplication:" << description;
+    });
+    #endif
 
     /* Save command-line arguments */
     if(args.value("log") == "verbose") _verboseLog = true;
