@@ -50,7 +50,7 @@
    recognize #ifndef, tells me to use #if if I attempt to use #ifdef, and then
    while it does what's expected on 3.1.34, on 3.1.35 it fails on
     ReferenceError: STRUCT_INFO is not defined
-   Ourageously stupid. All of this. So what I do instead is passing this file
+   Outrageously stupid. All of this. So what I do instead is passing this file
    through configure_file() and replacing MagnumPlatform_EMSCRIPTEN_3135_ONLY
    with a // on older versions. */
 

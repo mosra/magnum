@@ -355,7 +355,7 @@ class MAGNUM_TEXT_EXPORT AbstractShaper {
          *
          * The returned view is generally neither
          * @relativeref{Corrade,Containers::StringViewFlag::Global} nor
-         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,NullTerminated} and
          * is only guaranteed to stay valid until the next @ref setLanguage()
          * or @ref shape() call. Particular @ref AbstractFont implementations
          * may give better guarantees, see their documentation for more

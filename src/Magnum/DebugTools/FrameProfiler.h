@@ -755,8 +755,8 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      * @brief Writes enum value as a string
      *
      * If the value is invalid, returns an empty string. The returned view is
-     * always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
-     * and @relativeref{Corrade,Containers::StringViewFlag::Global}.
+     * always @relativeref{Corrade,Containers::StringViewFlag::Global}
+     * and @relativeref{Corrade::Containers::StringViewFlag,NullTerminated}.
      */
     static Containers::StringView toString(Magnum::DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags);
 

@@ -2121,7 +2121,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * The @p filename string is guaranteed to stay in scope until a call
          * to @ref doEndFile(). It's not guaranteed to be
          * @relativeref{Corrade,Containers::StringViewFlag::Global} or
-         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated},
+         * @relativeref{Corrade::Containers::StringViewFlag,NullTerminated},
          * however.
          */
         virtual bool doBeginFile(Containers::StringView filename);

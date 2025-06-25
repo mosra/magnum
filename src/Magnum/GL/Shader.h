@@ -702,9 +702,9 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @ref GL-Shader-errors "compilation error reporting". If it's empty,
          * the function is a no-op.
          *
-         * If the view is both @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
-         * and @relativeref{Corrade,Containers::StringViewFlag::Global}, it's
-         * directly referenced, otherwise a copy is made internally. For
+         * If the view is both @relativeref{Corrade,Containers::StringViewFlag::Global}
+         * and @relativeref{Corrade::Containers::StringViewFlag,NullTerminated},
+         * it's directly referenced, otherwise a copy is made internally. For
          * dynamic strings prefer to use the @ref addSource(Containers::String&&)
          * overload to avoid copies.
          * @see @ref addFile()
