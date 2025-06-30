@@ -72,11 +72,42 @@ template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelSto
     _dataFlags = dataFlags;
 }
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _compressed{true}, _flags{flags}, _compressedStorage{storage}, _compressedFormat{format}, _size{size}, _data{Utility::move(data)}, _importerState{importerState} {
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, format, (
+    /* Have to do it like this to avoid an ungraceful assertion from
+       compressedPixelFormatBlockDataSize() / compressedPixelFormatBlockSize()
+       afterwards */
     #ifndef CORRADE_NO_ASSERT
+    isCompressedPixelFormatImplementationSpecific(format) ?
+        (CORRADE_CONSTEXPR_ASSERT(false, "Trade::ImageData: can't determine block size of an implementation-specific pixel format" << Debug::hex << compressedPixelFormatUnwrap(format) << Debug::nospace << ", pass it explicitly"), Vector3i{}) :
+    #endif
+        compressedPixelFormatBlockSize(format)
+    ), (
+    #ifndef CORRADE_NO_ASSERT
+    isCompressedPixelFormatImplementationSpecific(format) ? 0 :
+    #endif
+        compressedPixelFormatBlockDataSize(format)
+    ), size, Utility::move(data), flags, importerState} {}
+
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _compressed{true}, _flags{flags}, _compressedStorage{storage}, _compressedFormat{format}, _blockSize{Vector3ub{blockSize}}, _blockDataSize{UnsignedByte(blockDataSize)}, _size{size}, _data{Utility::move(data)}, _importerState{importerState} {
+    #ifndef CORRADE_NO_ASSERT
+    const bool passed =
+    Magnum::Implementation::checkBlockProperties("Trade::ImageData:", blockSize, blockDataSize);
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* If the above check fails on a build with graceful assertions, the data
+       size check below could then die on division by zero. Exit early in that
+       case. */
+    /** @todo any better idea to handle this? ugh */
+    if(!passed) return;
+    #else
+    static_cast<void>(passed);
+    #endif
+    Magnum::Implementation::checkBlockPropertiesForStorage("Trade::ImageData:", blockSize, blockDataSize, storage);
+    CORRADE_ASSERT(Magnum::Implementation::compressedImageDataSize(*this) <= _data.size(), "Trade::ImageData: data too small, got" << _data.size() << "but expected at least" << Magnum::Implementation::compressedImageDataSize(*this) << "bytes", );
     Magnum::Implementation::checkImageFlagsForSize("Trade::ImageData:", flags, size);
     #endif
 }
+
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, compressedPixelFormatWrap(format), blockSize, blockDataSize, size, Utility::move(data), flags, importerState} {}
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, format, size, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, flags, importerState} {
     CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
@@ -84,20 +115,25 @@ template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const Compress
     _dataFlags = dataFlags;
 }
 
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, format, blockSize, blockDataSize, size, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, flags, importerState} {
+    CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
+        "Trade::ImageData: can't construct a non-owned instance with" << dataFlags, );
+    _dataFlags = dataFlags;
+}
+
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, compressedPixelFormatWrap(format), blockSize, blockDataSize, size, dataFlags, data, flags, importerState} {}
+
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{{}, format, size, Utility::move(data), flags, importerState} {}
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{{}, format, size, dataFlags, data, flags, importerState} {}
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, compressedPixelFormatWrap(format), size, Utility::move(data), flags, importerState} {}
-
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, compressedPixelFormatWrap(format), size, dataFlags, data, flags, importerState} {}
-
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: _dataFlags{other._dataFlags}, _compressed{Utility::move(other._compressed)}, _flags{Utility::move(other._flags)}, _size{Utility::move(other._size)}, _data{Utility::move(other._data)}, _importerState{Utility::move(other._importerState)} {
     if(_compressed) {
-        new(&_compressedStorage) CompressedPixelStorage{Utility::move(other._compressedStorage)};
-        _compressedFormat = Utility::move(other._compressedFormat);
-    }
-    else {
+        new(&_compressedStorage) CompressedPixelStorage{other._compressedStorage};
+        _compressedFormat = other._compressedFormat;
+        _blockSize = other._blockSize;
+        _blockDataSize = other._blockDataSize;
+    } else {
         new(&_storage) PixelStorage{Utility::move(other._storage)};
         _format = Utility::move(other._format);
         _formatExtra = Utility::move(other._formatExtra);
@@ -116,20 +152,26 @@ template<UnsignedInt dimensions> ImageData<dimensions>& ImageData<dimensions>::o
     swap(_dataFlags, other._dataFlags);
     swap(_compressed, other._compressed);
     swap(_flags, other._flags);
+
     /* Because the CompressedPixelStorage is larger than the
        uncompressed, copy it if either of the sides is compressed to ensure no
        compressed properties are lost. The _storage / _compressedStorage and
        _format / _compressedFormat are unions of trivially copyable contents so
-       copying a type that's not there should be fine. */
+       copying a type that's not there should be fine. Then,
+       _compressedBlockDataSize and _pixelSize have compatible layout, so
+       swapping one with the other is fine, but _compressedBlockSize is smaller
+       than _formatExtra, so swapping _formatExtra always. */
     if(_compressed || other._compressed) {
         swap(_compressedStorage, other._compressedStorage);
         swap(_compressedFormat, other._compressedFormat);
+        swap(_blockDataSize, other._blockDataSize);
     } else {
         swap(_storage, other._storage);
         swap(_format, other._format);
+        swap(_pixelSize, other._pixelSize);
     }
     swap(_formatExtra, other._formatExtra);
-    swap(_pixelSize, other._pixelSize);
+
     swap(_size, other._size);
     swap(_data, other._data);
     swap(_importerState, other._importerState);
@@ -166,9 +208,24 @@ template<UnsignedInt dimensions> UnsignedInt ImageData<dimensions>::pixelSize() 
     return _pixelSize;
 }
 
+template<UnsignedInt dimensions> Vector3i ImageData<dimensions>::blockSize() const {
+    CORRADE_ASSERT(_compressed, "Trade::ImageData::blockSize(): the image is not compressed", {});
+    return Vector3i{_blockSize};
+}
+
+template<UnsignedInt dimensions> UnsignedInt ImageData<dimensions>::blockDataSize() const {
+    CORRADE_ASSERT(_compressed, "Trade::ImageData::blockDataSize(): the image is not compressed", {});
+    return _blockDataSize;
+}
+
 template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> ImageData<dimensions>::dataProperties() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::dataProperties(): the image is compressed", {});
     return Magnum::Implementation::imageDataProperties<dimensions>(*this);
+}
+
+template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> ImageData<dimensions>::compressedDataProperties() const {
+    CORRADE_ASSERT(_compressed, "Trade::ImageData::compressedDataProperties(): the image is not compressed", {});
+    return Magnum::Implementation::compressedImageDataProperties<dimensions>(*this);
 }
 
 template<UnsignedInt dimensions> Containers::ArrayView<char> ImageData<dimensions>::mutableData() & {
@@ -202,20 +259,16 @@ template<UnsignedInt dimensions> ImageData<dimensions>::operator BasicMutableIma
 }
 
 template<UnsignedInt dimensions> ImageData<dimensions>::operator BasicCompressedImageView<dimensions>() const {
-    CORRADE_ASSERT(_compressed, "Trade::ImageData: the image is not compressed", (BasicCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, _size}));
-    return BasicCompressedImageView<dimensions>{
-        _compressedStorage,
-        _compressedFormat, _size, _data, _flags};
+    CORRADE_ASSERT(_compressed, "Trade::ImageData: the image is not compressed", (BasicCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, Vector3i{_blockSize}, _blockDataSize, _size}));
+    return BasicCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, Vector3i{_blockSize}, _blockDataSize, _size, _data, _flags};
 }
 
 template<UnsignedInt dimensions> ImageData<dimensions>::operator BasicMutableCompressedImageView<dimensions>() {
     CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
         "Trade::ImageData: the image is not mutable",
-        (BasicMutableCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, _size}));
-    CORRADE_ASSERT(_compressed, "Trade::ImageData: the image is not compressed", (BasicMutableCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, _size}));
-    return BasicMutableCompressedImageView<dimensions>{
-        _compressedStorage,
-        _compressedFormat, _size, _data, _flags};
+        (BasicMutableCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, Vector3i{_blockSize}, _blockDataSize, _size}));
+    CORRADE_ASSERT(_compressed, "Trade::ImageData: the image is not compressed", (BasicMutableCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, Vector3i{_blockSize}, _blockDataSize, _size}));
+    return BasicMutableCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, Vector3i{_blockSize}, _blockDataSize, _size, _data, _flags};
 }
 
 template<UnsignedInt dimensions> Containers::Array<char> ImageData<dimensions>::release() {

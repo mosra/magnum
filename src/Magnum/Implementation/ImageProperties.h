@@ -49,6 +49,33 @@ inline void checkPixelSize(const char*
         prefix << "expected pixel size to be non-zero and less than 256 but got" << pixelSize, );
 }
 
+inline bool checkBlockProperties(const char*
+    #ifndef CORRADE_STANDARD_ASSERT
+    const prefix
+    #endif
+    , const Vector3i& blockSize, const UnsignedInt blockDataSize)
+{
+    CORRADE_ASSERT((blockSize > Vector3i{}).all() &&
+                   (blockSize < Vector3i{256}).all(),
+        prefix << "expected block size to be greater than zero and less than 256 but got" << Debug::packed << blockSize, {});
+    CORRADE_ASSERT(blockDataSize && blockDataSize < 256,
+        prefix << "expected block data size to be non-zero and less than 256 but got" << blockDataSize, {});
+    return true;
+}
+/* GL::BufferImage has block size statically defined for all known formats so
+   it doesn't need the above, only this */
+inline void checkBlockPropertiesForStorage(const char*
+    #ifndef CORRADE_STANDARD_ASSERT
+    const prefix
+    #endif
+    , const Vector3i& blockSize, const UnsignedInt blockDataSize, const CompressedPixelStorage& storage)
+{
+    CORRADE_ASSERT(storage.compressedBlockSize() == Vector3i{} || storage.compressedBlockSize() == blockSize,
+        prefix << "expected pixel storage block size to be either not set at all or equal to" << Debug::packed << blockSize << "but got" << Debug::packed << storage.compressedBlockSize(), );
+    CORRADE_ASSERT(!storage.compressedBlockDataSize() || UnsignedInt(storage.compressedBlockDataSize()) == blockDataSize,
+        prefix << "expected pixel storage block data size to be either not set at all or equal to" << blockDataSize << "but got" << storage.compressedBlockDataSize(), );
+}
+
 inline void checkImageFlagsForSize(const char*, const ImageFlags1D, const Math::Vector<1, Int>&) {}
 inline void checkImageFlagsForSize(const char*, const ImageFlags2D, const Vector2i&) {}
 inline void checkImageFlagsForSize(const char*
@@ -73,7 +100,8 @@ template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std
 }
 
 /* Used in CompressedPixelStorage::dataProperties(), where it passes the
-   storage-supplied block size */
+   storage-supplied block size, and in compressedImageDataSizeFor() below where
+   it passes the block size from the image */
 inline std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> compressedDataProperties(const CompressedPixelStorage& storage, const Vector3i& blockSize, const UnsignedInt blockDataSize, const Vector3i& size) {
     const Vector3i blockCount = (size + blockSize - Vector3i{1})/blockSize;
     const Math::Vector3<std::size_t> dataSize{
@@ -87,9 +115,17 @@ inline std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> compres
     return std::make_pair(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{});
 }
 
+template<class, class = void> struct CompressedImageTraits;
+template<class T> struct CompressedImageTraits<T, typename std::enable_if<std::is_same<decltype(std::declval<T>().storage()), CompressedPixelStorage>::value>::type> {
+    static CompressedPixelStorage storage(const T& image) { return image.storage(); }
+};
+template<class T> struct CompressedImageTraits<T, typename std::enable_if<std::is_same<decltype(std::declval<T>().storage()), PixelStorage>::value>::type> {
+    static CompressedPixelStorage storage(const T& image) { return image.compressedStorage(); }
+};
+
 /* Used in Compressed*Image::dataProperties() */
 template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> compressedImageDataProperties(const T& image) {
-    std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
+    std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = compressedDataProperties(CompressedImageTraits<T>::storage(image), image.blockSize(), image.blockDataSize(), Vector3i::pad(image.size(), 1));
     return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
 }
 
@@ -126,10 +162,8 @@ template<class T> inline std::size_t imageDataSize(const T& image) {
    where the nv-cubemap-broken-full-compressed-image-query workaround needs to
    go slice by slice, taking offset and incrementing it by size divided by the
    Z dimension. */
-template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
-    CORRADE_INTERNAL_ASSERT(image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize());
-
-    std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(Vector3i::pad(size, 1));
+template<std::size_t dimensions> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const CompressedPixelStorage& storage, const Vector3i& blockSize, const UnsignedInt blockDataSize, const Math::Vector<dimensions, Int>& size) {
+    std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = compressedDataProperties(storage, blockSize, blockDataSize, Vector3i::pad(size, 1));
 
     /* Smallest line/rectangle/cube that covers the area. Same logic as in
        imageDataSizeFor() above. */
@@ -137,18 +171,28 @@ template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> co
     if(dataProperties.first.z())
         dataOffset += dataProperties.first.z();
     else if(dataProperties.first.y()) {
-        if(!image.storage().imageHeight())
+        if(!storage.imageHeight())
             dataOffset += dataProperties.first.y();
     } else if(dataProperties.first.x()) {
-        if(!image.storage().rowLength())
+        if(!storage.rowLength())
             dataOffset += dataProperties.first.x();
     }
-    return {dataOffset, dataProperties.second.product()*image.storage().compressedBlockDataSize()};
+    return {dataOffset, dataProperties.second.product()*blockDataSize};
+}
+
+template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
+    return compressedImageDataOffsetSizeFor(CompressedImageTraits<T>::storage(image), image.blockSize(), image.blockDataSize(), size);
 }
 
 /* Used in image query functions */
 template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
     auto r = compressedImageDataOffsetSizeFor(image, size);
+    return r.first + r.second;
+}
+
+/* Used in data size assertions */
+template<class T> inline std::size_t compressedImageDataSize(const T& image) {
+    auto r = compressedImageDataOffsetSizeFor(image, image.size());
     return r.first + r.second;
 }
 

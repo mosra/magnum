@@ -70,6 +70,8 @@ void BufferImageTest::constructNoCreateCompressed() {
         CORRADE_COMPARE(image.buffer().id(), 0);
         CORRADE_COMPARE(image.size(), Vector2i{});
         CORRADE_COMPARE(image.format(), CompressedPixelFormat{});
+        CORRADE_COMPARE(image.blockSize(), Vector3i{});
+        CORRADE_COMPARE(image.blockDataSize(), 0);
         CORRADE_COMPARE(image.dataSize(), 0);
     }
 

@@ -64,6 +64,8 @@ struct ImageViewTest: TestSuite::Tester {
     void constructInvalidPixelSize();
     void constructInvalidSize();
     void constructInvalidCubeMap();
+    void constructCompressedUnknownImplementationSpecificBlockSize();
+    void constructCompressedInvalidBlockSize();
     void constructCompressedInvalidSize();
     void constructCompressedInvalidCubeMap();
 
@@ -120,6 +122,8 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::constructInvalidPixelSize,
               &ImageViewTest::constructInvalidSize,
               &ImageViewTest::constructInvalidCubeMap,
+              &ImageViewTest::constructCompressedUnknownImplementationSpecificBlockSize,
+              &ImageViewTest::constructCompressedInvalidBlockSize,
               &ImageViewTest::constructCompressedInvalidSize,
               &ImageViewTest::constructCompressedInvalidCubeMap,
 
@@ -160,6 +164,20 @@ namespace GL {
     }
 
     enum class CompressedPixelFormat { RGBS3tcDxt1 = 21 };
+    Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat format) {
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        #endif
+        CORRADE_INTERNAL_ASSERT(format == CompressedPixelFormat::RGBS3tcDxt1);
+        return {4, 4, 1};
+    }
+    UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat format) {
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        #endif
+        CORRADE_INTERNAL_ASSERT(format == CompressedPixelFormat::RGBS3tcDxt1);
+        return 8;
+    }
 }
 
 namespace Vk {
@@ -173,6 +191,22 @@ namespace Vk {
         static_cast<void>(format);
         #endif
         return 12;
+    }
+
+    enum class CompressedPixelFormat { Astc5x5x4RGBAF = 111 };
+    Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat format) {
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        #endif
+        CORRADE_INTERNAL_ASSERT(format == CompressedPixelFormat::Astc5x5x4RGBAF);
+        return {5, 5, 4};
+    }
+    UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat format) {
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        #endif
+        CORRADE_INTERNAL_ASSERT(format == CompressedPixelFormat::Astc5x5x4RGBAF);
+        return 16;
     }
 }
 
@@ -376,27 +410,34 @@ template<class T> void ImageViewTest::constructCompressedGeneric() {
     setTestCaseTemplateName(MutabilityTraits<T>::name());
 
     {
-        T data[8]{};
-        CompressedImageView<2, T> a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data, ImageFlag2D::Array};
-
-        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-        CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
-        CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
-        CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
-        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
-        CORRADE_COMPARE(a.data().size(), 8);
-    } {
-        T data[8]{};
-        CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-            CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
+        T data[6*8]{};
+        CompressedImageView<2, T> a{
+            CompressedPixelFormat::Bc1RGBAUnorm, {12, 8},
             data, ImageFlag2D::Array};
 
         CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-        CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
+        CORRADE_COMPARE(a.storage().rowLength(), 0);
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
-        CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE(a.blockDataSize(), 8);
+        CORRADE_COMPARE(a.size(), (Vector2i{12, 8}));
         CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
-        CORRADE_COMPARE(a.data().size(), 8);
+        CORRADE_COMPARE(a.data().size(), 6*8);
+    } {
+        T data[8*16]{};
+        CompressedImageView<2, T> a{
+            CompressedPixelStorage{}.setRowLength(20),
+            CompressedPixelFormat::Astc5x5x4RGBAF, {15, 10},
+            data, ImageFlag2D::Array};
+
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
+        CORRADE_COMPARE(a.storage().rowLength(), 20);
+        CORRADE_COMPARE(a.format(), CompressedPixelFormat::Astc5x5x4RGBAF);
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+        CORRADE_COMPARE(a.blockDataSize(), 16);
+        CORRADE_COMPARE(a.size(), (Vector2i{15, 10}));
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
+        CORRADE_COMPARE(a.data().size(), 8*16);
     }
 }
 
@@ -404,21 +445,27 @@ template<class T> void ImageViewTest::constructCompressedGenericEmpty() {
     setTestCaseTemplateName(MutabilityTraits<T>::name());
 
     {
-        CompressedImageView<2, T> a{CompressedPixelFormat::Bc1RGBAUnorm, {8, 16}, ImageFlag2D::Array};
+        CompressedImageView<2, T> a{CompressedPixelFormat::Bc1RGBAUnorm, {12, 8}, ImageFlag2D::Array};
 
         CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-        CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
+        CORRADE_COMPARE(a.storage().rowLength(), 0);
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
-        CORRADE_COMPARE(a.size(), (Vector2i{8, 16}));
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE(a.blockDataSize(), 8);
+        CORRADE_COMPARE(a.size(), (Vector2i{12, 8}));
         CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
-        CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-            CompressedPixelFormat::Bc1RGBAUnorm, {8, 16}, ImageFlag2D::Array};
+        CompressedImageView<2, T> a{
+            CompressedPixelStorage{}.setRowLength(20),
+            CompressedPixelFormat::Astc5x5x4RGBAF, {15, 10},
+            ImageFlag2D::Array};
 
         CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-        CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
-        CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
-        CORRADE_COMPARE(a.size(), (Vector2i{8, 16}));
+        CORRADE_COMPARE(a.storage().rowLength(), 20);
+        CORRADE_COMPARE(a.format(), CompressedPixelFormat::Astc5x5x4RGBAF);
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+        CORRADE_COMPARE(a.blockDataSize(), 16);
+        CORRADE_COMPARE(a.size(), (Vector2i{15, 10}));
         CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 }
@@ -428,30 +475,54 @@ template<class T> void ImageViewTest::constructCompressedImplementationSpecific(
 
     /* Format with autodetection */
     {
-        T data[8]{};
-        CompressedImageView<2, T> a{GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4},
+        T data[6*8]{};
+        CompressedImageView<2, T> a{
+            GL::CompressedPixelFormat::RGBS3tcDxt1, {12, 8},
             data, ImageFlag2D::Array};
 
         CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-        CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
+        CORRADE_COMPARE(a.storage().rowLength(), 0);
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-        CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE(a.blockDataSize(), 8);
+        CORRADE_COMPARE(a.size(), (Vector2i{12, 8}));
         CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
-        CORRADE_COMPARE(a.data().size(), 8);
+        CORRADE_COMPARE(a.data().size(), 6*8);
     } {
-        T data[8]{};
-        CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-            GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, data, ImageFlag2D::Array};
+        T data[8*16]{};
+        CompressedImageView<2, T> a{
+            CompressedPixelStorage{}.setRowLength(20),
+            Vk::CompressedPixelFormat::Astc5x5x4RGBAF, {15, 10},
+            data, ImageFlag2D::Array};
 
         CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-        CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
-        CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-        CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
+        CORRADE_COMPARE(a.storage().rowLength(), 20);
+        CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+        CORRADE_COMPARE(a.blockDataSize(), 16);
+        CORRADE_COMPARE(a.size(), (Vector2i{15, 10}));
         CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
-        CORRADE_COMPARE(a.data().size(), 8);
+        CORRADE_COMPARE(a.data().size(), 8*16);
     }
 
-    /* Manual properties not implemented yet */
+    /* Manual block properties */
+    {
+        T data[6*12]{};
+        CompressedImageView<2, T> a{
+            CompressedPixelStorage{}.setRowLength(6),
+            111, {3, 4, 5}, 12, {3, 8}, data, ImageFlag2D::Array};
+
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
+        CORRADE_COMPARE(a.storage().rowLength(), 6);
+        CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+        /* These deliberately don't match what compressedPixelFormatBlockSize()
+           above returns */
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{3, 4, 5}));
+        CORRADE_COMPARE(a.blockDataSize(), 12);
+        CORRADE_COMPARE(a.size(), (Vector2i{3, 8}));
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
+        CORRADE_COMPARE(a.data().size(), 6*12);
+    }
 }
 
 template<class T> void ImageViewTest::constructCompressedImplementationSpecificEmpty() {
@@ -459,25 +530,47 @@ template<class T> void ImageViewTest::constructCompressedImplementationSpecificE
 
     /* Format with autodetection */
     {
-        CompressedImageView<2, T> a{GL::CompressedPixelFormat::RGBS3tcDxt1, {8, 16}, ImageFlag2D::Array};
+        CompressedImageView<2, T> a{
+            GL::CompressedPixelFormat::RGBS3tcDxt1, {12, 8},
+            ImageFlag2D::Array};
 
         CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-        CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
+        CORRADE_COMPARE(a.storage().rowLength(), 0);
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-        CORRADE_COMPARE(a.size(), (Vector2i{8, 16}));
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE(a.blockDataSize(), 8);
+        CORRADE_COMPARE(a.size(), (Vector2i{12, 8}));
         CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
-        CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-            GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 8}, ImageFlag2D::Array};
+        CompressedImageView<2, T> a{
+            CompressedPixelStorage{}.setRowLength(20),
+            Vk::CompressedPixelFormat::Astc5x5x4RGBAF, {15, 10}, ImageFlag2D::Array};
 
         CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-        CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
-        CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-        CORRADE_COMPARE(a.size(), (Vector2i{4, 8}));
+        CORRADE_COMPARE(a.storage().rowLength(), 20);
+        CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+        CORRADE_COMPARE(a.blockDataSize(), 16);
+        CORRADE_COMPARE(a.size(), (Vector2i{15, 10}));
         CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 
-    /* Manual properties not implemented yet */
+    /* Manual block properties */
+    {
+        CompressedImageView<2, T> a{
+            CompressedPixelStorage{}.setRowLength(6),
+            111, {3, 4, 5}, 12, {3, 8}, ImageFlag2D::Array};
+
+        CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
+        CORRADE_COMPARE(a.storage().rowLength(), 6);
+        CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+        /* These deliberately don't match what compressedPixelFormatBlockSize()
+           above returns */
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{3, 4, 5}));
+        CORRADE_COMPARE(a.blockDataSize(), 12);
+        CORRADE_COMPARE(a.size(), (Vector2i{3, 8}));
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
+    }
 }
 
 void ImageViewTest::construct3DFrom1D() {
@@ -549,29 +642,35 @@ void ImageViewTest::construct3DFrom2D() {
 
 void ImageViewTest::constructCompressed3DFrom1D() {
     /* Copied from constructCompressedImplementationSpecific(), as that exposes
-       most fields */
-    /** @todo S3TC doesn't have 1D compression so this might blow up once we
-        check for block sizes */
-    const char data[8]{};
-    /** @todo use a real flag once it exists */
-    CompressedImageView1D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        GL::CompressedPixelFormat::RGBS3tcDxt1, 4, data, ImageFlag1D(0xdea0)};
+       most fields. It's okay to use a 2D format for a 1D image, only the first
+       row of each block gets used. */
+    char data[4*16]{};
+    CompressedImageView1D a{
+        CompressedPixelStorage{}.setRowLength(20),
+        Vk::CompressedPixelFormat::Astc5x5x4RGBAF, 15,
+        data, ImageFlag1D(0xdea0)};
+
     CORRADE_COMPARE(a.flags(), ImageFlag1D(0xdea0));
-    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
-    CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-    CORRADE_COMPARE(a.size(), 4);
+    CORRADE_COMPARE(a.storage().rowLength(), 20);
+    CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+    CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+    CORRADE_COMPARE(a.blockDataSize(), 16);
+    CORRADE_COMPARE(a.size(), 15);
     CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
-    CORRADE_COMPARE(a.data().size(), 8);
+    CORRADE_COMPARE(a.data().size(), 4*16);
 
     /* Not testing the flags parameter here to be sure implicit conversion
        works as well, it's tested in constructCompressed3DFrom2D() below */
     CompressedImageView3D b = a;
     CORRADE_COMPARE(b.flags(), ImageFlag3D(0xdea0));
-    CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
-    CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-    CORRADE_COMPARE(b.size(), (Vector3i{4, 1, 1}));
+    CORRADE_COMPARE(b.storage().rowLength(), 20);
+    CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+    CORRADE_COMPARE(b.blockSize(), (Vector3i{5, 5, 4}));
+    CORRADE_COMPARE(b.blockDataSize(), 16);
+    /* The size doesn't get expanded */
+    CORRADE_COMPARE(b.size(), (Vector3i{15, 1, 1}));
     CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
-    CORRADE_COMPARE(b.data().size(), 8);
+    CORRADE_COMPARE(b.data().size(), 4*16);
 
     /* Conversion the other way is not allowed (will be later, but explicitly
        via a slice<1>() like with StridedArrayView); conversion from const to
@@ -584,25 +683,32 @@ void ImageViewTest::constructCompressed3DFrom1D() {
 void ImageViewTest::constructCompressed3DFrom2D() {
     /* Copied from constructCompressedImplementationSpecific(), as that exposes
        most fields */
-    char data[8*2]{};
-    MutableCompressedImageView2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 8}, data, ImageFlag2D::Array|ImageFlag2D(0xde00)};
+    char data[8*16]{};
+    MutableCompressedImageView2D a{
+        CompressedPixelStorage{}.setRowLength(20),
+        Vk::CompressedPixelFormat::Astc5x5x4RGBAF, {15, 10},
+        data, ImageFlag2D::Array|ImageFlag2D(0xde00)};
+
     CORRADE_COMPARE(a.flags(), ImageFlag2D::Array|ImageFlag2D(0xde00));
-    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
-    CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-    CORRADE_COMPARE(a.size(), (Vector2i{4, 8}));
+    CORRADE_COMPARE(a.storage().rowLength(), 20);
+    CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+    CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+    CORRADE_COMPARE(a.blockDataSize(), 16);
+    CORRADE_COMPARE(a.size(), (Vector2i{15, 10}));
     CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
-    CORRADE_COMPARE(a.data().size(), 8*2);
+    CORRADE_COMPARE(a.data().size(), 8*16);
 
     MutableCompressedImageView3D b = {a, ImageFlag3D(0x00a0)};
     /* The Array flag got implicitly stripped away, the rest got passed through
        and combined with the flags argument */
     CORRADE_COMPARE(b.flags(), ImageFlag3D(0xdea0));
-    CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
-    CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-    CORRADE_COMPARE(b.size(), (Vector3i{4, 8, 1}));
+    CORRADE_COMPARE(b.storage().rowLength(), 20);
+    CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+    CORRADE_COMPARE(b.blockSize(), (Vector3i{5, 5, 4}));
+    CORRADE_COMPARE(b.blockDataSize(), 16);
+    CORRADE_COMPARE(b.size(), (Vector3i{15, 10, 1}));
     CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
-    CORRADE_COMPARE(b.data().size(), 8*2);
+    CORRADE_COMPARE(b.data().size(), 8*16);
 
     /* Conversion the other way is not allowed (will be later, but explicitly
        via a slice<1>() like with StridedArrayView) */
@@ -638,23 +744,30 @@ void ImageViewTest::constructFromMutable() {
 void ImageViewTest::constructCompressedFromMutable() {
     /* Copied from constructCompressedImplementationSpecific(), as that exposes
        most fields */
-    char data[8]{};
-    MutableCompressedImageView2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, data, ImageFlag2D::Array};
+    char data[8*16]{};
+    MutableCompressedImageView2D a{
+        CompressedPixelStorage{}.setRowLength(20),
+        Vk::CompressedPixelFormat::Astc5x5x4RGBAF, {15, 10},
+        data, ImageFlag2D::Array};
+
     CORRADE_COMPARE(a.flags(), ImageFlag2D::Array);
-    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
-    CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-    CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
+    CORRADE_COMPARE(a.storage().rowLength(), 20);
+    CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+    CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+    CORRADE_COMPARE(a.blockDataSize(), 16);
+    CORRADE_COMPARE(a.size(), (Vector2i{15, 10}));
     CORRADE_COMPARE(a.data(), static_cast<const void*>(data));
-    CORRADE_COMPARE(a.data().size(), 8);
+    CORRADE_COMPARE(a.data().size(), 8*16);
 
     CompressedImageView2D b = a;
     CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
-    CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
-    CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
-    CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
+    CORRADE_COMPARE(b.storage().rowLength(), 20);
+    CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(Vk::CompressedPixelFormat::Astc5x5x4RGBAF));
+    CORRADE_COMPARE(b.blockSize(), (Vector3i{5, 5, 4}));
+    CORRADE_COMPARE(b.blockDataSize(), 16);
+    CORRADE_COMPARE(b.size(), (Vector2i{15, 10}));
     CORRADE_COMPARE(b.data(), static_cast<const void*>(data));
-    CORRADE_COMPARE(b.data().size(), 8);
+    CORRADE_COMPARE(b.data().size(), 8*16);
 }
 
 void ImageViewTest::constructUnknownImplementationSpecificPixelSize() {
@@ -729,10 +842,126 @@ void ImageViewTest::constructInvalidCubeMap() {
         "ImageView: expected exactly 6 faces for a cube map, got 5\n");
 }
 
-void ImageViewTest::constructCompressedInvalidSize() {
+void ImageViewTest::constructCompressedUnknownImplementationSpecificBlockSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    CORRADE_EXPECT_FAIL("Size checking for compressed image data is not implemented yet.");
+    char data[1];
+
+    Containers::String out;
+    Error redirectError{&out};
+    CompressedImageView2D{compressedPixelFormatWrap(0x666), {1, 1}, data};
+    CompressedImageView2D{compressedPixelFormatWrap(0x777), {1, 1}};
+    CORRADE_COMPARE_AS(out,
+        "CompressedImageView: can't determine block size of an implementation-specific pixel format 0x666, pass it explicitly\n"
+        /* The next messages are printed because it cannot exit the
+           construction from the middle of the member initializer list. With
+           non-graceful asserts just one message is printed tho. */
+        "compressedPixelFormatBlockSize(): can't determine size of an implementation-specific format 0x666\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {0, 0, 0}\n"
+
+        "CompressedImageView: can't determine block size of an implementation-specific pixel format 0x777, pass it explicitly\n"
+        /* Same */
+        "compressedPixelFormatBlockSize(): can't determine size of an implementation-specific format 0x777\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {0, 0, 0}\n",
+        TestSuite::Compare::String);
+}
+
+void ImageViewTest::constructCompressedInvalidBlockSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This is all okay */
+    char data[8];
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {4, 5, 6}, 8, {1, 1}, data};
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({4, 5, 6})
+        .setCompressedBlockDataSize(8),
+        666, {4, 5, 6}, 8, {1, 1}, data};
+
+    Containers::String out;
+    Error redirectError{&out};
+    /* Zeros */
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {4, 4, 0}, 4, {1, 1}, nullptr};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {4, 4, 0}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {4, 0, 4}, 4, {1, 1}, nullptr};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {4, 0, 4}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {0, 4, 4}, 4, {1, 1}, nullptr};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {0, 4, 4}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {4, 4, 4}, 0, {1, 1}, nullptr};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {4, 4, 4}, 0, {1, 1}};
+    /* Too large */
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {1, 1, 256}, 4, {1, 1}, nullptr};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {1, 1, 256}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {1, 256, 1}, 4, {1, 1}, nullptr};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {1, 256, 1}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {256, 1, 1}, 4, {1, 1}, nullptr};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {256, 1, 1}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {1, 1, 1}, 256, {1, 1}, nullptr};
+    CompressedImageView2D{CompressedPixelStorage{}, 666, {1, 1, 1}, 256, {1, 1}};
+    /* CompressedPixelStorage doesn't match what is passed */
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({4, 5, 5})
+        .setCompressedBlockDataSize(4),
+        666, {4, 5, 6}, 4, {1, 1}, data};
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({4, 5, 5})
+        .setCompressedBlockDataSize(4),
+        666, {4, 5, 6}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({4, 6, 6})
+        .setCompressedBlockDataSize(4),
+        666, {4, 5, 6}, 4, {1, 1}, data};
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({4, 6, 6})
+        .setCompressedBlockDataSize(4),
+        666, {4, 5, 6}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({5, 5, 6})
+        .setCompressedBlockDataSize(4),
+        666, {4, 5, 6}, 4, {1, 1}, data};
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({5, 5, 6})
+        .setCompressedBlockDataSize(4),
+        666, {4, 5, 6}, 4, {1, 1}};
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({4, 5, 6})
+        .setCompressedBlockDataSize(8),
+        666, {4, 5, 6}, 4, {1, 1}, data};
+    CompressedImageView2D{CompressedPixelStorage{}
+        .setCompressedBlockSize({4, 5, 6})
+        .setCompressedBlockDataSize(8),
+        666, {4, 5, 6}, 4, {1, 1}};
+    CORRADE_COMPARE_AS(out,
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {4, 4, 0}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {4, 4, 0}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {4, 0, 4}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {4, 0, 4}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {0, 4, 4}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {0, 4, 4}\n"
+        "CompressedImageView: expected block data size to be non-zero and less than 256 but got 0\n"
+        "CompressedImageView: expected block data size to be non-zero and less than 256 but got 0\n"
+
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {1, 1, 256}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {1, 1, 256}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {1, 256, 1}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {1, 256, 1}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {256, 1, 1}\n"
+        "CompressedImageView: expected block size to be greater than zero and less than 256 but got {256, 1, 1}\n"
+        "CompressedImageView: expected block data size to be non-zero and less than 256 but got 256\n"
+        "CompressedImageView: expected block data size to be non-zero and less than 256 but got 256\n"
+
+        "CompressedImageView: expected pixel storage block size to be either not set at all or equal to {4, 5, 6} but got {4, 5, 5}\n"
+        "CompressedImageView: expected pixel storage block size to be either not set at all or equal to {4, 5, 6} but got {4, 5, 5}\n"
+        "CompressedImageView: expected pixel storage block size to be either not set at all or equal to {4, 5, 6} but got {4, 6, 6}\n"
+        "CompressedImageView: expected pixel storage block size to be either not set at all or equal to {4, 5, 6} but got {4, 6, 6}\n"
+        "CompressedImageView: expected pixel storage block size to be either not set at all or equal to {4, 5, 6} but got {5, 5, 6}\n"
+        "CompressedImageView: expected pixel storage block size to be either not set at all or equal to {4, 5, 6} but got {5, 5, 6}\n"
+        "CompressedImageView: expected pixel storage block data size to be either not set at all or equal to 4 but got 8\n"
+        "CompressedImageView: expected pixel storage block data size to be either not set at all or equal to 4 but got 8\n",
+        TestSuite::Compare::String);
+}
+
+void ImageViewTest::constructCompressedInvalidSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const char data[15]{};
 
@@ -785,18 +1014,16 @@ void ImageViewTest::dataProperties() {
 }
 
 void ImageViewTest::dataPropertiesCompressed() {
-    /* Yes, I know, this is totally bogus and doesn't match the BC1 format */
-    const char data[1]{};
+    const char data[336]{};
     CompressedImageView3D image{
         CompressedPixelStorage{}
-            .setCompressedBlockSize({3, 4, 5})
-            .setCompressedBlockDataSize(16)
-            .setImageHeight(12)
-            .setSkip({5, 8, 11}),
-        CompressedPixelFormat::Bc1RGBAUnorm, {2, 8, 11},
+            .setRowLength(12)
+            .setImageHeight(8)
+            .setSkip({8, 4, 4}),
+        CompressedPixelFormat::Bc1RGBAUnorm, {2, 3, 3},
         data};
     CORRADE_COMPARE(image.dataProperties(),
-        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{2*16, 2*16, 9*16}, {1, 3, 3}}));
+        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{16, 24, 192}, {3, 2, 3}}));
 }
 
 template<class T> void ImageViewTest::setData() {
@@ -811,23 +1038,23 @@ template<class T> void ImageViewTest::setData() {
     CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), PixelFormat::RGB8Snorm);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
-    CORRADE_COMPARE(a.data(), &data2[0]);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(data2));
 }
 
 template<class T> void ImageViewTest::setDataCompressed() {
     setTestCaseTemplateName(MutabilityTraits<T>::name());
 
-    T data[8]{};
+    T data[2*8]{};
     CompressedImageView<2, T> a{
-        CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        CompressedPixelStorage{}.setRowLength(8),
         CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data};
-    T data2[16]{};
+    T data2[2*8]{};
     a.setData(data2);
 
-    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
+    CORRADE_COMPARE(a.storage().rowLength(), 8);
     CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
-    CORRADE_COMPARE(a.data(), &data2[0]);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(data2));
 }
 
 void ImageViewTest::setDataInvalidSize() {
@@ -844,8 +1071,6 @@ void ImageViewTest::setDataInvalidSize() {
 
 void ImageViewTest::setDataCompressedInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
-
-    CORRADE_EXPECT_FAIL("Size checking for compressed image data is not implemented yet.");
 
     const char data[11]{};
 

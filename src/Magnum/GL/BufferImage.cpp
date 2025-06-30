@@ -95,23 +95,32 @@ template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const Pix
 }
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage): CompressedBufferImage{storage, format, size, Buffer{Buffer::TargetHint::PixelPack}, data.size()} {
+    /* Size and block properties checks done in the delegated-to constructor
+       already */
     _buffer.setData(data, usage);
 }
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage): CompressedBufferImage{storage, compressedPixelFormat(format), size, data, usage} {}
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _size{size}, _buffer{Utility::move(buffer)}, _dataSize{dataSize} {}
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _blockSize{Vector3ub(compressedPixelFormatBlockSize(format))}, _blockDataSize{UnsignedByte(compressedPixelFormatBlockDataSize(format))}, _size{size}, _buffer{Utility::move(buffer)}, _dataSize{dataSize} {
+    #ifndef CORRADE_NO_ASSERT
+    Magnum::Implementation::checkBlockPropertiesForStorage("GL::CompressedBufferImage:", Vector3i{_blockSize}, _blockDataSize, storage);
+    CORRADE_ASSERT(Magnum::Implementation::compressedImageDataSize(*this) <= dataSize, "GL::CompressedBufferImage: data too small, got" << dataSize << "but expected at least" << Magnum::Implementation::compressedImageDataSize(*this) << "bytes", );
+    #endif
+}
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: CompressedBufferImage{storage, compressedPixelFormat(format), size, Utility::move(buffer), dataSize} {}
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage): _storage{storage}, _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {
-    /* Not delegating to the (buffer&&, dataSize) constructor to avoid a size
-       assertion that'd happen with certain storage parameters */
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage): _storage{storage}, _format{}, _blockDataSize{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {
+    CORRADE_ASSERT(storage.compressedBlockSize() == Vector3i{},
+        "GL::CompressedBufferImage: expected pixel storage block size to not be set at all but got" << Debug::packed << storage.compressedBlockSize(), );
+    CORRADE_ASSERT(!storage.compressedBlockDataSize(),
+        "GL::CompressedBufferImage: expected pixel storage block data size to not be set at all but got" << storage.compressedBlockDataSize(), );
 }
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(NoCreateT) noexcept: _format{}, _buffer{NoCreate}, _dataSize{} {}
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(NoCreateT) noexcept: _format{}, _blockDataSize{}, _buffer{NoCreate}, _dataSize{} {}
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: _storage{Utility::move(other._storage)}, _format{Utility::move(other._format)}, _size{Utility::move(other._size)}, _buffer{Utility::move(other._buffer)}, _dataSize{Utility::move(other._dataSize)} {
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: _storage{other._storage}, _format{other._format}, _blockSize{other._blockSize}, _blockDataSize{other._blockDataSize}, _size{other._size}, _buffer{Utility::move(other._buffer)}, _dataSize{other._dataSize} {
     other._size = {};
     other._dataSize = {};
 }
@@ -120,6 +129,8 @@ template<UnsignedInt dimensions> CompressedBufferImage<dimensions>& CompressedBu
     using Utility::swap;
     swap(_storage, other._storage);
     swap(_format, other._format);
+    swap(_blockSize, other._blockSize);
+    swap(_blockDataSize, other._blockDataSize);
     swap(_size, other._size);
     swap(_buffer, other._buffer);
     swap(_dataSize, other._dataSize);
@@ -133,10 +144,18 @@ template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t
 template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage) {
     _storage = storage;
     _format = format;
+    _blockSize = Vector3ub(compressedPixelFormatBlockSize(format));
+    _blockDataSize = UnsignedByte(compressedPixelFormatBlockDataSize(format));
     _size = size;
+    #ifndef CORRADE_NO_ASSERT
+    Magnum::Implementation::checkBlockPropertiesForStorage("GL::CompressedBufferImage::setData():", Vector3i{_blockSize}, _blockDataSize, storage);
+    #endif
 
     /* Keep the old storage if zero-sized nullptr buffer was passed */
-    if(!(data.data() == nullptr && data.size() == 0)) {
+    if(data.data() == nullptr && data.size() == 0) {
+        CORRADE_ASSERT(Magnum::Implementation::compressedImageDataSize(*this) <= _dataSize, "GL::CompressedBufferImage::setData(): current storage too small, got" << _dataSize << "but expected at least" << Magnum::Implementation::compressedImageDataSize(*this) << "bytes", );
+    } else {
+        CORRADE_ASSERT(Magnum::Implementation::compressedImageDataSize(*this) <= data.size(), "GL::CompressedBufferImage::setData(): data too small, got" << data.size() << "but expected at least" << Magnum::Implementation::compressedImageDataSize(*this) << "bytes", );
         _buffer.setData(data, usage);
         _dataSize = data.size();
     }

@@ -302,10 +302,10 @@ void PixelStorageTest::dataOffsetSizeCompressed1D() {
     /* Image size in whole blocks, no skip */
     {
         CompressedImageView1D image{
-            CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 1, 1})
-                .setCompressedBlockDataSize(8),
+            CompressedPixelStorage{},
             42069, /* custom format */
+            {5, 1, 1},
+            8,
             1, /* this is ignored, the passed size is used instead */
             data};
         CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, (Math::Vector<1, Int>{55})), (std::pair<std::size_t, std::size_t>{
@@ -316,10 +316,10 @@ void PixelStorageTest::dataOffsetSizeCompressed1D() {
     } {
         CompressedImageView1D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 1, 1})
-                .setCompressedBlockDataSize(8)
                 .setSkip({10, 0, 0}),
             42069,
+            {5, 1, 1},
+            8,
             1,
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Math::Vector<1, Int>{35});
@@ -336,10 +336,10 @@ void PixelStorageTest::dataOffsetSizeCompressed1D() {
     } {
         CompressedImageView1D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 1, 1})
-                .setCompressedBlockDataSize(8)
                 .setSkip({10, 0, 0}),
             42069,
+            {5, 1, 1},
+            8,
             1,
             data};
         CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, (Math::Vector<1, Int>{35})), (std::pair<std::size_t, std::size_t>{
@@ -356,10 +356,10 @@ void PixelStorageTest::dataOffsetSizeCompressed2D() {
     /* Image size in whole blocks, no skip */
     {
         CompressedImageView2D image{
-            CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 1})
-                .setCompressedBlockDataSize(8),
+            CompressedPixelStorage{},
             42069, /* custom format */
+            {5, 4, 1},
+            8,
             {1, 1}, /* this is ignored, the passed size is used instead */
             data};
         CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{55, 28}), (std::pair<std::size_t, std::size_t>{
@@ -370,11 +370,11 @@ void PixelStorageTest::dataOffsetSizeCompressed2D() {
     } {
         CompressedImageView2D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 1})
-                .setCompressedBlockDataSize(8)
                 .setRowLength(45)
                 .setSkip({10, 0, 0}),
             42069,
+            {5, 4, 1},
+            8,
             {1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20});
@@ -392,10 +392,10 @@ void PixelStorageTest::dataOffsetSizeCompressed2D() {
     } {
         CompressedImageView2D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 1})
-                .setCompressedBlockDataSize(8)
                 .setSkip({0, 8, 0}),
             42069,
+            {5, 4, 1},
+            8,
             {1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20});
@@ -412,11 +412,11 @@ void PixelStorageTest::dataOffsetSizeCompressed2D() {
     } {
         CompressedImageView2D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 1})
-                .setCompressedBlockDataSize(8)
                 .setRowLength(45)
                 .setSkip({0, 8, 0}),
             42069,
+            {5, 4, 1},
+            8,
             {1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20});
@@ -433,11 +433,11 @@ void PixelStorageTest::dataOffsetSizeCompressed2D() {
     } {
         CompressedImageView2D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 1})
-                .setCompressedBlockDataSize(8)
                 .setRowLength(45)
                 .setSkip({10, 8, 0}),
             42069,
+            {5, 4, 1},
+            8,
             {1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20});
@@ -454,11 +454,11 @@ void PixelStorageTest::dataOffsetSizeCompressed2D() {
     } {
         CompressedImageView2D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 1})
-                .setCompressedBlockDataSize(8)
                 .setRowLength(41)
                 .setSkip({10, 8, 0}),
             42069,
+            {5, 4, 1},
+            8,
             {1, 1},
             data};
         CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20}), (std::pair<std::size_t, std::size_t>{
@@ -475,10 +475,10 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
     /* Image size in whole blocks, no offset */
     {
         CompressedImageView3D image{
-            CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16),
+            CompressedPixelStorage{},
             42069, /* custom format */
+            {5, 4, 2},
+            16,
             {1, 1, 1}, /* this is ignored, the passed size is used instead */
             data};
         CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{45, 28, 6}), (std::pair<std::size_t, std::size_t>{
@@ -489,11 +489,11 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
     } {
         CompressedImageView3D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
                 .setRowLength(45)
                 .setSkip({10, 0, 0}),
             42069,
+            {5, 4, 2},
+            16,
             {1, 1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
@@ -511,12 +511,12 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
     } {
         CompressedImageView3D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
                 .setRowLength(45)
                 .setImageHeight(28)
                 .setSkip({20, 0, 0}),
             42069,
+            {5, 4, 2},
+            16,
             {1, 1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
@@ -534,11 +534,11 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
     } {
         CompressedImageView3D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
                 .setImageHeight(28)
                 .setSkip({0, 8, 0}),
             42069,
+            {5, 4, 2},
+            16,
             {1, 1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
@@ -556,12 +556,12 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
     } {
         CompressedImageView3D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
                 .setRowLength(45)
                 .setImageHeight(28)
                 .setSkip({0, 8, 0}),
             42069,
+            {5, 4, 2},
+            16,
             {1, 1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
@@ -579,12 +579,12 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
     } {
         CompressedImageView3D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
                 .setRowLength(45)
                 .setImageHeight(28)
                 .setSkip({0, 0, 4}),
             42069,
+            {5, 4, 2},
+            16,
             {1, 1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
@@ -601,12 +601,12 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
     } {
         CompressedImageView3D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
                 .setRowLength(45)
                 .setImageHeight(28)
                 .setSkip({10, 8, 4}),
             42069,
+            {5, 4, 2},
+            16,
             {1, 1, 1},
             data};
         std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
@@ -624,12 +624,12 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
     } {
         CompressedImageView3D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
                 .setRowLength(41)
                 .setImageHeight(27)
                 .setSkip({10, 8, 4}),
             42069,
+            {5, 4, 2},
+            16,
             {1, 1, 1},
             data};
         CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6}), (std::pair<std::size_t, std::size_t>{
@@ -639,9 +639,14 @@ void PixelStorageTest::dataOffsetSizeCompressed3D() {
 }
 
 void PixelStorageTest::dataOffsetSizeCompressedZeroSize() {
-    const CompressedImage3D image{CompressedPixelStorage{}
-        .setCompressedBlockSize({4, 4, 1})
-        .setCompressedBlockDataSize(16)};
+    char data[16];
+    const CompressedImageView3D image{
+        CompressedPixelStorage{},
+        42069, /* custom format */
+        {4, 4, 1},
+        16,
+        {1, 1, 1}, /* this is ignored, the passed size is used instead */
+        data};
     CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{0, 4, 4}),
         (std::pair<std::size_t, std::size_t>{}));
     CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{4, 0, 4}),

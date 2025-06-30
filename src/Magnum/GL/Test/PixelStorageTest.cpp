@@ -48,9 +48,10 @@ void PixelStorageTest::occupiedCompressedImageDataSize() {
        being 55x28x12 */
     const char data[(55/5)*(28/4)*(12/2)*16]{};
 
-    /* If we have no block properties, the passed data size is taken, assuming
-       it's the best bet. Image size or row length and image height isn't taken
-       into account in any way. */
+    /* The size is calculated from block properties and the *image* size, not
+       the supplied row length / image height. This is what GL wants, it has no
+       relation to anything useful. For comparison see the  PixelStorageTest::dataOffsetSizeCompressed() test in the core
+       library. */
     {
         CompressedImageView3D image{
             CompressedPixelStorage{}
@@ -58,41 +59,26 @@ void PixelStorageTest::occupiedCompressedImageDataSize() {
                 .setImageHeight(28)
                 .setSkip({10, 8, 4}),
             42069, /* custom format */
+            {5, 4, 2},
+            16,
             {35, 20, 6},
             data};
-        CORRADE_COMPARE(Implementation::occupiedCompressedImageDataSize(image, 1337), 1337);
-
-    /* If we have block properties, the size is calculated from those and the
-       *image* size, not the supplied row length / image height. This is what
-       GL wants, it has no relation to anything useful. For comparison see the PixelStorageTest::dataOffsetSizeCompressed() test in the core
-       library. */
-    } {
-        CompressedImageView3D image{
-            CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
-                .setRowLength(55)
-                .setImageHeight(28)
-                .setSkip({10, 8, 4}),
-            42069, /* custom format */
-            {35, 20, 6},
-            data};
-        CORRADE_COMPARE(Implementation::occupiedCompressedImageDataSize(image, 1337),
+        CORRADE_COMPARE(Implementation::occupiedCompressedImageDataSize(image),
             (35/5)*(20/4)*(6/2)*16);
 
     /* Same result if the size isn't whole blocks */
     } {
         CompressedImageView3D image{
             CompressedPixelStorage{}
-                .setCompressedBlockSize({5, 4, 2})
-                .setCompressedBlockDataSize(16)
                 .setRowLength(55)
                 .setImageHeight(28)
                 .setSkip({10, 8, 4}),
             42069, /* custom format */
+            {5, 4, 2},
+            16,
             {31, 19, 5},
             data};
-        CORRADE_COMPARE(Implementation::occupiedCompressedImageDataSize(image, 1337),
+        CORRADE_COMPARE(Implementation::occupiedCompressedImageDataSize(image),
             (35/5)*(20/4)*(6/2)*16);
     }
 }

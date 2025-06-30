@@ -730,8 +730,23 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * @param data              Image data
          * @param flags             Image layout flags
          *
-         * For a 3D image, if @p flags contain @ref ImageFlag3D::CubeMap, the
-         * @p size is expected to match its restrictions.
+         * The @p data array is expected to be of proper size for given
+         * parameters. For a 3D image, if @p flags contain
+         * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
+         * restrictions.
+         *
+         * The @p format is expected to not be implementation-specific, use the
+         * @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const Vector3i&, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
+         * overload to explicitly pass pass an implementation-specific
+         * @ref CompressedPixelFormat along with its block properties, or the
+         * @ref CompressedImageView(CompressedPixelStorage, U, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
+         * overload with the original implementation-specific enum type to have
+         * the pixel size determined implicitly.
+         *
+         * @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be either both zero or exactly matching
+         * properties of given @p format.
          */
         explicit CompressedImageView(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -758,6 +773,19 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * assign a memory view to the image. For a 3D image, if @p flags
          * contain @ref ImageFlag3D::CubeMap, the @p size is expected to match
          * its restrictions.
+         *
+         * The @p format is expected to not be implementation-specific, use the
+         * @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const Vector3i&, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
+         * overload to explicitly pass pass an implementation-specific
+         * @ref CompressedPixelFormat along with its block properties, or the
+         * @ref CompressedImageView(CompressedPixelStorage, U, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
+         * overload with the original implementation-specific enum type to have
+         * the pixel size determined implicitly.
+         *
+         * @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be either both zero or exactly matching
+         * properties of given @p format.
          */
         explicit CompressedImageView(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -773,6 +801,94 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
         explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept: CompressedImageView{{}, format, size, flags} {}
 
         /**
+         * @brief Construct a view with an implementation-specific pixel format
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param blockSize         Size of a compressed block in given format,
+         *      in pixels
+         * @param blockDataSize     Size of a compressed block in given format,
+         *      in bytes
+         * @param size              Image size, in pixels
+         * @param data              Image data
+         * @param flags             Image layout flags
+         * @m_since_latest
+         *
+         * Unlike with @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>),
+         * where block size is determined automatically
+         * @ref compressedPixelFormatBlockSize() and
+         * @ref compressedPixelFormatBlockDataSize(), this allows you to
+         * specify an implementation-specific pixel format and block properties
+         * directly. Uses @ref compressedPixelFormatWrap() internally to wrap
+         * @p format in @ref CompressedPixelFormat. The @p blockSize and
+         * @p blockDataSize is expected to be greater than @cpp 0 @ce and less
+         * than @cpp 256 @ce. Note that the blocks can be 3D even for 2D images
+         * and 2D or 3D even for 1D images, in which case only the first slice
+         * in the extra dimensions is used.
+         *
+         * @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be either both zero or exactly matching
+         * @p blockSize and @p blockDataSize.
+         *
+         * The @p data array is expected to be of proper size for given
+         * parameters. For a 3D image, if @p flags contain
+         * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
+         * restrictions.
+         */
+        explicit CompressedImageView(CompressedPixelStorage storage, UnsignedInt format, const Vector3i& blockSize, UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
+
+        /** @overload
+         *
+         * Equivalent to the above for @p format already wrapped with
+         * @ref compressedPixelFormatWrap().
+         */
+        explicit CompressedImageView(CompressedPixelStorage storage, CompressedPixelFormat format, const Vector3i& blockSize, UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
+
+        /**
+         * @brief Construct an empty view with an implementation-specific pixel format
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param blockSize         Size of a compressed block in given format,
+         *      in pixels
+         * @param blockDataSize     Size of a compressed block in given format,
+         *      in bytes
+         * @param size              Image size, in pixels
+         * @param flags             Image layout flags
+         * @m_since_latest
+         *
+         * Unlike with @ref CompressedImageView(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>),
+         * where block size is determined automatically
+         * @ref compressedPixelFormatBlockSize() and
+         * @ref compressedPixelFormatBlockDataSize(), this allows you to
+         * specify an implementation-specific pixel format and block properties
+         * directly. Uses @ref compressedPixelFormatWrap() internally to wrap
+         * @p format in @ref CompressedPixelFormat. The @p blockSize and
+         * @p blockDataSize is expected to be greater than @cpp 0 @ce and less
+         * than @cpp 256 @ce. Note that the blocks can be 3D even for 2D images
+         * and 2D or 3D even for 1D images, in that case only the first slice
+         * in the extra dimensions is used.
+         *
+         * @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be either both zero or exactly matching
+         * @p blockSize and @p blockDataSize.
+         *
+         * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
+         * assign a memory view to the image. For a 3D image, if @p flags
+         * contain @ref ImageFlag3D::CubeMap, the @p size is expected to match
+         * its restrictions.
+         */
+        explicit CompressedImageView(CompressedPixelStorage storage, UnsignedInt format, const Vector3i& blockSize, UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to the above for @p format already wrapped with
+         * @ref compressedPixelFormatWrap().
+         */
+        explicit CompressedImageView(CompressedPixelStorage storage, CompressedPixelFormat format, const Vector3i& blockSize, UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
+
+        /**
          * @brief Construct an image view with implementation-specific format
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
@@ -780,11 +896,10 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * @param data              Image data
          * @param flags             Image layout flags
          *
-         * Uses @ref compressedPixelFormatWrap() internally to convert
-         * @p format to @ref CompressedPixelFormat.
-         *
-         * For a 3D image, if @p flags contain @ref ImageFlag3D::CubeMap, the
-         * @p size is expected to match its restrictions.
+         * Uses ADL to find a corresponding @cpp compressedPixelFormatBlockSize(U) @ce
+         * and @cpp compressedPixelFormatBlockDataSize(U) @ce overloads, then
+         * calls @ref CompressedImageView(CompressedPixelStorage, UnsignedInt, const Vector3i&, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>, ImageFlags<dimensions>)
+         * with determined block size properties.
          */
         template<class U> explicit CompressedImageView(CompressedPixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -807,13 +922,10 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * @param size              Image size
          * @param flags             Image layout flags
          *
-         * Uses @ref compressedPixelFormatWrap() internally to convert
-         * @p format to @ref CompressedPixelFormat.
-         *
-         * Data pointer is set to @cpp nullptr @ce, call @ref setData() to
-         * assign a memory view to the image. For a 3D image, if @p flags
-         * contain @ref ImageFlag3D::CubeMap, the @p size is expected to match
-         * its restrictions.
+         * Uses ADL to find a corresponding @cpp compressedPixelFormatBlockSize(U) @ce
+         * and @cpp compressedPixelFormatBlockDataSize(U) @ce overloads, then
+         * calls @ref CompressedImageView(CompressedPixelStorage, UnsignedInt, const Vector3i&, UnsignedInt, const VectorTypeFor<dimensions, Int>&, ImageFlags<dimensions>)
+         * with determined block size properties.
          */
         template<class U> explicit CompressedImageView(CompressedPixelStorage storage, U format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags = {}) noexcept;
 
@@ -874,6 +986,25 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          */
         CompressedPixelFormat format() const { return _format; }
 
+        /**
+         * @brief Size of a compressed block in pixels
+         * @m_since_latest
+         *
+         * Note that the blocks can be 3D even for 2D images and 2D or 3D even
+         * for 1D images, in which case only the first slice in the extra
+         * dimensions is used.
+         * @see @ref blockDataSize(), @ref compressedPixelFormatBlockSize()
+         */
+        Vector3i blockSize() const { return Vector3i{_blockSize}; }
+
+        /**
+         * @brief Size of a compressed block in bytes
+         * @m_since_latest
+         *
+         * @see @ref blockSize(), @ref compressedPixelFormatBlockDataSize()
+         */
+        UnsignedInt blockDataSize() const { return _blockDataSize; }
+
         /** @brief Image size in pixels */
         /* Unlike other getters this one is a const& so it's possible to slice
            to the sizes when all images are in an array, for example for use
@@ -897,22 +1028,20 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * The data array is expected to be of proper size for parameters
          * specified in the constructor.
          */
-        void setData(Containers::ArrayView<ErasedType> data) {
-            _data = {reinterpret_cast<Type*>(data.data()), data.size()};
-        }
+        void setData(Containers::ArrayView<ErasedType> data);
 
     private:
         /* Needed for mutable->const conversion */
         template<UnsignedInt, class> friend class CompressedImageView;
 
-        /* To be made public once block size and block data size are stored
-           together with the image */
-        explicit CompressedImageView(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<ErasedType> data, ImageFlags<dimensions> flags) noexcept;
-        explicit CompressedImageView(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, ImageFlags<dimensions> flags) noexcept;
-
         CompressedPixelStorage _storage;
         CompressedPixelFormat _format;
         ImageFlags<dimensions> _flags;
+        /* Largest blocks are 12x12 in ASTC and at most 32 bytes, so an 8-bit
+           type should be more than enough. As even 1D images can have 3D
+           blocks, the member isn't dependent on dimension count. */
+        Vector3ub _blockSize;
+        UnsignedByte _blockDataSize;
         VectorTypeFor<dimensions, Int> _size;
         Containers::ArrayView<Type> _data;
 };
@@ -1024,12 +1153,12 @@ template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, 
 template<UnsignedInt dimensions, class T> template<class U, typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value, int>::type> ImageView<dimensions, T>::ImageView(const ImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _formatExtra{other._formatExtra}, _pixelSize{other._pixelSize}, _flags{other._flags}, _size{other._size}, _data{other._data} {}
 #endif
 
-template<UnsignedInt dimensions, class T> template<class U> inline  CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, UnsignedInt(format), size, data, flags} {
+template<UnsignedInt dimensions, class T> template<class U> inline  CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, UnsignedInt(format), compressedPixelFormatBlockSize(format), compressedPixelFormatBlockDataSize(format), size, data, flags} {
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions, class T> template<class U> inline CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, UnsignedInt(format), size, flags} {
+template<UnsignedInt dimensions, class T> template<class U> inline CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, UnsignedInt(format), compressedPixelFormatBlockSize(format), compressedPixelFormatBlockDataSize(format), size, flags} {
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
@@ -1040,10 +1169,12 @@ template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, 
     _format{other._format},
     /* Removing the Array bit and transferring the rest, as documented */
     _flags{ImageFlag<dimensions>(UnsignedShort(other._flags)&~UnsignedShort(ImageFlag2D::Array))|flags},
+    _blockSize{other._blockSize},
+    _blockDataSize{other._blockDataSize},
     _size{Math::Vector<dimensions, Int>::pad(other._size, 1)},
     _data{other._data} {}
 
-template<UnsignedInt dimensions, class T> template<class U, typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value, int>::type> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _flags{other._flags}, _size{other._size}, _data{other._data} {}
+template<UnsignedInt dimensions, class T> template<class U, typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value, int>::type> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _flags{other._flags}, _blockSize{other._blockSize}, _blockDataSize{other._blockDataSize}, _size{other._size}, _data{other._data} {}
 #endif
 
 }

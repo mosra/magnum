@@ -68,24 +68,64 @@ template<UnsignedInt dimensions, class T> auto ImageView<dimensions, T>::pixels(
     return Implementation::imagePixelView<dimensions, Type>(*this, data());
 }
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, format, (CORRADE_CONSTEXPR_ASSERT(!isCompressedPixelFormatImplementationSpecific(format), "CompressedImageView: can't determine block size of an implementation-specific pixel format" << Debug::hex << compressedPixelFormatUnwrap(format) << Debug::nospace << ", pass it explicitly"), compressedPixelFormatBlockSize(format)), (
+    /* Have to do it like this to ensure the above assertion is printed before
+       the subsequent one from compressedPixelFormatBlockDataSize(), as
+       compilers are free to reorder these as they want */
     #ifndef CORRADE_NO_ASSERT
+    isCompressedPixelFormatImplementationSpecific(format) ? 0 :
+    #endif
+        compressedPixelFormatBlockDataSize(format)
+), size, data, flags} {}
+
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _blockSize{Vector3ub{blockSize}}, _blockDataSize{UnsignedByte(blockDataSize)}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {
+    #ifndef CORRADE_NO_ASSERT
+    const bool passed =
+    Implementation::checkBlockProperties("CompressedImageView:", blockSize, blockDataSize);
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* If the above check fails on a build with graceful assertions, the data
+       size check below could then die on division by zero. Exit early in that
+       case. */
+    /** @todo any better idea to handle this? ugh */
+    if(!passed) return;
+    #else
+    static_cast<void>(passed);
+    #endif
+    Implementation::checkBlockPropertiesForStorage("CompressedImageView:", blockSize, blockDataSize, storage);
+    CORRADE_ASSERT(Implementation::compressedImageDataSize(*this) <= data.size(), "CompressedImageView: data too small, got" << data.size() << "but expected at least" << Implementation::compressedImageDataSize(*this) << "bytes", );
     Implementation::checkImageFlagsForSize("CompressedImageView:", flags, size);
     #endif
 }
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _size{size} {
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), blockSize, blockDataSize, size, data, flags} {}
+
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _blockSize{Vector3ub{blockSize}}, _blockDataSize{UnsignedByte(blockDataSize)}, _size{size} {
     #ifndef CORRADE_NO_ASSERT
+    Implementation::checkBlockProperties("CompressedImageView:", blockSize, blockDataSize);
+    Implementation::checkBlockPropertiesForStorage("CompressedImageView:", blockSize, blockDataSize, storage);
     Implementation::checkImageFlagsForSize("CompressedImageView:", flags, size);
     #endif
 }
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size, data, flags} {}
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), blockSize, blockDataSize, size, flags} {}
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size, flags} {}
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const ImageFlags<dimensions> flags) noexcept: CompressedImageView{storage, format, (CORRADE_CONSTEXPR_ASSERT(!isCompressedPixelFormatImplementationSpecific(format), "CompressedImageView: can't determine block size of an implementation-specific pixel format" << Debug::hex << compressedPixelFormatUnwrap(format) << Debug::nospace << ", pass it explicitly"), compressedPixelFormatBlockSize(format)), (
+    /* Have to do it like this to ensure the above assertion is printed before
+       the subsequent one from compressedPixelFormatBlockDataSize(), as
+       compilers are free to reorder these as they want */
+    #ifndef CORRADE_NO_ASSERT
+    isCompressedPixelFormatImplementationSpecific(format) ? 0 :
+    #endif
+        compressedPixelFormatBlockDataSize(format)
+), size, flags} {}
 
 template<UnsignedInt dimensions, class T> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> CompressedImageView<dimensions, T>::dataProperties() const {
     return Implementation::compressedImageDataProperties<dimensions>(*this);
+}
+
+template<UnsignedInt dimensions, class T> void CompressedImageView<dimensions, T>::setData(const Containers::ArrayView<ErasedType> data) {
+    CORRADE_ASSERT(Implementation::compressedImageDataSize(*this) <= data.size(), "CompressedImageView::setData(): data too small, got" << data.size() << "but expected at least" << Implementation::compressedImageDataSize(*this) << "bytes", );
+    _data = {reinterpret_cast<Type*>(data.data()), data.size()};
 }
 
 template class MAGNUM_EXPORT ImageView<1, const char>;

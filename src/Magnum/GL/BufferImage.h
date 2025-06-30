@@ -454,6 +454,12 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
+         * The @p data array is expected to be of proper size for given
+         * parameters. @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be either both zero or exactly matching
+         * properties of given @p format.
+         *
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
@@ -507,6 +513,12 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param buffer            Buffer
          * @param dataSize          Buffer data size
          *
+         * The @p dataSize is expected to be of proper size for given
+         * parameters. @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be either both zero or exactly matching
+         * properties of given @p format.
+         *
          * If @p dataSize is @cpp 0 @ce, the buffer is unconditionally
          * reallocated on the first call to @ref setData().
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
@@ -558,8 +570,12 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @brief Construct an image placeholder
          * @param storage           Storage of compressed pixel data
          *
-         * Format is undefined, size is zero and buffer is empty, call
-         * @ref setData() to fill the image with data.
+         * Format and block properties are undefined, size is zero and buffer
+         * is empty. Call @ref setData() to fill the image with data.
+         *
+         * @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be both zero.
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
@@ -607,6 +623,25 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
 
         /** @brief Format of compressed pixel data */
         CompressedPixelFormat format() const { return _format; }
+
+        /**
+         * @brief Size of a compressed block in pixels
+         * @m_since_latest
+         *
+         * Note that the blocks can be 3D even for 2D images and 2D or 3D even
+         * for 1D images, in which case only the first slice in the extra
+         * dimensions is used.
+         * @see @ref blockDataSize(), @ref compressedPixelFormatBlockSize()
+         */
+        Vector3i blockSize() const { return Vector3i{_blockSize}; }
+
+        /**
+         * @brief Size of a compressed block in bytes
+         * @m_since_latest
+         *
+         * @see @ref blockSize(), @ref compressedPixelFormatBlockDataSize()
+         */
+        UnsignedInt blockDataSize() const { return _blockDataSize; }
 
         /** @brief Image size */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
@@ -706,6 +741,11 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
     private:
         CompressedPixelStorage _storage;
         CompressedPixelFormat _format;
+        /* Largest blocks are 12x12 in ASTC and at most 32 bytes, so an 8-bit
+           type should be more than enough. As even 1D images can have 3D
+           blocks, the member isn't dependent on dimension count. */
+        Vector3ub _blockSize;
+        UnsignedByte _blockDataSize;
         Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
         std::size_t _dataSize;

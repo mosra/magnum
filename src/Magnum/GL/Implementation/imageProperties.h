@@ -26,7 +26,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/PixelStorage.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
 
@@ -40,18 +40,11 @@ namespace Magnum { namespace GL { namespace Implementation {
    ARB_compressed_texture_pixel_storage (which makes skip, row length etc.
    possible for compressed formats) didn't bother thinking about what the
    existing parameter is for, just left it unchanged, and nobody else in the
-   commitee bothered either.
+   commitee bothered either. */
+template<class T> std::size_t occupiedCompressedImageDataSize(const T& image) {
+    const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(image.size(), 1) + image.blockSize() - Vector3i{1})/image.blockSize()};
 
-   In case the block size properties aren't set, the actual image data size is
-   used as a backup, which might still be correct in most cases. */
-template<class T> std::size_t occupiedCompressedImageDataSize(const T& image, std::size_t dataSize) {
-    if(image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize()) {
-        const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(image.size(), 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
-
-        return realBlockCount.product()*image.storage().compressedBlockDataSize();
-    }
-
-    return dataSize;
+    return realBlockCount.product()*image.blockDataSize();
 }
 
 }}}

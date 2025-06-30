@@ -177,31 +177,40 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
             return !operator==(other);
         }
 
-        /** @brief Compressed block size */
+        /** @brief Compressed block size in pixels */
         constexpr Vector3i compressedBlockSize() const { return _blockSize; }
 
         /**
-         * @brief Set compressed block size
+         * @brief Set compressed block size in pixels
          *
-         * If set to @cpp 0 @ce for given dimension, size information from
-         * particular compressed format is used. Default is @cpp 0 @ce in all
-         * dimensions.
-         * @see @ref Magnum::compressedPixelFormatBlockSize()
+         * Expected to either match size information for a particular
+         * compressed format of image the storage is used with or be set to
+         * @cpp 0 @ce. Default is @cpp 0 @ce in all dimensions.
+         * @see @ref compressedPixelFormatBlockSize(),
+         *      @ref CompressedImageView::blockSize(),
+         *      @ref CompressedImage::blockSize(),
+         *      @ref Trade::ImageData::compressedBlockSize(),
+         *      @ref GL::CompressedBufferImage::blockSize(),
          */
         CompressedPixelStorage& setCompressedBlockSize(const Vector3i& size) {
             _blockSize = size;
             return *this;
         }
 
-        /** @brief Compressed block data size (in bytes) */
+        /** @brief Compressed block data size in bytes */
         constexpr Int compressedBlockDataSize() const { return _blockDataSize; }
 
         /**
-         * @brief Set compressed block data size (in bytes)
+         * @brief Set compressed block data size in bytes
          *
-         * If set to @cpp 0 @ce, size information from particular compressed
-         * format is used. Default is @cpp 0 @ce in all dimensions.
-         * @see @ref Magnum::compressedPixelFormatBlockDataSize()
+         * Expected to either match size information for a particular
+         * compressed format of image the storage is used with or be set to
+         * @cpp 0 @ce. Default is @cpp 0 @ce.
+         * @see @ref compressedPixelFormatBlockDataSize(),
+         *      @ref CompressedImageView::blockDataSize(),
+         *      @ref CompressedImage::blockDataSize(),
+         *      @ref Trade::ImageData::compressedBlockDataSize(),
+         *      @ref GL::CompressedBufferImage::blockSize(),
          */
         CompressedPixelStorage& setCompressedBlockDataSize(Int size) {
             _blockDataSize = size;

@@ -476,6 +476,24 @@ template<UnsignedInt dimensions> class ImageData {
          * @param flags             Image layout flags
          * @param importerState     Importer-specific state
          * @m_since_latest
+         *
+         * The @p data array is expected to be of proper size for given
+         * parameters. For a 3D image, if @p flags contain
+         * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
+         * restrictions.
+         *
+         * The @p format is expected to not be implementation-specific, use the
+         * @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const Vector3i&, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * overload to explicitly pass pass an implementation-specific
+         * @ref CompressedPixelFormat along with its block properties, or the
+         * @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * overload with the original implementation-specific enum type to have
+         * the pixel size determined implicitly.
+         *
+         * @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be either both zero or exactly matching
+         * properties of given @p format.
          */
         explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 
@@ -564,7 +582,53 @@ template<UnsignedInt dimensions> class ImageData {
         #endif
 
         /**
-         * @brief Construct a compressed image data
+         * @brief Construct a compressed image data with an implementation-specific pixel format
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param blockSize         Size of a compressed block in given format,
+         *      in pixels
+         * @param blockDataSize     Size of a compressed block in given format,
+         *      in bytes
+         * @param size              Image size, in pixels
+         * @param data              Image data
+         * @param flags             Image layout flags
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Unlike with @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*),
+         * where block size is determined automatically
+         * @ref compressedPixelFormatBlockSize() and
+         * @ref compressedPixelFormatBlockDataSize(), this allows you to
+         * specify an implementation-specific pixel format and block properties
+         * directly. Uses @ref compressedPixelFormatWrap() internally to wrap
+         * @p format in @ref CompressedPixelFormat. The @p blockSize and
+         * @p blockDataSize is expected to be greater than @cpp 0 @ce and less
+         * than @cpp 256 @ce. Note that the blocks can be 3D even for 2D images
+         * and 2D or 3D even for 1D images, in which case only the first slice
+         * in the extra dimensions is used.
+         *
+         * @ref CompressedPixelStorage::compressedBlockSize() and
+         * @relativeref{CompressedPixelStorage,compressedBlockDataSize()} in
+         * @p storage are expected to be either both zero or exactly matching
+         * @p blockSize and @p blockDataSize.
+         *
+         * The @p data array is expected to be of proper size for given
+         * parameters. For a 3D image, if @p flags contain
+         * @ref ImageFlag3D::CubeMap, the @p size is expected to match its
+         * restrictions.
+         */
+        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const Vector3i& blockSize, UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to the above for @p format already wrapped with
+         * @ref compressedPixelFormatWrap().
+         */
+        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const Vector3i& blockSize, UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct a compressed image data with an implementation-specific format
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
          * @param size              Image size
@@ -573,11 +637,10 @@ template<UnsignedInt dimensions> class ImageData {
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
-         * Uses @ref compressedPixelFormatWrap() internally to convert
-         * @p format to @ref CompressedPixelFormat.
-         *
-         * For a 3D image, if @p flags contain @ref ImageFlag3D::CubeMap, the
-         * @p size is expected to match its restrictions.
+         * Uses ADL to find a corresponding @cpp compressedPixelFormatBlockSize(T) @ce
+         * and @cpp compressedPixelFormatBlockDataSize(T) @ce overloads, then
+         * calls @ref ImageData(CompressedPixelStorage, UnsignedInt, const Vector3i&, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * with determined block size properties.
          */
         template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 
@@ -591,7 +654,38 @@ template<UnsignedInt dimensions> class ImageData {
         #endif
 
         /**
-         * @brief Construct a non-owned compressed image data
+         * @brief Construct a non-owned compressed image data with an implementation-specific pixel format
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param blockSize         Size of a compressed block in given format,
+         *      in pixels
+         * @param blockDataSize     Size of a compressed block in given format,
+         *      in bytes
+         * @param size              Image size, in pixels
+         * @param dataFlags         Data flags
+         * @param data              Image data
+         * @param flags             Image layout flags
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(CompressedPixelStorage, UnsignedInt, const Vector3i&, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const Vector3i& blockSize, UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to the above for @p format already wrapped with
+         * @ref compressedPixelFormatWrap().
+         */
+        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const Vector3i& blockSize, UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct a non-owned compressed image data with implementation-specific format
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
          * @param size              Image size
@@ -601,11 +695,10 @@ template<UnsignedInt dimensions> class ImageData {
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
-         * Compared to @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
-         * creates an instance that doesn't own the passed data. The
-         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
-         * indicate the external data can be modified, and is expected to *not*
-         * have @ref DataFlag::Owned set.
+         * Uses ADL to find a corresponding @cpp compressedPixelFormatBlockSize(T) @ce
+         * and @cpp compressedPixelFormatBlockDataSize(T) @ce overloads, then
+         * calls @ref ImageData(CompressedPixelStorage, UnsignedInt, const Vector3i&, UnsignedInt, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, ImageFlags<dimensions>, const void*)
+         * with determined block size properties.
          */
         template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags = {}, const void* importerState = nullptr) noexcept;
 
@@ -759,6 +852,28 @@ template<UnsignedInt dimensions> class ImageData {
          */
         UnsignedInt pixelSize() const;
 
+        /**
+         * @brief Size of a block in pixels
+         * @m_since_latest
+         *
+         * The image is expected to be compressed. Note that the blocks can be
+         * 3D even for 2D images and 2D or 3D even for 1D images, in which case
+         * only the first slice in the extra dimensions is used.
+         * @see @ref isCompressed(), @ref blockDataSize(),
+         *      @ref compressedPixelFormatBlockSize()
+         */
+        Vector3i blockSize() const;
+
+        /**
+         * @brief Size of a block in bytes
+         * @m_since_latest
+         *
+         * The image is expected to be compressed.
+         * @see @ref isCompressed(), @ref blockSize(),
+         *      @ref compressedPixelFormatBlockDataSize()
+         */
+        UnsignedInt blockDataSize() const;
+
         /** @brief Image size in pixels */
         /* Unlike other getters this one is a const& so it's possible to slice
            to the sizes when all images are in an array, for example for use
@@ -774,9 +889,15 @@ template<UnsignedInt dimensions> class ImageData {
          */
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
-        /* compressed data properties are not available because the importers
-           are not setting any block size pixel storage properties to avoid
-           needless state changes -- thus the calculation can't be done */
+        /**
+         * @brief Compressed image data properties
+         * @m_since_latest
+         *
+         * The image is expected to be compressed. See
+         * @ref CompressedPixelStorage::dataProperties() for more information.
+         * @see @ref isCompressed()
+         */
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> compressedDataProperties() const;
 
         /**
          * @brief Raw image data
@@ -896,10 +1017,6 @@ template<UnsignedInt dimensions> class ImageData {
         friend AbstractImporter;
         friend AbstractImageConverter;
 
-        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags, const void* importerState = nullptr) noexcept;
-
-        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, ImageFlags<dimensions> flags, const void* importerState = nullptr) noexcept;
-
         DataFlags _dataFlags;
         bool _compressed;
         ImageFlags<dimensions> _flags;
@@ -911,8 +1028,14 @@ template<UnsignedInt dimensions> class ImageData {
             PixelFormat _format;
             CompressedPixelFormat _compressedFormat;
         };
-        UnsignedInt _formatExtra;
-        UnsignedByte _pixelSize;
+        union {
+            UnsignedInt _formatExtra;
+            Vector3ub _blockSize;
+        };
+        union {
+            UnsignedByte _pixelSize;
+            UnsignedByte _blockDataSize;
+        };
         /* 3 bytes free */
         VectorTypeFor<dimensions, Int> _size;
         Containers::Array<char> _data;
@@ -948,12 +1071,12 @@ template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageD
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, Utility::move(data), flags, importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), compressedPixelFormatBlockSize(format), compressedPixelFormatBlockDataSize(format), size, Utility::move(data), flags, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, dataFlags, data, flags, importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), compressedPixelFormatBlockSize(format), compressedPixelFormatBlockDataSize(format), size, dataFlags, data, flags, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
