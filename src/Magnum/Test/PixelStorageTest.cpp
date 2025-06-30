@@ -25,9 +25,11 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo drop once std::pair isn't used (i.e., the whole PixelStorage crap ceases to exist) */
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/PixelStorage.h"
 #include "Magnum/Implementation/ImageProperties.h"
@@ -48,12 +50,16 @@ struct PixelStorageTest: TestSuite::Tester {
     void dataSize1D();
     void dataSize2D();
     void dataSize3D();
+    void dataSizeZeroSize();
 
     void dataPropertiesCompressed();
     void dataPropertiesCompressedRowLength();
     void dataPropertiesCompressedImageHeight();
 
-    void dataOffsetSizeCompressed();
+    void dataOffsetSizeCompressed1D();
+    void dataOffsetSizeCompressed2D();
+    void dataOffsetSizeCompressed3D();
+    void dataOffsetSizeCompressedZeroSize();
 };
 
 typedef Math::Vector3<std::size_t> Vector3st;
@@ -70,12 +76,16 @@ PixelStorageTest::PixelStorageTest() {
               &PixelStorageTest::dataSize1D,
               &PixelStorageTest::dataSize2D,
               &PixelStorageTest::dataSize3D,
+              &PixelStorageTest::dataSizeZeroSize,
 
               &PixelStorageTest::dataPropertiesCompressed,
               &PixelStorageTest::dataPropertiesCompressedRowLength,
               &PixelStorageTest::dataPropertiesCompressedImageHeight,
 
-              &PixelStorageTest::dataOffsetSizeCompressed});
+              &PixelStorageTest::dataOffsetSizeCompressed1D,
+              &PixelStorageTest::dataOffsetSizeCompressed2D,
+              &PixelStorageTest::dataOffsetSizeCompressed3D,
+              &PixelStorageTest::dataOffsetSizeCompressedZeroSize});
 }
 
 void PixelStorageTest::compare() {
@@ -246,6 +256,13 @@ void PixelStorageTest::dataSize3D() {
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image3, Vector3i{64, 64, 64}), 8388608);
 }
 
+void PixelStorageTest::dataSizeZeroSize() {
+    const Image3D image{PixelFormat::RGBA8Unorm};
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{0, 64, 64}), 0);
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{64, 0, 64}), 0);
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{64, 64, 0}), 0);
+}
+
 void PixelStorageTest::dataPropertiesCompressed() {
     CompressedPixelStorage storage;
     storage.setCompressedBlockSize({3, 4, 5})
@@ -277,16 +294,360 @@ void PixelStorageTest::dataPropertiesCompressedImageHeight() {
         (std::pair<Vector3st, Vector3st>{{2*16, 2*16, 9*16}, {1, 3, 3}}));
 }
 
-void PixelStorageTest::dataOffsetSizeCompressed() {
-    /* The same parameters as in PixelStorageGLTest 3D case */
+void PixelStorageTest::dataOffsetSizeCompressed1D() {
+    /* Assuming a custom 5-pixel block format with 8-byte blocks, with the
+       whole image being 45 pixels wide */
+    const char data[(45/5)*8]{};
+
+    /* Image size in whole blocks, no skip */
+    {
+        CompressedImageView1D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 1, 1})
+                .setCompressedBlockDataSize(8),
+            42069, /* custom format */
+            1, /* this is ignored, the passed size is used instead */
+            data};
+        CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, (Math::Vector<1, Int>{55})), (std::pair<std::size_t, std::size_t>{
+            0,
+            (55/5)*8}));
+
+    /* Skip */
+    } {
+        CompressedImageView1D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 1, 1})
+                .setCompressedBlockDataSize(8)
+                .setSkip({10, 0, 0}),
+            42069,
+            1,
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Math::Vector<1, Int>{35});
+        /* The total size shouldn't overflow the 45 block line */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*8);
+        /* The size should be an exact amount of blocks */
+        CORRADE_COMPARE_AS(out.second, 8, TestSuite::Compare::Divisible);
+        /* Check the exact values */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            (10/5)*8,
+            (35/5)*8}));
+
+    /* Row length not whole blocks, should result in the same */
+    } {
+        CompressedImageView1D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 1, 1})
+                .setCompressedBlockDataSize(8)
+                .setSkip({10, 0, 0}),
+            42069,
+            1,
+            data};
+        CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, (Math::Vector<1, Int>{35})), (std::pair<std::size_t, std::size_t>{
+            (10/5)*8,
+            (35/5)*8}));
+    }
+}
+
+void PixelStorageTest::dataOffsetSizeCompressed2D() {
+    /* Assuming a custom 5x4 format with 8-byte blocks, with the whole image
+       being 45x28x12 */
+    const char data[(45/5)*(28/4)*8]{};
+
+    /* Image size in whole blocks, no skip */
+    {
+        CompressedImageView2D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 1})
+                .setCompressedBlockDataSize(8),
+            42069, /* custom format */
+            {1, 1}, /* this is ignored, the passed size is used instead */
+            data};
+        CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{55, 28}), (std::pair<std::size_t, std::size_t>{
+            0,
+            (55/5)*(28/4)*8}));
+
+    /* Skip just blocks, explicitly supplied row length */
+    } {
+        CompressedImageView2D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 1})
+                .setCompressedBlockDataSize(8)
+                .setRowLength(45)
+                .setSkip({10, 0, 0}),
+            42069,
+            {1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20});
+        /* The total size shouldn't overflow the 45x20 block rectangle */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*(20/4)*8);
+        /* The size should be an exact amount of row blocks */
+        CORRADE_COMPARE_AS(out.second, (45/5)*8, TestSuite::Compare::Divisible);
+        /* Check the exact values. In this case there's no offset as the
+           rectangle starts right away. */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            0,
+            (45/5)*(20/4)*8}));
+
+    /* Skip just rows */
+    } {
+        CompressedImageView2D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 1})
+                .setCompressedBlockDataSize(8)
+                .setSkip({0, 8, 0}),
+            42069,
+            {1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20});
+        /* The total size shouldn't overflow the 35x28 block rectangle */
+        CORRADE_COMPARE(out.first + out.second, (35/5)*(28/4)*8);
+        /* The size should be an exact amount of row blocks */
+        CORRADE_COMPARE_AS(out.second, (35/5)*8, TestSuite::Compare::Divisible);
+        /* Check the exact values */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            (35/5)*(8/4)*8,
+            (35/5)*(20/4)*8}));
+
+    /* Skip just rows, explicitly supplied row length */
+    } {
+        CompressedImageView2D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 1})
+                .setCompressedBlockDataSize(8)
+                .setRowLength(45)
+                .setSkip({0, 8, 0}),
+            42069,
+            {1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20});
+        /* The total size shouldn't overflow the 45x28 block rectangle */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*(28/4)*8);
+        /* The size should be an exact amount of row blocks */
+        CORRADE_COMPARE_AS(out.second, (45/5)*8, TestSuite::Compare::Divisible);
+        /* Check the exact values */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            (45/5)*(8/4)*8,
+            (45/5)*(20/4)*8}));
+
+    /* Skip blocks and rows, explicitly supplied row length */
+    } {
+        CompressedImageView2D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 1})
+                .setCompressedBlockDataSize(8)
+                .setRowLength(45)
+                .setSkip({10, 8, 0}),
+            42069,
+            {1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20});
+        /* The total size shouldn't overflow the 45x28 block rectangle */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*(28/4)*8);
+        /* The size should be an exact amount of row blocks */
+        CORRADE_COMPARE_AS(out.second, (45/5)*8, TestSuite::Compare::Divisible);
+        /* Check the exact values */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            (8/4)*(45/5)*8,
+            (45/5)*(20/4)*8}));
+
+    /* Row length not whole blocks, should result in the same */
+    } {
+        CompressedImageView2D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 1})
+                .setCompressedBlockDataSize(8)
+                .setRowLength(41)
+                .setSkip({10, 8, 0}),
+            42069,
+            {1, 1},
+            data};
+        CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector2i{35, 20}), (std::pair<std::size_t, std::size_t>{
+            (8/4)*(45/5)*8,
+            (45/5)*(20/4)*8}));
+    }
+}
+
+void PixelStorageTest::dataOffsetSizeCompressed3D() {
+    /* Assuming a custom 5x4x2 format with 16-byte blocks, with the whole image
+       being 45x28x10 */
+    const char data[(45/5)*(28/4)*(10/2)*16]{};
+
+    /* Image size in whole blocks, no offset */
+    {
+        CompressedImageView3D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 2})
+                .setCompressedBlockDataSize(16),
+            42069, /* custom format */
+            {1, 1, 1}, /* this is ignored, the passed size is used instead */
+            data};
+        CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{45, 28, 6}), (std::pair<std::size_t, std::size_t>{
+            0,
+            (45/5)*(28/4)*(6/2)*16}));
+
+    /* Skip just blocks, explicitly supplied row length */
+    } {
+        CompressedImageView3D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 2})
+                .setCompressedBlockDataSize(16)
+                .setRowLength(45)
+                .setSkip({10, 0, 0}),
+            42069,
+            {1, 1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
+        /* The total size shouldn't overflow the 45x20x6 cube */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*(20/4)*(6/2)*16);
+        /* The size should be an exact amount of slice blocks */
+        CORRADE_COMPARE_AS(out.second, (45/5)*(20/4)*16, TestSuite::Compare::Divisible);
+        /* Check the exact values. In this case there's no offset as the cube
+           starts right away. */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            0,
+            (45/5)*(20/4)*(6/2)*16}));
+
+    /* Skip just blocks, explicitly supplied row length and image height */
+    } {
+        CompressedImageView3D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 2})
+                .setCompressedBlockDataSize(16)
+                .setRowLength(45)
+                .setImageHeight(28)
+                .setSkip({20, 0, 0}),
+            42069,
+            {1, 1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
+        /* The total size shouldn't overflow the 45x28x6 cube */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*(28/4)*(6/2)*16);
+        /* The size should be an exact amount of slice blocks */
+        CORRADE_COMPARE_AS(out.second, (45/5)*(28/4)*16, TestSuite::Compare::Divisible);
+        /* Check the exact values. In this case there's no offset as the cube
+           starts right away. */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            0,
+            (45/5)*(28/4)*(6/2)*16}));
+
+    /* Skip just rows, explicitly supplied image height */
+    } {
+        CompressedImageView3D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 2})
+                .setCompressedBlockDataSize(16)
+                .setImageHeight(28)
+                .setSkip({0, 8, 0}),
+            42069,
+            {1, 1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
+        /* The total size shouldn't overflow the 35x28x6 cube */
+        CORRADE_COMPARE(out.first + out.second, (35/5)*(28/4)*(6/2)*16);
+        /* The size should be an exact amount of slice blocks */
+        CORRADE_COMPARE_AS(out.second, (35/5)*(28/4)*16, TestSuite::Compare::Divisible);
+        /* Check the exact values. In this case there's no offset either as the
+           cube again starts right away. */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            0,
+            (35/5)*(28/4)*(6/2)*16}));
+
+    /* Skip just rows, explicitly supplied row length and image height */
+    } {
+        CompressedImageView3D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 2})
+                .setCompressedBlockDataSize(16)
+                .setRowLength(45)
+                .setImageHeight(28)
+                .setSkip({0, 8, 0}),
+            42069,
+            {1, 1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
+        /* The total size shouldn't overflow the 45x28x6 cube */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*(28/4)*(6/2)*16);
+        /* The size should be an exact amount of slice blocks */
+        CORRADE_COMPARE_AS(out.second, (45/5)*(28/4)*16, TestSuite::Compare::Divisible);
+        /* Check the exact values. In this case there's no offset either as the
+           cube again starts right away. */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            0,
+            (45/5)*(28/4)*(6/2)*16}));
+
+    /* Skip just slices, explicitly supplied row length and image height */
+    } {
+        CompressedImageView3D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 2})
+                .setCompressedBlockDataSize(16)
+                .setRowLength(45)
+                .setImageHeight(28)
+                .setSkip({0, 0, 4}),
+            42069,
+            {1, 1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
+        /* The total size shouldn't overflow the 45x28x10 cube */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*(28/4)*(10/2)*16);
+        /* The size should be an exact amount of slice blocks */
+        CORRADE_COMPARE_AS(out.second, (45/5)*(28/4)*16, TestSuite::Compare::Divisible);
+        /* Check the exact values */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            (45/5)*(28/4)*(4/2)*16,
+            (45/5)*(28/4)*(6/2)*16}));
+
+    /* Skip all, explicitly supplied row length and image height */
+    } {
+        CompressedImageView3D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 2})
+                .setCompressedBlockDataSize(16)
+                .setRowLength(45)
+                .setImageHeight(28)
+                .setSkip({10, 8, 4}),
+            42069,
+            {1, 1, 1},
+            data};
+        std::pair<std::size_t, std::size_t> out = Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6});
+        /* The total size shouldn't overflow the 45x28x10 cube */
+        CORRADE_COMPARE(out.first + out.second, (45/5)*(28/4)*(10/2)*16);
+        /* The size should be an exact amount of slice blocks */
+        CORRADE_COMPARE_AS(out.second, (45/5)*(28/4)*16, TestSuite::Compare::Divisible);
+        /* Check the exact values */
+        CORRADE_COMPARE(out, (std::pair<std::size_t, std::size_t>{
+            (45/5)*(28/4)*(4/2)*16,
+            (45/5)*(28/4)*(6/2)*16}));
+
+    /* Row length and image height not whole blocks, should result in the
+       same */
+    } {
+        CompressedImageView3D image{
+            CompressedPixelStorage{}
+                .setCompressedBlockSize({5, 4, 2})
+                .setCompressedBlockDataSize(16)
+                .setRowLength(41)
+                .setImageHeight(27)
+                .setSkip({10, 8, 4}),
+            42069,
+            {1, 1, 1},
+            data};
+        CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{35, 20, 6}), (std::pair<std::size_t, std::size_t>{
+            (45/5)*(28/4)*(4/2)*16,
+            (45/5)*(28/4)*(6/2)*16}));
+    }
+}
+
+void PixelStorageTest::dataOffsetSizeCompressedZeroSize() {
     const CompressedImage3D image{CompressedPixelStorage{}
         .setCompressedBlockSize({4, 4, 1})
-        .setCompressedBlockDataSize(16)
-        .setRowLength(8)
-        .setImageHeight(8)
-        .setSkip({4, 4, 4})};
-    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{4, 4, 1}),
-        (std::pair<std::size_t, std::size_t>{16*4*4 + 16*2 + 16, 16}));
+        .setCompressedBlockDataSize(16)};
+    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{0, 4, 4}),
+        (std::pair<std::size_t, std::size_t>{}));
+    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{4, 0, 4}),
+        (std::pair<std::size_t, std::size_t>{}));
+    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{4, 4, 0}),
+        (std::pair<std::size_t, std::size_t>{}));
 }
 
 }}}

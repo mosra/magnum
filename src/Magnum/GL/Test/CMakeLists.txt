@@ -37,6 +37,7 @@ corrade_add_test(GLDefaultFramebufferTest DefaultFramebufferTest.cpp LIBRARIES M
 corrade_add_test(GLFramebufferTest FramebufferTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLMeshTest MeshTest.cpp LIBRARIES MagnumGLTestLib)
 corrade_add_test(GLPixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumGLTestLib)
+corrade_add_test(GLPixelStorageTest PixelStorageTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLRendererTest RendererTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLRenderbufferTest RenderbufferTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLSamplerTest SamplerTest.cpp LIBRARIES MagnumGLTestLib)

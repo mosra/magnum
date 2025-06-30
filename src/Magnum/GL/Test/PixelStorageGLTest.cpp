@@ -565,26 +565,44 @@ void PixelStorageGLTest::imageHeightSkipZPackNotSupported() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-constexpr const UnsignedByte CompressedData2D[] = {
-    /* Skip */
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
+constexpr const UnsignedByte CompressedData2D[]{
+    /* Skip rows (5 blocks) */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
+    /* Image data row (2 blocks skipped, 2 data, 1 more for 5 total) */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-      0,  17,  17,  34,  34,  51,  51,  67,
-    232,  57,   0,   0, 213, 255, 170,   2
+    /* Image data row (2 blocks skipped, 2 data, 1 more for 5 total) */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    /* Image data row (2 blocks skipped, 2 data, 1 more for 5 total) */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-/* Just 4x4 0x00 - 0x3f compressed using RGBA DXT3 by the driver */
-constexpr const UnsignedByte ActualCompressedData[] = {
-      0,  17,  17,  34,  34,  51,  51,  67,
-    232,  57,   0,   0, 213, 255, 170,   2,
+/* Just two different 16-byte RGBA DXT3 blocks mixed to form 6 blocks */
+constexpr UnsignedByte ActualCompressedData2D[]{
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
 };
 
 void PixelStorageGLTest::compressedUnpack2D() {
@@ -594,13 +612,13 @@ void PixelStorageGLTest::compressedUnpack2D() {
     CompressedPixelStorage storage;
     storage.setCompressedBlockSize({4, 4, 1})
         .setCompressedBlockDataSize(16)
-        .setRowLength(12)
-        .setSkip({4, 4, 0});
+        .setRowLength(20)
+        .setSkip({8, 4, 0});
 
-    CompressedImageView2D image{storage, CompressedPixelFormat::RGBAS3tcDxt3, {4, 4}, CompressedData2D};
+    CompressedImageView2D image{storage, CompressedPixelFormat::RGBAS3tcDxt3, {8, 12}, CompressedData2D};
 
     Texture2D texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {4, 4})
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {8, 12})
         .setCompressedSubImage(0, {}, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -610,7 +628,7 @@ void PixelStorageGLTest::compressedUnpack2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(actual.data()),
-        Containers::arrayView(ActualCompressedData),
+        Containers::arrayView(ActualCompressedData2D),
         TestSuite::Compare::Container);
 }
 
@@ -618,10 +636,10 @@ void PixelStorageGLTest::compressedPack2D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
-    CompressedImageView2D actual{CompressedPixelFormat::RGBAS3tcDxt3, {4, 4}, ActualCompressedData};
+    CompressedImageView2D actual{CompressedPixelFormat::RGBAS3tcDxt3, {8, 12}, ActualCompressedData2D};
 
     Texture2D texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {4, 4})
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {8, 12})
         .setCompressedSubImage(0, {}, actual);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -630,8 +648,8 @@ void PixelStorageGLTest::compressedPack2D() {
     CompressedImage2D image{CompressedPixelStorage{}
         .setCompressedBlockSize({4, 4, 1})
         .setCompressedBlockDataSize(16)
-        .setRowLength(12)
-        .setSkip({4, 4, 0}),
+        .setRowLength(20)
+        .setSkip({8, 4, 0}),
         CompressedPixelFormat::RGBAS3tcDxt3, {}, Containers::Array<char>{ValueInit, sizeof(CompressedData2D)}};
     texture.compressedImage(0, image);
 
@@ -643,54 +661,176 @@ void PixelStorageGLTest::compressedPack2D() {
 }
 
 constexpr const UnsignedByte CompressedData3D[] = {
-    /* Skip image */
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
+    /* Skip first image (5x6 blocks) */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-    /* Skip rows and pixels */
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-      0,  17,  17,  34,  34,  51,  51,  67,
-    232,  57,   0,   0, 213, 255, 170,   2
+    /* Skip second image (5x6 blocks) */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    /* First image data slice (1 row skipped, 3 data, 2 more for 6 total),
+       each data row then 2 blocks skipped, 2 data, 1 more for 5 total */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    /* Data */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    /* Two more rows */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    /* Second image data slice (1 row skipped, 3 data, 2 more for 6 total),
+       each data row then 2 blocks skipped, 2 data, 1 more for 5 total */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    /* Two more rows */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+/* ActualCompressedData2D but repeated two times */
+constexpr UnsignedByte ActualCompressedData3D[]{
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+
+    /* Second slice with the two different blocks swapped */
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    68, 84, 85, 101, 102, 118, 119, 119, 239, 123, 8, 66, 213, 255, 170, 2,
+    0, 17, 17, 34, 34, 51, 51, 67, 232, 57, 0, 0, 213, 255, 170, 2,
 };
 
 void PixelStorageGLTest::compressedUnpack3D() {
@@ -700,14 +840,14 @@ void PixelStorageGLTest::compressedUnpack3D() {
     CompressedPixelStorage storage;
     storage.setCompressedBlockSize({4, 4, 1})
         .setCompressedBlockDataSize(16)
-        .setRowLength(8)
-        .setImageHeight(8)
-        .setSkip({4, 4, 4});
+        .setRowLength(20)
+        .setImageHeight(24)
+        .setSkip({8, 4, 2});
 
-    CompressedImageView3D image{storage, CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 1}, CompressedData3D};
+    CompressedImageView3D image{storage, CompressedPixelFormat::RGBAS3tcDxt3, {8, 12, 2}, CompressedData3D};
 
     Texture2DArray texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {4, 4, 1})
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {8, 12, 2})
         .setCompressedSubImage(0, {}, image);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -717,7 +857,7 @@ void PixelStorageGLTest::compressedUnpack3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(actual.data()),
-        Containers::arrayView(ActualCompressedData),
+        Containers::arrayView(ActualCompressedData3D),
         TestSuite::Compare::Container);
 }
 
@@ -725,10 +865,10 @@ void PixelStorageGLTest::compressedPack3D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
-    CompressedImageView3D actual{CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 1}, ActualCompressedData};
+    CompressedImageView3D actual{CompressedPixelFormat::RGBAS3tcDxt3, {8, 12, 2}, ActualCompressedData3D};
 
     Texture2DArray texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {4, 4, 1})
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {8, 12, 2})
         .setCompressedSubImage(0, {}, actual);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -737,9 +877,9 @@ void PixelStorageGLTest::compressedPack3D() {
     CompressedImage3D image{CompressedPixelStorage{}
         .setCompressedBlockSize({4, 4, 1})
         .setCompressedBlockDataSize(16)
-        .setRowLength(8)
-        .setImageHeight(8)
-        .setSkip({4, 4, 4}),
+        .setRowLength(20)
+        .setImageHeight(24)
+        .setSkip({8, 4, 2}),
         CompressedPixelFormat::RGBAS3tcDxt3, {}, Containers::Array<char>{ValueInit, sizeof(CompressedData3D)}};
     texture.compressedImage(0, image);
 
