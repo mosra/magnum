@@ -97,7 +97,12 @@ template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std
 template<std::size_t dimensions, class T> std::size_t imageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
     std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(size, 1));
 
-    /* Smallest line/rectangle/cube that covers the area */
+    /* Smallest line/rectangle/cube that covers the area. In other words, make
+       it so that it matches what can be practically achieved by slicing a
+       larger image. For example, if an image of 100x100 is sliced to a 50x50
+       rectangle at offset (25, 25), the data size is 100x75. I.e., including
+       the extra 25 padding pixels until the end of the last row, because the
+       original image would have them anyway. */
     std::size_t dataOffset = 0;
     if(dataProperties.first.z())
         dataOffset += dataProperties.first.z();
@@ -116,14 +121,29 @@ template<class T> inline std::size_t imageDataSize(const T& image) {
     return imageDataSizeFor(image, image.size());
 }
 
+/* Unlike imageDataSizeFor() this produces separate offset and size because
+   because compressedImageDataSizeFor() it's also used in GL image queries,
+   where the nv-cubemap-broken-full-compressed-image-query workaround needs to
+   go slice by slice, taking offset and incrementing it by size divided by the
+   Z dimension. */
 template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
     CORRADE_INTERNAL_ASSERT(image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize());
 
     std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(Vector3i::pad(size, 1));
 
-    const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(size, 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
-
-    return {dataProperties.first.sum(), (dataProperties.second.product() - (dataProperties.second.x() - realBlockCount.x()) - (dataProperties.second.y() - realBlockCount.y())*dataProperties.second.x())*image.storage().compressedBlockDataSize()};
+    /* Smallest line/rectangle/cube that covers the area. Same logic as in
+       imageDataSizeFor() above. */
+    std::size_t dataOffset = 0;
+    if(dataProperties.first.z())
+        dataOffset += dataProperties.first.z();
+    else if(dataProperties.first.y()) {
+        if(!image.storage().imageHeight())
+            dataOffset += dataProperties.first.y();
+    } else if(dataProperties.first.x()) {
+        if(!image.storage().rowLength())
+            dataOffset += dataProperties.first.x();
+    }
+    return {dataOffset, dataProperties.second.product()*image.storage().compressedBlockDataSize()};
 }
 
 /* Used in image query functions */

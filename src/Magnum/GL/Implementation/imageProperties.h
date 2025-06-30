@@ -26,7 +26,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Implementation/ImageProperties.h"
+#include "Magnum/PixelStorage.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
 
@@ -45,8 +45,13 @@ namespace Magnum { namespace GL { namespace Implementation {
    In case the block size properties aren't set, the actual image data size is
    used as a backup, which might still be correct in most cases. */
 template<class T> std::size_t occupiedCompressedImageDataSize(const T& image, std::size_t dataSize) {
-    return image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize()
-        ? Magnum::Implementation::compressedImageDataOffsetSizeFor(image, image.size()).second : dataSize;
+    if(image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize()) {
+        const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(image.size(), 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
+
+        return realBlockCount.product()*image.storage().compressedBlockDataSize();
+    }
+
+    return dataSize;
 }
 
 }}}
