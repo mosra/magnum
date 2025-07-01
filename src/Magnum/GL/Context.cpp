@@ -1122,13 +1122,13 @@ Containers::StringView Context::shadingLanguageVersionString() const {
 
 Containers::Array<Containers::StringView> Context::shadingLanguageVersionStrings() const {
     #ifndef MAGNUM_TARGET_GLES
-    GLint versionCount = 0;
-    glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &versionCount);
+    /* GL_NUM_SHADING_LANGUAGE_VERSIONS is only since GL 4.3 */
+    if(_version >= Version::GL430) {
+        GLint versionCount = 0;
+        glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &versionCount);
+        /* If on GL 4.3+, there should be always at least one */
+        CORRADE_INTERNAL_ASSERT(versionCount);
 
-    /* If zero, the implementation doesn't yet support this query (< GL4.3) */
-    /** @todo doesn't this throw a GL error? some better handling? */
-    if(versionCount) {
-        /* Get all of them */
         Containers::Array<Containers::StringView> versions{std::size_t(versionCount)};
         for(GLint i = 0; i != versionCount; ++i)
             versions[i] = {reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)), Containers::StringViewFlag::Global};
@@ -1136,6 +1136,7 @@ Containers::Array<Containers::StringView> Context::shadingLanguageVersionStrings
     }
     #endif
 
+    /* On GLES or GL < 4.3 return just the main */
     return Containers::array({shadingLanguageVersionString()});
 }
 
