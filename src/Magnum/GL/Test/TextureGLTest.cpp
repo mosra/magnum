@@ -366,17 +366,13 @@ constexpr UnsignedByte CompressedData2D[]{
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
-    #ifndef MAGNUM_TARGET_GLES
     CompressedPixelStorage storage;
-    #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
 } CompressedPixelStorage2DData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedData2D).exceptPrefix(16),
-        #ifndef MAGNUM_TARGET_GLES
         {},
-        #endif
         Containers::arrayView(CompressedData2D).exceptPrefix(16), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Y",
@@ -2178,9 +2174,7 @@ void TextureGLTest::compressedImage2D() {
 
     Texture2D texture;
     texture.setCompressedImage(0, CompressedImageView2D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse});
 
@@ -2223,9 +2217,7 @@ void TextureGLTest::compressedImage2DBuffer() {
 
     Texture2D texture;
     texture.setCompressedImage(0, CompressedBufferImage2D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse,
         BufferUsage::StaticDraw});
@@ -2320,9 +2312,7 @@ void TextureGLTest::compressedSubImage2D() {
     texture.setCompressedImage(0, CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 4}, CompressedZero2D});
     texture.setCompressedSubImage(0, {4, 0}, CompressedImageView2D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse});
 
@@ -2365,9 +2355,7 @@ void TextureGLTest::compressedSubImage2DBuffer() {
     texture.setCompressedImage(0, CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 4}, CompressedZero2D});
     texture.setCompressedSubImage(0, {4, 0}, CompressedBufferImage2D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse,
         BufferUsage::StaticDraw});

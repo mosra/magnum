@@ -221,17 +221,13 @@ constexpr UnsignedByte CompressedData[]{
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
-    #ifndef MAGNUM_TARGET_GLES
     CompressedPixelStorage storage;
-    #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
 } CompressedPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedData).exceptPrefix(16),
-        #ifndef MAGNUM_TARGET_GLES
         {},
-        #endif
         Containers::arrayView(CompressedData).exceptPrefix(16), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Y",
@@ -1312,9 +1308,7 @@ void CubeMapTextureGLTest::compressedImage() {
     #endif
 
     const CompressedImageView2D view{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse};
 
@@ -1363,9 +1357,7 @@ void CubeMapTextureGLTest::compressedImageBuffer() {
     #endif
 
     CompressedBufferImage2D buffer{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse,
         BufferUsage::StaticDraw};
@@ -1547,9 +1539,7 @@ void CubeMapTextureGLTest::immutableCompressedImage() {
        specs so I suspect it's a bug). */
 
     const CompressedImageView2D view{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse};
 
@@ -1640,9 +1630,7 @@ void CubeMapTextureGLTest::compressedSubImage() {
     texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
         CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
     texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i{4}, CompressedImageView2D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse});
 
@@ -1701,9 +1689,7 @@ void CubeMapTextureGLTest::compressedSubImageBuffer() {
     texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
         CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
     texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i{4}, CompressedBufferImage2D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
         data.dataSparse,
         BufferUsage::StaticDraw});

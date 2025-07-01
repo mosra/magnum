@@ -274,17 +274,13 @@ constexpr UnsignedByte CompressedData2D[]{
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
-    #ifndef MAGNUM_TARGET_GLES
     CompressedPixelStorage storage;
-    #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
 } CompressedPixelStorage2DData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedData2D).exceptPrefix(16),
-        #ifndef MAGNUM_TARGET_GLES
         {},
-        #endif
         Containers::arrayView(CompressedData2D).exceptPrefix(16), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Z",
@@ -1700,9 +1696,7 @@ void TextureArrayGLTest::compressedImage2D() {
 
     Texture2DArray texture;
     texture.setCompressedImage(0, CompressedImageView3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2},
         data.dataSparse});
 
@@ -1747,9 +1741,7 @@ void TextureArrayGLTest::compressedImage2DBuffer() {
 
     Texture2DArray texture;
     texture.setCompressedImage(0, CompressedBufferImage3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2},
         data.dataSparse,
         BufferUsage::StaticDraw});
@@ -1867,9 +1859,7 @@ void TextureArrayGLTest::compressedSubImage2D() {
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         Vector3i{12, 4, 4}, CompressedZero2D});
     texture.setCompressedSubImage(0, {4, 0, 1}, CompressedImageView3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2},
         data.dataSparse});
 
@@ -1915,9 +1905,7 @@ void TextureArrayGLTest::compressedSubImage2DBuffer() {
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         Vector3i{12, 4, 4}, CompressedZero2D});
     texture.setCompressedSubImage(0, {4, 0, 1}, CompressedBufferImage3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2},
         data.dataSparse,
         BufferUsage::StaticDraw});
@@ -2029,11 +2017,7 @@ void TextureArrayGLTest::compressedSubImage2DQueryBuffer() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), {
-        #ifndef MAGNUM_TARGET_GLES
-        data.storage
-        #endif
-    }, BufferUsage::StaticRead);
+    CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), {data.storage}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_GL_ERROR();

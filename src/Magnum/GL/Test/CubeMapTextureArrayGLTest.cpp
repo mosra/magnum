@@ -180,17 +180,13 @@ constexpr UnsignedByte CompressedData[]{
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
-    #ifndef MAGNUM_TARGET_GLES
     CompressedPixelStorage storage;
-    #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
 } CompressedPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedData).exceptPrefix(16*4),
-        #ifndef MAGNUM_TARGET_GLES
         {},
-        #endif
         Containers::arrayView(CompressedData).exceptPrefix(16*4), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Z",
@@ -253,17 +249,13 @@ constexpr UnsignedByte CompressedSubData[] = {
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
-    #ifndef MAGNUM_TARGET_GLES
     CompressedPixelStorage storage;
-    #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
 } CompressedSubPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedSubData).exceptPrefix(16*4),
-        #ifndef MAGNUM_TARGET_GLES
         {},
-        #endif
         Containers::arrayView(CompressedSubData).exceptPrefix(16*4), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Z",
@@ -843,9 +835,7 @@ void CubeMapTextureArrayGLTest::compressedImage() {
 
     CubeMapTextureArray texture;
     texture.setCompressedImage(0, CompressedImageView3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 6},
         data.dataSparse});
 
@@ -890,9 +880,7 @@ void CubeMapTextureArrayGLTest::compressedImageBuffer() {
 
     CubeMapTextureArray texture;
     texture.setCompressedImage(0, CompressedBufferImage3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 6},
         data.dataSparse,
         BufferUsage::StaticDraw});
@@ -928,9 +916,7 @@ void CubeMapTextureArrayGLTest::compressedImageQueryView() {
 
     CubeMapTextureArray texture;
     texture.setCompressedImage(0, CompressedImageView3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 6},
         data.dataSparse});
 
@@ -1238,9 +1224,7 @@ void CubeMapTextureArrayGLTest::compressedSubImage() {
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 12, 6}, CompressedZero});
     texture.setCompressedSubImage(0, {4, 4, 1}, CompressedImageView3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4},
         data.dataSparse});
 
@@ -1286,9 +1270,7 @@ void CubeMapTextureArrayGLTest::compressedSubImageBuffer() {
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 12, 6}, CompressedZero});
     texture.setCompressedSubImage(0, {4, 4, 1}, CompressedBufferImage3D{
-        #ifndef MAGNUM_TARGET_GLES
         data.storage,
-        #endif
         CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4},
         data.dataSparse,
         BufferUsage::StaticDraw});
