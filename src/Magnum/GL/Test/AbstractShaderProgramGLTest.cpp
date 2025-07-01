@@ -820,7 +820,11 @@ void main() {
     Containers::Pair<bool, Containers::String> result = program.validate();
     MAGNUM_VERIFY_NO_GL_ERROR();
     {
-        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia, "NVidia doesn't treat conflicting sampler locations as a failure.");
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia,
+            "NVidia doesn't treat conflicting sampler locations as a failure.");
+        /* Likely also other versions. Fails as expected on Mesa 24 and 25. */
+        CORRADE_EXPECT_FAIL_IF(Context::current().versionString().contains("Mesa 20"),
+            "Mesa 20 doesn't treat conflicting sampler locations as a failure.");
         CORRADE_VERIFY(!result.first());
         /* The message shouldn't be empty */
         CORRADE_COMPARE_AS(result.second(),
