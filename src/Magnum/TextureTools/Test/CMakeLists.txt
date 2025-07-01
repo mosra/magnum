@@ -95,11 +95,15 @@ if(MAGNUM_TARGET_GL)
         # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
         find_package(Corrade REQUIRED PluginManager)
 
+        # Shared by DistanceFieldGLTest and DistanceFieldGLBenchmark
+        if(CORRADE_TARGET_IOS)
+            set_source_files_properties(DistanceFieldGLTestFiles PROPERTIES
+                MACOSX_PACKAGE_LOCATION Resources)
+        endif()
+
         set(TextureToolsDistanceFieldGLTest_SRCS DistanceFieldGLTest.cpp)
         if(CORRADE_TARGET_IOS)
             # TODO: do this in a generic way in corrade_add_test()
-            set_source_files_properties(DistanceFieldGLTestFiles PROPERTIES
-                MACOSX_PACKAGE_LOCATION Resources)
             list(APPEND TextureToolsDistanceFieldGLTest_SRCS DistanceFieldGLTestFiles)
         endif()
         corrade_add_test(TextureToolsDistanceFieldGLTest ${TextureToolsDistanceFieldGLTest_SRCS}
@@ -127,6 +131,31 @@ if(MAGNUM_TARGET_GL)
             endif()
             if(MAGNUM_WITH_TGAIMPORTER)
                 add_dependencies(TextureToolsDistanceFieldGLTest TgaImporter)
+            endif()
+        endif()
+
+        set(TextureToolsDistanceFieldGLBenchmark_SRCS DistanceFieldGLBenchmark.cpp)
+        if(CORRADE_TARGET_IOS)
+            # TODO: do this in a generic way in corrade_add_test()
+            list(APPEND TextureToolsDistanceFieldGLBenchmark_SRCS DistanceFieldGLTestFiles)
+        endif()
+        corrade_add_test(TextureToolsDistanceFieldGLBenchmark ${TextureToolsDistanceFieldGLBenchmark_SRCS}
+            LIBRARIES
+                MagnumGL
+                MagnumOpenGLTester
+                MagnumTextureTools
+                MagnumTrade
+            FILES
+                DistanceFieldGLTestFiles/input.tga)
+        target_include_directories(TextureToolsDistanceFieldGLBenchmark PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+        if(MAGNUM_BUILD_PLUGINS_STATIC)
+            if(MAGNUM_WITH_TGAIMPORTER)
+                target_link_libraries(TextureToolsDistanceFieldGLBenchmark PRIVATE TgaImporter)
+            endif()
+        else()
+            # So the plugins get properly built when building the test
+            if(MAGNUM_WITH_TGAIMPORTER)
+                add_dependencies(TextureToolsDistanceFieldGLBenchmark TgaImporter)
             endif()
         endif()
     endif()
