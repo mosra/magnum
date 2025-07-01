@@ -32,6 +32,7 @@ cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=$CONFIGURATION \
+    -DMAGNUM_TARGET_EGL=$TARGET_EGL \
     -DMAGNUM_WITH_AUDIO=ON \
     -DMAGNUM_WITH_VK=ON \
     -DMAGNUM_WITH_GLFWAPPLICATION=$BUILD_APPLICATIONS \
@@ -66,7 +67,31 @@ cmake .. \
     $EXTRA_OPTS \
     -G Ninja
 ninja $NINJA_JOBS
-ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always suppressions=$(pwd)/../package/ci/leaksanitizer.conf" TSAN_OPTIONS="color=always" CORRADE_TEST_COLOR=ON ctest -V -E "GLTest|GLBenchmark|VkTest"
+
+export CORRADE_TEST_COLOR=ON
+# Sanitizer options are used only in sanitizer builds, they do nothing
+# elsewhere
+export ASAN_OPTIONS="color=always"
+export LSAN_OPTIONS="color=always suppressions=$(pwd)/../package/ci/leaksanitizer.conf"
+export TSAN_OPTIONS="color=always"
+
+# Run GL tests if we can use llvmpipe through EGL. (Not benchmarks because I'm
+# not interested in knowing speed of a random software GPU emulation, further
+# offset by inherent randomness of a CI VM.) Enabled only on some builds to
+# make sure the MAGNUM_TARGET_EGL=OFF option is at least compile-tested too.
+if [ "$TARGET_EGL" == "ON" ]; then
+    # Keep in sync with package/archlinux/PKGBUILD and PKGBUILD-coverage
+    ctest -V -E "GLBenchmark|VkTest"
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location GL_ARB_texture_filter_anisotropic" ctest -V -R GLTest
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest -V -R GLTest
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" ctest -V -R GLTest
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" ctest -V -R GLTest
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object GL_ARB_shader_storage_buffer_object" ctest -V -R GLTest
+    MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest -V -R GLTest
+    $CONFIGURATION/bin/magnum-gl-info --limits
+else
+    ctest -V -E "GLTest|GLBenchmark|VkTest"
+fi
 
 # Test install, after running the tests as for them it shouldn't be needed
 ninja install

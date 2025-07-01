@@ -333,6 +333,8 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
+      # STUPID yml interprets unquoted ON as a boolean
+      TARGET_EGL: "ON"
       EXTRA_OPTS: >
         -DMAGNUM_WITH_GLXAPPLICATION=ON
         -DMAGNUM_WITH_XEGLAPPLICATION=ON
@@ -362,6 +364,14 @@ jobs:
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
+      # The ARM64 job is a machine job, not a VM, which means running GL tests
+      # will get more expensive. But it's a newer Ubuntu version, meaning it
+      # could provide better coverage than the base job, so enabling EGL to run
+      # the tests. OTOH, the ASan and TSan jobs have them disabled, so the GLX
+      # code paths are tested there. (Also STUPID yml interprets unquoted ON as
+      # a boolean.)
+      # TODO switch to OFF when the main job is upgraded to a newer OS version
+      TARGET_EGL: "ON"
       EXTRA_OPTS: >
         -DMAGNUM_WITH_GLXAPPLICATION=ON
         -DMAGNUM_WITH_XEGLAPPLICATION=ON
@@ -489,6 +499,8 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
+      # STUPID yml interprets unquoted ON as a boolean
+      TARGET_EGL: "ON"
     steps:
     # libidn11 needed by CMake
     - install-base-linux:
@@ -514,6 +526,8 @@ jobs:
       BUILD_DEPRECATED: "OFF"
       CMAKE_CXX_FLAGS: -DCORRADE_NO_ASSERT
       CONFIGURATION: Release
+      # STUPID yml interprets unquoted ON as a boolean
+      TARGET_EGL: "ON"
       EXTRA_OPTS: >
         -DMAGNUM_WITH_GLXAPPLICATION=ON
         -DMAGNUM_WITH_XEGLAPPLICATION=ON
@@ -547,6 +561,17 @@ jobs:
       BUILD_APPLICATIONS: "OFF"
       CMAKE_CXX_FLAGS: -fsanitize=address
       CONFIGURATION: Debug
+      # llvmpipe on Mesa 20 on 18.04 seems to be leaking somewhere, reporting
+      # two 56 byte leaks from calloc in <unknown module>, so not suppressible
+      # in any way. Not reproducible with Mesa 25 Intel, Mesa 25 llvmpipe has
+      # random GLX leaks, so I guess the driver is just in a perpetual state of
+      # disrepair. Additionally it reports an ODR violation for
+      # GL::defaultFramebuffer due to complex yet-unresolved reasons explained
+      # in https://github.com/mosra/magnum/pull/565. (Also STUPID yml
+      # interprets unquoted ON as a boolean.)
+      # TODO retry when upgrading to a newer OS version or when that PR is
+      #   merged
+      TARGET_EGL: "OFF"
       EXTRA_OPTS: >
         -DMAGNUM_WITH_GLXAPPLICATION=ON
         -DMAGNUM_WITH_XEGLAPPLICATION=ON
@@ -588,6 +613,11 @@ jobs:
       BUILD_APPLICATIONS: "OFF"
       CMAKE_CXX_FLAGS: -fsanitize=thread
       CONFIGURATION: Debug
+      # The TSan job is a (more expensive) machine job, not a VM, so don't run
+      # the GL tests there (and thus do at least a compile test for the GLX
+      # codepath).
+      # TODO in case it can ever be made a VM again, switch those on
+      TARGET_EGL: "OFF"
       EXTRA_OPTS: >
         -DMAGNUM_WITH_GLXAPPLICATION=ON
         -DMAGNUM_WITH_XEGLAPPLICATION=ON
