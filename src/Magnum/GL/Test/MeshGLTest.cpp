@@ -2721,6 +2721,23 @@ void MeshGLTest::addEmptyBuffer() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* Framebuffer just so I can call draw() below without risking a GL error
+       due to no default framebuffer */
+    Framebuffer framebuffer{{{}, Vector2i{1}}};
+    Renderbuffer renderbuffer;
+    renderbuffer.setStorage(
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        Vector2i(1));
+    framebuffer
+        .attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer)
+        .bind();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
     /* This should do nothing */
     FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"};
     shader.draw(mesh);
