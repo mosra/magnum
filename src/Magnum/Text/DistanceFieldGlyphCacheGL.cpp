@@ -123,6 +123,9 @@ Range2Di paddedImageRange(const Vector3i& cacheSize, const Vector2i& imageOffset
     /* As the size is also a multiple of ratio, the resulting size should not
        get larger */
     CORRADE_INTERNAL_ASSERT(paddedMaxRounded <= cacheSize.xy());
+    #ifdef CORRADE_NO_ASSERT
+    static_cast<void>(cacheSize);
+    #endif
     return {paddedMinRounded, paddedMaxRounded};
 }
 
