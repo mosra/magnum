@@ -83,11 +83,8 @@ if [ "$TARGET_EGL" == "ON" ]; then
     # Keep in sync with package/archlinux/PKGBUILD and PKGBUILD-coverage
     ctest -V -E "GLBenchmark|VkTest"
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location GL_ARB_texture_filter_anisotropic" ctest -V -R GLTest
-    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest -V -R GLTest
-    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" ctest -V -R GLTest
-    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" ctest -V -R GLTest
-    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object GL_ARB_shader_storage_buffer_object" ctest -V -R GLTest
-    MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest -V -R GLTest
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_ARB_get_texture_sub_image GL_ARB_robustness" ctest -V -R GLTest
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object GL_ARB_shader_storage_buffer_object GL_ARB_vertex_array_object GL_KHR_debug" ctest -V -R GLTest
     $CONFIGURATION/bin/magnum-gl-info --limits
 else
     ctest -V -E "GLTest|GLBenchmark|VkTest"
