@@ -62,6 +62,8 @@ build() {
 
 check() {
     cd "$_rootdir/build-es3"
+    # Keep these in sync with package/ci/unix-desktop-gles.sh and
+    # PKGBUILD-es3desktop
     CORRADE_TEST_COLOR=ON ctest --output-on-failure -j9
     MAGNUM_DISABLE_EXTENSIONS="GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j9 -R GLTest
     MAGNUM_DISABLE_EXTENSIONS="GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j9 -R GLTest

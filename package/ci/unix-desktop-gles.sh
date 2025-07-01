@@ -59,16 +59,18 @@ cmake .. \
     -G Ninja
 ninja $NINJA_JOBS
 
+export CORRADE_TEST_COLOR=ON
 # Don't run any benchmarks. SwiftShader doesn't support
 # EXT_disjoint_timer_query anyway and the CPU-side things are run in the usual
 # desktop build already.
 export CORRADE_TEST_SKIP_BENCHMARKS=ON
 
-CORRADE_TEST_COLOR=ON ctest -V
-MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
-MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
-MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance GL_EXT_multi_draw_arrays GL_ANGLE_multi_draw" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
-MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
+# Keep these in sync with package/archlinux/PKGBUILD-es*
+ctest -V
+MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex" ctest --output-on-failure -j5 -R GLTest
+MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance" ctest --output-on-failure -j5 -R GLTest
+MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance GL_EXT_multi_draw_arrays GL_ANGLE_multi_draw" ctest --output-on-failure -j5 -R GLTest
+MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest --output-on-failure -j5 -R GLTest
 Debug/bin/magnum-gl-info --limits
 
 # Test install, after running the tests as for them it shouldn't be needed
