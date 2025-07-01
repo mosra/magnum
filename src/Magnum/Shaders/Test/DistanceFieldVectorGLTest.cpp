@@ -302,57 +302,57 @@ constexpr struct {
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         {}, 1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     {"bind with offset, texture array", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::TextureArrays, 1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     {"bind with offset, texture array, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     #endif
     {"draw offset", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         {}, 2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     {"draw offset, texture array", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::TextureArrays, 2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     {"draw offset, texture array, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     #endif
     {"multidraw", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     {"multidraw, texture array", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     {"multidraw, texture array, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
         DistanceFieldVectorGL2D::Flag::TextureArrays|DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
-        /* Minor differences on ARM Mali */
-        1.67f, 0.012f},
+        /* Minor differences on ARM Mali and llvmpipe, old llvmpipe more */
+        10.67f, 0.12f},
     #endif
 };
 #endif
@@ -1024,12 +1024,13 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 131.0f, 1.83f}));
+        /* llvmpipe has a bit extra difference */
+        (DebugTools::CompareImageToFile{_manager, 134.0f, 2.24f}));
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
        all channels. Apple A8 & llvmpipe off-by-more. */
-    const Float maxThreshold = 32.0f, meanThreshold = 0.583f;
+    const Float maxThreshold = 32.0f, meanThreshold = 0.596f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 0.480f;
@@ -1134,12 +1135,13 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "VectorTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 131.0f, 1.83f}));
+        /* llvmpipe has a bit extra difference */
+        (DebugTools::CompareImageToFile{_manager, 134.0f, 2.24f}));
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
        all channels. Apple A8 and llvmpipe off-by-more. */
-    const Float maxThreshold = 32.0f, meanThreshold = 0.583f;
+    const Float maxThreshold = 32.0f, meanThreshold = 0.596f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 0.480f;
@@ -1516,8 +1518,9 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences when smoothing plus a bunch of
-       different pixels on primitive edges, Apple A8 & llvmpipe a bit more. */
-    const Float maxThreshold = 32.0f, meanThreshold = 0.642f;
+       different pixels on primitive edges, Apple A8 & old llvmpipe a bit
+       more. */
+    const Float maxThreshold = 32.0f, meanThreshold = 0.660f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 32.0f, meanThreshold = 1.613f;

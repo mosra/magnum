@@ -702,23 +702,23 @@ constexpr struct {
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        2.34f, 0.01f},
+        /* Minor differences on ARM Mali, on old llvmpipe */
+        2.34f, 0.023f},
     {"bind with offset, texture array",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         1, 1, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
-           while the 2D array has a black area around) */
-        65.0f, 0.15f},
+           while the 2D array has a black area around), more on old llvmpipe */
+        65.0f, 0.167f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, texture array, shader storage",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         0, 0, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
-           while the 2D array has a black area around) */
-        65.0f, 0.15f},
+           while the 2D array has a black area around), bit more on llvmpipe */
+        65.0f, 0.167f},
     #endif
     {"draw offset, colored",
         "multidraw2D.tga", "multidraw3D.tga", {},
@@ -740,23 +740,23 @@ constexpr struct {
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        2.34f, 0.01f},
+        /* Minor differences on ARM Mali, on old llvmpipe */
+        2.34f, 0.023f},
     {"draw offset, texture array",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
-           while the 2D array has a black area around) */
-        65.0f, 0.15f},
+           while the 2D array has a black area around), more on old llvmpipe */
+        65.0f, 0.167f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, texture array, shader storage",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         0, 0, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
-           while the 2D array has a black area around) */
-        65.0f, 0.15f},
+           while the 2D array has a black area around), bit more on llvmpipe */
+        65.0f, 0.167f},
     #endif
     {"multidraw, colored",
         "multidraw2D.tga", "multidraw3D.tga", {},
@@ -778,23 +778,23 @@ constexpr struct {
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        2.34f, 0.01f},
+        /* Minor differences on ARM Mali, on old llvmpipe */
+        2.34f, 0.023f},
     {"multidraw, texture array",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
-           while the 2D array has a black area around) */
-        65.0f, 0.15f},
+           while the 2D array has a black area around), more on old llvmpipe */
+        65.0f, 0.167f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, texture array, shader storage",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
         0, 0, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
-           while the 2D array has a black area around) */
-        65.0f, 0.15f}
+           while the 2D array has a black area around), bit more on llvmpipe */
+        65.0f, 0.167f},
     #endif
 };
 
@@ -3099,8 +3099,9 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderAlpha2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* Minor differences between opaque and diffuse, not sure why */
-    const Float maxThreshold = 24.34f, meanThreshold = 0.305f;
+    /* Minor differences between opaque and diffuse, not sure why, some more on
+       llvmpipe */
+    const Float maxThreshold = 24.34f, meanThreshold = 0.311f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 31.34f, meanThreshold = 3.945f;

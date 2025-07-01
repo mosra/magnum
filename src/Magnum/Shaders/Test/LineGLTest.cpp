@@ -1259,7 +1259,8 @@ template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* llvmpipe has one pixel different */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.038f}));
 }
 
 template<LineGL3D::Flag flag> void LineGLTest::renderDefaults3D() {
@@ -1357,7 +1358,8 @@ template<LineGL3D::Flag flag> void LineGLTest::renderDefaults3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* llvmpipe has one pixel different */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.038f}));
 }
 
 const Vector2 RenderLineCapsJoins2DLineData[]{

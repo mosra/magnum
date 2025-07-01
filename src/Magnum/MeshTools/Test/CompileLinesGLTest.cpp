@@ -186,8 +186,8 @@ void CompileLinesGLTest::twoDimensions() {
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Path::join({MESHTOOLS_TEST_DIR, "CompileLinesTestFiles", data.expected}),
         /* Minor differences in vertex color rendering on NVidia vs Mesa
-           Intel */
-        (DebugTools::CompareImageToFile{_manager, 0.25f, 0.007f}));
+           Intel, llvmpipe also */
+        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.009f}));
 }
 
 void CompileLinesGLTest::threeDimensions() {

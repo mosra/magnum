@@ -1103,8 +1103,11 @@ template<class T> void CompileGLTest::threeDimensions() {
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/tbn.tga"),
-            /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
+            /* SwiftShader has some minor off-by-one precision differences. Old
+               llvmpipe doesn't render the vertical line in the middle, but
+               does all others. Not sure why, maybe it narrowly escapes the NDC
+               or there's some division by zero accident. */
+            (DebugTools::CompareImageToFile{_manager, 127.5f, 1.37f}));
         #else
         CORRADE_SKIP("Geometry shaders not available on ES2 or WebGL.");
         #endif

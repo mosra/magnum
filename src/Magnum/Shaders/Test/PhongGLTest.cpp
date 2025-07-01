@@ -1086,7 +1086,7 @@ constexpr struct {
         2, 2, 1, 1, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.146f},
+        50.67f, 0.146f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, texture array, shader storage",
         "multidraw-textured.tga", {},
@@ -1094,7 +1094,7 @@ constexpr struct {
         0, 2, 0, 0, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.146f},
+        50.67f, 0.146f},
     #endif
     {"draw offset, colored",
         "multidraw.tga", {},
@@ -1138,7 +1138,7 @@ constexpr struct {
         4, 4, 2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.146f},
+        50.67f, 0.146f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, texture array, shader storage",
         "multidraw-textured.tga", {},
@@ -1146,7 +1146,7 @@ constexpr struct {
         0, 2, 0, 0, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.146f},
+        50.67f, 0.146f},
     #endif
     {"multidraw, colored",
         "multidraw.tga", {},
@@ -1190,7 +1190,7 @@ constexpr struct {
         4, 4, 2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.141f},
+        50.67f, 0.146f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, texture array, shader storage",
         "multidraw-textured.tga", {},
@@ -1198,7 +1198,7 @@ constexpr struct {
         0, 4, 0, 0, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.141f},
+        50.67f, 0.146f},
     #endif
     /** @todo test normal and per-draw scaling when there's usable texture */
 };
@@ -3228,8 +3228,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
        okay. Due to the density of the normal map, SwiftShader has an overally
        consistent off-by-a-bit error. AMD macOS drivers have one pixel off
        due to a rounding error on the edge. Apple A8 has a slightly larger
-       overall difference; llvmpipe is off also. */
-    const Float maxThreshold = 191.0f, meanThreshold = 0.918f;
+       overall difference; llvmpipe is off also, older versions more for
+       left-handed (lol?). */
+    const Float maxThreshold = 191.0f, meanThreshold = 1.035f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 191.0f, meanThreshold = 3.017f;
@@ -3727,8 +3728,8 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
     /* In some cases (separate vs combined alpha) there are off-by-one errors.
        That's okay, as we have only 8bit texture precision. SwiftShader has
        additionally a few minor rounding errors at the edges, Apple A8 a bit
-       more. */
-    const Float maxThreshold = 189.4f, meanThreshold = 0.385f;
+       more. Old llvmpipe also. */
+    const Float maxThreshold = 189.4f, meanThreshold = 0.485f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 189.4f, meanThreshold = 4.736f;

@@ -1048,8 +1048,8 @@ const struct {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", "instanced-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
-        /* Minor differences on ARM Mali, NVidia */
-        0.667f, 0.012f},
+        /* Minor differences on ARM Mali, NVidia, llvmpipe */
+        0.667f, 0.0191f},
     #endif
     {"wireframe w/o GS", "instanced-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
@@ -1058,24 +1058,24 @@ const struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"vertex ID", "instanced-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::VertexId,
-        /* SwiftShader has a few rounding errors on edges */
-        138.7f, 0.08f},
+        /* SwiftShader has a few rounding errors on edges, old llvmpipe too */
+        138.7f, 0.121f},
     {"instanced object ID", "instanced-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         /* SwiftShader has a few rounding errors on edges */
         133.0f, 0.12f},
     {"textured object ID", "instanced-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
-        /* SwiftShader has a few rounding errors on edges */
-        146.7f, 0.097f},
+        /* SwiftShader has a few rounding errors on edges, old llvmpipe too */
+        146.7f, 0.138f},
     {"instanced textured object ID", "instanced-instancedobjectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
-        /* SwiftShader has a few rounding errors on edges */
-        133.0f, 0.071f},
+        /* SwiftShader has a few rounding errors on edges, old llvmpipe too */
+        133.0f, 0.103f},
     {"instanced textured array object ID", "instanced-instancedobjectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset|MeshVisualizerGL2D::Flag::TextureArrays,
-        /* SwiftShader has a few rounding errors on edges */
-        133.0f, 0.071f},
+        /* SwiftShader has a few rounding errors on edges, old llvmpipe too */
+        133.0f, 0.103f},
     #endif
 };
 
@@ -1088,14 +1088,14 @@ const struct {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", "instanced-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
-        /* Minor differences on NVidia */
-        0.667f, 0.0054f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.0079f},
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe + TBN", "instanced-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        /* Minor differences on NVidia */
-        0.667f, 0.0050f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.0059f},
     #endif
     {"wireframe w/o GS", "instanced-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
@@ -1104,24 +1104,24 @@ const struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"vertex ID", "instanced-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
-        /* SwiftShader has a minor rounding error */
-        5.667f, 0.034f},
+        /* SwiftShader has a minor rounding error, old llvmpipe too */
+        5.667f, 0.067f},
     {"instanced object ID", "instanced-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId,
-        /* SwiftShader has an off-by-one error on certain colors */
-        0.334f, 0.042f},
+        /* SwiftShader has an off-by-one error on some colors, llvmpipe too */
+        0.667f, 0.059f},
     {"textured object ID", "instanced-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset,
-        /* SwiftShader has a few rounding errors on edges */
-        28.67f, 0.097f},
+        /* SwiftShader has a few rounding errors on edges, old llvmpipe too */
+        28.67f, 0.144f},
     {"instanced textured object ID", "instanced-instancedobjectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset,
-        /* SwiftShader has a few rounding errors on edges */
-        32.67f, 0.101f},
+        /* SwiftShader has a few rounding errors on edges, old llvmpipe too */
+        33.34f, 0.139f},
     {"instanced textured array object ID", "instanced-instancedobjectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset|MeshVisualizerGL3D::Flag::TextureArrays,
-        /* SwiftShader has a few rounding errors on edges */
-        32.67f, 0.101f},
+        /* SwiftShader has a few rounding errors on edges, old llvmpipe too */
+        33.34f, 0.134f},
     #endif
 };
 
@@ -1145,34 +1145,34 @@ constexpr struct {
     {"bind with offset, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.02f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        0.67f, 0.021f},
     {"bind with offset, vertex ID", "multidraw-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::VertexId,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.01f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        1.0f, 0.106f},
     {"bind with offset, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.108f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        0.67f, 0.117f},
     {"bind with offset, textured object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.073f},
+        /* Minor differences on ARM Mali, old llvmpipe */
+        0.67f, 0.074f},
     {"bind with offset, textured array object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.073f},
+        /* Minor differences on ARM Mali, old llvmpipe */
+        0.67f, 0.074f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         0, 0, true, 16,
-        /* Minor differences on NVidia */
-        0.667f, 0.056f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.074f},
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe2D.tga",
@@ -1184,34 +1184,34 @@ constexpr struct {
     {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.02f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        0.67f, 0.021f},
     {"draw offset, vertex ID", "multidraw-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::VertexId,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.01f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        1.0f, 0.106f},
     {"draw offset, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.108f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        0.67f, 0.117f},
     {"draw offset, textured object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.073f},
+        /* Minor differences on ARM Mali, old llvmpipe */
+        0.67f, 0.074f},
     {"draw offset, textured array object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.073f},
+        /* Minor differences on ARM Mali, old llvmpipe */
+        0.67f, 0.074f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         0, 0, false, 1,
-        /* Minor differences on NVidia */
-        0.667f, 0.056f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.074f},
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe2D.tga",
@@ -1223,30 +1223,34 @@ constexpr struct {
     {"multidraw, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.02f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        0.67f, 0.021f},
     {"multidraw, vertex ID", "multidraw-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::VertexId,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.01f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        1.0f, 0.106f},
     {"multidraw, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::InstancedObjectId,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on llvmpipe */
+        0.67f, 0.117f},
     {"multidraw, textured object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on llvmpipe */
+        0.67f, 0.074f},
     {"multidraw, textured array object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on llvmpipe */
+        0.67f, 0.074f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         0, 0, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.074f},
     #endif
 };
 
@@ -1263,13 +1267,13 @@ constexpr struct {
     {"bind with offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
         1, 1, true, 16,
-        /* Minor differences on NVidia */
-        0.667f, 0.0055f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.0099f},
     {"bind with offset, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
         1, 1, true, 16,
-        /* Minor differences on NVidia */
-        0.667f, 0.0054f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.0097f},
     #endif
     {"bind with offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
@@ -1279,38 +1283,41 @@ constexpr struct {
     {"bind with offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.01f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        1.0f, 0.091f},
     {"bind with offset, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId,
         1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.007f},
+        /* Minor differences on ARM Mali, old llvmpipe */
+        0.67f, 0.103f},
     {"bind with offset, textured object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
         1, 1, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on old llvmpipe */
+        0.67f, 0.105f},
     {"bind with offset, textured array object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
         1, 1, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on old llvmpipe */
+        0.67f, 0.105f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, textured array object ID, shader storage", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
         0, 0, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on llvmpipe */
+        0.67f, 0.105f},
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
         2, 3, false, 1,
-        /* Minor differences on NVidia */
-        0.667f, 0.0055f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.0099f},
     {"draw offset, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
         2, 3, false, 1,
-        /* Minor differences on NVidia */
-        0.667f, 0.0054f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.0097f},
     #endif
     {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
@@ -1320,66 +1327,73 @@ constexpr struct {
     {"draw offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.01f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        1.0f, 0.091f},
     {"draw offset, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.34f, 0.007f},
+        /* Minor differences on ARM Mali, old llvmpipe */
+        0.67f, 0.103f},
     {"draw offset, textured object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on old llvmpipe */
+        0.67f, 0.105f},
     {"draw offset, textured array object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on old llvmpipe */
+        0.67f, 0.105f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, textured array object ID, shader storage", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
         0, 0, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on llvmpipe */
+        0.67f, 0.105f},
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe,
         2, 3, false, 1,
-        /* Minor differences on NVidia */
-        0.667f, 0.003f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.0099f},
     {"multidraw, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
         2, 3, false, 1,
-        /* Minor differences on NVidia */
-        0.667f, 0.003f},
+        /* Minor differences on NVidia, llvmpipe */
+        0.667f, 0.0097f},
     #endif
     {"multidraw, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
         2, 3, false, 1,
         /* Minor differences on ARM Mali, NVidia */
-        11.34f, 0.066f},
+        11.34f, 0.068f},
     {"multidraw, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::VertexId,
         2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        0.67f, 0.01f},
+        /* Minor differences on ARM Mali, llvmpipe */
+        1.0f, 0.091f},
     {"multidraw, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::InstancedObjectId,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali, old llvmpipe */
+        0.67f, 0.103f},
     {"multidraw, textured object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on old llvmpipe */
+        0.67f, 0.105f},
     {"multidraw, textured array object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on old llvmpipe */
+        0.67f, 0.105f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, textured array object ID, shader storage", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
         0, 0, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on llvmpipe */
+        0.67f, 0.105f},
     #endif
 };
 
@@ -3866,8 +3880,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid2D.tga"),
-        /* Minor differences on NVidia */
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.022f}));
+        /* Minor differences on NVidia, old llvmpipe */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.380f}));
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
@@ -3945,8 +3959,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid3D.tga"),
-        /* Minor differences on NVidia */
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.018f}));
+        /* Minor differences on NVidia, old llvmpipe */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.291f}));
 }
 
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
@@ -4782,9 +4796,9 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.file2D}),
-        /* AMD has slight off-by-one errors compared to Intel, SwiftShader a
-           bit more */
-        (DebugTools::CompareImageToFile{_manager, 4.67f, 0.141f}));
+        /* AMD has slight off-by-one errors compared to Intel, llvmpipe also,
+           SwiftShader a bit more */
+        (DebugTools::CompareImageToFile{_manager, 4.67f, 0.205f}));
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
@@ -5005,7 +5019,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
        additional off-by-one errors compared to Intel, SwiftShader some errors
        on the edges. If GL_NV_shader_noperspective_interpolation is not
        supported, the artifacts are bigger when wireframe is enabled. */
-    Float maxThreshold = 138.4f, meanThreshold = 0.279f;
+    Float maxThreshold = 138.4f, meanThreshold = 0.284f;
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(data.flags3D & MeshVisualizerGL3D::Flag::Wireframe && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
         /* SwiftShader has a bit more rounding errors */
@@ -5258,10 +5272,10 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    /* Slight rasterization differences on AMD. If
+    /* Slight rasterization differences on AMD and old llvmpipe. If
        GL_NV_shader_noperspective_interpolation is not supported, the artifacts
        are bigger. */
-    Float maxThreshold = 1.334f, meanThreshold = 0.018f;
+    Float maxThreshold = 1.334f, meanThreshold = 0.077f;
     #ifdef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
         maxThreshold = 58.0f;
