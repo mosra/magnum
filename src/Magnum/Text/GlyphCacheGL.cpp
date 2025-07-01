@@ -193,7 +193,11 @@ void GlyphCacheGL::doSetProcessedImage(const Vector2i& offset, const ImageView2D
 #ifndef MAGNUM_TARGET_GLES
 Image3D GlyphCacheGL::doProcessedImage() {
     Image2D out = static_cast<State&>(*_state).texture.image(0, processedFormat());
-    return Image3D{out.format(), {out.size(), 1}, out.release()};
+    /* Explicitly query size before calling release() to ensure the compiler
+       doesn't call first release() and then size() if they'd be in a single
+       expression, resulting in an image of zero dimensions */
+    const Vector3i size{out.size(), 1};
+    return Image3D{out.format(), size, out.release()};
 }
 #endif
 
