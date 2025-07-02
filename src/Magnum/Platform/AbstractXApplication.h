@@ -1191,9 +1191,11 @@ class AbstractXApplication::InputEvent {
          * @m_deprecated_since_latest Use @ref KeyEvent::pointers() or
          *      @ref PointerMoveEvent::pointers() instead.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH
         CORRADE_DEPRECATED("use pointers() instead") Buttons buttons() const {
             return Buttons(_modifiers & (Button1Mask|Button2Mask|Button3Mask));
         }
+        CORRADE_IGNORE_DEPRECATED_POP
         #endif
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
