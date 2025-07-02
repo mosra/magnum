@@ -126,6 +126,7 @@ const struct {
         {}},
 };
 
+#ifndef MAGNUM_TARGET_GLES2
 /* Expands upon SetImageData with third dimension. For simplicity only a single
    layer always contains data to process, but it's changed which one it is to
    verify all uploaded layers get processed. */
@@ -180,6 +181,7 @@ const struct {
         {{47, 48, 2}, {208, 209, 6}},
         {}},
 };
+#endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 const struct {
