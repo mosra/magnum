@@ -426,6 +426,14 @@ void CubeMapTextureArrayGLTest::wrap() {
 }
 
 void CubeMapTextureArrayGLTest::label() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
+    #endif
+
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
