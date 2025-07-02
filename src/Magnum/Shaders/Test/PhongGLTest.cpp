@@ -3513,8 +3513,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
         #ifndef MAGNUM_TARGET_WEBGL
         CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().contains("AMD"),
             "AMD Mesa drivers have a much larger ring for the overflown shininess when it's exactly 0.");
-        CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().contains("llvmpipe"),
-            "Mesa llvmpipe drivers have a much larger ring for the overflown shininess.");
+        CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f &&
+            GL::Context::current().rendererString().contains("llvmpipe") &&
+            (GL::Context::current().versionString().contains("Mesa 20") ||
+             GL::Context::current().versionString().contains("Mesa 1")),
+            "Mesa llvmpipe 20 and older drivers have a much larger ring for the overflown shininess.");
         #endif
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
         CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && GL::Context::current().rendererString().contains("AMD"),
