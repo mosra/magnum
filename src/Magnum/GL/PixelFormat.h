@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::hasPixelFormat(), @ref Magnum::GL::pixelFormat(), @ref Magnum::GL::pixelType(), @ref Magnum::GL::pixelFormatSize(), @ref Magnum::GL::genericPixelFormat(), @ref Magnum::GL::hasCompressedPixelFormat(), @ref Magnum::GL::compressedPixelFormat(), @ref Magnum::GL::genericCompressedPixelFormat()
+ * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::hasPixelFormat(), @ref Magnum::GL::pixelFormat(), @ref Magnum::GL::pixelType(), @ref Magnum::GL::pixelFormatSize(), @ref Magnum::GL::genericPixelFormat(), @ref Magnum::GL::hasCompressedPixelFormat(), @ref Magnum::GL::compressedPixelFormat(), @ref Magnum::GL::compressedPixelFormatBlockSize(), @ref Magnum::GL::compressedPixelFormatBlockDataSize(), @ref Magnum::GL::genericCompressedPixelFormat()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -2169,7 +2169,8 @@ Expects that @p format is not one of the generic
 @relativeref{CompressedPixelFormat,RGBA} formats for which properties are
 unspecified. For 2D formats the Z dimension is always 1.
 @see @ref compressedPixelFormatBlockDataSize(),
-    @ref Magnum::compressedPixelFormatBlockSize(), @ref pixelFormatSize()
+    @ref Magnum::compressedPixelFormatBlockSize(),
+    @ref Texture::compressedBlockSize(), @ref pixelFormatSize()
 */
 MAGNUM_GL_EXPORT Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat format);
 
@@ -2183,7 +2184,8 @@ Expects that @p format is not one of the generic
 @relativeref{CompressedPixelFormat,RGBA} formats for which properties are
 unspecified.
 @see @ref compressedPixelFormatBlockSize(),
-    @ref Magnum::compressedPixelFormatBlockDataSize(), @ref pixelFormatSize()
+    @ref Magnum::compressedPixelFormatBlockDataSize(),
+    @ref Texture::compressedBlockDataSize(), @ref pixelFormatSize()
 */
 MAGNUM_GL_EXPORT UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat format);
 

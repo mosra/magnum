@@ -134,7 +134,9 @@ Texture: public AbstractTexture {
          * pixels). For uncompressed formats returns zero vector.
          * @see @ref compressedBlockDataSize(), @fn_gl_keyword{GetInternalformat}
          *      with @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_WIDTH},
-         *      @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_HEIGHT}
+         *      @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_HEIGHT},
+         *      @ref compressedPixelFormatBlockSize(),
+         *      @ref Magnum::compressedPixelFormatBlockSize()
          * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
@@ -149,7 +151,9 @@ Texture: public AbstractTexture {
          * If @p format is compressed, returns compressed block data size (in
          * bytes). For uncompressed formats returns zero.
          * @see @ref compressedBlockSize(), @fn_gl_keyword{GetInternalformat}
-         *      with @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         *      with @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_SIZE},
+         *      @ref compressedPixelFormatBlockDataSize(),
+         *      @ref Magnum::compressedPixelFormatBlockDataSize()
          * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
