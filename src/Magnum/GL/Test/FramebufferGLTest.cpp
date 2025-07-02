@@ -1075,38 +1075,6 @@ void FramebufferGLTest::detach() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void FramebufferGLTest::setDefaultSize() {
-    #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_no_attachments>())
-        CORRADE_SKIP(Extensions::ARB::framebuffer_no_attachments::string() << "is not supported.");
-    #else
-    if(!Context::current().isVersionSupported(Version::GLES310))
-        CORRADE_SKIP(Version::GLES310 << "is not supported.");
-    #endif
-
-    Framebuffer framebuffer{{{}, Vector2i{128}}};
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::IncompleteMissingAttachment);
-
-    framebuffer.setDefaultSize({256, 256})
-        .setDefaultLayerCount(3)
-        .setDefaultSampleCount(1)
-        .setDefaultFixedSampleLocations(false);
-
-    /* Works on Mesa 25, not sure about the versions between */
-    {
-        CORRADE_EXPECT_FAIL_IF(
-            Context::current().version() == Version::GLES310 &&
-            Context::current().versionString().contains("Mesa 20"),
-            "Mesa 20 reports GL ES 3.1 but fails with InvalidEnum.");
-        MAGNUM_VERIFY_NO_GL_ERROR();
-    }
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
-}
-#endif
-
 void FramebufferGLTest::multipleColorOutputs() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
@@ -1181,6 +1149,38 @@ void FramebufferGLTest::multipleColorOutputs() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void FramebufferGLTest::setDefaultSize() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_no_attachments>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_no_attachments::string() << "is not supported.");
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP(Version::GLES310 << "is not supported.");
+    #endif
+
+    Framebuffer framebuffer{{{}, Vector2i{128}}};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::IncompleteMissingAttachment);
+
+    framebuffer.setDefaultSize({256, 256})
+        .setDefaultLayerCount(3)
+        .setDefaultSampleCount(1)
+        .setDefaultFixedSampleLocations(false);
+
+    /* Works on Mesa 25, not sure about the versions between */
+    {
+        CORRADE_EXPECT_FAIL_IF(
+            Context::current().version() == Version::GLES310 &&
+            Context::current().versionString().contains("Mesa 20"),
+            "Mesa 20 reports GL ES 3.1 but fails with InvalidEnum.");
+        MAGNUM_VERIFY_NO_GL_ERROR();
+    }
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+#endif
 
 void FramebufferGLTest::clear() {
     #ifndef MAGNUM_TARGET_GLES
