@@ -438,8 +438,6 @@ jobs:
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
-    - install-swiftshader-gles:
-        build: ubuntu-18.04
     - build:
         script: unix-desktop-gles.sh
     - lcov
@@ -471,8 +469,6 @@ jobs:
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
-    - install-swiftshader-gles:
-        build: ubuntu-18.04
     - build:
         script: unix-desktop-gles.sh
     - lcov

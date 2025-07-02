@@ -18,10 +18,13 @@ cd ../..
 mkdir build && cd build
 cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+    `# SwiftShader is used only on the Mac ES3 build. On Linux Mesa llvmpipe` \
+    `# is used instead and SwiftShader is not even downloaded so this points` \
+    `# to a non-existent location and does nothing.` \
     -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/swiftshader" \
+    -DCMAKE_INSTALL_RPATH=$HOME/swiftshader/lib \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_INSTALL_RPATH=$HOME/swiftshader/lib \
     -DMAGNUM_TARGET_GLES=ON \
     -DMAGNUM_TARGET_GLES2=$TARGET_GLES2 \
     -DMAGNUM_WITH_AUDIO=OFF \
@@ -60,17 +63,16 @@ cmake .. \
 ninja $NINJA_JOBS
 
 export CORRADE_TEST_COLOR=ON
-# Don't run any benchmarks. SwiftShader doesn't support
-# EXT_disjoint_timer_query anyway and the CPU-side things are run in the usual
-# desktop build already.
+# Don't run any benchmarks. It doesn't make sense for GPU emulation, and
+# CPU-side things are run in the usual desktop build already.
 export CORRADE_TEST_SKIP_BENCHMARKS=ON
 
 # Keep these in sync with package/archlinux/PKGBUILD-es*
-ctest -V
-MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex" ctest --output-on-failure -j5 -R GLTest
-MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance" ctest --output-on-failure -j5 -R GLTest
-MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance GL_EXT_multi_draw_arrays GL_ANGLE_multi_draw" ctest --output-on-failure -j5 -R GLTest
-MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest --output-on-failure -j5 -R GLTest
+ctest -V -E GLBenchmark
+MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex" ctest -V -R GLTest
+MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance" ctest -V -R GLTest
+MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance GL_EXT_multi_draw_arrays GL_ANGLE_multi_draw" ctest -V -R GLTest
+MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest -V -R GLTest
 Debug/bin/magnum-gl-info --limits
 
 # Test install, after running the tests as for them it shouldn't be needed
