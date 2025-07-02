@@ -1095,7 +1095,14 @@ void FramebufferGLTest::setDefaultSize() {
         .setDefaultSampleCount(1)
         .setDefaultFixedSampleLocations(false);
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+    /* Works on Mesa 25, not sure about the versions between */
+    {
+        CORRADE_EXPECT_FAIL_IF(
+            Context::current().version() == Version::GLES310 &&
+            Context::current().versionString().contains("Mesa 20"),
+            "Mesa 20 reports GL ES 3.1 but fails with InvalidEnum.");
+        MAGNUM_VERIFY_NO_GL_ERROR();
+    }
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
