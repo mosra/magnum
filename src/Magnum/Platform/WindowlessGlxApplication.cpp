@@ -27,6 +27,7 @@
 
 #include "WindowlessGlxApplication.h"
 
+#include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -100,6 +101,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         Error() << "Platform::WindowlessGlxContext: no supported framebuffer configuration found";
         return;
     }
+    Containers::ScopeGuard freeConfigs{configs, XFree};
 
     /* Create pbuffer */
     constexpr static const int pbufferAttributes[] = {
@@ -265,8 +267,6 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
     #else
     static_cast<void>(magnumContext);
     #endif
-
-    XFree(configs);
 
     if(!_context) {
         Error e;
