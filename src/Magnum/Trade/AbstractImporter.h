@@ -2646,7 +2646,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Trade.AbstractImporter/0.5.2"
+"cz.mosra.magnum.Trade.AbstractImporter/0.5.3"
 /* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

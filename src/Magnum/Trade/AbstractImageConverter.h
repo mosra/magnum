@@ -1981,7 +1981,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.3"
+"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.4"
 /* [interface] */
 
 }}
