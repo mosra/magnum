@@ -161,7 +161,7 @@ void ContextTest::configurationConstruct() {
     #ifndef MAGNUM_TARGET_GLES
     const Containers::StringView a = "no-layout-qualifiers-on-old-glsl!"_s.exceptSuffix(1);
     const Containers::StringView b = "nv-compressed-block-size-in-bits!"_s.exceptSuffix(1);
-    const Containers::StringView c = "nv-cubemap-inconsistent-compressed-image-size!"_s.exceptSuffix(1);
+    const Containers::StringView c = "nv-zero-context-profile-mask!"_s.exceptSuffix(1);
     #elif !defined(MAGNUM_TARGET_WEBGL)
     const Containers::StringView a = "swiftshader-no-empty-egl-context-flags!"_s.exceptSuffix(1);
     const Containers::StringView b = "swiftshader-egl-context-needs-pbuffer!"_s.exceptSuffix(1);

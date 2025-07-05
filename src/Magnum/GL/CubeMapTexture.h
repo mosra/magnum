@@ -1344,13 +1344,6 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        static GLint MAGNUM_GL_LOCAL getLevelCompressedImageSizeImplementationDefault(CubeMapTexture& self, GLint level);
-        static GLint MAGNUM_GL_LOCAL getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround(CubeMapTexture& self, GLint level);
-        static GLint MAGNUM_GL_LOCAL getLevelCompressedImageSizeImplementationDSA(CubeMapTexture& self, GLint level);
-        static GLint MAGNUM_GL_LOCAL getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround(CubeMapTexture& self, GLint level);
-        #endif
-
-        #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL getImageImplementationDSA(CubeMapTexture& self, GLint level, const Vector3i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data, const PixelStorage& storage);
         static void MAGNUM_GL_LOCAL getImageImplementationDSAAmdSliceBySlice(CubeMapTexture& self, GLint level, const Vector3i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data, const PixelStorage& storage);
         static void MAGNUM_GL_LOCAL getImageImplementationSliceBySlice(CubeMapTexture& self, GLint level, const Vector3i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data, const PixelStorage& storage);

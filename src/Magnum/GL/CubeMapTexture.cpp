@@ -684,40 +684,6 @@ void CubeMapTexture::getLevelParameterImplementationDSA(CubeMapTexture& self, co
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDefault(CubeMapTexture& self, const GLint level) {
-    self.bindInternal();
-    /* Using only parameters of +X in pre-DSA code path and assuming that all
-       other faces are the same */
-    GLint value;
-    glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &value);
-
-    return value;
-}
-
-GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround(CubeMapTexture& self, const GLint level) {
-    const GLint value = getLevelCompressedImageSizeImplementationDefault(self, level);
-
-    GLint immutable;
-    glGetTexParameteriv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_IMMUTABLE_LEVELS, &immutable);
-    return immutable ? value/6 : value;
-}
-
-GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSA(CubeMapTexture& self, const GLint level) {
-    GLint value;
-    glGetTextureLevelParameteriv(self._id, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &value);
-    return value;
-}
-
-GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround(CubeMapTexture& self, const GLint level) {
-    const GLint value = getLevelCompressedImageSizeImplementationDSA(self, level);
-
-    GLint immutable;
-    glGetTextureParameteriv(self._id, GL_TEXTURE_IMMUTABLE_LEVELS, &immutable);
-    return immutable ? value/6 : value;
-}
-#endif
-
-#ifndef MAGNUM_TARGET_GLES
 void CubeMapTexture::getImageImplementationDSA(CubeMapTexture& self, const GLint level, const Vector3i&, const PixelFormat format, const PixelType type, const std::size_t dataSize, GLvoid* const data, const PixelStorage&) {
     glGetTextureImage(self._id, level, GLenum(format), GLenum(type), dataSize, data);
 }

@@ -132,9 +132,6 @@ struct CubeMapTextureGLTest: OpenGLTester {
     void compressedImageQueryViewBadSize();
     void compressedImageQueryViewBadFormat();
     #endif
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    void immutableCompressedImage();
-    #endif
     void compressedSubImage();
     #ifndef MAGNUM_TARGET_GLES2
     void compressedSubImageBuffer();
@@ -420,9 +417,6 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         &CubeMapTextureGLTest::compressedImageQueryView,
-        #endif
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        &CubeMapTextureGLTest::immutableCompressedImage,
         #endif
         }, Containers::arraySize(CompressedPixelStorageData));
 
@@ -1475,71 +1469,6 @@ void CubeMapTextureGLTest::compressedImageQueryViewBadFormat() {
     Error redirectError{&out};
     texture.compressedImage(CubeMapCoordinate::PositiveX, 0, image);
     CORRADE_COMPARE(out, "GL::CubeMapTexture::compressedImage(): expected image view format GL::CompressedPixelFormat::RGBAS3tcDxt3 but got GL::CompressedPixelFormat::RGBAS3tcDxt1\n");
-}
-#endif
-
-#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-void CubeMapTextureGLTest::immutableCompressedImage() {
-    auto&& data = CompressedPixelStorageData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
-        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
-    #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_storage>())
-        CORRADE_SKIP(Extensions::EXT::texture_storage::string() << "is not supported.");
-    #endif
-    #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-    #elif defined(MAGNUM_TARGET_WEBGL)
-    if(!Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_s3tc>())
-        CORRADE_SKIP(Extensions::WEBGL::compressed_texture_s3tc::string() << "is not supported.");
-    #else
-    if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
-        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() << "is not supported.");
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(data.storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
-    #endif
-
-    /* Testing that GL_TEXTURE_COMPRESSED_IMAGE_SIZE is consistent and returns
-       the same value regardless whether the texture is immutable or not. (Not
-       the case, at least on NVidia 358.16, compare with compressedImage() test
-       case that just calls setImage() six times instead of setStorage() and
-       gets value that's six times smaller. I couldn't find anything in the
-       specs so I suspect it's a bug). */
-
-    const CompressedImageView2D view{
-        data.storage,
-        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
-        data.dataSparse};
-
-    CubeMapTexture texture;
-    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4})
-           .setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, {}, view)
-           .setCompressedSubImage(CubeMapCoordinate::NegativeX, 0, {}, view)
-           .setCompressedSubImage(CubeMapCoordinate::PositiveY, 0, {}, view)
-           .setCompressedSubImage(CubeMapCoordinate::NegativeY, 0, {}, view)
-           .setCompressedSubImage(CubeMapCoordinate::PositiveZ, 0, {}, view)
-           .setCompressedSubImage(CubeMapCoordinate::NegativeZ, 0, {}, view);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    #ifndef MAGNUM_TARGET_GLES
-    CompressedImage2D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {}, nullptr};
-    texture.compressedImage(CubeMapCoordinate::NegativeY, 0, image);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    CORRADE_COMPARE(image.size(), Vector2i{4});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).exceptPrefix(data.offset),
-        data.data,
-        TestSuite::Compare::Container);
-    #endif
 }
 #endif
 

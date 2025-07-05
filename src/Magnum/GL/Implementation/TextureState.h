@@ -134,7 +134,6 @@ struct TextureState {
     void(*getCubeLevelParameterivImplementation)(CubeMapTexture&, GLint, GLenum, GLint*);
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    GLint(*getCubeLevelCompressedImageSizeImplementation)(CubeMapTexture&, GLint);
     void(*getCubeImageImplementation)(CubeMapTexture&, CubeMapCoordinate, GLint, const Vector2i&, PixelFormat, PixelType, std::size_t, GLvoid*);
     void(*getCubeImage3DImplementation)(CubeMapTexture&, GLint, const Vector3i&, PixelFormat, PixelType, std::size_t, GLvoid*, const PixelStorage&);
     void(*getCompressedCubeImage3DImplementation)(CubeMapTexture&, GLint, const Vector2i&, std::size_t, std::size_t, GLvoid*);

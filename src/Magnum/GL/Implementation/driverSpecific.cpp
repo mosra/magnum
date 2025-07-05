@@ -192,11 +192,6 @@ constexpr Containers::StringView KnownWorkarounds[]{
    query in bits instead of bytes */
 "nv-compressed-block-size-in-bits"_s,
 
-/* NVidia drivers (358.16) report different compressed image size for cubemaps
-   based on whether the texture is immutable or not and not based on whether
-   I'm querying all faces (ARB_DSA) or a single face (non-DSA, EXT_DSA) */
-"nv-cubemap-inconsistent-compressed-image-size"_s,
-
 /* NVidia drivers (358.16) return only the first slice of compressed cube map
    image when querying all six slices using the ARB_DSA API */
 "nv-cubemap-broken-full-compressed-image-query"_s,

@@ -300,24 +300,6 @@ TextureState::TextureState(Context& context,
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    /* Compressed cubemap image size query implementation (extensions added
-       above) */
-    if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
-        !context.isDriverWorkaroundDisabled("nv-cubemap-inconsistent-compressed-image-size"_s)) {
-        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>())
-            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround;
-        else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround;
-    } else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
-        #ifdef CORRADE_TARGET_WINDOWS
-        && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s))
-        #endif
-    ) {
-        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
-    } else {
-        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefault;
-    }
-
     /* Image retrieval implementation */
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         /* Extension name added above */
