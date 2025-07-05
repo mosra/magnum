@@ -114,11 +114,6 @@ void DistanceFieldGLBenchmark::benchmark() {
     auto&& data = BenchmarkData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef MAGNUM_TARGET_GLES
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::disjoint_timer_query>())
-        CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query::string() << "is not supported, can't benchmark");
-    #endif
-
     Containers::Pointer<Trade::AbstractImporter> importer;
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
