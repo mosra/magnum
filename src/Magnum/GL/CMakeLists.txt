@@ -48,7 +48,6 @@ set(MagnumGL_SRCS
     Implementation/FramebufferState.cpp
     Implementation/MeshState.cpp
     Implementation/QueryState.cpp
-    Implementation/RendererState.cpp
     Implementation/ShaderProgramState.cpp
     Implementation/ShaderState.cpp
     Implementation/State.cpp
@@ -66,7 +65,9 @@ set(MagnumGL_GracefulAssert_SRCS
     MeshView.cpp
     PixelFormat.cpp
     Sampler.cpp
-    Shader.cpp)
+    Shader.cpp
+
+    Implementation/RendererState.cpp)
 
 set(MagnumGL_HEADERS
     AbstractFramebuffer.h

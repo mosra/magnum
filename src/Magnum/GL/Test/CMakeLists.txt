@@ -153,7 +153,7 @@ if(MAGNUM_BUILD_GL_TESTS)
 
     if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
         corrade_add_test(GLAbstractQueryGLTest AbstractQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        corrade_add_test(GLPixelStorageGLTest PixelStorageGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(GLPixelStorageGLTest PixelStorageGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
         corrade_add_test(GLSampleQueryGLTest SampleQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
     endif()
 

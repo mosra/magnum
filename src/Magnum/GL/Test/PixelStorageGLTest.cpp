@@ -25,11 +25,14 @@
 */
 
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
@@ -56,11 +59,24 @@ struct PixelStorageGLTest: OpenGLTester {
     void alignmentImageHeightRowLengthSkipXYZPack3D();
     #endif
 
+    #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
+    void rowLengthNotSupported();
+    #endif
+    #ifdef MAGNUM_TARGET_GLES2
+    void imageHeightNotSupported();
+    #elif defined(MAGNUM_TARGET_GLES)
+    void imageHeightSkipZPackNotSupported();
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     void compressedUnpack2D();
     void compressedPack2D();
     void compressedUnpack3D();
     void compressedPack3D();
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    void compressedNotSupported();
     #endif
 };
 
@@ -74,11 +90,24 @@ PixelStorageGLTest::PixelStorageGLTest() {
               &PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZPack3D,
               #endif
 
+              #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
+              &PixelStorageGLTest::rowLengthNotSupported,
+              #endif
+              #ifdef MAGNUM_TARGET_GLES2
+              &PixelStorageGLTest::imageHeightNotSupported,
+              #elif defined(MAGNUM_TARGET_GLES)
+              &PixelStorageGLTest::imageHeightSkipZPackNotSupported,
+              #endif
+
               #ifndef MAGNUM_TARGET_GLES
               &PixelStorageGLTest::compressedUnpack2D,
               &PixelStorageGLTest::compressedPack2D,
               &PixelStorageGLTest::compressedUnpack3D,
               &PixelStorageGLTest::compressedPack3D
+              #endif
+
+              #ifdef MAGNUM_TARGET_GLES
+              &PixelStorageGLTest::compressedNotSupported,
               #endif
               });
 }
@@ -260,6 +289,160 @@ void PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZPack3D() {
 
     CORRADE_COMPARE_AS(image.data(), Containers::arrayView(Data3D),
         TestSuite::Compare::Container);
+}
+#endif
+
+#if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
+void PixelStorageGLTest::rowLengthNotSupported() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char data[4*4*4]{};
+    MutableImageView2D image{
+        PixelStorage{}
+            .setRowLength(4),
+        Magnum::PixelFormat::RGBA8Unorm,
+        {4, 4},
+        data};
+
+    Texture2D texture;
+    /* Just to reset all pixel storage parameters potentially set by any of the
+       above tests to default. The (graceful) assertions would do an early
+       return somewhere in the middle, leading to some params being left at
+       their earlier state. */
+    texture.setImage(0,
+        textureFormat(image.format()),
+        ImageView2D{image.format(), image.size(), image.data()});
+    Framebuffer framebuffer{{}};
+    framebuffer.attachTexture(Framebuffer::ColorAttachment{0}, texture, 0);
+    /* ... and similarly to reset unpack parameters */
+    framebuffer.read({{}, image.size()},
+        MutableImageView2D{image.format(), image.size(), data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Containers::String out;
+    Error redirectError{&out};
+    texture.setImage(0, textureFormat(image.format()), image);
+    framebuffer.read({{}, image.size()}, image);
+    CORRADE_COMPARE_AS(out,
+        "GL: non-default PixelStorage::rowLength() is not supported in WebGL 1.0\n"
+        "GL: non-default PixelStorage::rowLength() is not supported in WebGL 1.0\n",
+        TestSuite::Compare::String);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* And again to reset these for any tests that might run after */
+    texture.setImage(0,
+        textureFormat(image.format()),
+        ImageView2D{image.format(), image.size(), image.data()});
+    framebuffer.read({{}, image.size()},
+        MutableImageView2D{image.format(), image.size(), data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GLES2
+void PixelStorageGLTest::imageHeightNotSupported() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char data[4*4*4]{};
+    MutableImageView2D image{
+        PixelStorage{}
+            .setImageHeight(4),
+        Magnum::PixelFormat::RGBA8Unorm,
+        {4, 4},
+        data};
+
+    Texture2D texture;
+    /* Just to reset all pixel storage parameters potentially set by any of the
+       above tests to default. The (graceful) assertions would do an early
+       return somewhere in the middle, leading to some params being left at
+       their earlier state. */
+    texture.setImage(0,
+        textureFormat(image.format()),
+        ImageView2D{image.format(), image.size(), data});
+
+    Framebuffer framebuffer{{}};
+    framebuffer.attachTexture(Framebuffer::ColorAttachment{0}, texture, 0);
+    /* ... and similarly to reset unpack parameters */
+    framebuffer.read({{}, image.size()},
+        MutableImageView2D{image.format(), image.size(), data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Containers::String out;
+    Error redirectError{&out};
+    texture.setImage(0, textureFormat(image.format()), image);
+    framebuffer.read({{}, image.size()}, image);
+    CORRADE_COMPARE_AS(out,
+        "GL: non-default PixelStorage::imageHeight() is not supported in OpenGL ES 2\n"
+        "GL: non-default PixelStorage::imageHeight() is not supported in OpenGL ES 2\n",
+        TestSuite::Compare::String);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* And again to reset these for any tests that might run after */
+    texture.setImage(0,
+        textureFormat(image.format()),
+        ImageView2D{image.format(), image.size(), data});
+    framebuffer.read({{}, image.size()},
+        MutableImageView2D{image.format(), image.size(), data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#elif defined(MAGNUM_TARGET_GLES)
+void PixelStorageGLTest::imageHeightSkipZPackNotSupported() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    GL::Context::current().resetState(GL::Context::State::PixelStorage);
+
+    char data[4*4*4*2]{}; /* twice for skip Z */
+    Texture2D texture;
+    /* Just so the texure can be correctly read from */
+    texture.setImage(0, TextureFormat::RGBA8,
+        ImageView2D{Magnum::PixelFormat::RGBA8Unorm, {4, 4}, data});
+
+    Framebuffer framebuffer{{}};
+    framebuffer.attachTexture(Framebuffer::ColorAttachment{0}, texture, 0);
+    /* Just to reset all pixel storage parameters potentially set by any of the
+       above tests to default. The (graceful) assertions would do an early
+       return somewhere in the middle, leading to some params being left at
+       their earlier state. */
+    framebuffer.read({{}, {4, 4}},
+        MutableImageView2D{Magnum::PixelFormat::RGBA8Unorm, {4, 4}, data});
+
+    MutableImageView2D imageImageHeight{
+        PixelStorage{}
+            .setImageHeight(4),
+        Magnum::PixelFormat::RGBA8Unorm,
+        {4, 4},
+        data};
+    MutableImageView2D imageSkipZ{
+        PixelStorage{}
+            .setSkip({0, 0, 1}),
+        Magnum::PixelFormat::RGBA8Unorm,
+        {4, 4},
+        data};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Containers::String out;
+    Error redirectError{&out};
+    framebuffer.read({{}, imageImageHeight.size()}, imageImageHeight);
+    framebuffer.read({{}, imageSkipZ.size()}, imageSkipZ);
+    CORRADE_COMPARE_AS(out,
+        "GL: non-default PixelStorage::imageHeight() for pack is not supported in OpenGL ES\n"
+        "GL: non-default PixelStorage::skip().z() for pack is not supported in OpenGL ES\n",
+        TestSuite::Compare::String);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* And again to reset these for any tests that might run after */
+    framebuffer.read({{}, {4, 4}},
+        MutableImageView2D{Magnum::PixelFormat::RGBA8Unorm, {4, 4}, data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
@@ -447,6 +630,82 @@ void PixelStorageGLTest::compressedPack3D() {
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
         Containers::arrayView(CompressedData3D),
         TestSuite::Compare::Container);
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void PixelStorageGLTest::compressedNotSupported() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* Pick a 64-bit 4x4 format. Zero data are uploaded so it doesn't matter
+       which it is. */
+    Magnum::CompressedPixelFormat format;
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>() ||
+       Context::current().isExtensionSupported<Extensions::EXT::texture_compression_dxt1>() ||
+       Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt1>())
+    #else
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_s3tc>())
+    #endif
+    {
+        format = Magnum::CompressedPixelFormat::Bc1RGBUnorm;
+    } else
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_etc>())
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::compressed_texture_etc>())
+    #else
+    /* On ES3 ETC textures are available always */
+    #endif
+    {
+        format = Magnum::CompressedPixelFormat::Etc2RGB8Unorm;
+    }
+    #if defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_TARGET_GLES2)
+    else {
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_SKIP(Extensions::WEBGL::compressed_texture_s3tc::string() << "not supported, can't test");
+        #else
+        CORRADE_SKIP("None of" << Extensions::EXT::texture_compression_s3tc::string() << Debug::nospace << "," << Extensions::EXT::texture_compression_dxt1::string() << Debug::nospace << "," << Extensions::ANGLE::texture_compression_dxt1::string() << "or" << Extensions::ANGLE::compressed_texture_etc::string() << "extensions are supported, can't test");
+        #endif
+    }
+    #endif
+
+    char data[8]{};
+    MutableCompressedImageView2D image{
+        /* Just set any random property to make it different from the
+           default-constructed instance to trigger the assert */
+        CompressedPixelStorage{}
+            .setRowLength(4),
+        format,
+        {4, 4},
+        data};
+
+    Texture2D texture;
+    /* Just to reset all pixel storage parameters potentially set by any of the
+       above tests to default. The (graceful) assertions would do an early
+       return somewhere in the middle, leading to some params being left at
+       their earlier state. */
+    texture.setCompressedImage(0,
+        CompressedImageView2D{image.format(), image.size(), data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Containers::String out;
+    Error redirectError{&out};
+    texture.setCompressedImage(0, image);
+    /* There isn't any way to use CompressedPixelStorage for pixel pack on
+       GLES */
+    CORRADE_COMPARE_AS(out,
+        "GL: non-default CompressedPixelStorage parameters are not supported in OpenGL ES or WebGL\n",
+        TestSuite::Compare::String);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* And again to reset these for any tests that might run after */
+    texture.setCompressedImage(0,
+        CompressedImageView2D{image.format(), image.size(), data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
