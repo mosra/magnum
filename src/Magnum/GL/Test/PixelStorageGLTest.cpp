@@ -47,43 +47,43 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct PixelStorageGLTest: OpenGLTester {
     explicit PixelStorageGLTest();
 
-    void unpack2D();
-    void pack2D();
+    void alignmentRowLengthSkipXYUnpack2D();
+    void alignmentRowLengthSkipXYPack2D();
     #ifndef MAGNUM_TARGET_GLES2
-    void unpack3D();
+    void alignmentImageHeightRowLengthSkipXYZUnpack3D();
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    void pack3D();
+    void alignmentImageHeightRowLengthSkipXYZPack3D();
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    void unpackCompressed2D();
-    void packCompressed2D();
-    void unpackCompressed3D();
-    void packCompressed3D();
+    void compressedUnpack2D();
+    void compressedPack2D();
+    void compressedUnpack3D();
+    void compressedPack3D();
     #endif
 };
 
 PixelStorageGLTest::PixelStorageGLTest() {
-    addTests({&PixelStorageGLTest::unpack2D,
-              &PixelStorageGLTest::pack2D,
+    addTests({&PixelStorageGLTest::alignmentRowLengthSkipXYUnpack2D,
+              &PixelStorageGLTest::alignmentRowLengthSkipXYPack2D,
               #ifndef MAGNUM_TARGET_GLES2
-              &PixelStorageGLTest::unpack3D,
+              &PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZUnpack3D,
               #endif
               #ifndef MAGNUM_TARGET_GLES
-              &PixelStorageGLTest::pack3D,
+              &PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZPack3D,
               #endif
 
               #ifndef MAGNUM_TARGET_GLES
-              &PixelStorageGLTest::unpackCompressed2D,
-              &PixelStorageGLTest::packCompressed2D,
-              &PixelStorageGLTest::unpackCompressed3D,
-              &PixelStorageGLTest::packCompressed3D
+              &PixelStorageGLTest::compressedUnpack2D,
+              &PixelStorageGLTest::compressedPack2D,
+              &PixelStorageGLTest::compressedUnpack3D,
+              &PixelStorageGLTest::compressedPack3D
               #endif
               });
 }
 
-constexpr const char Data2D[] = {
+constexpr char AlignmentRowLengthSkipXYData2D[]{
     /* Row length ------------------------------------------------------ */ /* Alignment */
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
@@ -100,7 +100,7 @@ constexpr const char ActualData[] = {
     '\x0c', '\x0d', '\x0e', '\x0f', '\x10', '\x11', '\x00', '\x00'
 };
 
-void PixelStorageGLTest::unpack2D() {
+void PixelStorageGLTest::alignmentRowLengthSkipXYUnpack2D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::EXT::unpack_subimage>())
         CORRADE_SKIP(Extensions::EXT::unpack_subimage::string() << "is not supported.");
@@ -110,7 +110,7 @@ void PixelStorageGLTest::unpack2D() {
         .setAlignment(2)
         .setRowLength(3)
         .setSkip({1, 3, 0}),
-        PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, Data2D};
+        PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, AlignmentRowLengthSkipXYData2D};
 
     Texture2D texture;
     texture.setStorage(1, TextureFormat::RGB8, {2, 3})
@@ -140,7 +140,7 @@ void PixelStorageGLTest::unpack2D() {
         TestSuite::Compare::Container);
 }
 
-void PixelStorageGLTest::pack2D() {
+void PixelStorageGLTest::alignmentRowLengthSkipXYPack2D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::NV::pack_subimage>())
         CORRADE_SKIP(Extensions::NV::pack_subimage::string() << "is not supported.");
@@ -159,7 +159,7 @@ void PixelStorageGLTest::pack2D() {
         .setAlignment(2)
         .setRowLength(3)
         .setSkip({1, 3, 0}),
-        PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{ValueInit, sizeof(Data2D)}};
+        PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{ValueInit, sizeof(AlignmentRowLengthSkipXYData2D)}};
 
     #ifndef MAGNUM_TARGET_GLES
     texture.image(0, image);
@@ -174,7 +174,7 @@ void PixelStorageGLTest::pack2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CORRADE_COMPARE_AS(image.data(), Containers::arrayView(Data2D),
+    CORRADE_COMPARE_AS(image.data(), Containers::arrayView(AlignmentRowLengthSkipXYData2D),
         TestSuite::Compare::Container);
 }
 
@@ -198,7 +198,7 @@ constexpr const char Data3D[] = {
     /* Filling to image height not needed */
 };
 
-void PixelStorageGLTest::unpack3D() {
+void PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZUnpack3D() {
     PixelStorage storage;
     storage.setAlignment(2)
         .setRowLength(3)
@@ -239,7 +239,7 @@ void PixelStorageGLTest::unpack3D() {
 /* Testing mainly image height here, which is not available as pack parameter
    in ES */
 #ifndef MAGNUM_TARGET_GLES
-void PixelStorageGLTest::pack3D() {
+void PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZPack3D() {
     ImageView3D actual{PixelFormat::RGB, PixelType::UnsignedByte, {2, 3, 1}, ActualData};
 
     Texture3D texture;
@@ -286,7 +286,7 @@ constexpr const UnsignedByte ActualCompressedData[] = {
     232,  57,   0,   0, 213, 255, 170,   2,
 };
 
-void PixelStorageGLTest::unpackCompressed2D() {
+void PixelStorageGLTest::compressedUnpack2D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
@@ -313,7 +313,7 @@ void PixelStorageGLTest::unpackCompressed2D() {
         TestSuite::Compare::Container);
 }
 
-void PixelStorageGLTest::packCompressed2D() {
+void PixelStorageGLTest::compressedPack2D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
@@ -392,7 +392,7 @@ constexpr const UnsignedByte CompressedData3D[] = {
     232,  57,   0,   0, 213, 255, 170,   2
 };
 
-void PixelStorageGLTest::unpackCompressed3D() {
+void PixelStorageGLTest::compressedUnpack3D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
@@ -420,7 +420,7 @@ void PixelStorageGLTest::unpackCompressed3D() {
         TestSuite::Compare::Container);
 }
 
-void PixelStorageGLTest::packCompressed3D() {
+void PixelStorageGLTest::compressedPack3D() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
