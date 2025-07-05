@@ -227,8 +227,6 @@ const struct {
     {"skip Y",
         Containers::arrayView(CompressedData).exceptPrefix(16),
         CompressedPixelStorage{}
-            .setCompressedBlockSize({4, 4, 1})
-            .setCompressedBlockDataSize(16)
             .setSkip({0, 4, 0}),
         Containers::arrayView(CompressedData), 16}
     #endif
@@ -312,8 +310,6 @@ const struct {
     {"skip Z",
         Containers::arrayView(CompressedFullData).exceptPrefix(16*4),
         CompressedPixelStorage{}
-            .setCompressedBlockSize({4, 4, 1})
-            .setCompressedBlockDataSize(16)
             .setSkip({0, 0, 4}), 16*4}
     #endif
 };
@@ -1311,8 +1307,7 @@ void CubeMapTextureGLTest::compressedImage() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedImage2D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {}, nullptr};
-    texture.compressedImage(CubeMapCoordinate::PositiveX, 0, image);
+    CompressedImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0, {data.storage});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1362,8 +1357,8 @@ void CubeMapTextureGLTest::compressedImageBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedBufferImage2D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {}, nullptr, BufferUsage::StaticRead};
-    texture.compressedImage(CubeMapCoordinate::PositiveX, 0, image, BufferUsage::StaticRead);
+    CompressedBufferImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0,
+        {data.storage}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1634,8 +1629,7 @@ void CubeMapTextureGLTest::compressedSubImageQuery() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CompressedImage3D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {}, nullptr};
-    texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image);
+    CompressedImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {data.storage});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1752,8 +1746,7 @@ void CubeMapTextureGLTest::compressedSubImageQueryBuffer() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CompressedBufferImage3D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {}, nullptr, BufferUsage::StaticRead};
-    texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image, BufferUsage::StaticRead);
+    CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {data.storage}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1929,8 +1922,7 @@ void CubeMapTextureGLTest::compressedImage3D() {
         if(fails) CORRADE_SKIP("Skipping the rest of the test");
     }
 
-    CompressedImage3D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {}, nullptr};
-    texture.compressedImage(0, image);
+    CompressedImage3D image = texture.compressedImage(0, {data.storage});
 
     {
         #ifdef CORRADE_TARGET_WINDOWS
@@ -1983,8 +1975,7 @@ void CubeMapTextureGLTest::compressedImage3DBuffer() {
         if(fails) CORRADE_SKIP("Skipping the rest of the test");
     }
 
-    CompressedBufferImage3D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {}, nullptr, BufferUsage::StaticRead};
-    texture.compressedImage(0, image, BufferUsage::StaticRead);
+    CompressedBufferImage3D image = texture.compressedImage(0, {data.storage}, BufferUsage::StaticRead);
 
     {
         #ifdef CORRADE_TARGET_WINDOWS

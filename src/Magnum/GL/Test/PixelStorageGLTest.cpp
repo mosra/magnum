@@ -610,8 +610,7 @@ void PixelStorageGLTest::compressedUnpack2D() {
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
     CompressedPixelStorage storage;
-    storage.setCompressedBlockSize({4, 4, 1})
-        .setCompressedBlockDataSize(16)
+    storage
         .setRowLength(20)
         .setSkip({8, 4, 0});
 
@@ -646,8 +645,6 @@ void PixelStorageGLTest::compressedPack2D() {
 
     /* Pre-allocate and zero out the data array so we can conveniently compare */
     CompressedImage2D image{CompressedPixelStorage{}
-        .setCompressedBlockSize({4, 4, 1})
-        .setCompressedBlockDataSize(16)
         .setRowLength(20)
         .setSkip({8, 4, 0}),
         CompressedPixelFormat::RGBAS3tcDxt3, {}, Containers::Array<char>{ValueInit, sizeof(CompressedData2D)}};
@@ -838,8 +835,7 @@ void PixelStorageGLTest::compressedUnpack3D() {
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
 
     CompressedPixelStorage storage;
-    storage.setCompressedBlockSize({4, 4, 1})
-        .setCompressedBlockDataSize(16)
+    storage
         .setRowLength(20)
         .setImageHeight(24)
         .setSkip({8, 4, 2});
@@ -875,8 +871,6 @@ void PixelStorageGLTest::compressedPack3D() {
 
     /* Pre-allocate and zero out the data array so we can conveniently compare */
     CompressedImage3D image{CompressedPixelStorage{}
-        .setCompressedBlockSize({4, 4, 1})
-        .setCompressedBlockDataSize(16)
         .setRowLength(20)
         .setImageHeight(24)
         .setSkip({8, 4, 2}),
