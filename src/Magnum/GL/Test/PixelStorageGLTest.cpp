@@ -50,6 +50,9 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct PixelStorageGLTest: OpenGLTester {
     explicit PixelStorageGLTest();
 
+    void alignmentUnpack2D();
+    void alignmentPack2D();
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void alignmentRowLengthSkipXYUnpack2D();
     void alignmentRowLengthSkipXYPack2D();
     #ifndef MAGNUM_TARGET_GLES2
@@ -57,6 +60,7 @@ struct PixelStorageGLTest: OpenGLTester {
     #endif
     #ifndef MAGNUM_TARGET_GLES
     void alignmentImageHeightRowLengthSkipXYZPack3D();
+    #endif
     #endif
 
     #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
@@ -81,13 +85,17 @@ struct PixelStorageGLTest: OpenGLTester {
 };
 
 PixelStorageGLTest::PixelStorageGLTest() {
-    addTests({&PixelStorageGLTest::alignmentRowLengthSkipXYUnpack2D,
+    addTests({&PixelStorageGLTest::alignmentUnpack2D,
+              &PixelStorageGLTest::alignmentPack2D,
+              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+              &PixelStorageGLTest::alignmentRowLengthSkipXYUnpack2D,
               &PixelStorageGLTest::alignmentRowLengthSkipXYPack2D,
               #ifndef MAGNUM_TARGET_GLES2
               &PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZUnpack3D,
               #endif
               #ifndef MAGNUM_TARGET_GLES
               &PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZPack3D,
+              #endif
               #endif
 
               #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
@@ -112,6 +120,115 @@ PixelStorageGLTest::PixelStorageGLTest() {
               });
 }
 
+constexpr char AlignmentData2D[]{
+    /* Data -----------------------------------------------------------. */ /* Alignment */
+    '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08', '\x00',
+    '\x0a', '\x0b', '\x0c', '\x0d', '\x0e', '\x0f', '\x10', '\x11', '\x12', '\x00',
+};
+
+void PixelStorageGLTest::alignmentUnpack2D() {
+    ImageView2D image{
+        PixelStorage{}
+            .setAlignment(2),
+        Magnum::PixelFormat::RGB8Unorm, {3, 2}, AlignmentData2D};
+
+    Texture2D texture;
+    texture.setImage(0, textureFormat(image.format()), image);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Read into a format that's guaranteed to be supported even on WebGL 1,
+       i.e. a four-component one. With a three-component format both Chrome and
+       Firefox produce a stupid error about "buffer not large enough", while
+       the problem is the format not being supported. WebGL 2 works with RGB
+       completely fine, tho.
+
+       Strangely enough, reading to RGB (with a two-pixel alignment, tho) in
+       alignmentPack2D() below works all fine. I smell some shitty ANGLE
+       bug. */
+    Image2D actual{PixelFormat::RGBA, PixelType::UnsignedByte, {},
+        Containers::Array<char>{ValueInit, 24}};
+
+    #ifndef MAGNUM_TARGET_GLES
+    texture.image(0, actual);
+    #else
+    Framebuffer framebuffer{{{}, {3, 2}}};
+    framebuffer
+        .attachTexture(Framebuffer::ColorAttachment{0}, texture, 0)
+        .read(framebuffer.viewport(), actual);
+    #endif
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_AS(actual.data(), Containers::arrayView({
+        '\x00', '\x01', '\x02', '\xff',
+        '\x03', '\x04', '\x05', '\xff',
+        '\x06', '\x07', '\x08', '\xff',
+
+        '\x0a', '\x0b', '\x0c', '\xff',
+        '\x0d', '\x0e', '\x0f', '\xff',
+        '\x10', '\x11', '\x12', '\xff',
+    }), TestSuite::Compare::Container);
+}
+
+void PixelStorageGLTest::alignmentPack2D() {
+    const char data[]{
+        '\x00', '\x01', '\x02',
+        '\x03', '\x04', '\x05',
+        '\x06', '\x07', '\x08', '\x00', '\x00', '\x00',
+
+        '\x0a', '\x0b', '\x0c',
+        '\x0d', '\x0e', '\x0f',
+        '\x10', '\x11', '\x12', '\x00', '\x00', '\x00',
+    };
+    ImageView2D actual{Magnum::PixelFormat::RGB8Unorm, {3, 2}, data};
+
+    Texture2D texture;
+    texture.setImage(0, textureFormat(actual.format()), actual);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Pre-allocate and zero out the data array so we can conveniently compare */
+    Image2D image{PixelStorage{}
+        .setAlignment(2),
+        PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{ValueInit, sizeof(AlignmentData2D)}};
+
+    #ifndef MAGNUM_TARGET_GLES
+    texture.image(0, image);
+    #else
+    Framebuffer framebuffer{{{}, {3, 2}}};
+    framebuffer.attachTexture(Framebuffer::ColorAttachment{0}, texture, 0);
+
+    /* We *need* to read as RGB in this case because otherwise the alignment
+       cannot be properly tested, as it'll be always a multiple of four */
+    CORRADE_EXPECT_FAIL_IF(framebuffer.implementationColorReadFormat() != PixelFormat::RGB,
+        "Implementation-defined framebuffer read format is not RGB, reading will fail.");
+
+    framebuffer.read(framebuffer.viewport(), image);
+    #endif
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #ifdef MAGNUM_TARGET_GLES
+    /* SwiftShader (on Android, at least) seems to write even to the padding
+       bytes, yay. Clear those before comparison. */
+    if(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader) {
+        CORRADE_COMPARE(image.data().size(), Containers::arraySize(AlignmentData2D));
+        for(std::size_t i: {9, 19}) {
+            CORRADE_ITERATION(i);
+            if(image.data()[i] != '\0') {
+                CORRADE_WARN("Padding byte at offset 9 isn't zero but" << image.data()[i]);
+                image.data()[i] = '\0';
+            }
+        }
+    }
+    #endif
+
+    CORRADE_COMPARE_AS(image.data(), Containers::arrayView(AlignmentData2D),
+        TestSuite::Compare::Container);
+}
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 constexpr char AlignmentRowLengthSkipXYData2D[]{
     /* Row length ------------------------------------------------------ */ /* Alignment */
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
@@ -206,6 +323,7 @@ void PixelStorageGLTest::alignmentRowLengthSkipXYPack2D() {
     CORRADE_COMPARE_AS(image.data(), Containers::arrayView(AlignmentRowLengthSkipXYData2D),
         TestSuite::Compare::Container);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 constexpr const char Data3D[] = {
