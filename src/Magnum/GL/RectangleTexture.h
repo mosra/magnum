@@ -545,10 +545,6 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
-         *      @ref CompressedPixelStorage::compressedBlockSize() and
-         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
-         *      set to non-zero values
          */
         void compressedSubImage(const Range2Di& range, CompressedImage2D& image) {
             AbstractTexture::compressedSubImage<2>(0, range, image, ImageFlags2D{});
@@ -585,10 +581,6 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
-         *      @ref CompressedPixelStorage::compressedBlockSize() and
-         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
-         *      set to non-zero values
          */
         void compressedSubImage(const Range2Di& range, CompressedBufferImage2D& image, BufferUsage usage) {
             AbstractTexture::compressedSubImage<2>(0, range, image, usage);

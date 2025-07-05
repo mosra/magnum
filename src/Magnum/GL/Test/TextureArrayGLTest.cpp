@@ -1940,8 +1940,6 @@ void TextureArrayGLTest::compressedSubImage2DQuery() {
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     if(data.storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
-    if(data.storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4, 4})
@@ -1974,8 +1972,6 @@ void TextureArrayGLTest::compressedSubImage2DQueryView() {
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     if(data.storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
-    if(data.storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4, 4})
@@ -2010,8 +2006,6 @@ void TextureArrayGLTest::compressedSubImage2DQueryBuffer() {
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
     if(data.storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() << "is not supported.");
-    if(data.storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4, 4})

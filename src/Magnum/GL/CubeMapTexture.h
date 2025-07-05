@@ -663,15 +663,24 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Read given mip level of a compressed texture to an image
          *
-         * Compression format and data size are taken from the texture, image
-         * size is taken using @ref imageSize(). Flags of @p image get reset to
+         * Compression format is taken from the texture, image size is taken
+         * using @ref imageSize(). Flags of @p image get reset to
          * @ref ImageFlag3D::CubeMap. The storage is not reallocated if it is
          * large enough to contain the new data --- however if you want to read
          * into existing memory or *ensure* a reallocation does not happen, use
          * @ref compressedImage(Int, const MutableCompressedImageView3D&)
          * instead.
+         *
+         * The function assumes that the internal texture format is a known
+         * @ref CompressedPixelFormat in order to correctly size the output
+         * array using @ref compressedPixelFormatBlockSize() and
+         * @ref compressedPixelFormatBlockDataSize() properties queried on it.
+         * If it's not, use @ref compressedImage(Int, const MutableCompressedImageView3D&)
+         * instead and specify the format along with explicit block properties.
+         * You can also query the texture itself using
+         * @ref compressedBlockSize() and @ref compressedBlockDataSize() in
+         * that case, if available on given platform.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
-         *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, then
          *      @fn_gl2_keyword{GetCompressedTextureImage,GetCompressedTexImage}
@@ -802,15 +811,25 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Read given compressed texture mip level and coordinate to an image
          *
-         * Compression format and data size are taken from the texture, image
-         * size is taken using @ref imageSize(). Flags of @p image get cleared
-         * --- use @ref compressedImage(Int, CompressedImage3D&) instead if you
-         * want to get an image annotated with @ref ImageFlag3D::CubeMap. The
-         * storage is not reallocated if it is large enough to contain the new
-         * data --- however if you want to read into existing memory or
-         * *ensure* a reallocation does not happen, use
+         * Compression format is taken from the texture, image size is taken
+         * using @ref imageSize(). Flags of @p image get cleared --- use
+         * @ref compressedImage(Int, CompressedImage3D&) instead if you want to
+         * get an image annotated with @ref ImageFlag3D::CubeMap. The storage
+         * is not reallocated if it is large enough to contain the new data ---
+         * however if you want to read into existing memory or *ensure* a
+         * reallocation does not happen, use
          * @ref compressedImage(CubeMapCoordinate, Int, const MutableCompressedImageView2D&)
          * instead.
+         *
+         * The function assumes that the internal texture format is a known
+         * @ref CompressedPixelFormat in order to correctly size the output
+         * array using @ref compressedPixelFormatBlockSize() and
+         * @ref compressedPixelFormatBlockDataSize() properties queried on it.
+         * If it's not, use @ref compressedImage(CubeMapCoordinate, Int, const MutableCompressedImageView2D&)
+         * instead and specify the format along with explicit block properties.
+         * You can also query the texture itself using
+         * @ref compressedBlockSize() and @ref compressedBlockDataSize() in
+         * that case, if available on given platform.
          *
          * If @gl_extension{ARB,get_texture_sub_image} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
@@ -819,7 +838,6 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * protected from buffer overflow.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
          *      eventually @fn_gl{GetTexLevelParameter} with
-         *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, then @fn_gl{PixelStore}, then
          *      @fn_gl_keyword{GetCompressedTextureSubImage},
@@ -956,10 +974,6 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
-         *      @ref CompressedPixelStorage::compressedBlockSize() and
-         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
-         *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -995,10 +1009,6 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
-         *      @ref CompressedPixelStorage::compressedBlockSize() and
-         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
-         *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.

@@ -715,10 +715,6 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
-         *      @ref CompressedPixelStorage::compressedBlockSize() and
-         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
-         *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES.
          *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -761,10 +757,6 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
-         *      @ref CompressedPixelStorage::compressedBlockSize() and
-         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
-         *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES.
          *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.

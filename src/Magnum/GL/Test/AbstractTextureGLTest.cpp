@@ -252,8 +252,6 @@ void AbstractTextureGLTest::compressedSubImageQueryViewNullptr() {
         CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-    if(!Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     Texture2D texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4});
@@ -275,8 +273,6 @@ void AbstractTextureGLTest::compressedSubImageQueryViewBadSize() {
         CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-    if(!Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     Texture2D texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4});
@@ -299,8 +295,6 @@ void AbstractTextureGLTest::compressedSubImageQueryViewBadFormat() {
         CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
-    if(!Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() << "is not supported.");
 
     Texture2D texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4});

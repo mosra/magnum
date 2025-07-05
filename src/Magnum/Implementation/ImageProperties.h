@@ -190,6 +190,12 @@ template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor
     return r.first + r.second;
 }
 
+/* Used in image query functions */
+template<std::size_t dimensions> std::size_t compressedImageDataSizeFor(const CompressedPixelStorage& storage, const Vector3i& blockSize, const UnsignedInt blockDataSize, const Math::Vector<dimensions, Int>& size) {
+    auto r = compressedImageDataOffsetSizeFor(storage, blockSize, blockDataSize, size);
+    return r.first + r.second;
+}
+
 /* Used in data size assertions */
 template<class T> inline std::size_t compressedImageDataSize(const T& image) {
     auto r = compressedImageDataOffsetSizeFor(image, image.size());

@@ -544,10 +544,6 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         static void MAGNUM_GL_LOCAL createImplementationDSA(AbstractTexture& self);
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        template<UnsignedInt dimensions> std::size_t MAGNUM_GL_LOCAL compressedSubImageSize(TextureFormat format, const Math::Vector<dimensions, Int>& size);
-        #endif
-
         static void MAGNUM_GL_LOCAL bindImplementationDefault(AbstractTexture& self, GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL bindImplementationMulti(AbstractTexture& self, GLint textureUnit);

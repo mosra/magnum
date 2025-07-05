@@ -359,39 +359,46 @@ void RendererState::applyPixelStorageInternal(const Magnum::PixelStorage& storag
     #endif
 }
 
-void RendererState::applyPixelStorageInternal(const CompressedPixelStorage& storage, const bool isUnpack) {
+void RendererState::applyCompressedPixelStorageInternal(const CompressedPixelStorage& storage, const Vector3i& blockSize, const Int blockDataSize, const bool isUnpack) {
     #ifdef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(storage == CompressedPixelStorage{},
         "GL: non-default CompressedPixelStorage parameters are not supported in OpenGL ES or WebGL", );
+    static_cast<void>(blockSize);
+    static_cast<void>(blockDataSize);
     static_cast<void>(isUnpack);
     #else
+    /* The block properties should always be non-zero, either coming from an
+       Image(View) constructed with a particular format or from properties for
+       a format that was queried from GL */
+    CORRADE_INTERNAL_ASSERT(blockSize != Vector3i{} && blockDataSize != 0);
+
     applyPixelStorageInternal(static_cast<const Magnum::PixelStorage&>(storage), isUnpack);
 
     PixelStorage& state = isUnpack ? unpackPixelStorage : packPixelStorage;
 
     /* Compressed block width */
     if(state.compressedBlockSize.x() == PixelStorage::DisengagedValue ||
-       state.compressedBlockSize.x() != storage.compressedBlockSize().x())
+       state.compressedBlockSize.x() != blockSize.x())
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_WIDTH : GL_PACK_COMPRESSED_BLOCK_WIDTH,
-            state.compressedBlockSize.x() = storage.compressedBlockSize().x());
+            state.compressedBlockSize.x() = blockSize.x());
 
     /* Compressed block height */
     if(state.compressedBlockSize.y() == PixelStorage::DisengagedValue ||
-       state.compressedBlockSize.y() != storage.compressedBlockSize().y())
+       state.compressedBlockSize.y() != blockSize.y())
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_HEIGHT : GL_PACK_COMPRESSED_BLOCK_HEIGHT,
-            state.compressedBlockSize.y() = storage.compressedBlockSize().y());
+            state.compressedBlockSize.y() = blockSize.y());
 
     /* Compressed block depth */
     if(state.compressedBlockSize.z() == PixelStorage::DisengagedValue ||
-       state.compressedBlockSize.z() != storage.compressedBlockSize().z())
+       state.compressedBlockSize.z() != blockSize.z())
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_DEPTH : GL_PACK_COMPRESSED_BLOCK_DEPTH,
-            state.compressedBlockSize.z() = storage.compressedBlockSize().z());
+            state.compressedBlockSize.z() = blockSize.z());
 
     /* Compressed block size */
     if(state.compressedBlockDataSize == PixelStorage::DisengagedValue ||
-       state.compressedBlockDataSize != storage.compressedBlockDataSize())
+       state.compressedBlockDataSize != blockDataSize)
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_SIZE : GL_PACK_COMPRESSED_BLOCK_SIZE,
-            state.compressedBlockDataSize = storage.compressedBlockDataSize());
+            state.compressedBlockDataSize = blockDataSize);
     #endif
 }
 

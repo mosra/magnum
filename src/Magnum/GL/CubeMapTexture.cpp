@@ -153,21 +153,30 @@ BufferImage3D CubeMapTexture::image(const Int level, BufferImage3D&& image, cons
 void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) {
     const Vector3i size{imageSize(level), 6};
 
-    /* If the user-provided pixel storage doesn't tell us all properties about
-       the compression, we need to ask GL for it */
-    std::pair<std::size_t, std::size_t> dataOffsetSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
-        /* Unlike in AbstractTexture::compressedImage(), here we have a
-           separate offset and size because of the
-           nv-cubemap-broken-full-compressed-image-query workaround, where it
-           needs to go slice-by-slice, advancing the offset each time */
-        dataOffsetSize.first = 0;
-        dataOffsetSize.second = Context::current().state().texture.getCubeLevelCompressedImageSizeImplementation(*this, level)*6;
-    } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
+    /* Get internal texture format, determine its properties (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat) and
+       calculate data size for those. Yes, if the format is unknown to Magnum,
+       this will blow up. But that's likely a very rare scenario that isn't
+       worth implementing (and is rather impossible to test), and the user can
+       always query into a view with block properties specified in that case.
 
-    /* Internal texture format */
-    GLint format;
+       The format is zero-init to have it deterministically assert inside
+       compressedPixelFormatBlockSize() if the drivers are extra shitty and
+       don't implement this query (Intel Windows drivers, I'm talking about
+       you), otherwise it could give back a value that could randomly work, or
+       cause OOMs, crashes and such. */
+    GLint format{};
+    /* Note that this has to call getCubeLevelParameterivImplementation(), not
+       getLevelParameterivImplementation(), to supply a concrete coordinate in
+       non-DSA codepaths */
     Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    const Vector3i blockSize = compressedPixelFormatBlockSize(CompressedPixelFormat(format));
+    const UnsignedInt blockDataSize = compressedPixelFormatBlockDataSize(CompressedPixelFormat(format));
+    /* Unlike in AbstractTexture::compressedImage(), here we have a separate
+       offset and size because of the nv-cubemap-broken-full-compressed-image-query
+       workaround, where it needs to go slice-by-slice, advancing the offset
+       each time */
+    const std::pair<std::size_t, std::size_t> dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image.storage(), blockSize, blockDataSize, size);
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
@@ -175,7 +184,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
         data = Containers::Array<char>{dataOffsetSize.first + dataOffsetSize.second};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image.storage(), blockSize, blockDataSize);
     Context::current().state().texture.getCompressedCubeImage3DImplementation(*this, level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, data);
     image = CompressedImage3D{image.storage(), CompressedPixelFormat(format), size, Utility::move(data), ImageFlag3D::CubeMap};
 }
@@ -193,59 +202,77 @@ void CubeMapTexture::compressedImage(const Int level, const MutableCompressedIma
     CORRADE_ASSERT(image.size() == size,
         "GL::CubeMapTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
 
-    /* If the user-provided pixel storage doesn't tell us all properties about
-       the compression, we need to ask GL for it */
-    std::pair<std::size_t, std::size_t> dataOffsetSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
-        /* Unlike in AbstractTexture::compressedImage(), here we have a
-           separate offset and size because of the
-           nv-cubemap-broken-full-compressed-image-query workaround, where it
-           needs to go slice-by-slice, advancing the offset each time */
-        dataOffsetSize.first = 0;
-        dataOffsetSize.second = Context::current().state().texture.getCubeLevelCompressedImageSizeImplementation(*this, level)*6;
-    } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
-
     #ifndef CORRADE_NO_ASSERT
-    /* Internal texture format */
-    GLint format;
-    Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
-
-    CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
-        "GL::CubeMapTexture::compressedImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    /* Check that the internal texture format matches (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat).
+       Zero-init to avoid a non-deterministic message in the assert below if
+       the drivers are extra shitty and don't implement this query (Intel
+       Windows drivers, I'm talking about you). */
+    {
+        GLint format{};
+        /* Note that this has to call getCubeLevelParameterivImplementation(),
+           not getLevelParameterivImplementation(), to supply a concrete
+           coordinate in non-DSA codepaths */
+        Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+        CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
+            "GL::CubeMapTexture::compressedImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    }
     #endif
 
+    /* Unlike in AbstractTexture::compressedImage(), here we have a separate
+       offset and size because of the nv-cubemap-broken-full-compressed-image-query
+       workaround, where it needs to go slice-by-slice, advancing the offset
+       each time */
+    const CompressedPixelFormat format = compressedPixelFormat(image.format());
+    const Vector3i blockSize = compressedPixelFormatBlockSize(format);
+    const UnsignedInt blockDataSize = compressedPixelFormatBlockDataSize(format);
+    const std::pair<std::size_t, std::size_t> dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image.storage(), blockSize, blockDataSize, size);
+
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image);
     Context::current().state().texture.getCompressedCubeImage3DImplementation(*this, level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, image.data());
 }
 
 void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& image, const BufferUsage usage) {
     const Vector3i size{imageSize(level), 6};
 
-    /* If the user-provided pixel storage doesn't tell us all properties about
-       the compression, we need to ask GL for it */
-    std::pair<std::size_t, std::size_t> dataOffsetSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
-        /* Unlike in AbstractTexture::compressedImage(), here we have a
-           separate offset and size because of the
-           nv-cubemap-broken-full-compressed-image-query workaround, where it
-           needs to go slice-by-slice, advancing the offset each time */
-        dataOffsetSize.first = 0;
-        dataOffsetSize.second = Context::current().state().texture.getCubeLevelCompressedImageSizeImplementation(*this, level)*6;
-    } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
+    /* Get internal texture format, determine its properties (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat) and
+       calculate data size for those. Yes, if the format is unknown to Magnum,
+       this will blow up. But that's likely a very rare scenario that isn't
+       worth implementing (and is rather impossible to test), and the user can
+       always query into a view with block properties specified in that case.
 
-    /* Internal texture format */
-    GLint format;
+       The format is zero-init to have it deterministically assert inside
+       compressedPixelFormatBlockSize() if the drivers are extra shitty and
+       don't implement this query (Intel Windows drivers, I'm talking about
+       you), otherwise it could give back a value that could randomly work, or
+       cause OOMs, crashes and such. */
+    GLint format{};
+    /* Note that this has to call getCubeLevelParameterivImplementation(), not
+       getLevelParameterivImplementation(), to supply a concrete coordinate in
+       non-DSA codepaths */
     Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    const Vector3i blockSize = compressedPixelFormatBlockSize(CompressedPixelFormat(format));
+    const UnsignedInt blockDataSize = compressedPixelFormatBlockDataSize(CompressedPixelFormat(format));
+    /* Unlike in AbstractTexture::compressedImage(), here we have a separate
+       offset and size because of the nv-cubemap-broken-full-compressed-image-query
+       workaround, where it needs to go slice-by-slice, advancing the offset
+       each time */
+    const std::pair<std::size_t, std::size_t> dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image.storage(), blockSize, blockDataSize, size);
 
     /* Reallocate only if needed */
     if(image.dataSize() < dataOffsetSize.first + dataOffsetSize.second)
         image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataOffsetSize.first + dataOffsetSize.second}, usage);
     else
         image.setData(image.storage(), CompressedPixelFormat(format), size, nullptr, usage);
+    /* The setData() call above updates the block properties, so just verify
+       they're the same as the ones used here as the ones from the umage get
+       used in applyCompressedPixelStoragePack() below */
+    CORRADE_INTERNAL_ASSERT(blockSize == image.blockSize() && blockDataSize == image.blockDataSize());
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image);
     Context::current().state().texture.getCompressedCubeImage3DImplementation(*this, level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, nullptr);
 }
 
@@ -309,19 +336,27 @@ BufferImage2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const In
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedImage2D& image) {
     const Vector2i size = imageSize(level);
 
-    /* If the user-provided pixel storage doesn't tell us all properties about
-       the compression, we need to ask GL for it */
-    std::size_t dataSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
-        dataSize = Context::current().state().texture.getCubeLevelCompressedImageSizeImplementation(*this, level);
-    else
-        dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
+    /* Get internal texture format, determine its properties (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat) and
+       calculate data size for those. Yes, if the format is unknown to Magnum,
+       this will blow up. But that's likely a very rare scenario that isn't
+       worth implementing (and is rather impossible to test), and the user can
+       always query into a view with block properties specified in that
+       case.
 
-    /* Internal texture format. Zero-init to avoid an assert about value
-       already wrapped in compressedPixelFormatWrap() later if the drivers are
-       extra shitty (Intel Windows drivers, I'm talking about you). */
+       The format is zero-init to have it deterministically assert inside
+       compressedPixelFormatBlockSize() if the drivers are extra shitty and
+       don't implement this query (Intel Windows drivers, I'm talking about
+       you), otherwise it could give back a value that could randomly work, or
+       cause OOMs, crashes and such. */
     GLint format{};
+    /* Note that this has to call getCubeLevelParameterivImplementation(), not
+       getLevelParameterivImplementation(), to supply a concrete coordinate in
+       non-DSA codepaths */
     Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    const Vector3i blockSize = compressedPixelFormatBlockSize(CompressedPixelFormat(format));
+    const UnsignedInt blockDataSize = compressedPixelFormatBlockDataSize(CompressedPixelFormat(format));
+    const std::size_t dataSize = Magnum::Implementation::compressedImageDataSizeFor(image.storage(), blockSize, blockDataSize, size);
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
@@ -329,7 +364,7 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
         data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image.storage(), blockSize, blockDataSize);
     Context::current().state().texture.getCompressedCubeImageImplementation(*this, coordinate, level, size, data.size(), data);
     image = CompressedImage2D{image.storage(), CompressedPixelFormat(format), size, Utility::move(data), ImageFlags2D{}};
 }
@@ -348,46 +383,63 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
         "GL::CubeMapTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
 
     #ifndef CORRADE_NO_ASSERT
-    /* Internal texture format. Zero-init to avoid an assert about value
-       already wrapped in compressedPixelFormatWrap() later if the drivers are
-       extra shitty (Intel Windows drivers, I'm talking about you). */
-    GLint format{};
-    Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
-
-    CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
-        "GL::CubeMapTexture::compressedImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    /* Check that the internal texture format matches (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat).
+       Zero-init to avoid a non-deterministic message in the assert below if
+       the drivers are extra shitty and don't implement this query (Intel
+       Windows drivers, I'm talking about you). */
+    {
+        GLint format{};
+        /* Note that this has to call getCubeLevelParameterivImplementation(),
+           not getLevelParameterivImplementation(), to supply a concrete
+           coordinate in non-DSA codepaths */
+        Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+        CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
+            "GL::CubeMapTexture::compressedImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    }
     #endif
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image);
     Context::current().state().texture.getCompressedCubeImageImplementation(*this, coordinate, level, size, image.data().size(), image.data());
 }
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedBufferImage2D& image, const BufferUsage usage) {
     const Vector2i size = imageSize(level);
 
-    /* If the user-provided pixel storage doesn't tell us all properties about
-       the compression, we need to ask GL for it */
-    std::size_t dataSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
-        dataSize = Context::current().state().texture.getCubeLevelCompressedImageSizeImplementation(*this, level);
-    else
-        dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
+    /* Get internal texture format, determine its properties (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat) and
+       calculate data size for those. Yes, if the format is unknown to Magnum,
+       this will blow up. But that's likely a very rare scenario that isn't
+       worth implementing (and is rather impossible to test), and the user can
+       always query into a view with block properties specified in that case.
 
-    /* Internal texture format. Zero-init to avoid an assert about value
-       already wrapped in compressedPixelFormatWrap() later if the drivers are
-       extra shitty (Intel Windows drivers, I'm talking about you). */
+       The format is zero-init to have it deterministically assert inside
+       compressedPixelFormatBlockSize() if the drivers are extra shitty and
+       don't implement this query (Intel Windows drivers, I'm talking about
+       you), otherwise it could give back a value that could randomly work, or
+       cause OOMs, crashes and such. */
     GLint format{};
+    /* Note that this has to call getCubeLevelParameterivImplementation(), not
+       getLevelParameterivImplementation(), to supply a concrete coordinate in
+       non-DSA codepaths */
     Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    const Vector3i blockSize = compressedPixelFormatBlockSize(CompressedPixelFormat(format));
+    const UnsignedInt blockDataSize = compressedPixelFormatBlockDataSize(CompressedPixelFormat(format));
+    const std::size_t dataSize = Magnum::Implementation::compressedImageDataSizeFor(image.storage(), blockSize, blockDataSize, size);
 
     /* Reallocate only if needed */
     if(image.dataSize() < dataSize)
         image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataSize}, usage);
     else
         image.setData(image.storage(), CompressedPixelFormat(format), size, nullptr, usage);
+    /* The setData() call above updates the block properties, so just verify
+       they're the same as the ones used here as the ones from the umage get
+       used in applyCompressedPixelStoragePack() below */
+    CORRADE_INTERNAL_ASSERT(blockSize == image.blockSize() && blockDataSize == image.blockDataSize());
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image);
     Context::current().state().texture.getCompressedCubeImageImplementation(*this, coordinate, level, size, dataSize, nullptr);
 }
 
@@ -411,19 +463,26 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
        created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
-    /* Internal texture format. Zero-init to avoid an assert about value
-       already wrapped in compressedPixelFormatWrap() later if the drivers are
-       extra shitty (Intel Windows drivers, I'm talking about you). */
-    GLint format{};
-    Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    /* Get internal texture format, determine its properties (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat) and
+       calculate data size for those. Yes, if the format is unknown to Magnum,
+       this will blow up. But that's likely a very rare scenario that isn't
+       worth implementing (and is rather impossible to test), and the user can
+       always query into a view with block properties specified in that case.
 
-    /* Calculate compressed subimage size. If the user-provided pixel storage
-       doesn't tell us all properties about the compression, we need to ask GL
-       for it. That requires GL_ARB_internalformat_query2. */
-    std::size_t dataSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
-        dataSize = compressedSubImageSize<3>(TextureFormat(format), range.size());
-    else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, range.size());
+       The format is zero-init to have it deterministically assert inside
+       compressedPixelFormatBlockSize() if the drivers are extra shitty and
+       don't implement this query (Intel Windows drivers, I'm talking about
+       you), otherwise it could give back a value that could randomly work, or
+       cause OOMs, crashes and such. */
+    GLint format{};
+    /* Note that this has to call getCubeLevelParameterivImplementation(), not
+       getLevelParameterivImplementation(), to supply a concrete coordinate in
+       non-DSA codepaths */
+    Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    const Vector3i blockSize = compressedPixelFormatBlockSize(CompressedPixelFormat(format));
+    const UnsignedInt blockDataSize = compressedPixelFormatBlockDataSize(CompressedPixelFormat(format));
+    const std::size_t dataSize = Magnum::Implementation::compressedImageDataSizeFor(image.storage(), blockSize, blockDataSize, range.size());
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
@@ -431,7 +490,7 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
         data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image.storage(), blockSize, blockDataSize);
     glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), data.size(), data);
     /* Would be CubeMap if the whole image was queried, but then we'd have to
        query the size and compare, which is extra work. So it's Array
@@ -455,18 +514,24 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
     createIfNotAlready();
 
     #ifndef CORRADE_NO_ASSERT
-    /* Internal texture format. Zero-init to avoid an assert about value
-       already wrapped in compressedPixelFormatWrap() later if the drivers are
-       extra shitty (Intel Windows drivers, I'm talking about you). */
-    GLint format{};
-    Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
-
-    CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
-        "GL::CubeMapTexture::compressedSubImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    /* Check that the internal texture format matches (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat).
+       Zero-init to avoid a non-deterministic message in the assert below if
+       the drivers are extra shitty and don't implement this query (Intel
+       Windows drivers, I'm talking about you). */
+    {
+        GLint format{};
+        /* Note that this has to call getCubeLevelParameterivImplementation(),
+           not getLevelParameterivImplementation(), to supply a concrete
+           coordinate in non-DSA codepaths */
+        Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+        CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
+            "GL::CubeMapTexture::compressedSubImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    }
     #endif
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image);
     glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), image.data().size(), image.data());
 }
 
@@ -475,28 +540,39 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
        created w/ the DSA extension disabled but below a DSA API is used */
     createIfNotAlready();
 
-    /* Internal texture format. Zero-init to avoid an assert about value
-       already wrapped in compressedPixelFormatWrap() later if the drivers are
-       extra shitty (Intel Windows drivers, I'm talking about you). */
-    GLint format{};
-    Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    /* Get internal texture format, determine its properties (compressed
+       GL::TextureFormat values are same as GL::CompressedPixelFormat) and
+       calculate data size for those. Yes, if the format is unknown to Magnum,
+       this will blow up. But that's likely a very rare scenario that isn't
+       worth implementing (and is rather impossible to test), and the user can
+       always query into a view with block properties specified in that case.
 
-    /* Calculate compressed subimage size. If the user-provided pixel storage
-       doesn't tell us all properties about the compression, we need to ask GL
-       for it. That requires GL_ARB_internalformat_query2. */
-    std::size_t dataSize;
-    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
-        dataSize = compressedSubImageSize<3>(TextureFormat(format), range.size());
-    else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, range.size());
+       The format is zero-init to have it deterministically assert inside
+       compressedPixelFormatBlockSize() if the drivers are extra shitty and
+       don't implement this query (Intel Windows drivers, I'm talking about
+       you), otherwise it could give back a value that could randomly work, or
+       cause OOMs, crashes and such. */
+    GLint format{};
+    /* Note that this has to call getCubeLevelParameterivImplementation(), not
+       getLevelParameterivImplementation(), to supply a concrete coordinate in
+       non-DSA codepaths */
+    Context::current().state().texture.getCubeLevelParameterivImplementation(*this, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    const Vector3i blockSize = compressedPixelFormatBlockSize(CompressedPixelFormat(format));
+    const UnsignedInt blockDataSize = compressedPixelFormatBlockDataSize(CompressedPixelFormat(format));
+    const std::size_t dataSize = Magnum::Implementation::compressedImageDataSizeFor(image.storage(), blockSize, blockDataSize, range.size());
 
     /* Reallocate only if needed */
     if(image.dataSize() < dataSize)
         image.setData(image.storage(), CompressedPixelFormat(format), range.size(), {nullptr, dataSize}, usage);
     else
         image.setData(image.storage(), CompressedPixelFormat(format), range.size(), nullptr, usage);
+    /* The setData() call above updates the block properties, so just verify
+       they're the same as the ones used here as the ones from the umage get
+       used in applyCompressedPixelStoragePack() below */
+    CORRADE_INTERNAL_ASSERT(blockSize == image.blockSize() && blockDataSize == image.blockDataSize());
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStoragePack(image);
     glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), dataSize, nullptr);
 }
 
@@ -535,7 +611,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vec
     createIfNotAlready();
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
-    Context::current().state().renderer.applyPixelStorageUnpack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStorageUnpack(image);
     glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(compressedPixelFormat(image.format())), Implementation::occupiedCompressedImageDataSize(image), image.data());
     return *this;
 }
@@ -546,7 +622,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vec
     createIfNotAlready();
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    Context::current().state().renderer.applyPixelStorageUnpack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStorageUnpack(image);
     glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), Implementation::occupiedCompressedImageDataSize(image), nullptr);
     return *this;
 }
@@ -578,7 +654,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const CubeMapCoordinate co
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
-    Context::current().state().renderer.applyPixelStorageUnpack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStorageUnpack(image);
     Context::current().state().texture.cubeCompressedSubImageImplementation(*this, coordinate, level, offset, image.size(), compressedPixelFormat(image.format()), image.data(), Implementation::occupiedCompressedImageDataSize(image));
     return *this;
 }
@@ -586,7 +662,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const CubeMapCoordinate co
 #ifndef MAGNUM_TARGET_GLES2
 CubeMapTexture& CubeMapTexture::setCompressedSubImage(const CubeMapCoordinate coordinate, const Int level, const Vector2i& offset, CompressedBufferImage2D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    Context::current().state().renderer.applyPixelStorageUnpack(image.storage());
+    Context::current().state().renderer.applyCompressedPixelStorageUnpack(image);
     Context::current().state().texture.cubeCompressedSubImageImplementation(*this, coordinate, level, offset, image.size(), image.format(), nullptr, Implementation::occupiedCompressedImageDataSize(image));
     return *this;
 }

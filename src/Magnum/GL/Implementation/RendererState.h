@@ -117,17 +117,26 @@ struct RendererState {
     void applyPixelStorageUnpack(const Magnum::PixelStorage& storage) {
         applyPixelStorageInternal(storage, true);
     }
+    /* Deleted to avoid accidents -- use applyCompressedPixelStorage*() */
+    void applyPixelStoragePack(const Magnum::CompressedPixelStorage&) = delete;
+    void applyPixelStorageUnpack(const Magnum::CompressedPixelStorage&) = delete;
 
     /* Bool parameter is ugly, but this is implementation detail of internal
        API so who cares */
-    void applyPixelStorageInternal(const CompressedPixelStorage& storage, bool unpack);
-    /* Used internally in *Texture::compressedImage(), *Texture::compressedSubImage(),
-       *Texture::setCompressedImage() and *Texture::setCompressedSubImage() */
-    void applyPixelStoragePack(const CompressedPixelStorage& storage) {
-        applyPixelStorageInternal(storage, false);
+    void applyCompressedPixelStorageInternal(const CompressedPixelStorage& storage, const Vector3i& blockSize, Int blockDataSize, bool unpack);
+    /* Used internally in *Texture::compressedImage(),
+       *Texture::compressedSubImage(), *Texture::setCompressedImage() and
+       *Texture::setCompressedSubImage(). The overload with explicit block
+       properties is used in APIs that take an Image& and which replace it with
+       am image of a new format along with its properties. */
+    void applyCompressedPixelStoragePack(const CompressedPixelStorage& storage, const Vector3i& blockSize, Int blockDataSize) {
+        applyCompressedPixelStorageInternal(storage, blockSize, blockDataSize, false);
     }
-    void applyPixelStorageUnpack(const CompressedPixelStorage& storage) {
-        applyPixelStorageInternal(storage, true);
+    template<class T> void applyCompressedPixelStoragePack(const T& image) {
+        applyCompressedPixelStoragePack(image.storage(), image.blockSize(), image.blockDataSize());
+    }
+    template<class T> void applyCompressedPixelStorageUnpack(const T& image) {
+        applyCompressedPixelStorageInternal(image.storage(), image.blockSize(), image.blockDataSize(), true);
     }
 };
 
