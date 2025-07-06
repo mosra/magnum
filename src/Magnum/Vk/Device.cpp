@@ -301,7 +301,8 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Strin
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());
     for(const Containers::StringView extension: extensions) {
         /* If the extension is blacklisted, skip it */
-        if(std::binary_search(_state->disabledExtensions.begin(), _state->disabledExtensions.end(), extension)) continue;
+        if(std::binary_search(_state->disabledExtensions.begin(), _state->disabledExtensions.end(), extension))
+            continue;
 
         /* Keep an owned *allocated* copy of the string if it's not global or
            null-terminated -- ideally, if people use string view literals,
@@ -336,7 +337,8 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());
     for(const Extension& extension: extensions) {
         /* If the extension is blacklisted, skip it */
-        if(std::binary_search(_state->disabledExtensions.begin(), _state->disabledExtensions.end(), extension.string())) continue;
+        if(std::binary_search(_state->disabledExtensions.begin(), _state->disabledExtensions.end(), extension.string()))
+            continue;
 
         arrayAppend(_state->extensions, extension.string().data());
     }
@@ -750,7 +752,8 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
         if(info._state->enabledFeatures) {
             Debug{} << "Enabled features:";
             for(std::size_t i = 0, max = DeviceFeatures::Size*64; i != max; ++i) {
-                if(!(info._state->enabledFeatures & DeviceFeature(i))) continue;
+                if(!(info._state->enabledFeatures & DeviceFeature(i)))
+                    continue;
                 Debug{} << "   " << DeviceFeature(i);
             }
         }
@@ -775,7 +778,8 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
         bool workaroundHeaderPrinted = false;
         for(const auto& workaround: encounteredWorkarounds) {
             /* Skip disabled workarounds */
-            if(workaround.second()) continue;
+            if(workaround.second())
+                continue;
 
             if(!workaroundHeaderPrinted) {
                 workaroundHeaderPrinted = true;
@@ -794,7 +798,8 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
             if(!missingExtensions[i]) continue;
             for(const Version extensionVersion: KnownVersionsForExtensions) {
                 for(const Extension extension: Extension::extensions(extensionVersion)) {
-                    if(extension.index() != i) continue;
+                    if(extension.index() != i)
+                        continue;
                     CORRADE_ASSERT_UNREACHABLE("Vk::Device::tryCreate(): some enabled features need" << extension.string() << "enabled", {});
                 }
             }
@@ -850,7 +855,8 @@ void Device::initialize(Instance& instance, const Version version, const Contain
                of providing a library helper to find the damn thing. See
                DeviceVkTest::wrapExtensionNotFound() for verification of both
                cases. */
-            if(found == knownExtensions.end() || found->string() != extension) continue;
+            if(found == knownExtensions.end() || found->string() != extension)
+                continue;
             _enabledExtensions.set(found->index(), true);
         }
     }

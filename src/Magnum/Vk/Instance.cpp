@@ -183,7 +183,8 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const Containers::Strin
     arrayReserve(_state->layers, _state->layers.size() + layers.size());
     for(const Containers::StringView layer: layers) {
         /* If the layer is blacklisted, skip it */
-        if(std::binary_search(_state->disabledLayers.begin(), _state->disabledLayers.end(), layer)) continue;
+        if(std::binary_search(_state->disabledLayers.begin(), _state->disabledLayers.end(), layer))
+            continue;
 
         /* Keep an owned *allocated* copy of the string if it's not global or
            null-terminated -- ideally, if people use string view literals,
@@ -213,7 +214,8 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::S
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());
     for(const Containers::StringView extension: extensions) {
         /* If the extension is blacklisted, skip it */
-        if(std::binary_search(_state->disabledExtensions.begin(), _state->disabledExtensions.end(), extension)) continue;
+        if(std::binary_search(_state->disabledExtensions.begin(), _state->disabledExtensions.end(), extension))
+            continue;
 
         /* Keep an owned *allocated* copy of the string if it's not global or
            null-terminated -- ideally, if people use string view literals,
@@ -242,7 +244,8 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::A
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());
     for(const InstanceExtension& extension: extensions) {
         /* If the extension is blacklisted, skip it */
-        if(std::binary_search(_state->disabledExtensions.begin(), _state->disabledExtensions.end(), extension.string())) continue;
+        if(std::binary_search(_state->disabledExtensions.begin(), _state->disabledExtensions.end(), extension.string()))
+            continue;
 
         arrayAppend(_state->extensions, extension.string().data());
     }
@@ -350,7 +353,8 @@ void Instance::initialize(const Version version, const Containers::StringIterabl
                of providing a library helper to find the damn thing. See
                InstanceVkTest::wrapExtensionNotFound() for verification of both
                cases. */
-            if(found == knownExtensions.end() || found->string() != extension) continue;
+            if(found == knownExtensions.end() || found->string() != extension)
+                continue;
             _extensionStatus.set(found->index(), true);
         }
     }
