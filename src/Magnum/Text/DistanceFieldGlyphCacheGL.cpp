@@ -106,6 +106,7 @@ GlyphCacheFeatures DistanceFieldGlyphCacheGL::doFeatures() const {
         ;
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 namespace {
 
 Range2Di paddedImageRange(const Vector3i& cacheSize, const Vector2i& imageOffset, const Vector2i& imageSize, const Vector2i& ratio) {
@@ -130,6 +131,7 @@ Range2Di paddedImageRange(const Vector3i& cacheSize, const Vector2i& imageOffset
 }
 
 }
+#endif
 
 void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)) && !defined(CORRADE_NO_ASSERT)
