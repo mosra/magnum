@@ -157,15 +157,23 @@ void GlyphCacheGL::doSetImage(const Vector2i& offset, const ImageView2D& image) 
     #endif
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     {
+        /* If EXT_unpack_subimage is supported, use the storage as-is but
+           reset image height to 0 as that only matters with arrays which are
+           not supported on ES2 at all. It's set by AbstractGlyphCache always
+           because with array textures the upload may fail if not set. See
+           GlyphCacheGLTest::setImageArraySingleLayer() for a repro case. */
+        PixelStorage storage{image.storage()};
+        storage.setImageHeight(0);
+
         /* On ES2 if EXT_texture_rg is present, the single-channel texture
            format is Red instead of Luminance */
         #ifdef MAGNUM_TARGET_GLES2
         if(image.format() == PixelFormat::R8Unorm && GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
-            state.texture.setSubImage(0, offset, ImageView2D{image.storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, image.size(), image.data()});
+            state.texture.setSubImage(0, offset, ImageView2D{storage, GL::PixelFormat::Red, GL::PixelType::UnsignedByte, image.size(), image.data()});
         } else
         #endif
         {
-            state.texture.setSubImage(0, offset, image);
+            state.texture.setSubImage(0, offset, ImageView2D{storage, image.format(), image.size(), image.data()});
         }
     }
     #endif

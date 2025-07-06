@@ -182,13 +182,21 @@ void DistanceFieldGlyphCacheGL::doSetImage(const Vector2i&
     #endif
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     {
+        /* If EXT_unpack_subimage is supported, use the storage as-is but
+           reset image height to 0 as that only matters with arrays which are
+           not supported on ES2 at all. It's set by AbstractGlyphCache always
+           because with array textures the upload may fail if not set. See
+           DistanceFieldGlyphCacheGLTest::setImageArraySingleLayer() for a
+           repro case. */
+        PixelStorage storage{image.storage()};
+        storage.setImageHeight(0);
+
         /* The image range was already expanded to include the padding in
            flushImage() */
-        CORRADE_INTERNAL_ASSERT(image.storage().skip().xy() == offset);
-        const Range2Di paddedRange = paddedImageRange(size(), image.storage().skip().xy(), image.size(), ratio);
+        CORRADE_INTERNAL_ASSERT(storage.skip().xy() == offset);
+        const Range2Di paddedRange = paddedImageRange(size(), storage.skip().xy(), image.size(), ratio);
         const ImageView2D paddedImage{
-            PixelStorage{image.storage()}
-                .setSkip({paddedRange.min(), image.storage().skip().z()}),
+            storage.setSkip({paddedRange.min(), storage.skip().z()}),
             image.format(),
             paddedRange.size(),
             image.data()};

@@ -366,16 +366,19 @@ void AbstractGlyphCache::flushImage(const Range3Di& range) {
     const Vector3i paddedMax = Math::min(size(),
         range.max() + Vector3i{padding(), 0});
 
+    /* In case a subclass doesn't support image slicing (such as GlyphCacheGL
+       on WebGL 1), it'll set the image as a whole without the storage
+       parameters. In case it doesn't support 3D images (such as GlyphCacheGL
+       on GLES2), it'll clear the row length. OTOH, image height needs to be
+       set even in case of single-layer array images to avoid errors on certain
+       platforms. See GlyphCacheGLTest::setImageArraySingleLayer() for a repro
+       case. */
     /** @todo ugh have slicing on images directly already */
-    PixelStorage storage;
-    storage.setRowLength(state.image.size().x())
-        .setSkip(paddedMin);
-    /* Set image height only if it's an array glyph cache, as otherwise it'd
-       cause errors on ES2 that doesn't support this pixel storage state */
-    if(state.image.size().z() != 1)
-        storage.setImageHeight(state.image.size().y());
     doSetImage(paddedMin, ImageView3D{
-        storage,
+        PixelStorage{}
+            .setRowLength(state.image.size().x())
+            .setImageHeight(state.image.size().y())
+            .setSkip(paddedMin),
         state.image.format(),
         paddedMax - paddedMin,
         state.image.data()});
