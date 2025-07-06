@@ -64,6 +64,7 @@ struct InstanceVkTest: TestSuite::Tester {
     void tryCreateUnknownExtension();
 
     void wrap();
+    void wrapExtensionNotFound();
     void wrapAlreadyCreated();
 
     void populateGlobalFunctionPointers();
@@ -172,6 +173,7 @@ InstanceVkTest::InstanceVkTest() {
               &InstanceVkTest::tryCreateUnknownExtension,
 
               &InstanceVkTest::wrap,
+              &InstanceVkTest::wrapExtensionNotFound,
               &InstanceVkTest::wrapAlreadyCreated,
 
               &InstanceVkTest::populateGlobalFunctionPointers});
@@ -524,6 +526,38 @@ void InstanceVkTest::wrap() {
     wrapped.wrap(instance, Version::Vk10, {});
     CORRADE_VERIFY(wrapped->DestroyInstance);
     wrapped->DestroyInstance(instance, nullptr);
+}
+
+void InstanceVkTest::wrapExtensionNotFound() {
+    if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
+
+    InstanceExtensionProperties properties = enumerateInstanceExtensionProperties();
+    if(!properties.isSupported<Extensions::EXT::debug_report>())
+        CORRADE_SKIP(Extensions::EXT::debug_report::string() << "not supported, can't test");
+
+    Instance instance{InstanceCreateInfo{}
+        .addEnabledExtensions<Extensions::EXT::debug_report>()
+    };
+
+    /* Verify that we don't dereference garbage when std::lower_bound() ... */
+    Instance wrapped{NoCreate};
+    wrapped.wrap(instance, Version::Vk11, {
+        /* ... returns `last` for an unknown extension, */
+        "VK_ZZZ_this_does_not_exist",
+        Extensions::EXT::debug_report::string(),
+        /* ... or returns an extension that isn't actually the one we're
+           looking for, in this case being right before
+           VK_KHR_get_physical_device_properties2 because of this here
+         ------------------------------------v  */
+        "VK_KHR_get_physical_device_propertier2",
+    }, {});
+
+    /* This one shouldn't be listed */
+    CORRADE_VERIFY(!wrapped.isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>());
+
+    /* The valid extension should be */
+    CORRADE_VERIFY(wrapped.isExtensionEnabled<Extensions::EXT::debug_report>());
 }
 
 void InstanceVkTest::wrapAlreadyCreated() {

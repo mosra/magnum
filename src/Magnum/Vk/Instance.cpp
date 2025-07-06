@@ -346,6 +346,10 @@ void Instance::initialize(const Version version, const Containers::StringIterabl
             const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const InstanceExtension& a, Containers::StringView b) {
                 return a.string() < b;
             });
+            /* Thanks, C++, for forcing me to have a larger bug surface instead
+               of providing a library helper to find the damn thing. See
+               InstanceVkTest::wrapExtensionNotFound() for verification of both
+               cases. */
             if(found == knownExtensions.end() || found->string() != extension) continue;
             _extensionStatus.set(found->index(), true);
         }

@@ -95,6 +95,7 @@ struct DeviceVkTest: VulkanTester {
     void tryCreateUnknownExtension();
 
     void wrap();
+    void wrapExtensionNotFound();
     void wrapAlreadyCreated();
 
     void populateGlobalFunctionPointers();
@@ -233,6 +234,7 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
               &DeviceVkTest::tryCreateUnknownExtension,
 
               &DeviceVkTest::wrap,
+              &DeviceVkTest::wrapExtensionNotFound,
               &DeviceVkTest::wrapAlreadyCreated,
 
               &DeviceVkTest::populateGlobalFunctionPointers});
@@ -1187,6 +1189,45 @@ void DeviceVkTest::wrap() {
     wrapped.wrap(instance2, deviceProperties, device, Version::Vk10, {}, {});
     CORRADE_VERIFY(wrapped->DestroyDevice);
     wrapped->DestroyDevice(device, nullptr);
+}
+
+void DeviceVkTest::wrapExtensionNotFound() {
+    if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
+
+    /* Creating a dedicated instance so we can enable device extensions
+       independently */
+    Instance instance2;
+
+    DeviceProperties deviceProperties = pickDevice(instance2);
+    ExtensionProperties extensions = deviceProperties.enumerateExtensionProperties({});
+    if(!extensions.isSupported<Extensions::KHR::bind_memory2>())
+        CORRADE_SKIP(Extensions::KHR::bind_memory2::string() << "not supported, can't test");
+
+    Queue queue{NoCreate};
+    Device device{instance2, DeviceCreateInfo{deviceProperties}
+        .addQueues(0, {0.0f}, {queue})
+        .addEnabledExtensions<Extensions::KHR::bind_memory2>()
+    };
+
+    /* Verify that we don't dereference garbage when std::lower_bound() ... */
+    Device wrapped{NoCreate};
+    wrapped.wrap(instance2, deviceProperties, device, device.version(), {
+        /* ... returns `last` for an unknown extension, */
+        "VK_ZZZ_this_does_not_exist",
+        Extensions::KHR::bind_memory2::string(),
+        /* ... or returns an extension that isn't actually the one we're
+           looking for, in this case being right before VK_KHR_maintenance1
+           because of this here
+         -----------------v  */
+        "VK_KHR_maintenancd1",
+    }, {}, {});
+
+    /* This one shouldn't be listed */
+    CORRADE_VERIFY(!wrapped.isExtensionEnabled<Extensions::KHR::maintenance1>());
+
+    /* The valid extension should be */
+    CORRADE_VERIFY(wrapped.isExtensionEnabled<Extensions::KHR::bind_memory2>());
 }
 
 void DeviceVkTest::wrapAlreadyCreated() {
