@@ -365,7 +365,14 @@ void RendererState::applyCompressedPixelStorageInternal(const CompressedPixelSto
         "GL: non-default CompressedPixelStorage parameters are not supported in OpenGL ES or WebGL", );
     static_cast<void>(blockSize);
     static_cast<void>(blockDataSize);
-    static_cast<void>(isUnpack);
+    /* Reset the image height & skip parameters back to zero. While the ES spec
+       seems to say that these are all ignored when uploading a compressed
+       image (and so resetting them shouldn't be needed), with a WebGL 2 build
+       Chrome is complaining that the pixel unpack parameters are invalid if
+       they're not explicitly reset to zero before the compressed upload.
+       Firefox doesn't mind. PixelStorageGLTest::compressedResetParameters()
+       has a repro case. */
+    applyPixelStorageInternal(Magnum::PixelStorage{}, isUnpack);
     #else
     /* The block properties should always be non-zero, either coming from an
        Image(View) constructed with a particular format or from properties for
