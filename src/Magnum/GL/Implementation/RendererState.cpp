@@ -288,18 +288,19 @@ void RendererState::PixelStorage::reset() {
     #endif
 }
 
-
 void RendererState::applyPixelStorageInternal(const Magnum::PixelStorage& storage, const bool isUnpack) {
     PixelStorage& state = isUnpack ? unpackPixelStorage : packPixelStorage;
 
     /* Alignment */
-    if(state.alignment == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.alignment != storage.alignment())
+    if(state.alignment == PixelStorage::DisengagedValue ||
+       state.alignment != storage.alignment())
         glPixelStorei(isUnpack ? GL_UNPACK_ALIGNMENT : GL_PACK_ALIGNMENT,
             state.alignment = storage.alignment());
 
     /* Row length */
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    if(state.rowLength == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.rowLength != storage.rowLength())
+    if(state.rowLength == PixelStorage::DisengagedValue ||
+       state.rowLength != storage.rowLength())
     {
         #ifndef MAGNUM_TARGET_GLES2
         glPixelStorei(isUnpack ? GL_UNPACK_ROW_LENGTH : GL_PACK_ROW_LENGTH,
@@ -316,7 +317,9 @@ void RendererState::applyPixelStorageInternal(const Magnum::PixelStorage& storag
 
     /* Image height (not on ES2, on ES3 for unpack only) */
     #ifndef MAGNUM_TARGET_GLES2
-    if(state.imageHeight == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != storage.imageHeight()) {
+    if(state.imageHeight == PixelStorage::DisengagedValue ||
+       state.imageHeight != storage.imageHeight())
+    {
         #ifndef MAGNUM_TARGET_GLES
         glPixelStorei(isUnpack ? GL_UNPACK_IMAGE_HEIGHT : GL_PACK_IMAGE_HEIGHT,
             state.imageHeight = storage.imageHeight());
@@ -335,17 +338,21 @@ void RendererState::applyPixelStorageInternal(const Magnum::PixelStorage& storag
     /* On ES2 done by modifying data pointer */
     #ifndef MAGNUM_TARGET_GLES2
     /* Skip pixels */
-    if(state.skip.x() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.x() != storage.skip().x())
+    if(state.skip.x() == PixelStorage::DisengagedValue ||
+       state.skip.x() != storage.skip().x())
         glPixelStorei(isUnpack ? GL_UNPACK_SKIP_PIXELS : GL_PACK_SKIP_PIXELS,
             state.skip.x() = storage.skip().x());
 
     /* Skip rows */
-    if(state.skip.y() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.y() != storage.skip().y())
+    if(state.skip.y() == PixelStorage::DisengagedValue ||
+       state.skip.y() != storage.skip().y())
         glPixelStorei(isUnpack ? GL_UNPACK_SKIP_ROWS : GL_PACK_SKIP_ROWS,
             state.skip.y() = storage.skip().y());
 
     /* Skip images (on ES3 for unpack only) */
-    if(state.skip.z() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != storage.skip().z()) {
+    if(state.skip.z() == PixelStorage::DisengagedValue ||
+       state.skip.z() != storage.skip().z())
+    {
         #ifndef MAGNUM_TARGET_GLES
         glPixelStorei(isUnpack ? GL_UNPACK_SKIP_IMAGES : GL_PACK_SKIP_IMAGES,
             state.skip.z() = storage.skip().z());
