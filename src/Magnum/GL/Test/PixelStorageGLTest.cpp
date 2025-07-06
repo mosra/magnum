@@ -62,6 +62,7 @@ struct PixelStorageGLTest: OpenGLTester {
     void alignmentImageHeightRowLengthSkipXYZPack3D();
     #endif
     #endif
+    void defaultsAfterStateReset();
 
     #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
     void rowLengthNotSupported();
@@ -79,6 +80,7 @@ struct PixelStorageGLTest: OpenGLTester {
     void compressedPack3D();
     #endif
     void compressedResetParameters();
+    void compressedDefaultsAfterStateReset();
 
     #ifdef MAGNUM_TARGET_GLES
     void compressedNotSupported();
@@ -98,6 +100,7 @@ PixelStorageGLTest::PixelStorageGLTest() {
               &PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZPack3D,
               #endif
               #endif
+              &PixelStorageGLTest::defaultsAfterStateReset,
 
               #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
               &PixelStorageGLTest::rowLengthNotSupported,
@@ -115,6 +118,7 @@ PixelStorageGLTest::PixelStorageGLTest() {
               &PixelStorageGLTest::compressedPack3D,
               #endif
               &PixelStorageGLTest::compressedResetParameters,
+              &PixelStorageGLTest::compressedDefaultsAfterStateReset,
 
               #ifdef MAGNUM_TARGET_GLES
               &PixelStorageGLTest::compressedNotSupported,
@@ -411,6 +415,45 @@ void PixelStorageGLTest::alignmentImageHeightRowLengthSkipXYZPack3D() {
         TestSuite::Compare::Container);
 }
 #endif
+
+void PixelStorageGLTest::defaultsAfterStateReset() {
+    /* Calling Context::resetState() should trigger re-setting of all pixel
+       storage parameters because they're assumed to be in an unknown state.
+       It should however not attempt to set pixel storage parameters for
+       features that aren't supported, such as when the EXT_unpack_subimage
+       extension isn't available.
+
+       In other words, there should be no GL error caused by the resetState()
+       call. */
+
+    Context::current().resetState(Context::State::PixelStorage);
+
+    const char data[]{
+        '\x00', '\x01', '\x02', '\xff',
+        '\x03', '\x04', '\x05', '\xff',
+        '\x06', '\x07', '\x08', '\xff',
+
+        '\x0a', '\x0b', '\x0c', '\xff',
+        '\x0d', '\x0e', '\x0f', '\xff',
+        '\x10', '\x11', '\x12', '\xff',
+    };
+    Texture2D texture;
+    texture.setImage(0, textureFormat(Magnum::PixelFormat::RGBA8Unorm), ImageView2D{Magnum::PixelFormat::RGBA8Unorm, {3, 2}, data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    Image2D actual = texture.image(0, Magnum::PixelFormat::RGBA8Unorm);
+    #else
+    Framebuffer framebuffer{{{}, {3, 2}}};
+    framebuffer.attachTexture(Framebuffer::ColorAttachment{0}, texture, 0);
+    Image2D actual = framebuffer.read(framebuffer.viewport(), Magnum::PixelFormat::RGBA8Unorm);
+    #endif
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_AS(actual.data(), Containers::arrayView(data), TestSuite::Compare::Container);
+}
 
 #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
 void PixelStorageGLTest::rowLengthNotSupported() {
@@ -974,6 +1017,68 @@ void PixelStorageGLTest::compressedResetParameters() {
        cause a GL error if used by accident. */
     #ifndef MAGNUM_TARGET_GLES
     CompressedImage2D image = compressed.compressedImage(0, {});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(ActualCompressedData2D),
+        TestSuite::Compare::Container);
+    #endif
+}
+
+void PixelStorageGLTest::compressedDefaultsAfterStateReset() {
+    /* Like defaultsAfterStateReset(), but with a compressed format */
+
+    /* Pick a supported 128-bit 4x4 format if available. The data uploaded are
+       always BC2 / DXT3 but since they're not rendered from it should be fine
+       even for ETC, */
+    Magnum::CompressedPixelFormat format;
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>() ||
+       Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
+    #else
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_s3tc>())
+    #endif
+    {
+        format = Magnum::CompressedPixelFormat::Bc2RGBAUnorm;
+    } else
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current().isExtensionSupported<Extensions::ARB::ES3_compatibility>())
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_etc>())
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::compressed_texture_etc>())
+    #else
+    /* On ES3 ETC textures are available always */
+    #endif
+    {
+        format = Magnum::CompressedPixelFormat::Etc2RGBA8Unorm;
+    }
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_TARGET_GLES2)
+    else {
+        #ifndef MAGNUM_TARGET_GLES
+        CORRADE_SKIP("Neither" << Extensions::EXT::texture_compression_s3tc::string() << "nor" << Extensions::ARB::ES3_compatibility::string() << "is supported, can't test");
+        #elif defined(MAGNUM_TARGET_WEBGL)
+        CORRADE_SKIP(Extensions::WEBGL::compressed_texture_s3tc::string() << "not supported, can't test");
+        #else
+        CORRADE_SKIP("None of" << Extensions::EXT::texture_compression_s3tc::string() << Debug::nospace << "," << Extensions::ANGLE::texture_compression_dxt3::string() << "or" << Extensions::ANGLE::compressed_texture_etc::string() << "extensions are supported, can't test");
+        #endif
+    }
+    #endif
+
+    Context::current().resetState(Context::State::PixelStorage);
+
+    Texture2D texture;
+    texture.setCompressedImage(0,
+        CompressedImageView2D{format, {8, 12}, ActualCompressedData2D});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* There's no way to test the compressed contents on ES */
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedImage2D image = texture.compressedImage(0, {});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
