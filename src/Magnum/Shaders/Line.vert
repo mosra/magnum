@@ -67,7 +67,7 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
-uniform lowp vec2 viewportSize; /* defaults to zero */
+uniform highp vec2 viewportSize; /* defaults to zero */
 
 #ifndef UNIFORM_BUFFERS
 #ifdef EXPLICIT_UNIFORM_LOCATION
