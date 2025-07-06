@@ -77,6 +77,7 @@ struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
 
     void setImage();
     #ifndef MAGNUM_TARGET_GLES2
+    void setImageArraySingleLayer();
     void setImageArray();
     #endif
     void setImageEdgeClamp();
@@ -86,6 +87,7 @@ struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
 
     void setProcessedImage();
     #ifndef MAGNUM_TARGET_GLES2
+    void setProcessedImageArraySingleLayer();
     void setProcessedImageArray();
     #endif
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -218,6 +220,9 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
         Containers::arraySize(SetImageData));
 
     #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&DistanceFieldGlyphCacheGLTest::setImageArraySingleLayer},
+        Containers::arraySize(SetImageData));
+
     addInstancedTests({&DistanceFieldGlyphCacheGLTest::setImageArray},
         Containers::arraySize(SetImageArrayData));
     #endif
@@ -236,7 +241,8 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    addTests({&DistanceFieldGlyphCacheGLTest::setProcessedImageArray});
+    addTests({&DistanceFieldGlyphCacheGLTest::setProcessedImageArraySingleLayer,
+              &DistanceFieldGlyphCacheGLTest::setProcessedImageArray});
     #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -493,6 +499,76 @@ void DistanceFieldGlyphCacheGLTest::setImage() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+void DistanceFieldGlyphCacheGLTest::setImageArraySingleLayer() {
+    auto&& data = SetImageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Like setImage(), but using a DistanceFieldGlyphCacheArrayGL with a
+       single layer to verify that there isn't any corner case where a regular
+       2D cache would work but array not. With GlyphCacheArrayGL, Chrome WebGL
+       2 *requires* image height to be set in the pixel storage for non-zero
+       skip even if uploading to the very first slice. In this particular case
+       not because the internal processing input texture is just 2D, not 2D
+       array, but including the test just in case. */
+
+    Containers::Pointer<Trade::AbstractImporter> importer;
+    if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
+        CORRADE_SKIP("TgaImporter plugin not found.");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(TEXTURETOOLS_DISTANCEFIELDGLTEST_DIR, "input.tga")));
+    CORRADE_COMPARE(importer->image2DCount(), 1);
+    Containers::Optional<Trade::ImageData2D> inputImage = importer->image2D(0);
+    CORRADE_VERIFY(inputImage);
+    CORRADE_COMPARE(inputImage->format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(inputImage->size(), (Vector2i{256, 256}));
+
+    DistanceFieldGlyphCacheArrayGL cache{{data.sourceSize, 1}, data.size, 32};
+
+    /* Clear the target texture to avoid random garbage getting in when the
+       data.flushRange isn't covering the whole output */
+    Containers::Array<char> zeros{ValueInit, data.size.product()*pixelFormatSize(cache.processedFormat())};
+    cache.texture().setSubImage(0, {},
+        /* On ES2, R8Unorm maps to Luminance, but here it's actually Red if
+           EXT_texture_rg is supported */
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        cache.processedFormat() == PixelFormat::R8Unorm ?
+            ImageView2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte, data.size, zeros} :
+        #endif
+            ImageView2D{cache.processedFormat(), data.size, zeros}
+    );
+
+    Containers::StridedArrayView2D<const UnsignedByte> src = inputImage->pixels<UnsignedByte>();
+    /* Test also uploading under an offset */
+    Utility::copy(src, cache.image().pixels<UnsignedByte>()[0].sliceSize({
+        std::size_t(data.sourceOffset.y()),
+        std::size_t(data.sourceOffset.x())}, src.size()));
+    cache.flushImage(data.flushRange);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* On GLES processedImage() isn't implemented as it'd mean creating a
+       temporary framebuffer. Do it via DebugTools here instead, we cannot
+       really verify that the size matches, but at least something. */
+    #ifndef MAGNUM_TARGET_GLES
+    Image3D actual3 = cache.processedImage();
+    /** @todo ugh have slicing on images directly already */
+    MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
+    #else
+    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, 0, {{}, data.size}, cache.processedFormat());
+    #endif
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /* The format may be three-component, consider just the first channel */
+    Containers::StridedArrayView3D<const char> pixels = actual.pixels();
+    CORRADE_COMPARE_WITH((Containers::arrayCast<2, const UnsignedByte>(pixels.prefix({pixels.size()[0], pixels.size()[1], 1})).exceptPrefix(data.offset)),
+        Utility::Path::join(TEXTURETOOLS_DISTANCEFIELDGLTEST_DIR, "output.tga"),
+        /* Same threshold as in TextureTools DistanceFieldGLTest */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
+}
+
 void DistanceFieldGlyphCacheGLTest::setImageArray() {
     auto&& data = SetImageArrayData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -766,6 +842,56 @@ void DistanceFieldGlyphCacheGLTest::setProcessedImage() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+void DistanceFieldGlyphCacheGLTest::setProcessedImageArraySingleLayer() {
+    /* Like setProcessedImage(), but using a DistanceFieldGlyphCacheArrayGL
+       with a single layer to verify that there isn't any corner case where a
+       regular 2D cache would work but array not. With GlyphCacheArrayGL,
+       Chrome WebGL 2 *requires* image height to be set in the pixel storage
+       for non-zero skip even if uploading to the very first slice. In this
+       particular case not because the image passed to setProcessedImage() is
+       under user's control, but including the test just in case.
+
+       Unlike setProcessedImage() the test is not instanced because the
+       instanced data are there just for deprecated APIs that aren't present in
+       the array variant. */
+
+    DistanceFieldGlyphCacheArrayGL cache({64, 32, 1}, {16, 8}, 16);
+
+    /* Clear the texture first, as it'd have random garbage otherwise */
+    UnsignedByte zeros[16*8]{};
+    cache.setProcessedImage({}, ImageView2D{PixelFormat::R8Unorm, {16, 8}, zeros});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    cache.setProcessedImage({8, 4}, ImageView2D{PixelFormat::R8Unorm, {8, 4}, InputData});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* On GLES processedImage() isn't implemented as it'd mean creating a
+       temporary framebuffer. Do it via DebugTools here instead, we cannot
+       really verify that the size matches, but at least something. */
+    #ifndef MAGNUM_TARGET_GLES
+    Image3D actual3 = cache.processedImage();
+    /** @todo ugh have slicing on images directly already */
+    MutableImageView2D actual{actual3.format(), actual3.size().xy(), actual3.data()};
+    #else
+    Image2D actual = DebugTools::textureSubImage(cache.texture(), 0, 0, {{}, {16, 8}}, cache.processedFormat());
+    #endif
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    UnsignedByte expected[]{
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0, 0, 0, 0, 0, 0, 0, 0, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+        0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0xff, 0x11, 0xee, 0x22, 0xdd, 0x33, 0xcc,
+        0, 0, 0, 0, 0, 0, 0, 0, 0x44, 0xbb, 0x55, 0xaa, 0x66, 0x99, 0x77, 0x88,
+    };
+    CORRADE_COMPARE_AS(actual,
+        (ImageView2D{PixelFormat::R8Unorm, {16, 8}, expected}),
+        DebugTools::CompareImage);
+}
+
 void DistanceFieldGlyphCacheGLTest::setProcessedImageArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())

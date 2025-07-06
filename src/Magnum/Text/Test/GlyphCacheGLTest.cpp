@@ -90,6 +90,7 @@ struct GlyphCacheGLTest: GL::OpenGLTester {
 
     void setImage();
     #ifndef MAGNUM_TARGET_GLES2
+    void setImageArraySingleLayer();
     void setImageArray();
     #endif
     void setImageFourChannel();
@@ -137,6 +138,7 @@ GlyphCacheGLTest::GlyphCacheGLTest() {
 
               &GlyphCacheGLTest::setImage,
               #ifndef MAGNUM_TARGET_GLES2
+              &GlyphCacheGLTest::setImageArraySingleLayer,
               &GlyphCacheGLTest::setImageArray,
               #endif
               &GlyphCacheGLTest::setImageFourChannel,
@@ -508,6 +510,76 @@ void GlyphCacheGLTest::setImage() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+void GlyphCacheGLTest::setImageArraySingleLayer() {
+    /* Like setImage(), but using a GlyphCacheArrayGL with a single layer to
+       verify that there isn't any corner case where a regular 2D cache would
+       work but array not.
+
+       In particular, Chrome WebGL 2 *requires* image height to be set in the
+       pixel storage for non-zero skip even if uploading to the very first
+       slice. Firefox doesn't. */
+
+    GlyphCacheArrayGL cache{PixelFormat::R8Unorm, {16, 8, 1}};
+
+    /* Fill the texture with non-zero data to verify the padding gets uploaded
+       as well */
+    cache.texture().setSubImage(0, {}, Image3D{PixelFormat::R8Unorm, {16, 8, 1}, Containers::Array<char>{DirectInit, 16*8, '\xcd'}});
+
+    Utility::copy(
+        Containers::StridedArrayView2D<const UnsignedByte>{InputData, {4, 8}},
+        cache.image().pixels<UnsignedByte>()[0].sliceSize({4, 8}, {4, 8}));
+    cache.flushImage(Range2Di::fromSize({8, 4}, {8, 4}));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    ImageView3D actual = cache.image();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* The CPU-side image is zero-initialized, what was set above in the
+       texture isn't present there */
+    /** @todo ugh have slicing on images directly already, and 3D image
+        comparison */
+    CORRADE_COMPARE_AS((ImageView2D{actual.format(), actual.size().xy(), actual.data()}),
+        (ImageView2D{PixelFormat::R8Unorm, {16, 8}, ExpectedData}),
+        DebugTools::CompareImage);
+
+    /* The actual texture has just the slice updated, the rest stays. On GLES
+       we cannot really verify that the size matches, but at least
+       something. */
+    #ifndef MAGNUM_TARGET_GLES
+    Image3D image = cache.texture().image(0, {PixelFormat::R8Unorm});
+    #else
+    Image2D image = DebugTools::textureSubImage(cache.texture(), 0, 0, {{}, {16, 8}}, {PixelFormat::R8Unorm});
+    #endif
+
+    const UnsignedByte expectedTextureData[]{
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0x00, 0xff, 0x11, 0xee, 0x22, 0xdd, 0x33, 0xcc,
+        0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0,
+            0x44, 0xbb, 0x55, 0xaa, 0x66, 0x99, 0x77, 0x88
+    };
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(image.pixels<UnsignedByte>()[0],
+        (ImageView2D{PixelFormat::R8Unorm, {16, 8}, expectedTextureData}),
+        DebugTools::CompareImage);
+    #else
+    CORRADE_COMPARE_AS(image.pixels<UnsignedByte>(),
+        (ImageView2D{PixelFormat::R8Unorm, {16, 8}, expectedTextureData}),
+        DebugTools::CompareImage);
+    #endif
+}
+
 void GlyphCacheGLTest::setImageArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
