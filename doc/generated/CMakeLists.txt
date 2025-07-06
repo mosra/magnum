@@ -52,16 +52,16 @@ else()
 endif()
 
 add_executable(colormaps colormaps.cpp)
-target_link_libraries(colormaps
+target_link_libraries(colormaps PRIVATE
     Magnum::Magnum
     Magnum::DebugTools)
 
 add_executable(easings easings.cpp)
-target_link_libraries(easings
+target_link_libraries(easings PRIVATE
     Magnum::Magnum)
 
 add_executable(shaders shaders.cpp)
-target_link_libraries(shaders
+target_link_libraries(shaders PRIVATE
     Magnum::Magnum
     Magnum::DebugTools
     Magnum::MeshTools
@@ -70,7 +70,7 @@ target_link_libraries(shaders
     Magnum::WindowlessApplication)
 
 add_executable(primitives primitives.cpp)
-target_link_libraries(primitives
+target_link_libraries(primitives PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
@@ -78,6 +78,6 @@ target_link_libraries(primitives
     Magnum::WindowlessApplication)
 
 add_executable(atlas atlas.cpp)
-target_link_libraries(atlas
+target_link_libraries(atlas PRIVATE
     Magnum::DebugTools
     Magnum::TextureTools)
