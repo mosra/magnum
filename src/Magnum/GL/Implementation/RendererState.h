@@ -87,6 +87,7 @@ struct RendererState {
         #ifndef MAGNUM_TARGET_GLES
         Vector3i compressedBlockSize;
         Int compressedBlockDataSize;
+        Int disengagedBlockSize;
         #endif
 
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))

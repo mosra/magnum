@@ -129,6 +129,18 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
     #endif
     #endif
 
+    /* Similarly, in case the compressed pixel storage isn't supported (which
+       is the case on macOS), all block properties are constantly 0 to avoid
+       modifying that state */
+    #ifndef MAGNUM_TARGET_GLES
+    unpackPixelStorage.disengagedBlockSize = PixelStorage::DisengagedValue;
+    packPixelStorage.disengagedBlockSize = PixelStorage::DisengagedValue;
+    if(!context.isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>()) {
+        unpackPixelStorage.disengagedBlockSize = 0;
+        packPixelStorage.disengagedBlockSize = 0;
+    }
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     if((context.detectedDriver() & Context::DetectedDriver::Mesa) &&
        (context.flags() & Context::Flag::ForwardCompatible) &&
@@ -283,8 +295,8 @@ void RendererState::PixelStorage::reset() {
     skip = Vector3i{DisengagedValue};
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    compressedBlockSize = Vector3i{DisengagedValue};
-    compressedBlockDataSize = DisengagedValue;
+    compressedBlockSize = Vector3i{disengagedBlockSize};
+    compressedBlockDataSize = disengagedBlockSize;
     #endif
 }
 
@@ -390,29 +402,50 @@ void RendererState::applyCompressedPixelStorageInternal(const CompressedPixelSto
 
     PixelStorage& state = isUnpack ? unpackPixelStorage : packPixelStorage;
 
-    /* Compressed block width */
-    if(state.compressedBlockSize.x() == PixelStorage::DisengagedValue ||
-       state.compressedBlockSize.x() != blockSize.x())
-        glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_WIDTH : GL_PACK_COMPRESSED_BLOCK_WIDTH,
-            state.compressedBlockSize.x() = blockSize.x());
+    /* If we have the default skip, row length and image height, we can keep
+       the state at 0 as well, so if the state is all 0s in that case, don't
+       set anything. It cannot happen that some state is 0 and some isn't, so
+       it's not branched individually for each state. Also not doing
+       `storage == CompressedPixelStorage{}` as the (unused) block size
+       parameters could be set as well, causing the comparison to fail.
 
-    /* Compressed block height */
-    if(state.compressedBlockSize.y() == PixelStorage::DisengagedValue ||
-       state.compressedBlockSize.y() != blockSize.y())
-        glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_HEIGHT : GL_PACK_COMPRESSED_BLOCK_HEIGHT,
-            state.compressedBlockSize.y() = blockSize.y());
+       On platforms that don't support ARB_compressed_texture_pixel_storage
+       (such as macOS) this also ensures that for default storage parameters
+       none of this state is being set as the default state there is always 0.
+       For non-default skip etc. it *is* set, thus causing a GL error, but
+       that's treated as a user error. */
+    if(!(storage.skip() == Vector3i{} && storage.rowLength() == 0 && storage.imageHeight() == 0 && state.compressedBlockSize == Vector3i{} && state.compressedBlockDataSize == 0)) {
+        /** @todo This could potentially also set the block size back to 0 if
+            default skip etc. is used. Assuming that most uses would be with
+            whole images it would mean the block sizes aren't set at all, OTOH
+            if they're mixed with sub-image uploads then they get repeatedly
+            set to a concrete value and then back to 0, making it worse than
+            now. */
 
-    /* Compressed block depth */
-    if(state.compressedBlockSize.z() == PixelStorage::DisengagedValue ||
-       state.compressedBlockSize.z() != blockSize.z())
-        glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_DEPTH : GL_PACK_COMPRESSED_BLOCK_DEPTH,
-            state.compressedBlockSize.z() = blockSize.z());
+        /* Compressed block width */
+        if(state.compressedBlockSize.x() == PixelStorage::DisengagedValue ||
+           state.compressedBlockSize.x() != blockSize.x())
+            glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_WIDTH : GL_PACK_COMPRESSED_BLOCK_WIDTH,
+                state.compressedBlockSize.x() = blockSize.x());
 
-    /* Compressed block size */
-    if(state.compressedBlockDataSize == PixelStorage::DisengagedValue ||
-       state.compressedBlockDataSize != blockDataSize)
-        glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_SIZE : GL_PACK_COMPRESSED_BLOCK_SIZE,
-            state.compressedBlockDataSize = blockDataSize);
+        /* Compressed block height */
+        if(state.compressedBlockSize.y() == PixelStorage::DisengagedValue ||
+           state.compressedBlockSize.y() != blockSize.y())
+            glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_HEIGHT : GL_PACK_COMPRESSED_BLOCK_HEIGHT,
+                state.compressedBlockSize.y() = blockSize.y());
+
+        /* Compressed block depth */
+        if(state.compressedBlockSize.z() == PixelStorage::DisengagedValue ||
+           state.compressedBlockSize.z() != blockSize.z())
+            glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_DEPTH : GL_PACK_COMPRESSED_BLOCK_DEPTH,
+                state.compressedBlockSize.z() = blockSize.z());
+
+        /* Compressed block size */
+        if(state.compressedBlockDataSize == PixelStorage::DisengagedValue ||
+           state.compressedBlockDataSize != blockDataSize)
+            glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_SIZE : GL_PACK_COMPRESSED_BLOCK_SIZE,
+                state.compressedBlockDataSize = blockDataSize);
+    }
     #endif
 }
 
