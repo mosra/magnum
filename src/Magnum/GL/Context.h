@@ -654,7 +654,8 @@ class MAGNUM_GL_EXPORT Context {
          * OpenGL calls. The returned view is always
          * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
          * @relativeref{Corrade::Containers::StringViewFlag,Global}.
-         * @see @ref versionString(), @ref version(), @fn_gl{GetString} with
+         * @see @ref shadingLanguageVersionStrings(), @ref versionString(),
+         *      @ref version(), @fn_gl{GetString} with
          *      @def_gl_keyword{SHADING_LANGUAGE_VERSION}
          */
         Containers::StringView shadingLanguageVersionString() const;
@@ -665,7 +666,10 @@ class MAGNUM_GL_EXPORT Context {
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. The returned view is always
          * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
-         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}. On GL
+         * before version 4.3, GLES and WebGL is equivalent to
+         * @ref shadingLanguageVersionString(), returning always exactly one
+         * item.
          * @see @ref versionString(), @ref version(), @fn_gl{Get} with
          *      @def_gl_keyword{NUM_SHADING_LANGUAGE_VERSIONS}, @fn_gl{GetString}
          *      with @def_gl_keyword{SHADING_LANGUAGE_VERSION}
