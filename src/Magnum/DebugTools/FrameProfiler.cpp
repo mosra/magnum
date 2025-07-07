@@ -153,7 +153,8 @@ void FrameProfiler::disable() {
 }
 
 void FrameProfiler::beginFrame() {
-    if(!_enabled) return;
+    if(!_enabled)
+        return;
 
     CORRADE_ASSERT(!_beginFrameCalled, "DebugTools::FrameProfiler::beginFrame(): expected end of frame", );
     #ifndef CORRADE_NO_ASSERT
@@ -175,7 +176,8 @@ UnsignedInt FrameProfiler::delayedCurrentData(UnsignedInt delay) const {
 }
 
 void FrameProfiler::endFrame() {
-    if(!_enabled) return;
+    if(!_enabled)
+        return;
 
     CORRADE_ASSERT(_beginFrameCalled, "DebugTools::FrameProfiler::endFrame(): expected begin of frame", );
     #ifndef CORRADE_NO_ASSERT
@@ -403,7 +405,8 @@ void FrameProfiler::printStatistics(const UnsignedInt frequency) const {
 }
 
 void FrameProfiler::printStatistics(Debug& out, const UnsignedInt frequency) const {
-    if(!isEnabled() || _measuredFrameCount % frequency != 0) return;
+    if(!isEnabled() || _measuredFrameCount % frequency != 0)
+        return;
 
     /* If on a TTY and we printed at least something already, scroll back up to
        overwrite previous output */
