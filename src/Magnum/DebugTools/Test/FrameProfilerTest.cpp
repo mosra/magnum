@@ -158,10 +158,19 @@ FrameProfilerTest::FrameProfilerTest() {
 
 void FrameProfilerTest::defaultConstructed() {
     FrameProfiler profiler;
+    CORRADE_VERIFY(!profiler.isEnabled());
     CORRADE_COMPARE(profiler.maxFrameCount(), 1);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
     CORRADE_COMPARE(profiler.measurementCount(), 0);
     CORRADE_COMPARE(profiler.statistics(), "Last 0 frames:");
+
+    /* Nothing happens by default as it's not enabled */
+    profiler.beginFrame();
+    profiler.endFrame();
+    CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
+
+    profiler.enable();
+    CORRADE_VERIFY(profiler.isEnabled());
 
     profiler.beginFrame();
     profiler.endFrame();
@@ -176,10 +185,19 @@ void FrameProfilerTest::defaultConstructed() {
 
 void FrameProfilerTest::noMeasurements() {
     FrameProfiler profiler{{}, 3};
+    CORRADE_VERIFY(!profiler.isEnabled());
     CORRADE_COMPARE(profiler.maxFrameCount(), 3);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
     CORRADE_COMPARE(profiler.measurementCount(), 0);
     CORRADE_COMPARE(profiler.statistics(), "Last 0 frames:");
+
+    /* Nothing happens by default as it's not enabled */
+    profiler.beginFrame();
+    profiler.endFrame();
+    CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
+
+    profiler.enable();
+    CORRADE_VERIFY(profiler.isEnabled());
 
     profiler.beginFrame();
     profiler.endFrame();
@@ -213,6 +231,8 @@ void FrameProfilerTest::singleFrame() {
 
     UnsignedLong time = 0, memory = 50;
     FrameProfiler profiler;
+    CORRADE_VERIFY(!profiler.isEnabled());
+
     if(!data.delayed) {
         profiler.setup({
             FrameProfiler::Measurement{
@@ -279,6 +299,7 @@ void FrameProfilerTest::singleFrame() {
                 }, nullptr}
         }, 1);
     }
+    CORRADE_VERIFY(profiler.isEnabled());
     CORRADE_COMPARE(profiler.maxFrameCount(), 1);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
     CORRADE_COMPARE(profiler.measurementCount(), 3);
@@ -367,6 +388,8 @@ void FrameProfilerTest::multipleFrames() {
         UnsignedInt delay;
     } state {0, 50, {0, 0, 0}, {50, 0, 0}, data.delay};
     FrameProfiler profiler;
+    CORRADE_VERIFY(!profiler.isEnabled());
+
     if(!data.delayed) {
         profiler.setup({
             FrameProfiler::Measurement{
@@ -441,6 +464,7 @@ void FrameProfilerTest::multipleFrames() {
                 }, nullptr}
         }, 3);
     }
+    CORRADE_VERIFY(profiler.isEnabled());
     CORRADE_COMPARE(profiler.maxFrameCount(), 3);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
     CORRADE_COMPARE(profiler.measurementDelay(0), data.delay);
@@ -580,6 +604,7 @@ void FrameProfilerTest::enableDisable() {
     profiler.endFrame();
     profiler.beginFrame();
     profiler.endFrame();
+    CORRADE_VERIFY(profiler.isEnabled());
     CORRADE_COMPARE(profiler.measurementCount(), 1);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 3);
     CORRADE_COMPARE(profiler.measurementDelay(0), 2);
@@ -588,6 +613,7 @@ void FrameProfilerTest::enableDisable() {
 
     /* It should only freeze everything, not wipe out any data */
     profiler.disable();
+    CORRADE_VERIFY(!profiler.isEnabled());
     CORRADE_COMPARE(profiler.measurementCount(), 1);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 3);
     CORRADE_COMPARE(profiler.measurementDelay(0), 2);
@@ -607,6 +633,7 @@ void FrameProfilerTest::enableDisable() {
     /* Enabling should reset the data to have a clean slate, but not the
        measurements */
     profiler.enable();
+    CORRADE_VERIFY(profiler.isEnabled());
     CORRADE_COMPARE(profiler.measurementCount(), 1);
     CORRADE_COMPARE(profiler.maxFrameCount(), 5);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
@@ -638,10 +665,13 @@ void FrameProfilerTest::reSetup() {
             [](void*, UnsignedInt) {},
             [](void*, UnsignedInt, UnsignedInt) { return UnsignedLong{}; }, nullptr},
     }, 5};
+    CORRADE_VERIFY(profiler.isEnabled());
 
     profiler.beginFrame();
     profiler.endFrame();
     profiler.beginFrame();
+    CORRADE_COMPARE(profiler.measurementCount(), 1);
+    CORRADE_COMPARE(profiler.measuredFrameCount(), 1);
 
     /* Setup should replace everything */
     profiler.setup({
@@ -656,6 +686,7 @@ void FrameProfilerTest::reSetup() {
             [](void*) { return UnsignedLong{}; },
             nullptr},
     }, 10);
+    CORRADE_VERIFY(profiler.isEnabled());
     CORRADE_COMPARE(profiler.measurementCount(), 2);
     CORRADE_COMPARE(profiler.maxFrameCount(), 10);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
@@ -668,6 +699,14 @@ void FrameProfilerTest::reSetup() {
        beginFrame() expected again */
     profiler.beginFrame();
     profiler.endFrame();
+    CORRADE_COMPARE(profiler.measuredFrameCount(), 1);
+
+    /* Empty setup clears everything and makes it disabled */
+    profiler.setup({}, 17);
+    CORRADE_VERIFY(!profiler.isEnabled());
+    CORRADE_COMPARE(profiler.measurementCount(), 0);
+    CORRADE_COMPARE(profiler.maxFrameCount(), 17);
+    CORRADE_COMPARE(profiler.measuredFrameCount(), 0);
 }
 
 void FrameProfilerTest::copy() {
@@ -811,7 +850,11 @@ void FrameProfilerTest::delayTooLittleFrames() {
 void FrameProfilerTest::startStopFrameUnexpected() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    /* Empty profiler is disabled by default, enable it to not have
+       beginFrame() and endFrame() no-op */
     FrameProfiler profiler;
+    profiler.enable();
+    CORRADE_VERIFY(profiler.isEnabled());
 
     Containers::String out;
     {
@@ -1101,6 +1144,7 @@ void FrameProfilerTest::gl() {
     Containers::Pointer<FrameProfilerGL> profiler_{InPlaceInit, data.values, 4u};
     FrameProfilerGL profiler = Utility::move(*profiler_);
     profiler_ = nullptr;
+    CORRADE_COMPARE(profiler.isEnabled(), !!data.values);
     CORRADE_COMPARE(profiler.values(), data.values);
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);
     CORRADE_COMPARE(profiler.measurementCount(), data.measurementCount);

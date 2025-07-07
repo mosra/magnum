@@ -122,17 +122,18 @@ void FrameProfiler::setup(Containers::Array<Measurement>&& measurements, const U
     }
     #endif
 
-    /* Reset to have a clean slate in case we did some other measurements
-       before */
-    enable();
+    /* Reset to a clean slate in case we did some other measurements before,
+       then either disable or enable based on whether we have anything to
+       measure */
+    reset();
+    _measurements.isEmpty() ? disable() : enable();
 }
 
 void FrameProfiler::setup(const std::initializer_list<Measurement> measurements, const UnsignedInt maxFrameCount) {
     setup(Containers::array(measurements), maxFrameCount);
 }
 
-void FrameProfiler::enable() {
-    _enabled = true;
+void FrameProfiler::reset() {
     #ifndef CORRADE_NO_ASSERT
     _beginFrameCalled = false;
     #endif
@@ -146,6 +147,11 @@ void FrameProfiler::enable() {
         measurement._movingSum = 0;
         measurement._current = 0;
     }
+}
+
+void FrameProfiler::enable() {
+    reset();
+    _enabled = true;
 }
 
 void FrameProfiler::disable() {

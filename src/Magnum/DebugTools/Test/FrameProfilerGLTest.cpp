@@ -122,6 +122,7 @@ void FrameProfilerGLTest::test() {
     Shaders::FlatGL3D shader;
 
     FrameProfilerGL profiler{data.values, 4};
+    CORRADE_VERIFY(profiler.isEnabled());
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);
 
     /* MSVC 2015 needs the {} */

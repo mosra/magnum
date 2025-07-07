@@ -176,7 +176,9 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
         /**
          * @brief Default constructor
          *
-         * Call @ref setup() to populate the profiler with measurements.
+         * Call @ref setup() to populate the profiler with measurements. A
+         * default-constructed instance has profiling implicitly disabled.
+         * @see @ref isEnabled()
          */
         explicit FrameProfiler() noexcept;
 
@@ -184,7 +186,9 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * @brief Constructor
          *
          * Equivalent to default-constructing an instance and calling
-         * @ref setup() afterwards.
+         * @ref setup() afterwards. If @p measurements are not empty, profiling
+         * is implicitly enabled after, otherwise it's implicitly disabled.
+         * @see @ref isEnabled()
          */
         explicit FrameProfiler(Containers::Array<Measurement>&& measurements, UnsignedInt maxFrameCount) noexcept;
 
@@ -211,23 +215,38 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          *
          * Calling @ref setup() on an already set up profiler will replace
          * existing measurements with @p measurements and reset
-         * @ref measuredFrameCount() back to @cpp 0 @ce.
+         * @ref measuredFrameCount() back to @cpp 0 @ce. If @p measurements
+         * are not empty, profiling is implicitly enabled after, otherwise it's
+         * implicitly disabled.
+         * @see @ref isEnabled()
          */
         void setup(Containers::Array<Measurement>&& measurements, UnsignedInt maxFrameCount);
 
         /** @overload */
         void setup(std::initializer_list<Measurement> measurements, UnsignedInt maxFrameCount);
 
-        /** @brief Whether the profiling is enabled */
+        /**
+         * @brief Whether the profiling is enabled
+         *
+         * @see @ref enable(), @ref disable(), @ref setup()
+         */
         bool isEnabled() const { return _enabled; }
 
         /**
          * @brief Enable the profiler
          *
-         * The profiler is enabled implicitly after construction. When this
-         * function is called, it discards all measured data, effectively
-         * making @ref measuredFrameCount() zero. If you want to reset the
-         * profiler to measure different values as well, call @ref setup().
+         * When this function is called, it discards all measured data,
+         * effectively making @ref measuredFrameCount() zero. If you want to
+         * reset the profiler to measure different values as well, call
+         * @ref setup() instead.
+         *
+         * A default-constructed profiler is implicitly disabled as it has
+         * nothing to measure. Constructing it with a non-empty set of
+         * measurements or calling @ref setup() with a non-empty set of
+         * measurements makes it implicitly enabled. It's allowed to call this
+         * function even if the profiler has no measurements, although it'll
+         * result in @ref statistics() / @ref printStatistics() producing
+         * useless output.
          */
         void enable();
 
@@ -381,8 +400,8 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * but in addition, if the output is a TTY, it's colored and overwrites
          * itself instead of filling up the terminal history. If profiling is
          * disabled, does nothing.
-         * @see @ref isMeasurementAvailable(), @ref isEnabled()
-         *      @ref Corrade::Utility::Debug::isTty()
+         * @see @ref isMeasurementAvailable(), @ref isEnabled(),
+         *      @relativeref{Corrade,Utility::Debug::isTty()}
          */
         void printStatistics(UnsignedInt frequency) const;
 
@@ -404,11 +423,12 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
         }
 
     private:
+        void reset();
         UnsignedInt delayedCurrentData(UnsignedInt delay) const;
         Double measurementMeanInternal(const Measurement& measurement) const;
         void printStatisticsInternal(Debug& out) const;
 
-        bool _enabled = true;
+        bool _enabled = false;
         #ifndef CORRADE_NO_ASSERT
         /* Here it shouldn't cause the class to have a different size when
            asserts get disabled */
