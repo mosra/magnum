@@ -286,6 +286,7 @@ commands:
           if [ "$BUILD_STATIC" != "ON" ]; then export BUILD_STATIC=OFF; fi
           if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
           if [ "$BUILD_APPLICATIONS" != "OFF" ]; then export BUILD_APPLICATIONS=ON; fi
+          if [ "$TARGET_EGL" != "ON" ]; then export TARGET_EGL=OFF; fi
           if [ "$TARGET_GLES2" == "ON" ]; then export TARGET_GLES3=OFF; fi
           if [ "$TARGET_GLES2" == "OFF" ]; then export TARGET_GLES3=ON; fi
           ./package/ci/<< parameters.script >>
