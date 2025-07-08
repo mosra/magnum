@@ -732,6 +732,7 @@ Debug& operator<<(Debug& debug, const Buffer::Target value) {
     debug << "GL::Buffer::Target" << Debug::nospace;
 
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Buffer::Target::value: return debug << "::" #value;
         #ifndef MAGNUM_TARGET_WEBGL
         _c(AtomicCounter)
@@ -739,6 +740,7 @@ Debug& operator<<(Debug& debug, const Buffer::Target value) {
         #endif
         _c(Uniform)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
