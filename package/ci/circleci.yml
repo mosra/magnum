@@ -292,17 +292,21 @@ commands:
           ./package/ci/<< parameters.script >>
 
   lcov:
+    parameters:
+      extra:
+        type: string
+        default: ""
     steps:
     - run:
         name: Collect code coverage
         # Keep in sync with PKBUILD-coverage and appveyor-desktop-{,mingw}.bat,
         # please
         command: |
-          lcov $LCOV_EXTRA_OPTS --directory . --capture --output-file coverage.info > /dev/null
-          lcov $LCOV_EXTRA_OPTS --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
-          lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/MagnumExternal/*" --output-file coverage.info > /dev/null
-          lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
-          lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null
+          lcov << parameters.extra >> --directory . --capture --output-file coverage.info > /dev/null
+          lcov << parameters.extra >> --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
+          lcov << parameters.extra >> --remove coverage.info "*/MagnumExternal/*" --output-file coverage.info > /dev/null
+          lcov << parameters.extra >> --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
+          lcov << parameters.extra >> --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null
     # Official docs say "token not needed for public repos", in reality not
     # using the token is "extremely flakey". What's best is that if the upload
     # fails, the damn thing exits with a success error code, and nobody cares:
@@ -332,7 +336,6 @@ jobs:
     executor: ubuntu-18_04
     environment:
       CMAKE_CXX_FLAGS: --coverage
-      LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_EGL: "ON"
@@ -358,7 +361,8 @@ jobs:
     - setup-null-openal-driver
     - build:
         script: unix-desktop.sh
-    - lcov
+    - lcov:
+        extra: --gcov-tool /usr/bin/gcov-4.8
 
   linux-arm64:
     executor: arm64
@@ -395,7 +399,6 @@ jobs:
     executor: ubuntu-18_04
     environment:
       CMAKE_CXX_FLAGS: --coverage
-      LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
     steps:
     - install-base-linux:
@@ -410,13 +413,13 @@ jobs:
         build: ubuntu-18.04
     - build:
         script: unix-desktop-vulkan.sh
-    - lcov
+    - lcov:
+        extra: --gcov-tool /usr/bin/gcov-4.8
 
   linux-gles2:
     executor: ubuntu-18_04
     environment:
       CMAKE_CXX_FLAGS: --coverage
-      LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
       # TODO enable also GlxApplication, WindowlessGlxApplication and
       # GlxContext once CMake 3.10+ is used to test correct libGLES + libGLX
@@ -441,13 +444,13 @@ jobs:
         version: "3.5.2"
     - build:
         script: unix-desktop-gles.sh
-    - lcov
+    - lcov:
+        extra: --gcov-tool /usr/bin/gcov-4.8
 
   linux-gles3:
     executor: ubuntu-18_04
     environment:
       CMAKE_CXX_FLAGS: --coverage
-      LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
       # TODO enable also GlxApplication, WindowlessGlxApplication and
       # GlxContext once CMake 3.10+ is used to test correct libGLES + libGLX
@@ -472,7 +475,8 @@ jobs:
         version: "3.5.2"
     - build:
         script: unix-desktop-gles.sh
-    - lcov
+    - lcov:
+        extra: --gcov-tool /usr/bin/gcov-4.8
 
   linux-static:
     executor: ubuntu-18_04
@@ -494,7 +498,6 @@ jobs:
         -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::AnySceneConverter;Magnum::ObjImporter
         -DMAGNUM_IMAGECONVERTER_STATIC_PLUGINS=Magnum::AnyImageImporter;Magnum::AnyImageConverter;Magnum::TgaImporter;Magnum::TgaImageConverter
       CMAKE_CXX_FLAGS: --coverage
-      LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_EGL: "ON"
@@ -514,7 +517,8 @@ jobs:
     - setup-null-openal-driver
     - build:
         script: unix-desktop.sh
-    - lcov
+    - lcov:
+        extra: --gcov-tool /usr/bin/gcov-4.8
 
   linux-nondeprecated:
     executor: ubuntu-18_04
