@@ -451,6 +451,61 @@ const struct {
         Containers::arrayView(CompressedData3D), 16*4}
     #endif
 };
+
+/* Combination of CompressedZero3D (defined below) and CompressedData3D */
+constexpr UnsignedByte CompressedSubData3DComplete[]{
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    144, 224, 128,   3,  80,   0, 129, 170,
+     84, 253,  73,  36, 109, 100, 107, 255,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    144, 232, 161, 135,  94, 244, 129, 170,
+     84, 253,  65,  34, 109, 100, 107, 255,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    144, 240, 194,  11,  47, 248, 130, 170,
+     84, 253,  65,  34, 109, 100, 107, 251,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    144, 247, 223, 143,  63, 252, 131, 170,
+     84, 253,  73,  34, 109, 100,  91, 251,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
+const struct {
+    const char* name;
+    CompressedPixelStorage storage;
+    Vector3i size, offset;
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+} CompressedSubImage3DData[]{
+    {"upload full image at zero offset, default pixel storage",
+        {}, {12, 4, 4}, {},
+        Containers::arrayView(CompressedSubData3DComplete)},
+    #ifndef MAGNUM_TARGET_GLES
+    {"upload full image at zero offset, redundant row length & image height",
+        CompressedPixelStorage{}
+            .setRowLength(12)
+            .setImageHeight(4), {12, 4, 4}, {},
+        Containers::arrayView(CompressedSubData3DComplete)},
+    {"upload a slice of full image at zero offset, row length & image height",
+        CompressedPixelStorage{}
+            .setRowLength(12)
+            .setImageHeight(4), {8, 4, 4}, {},
+        Containers::arrayView(CompressedSubData3DComplete)},
+    #endif
+    {"upload a smaller image at offset, default pixel storage",
+        {}, {4, 4, 4}, {4, 0, 0},
+        Containers::arrayView(CompressedData3D).exceptPrefix(16*4)},
+    #ifndef MAGNUM_TARGET_GLES
+    {"upload a smaller image at offset, skip Z",
+        CompressedPixelStorage{}
+            .setSkip({0, 0, 4}), {4, 4, 4}, {4, 0, 0},
+        Containers::arrayView(CompressedData3D)}
+    #endif
+};
 #endif
 
 TextureGLTest::TextureGLTest() {
@@ -664,16 +719,22 @@ TextureGLTest::TextureGLTest() {
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::compressedImage3DQueryView,
         #endif
+        }, Containers::arraySize(CompressedPixelStorage3DData));
+
+    addInstancedTests({
         &TextureGLTest::compressedSubImage3D,
         #ifndef MAGNUM_TARGET_GLES2
         &TextureGLTest::compressedSubImage3DBuffer,
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        }, Containers::arraySize(CompressedSubImage3DData));
+
+    #ifndef MAGNUM_TARGET_GLES
+    addInstancedTests({
         &TextureGLTest::compressedSubImage3DQuery,
         &TextureGLTest::compressedSubImage3DQueryView,
         &TextureGLTest::compressedSubImage3DQueryBuffer
-        #endif
         }, Containers::arraySize(CompressedPixelStorage3DData));
+    #endif
     #endif
 
     addTests({
@@ -2871,33 +2932,8 @@ constexpr UnsignedByte CompressedZero3D[3*4*16]{
 };
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
-/* Combination of CompressedZero3D and CompressedData3D */
-constexpr UnsignedByte CompressedSubData3DComplete[]{
-    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    144, 224, 128,   3,  80,   0, 129, 170,
-     84, 253,  73,  36, 109, 100, 107, 255,
-    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-
-    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    144, 232, 161, 135,  94, 244, 129, 170,
-     84, 253,  65,  34, 109, 100, 107, 255,
-    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-
-    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    144, 240, 194,  11,  47, 248, 130, 170,
-     84, 253,  65,  34, 109, 100, 107, 251,
-    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-
-    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    144, 247, 223, 143,  63, 252, 131, 170,
-     84, 253,  73,  34, 109, 100,  91, 251,
-    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-};
-#endif
-
 void TextureGLTest::compressedSubImage3D() {
-    auto&& data = CompressedPixelStorage3DData[testCaseInstanceId()];
+    auto&& data = CompressedSubImage3DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -2916,8 +2952,8 @@ void TextureGLTest::compressedSubImage3D() {
     Texture3D texture;
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBABptcUnorm,
         {12, 4, 4}, CompressedZero3D});
-    texture.setCompressedSubImage(0, {4, 0, 0}, CompressedImageView3D{data.storage,
-        CompressedPixelFormat::RGBABptcUnorm, Vector3i{4},
+    texture.setCompressedSubImage(0, data.offset, CompressedImageView3D{data.storage,
+        CompressedPixelFormat::RGBABptcUnorm, data.size,
         data.dataSparse});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -2931,8 +2967,43 @@ void TextureGLTest::compressedSubImage3D() {
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
 
     {
-        CORRADE_EXPECT_FAIL_IF(data.storage != CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
-            "Compressed 3D pixel storage behaves weirdly with BPTC compression on NVidia.");
+        /* This "works" if running the test cases that have a default pixel
+           storage as the first ever, i.e. with no test before setting
+           GL_UNPACK_COMPRESSED_BLOCK_WIDTH etc. Which used to be the common
+           case back when compressed block properties were meant to be
+           specified manually in CompressedPixelStorage, and so this particular
+           test case seemed to pass on NVidia and seemed to only behave weird
+           with the Z skip.
+
+           But the block properties are now taken implicitly from the format
+           and set internally almost always, thus resulting in this test being
+           broken in almost all cases. I tried many different things, including
+           uploading slice-by-slice (and thus avoiding the need to set Z skip),
+           but as soon as the block size state is non-zero, only the very first
+           slice uploaded, no other. Using setStorage() instead of setImage()
+           didn't make any difference, although such a change is known to work
+           around certain bugs in cube maps.
+
+           One option I refuse to try out is reverting the change in
+           https://github.com/mosra/magnum/commit/214dd5dbadf4bba8884e2cafed1eced838cda977
+           -- i.e., it seems that NV treats 3D BPTC blocks as cubes, being
+           4x4x4 instead of 4x4x1, and then uploads them as such, which might
+           *partially* explain what's going on in here. But even if reordering
+           data in such a way would make some more tests pass, it'd still limit
+           the upload to be only possible with multiples of four slices, which
+           isn't really any better.
+
+           Thus, I fear, it's unfixable. Fortunately it's only the case of 3D
+           textures, which only support BPTC / BC7. 2D arrays or cubemaps don't
+           seem to exhibit any similar bug. 3D ASTC formats would theoretically
+           be another format that works with 3D textures, but even 2D ASTC
+           still isn't exposed by NVidia even in 2025, so that's out of
+           question. The workaround is shown in the passing tests, i.e.
+           uploading whole slices. */
+        Int pixelStoreBlockPropertiesSet = 0;
+        glGetIntegerv(GL_UNPACK_COMPRESSED_BLOCK_WIDTH, &pixelStoreBlockPropertiesSet);
+        CORRADE_EXPECT_FAIL_IF((pixelStoreBlockPropertiesSet || data.storage != CompressedPixelStorage{}) && data.size != (Vector3i{12, 4, 4}) && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+            "Compressed 3D texture upload behaves weirdly on NVidia if non-default pixel storage is used and not uploading the whole image.");
         CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
             Containers::arrayView(CompressedSubData3DComplete),
             TestSuite::Compare::Container);
@@ -2943,7 +3014,7 @@ void TextureGLTest::compressedSubImage3D() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::compressedSubImage3DBuffer() {
-    auto&& data = CompressedPixelStorage3DData[testCaseInstanceId()];
+    auto&& data = CompressedSubImage3DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -2959,8 +3030,8 @@ void TextureGLTest::compressedSubImage3DBuffer() {
     Texture3D texture;
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBABptcUnorm,
         {12, 4, 4}, CompressedZero3D});
-    texture.setCompressedSubImage(0, {4, 0, 0}, CompressedImageView3D{data.storage,
-        CompressedPixelFormat::RGBABptcUnorm, Vector3i{4},
+    texture.setCompressedSubImage(0, data.offset, CompressedImageView3D{data.storage,
+        CompressedPixelFormat::RGBABptcUnorm, data.size,
         data.dataSparse});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -2975,8 +3046,11 @@ void TextureGLTest::compressedSubImage3DBuffer() {
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
 
     {
-        CORRADE_EXPECT_FAIL_IF(data.storage != CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
-            "Compressed 3D pixel storage behaves weirdly with BPTC compression on NVidia.");
+        /* Same as in compressedSubImage3D(), see comment there for details */
+        Int pixelStoreBlockPropertiesSet = 0;
+        glGetIntegerv(GL_UNPACK_COMPRESSED_BLOCK_WIDTH, &pixelStoreBlockPropertiesSet);
+        CORRADE_EXPECT_FAIL_IF((pixelStoreBlockPropertiesSet || data.storage != CompressedPixelStorage{}) && data.size != (Vector3i{12, 4, 4}) && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+            "Compressed 3D texture upload behaves weirdly on NVidia if non-default pixel storage is used and not uploading the whole image.");
         CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
             Containers::arrayView(CompressedSubData3DComplete),
             TestSuite::Compare::Container);
