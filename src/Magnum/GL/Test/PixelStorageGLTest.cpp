@@ -221,9 +221,8 @@ void PixelStorageGLTest::alignmentPack2D() {
     if(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader) {
         CORRADE_COMPARE(image.data().size(), Containers::arraySize(AlignmentData2D));
         for(std::size_t i: {9, 19}) {
-            CORRADE_ITERATION(i);
             if(image.data()[i] != '\0') {
-                CORRADE_WARN("Padding byte at offset 9 isn't zero but" << image.data()[i]);
+                CORRADE_WARN("Padding byte at offset" << i << "isn't zero but" << image.data()[i]);
                 image.data()[i] = '\0';
             }
         }
