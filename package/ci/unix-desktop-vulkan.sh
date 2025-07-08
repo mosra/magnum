@@ -91,6 +91,8 @@ export CORRADE_TEST_COLOR=ON
 ctest -V
 MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON ctest -V -R VkTest
 MAGNUM_DISABLE_EXTENSIONS="VK_KHR_get_physical_device_properties2 VK_KHR_get_memory_requirements2 VK_KHR_bind_memory2 VK_KHR_create_renderpass2 VK_KHR_copy_commands2 VK_KHR_maintenance1 VK_KHR_multiview VK_KHR_maintenance2" MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON ctest -V -R VkTest
+Debug/bin/magnum-vk-info --extension-strings
+Debug/bin/magnum-vk-info --features
 
 # Test install, after running the tests as for them it shouldn't be needed
 ninja install

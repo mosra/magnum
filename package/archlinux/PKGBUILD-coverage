@@ -91,9 +91,10 @@ check() {
 
     ./Debug/bin/magnum-al-info > /dev/null
     ./Debug/bin/magnum-al-info --extension-strings > /dev/null
+    ./Debug/bin/magnum-gl-info --extension-strings > /dev/null
     ./Debug/bin/magnum-gl-info --limits > /dev/null
-    # Not calling vk-info because currently it doesn't do anything that
-    # wouldn't be covered elsewhere (but it causes false positives in coverage)
+    ./Debug/bin/magnum-vk-info --extension-strings > /dev/null
+    ./Debug/bin/magnum-vk-info --features
 
     rm -rf coverage
     mkdir coverage
