@@ -50,6 +50,8 @@ struct BufferGLTest: OpenGLTester {
     void constructMove();
     void wrap();
 
+    void targetHint();
+
     #ifndef MAGNUM_TARGET_WEBGL
     void label();
     #endif
@@ -108,6 +110,8 @@ BufferGLTest::BufferGLTest() {
               &BufferGLTest::constructFromData,
               &BufferGLTest::constructMove,
               &BufferGLTest::wrap,
+
+              &BufferGLTest::targetHint,
 
               #ifndef MAGNUM_TARGET_WEBGL
               &BufferGLTest::label,
@@ -232,6 +236,14 @@ void BufferGLTest::wrap() {
     /* ...so we can wrap it again */
     Buffer::wrap(id);
     glDeleteBuffers(1, &id);
+}
+
+void BufferGLTest::targetHint() {
+    Buffer buffer;
+    CORRADE_COMPARE(buffer.targetHint(), Buffer::TargetHint::Array);
+
+    buffer.setTargetHint(Buffer::TargetHint::ElementArray);
+    CORRADE_COMPARE(buffer.targetHint(), Buffer::TargetHint::ElementArray);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
