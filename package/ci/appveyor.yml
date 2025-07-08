@@ -53,6 +53,7 @@ environment:
     APPVEYOR_JOB_NAME: windows-msvc2019-clang
     CONFIGURATION: Debug
     ENABLE_VULKAN: ON
+  # This one collects code coverage using Clang's --coverage and grcov
   - TARGET: desktop
     COMPILER: msvc-clang
     PLATFORM: x64
@@ -90,6 +91,7 @@ environment:
     APPVEYOR_JOB_NAME: windows-conforming-msvc2022
     CONFIGURATION: Debug
     ENABLE_VULKAN: ON
+  # This one collects code coverage using GCC's --coverage and grcov
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017

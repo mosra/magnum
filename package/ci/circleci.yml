@@ -564,7 +564,7 @@ jobs:
       # disrepair. Additionally it reports an ODR violation for
       # GL::defaultFramebuffer due to complex yet-unresolved reasons explained
       # in https://github.com/mosra/magnum/pull/565. (Also STUPID yml
-      # interprets unquoted ON as a boolean.)
+      # interprets unquoted OFF as a boolean.)
       # TODO retry when upgrading to a newer OS version or when that PR is
       #   merged
       TARGET_EGL: "OFF"
