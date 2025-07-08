@@ -228,6 +228,40 @@ const struct {
     #endif
 };
 
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    CompressedPixelStorage storage;
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+    bool immutable;
+} CompressedSubImageData[]{
+    {"default pixel storage",
+        Containers::arrayView(CompressedData).exceptPrefix(16),
+        {},
+        Containers::arrayView(CompressedData).exceptPrefix(16), 0, false},
+    #ifndef MAGNUM_TARGET_GLES
+    {"skip Y",
+        Containers::arrayView(CompressedData).exceptPrefix(16),
+        CompressedPixelStorage{}
+            .setSkip({0, 4, 0}),
+        Containers::arrayView(CompressedData), 16, false},
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    {"immutable storage, default pixel storage",
+        Containers::arrayView(CompressedData).exceptPrefix(16),
+        {},
+        Containers::arrayView(CompressedData).exceptPrefix(16), 0, true},
+    #ifndef MAGNUM_TARGET_GLES
+    {"immutable storage, skip Y",
+        Containers::arrayView(CompressedData).exceptPrefix(16),
+        CompressedPixelStorage{}
+            .setSkip({0, 4, 0}),
+        Containers::arrayView(CompressedData), 16, true},
+    #endif
+    #endif
+};
+
 constexpr UnsignedByte FullData[]{
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
@@ -403,7 +437,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         #ifndef MAGNUM_TARGET_GLES2
         &CubeMapTextureGLTest::compressedSubImageBuffer,
         #endif
-        }, Containers::arraySize(CompressedPixelStorageData));
+        }, Containers::arraySize(CompressedSubImageData));
 
     addInstancedTests({
         &CubeMapTextureGLTest::image3D,
@@ -1411,7 +1445,7 @@ constexpr UnsignedByte CompressedSubDataComplete[]{
 #endif
 
 void CubeMapTextureGLTest::compressedSubImage() {
-    auto&& data = CompressedPixelStorageData[testCaseInstanceId()];
+    auto&& data = CompressedSubImageData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -1431,18 +1465,37 @@ void CubeMapTextureGLTest::compressedSubImage() {
     #endif
 
     CubeMapTexture texture;
-    texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::NegativeX, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::PositiveY, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::NegativeY, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::PositiveZ, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.immutable) {
+        texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{12});
+        texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::NegativeX, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::PositiveY, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::NegativeY, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::PositiveZ, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::NegativeZ, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    } else
+    #endif
+    {
+        texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeX, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::PositiveY, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeY, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::PositiveZ, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    }
     texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i{4}, CompressedImageView2D{
         data.storage,
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},
@@ -1456,21 +1509,21 @@ void CubeMapTextureGLTest::compressedSubImage() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{12});
-
-    {
-        CORRADE_EXPECT_FAIL_IF(data.storage != CompressedPixelStorage{} && Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
-            "Non-default compressed pixel storage for cube map textures behaves weirdly on NVidia for client-memory images when using ARB_direct_state_access");
-
-        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
-            Containers::arrayView(CompressedSubDataComplete),
-            TestSuite::Compare::Container);
-    }
+    /* This fails if the "nv-cubemap-broken-dsa-compressed-subimage-upload" is
+       disabled, but only if pixel storage is non-default and setStorage()
+       isn't used. Thus, the "skip Y" case will fail, and "default pixel
+       storage" case will fail if run after any other test that sets pixel
+       storage compressed block properties. Running it as a first test
+       works. */
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(CompressedSubDataComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 void CubeMapTextureGLTest::compressedSubImageBuffer() {
-    auto&& data = CompressedPixelStorageData[testCaseInstanceId()];
+    auto&& data = CompressedSubImageData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -1490,18 +1543,34 @@ void CubeMapTextureGLTest::compressedSubImageBuffer() {
     #endif
 
     CubeMapTexture texture;
-    texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::NegativeX, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::PositiveY, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::NegativeY, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::PositiveZ, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
-        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    if(data.immutable) {
+        texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{12});
+        texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::NegativeX, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::PositiveY, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::NegativeY, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::PositiveZ, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::NegativeZ, 0, {},
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    } else {
+        texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeX, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::PositiveY, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeY, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::PositiveZ, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    }
     texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i{4}, CompressedBufferImage2D{
         data.storage,
         CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4},

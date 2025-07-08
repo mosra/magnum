@@ -254,6 +254,10 @@ See also:
 -   A new @cpp "nv-framebuffer-invalidation-wants-draw-binding" @ce workaround
     for @ref GL::Framebuffer::invalidate() affecting unrelated framebuffers on
     NVidia. See @ref opengl-workarounds for more information.
+-   A new @cpp "nv-cubemap-broken-dsa-compressed-subimage-upload" @ce
+    workaround for yet another broken case with compressed formats used in
+    @ref GL::CubeMapTexture on NVidia. See @ref opengl-workarounds for more
+    information.
 
 @subsubsection changelog-latest-new-math Math library
 

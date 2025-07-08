@@ -196,11 +196,10 @@ TextureState::TextureState(Context& context,
         #endif
     }
 
-    /* DSA/non-DSA implementation for cubemaps, because Intel (and AMD) Windows
-       drivers have to be broken in a special way */
+    /* DSA/non-DSA implementation for cubemaps, because ... well, basically all
+       non-Mesa drivers have to be broken in a special way */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
-
         #ifdef CORRADE_TARGET_WINDOWS
         if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s)) {
             getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDefault;
@@ -213,7 +212,12 @@ TextureState::TextureState(Context& context,
             cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
         } else
         #endif
-        {
+        if((context.detectedDriver() & Context::DetectedDriver::NVidia) && !context.isDriverWorkaroundDisabled("nv-cubemap-broken-dsa-compressed-subimage-upload"_s)) {
+            getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
+            cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
+            /* This one is broken, the others are not */
+            cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
+        } else {
             /* Extension name added above */
 
             getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;

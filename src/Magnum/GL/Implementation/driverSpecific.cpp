@@ -196,6 +196,18 @@ constexpr Containers::StringView KnownWorkarounds[]{
    image when querying all six slices using the ARB_DSA API */
 "nv-cubemap-broken-full-compressed-image-query"_s,
 
+/* NVidia drivers (575.64, but likely also any before) behave wrong when
+   uploading compressed 2D cubemap subimages when
+    - a DSA API is used,
+    - the cubemap doesn't have immutable storage,
+    - the query is done to client memory and not a buffer,
+    - *and* non-zero compressed block size is set in pixel storage
+   With just any of the four missing, it works well. As it's too restrictive to
+   require users to either always use setStorage() for cubemaps or to always
+   upload full slices, the workaround is simply to use the classic non-DSA
+   codepath. See CubeMapGLTest::compressedSubImage() for a repro case. */
+"nv-cubemap-broken-dsa-compressed-subimage-upload"_s,
+
 /* NVidia drivers return 0 when asked for GL_CONTEXT_PROFILE_MASK, so it needs
    to be worked around by asking for GL_ARB_compatibility */
 "nv-zero-context-profile-mask"_s,
