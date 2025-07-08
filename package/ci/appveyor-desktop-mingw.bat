@@ -75,11 +75,17 @@ rem Coverage upload
 cd %APPVEYOR_BUILD_FOLDER%
 set GCOV=C:/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov.exe
 rem Keep in sync with circleci.yml, appveyor-desktop.bat and PKBUILD-coverage,
-rem please. The --source-dir needs to be present in order to circumvent
+rem please.
+rem
+rem The --source-dir needs to be present in order to circumvent
 rem     Warning: "../foo" cannot be normalized because of "..", so skip it.
 rem that happens with CMake before 3.21 that doesn't yet pass full paths to
 rem Ninja: https://github.com/mozilla/grcov/issues/1182
-grcov build -t lcov --source-dir %APPVEYOR_BUILD_FOLDER%/build --keep-only "*/src/Magnum*/*" --ignore "*/src/MagnumExternal/*" --ignore "*/Test/*" --ignore "*/build/src/*" -o coverage.info --excl-line LCOV_EXCL_LINE --excl-start LCOV_EXCL_START --excl-stop LCOV_EXCL_STOP  || exit /b
+rem
+rem Additionally, MinGW often reports empty lines containing just } as
+rem uncovered, possibly due to exception handling. Exclude them, and feel free
+rem to expand the regex to catch more cases if needed.
+grcov build -t lcov --source-dir %APPVEYOR_BUILD_FOLDER%/build --keep-only "*/src/Magnum*/*" --ignore "*/src/MagnumExternal/*" --ignore "*/Test/*" --ignore "*/build/src/*" -o coverage.info --excl-line "(LCOV_EXCL_LINE|^\s*}$)" --excl-start LCOV_EXCL_START --excl-stop LCOV_EXCL_STOP  || exit /b
 rem Official docs say "not needed for public repos", in reality not using the
 rem token is "extremely flakey". What's best is that if the upload fails, the
 rem damn thing exits with a success error code, and nobody cares:
