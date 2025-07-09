@@ -435,8 +435,11 @@ void BufferImageGLTest::constructInvalidSize() {
 void BufferImageGLTest::constructCompressedInvalidBlockSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    /* This is okay */
+    /* This is all okay. In particular, it's also completely fine that the Y
+       and Z size is more than 1 for 1D and 2D. GL might disagree about using
+       S3TC in 1D images, but the construction itself is fine. */
     const char data[8]{};
+    CompressedBufferImage1D{CompressedPixelFormat::SRGBS3tcDxt1, 1, data, BufferUsage::StaticDraw};
     CompressedBufferImage2D{CompressedPixelStorage{}
         .setCompressedBlockSize({4, 4, 1})
         .setCompressedBlockDataSize(8),

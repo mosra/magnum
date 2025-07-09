@@ -855,7 +855,9 @@ void ImageDataTest::constructCompressedUnknownImplementationSpecificBlockSize() 
 void ImageDataTest::constructCompressedInvalidBlockSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    /* This is all okay */
+    /* This is all okay. In particular, it's also completely fine that the Y
+       and Z size is more than 1 for 1D and 2D. */
+    ImageData1D{CompressedPixelStorage{}, 666, {4, 5, 6}, 8, 1, Containers::Array<char>{NoInit, 8}};
     ImageData2D{CompressedPixelStorage{}, 666, {4, 5, 6}, 8, {1, 1}, Containers::Array<char>{NoInit, 8}};
     ImageData2D{CompressedPixelStorage{}
         .setCompressedBlockSize({4, 5, 6})
