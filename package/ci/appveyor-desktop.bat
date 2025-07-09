@@ -93,7 +93,16 @@ rem
 rem Additionally, Clang-cl often reports empty lines containing just } as
 rem uncovered, possibly due to exception handling, similarly to MinGW. Exclude
 rem them, and feel free to expand the regex to catch more cases if needed.
-if "%COMPILER%" == "msvc-clang" if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2022" grcov build -t lcov --keep-only "*/src/Magnum*/*" --ignore "*/src/MagnumExternal/*" --ignore "*/Test/*" --ignore "*/build/src/*" -o coverage.info --excl-line "(LCOV_EXCL_LINE|^\s*}$)" --excl-start LCOV_EXCL_START --excl-stop LCOV_EXCL_STOP || exit /b
+rem
+rem Also, partially due to the above, where, if a code isn't run through at
+rem all, a lot more uncovered lines is reported compared to Linux / Mac, the
+rem whole GL and Vk libraries as well as any GL- or Vk-specific files are
+rem ignored for code coverage here. They're still built and tested where
+rem possible without an actual GL/Vk driver, but the false negatives far
+rem outweigh the benefits of having Windows-specific coverage reported for
+rem those -- there isn't any Windows-specific code for most of them, after all
+rem -- that it's not worth including them.
+if "%COMPILER%" == "msvc-clang" if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2022" grcov build -t lcov --keep-only "*/src/Magnum*/*" --ignore "*/src/MagnumExternal/*" --ignore "*/Test/*" --ignore "*/build/src/*" --ignore "*/src/Magnum/GL/*" --ignore "*/src/Magnum/Vk/*" --ignore "*/src/Magnum/Platform/*" --ignore "*GL.cpp" --ignore "*GL.h" --ignore "*Vk.cpp" --ignore "*Vk.h" -o coverage.info --excl-line "(LCOV_EXCL_LINE|^\s*}$)" --excl-start LCOV_EXCL_START --excl-stop LCOV_EXCL_STOP || exit /b
 rem Official docs say "not needed for public repos", in reality not using the
 rem token is "extremely flakey". What's best is that if the upload fails, the
 rem damn thing exits with a success error code, and nobody cares:

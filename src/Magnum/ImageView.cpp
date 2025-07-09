@@ -35,7 +35,7 @@ template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(co
 
 template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, data, flags} {}
 
-template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{UnsignedByte(pixelSize)}, _flags{flags}, _size{size}, _data{static_cast<Type*>(data.data()), data.size()} {
+template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{UnsignedByte(pixelSize)}, _flags{flags}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {
     #ifndef CORRADE_NO_ASSERT
     Implementation::checkPixelSize("ImageView:", pixelSize);
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "ImageView: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
@@ -60,7 +60,7 @@ template<UnsignedInt dimensions, class T> std::pair<VectorTypeFor<dimensions, st
 
 template<UnsignedInt dimensions, class T> void ImageView<dimensions, T>::setData(const Containers::ArrayView<ErasedType> data) {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "ImageView::setData(): data too small, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
-    _data = {static_cast<Type*>(data.data()), data.size()};
+    _data = {reinterpret_cast<Type*>(data.data()), data.size()};
 }
 
 template<UnsignedInt dimensions, class T> auto ImageView<dimensions, T>::pixels() const -> Containers::StridedArrayView<dimensions + 1, Type> {
@@ -78,7 +78,7 @@ template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::Co
         compressedPixelFormatBlockDataSize(format)
 ), size, data, flags} {}
 
-template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _blockSize{Vector3ub{blockSize}}, _blockDataSize{UnsignedByte(blockDataSize)}, _size{size}, _data{static_cast<Type*>(data.data()), data.size()} {
+template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const Vector3i& blockSize, const UnsignedInt blockDataSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data, const ImageFlags<dimensions> flags) noexcept: _storage{storage}, _format{format}, _flags{flags}, _blockSize{Vector3ub{blockSize}}, _blockDataSize{UnsignedByte(blockDataSize)}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {
     #ifndef CORRADE_NO_ASSERT
     const bool passed =
     Implementation::checkBlockProperties("CompressedImageView:", blockSize, blockDataSize);
@@ -125,7 +125,7 @@ template<UnsignedInt dimensions, class T> std::pair<VectorTypeFor<dimensions, st
 
 template<UnsignedInt dimensions, class T> void CompressedImageView<dimensions, T>::setData(const Containers::ArrayView<ErasedType> data) {
     CORRADE_ASSERT(Implementation::compressedImageDataSize(*this) <= data.size(), "CompressedImageView::setData(): data too small, got" << data.size() << "but expected at least" << Implementation::compressedImageDataSize(*this) << "bytes", );
-    _data = {static_cast<Type*>(data.data()), data.size()};
+    _data = {reinterpret_cast<Type*>(data.data()), data.size()};
 }
 
 template class MAGNUM_EXPORT ImageView<1, const char>;
