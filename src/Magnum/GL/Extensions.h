@@ -88,6 +88,7 @@ namespace Extensions {
         constexpr static const char* string() { return "GL_" #vendor "_" #extension; } \
     };
 
+/* LCOV_EXCL_START */
 #ifndef MAGNUM_TARGET_GLES
 namespace AMD {
     _extension(  0,AMD,transform_feedback3_lines_triangles, GL210, None) // #397
@@ -634,6 +635,7 @@ namespace ANDROID {
     _extension(162,MAGNUM,shader_vertex_id,         GLES300, GLES300)
     #endif
 }
+/* LCOV_EXCL_STOP */
 #endif
 #undef _extension
 #endif

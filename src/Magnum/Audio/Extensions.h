@@ -93,6 +93,7 @@ namespace Extensions {
         constexpr static const char* string() { return #prefix "_" #extension "_" #vendor; } \
     };
 
+/* LCOV_EXCL_START */
 /* IMPORTANT: don't forget to add new extensions also in Context.cpp */
 namespace AL {
     namespace EXT {
@@ -116,6 +117,7 @@ namespace AL {
         _extension(9,ALC,SOFT,HRTF) // #???
     }
 }
+/* LCOV_EXCL_STOP */
 #undef _extension
 #undef _extension_rev
 #endif

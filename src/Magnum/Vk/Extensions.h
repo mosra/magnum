@@ -84,6 +84,7 @@ namespace Extensions {
             return "VK_" #vendor "_" #extension ""_s;                       \
         }                                                                   \
     };
+/* LCOV_EXCL_START */
 namespace EXT {
     /** @todo remove EXT_debug_report when all platforms have EXT_debug_utils
         (my Huawei P10 doesn't have it) */
@@ -97,6 +98,7 @@ namespace EXT {
     _extension(13, KHR,external_semaphore_capabilities,     Vk10, Vk11) // #77
     _extension(14, KHR,external_fence_capabilities,         Vk10, Vk11) // #113
 }
+/* LCOV_EXCL_STOP */
 #undef _extension
 
 #define _extension_(index, vendor, name, extension, _requiredVersion, _coreVersion) \
@@ -111,6 +113,7 @@ namespace EXT {
     };
 #define _extension(index, vendor, extension, _requiredVersion, _coreVersion) \
     _extension_(index, vendor, extension, extension, _requiredVersion, _coreVersion)
+/* LCOV_EXCL_START */
 namespace EXT {
     /** @todo remove EXT_debug_marker when all platforms have EXT_debug_utils
         (my Huawei P10 doesn't have it) */
@@ -174,6 +177,7 @@ namespace EXT {
     _extension(71, KHR,ray_tracing_pipeline,                Vk11, None) // #348
     _extension(72, KHR,ray_query,                           Vk11, None) // #349
 }
+/* LCOV_EXCL_STOP */
 #undef _extension
 #undef _extension_
 
