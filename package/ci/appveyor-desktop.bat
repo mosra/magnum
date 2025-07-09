@@ -89,7 +89,11 @@ cd %APPVEYOR_BUILD_FOLDER%
 
 rem Gather and upload coverage on the clang-cl MSVC 2022 build. Keep in sync
 rem with circleci.yml, appveyor-desktop-mingw.bat and PKBUILD-coverage, please.
-if "%COMPILER%" == "msvc-clang" if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2022" grcov build -t lcov --keep-only "*/src/Magnum*/*" --ignore "*/src/MagnumExternal/*" --ignore "*/Test/*" --ignore "*/build/src/*" -o coverage.info --excl-line LCOV_EXCL_LINE --excl-start LCOV_EXCL_START --excl-stop LCOV_EXCL_STOP || exit /b
+rem
+rem Additionally, Clang-cl often reports empty lines containing just } as
+rem uncovered, possibly due to exception handling, similarly to MinGW. Exclude
+rem them, and feel free to expand the regex to catch more cases if needed.
+if "%COMPILER%" == "msvc-clang" if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2022" grcov build -t lcov --keep-only "*/src/Magnum*/*" --ignore "*/src/MagnumExternal/*" --ignore "*/Test/*" --ignore "*/build/src/*" -o coverage.info --excl-line "(LCOV_EXCL_LINE|^\s*}$)" --excl-start LCOV_EXCL_START --excl-stop LCOV_EXCL_STOP || exit /b
 rem Official docs say "not needed for public repos", in reality not using the
 rem token is "extremely flakey". What's best is that if the upload fails, the
 rem damn thing exits with a success error code, and nobody cares:
