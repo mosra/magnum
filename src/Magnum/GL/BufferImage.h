@@ -272,32 +272,6 @@ template<UnsignedInt dimensions> class BufferImage {
         /** @brief Move assignment */
         BufferImage<dimensions>& operator=(BufferImage<dimensions>&& other) noexcept;
 
-        /** @brief Storage of pixel data */
-        PixelStorage storage() const { return _storage; }
-
-        /** @brief Format of pixel data */
-        PixelFormat format() const { return _format; }
-
-        /** @brief Data type of pixel data */
-        PixelType type() const { return _type; }
-
-        /**
-         * @brief Size of a pixel in bytes
-         *
-         * @see @ref Magnum::pixelFormatSize(), @ref GL::pixelFormatSize()
-         */
-        UnsignedInt pixelSize() const { return _pixelSize; }
-
-        /** @brief Image size in pixels */
-        VectorTypeFor<Dimensions, Int> size() const { return _size; }
-
-        /**
-         * @brief Image data properties
-         *
-         * See @ref PixelStorage::dataProperties() for more information.
-         */
-        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
-
         /** @brief Currently allocated data size */
         std::size_t dataSize() const { return _dataSize; }
 
@@ -358,6 +332,32 @@ template<UnsignedInt dimensions> class BufferImage {
         void setData(Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
             setData({}, format, size, data, usage);
         }
+
+        /** @brief Storage of pixel data */
+        PixelStorage storage() const { return _storage; }
+
+        /** @brief Format of pixel data */
+        PixelFormat format() const { return _format; }
+
+        /** @brief Data type of pixel data */
+        PixelType type() const { return _type; }
+
+        /**
+         * @brief Size of a pixel in bytes
+         *
+         * @see @ref Magnum::pixelFormatSize(), @ref GL::pixelFormatSize()
+         */
+        UnsignedInt pixelSize() const { return _pixelSize; }
+
+        /** @brief Image size in pixels */
+        VectorTypeFor<Dimensions, Int> size() const { return _size; }
+
+        /**
+         * @brief Image data properties
+         *
+         * See @ref PixelStorage::dataProperties() for more information.
+         */
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
          * @brief Release the image buffer
@@ -618,46 +618,6 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         /** @brief Move assignment */
         CompressedBufferImage<dimensions>& operator=(CompressedBufferImage<dimensions>&& other) noexcept;
 
-        /** @brief Storage of compressed pixel data */
-        CompressedPixelStorage storage() const { return _storage; }
-
-        /** @brief Format of compressed pixel data */
-        CompressedPixelFormat format() const { return _format; }
-
-        /**
-         * @brief Size of a compressed block in pixels
-         * @m_since_latest
-         *
-         * Note that the blocks can be 3D even for 2D images and 2D or 3D even
-         * for 1D images, in which case only the first slice in the extra
-         * dimensions is used.
-         * @see @ref blockDataSize(), @ref compressedPixelFormatBlockSize()
-         */
-        Vector3i blockSize() const { return Vector3i{_blockSize}; }
-
-        /**
-         * @brief Size of a compressed block in bytes
-         * @m_since_latest
-         *
-         * @see @ref blockSize(), @ref compressedPixelFormatBlockDataSize()
-         */
-        UnsignedInt blockDataSize() const { return _blockDataSize; }
-
-        /** @brief Image size */
-        VectorTypeFor<Dimensions, Int> size() const { return _size; }
-
-        /**
-         * @brief Compressed image data properties
-         *
-         * See @ref CompressedPixelStorage::dataProperties() for more
-         * information.
-         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
-         *      for non-default @ref CompressedPixelStorage
-         * @requires_gl Non-default @ref CompressedPixelStorage is not
-         *      available in OpenGL ES and WebGL.
-         */
-        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
-
         /**
          * @brief Image buffer
          *
@@ -728,6 +688,46 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         void setData(Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
             setData({}, format, size, data, usage);
         }
+
+        /** @brief Storage of compressed pixel data */
+        CompressedPixelStorage storage() const { return _storage; }
+
+        /** @brief Format of compressed pixel data */
+        CompressedPixelFormat format() const { return _format; }
+
+        /**
+         * @brief Size of a compressed block in pixels
+         * @m_since_latest
+         *
+         * Note that the blocks can be 3D even for 2D images and 2D or 3D even
+         * for 1D images, in which case only the first slice in the extra
+         * dimensions is used.
+         * @see @ref blockDataSize(), @ref compressedPixelFormatBlockSize()
+         */
+        Vector3i blockSize() const { return Vector3i{_blockSize}; }
+
+        /**
+         * @brief Size of a compressed block in bytes
+         * @m_since_latest
+         *
+         * @see @ref blockSize(), @ref compressedPixelFormatBlockDataSize()
+         */
+        UnsignedInt blockDataSize() const { return _blockDataSize; }
+
+        /** @brief Image size */
+        VectorTypeFor<Dimensions, Int> size() const { return _size; }
+
+        /**
+         * @brief Compressed image data properties
+         *
+         * See @ref CompressedPixelStorage::dataProperties() for more
+         * information.
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
+         */
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
          * @brief Release the image buffer

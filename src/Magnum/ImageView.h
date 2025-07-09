@@ -446,6 +446,21 @@ template<UnsignedInt dimensions, class T> class ImageView {
          */
         ImageFlags<dimensions> flags() const { return _flags; }
 
+        /**
+         * @brief Raw image data
+         *
+         * @see @ref pixels()
+         */
+        Containers::ArrayView<Type> data() const { return _data; }
+
+        /**
+         * @brief Set image data
+         *
+         * The data array is expected to be of proper size for parameters
+         * specified in the constructor.
+         */
+        void setData(Containers::ArrayView<ErasedType> data);
+
         /** @brief Storage of pixel data */
         PixelStorage storage() const { return _storage; }
 
@@ -489,21 +504,6 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * See @ref PixelStorage::dataProperties() for more information.
          */
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
-
-        /**
-         * @brief Raw image data
-         *
-         * @see @ref pixels()
-         */
-        Containers::ArrayView<Type> data() const { return _data; }
-
-        /**
-         * @brief Set image data
-         *
-         * The data array is expected to be of proper size for parameters
-         * specified in the constructor.
-         */
-        void setData(Containers::ArrayView<ErasedType> data);
 
         /**
          * @brief Pixel data
@@ -972,6 +972,17 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          */
         ImageFlags<dimensions> flags() const { return _flags; }
 
+        /** @brief Raw image data */
+        Containers::ArrayView<Type> data() const { return _data; }
+
+        /**
+         * @brief Set image data
+         *
+         * The data array is expected to be of proper size for parameters
+         * specified in the constructor.
+         */
+        void setData(Containers::ArrayView<ErasedType> data);
+
         /** @brief Storage of compressed pixel data */
         CompressedPixelStorage storage() const { return _storage; }
 
@@ -1018,17 +1029,6 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * information.
          */
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
-
-        /** @brief Raw image data */
-        Containers::ArrayView<Type> data() const { return _data; }
-
-        /**
-         * @brief Set image data
-         *
-         * The data array is expected to be of proper size for parameters
-         * specified in the constructor.
-         */
-        void setData(Containers::ArrayView<ErasedType> data);
 
     private:
         /* Needed for mutable->const conversion */

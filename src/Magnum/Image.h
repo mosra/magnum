@@ -391,6 +391,33 @@ template<UnsignedInt dimensions> class Image {
          */
         ImageFlags<dimensions> flags() const { return _flags; }
 
+        /**
+         * @brief Raw image data
+         *
+         * @see @ref release(), @ref pixels()
+         */
+        Containers::ArrayView<char> data() & { return _data; }
+
+        /** @overload */
+        Containers::ArrayView<const char> data() const & { return _data; }
+
+        /**
+         * @brief Raw image data from a r-value
+         * @m_since{2019,10}
+         *
+         * Unlike @ref data(), which returns a view, this is equivalent to
+         * @ref release() to avoid a dangling view when the temporary instance
+         * goes out of scope.
+         * @todoc stupid doxygen can't link to & overloads ffs
+         */
+        Containers::Array<char> data() && { return release(); }
+
+        /** @overload
+         * @m_since{2019,10}
+         * @todo what to do here?!
+         */
+        Containers::Array<char> data() const && = delete;
+
         /** @brief Storage of pixel data */
         PixelStorage storage() const { return _storage; }
 
@@ -434,33 +461,6 @@ template<UnsignedInt dimensions> class Image {
          * See @ref PixelStorage::dataProperties() for more information.
          */
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
-
-        /**
-         * @brief Raw image data
-         *
-         * @see @ref release(), @ref pixels()
-         */
-        Containers::ArrayView<char> data() & { return _data; }
-
-        /** @overload */
-        Containers::ArrayView<const char> data() const & { return _data; }
-
-        /**
-         * @brief Raw image data from a r-value
-         * @m_since{2019,10}
-         *
-         * Unlike @ref data(), which returns a view, this is equivalent to
-         * @ref release() to avoid a dangling view when the temporary instance
-         * goes out of scope.
-         * @todoc stupid doxygen can't link to & overloads ffs
-         */
-        Containers::Array<char> data() && { return release(); }
-
-        /** @overload
-         * @m_since{2019,10}
-         * @todo what to do here?!
-         */
-        Containers::Array<char> data() const && = delete;
 
         /**
          * @brief Pixel data
@@ -730,6 +730,33 @@ template<UnsignedInt dimensions> class CompressedImage {
          */
         ImageFlags<dimensions> flags() const { return _flags; }
 
+        /**
+         * @brief Raw image data
+         *
+         * @see @ref release()
+         */
+        Containers::ArrayView<char> data() & { return _data; }
+
+        /** @overload */
+        Containers::ArrayView<const char> data() const & { return _data; }
+
+        /**
+         * @brief Raw image data from a r-value
+         * @m_since{2019,10}
+         *
+         * Unlike @ref data(), which returns a view, this is equivalent to
+         * @ref release() to avoid a dangling view when the temporary instance
+         * goes out of scope.
+         * @todoc stupid doxygen can't link to & overloads ffs
+         */
+        Containers::Array<char> data() && { return release(); }
+
+        /** @overload
+         * @m_since{2019,10}
+         * @todo what to do here?!
+         */
+        Containers::Array<char> data() const && = delete;
+
         /** @brief Storage of compressed pixel data */
         CompressedPixelStorage storage() const { return _storage; }
 
@@ -776,33 +803,6 @@ template<UnsignedInt dimensions> class CompressedImage {
          * information.
          */
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
-
-        /**
-         * @brief Raw image data
-         *
-         * @see @ref release()
-         */
-        Containers::ArrayView<char> data() & { return _data; }
-
-        /** @overload */
-        Containers::ArrayView<const char> data() const & { return _data; }
-
-        /**
-         * @brief Raw image data from a r-value
-         * @m_since{2019,10}
-         *
-         * Unlike @ref data(), which returns a view, this is equivalent to
-         * @ref release() to avoid a dangling view when the temporary instance
-         * goes out of scope.
-         * @todoc stupid doxygen can't link to & overloads ffs
-         */
-        Containers::Array<char> data() && { return release(); }
-
-        /** @overload
-         * @m_since{2019,10}
-         * @todo what to do here?!
-         */
-        Containers::Array<char> data() const && = delete;
 
         /**
          * @brief Release data storage

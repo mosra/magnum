@@ -735,15 +735,6 @@ template<UnsignedInt dimensions> class ImageData {
         ImageData<dimensions>& operator=(ImageData<dimensions>&& other) noexcept;
 
         /**
-         * @brief Data flags
-         * @m_since{2020,06}
-         */
-        DataFlags dataFlags() const { return _dataFlags; }
-
-        /** @brief Whether the image is compressed */
-        bool isCompressed() const { return _compressed; }
-
-        /**
          * @brief Conversion to a view
          *
          * The image is expected to be uncompressed.
@@ -782,10 +773,55 @@ template<UnsignedInt dimensions> class ImageData {
         /*implicit*/ operator BasicMutableCompressedImageView<dimensions>();
 
         /**
+         * @brief Data flags
+         * @m_since{2020,06}
+         */
+        DataFlags dataFlags() const { return _dataFlags; }
+
+        /**
          * @brief Layout flags
          * @m_since_latest
          */
         ImageFlags<dimensions> flags() const { return _flags; }
+
+        /**
+         * @brief Raw image data
+         *
+         * @see @ref release(), @ref pixels()
+         */
+        Containers::ArrayView<const char> data() const & { return _data; }
+
+        /**
+         * @brief Image data from a r-value
+         * @m_since{2019,10}
+         *
+         * Unlike @ref data(), which returns a view, this is equivalent to
+         * @ref release() to avoid a dangling view when the temporary instance
+         * goes out of scope. Note that the returned array has a custom no-op
+         * deleter when the data are not owned by the image, and while the
+         * returned array type is mutable, the actual memory might be not.
+         * @todoc stupid doxygen can't link to & overloads ffs
+         */
+        Containers::Array<char> data() && { return release(); }
+
+        /** @overload
+         * @m_since{2019,10}
+         * @todo what to do here?!
+         */
+        Containers::Array<char> data() const && = delete;
+
+        /**
+         * @brief Mutable image data
+         * @m_since{2020,06}
+         *
+         * Like @ref data(), but returns a non-const view. Expects that the
+         * image is mutable.
+         * @see @ref dataFlags()
+         */
+        Containers::ArrayView<char> mutableData() &;
+
+        /** @brief Whether the image is compressed */
+        bool isCompressed() const { return _compressed; }
 
         /**
          * @brief Storage of pixel data
@@ -898,42 +934,6 @@ template<UnsignedInt dimensions> class ImageData {
          * @see @ref isCompressed()
          */
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> compressedDataProperties() const;
-
-        /**
-         * @brief Raw image data
-         *
-         * @see @ref release(), @ref pixels()
-         */
-        Containers::ArrayView<const char> data() const & { return _data; }
-
-        /**
-         * @brief Image data from a r-value
-         * @m_since{2019,10}
-         *
-         * Unlike @ref data(), which returns a view, this is equivalent to
-         * @ref release() to avoid a dangling view when the temporary instance
-         * goes out of scope. Note that the returned array has a custom no-op
-         * deleter when the data are not owned by the image, and while the
-         * returned array type is mutable, the actual memory might be not.
-         * @todoc stupid doxygen can't link to & overloads ffs
-         */
-        Containers::Array<char> data() && { return release(); }
-
-        /** @overload
-         * @m_since{2019,10}
-         * @todo what to do here?!
-         */
-        Containers::Array<char> data() const && = delete;
-
-        /**
-         * @brief Mutable image data
-         * @m_since{2020,06}
-         *
-         * Like @ref data(), but returns a non-const view. Expects that the
-         * image is mutable.
-         * @see @ref dataFlags()
-         */
-        Containers::ArrayView<char> mutableData() &;
 
         /**
          * @brief Pixel data
