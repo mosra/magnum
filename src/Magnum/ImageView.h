@@ -449,7 +449,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         /**
          * @brief Raw image data
          *
-         * @see @ref pixels()
+         * @see @ref pixels(), @ref size(), @ref pixelSize()
          */
         Containers::ArrayView<Type> data() const { return _data; }
 
@@ -488,11 +488,15 @@ template<UnsignedInt dimensions, class T> class ImageView {
         /**
          * @brief Size of a pixel in bytes
          *
-         * @see @ref pixelFormatSize()
+         * @see @ref size(), @ref pixelFormatSize()
          */
         UnsignedInt pixelSize() const { return _pixelSize; }
 
-        /** @brief Image size in pixels */
+        /**
+         * @brief Image size in pixels
+         *
+         * @see @ref pixelSize()
+         */
         /* Unlike other getters this one is a const& so it's possible to slice
            to the sizes when all images are in an array, for example for use
            in TextureTools atlas APIs */
@@ -972,7 +976,11 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          */
         ImageFlags<dimensions> flags() const { return _flags; }
 
-        /** @brief Raw image data */
+        /**
+         * @brief Raw image data
+         *
+         * @see @ref size(), @ref blockSize(), @ref blockDataSize()
+         */
         Containers::ArrayView<Type> data() const { return _data; }
 
         /**
@@ -1004,7 +1012,8 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * Note that the blocks can be 3D even for 2D images and 2D or 3D even
          * for 1D images, in which case only the first slice in the extra
          * dimensions is used.
-         * @see @ref blockDataSize(), @ref compressedPixelFormatBlockSize()
+         * @see @ref blockDataSize(), @ref size(),
+         *      @ref compressedPixelFormatBlockSize()
          */
         Vector3i blockSize() const { return Vector3i{_blockSize}; }
 
@@ -1012,11 +1021,18 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * @brief Size of a compressed block in bytes
          * @m_since_latest
          *
-         * @see @ref blockSize(), @ref compressedPixelFormatBlockDataSize()
+         * @see @ref blockSize(), @ref size(),
+         *      @ref compressedPixelFormatBlockDataSize()
          */
         UnsignedInt blockDataSize() const { return _blockDataSize; }
 
-        /** @brief Image size in pixels */
+        /**
+         * @brief Image size in pixels
+         *
+         * If the size isn't divisible by @ref blockSize(), the edge blocks are
+         * still present in full but used only partially.
+         * @see @ref blockDataSize()
+         */
         /* Unlike other getters this one is a const& so it's possible to slice
            to the sizes when all images are in an array, for example for use
            in TextureTools atlas APIs */

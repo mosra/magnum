@@ -787,7 +787,8 @@ template<UnsignedInt dimensions> class ImageData {
         /**
          * @brief Raw image data
          *
-         * @see @ref release(), @ref pixels()
+         * @see @ref release(), @ref pixels(), @ref size(), @ref pixelSize(),
+         *      @ref blockSize(), @ref blockDataSize()
          */
         Containers::ArrayView<const char> data() const & { return _data; }
 
@@ -884,7 +885,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @brief Size of a pixel in bytes
          *
          * The image is expected to be uncompressed.
-         * @see @ref isCompressed(), @ref pixelFormatSize()
+         * @see @ref isCompressed(), @ref size(), @ref pixelFormatSize()
          */
         UnsignedInt pixelSize() const;
 
@@ -895,7 +896,7 @@ template<UnsignedInt dimensions> class ImageData {
          * The image is expected to be compressed. Note that the blocks can be
          * 3D even for 2D images and 2D or 3D even for 1D images, in which case
          * only the first slice in the extra dimensions is used.
-         * @see @ref isCompressed(), @ref blockDataSize(),
+         * @see @ref isCompressed(), @ref blockDataSize(), @ref size(),
          *      @ref compressedPixelFormatBlockSize()
          */
         Vector3i blockSize() const;
@@ -905,12 +906,19 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_since_latest
          *
          * The image is expected to be compressed.
-         * @see @ref isCompressed(), @ref blockSize(),
+         * @see @ref isCompressed(), @ref blockSize(), @ref size(),
          *      @ref compressedPixelFormatBlockDataSize()
          */
         UnsignedInt blockDataSize() const;
 
-        /** @brief Image size in pixels */
+        /**
+         * @brief Image size in pixels
+         *
+         * For a compressed image, if the size isn't divisible by
+         * @ref blockSize(), the edge blocks are still present in full but used
+         * only partially.
+         * @see @ref isCompressed(), @ref pixelSize(), @ref blockDataSize()
+         */
         /* Unlike other getters this one is a const& so it's possible to slice
            to the sizes when all images are in an array, for example for use
            in TextureTools atlas APIs */

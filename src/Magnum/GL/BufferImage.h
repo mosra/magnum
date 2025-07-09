@@ -278,7 +278,7 @@ template<UnsignedInt dimensions> class BufferImage {
         /**
          * @brief Image buffer
          *
-         * @see @ref release()
+         * @see @ref release(), @ref size(), @ref pixelSize()
          */
         Buffer& buffer() { return _buffer; }
 
@@ -345,11 +345,16 @@ template<UnsignedInt dimensions> class BufferImage {
         /**
          * @brief Size of a pixel in bytes
          *
-         * @see @ref Magnum::pixelFormatSize(), @ref GL::pixelFormatSize()
+         * @see @ref size(), @ref Magnum::pixelFormatSize(),
+         *      @ref GL::pixelFormatSize()
          */
         UnsignedInt pixelSize() const { return _pixelSize; }
 
-        /** @brief Image size in pixels */
+        /**
+         * @brief Image size in pixels
+         *
+         * @see @ref pixelSize()
+         */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
 
         /**
@@ -621,7 +626,8 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         /**
          * @brief Image buffer
          *
-         * @see @ref release()
+         * @see @ref release(), @ref size(), @ref blockSize(),
+         *      @ref blockDataSize()
          */
         Buffer& buffer() { return _buffer; }
 
@@ -702,7 +708,8 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * Note that the blocks can be 3D even for 2D images and 2D or 3D even
          * for 1D images, in which case only the first slice in the extra
          * dimensions is used.
-         * @see @ref blockDataSize(), @ref compressedPixelFormatBlockSize()
+         * @see @ref blockDataSize(), @ref size(),
+         *      @ref compressedPixelFormatBlockSize()
          */
         Vector3i blockSize() const { return Vector3i{_blockSize}; }
 
@@ -710,11 +717,18 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @brief Size of a compressed block in bytes
          * @m_since_latest
          *
-         * @see @ref blockSize(), @ref compressedPixelFormatBlockDataSize()
+         * @see @ref blockSize(), @ref size(),
+         *      @ref compressedPixelFormatBlockDataSize()
          */
         UnsignedInt blockDataSize() const { return _blockDataSize; }
 
-        /** @brief Image size */
+        /**
+         * @brief Image size in pixels
+         *
+         * If the size isn't divisible by @ref blockSize(), the edge blocks are
+         * still present in full but used only partially.
+         * @see @ref blockDataSize()
+         */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
 
         /**
