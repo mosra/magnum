@@ -26,11 +26,11 @@
 
 #include "AbstractObject.h"
 
-#include <Corrade/Utility/Assert.h>
 #include <Corrade/Containers/ArrayView.h>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
+#include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"

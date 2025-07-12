@@ -28,8 +28,8 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/GL/Test")
 
-corrade_add_test(GLAttributeTest AttributeTest.cpp LIBRARIES MagnumGLTestLib)
 corrade_add_test(GLAbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARIES MagnumGL)
+corrade_add_test(GLAttributeTest AttributeTest.cpp LIBRARIES MagnumGLTestLib)
 corrade_add_test(GLBufferTest BufferTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLContextTest ContextTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLCubeMapTextureTest CubeMapTextureTest.cpp LIBRARIES MagnumGL)
