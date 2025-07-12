@@ -1220,7 +1220,8 @@ bool Context::isVersionSupported(Version version) const {
 
 Version Context::supportedVersion(std::initializer_list<Version> versions) const {
     for(auto version: versions)
-        if(isVersionSupported(version)) return version;
+        if(isVersionSupported(version))
+            return version;
 
     #ifndef MAGNUM_TARGET_GLES
     return Version::GL210;

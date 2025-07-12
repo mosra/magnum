@@ -202,7 +202,8 @@ void Buffer::createImplementationDSA(Buffer& self) {
 
 Buffer::~Buffer() {
     /* Moved out or not deleting on destruction, nothing to do */
-    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction))
+        return;
 
     GLuint* bindings = Context::current().state().buffer.bindings;
 
@@ -232,7 +233,8 @@ void Buffer::setTargetHintImplementationSwiftShader(Buffer& self, const TargetHi
 
 #ifndef MAGNUM_TARGET_WEBGL
 void Buffer::createIfNotAlready() {
-    if(_flags & ObjectFlag::Created) return;
+    if(_flags & ObjectFlag::Created)
+        return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glInvalidateBufferData() or glObjectLabel()) operate
@@ -280,7 +282,8 @@ void Buffer::bindInternal(const TargetHint target, Buffer* const buffer) {
     GLuint& bound = Context::current().state().buffer.bindings[Implementation::BufferState::indexForTarget(target)];
 
     /* Already bound, nothing to do */
-    if(bound == id) return;
+    if(bound == id)
+        return;
 
     /* Bind the buffer otherwise, which will also finally create it */
     bound = id;
@@ -293,12 +296,14 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
     GLuint& hintBinding = bindings[Implementation::BufferState::indexForTarget(hint)];
 
     /* Shortcut - if already bound to hint, return */
-    if(hintBinding == _id) return hint;
+    if(hintBinding == _id)
+        return hint;
 
     /* Return first target in which the buffer is bound */
     /** @todo wtf there is one more? */
     for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
-        if(bindings[i] == _id) return Implementation::BufferState::targetForIndex[i-1];
+        if(bindings[i] == _id)
+            return Implementation::BufferState::targetForIndex[i-1];
 
     /* Sorry, this is ugly because GL is also ugly. Blame GL, not me.
 
@@ -651,7 +656,8 @@ void Buffer::textureWorkaroundAppleBefore() {
        pretty significant overhead. Skipping the whole thing if no buffer
        texture is known to be bound. */
     Implementation::TextureState& textureState = Context::current().state().texture;
-    if(textureState.bufferTextureBound.none()) return;
+    if(textureState.bufferTextureBound.none())
+        return;
     for(GLint textureUnit = 0; textureUnit != GLint(textureState.bindings.size()); ++textureUnit) {
         /* Checking just
             textureState.bindings[textureUnit].first != GL_TEXTURE_BUFFER
@@ -659,7 +665,8 @@ void Buffer::textureWorkaroundAppleBefore() {
            the same texture unit. Magnum's state tracker ignores that (as it
            would mean having to maintain a state cache of 128 units times 12
            targets) and so this state is tracked separately. */
-        if(!textureState.bufferTextureBound[textureUnit]) continue;
+        if(!textureState.bufferTextureBound[textureUnit])
+            continue;
 
         /* Activate given texture unit if not already active, update state
            tracker */

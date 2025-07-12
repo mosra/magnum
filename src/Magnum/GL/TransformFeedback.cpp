@@ -132,7 +132,8 @@ void TransformFeedback::createImplementationDSA(TransformFeedback& self) {
 
 TransformFeedback::~TransformFeedback() {
     /* Moved out or not deleting on destruction, nothing to do */
-    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction))
+        return;
 
     /* If bound, remove itself from state */
     GLuint& binding = Context::current().state().transformFeedback.binding;
@@ -145,7 +146,8 @@ void TransformFeedback::bindInternal() {
     GLuint& bound = Context::current().state().transformFeedback.binding;
 
     /* Already bound, nothing to do */
-    if(bound == _id) return;
+    if(bound == _id)
+        return;
 
     /* Bind the transform feedback otherwise, which will also finally create it */
     bound = _id;
@@ -155,7 +157,8 @@ void TransformFeedback::bindInternal() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 inline void TransformFeedback::createIfNotAlready() {
-    if(_flags & ObjectFlag::Created) return;
+    if(_flags & ObjectFlag::Created)
+        return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glObjectLabel()) operate with IDs directly and they

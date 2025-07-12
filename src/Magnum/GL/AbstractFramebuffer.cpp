@@ -105,7 +105,8 @@ Int AbstractFramebuffer::maxDualSourceDrawBuffers() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractFramebuffer::createIfNotAlready() {
-    if(_flags & ObjectFlag::Created) return;
+    if(_flags & ObjectFlag::Created)
+        return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glObjectLabel()) operate with IDs directly and they
@@ -146,7 +147,8 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
 void AbstractFramebuffer::bindImplementationSingle(AbstractFramebuffer& self, FramebufferTarget) {
     Implementation::FramebufferState& state = Context::current().state().framebuffer;
     CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
-    if(state.readBinding == self._id) return;
+    if(state.readBinding == self._id)
+        return;
 
     state.readBinding = state.drawBinding = self._id;
 
@@ -163,10 +165,12 @@ void AbstractFramebuffer::bindImplementationDefault(AbstractFramebuffer& self, F
     Implementation::FramebufferState& state = Context::current().state().framebuffer;
 
     if(target == FramebufferTarget::Read) {
-        if(state.readBinding == self._id) return;
+        if(state.readBinding == self._id)
+            return;
         state.readBinding = self._id;
     } else if(target == FramebufferTarget::Draw) {
-        if(state.drawBinding == self._id) return;
+        if(state.drawBinding == self._id)
+            return;
         state.drawBinding = self._id;
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 

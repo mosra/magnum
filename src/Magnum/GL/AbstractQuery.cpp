@@ -46,7 +46,8 @@ AbstractQuery::AbstractQuery(GLenum target): _target{target}, _flags{ObjectFlag:
 
 AbstractQuery::~AbstractQuery() {
     /* Moved out or not deleting on destruction, nothing to do */
-    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction))
+        return;
 
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteQueries(1, &_id);

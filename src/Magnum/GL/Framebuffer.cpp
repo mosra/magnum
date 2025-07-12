@@ -125,7 +125,8 @@ void Framebuffer::createImplementationDSA(Framebuffer& self) {
 
 Framebuffer::~Framebuffer() {
     /* Moved out or not deleting on destruction, nothing to do */
-    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction))
+        return;
 
     /* If bound, remove itself from state */
     Context& context = Context::current();
