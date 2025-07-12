@@ -57,6 +57,7 @@ struct TransformFeedbackGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+    void wrapCreateIfNotAlready();
 
     #ifndef MAGNUM_TARGET_WEBGL
     void label();
@@ -126,6 +127,7 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
     addTests({&TransformFeedbackGLTest::construct,
               &TransformFeedbackGLTest::constructMove,
               &TransformFeedbackGLTest::wrap,
+              &TransformFeedbackGLTest::wrapCreateIfNotAlready,
 
               #ifndef MAGNUM_TARGET_WEBGL
               &TransformFeedbackGLTest::label,
@@ -216,6 +218,38 @@ void TransformFeedbackGLTest::wrap() {
     /* ...so we can wrap it again */
     TransformFeedback::wrap(id);
     glDeleteTransformFeedbacks(1, &id);
+}
+
+void TransformFeedbackGLTest::wrapCreateIfNotAlready() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
+    #endif
+
+    Buffer buffer{Buffer::TargetHint::Array};
+
+    /* Make an object and ensure it's created */
+    TransformFeedback xfb;
+    xfb.attachBuffer(0, buffer);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(xfb.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. Here the "already bound" case
+       only happens if GL_ARB_direct_state_access is disabled. */
+    TransformFeedback wrapped = TransformFeedback::wrap(xfb.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

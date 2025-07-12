@@ -63,6 +63,7 @@ struct CubeMapTextureGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+    void wrapCreateIfNotAlready();
 
     #ifndef MAGNUM_TARGET_WEBGL
     void label();
@@ -354,6 +355,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         &CubeMapTextureGLTest::construct,
         &CubeMapTextureGLTest::constructMove,
         &CubeMapTextureGLTest::wrap,
+        &CubeMapTextureGLTest::wrapCreateIfNotAlready,
 
         #ifndef MAGNUM_TARGET_WEBGL
         &CubeMapTextureGLTest::label,
@@ -552,6 +554,30 @@ void CubeMapTextureGLTest::wrap() {
     /* ...so we can wrap it again */
     CubeMapTexture::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+void CubeMapTextureGLTest::wrapCreateIfNotAlready() {
+    /* Make an object and ensure it's created */
+    CubeMapTexture texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    CubeMapTexture wrapped = CubeMapTexture::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

@@ -49,6 +49,7 @@ struct BufferTextureGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+    void wrapCreateIfNotAlready();
 
     void label();
 
@@ -75,6 +76,7 @@ BufferTextureGLTest::BufferTextureGLTest() {
     addTests({&BufferTextureGLTest::construct,
               &BufferTextureGLTest::constructMove,
               &BufferTextureGLTest::wrap,
+              &BufferTextureGLTest::wrapCreateIfNotAlready,
 
               &BufferTextureGLTest::label,
 
@@ -149,6 +151,38 @@ void BufferTextureGLTest::wrap() {
     /* ...so we can wrap it again */
     BufferTexture::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+void BufferTextureGLTest::wrapCreateIfNotAlready() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() << "is not supported.");
+    #endif
+
+    /* Make an object and ensure it's created */
+    BufferTexture texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    BufferTexture wrapped = BufferTexture::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
 }
 
 void BufferTextureGLTest::label() {

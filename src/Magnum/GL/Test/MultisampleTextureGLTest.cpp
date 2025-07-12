@@ -47,6 +47,8 @@ struct MultisampleTextureGLTest: OpenGLTester {
 
     void wrap2D();
     void wrap2DArray();
+    void wrapCreateIfNotAlready2D();
+    void wrapCreateIfNotAlready2DArray();
 
     void label2D();
     void label2DArray();
@@ -80,6 +82,8 @@ MultisampleTextureGLTest::MultisampleTextureGLTest() {
 
               &MultisampleTextureGLTest::wrap2D,
               &MultisampleTextureGLTest::wrap2DArray,
+              &MultisampleTextureGLTest::wrapCreateIfNotAlready2D,
+              &MultisampleTextureGLTest::wrapCreateIfNotAlready2DArray,
 
               &MultisampleTextureGLTest::label2D,
               &MultisampleTextureGLTest::label2DArray,
@@ -198,6 +202,70 @@ void MultisampleTextureGLTest::wrap2DArray() {
     /* ...so we can wrap it again */
     MultisampleTexture2DArray::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+void MultisampleTextureGLTest::wrapCreateIfNotAlready2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    /* Make an object and ensure it's created */
+    MultisampleTexture2D texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    MultisampleTexture2D wrapped = MultisampleTexture2D::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
+}
+
+void MultisampleTextureGLTest::wrapCreateIfNotAlready2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() << "is not supported.");
+    #endif
+
+    /* Make an object and ensure it's created */
+    MultisampleTexture2DArray texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    MultisampleTexture2DArray wrapped = MultisampleTexture2DArray::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
 }
 
 void MultisampleTextureGLTest::label2D() {

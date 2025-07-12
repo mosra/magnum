@@ -70,6 +70,10 @@ struct TextureArrayGLTest: OpenGLTester {
     void wrap1D();
     #endif
     void wrap2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void wrapCreateIfNotAlready1D();
+    #endif
+    void wrapCreateIfNotAlready2D();
 
     #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES
@@ -309,6 +313,10 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::wrap1D,
         #endif
         &TextureArrayGLTest::wrap2D,
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayGLTest::wrapCreateIfNotAlready1D,
+        #endif
+        &TextureArrayGLTest::wrapCreateIfNotAlready2D,
 
         #ifndef MAGNUM_TARGET_WEBGL
         #ifndef MAGNUM_TARGET_GLES
@@ -565,6 +573,65 @@ void TextureArrayGLTest::wrap2D() {
     /* ...so we can wrap it again */
     Texture2DArray::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureArrayGLTest::wrapCreateIfNotAlready1D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    /* Make an object and ensure it's created */
+    Texture1DArray texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    Texture1DArray wrapped = Texture1DArray::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+}
+#endif
+
+void TextureArrayGLTest::wrapCreateIfNotAlready2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    /* Make an object and ensure it's created */
+    Texture2DArray texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    Texture2DArray wrapped = Texture2DArray::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

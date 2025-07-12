@@ -81,6 +81,13 @@ struct TextureGLTest: OpenGLTester {
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void wrap3D();
     #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void wrapCreateIfNotAlready1D();
+    #endif
+    void wrapCreateIfNotAlready2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    void wrapCreateIfNotAlready3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES
@@ -533,6 +540,13 @@ TextureGLTest::TextureGLTest() {
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &TextureGLTest::wrap3D,
         #endif
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::wrapCreateIfNotAlready1D,
+        #endif
+        &TextureGLTest::wrapCreateIfNotAlready2D,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        &TextureGLTest::wrapCreateIfNotAlready3D,
+        #endif
 
         #ifndef MAGNUM_TARGET_WEBGL
         #ifndef MAGNUM_TARGET_GLES
@@ -922,6 +936,83 @@ void TextureGLTest::wrap3D() {
     /* ...so we can wrap it again */
     Texture3D::wrap(id);
     glDeleteTextures(1, &id);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::wrapCreateIfNotAlready1D() {
+    /* Make an object and ensure it's created */
+    Texture1D texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    Texture1D wrapped = Texture1D::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+}
+#endif
+
+void TextureGLTest::wrapCreateIfNotAlready2D() {
+    /* Make an object and ensure it's created */
+    Texture2D texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    Texture2D wrapped = Texture2D::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
+}
+
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+void TextureGLTest::wrapCreateIfNotAlready3D() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::OES::texture_3D::string() << "is not supported.");
+    #endif
+
+    /* Make an object and ensure it's created */
+    Texture3D texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    Texture3D wrapped = Texture3D::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
 }
 #endif
 
