@@ -112,7 +112,17 @@ void AbstractFramebuffer::createIfNotAlready() {
        require the object to be created. Binding the framebuffer finally
        creates it. Also all EXT DSA functions implicitly create it. */
     bindInternal();
-    CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
+
+    /* In some cases, such as when this function is called on a object created
+       using wrap(), ObjectFlag::Created might not be set but bindInternal()
+       above was a no-op as the object was already bound somewhere. In that
+       case assume that, since it's bound, it's already created, and we just
+       didn't know. See the wrapCreateIfNotAlready() test for a repro case.
+
+       Note that the branch is done this way instead of an unconditional |= to
+       make code coverage report that this codepath is indeed tested. */
+    if(!(_flags >= ObjectFlag::Created))
+        _flags |= ObjectFlag::Created;
 }
 #endif
 
