@@ -71,6 +71,12 @@ enum class ObjectFlag: UnsignedByte {
 };
 
 /**
+@debugoperatorenum{ObjectFlag}
+@m_since_latest
+*/
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, ObjectFlag value);
+
+/**
 @brief Object wrapping flags
 
 @see @ref Buffer::wrap(), @ref BufferTexture::wrap(),
@@ -83,6 +89,12 @@ enum class ObjectFlag: UnsignedByte {
     @ref TransformFeedback::wrap()
 */
 typedef Containers::EnumSet<ObjectFlag> ObjectFlags;
+
+/**
+@debugoperatorenum{ObjectFlags}
+@m_since_latest
+*/
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, ObjectFlags value);
 
 /**
 @brief Base for all OpenGL objects

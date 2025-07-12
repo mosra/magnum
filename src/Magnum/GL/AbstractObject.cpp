@@ -27,6 +27,7 @@
 #include "AbstractObject.h"
 
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/EnumSet.hpp>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
@@ -40,6 +41,28 @@
 #endif
 
 namespace Magnum { namespace GL {
+
+Debug& operator<<(Debug& debug, const ObjectFlag value) {
+    debug << "GL::ObjectFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case ObjectFlag::value: return debug << "::" #value;
+        _c(Created)
+        _c(DeleteOnDestruction)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const ObjectFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "GL::ObjectFlags{}", {
+        ObjectFlag::Created,
+        ObjectFlag::DeleteOnDestruction
+    });
+}
 
 #ifndef MAGNUM_TARGET_WEBGL
 namespace {
