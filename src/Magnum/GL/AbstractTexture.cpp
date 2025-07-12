@@ -386,6 +386,10 @@ void AbstractTexture::bindImplementationDefault(AbstractTexture& self, GLint tex
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::bindImplementationMulti(AbstractTexture& self, GLint textureUnit) {
+    /* ARB_multi_bind doesn't create the texture inside glBindImageTextures()
+       because it doesn't know what for what target it should be created (a 2D
+       texture, a cubemap, ...). So we need to ensure it's created first, which
+       is either implicitly if using ARB_DSA or by calling glBindTexture(). */
     self.createIfNotAlready();
     glBindTextures(textureUnit, 1, &self._id);
 }
@@ -582,7 +586,7 @@ void AbstractTexture::bindInternal() {
 
     /* Update state tracker, bind the texture to the unit. Not directly calling
        glBindTexture() here because we may need to include various
-       platform-specific workarounds (Apple, Intel Windpws), also can't just
+       platform-specific workarounds (Apple, Intel Windows), also can't just
        reuse textureState.bindImplementation as we *need* to call
        glBindTexture() in order to create it and have ObjectFlag::Created set
        (which is then asserted in createIfNotAlready()) */
