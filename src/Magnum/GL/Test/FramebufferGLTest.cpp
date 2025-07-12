@@ -69,6 +69,7 @@ struct FramebufferGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+    void wrapCreateIfNotAlready();
 
     #ifndef MAGNUM_TARGET_WEBGL
     void label();
@@ -236,6 +237,7 @@ FramebufferGLTest::FramebufferGLTest() {
     addTests({&FramebufferGLTest::construct,
               &FramebufferGLTest::constructMove,
               &FramebufferGLTest::wrap,
+              &FramebufferGLTest::wrapCreateIfNotAlready,
 
               #ifndef MAGNUM_TARGET_WEBGL
               &FramebufferGLTest::label,
@@ -443,6 +445,35 @@ void FramebufferGLTest::wrap() {
     /* ...so we can wrap it again */
     Framebuffer::wrap(id, {});
     glDeleteFramebuffers(1, &id);
+}
+
+void FramebufferGLTest::wrapCreateIfNotAlready() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
+    #endif
+
+    /* Make an object and ensure it's created */
+    Framebuffer framebuffer({{}, Vector2i{4}});
+    framebuffer.bind();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(framebuffer.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    Framebuffer wrapped = Framebuffer::wrap(framebuffer.id(), {{}, Vector2i{4}});
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

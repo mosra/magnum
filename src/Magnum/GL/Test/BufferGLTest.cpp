@@ -49,6 +49,7 @@ struct BufferGLTest: OpenGLTester {
     void constructFromData();
     void constructMove();
     void wrap();
+    void wrapCreateIfNotAlready();
 
     void targetHint();
 
@@ -110,6 +111,7 @@ BufferGLTest::BufferGLTest() {
               &BufferGLTest::constructFromData,
               &BufferGLTest::constructMove,
               &BufferGLTest::wrap,
+              &BufferGLTest::wrapCreateIfNotAlready,
 
               &BufferGLTest::targetHint,
 
@@ -241,6 +243,29 @@ void BufferGLTest::wrap() {
     glDeleteBuffers(1, &id);
 }
 
+void BufferGLTest::wrapCreateIfNotAlready() {
+    /* Make an object and ensure it's created */
+    Buffer buffer{"hello"};
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(buffer.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. Here the "already bound" case
+       only happens if GL_ARB_direct_state_access is disabled. */
+    Buffer wrapped = Buffer::wrap(buffer.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
+    #else
+    CORRADE_SKIP("No API that would call createIfNotAlready() on WebGL, can't test.");
+    #endif
+}
 void BufferGLTest::targetHint() {
     Buffer buffer;
     CORRADE_COMPARE(buffer.targetHint(), Buffer::TargetHint::Array);

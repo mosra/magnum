@@ -51,6 +51,7 @@ struct RectangleTextureGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+    void wrapCreateIfNotAlready();
 
     void label();
 
@@ -128,6 +129,7 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
               &RectangleTextureGLTest::construct,
               &RectangleTextureGLTest::constructMove,
               &RectangleTextureGLTest::wrap,
+              &RectangleTextureGLTest::wrapCreateIfNotAlready,
 
               &RectangleTextureGLTest::label,
 
@@ -220,6 +222,29 @@ void RectangleTextureGLTest::wrap() {
     /* ...so we can wrap it again */
     RectangleTexture::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+void RectangleTextureGLTest::wrapCreateIfNotAlready() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() << "is not supported.");
+
+    /* Make an object and ensure it's created */
+    RectangleTexture texture;
+    texture.bind(0);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.flags(), ObjectFlag::Created|ObjectFlag::DeleteOnDestruction);
+
+    /* Wrap into another object without ObjectFlag::Created being set, which is
+       a common usage pattern to make non-owning references. Then calling an
+       API that internally does createIfNotAlready() shouldn't assert just
+       because Created isn't set but the object is bound, instead it should
+       just mark it as such when it discovers it. */
+    RectangleTexture wrapped = RectangleTexture::wrap(texture.id());
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlags{});
+
+    wrapped.label();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(wrapped.flags(), ObjectFlag::Created);
 }
 
 void RectangleTextureGLTest::label() {
