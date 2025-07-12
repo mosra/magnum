@@ -112,7 +112,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          * with target @def_gl{TEXTURE_BUFFER}. Unlike texture created using
          * constructor, the OpenGL object is by default not deleted on
          * destruction, use @p flags for different behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static BufferTexture wrap(GLuint id, ObjectFlags flags = {}) {
             return BufferTexture{id, flags};

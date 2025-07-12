@@ -178,7 +178,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * with target @def_gl{TEXTURE_CUBE_MAP}. Unlike texture created using
          * constructor, the OpenGL object is by default not deleted on
          * destruction, use @p flags for different behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static CubeMapTexture wrap(GLuint id, ObjectFlags flags = {}) {
             return CubeMapTexture{id, flags};

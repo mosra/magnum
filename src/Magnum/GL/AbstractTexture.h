@@ -352,6 +352,17 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         GLuint release();
 
         /**
+         * @brief Object flags
+         * @m_since_latest
+         *
+         * @see @ref BufferTexture::wrap(), @ref CubeMapTexture::wrap(),
+         *      @ref CubeMapTextureArray::wrap(),
+         *      @ref MultisampleTexture::wrap(), @ref RectangleTexture::wrap(),
+         *      @ref Texture::wrap(), @ref TextureArray::wrap()
+         */
+        ObjectFlags flags() const { return _flags; }
+
+        /**
          * @brief OpenGL texture target
          * @m_since_latest
          */

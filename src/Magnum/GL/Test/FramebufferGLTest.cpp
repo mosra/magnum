@@ -29,6 +29,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -383,6 +384,9 @@ void FramebufferGLTest::construct() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(framebuffer.id() > 0);
+        CORRADE_COMPARE_AS(framebuffer.flags(),
+            ObjectFlag::DeleteOnDestruction,
+            TestSuite::Compare::GreaterOrEqual);
         CORRADE_COMPARE(framebuffer.viewport(), Range2Di({32, 16}, {128, 256}));
     }
 

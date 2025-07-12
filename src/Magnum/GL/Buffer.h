@@ -889,7 +889,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * Unlike buffer created using constructor, the OpenGL object is by
          * default not deleted on destruction, use @p flags for different
          * behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static Buffer wrap(GLuint id, TargetHint targetHint = TargetHint::Array, ObjectFlags flags = {}) {
             return Buffer{id, targetHint, flags};
@@ -999,6 +999,14 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          */
         /* MinGW complains loudly if the declaration doesn't also have inline */
         inline GLuint release();
+
+        /**
+         * @brief Object flags
+         * @m_since_latest
+         *
+         * @see @ref wrap()
+         */
+        ObjectFlags flags() const { return _flags; }
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**

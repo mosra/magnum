@@ -85,6 +85,14 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
          */
         GLuint release();
 
+        /**
+         * @brief Object flags
+         * @m_since_latest
+         *
+         * @see @ref wrap()
+         */
+        ObjectFlags flags() const { return _flags; }
+
         #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Query label

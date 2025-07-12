@@ -24,6 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/TestSuite/Compare/Numeric.h>
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
@@ -86,6 +88,9 @@ void RenderbufferGLTest::construct() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(renderbuffer.id() > 0);
+        CORRADE_COMPARE_AS(renderbuffer.flags(),
+            ObjectFlag::DeleteOnDestruction,
+            TestSuite::Compare::GreaterOrEqual);
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();

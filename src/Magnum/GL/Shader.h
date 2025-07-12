@@ -575,7 +575,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * Unlike a shader created using a constructor, the OpenGL object is by
          * default not deleted on destruction, use @p flags for different
          * behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static Shader wrap(Type type, GLuint id, ObjectFlags flags = {}) {
             return Shader{type, id, flags};
@@ -644,6 +644,14 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          */
         /* MinGW complains loudly if the declaration doesn't also have inline */
         inline GLuint release();
+
+        /**
+         * @brief Object flags
+         * @m_since_latest
+         *
+         * @see @ref wrap()
+         */
+        ObjectFlags flags() const { return _flags; }
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**

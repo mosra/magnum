@@ -121,7 +121,7 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
          * Unlike query created using constructor, the OpenGL object is by
          * default not deleted on destruction, use @p flags for different
          * behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static PrimitiveQuery wrap(GLuint id, Target target, ObjectFlags flags = {}) {
             return PrimitiveQuery{id, target, flags};

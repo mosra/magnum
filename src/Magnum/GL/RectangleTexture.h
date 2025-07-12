@@ -125,7 +125,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * with target @def_gl{TEXTURE_RECTANGLE}. Unlike texture created using
          * constructor, the OpenGL object is by default not deleted on
          * destruction, use @p flags for different behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static RectangleTexture wrap(GLuint id, ObjectFlags flags = {}) {
             return RectangleTexture{id, flags};

@@ -201,7 +201,7 @@ MultisampleTexture: public AbstractTexture {
          * Unlike texture created using constructor, the OpenGL object is by
          * default not deleted on destruction, use @p flags for different
          * behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref wrap()
          */
         static MultisampleTexture<dimensions> wrap(GLuint id, ObjectFlags flags = {}) {
             return MultisampleTexture<dimensions>{id, flags};

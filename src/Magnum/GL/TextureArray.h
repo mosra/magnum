@@ -235,7 +235,7 @@ TextureArray: public AbstractTexture {
          * based on dimension count. Unlike texture created using constructor,
          * the OpenGL object is by default not deleted on destruction, use
          * @p flags for different behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static TextureArray<dimensions> wrap(GLuint id, ObjectFlags flags = {}) {
             return TextureArray<dimensions>{id, flags};

@@ -29,6 +29,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
@@ -125,6 +126,9 @@ void ShaderGLTest::construct() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(shader.id() > 0);
+        CORRADE_COMPARE_AS(shader.flags(),
+            ObjectFlag::DeleteOnDestruction,
+            TestSuite::Compare::GreaterOrEqual);
         CORRADE_COMPARE(shader.type(), Shader::Type::Fragment);
         /* There may be various workaround defines after, so check just that
            the first source is the version definition */

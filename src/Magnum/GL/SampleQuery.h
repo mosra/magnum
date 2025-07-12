@@ -179,7 +179,7 @@ class MAGNUM_GL_EXPORT SampleQuery: public AbstractQuery {
          * Unlike query created using constructor, the OpenGL object is by
          * default not deleted on destruction, use @p flags for different
          * behavior.
-         * @see @ref release(), @fn_gl{IsQuery}
+         * @see @ref release(), @ref flags(), @fn_gl{IsQuery}
          */
         static SampleQuery wrap(GLuint id, Target target, ObjectFlags flags = {}) {
             return SampleQuery{id, target, flags};

@@ -119,7 +119,7 @@ class MAGNUM_GL_EXPORT PipelineStatisticsQuery: public AbstractQuery {
          * Unlike query created using constructor, the OpenGL object is by
          * default not deleted on destruction, use @p flags for different
          * behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static PipelineStatisticsQuery wrap(GLuint id, Target target, ObjectFlags flags = {}) {
             return PipelineStatisticsQuery{id, target, flags};

@@ -181,7 +181,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * object. Unlike renderbuffer created using constructor, the OpenGL
          * object is by default not deleted on destruction, use @p flags for
          * different behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static TransformFeedback wrap(GLuint id, ObjectFlags flags = {}) {
             return TransformFeedback{id, flags};
@@ -249,6 +249,14 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          */
         /* MinGW complains loudly if the declaration doesn't also have inline */
         inline GLuint release();
+
+        /**
+         * @brief Object flags
+         * @m_since_latest
+         *
+         * @see @ref wrap()
+         */
+        ObjectFlags flags() const { return _flags; }
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**

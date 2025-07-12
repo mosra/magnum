@@ -29,6 +29,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/Triple.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Format.h>
 
 #include "Magnum/Image.h"
@@ -159,6 +160,9 @@ void TransformFeedbackGLTest::construct() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(feedback.id() > 0);
+        CORRADE_COMPARE_AS(feedback.flags(),
+            ObjectFlag::DeleteOnDestruction,
+            TestSuite::Compare::GreaterOrEqual);
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();

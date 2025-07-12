@@ -161,6 +161,9 @@ void BufferGLTest::construct() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(buffer.id() > 0);
+        CORRADE_COMPARE_AS(buffer.flags(),
+            ObjectFlag::DeleteOnDestruction,
+            TestSuite::Compare::GreaterOrEqual);
         CORRADE_COMPARE(buffer.targetHint(), Buffer::TargetHint::Array);
         CORRADE_COMPARE(buffer.size(), 0);
     }

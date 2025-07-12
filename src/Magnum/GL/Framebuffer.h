@@ -392,7 +392,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * object. Unlike framebuffer created using constructor, the OpenGL
          * object is by default not deleted on destruction, use @p flags for
          * different behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static Framebuffer wrap(GLuint id, const Range2Di& viewport, ObjectFlags flags = {}) {
             return Framebuffer{id, viewport, flags};
@@ -458,6 +458,14 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          */
         /* MinGW complains loudly if the declaration doesn't also have inline */
         inline GLuint release();
+
+        /**
+         * @brief Object flags
+         * @m_since_latest
+         *
+         * @see @ref wrap()
+         */
+        ObjectFlags flags() const { return _flags; }
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**

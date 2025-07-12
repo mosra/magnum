@@ -257,7 +257,7 @@ Texture: public AbstractTexture {
          * @def_gl{TEXTURE_3D} based on dimension count. Unlike texture created
          * using constructor, the OpenGL object is by default not deleted on
          * destruction, use @p flags for different behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static Texture<dimensions> wrap(GLuint id, ObjectFlags flags = {}) {
             return Texture<dimensions>{id, flags};

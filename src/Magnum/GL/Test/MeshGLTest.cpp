@@ -789,6 +789,9 @@ void MeshGLTest::construct() {
         #endif
         {
             CORRADE_VERIFY(mesh.id() > 0);
+            CORRADE_COMPARE_AS(mesh.flags(),
+                ObjectFlag::DeleteOnDestruction,
+                TestSuite::Compare::GreaterOrEqual);
         }
     }
 

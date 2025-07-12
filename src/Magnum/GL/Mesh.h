@@ -510,7 +510,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * object. Unlike vertex array created using constructor, the OpenGL
          * object is by default not deleted on destruction, use @p flags for
          * different behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          * @requires_gl30 Extension @gl_extension{ARB,vertex_array_object}
          * @requires_gles30 Extension @gl_extension{OES,vertex_array_object} in
          *      OpenGL ES 2.0.
@@ -614,6 +614,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      in WebGL 1.0.
          */
         GLuint release();
+
+        /**
+         * @brief Object flags
+         * @m_since_latest
+         *
+         * @see @ref wrap()
+         */
+        ObjectFlags flags() const { return _flags; }
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**

@@ -97,7 +97,7 @@ class MAGNUM_GL_EXPORT TimeQuery: public AbstractQuery {
          * Unlike query created using constructor, the OpenGL object is by
          * default not deleted on destruction, use @p flags for different
          * behavior.
-         * @see @ref release()
+         * @see @ref release(), @ref flags()
          */
         static TimeQuery wrap(GLuint id, Target target, ObjectFlags flags = {}) {
             return TimeQuery{id, target, flags};

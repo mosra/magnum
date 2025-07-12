@@ -25,6 +25,7 @@
 */
 
 #include <Corrade/Containers/String.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/GL/Context.h"
@@ -88,6 +89,9 @@ void AbstractTextureGLTest::construct() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
+        CORRADE_COMPARE_AS(texture.flags(),
+            ObjectFlag::DeleteOnDestruction,
+            TestSuite::Compare::GreaterOrEqual);
         CORRADE_COMPARE(texture.target(), GL_TEXTURE_2D);
     }
 
