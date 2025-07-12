@@ -298,8 +298,8 @@ constexpr struct {
         1.34f, 0.02f},
     {"bind with offset, texture array", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::TextureArrays, 1, 1, true, 16,
-        /* Minor differences on ARM Mali */
-        1.34f, 0.02f},
+        /* Minor differences on ARM Mali, on NVidia GLES3(?!) */
+        4.67f, 0.02f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
@@ -307,8 +307,8 @@ constexpr struct {
         1.34f, 0.02f},
     {"bind with offset, texture array, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
-        /* Minor differences on ARM Mali */
-        1.34f, 0.02f},
+        /* Minor differences on ARM Mali, on NVidia GLES3(?!) */
+        4.67f, 0.02f},
     #endif
     {"draw offset", "multidraw2D.tga", "multidraw3D.tga",
         {}, 2, 3, false, 1,
@@ -316,8 +316,8 @@ constexpr struct {
         1.34f, 0.02f},
     {"draw offset, texture array", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::TextureArrays, 2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        1.34f, 0.02f},
+        /* Minor differences on ARM Mali, on NVidia GLES3(?!) */
+        4.67f, 0.02f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
@@ -325,8 +325,8 @@ constexpr struct {
         1.34f, 0.02f},
     {"draw offset, texture array, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
-        /* Minor differences on ARM Mali */
-        1.34f, 0.02f},
+        /* Minor differences on ARM Mali, on NVidia GLES3(?!) */
+        4.67f, 0.02f},
     #endif
     {"multidraw", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
@@ -334,8 +334,8 @@ constexpr struct {
         1.34f, 0.02f},
     {"multidraw, texture array", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
-        /* Minor differences on ARM Mali */
-        1.34f, 0.02f},
+        /* Minor differences on ARM Mali, on NVidia GLES3(?!) */
+        4.67f, 0.02f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
@@ -343,8 +343,8 @@ constexpr struct {
         1.34f, 0.02f},
     {"multidraw, texture array, shader storage", "multidraw2D.tga", "multidraw3D.tga",
         VectorGL2D::Flag::TextureArrays|VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
-        /* Minor differences on ARM Mali */
-        1.34f, 0.02f},
+        /* Minor differences on ARM Mali, on NVidia GLES3(?!) */
+        4.67f, 0.02f},
     #endif
 };
 #endif
