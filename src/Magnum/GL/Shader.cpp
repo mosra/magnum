@@ -769,7 +769,8 @@ Shader::Shader(Shader&& other) noexcept: _type{other._type}, _id{other._id}, _fl
 
 Shader::~Shader() {
     /* Moved out or not deleting on destruction, nothing to do */
-    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction))
+        return;
 
     glDeleteShader(_id);
 }

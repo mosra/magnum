@@ -130,7 +130,8 @@ void MeshView::multiDrawImplementationDefault(const Containers::Iterable<MeshVie
 void MeshView::multiDrawImplementationFallback(const Containers::Iterable<MeshView>& meshes) {
     for(MeshView& mesh: meshes) {
         /* Nothing to draw in this mesh */
-        if(!mesh._count) continue;
+        if(!mesh._count)
+            continue;
 
         CORRADE_ASSERT(mesh._instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes", );
 

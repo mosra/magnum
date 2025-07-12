@@ -122,7 +122,8 @@ void AbstractTexture::unbind(const Int textureUnit) {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* If given texture unit is already unbound, nothing to do */
-    if(textureState.bindings[textureUnit].second() == 0) return;
+    if(textureState.bindings[textureUnit].second() == 0)
+        return;
 
     /* Unbind the texture, reset state tracker */
     Context::current().state().texture.unbindImplementation(textureUnit);
@@ -233,7 +234,8 @@ void AbstractTexture::createImplementationDSA(AbstractTexture& self) {
 
 AbstractTexture::~AbstractTexture() {
     /* Moved out or not deleting on destruction, nothing to do */
-    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction))
+        return;
 
     /* Remove all bindings */
     for(auto& binding: Context::current().state().texture.bindings) {
@@ -254,7 +256,8 @@ AbstractTexture::~AbstractTexture() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractTexture::createIfNotAlready() {
-    if(_flags & ObjectFlag::Created) return;
+    if(_flags & ObjectFlag::Created)
+        return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glBindTextures() or glObjectLabel()) operate with IDs
@@ -293,7 +296,8 @@ void AbstractTexture::unbindImage(const Int imageUnit) {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* If already unbound in given image unit, nothing to do */
-    if(textureState.imageBindings[imageUnit].id == 0) return;
+    if(textureState.imageBindings[imageUnit].id == 0)
+        return;
 
     /* Update state tracker, bind the texture to the unit */
     textureState.imageBindings[imageUnit].id = 0;
@@ -343,7 +347,8 @@ void AbstractTexture::bindImageInternal(const Int imageUnit, const Int level, co
     const Implementation::TextureState::ImageBinding state{_id, level, layered, layer, GLenum(access)};
 
     /* If already bound in given texture unit, nothing to do */
-    if(textureState.imageBindings[imageUnit] == state) return;
+    if(textureState.imageBindings[imageUnit] == state)
+        return;
 
     /* Update state tracker, bind the texture to the unit */
     textureState.imageBindings[imageUnit] = state;
@@ -355,7 +360,8 @@ void AbstractTexture::bind(Int textureUnit) {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* If already bound in given texture unit, nothing to do */
-    if(textureState.bindings[textureUnit].second() == _id) return;
+    if(textureState.bindings[textureUnit].second() == _id)
+        return;
 
     /* Bind the texture to the unit, *then* update the state tracker. The order
        is important, as if bindImplementationMulti() is used, it calls into
@@ -571,7 +577,8 @@ void AbstractTexture::bindInternal() {
         glActiveTexture(GL_TEXTURE0 + (textureState.currentTextureUnit = internalTextureUnit));
 
     /* If already bound in given texture unit, nothing to do */
-    if(textureState.bindings[internalTextureUnit].second() == _id) return;
+    if(textureState.bindings[internalTextureUnit].second() == _id)
+        return;
 
     /* Update state tracker, bind the texture to the unit. Not directly calling
        glBindTexture() here because we may need to include various

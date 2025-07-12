@@ -205,7 +205,8 @@ struct Mesh::AttributeLayout {
     GLint size() const {
         const GLint size = kindSize >> 2;
         #ifndef MAGNUM_TARGET_GLES
-        if(!size) return GL_BGRA;
+        if(!size)
+            return GL_BGRA;
         #endif
         return size;
     }
@@ -394,7 +395,8 @@ Mesh::Mesh(const GLuint id, const MeshPrimitive primitive, const ObjectFlags fla
 #ifndef MAGNUM_TARGET_WEBGL
 inline void Mesh::createIfNotAlready() {
     /* If VAO extension is not available, the following is always true */
-    if(_flags & ObjectFlag::Created) return;
+    if(_flags & ObjectFlag::Created)
+        return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glObjectLabel()) operate with IDs directly and they

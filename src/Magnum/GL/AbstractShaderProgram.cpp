@@ -307,7 +307,8 @@ AbstractShaderProgram::AbstractShaderProgram(AbstractShaderProgram&& other) noex
 }
 
 AbstractShaderProgram::~AbstractShaderProgram() {
-    if(!_id) return;
+    if(!_id)
+        return;
 
     /* Remove current usage from the state */
     GLuint& current = Context::current().state().shaderProgram.current;
@@ -370,7 +371,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh) {
     CORRADE_ASSERT(mesh._countSet, "GL::AbstractShaderProgram::draw(): Mesh::setCount() was never called, probably a mistake?", *this);
 
     /* Nothing to draw, exit without touching any state */
-    if(!mesh._count || !mesh._instanceCount) return *this;
+    if(!mesh._count || !mesh._instanceCount)
+        return *this;
 
     use();
 
@@ -386,7 +388,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(MeshView& mesh) {
     CORRADE_ASSERT(mesh._countSet, "GL::AbstractShaderProgram::draw(): MeshView::setCount() was never called, probably a mistake?", *this);
 
     /* Nothing to draw, exit without touching any state */
-    if(!mesh._count || !mesh._instanceCount) return *this;
+    if(!mesh._count || !mesh._instanceCount)
+        return *this;
 
     use();
 
@@ -399,7 +402,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(MeshView& mesh) {
 }
 
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
-    if(!counts.size()) return *this;
+    if(!counts.size())
+        return *this;
 
     use();
 
@@ -409,7 +413,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 
 #ifndef CORRADE_TARGET_32BIT
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
-    if(!counts.size()) return *this;
+    if(!counts.size())
+        return *this;
 
     use();
 
@@ -425,7 +430,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 #ifdef MAGNUM_TARGET_GLES
 #ifndef MAGNUM_TARGET_GLES2
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets) {
-    if(!counts.size()) return *this;
+    if(!counts.size())
+        return *this;
 
     use();
 
@@ -435,7 +441,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 
 #ifndef CORRADE_TARGET_32BIT
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& instanceOffsets) {
-    if(!counts.size()) return *this;
+    if(!counts.size())
+        return *this;
 
     use();
 
@@ -450,7 +457,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 #endif
 
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
-    if(!counts.size()) return *this;
+    if(!counts.size())
+        return *this;
 
     use();
 
@@ -464,7 +472,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 
 #ifndef CORRADE_TARGET_32BIT
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& instanceCounts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
-    if(!counts.size()) return *this;
+    if(!counts.size())
+        return *this;
 
     use();
 
@@ -483,7 +492,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 #endif
 
 AbstractShaderProgram& AbstractShaderProgram::draw(const Containers::Iterable<MeshView>& meshes) {
-    if(meshes.isEmpty()) return *this;
+    if(meshes.isEmpty())
+        return *this;
 
     use();
 
@@ -504,7 +514,8 @@ AbstractShaderProgram& AbstractShaderProgram::draw(const Containers::Iterable<Me
 #ifndef MAGNUM_TARGET_GLES
 AbstractShaderProgram& AbstractShaderProgram::drawTransformFeedback(Mesh& mesh, TransformFeedback& xfb, UnsignedInt stream) {
     /* Nothing to draw, exit without touching any state */
-    if(!mesh._instanceCount) return *this;
+    if(!mesh._instanceCount)
+        return *this;
 
     use();
     mesh.drawInternal(xfb, stream, mesh._instanceCount);
@@ -513,7 +524,8 @@ AbstractShaderProgram& AbstractShaderProgram::drawTransformFeedback(Mesh& mesh, 
 
 AbstractShaderProgram& AbstractShaderProgram::drawTransformFeedback(MeshView& mesh, TransformFeedback& xfb, UnsignedInt stream) {
     /* If nothing to draw, exit without touching any state */
-    if(mesh._instanceCount) return *this;
+    if(mesh._instanceCount)
+        return *this;
 
     use();
     mesh._original->drawInternal(xfb, stream, mesh._instanceCount);
@@ -524,7 +536,8 @@ AbstractShaderProgram& AbstractShaderProgram::drawTransformFeedback(MeshView& me
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 AbstractShaderProgram& AbstractShaderProgram::dispatchCompute(const Vector3ui& workgroupCount) {
     /* Nothing to dispatch, exit without touching any state */
-    if(!workgroupCount.product()) return *this;
+    if(!workgroupCount.product())
+        return *this;
 
     use();
     glDispatchCompute(workgroupCount.x(), workgroupCount.y(), workgroupCount.z());
@@ -633,7 +646,8 @@ bool AbstractShaderProgram::checkLink(const Containers::Iterable<Shader>& shader
        The checkCompile() API is called always, to print also compilation
        warnings even in case everything still manages to link well. */
     for(Shader& shader: shaders)
-        if(!shader.checkCompile()) return false;
+        if(!shader.checkCompile())
+            return false;
 
     GLint success, logLength;
     glGetProgramiv(_id, GL_LINK_STATUS, &success);

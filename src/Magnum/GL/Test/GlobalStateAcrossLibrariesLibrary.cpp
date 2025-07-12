@@ -31,7 +31,8 @@
 namespace Magnum { namespace GL { namespace Test {
 
 GL::Context* currentContextInALibrary() {
-    if(!GL::Context::hasCurrent()) return nullptr;
+    if(!GL::Context::hasCurrent())
+        return nullptr;
     return &GL::Context::current();
 }
 

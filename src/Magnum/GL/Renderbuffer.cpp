@@ -90,7 +90,8 @@ void Renderbuffer::createImplementationDSA(Renderbuffer& self) {
 
 Renderbuffer::~Renderbuffer() {
     /* Moved out, nothing to do */
-    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction))
+        return;
 
     /* If bound, remove itself from state */
     GLuint& binding = Context::current().state().framebuffer.renderbufferBinding;
@@ -101,7 +102,8 @@ Renderbuffer::~Renderbuffer() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 inline void Renderbuffer::createIfNotAlready() {
-    if(_flags & ObjectFlag::Created) return;
+    if(_flags & ObjectFlag::Created)
+        return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glObjectLabel()) operate with IDs directly and they
@@ -147,8 +149,8 @@ void Renderbuffer::setStorageMultisample(const Int samples, const RenderbufferFo
 
 void Renderbuffer::bind() {
     GLuint& binding = Context::current().state().framebuffer.renderbufferBinding;
-
-    if(binding == _id) return;
+    if(binding == _id)
+        return;
 
     /* Binding the renderbuffer finally creates it */
     binding = _id;

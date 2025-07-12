@@ -518,14 +518,16 @@ constexpr Containers::StringView KnownWorkarounds[]{
    bother with some binary search, which needs extra testing effort. */
 Containers::StringView findWorkaround(Containers::StringView workaround) {
     for(Containers::StringView i: KnownWorkarounds)
-        if(workaround == i) return i;
+        if(workaround == i)
+            return i;
     return {};
 }
 
 }
 
 auto Context::detectedDriver() -> DetectedDrivers {
-    if(_detectedDrivers) return *_detectedDrivers;
+    if(_detectedDrivers)
+        return *_detectedDrivers;
 
     _detectedDrivers = DetectedDrivers{};
 
@@ -681,7 +683,8 @@ bool Context::isDriverWorkaroundDisabled(const Containers::StringView workaround
        compare just data pointers instead of the whole string as we store only
        the views in the KnownWorkarounds list. */
     for(const auto& i: _driverWorkarounds)
-        if(i.first().data() == found.data()) return i.second();
+        if(i.first().data() == found.data())
+            return i.second();
     arrayAppend(_driverWorkarounds, InPlaceInit, found, false);
     return false;
 }
@@ -717,7 +720,8 @@ void Context::setupDriverWorkarounds() {
         #endif
         const Int firefoxVersion = EM_ASM_INT({
             var match = navigator.userAgent.match(/Firefox\\\\/(\\\\d+)/);
-            if(match) return match[1]|0; /* coerce to an int (remember asm.js?) */
+            if(match)
+                return match[1]|0; /* coerce to an int (remember asm.js?) */
             return 0;
         });
         #pragma GCC diagnostic pop
