@@ -1419,7 +1419,9 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         static void MAGNUM_GL_LOCAL setTargetHintImplementationSwiftShader(Buffer& self, TargetHint hint);
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_GL_LOCAL createIfNotAlready();
+        #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         static void MAGNUM_GL_LOCAL storageImplementationDefault(Buffer& self, Containers::ArrayView<const void> data, StorageFlags flags);

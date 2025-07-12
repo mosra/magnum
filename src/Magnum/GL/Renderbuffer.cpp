@@ -99,6 +99,7 @@ Renderbuffer::~Renderbuffer() {
     glDeleteRenderbuffers(1, &_id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 inline void Renderbuffer::createIfNotAlready() {
     if(_flags & ObjectFlag::Created) return;
 
@@ -109,6 +110,7 @@ inline void Renderbuffer::createIfNotAlready() {
     bind();
     CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 Containers::String Renderbuffer::label() {

@@ -436,7 +436,9 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
 
         void bindInternal();
 
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_GL_LOCAL createIfNotAlready();
+        #endif
 
         static void MAGNUM_GL_LOCAL createImplementationDefault(TransformFeedback& self);
         #ifndef MAGNUM_TARGET_GLES

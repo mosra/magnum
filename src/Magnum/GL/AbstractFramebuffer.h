@@ -778,7 +778,9 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_GL_LOCAL createIfNotAlready();
+        #endif
 
         void MAGNUM_GL_LOCAL bindInternal(FramebufferTarget target);
         FramebufferTarget MAGNUM_GL_LOCAL bindInternal();

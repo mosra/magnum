@@ -103,6 +103,7 @@ Int AbstractFramebuffer::maxDualSourceDrawBuffers() {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractFramebuffer::createIfNotAlready() {
     if(_flags & ObjectFlag::Created) return;
 
@@ -113,6 +114,7 @@ void AbstractFramebuffer::createIfNotAlready() {
     bindInternal();
     CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
+#endif
 
 void AbstractFramebuffer::bind() {
     bindInternal(FramebufferTarget::Draw);

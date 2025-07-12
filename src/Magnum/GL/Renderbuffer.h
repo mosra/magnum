@@ -264,7 +264,9 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
         static void MAGNUM_GL_LOCAL createImplementationDSA(Renderbuffer& self);
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_GL_LOCAL createIfNotAlready();
+        #endif
 
         static void MAGNUM_GL_LOCAL storageImplementationDefault(Renderbuffer& self, RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES

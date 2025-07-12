@@ -252,6 +252,7 @@ AbstractTexture::~AbstractTexture() {
     glDeleteTextures(1, &_id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractTexture::createIfNotAlready() {
     if(_flags & ObjectFlag::Created) return;
 
@@ -262,6 +263,7 @@ void AbstractTexture::createIfNotAlready() {
     bindInternal();
     CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 Containers::String AbstractTexture::label() {

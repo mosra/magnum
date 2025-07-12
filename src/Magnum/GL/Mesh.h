@@ -1208,7 +1208,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         /* Used by wrap() */
         explicit Mesh(GLuint id, MeshPrimitive primitive, ObjectFlags flags);
 
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_GL_LOCAL createIfNotAlready();
+        #endif
 
         /* Computing stride of interleaved vertex attributes */
         template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const Attribute<location, T>& attribute, const U&... attributes) {

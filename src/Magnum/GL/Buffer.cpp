@@ -230,6 +230,7 @@ void Buffer::setTargetHintImplementationSwiftShader(Buffer& self, const TargetHi
 }
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 void Buffer::createIfNotAlready() {
     if(_flags & ObjectFlag::Created) return;
 
@@ -241,6 +242,7 @@ void Buffer::createIfNotAlready() {
     bindSomewhereInternal(_targetHint);
     CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 Containers::String Buffer::label() {

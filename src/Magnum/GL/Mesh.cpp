@@ -391,6 +391,7 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 
 Mesh::Mesh(const GLuint id, const MeshPrimitive primitive, const ObjectFlags flags): _id{id}, _primitive{primitive}, _flags{flags} {}
 
+#ifndef MAGNUM_TARGET_WEBGL
 inline void Mesh::createIfNotAlready() {
     /* If VAO extension is not available, the following is always true */
     if(_flags & ObjectFlag::Created) return;
@@ -402,6 +403,7 @@ inline void Mesh::createIfNotAlready() {
     bindVAO();
     CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 Containers::String Mesh::label() {

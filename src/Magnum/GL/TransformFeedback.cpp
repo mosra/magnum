@@ -153,6 +153,7 @@ void TransformFeedback::bindInternal() {
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, _id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 inline void TransformFeedback::createIfNotAlready() {
     if(_flags & ObjectFlag::Created) return;
 
@@ -163,6 +164,7 @@ inline void TransformFeedback::createIfNotAlready() {
     bindInternal();
     CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 Containers::String TransformFeedback::label() {
