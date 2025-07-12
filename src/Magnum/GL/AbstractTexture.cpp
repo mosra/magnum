@@ -347,9 +347,13 @@ void AbstractTexture::bind(Int textureUnit) {
     /* If already bound in given texture unit, nothing to do */
     if(textureState.bindings[textureUnit].second() == _id) return;
 
-    /* Update state tracker, bind the texture to the unit */
-    textureState.bindings[textureUnit] = {_target, _id};
+    /* Bind the texture to the unit, *then* update the state tracker. The order
+       is important, as if bindImplementationMulti() is used, it calls into
+       createIfNotAlready() which then, if the state tracker would be already
+       updated, would see that the texture is bound already, and thus wouldn't
+       bind it at all, never actually creating it. */
     textureState.bindImplementation(*this, textureUnit);
+    textureState.bindings[textureUnit] = {_target, _id};
 }
 
 void AbstractTexture::bindImplementationDefault(AbstractTexture& self, GLint textureUnit) {
