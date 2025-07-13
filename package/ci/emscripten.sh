@@ -9,6 +9,9 @@ cd corrade
 mkdir build-emscripten && cd build-emscripten
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE="../../toolchains/generic/Emscripten-wasm.cmake" \
+    `# Building as Debug always, as Release optimizations take a long time` \
+    `# and make no sense on the CI. Thus, benchmark output will not be` \
+    `# really meaningful, but we still want to run them to catch issues.` \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCORRADE_WITH_INTERCONNECT=OFF \
@@ -23,6 +26,9 @@ cd ..
 mkdir build-emscripten && cd build-emscripten
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten-wasm.cmake" \
+    `# Building as Debug always, as Release optimizations take a long time` \
+    `# and make no sense on the CI. Thus, benchmark output will not be` \
+    `# really meaningful, but we still want to run them to catch issues.` \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \

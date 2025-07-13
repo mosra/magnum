@@ -26,26 +26,24 @@ executors:
     macos:
       xcode: 13.4.1
     resource_class: macos.m1.medium.gen1
-  emscripten1:
+  emscripten:
     docker:
-    # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
-    # randomly asserts: https://github.com/emscripten-core/emscripten/pull/9742
-    # Then, anything before 1.39.6 is useless as well because emar has a
-    # filesystem race and randomly complains that a file doesn't exist:
-    # https://github.com/mosra/magnum/issues/413,
-    # https://github.com/emscripten-core/emscripten/pull/10161
-    - image: emscripten/emsdk:1.39.6-upstream
+    #  See Corrade's package/ci/circleci.yml
+    # for more information.
+    - image: emscripten/emsdk:2.0.16
   emscripten2:
     docker:
-    # Used by the webgl2 job. 2.0.17 is the first version that exposes
-    # glGetBufferSubData() so GLES3 tests can read buffer data without having
-    # to check the Emscripten version. 2.0.17 dies midway compiling however, so
-    # using some newer version. 2.0.18 to 2.0.24 then fails due to an
-    # unresolved malloc dependency of glGetString() (!!!), in 2.0.25 it
-    # mysteriously disappears. See https://github.com/mosra/magnum/issues/507.
-    # 2.0.27 is then the first that adds timestamps to events, which are needed
-    # internally by touch events.
-    - image: emscripten/emsdk:2.0.27
+    # 2.0.16 is the oldest on Docker that isn't based on Debian Buster which
+    # started 404ing as of 2025-07-13. However, as usual, it doesn't work, so
+    # bumping to 2.0.26 that was known to work previously. See Corrade's
+    # package/ci/circleci.yml for more information.
+    - image: emscripten/emsdk:2.0.26
+  emscripten3:
+    docker:
+    # Used by the webgl2 job. 2.0.27 is the first that adds timestamps to
+    # events, which are needed internally by touch events, but making sure the
+    # version 3 is tested also.
+    - image: emscripten/emsdk:3.0.0
   android-29:
     machine:
       image: android:2021.10.1
@@ -717,32 +715,36 @@ jobs:
     - lcov
 
   emscripten-webgl1:
-    executor: emscripten1
+    executor: emscripten2
+    # Deliberately *not* setting NODEJS_EXECUTABLE here to verify that the
+    # build correctly skips WASM SIMD tests for Node.js 14. WASM SIMD is then
+    # tested in the job below.
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "ON"
     steps:
     - install-base-linux
-    # With a Debug build, 16+ is causing OOMs. Release was fine with 24.
+    # With a Debug build, 8+ is causing OOMs. Release was fine with 24.
     - cap-ninja-jobs:
-        count: 8
+        count: 4
     - build:
         script: emscripten.sh
 
   emscripten-webgl2:
-    executor: emscripten2
+    executor: emscripten3
     environment:
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
-      # emsdk forces the PATH to prefer its own nodejs, so explicitly force
-      # /usr/bin/node to be used by CMake
+      # Use Node.js 15 to be able to verify WASM SIMD codepaths. emsdk forces
+      # the PATH to prefer its own nodejs, so explicitly force /usr/bin/node to
+      # be used by CMake.
       EXTRA_OPTS: >
         -DNODEJS_EXECUTABLE=/usr/bin/node
     steps:
     - install-base-linux:
         extra: curl
     - install-nodejs
-    # With a Debug build, 8+ is causing OOMs. Release was fine with 24.
+      # With a Debug build, 8+ is causing OOMs. Release was fine with 24.
     - cap-ninja-jobs:
         count: 4
     - build:
