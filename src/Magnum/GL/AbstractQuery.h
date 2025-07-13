@@ -88,8 +88,6 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
         /**
          * @brief Object flags
          * @m_since_latest
-         *
-         * @see @ref wrap()
          */
         ObjectFlags flags() const { return _flags; }
 
