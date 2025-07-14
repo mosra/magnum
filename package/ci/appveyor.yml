@@ -1,5 +1,7 @@
 clone_depth: 1
 
+don't.
+
 environment:
   matrix:
   - TARGET: desktop
