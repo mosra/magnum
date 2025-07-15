@@ -230,10 +230,11 @@ constexpr Containers::StringView KnownWorkarounds[]{
 
 /* On NV driver 572.83 and likely 566.24 as well, DSA buffer APIs don't work.
    This was reported on Windows with a NVIDIA RTX 2000 ADA generation graphics
-   card, and downgrading to 556.39 fixes that. On Arch, RTX 3050 and 570.86 it
-   doesn't happen. Not sure if it's really specific to that GPU generation or
-   it's just a regression in the platform-independent GL frontend that affects
-   only some cards somehow.
+   card, and downgrading to 556.39 fixes that. A similar issue was reported
+   with A3000 on Windows. On Arch, RTX 3050 and 570.86 it doesn't happen. Not
+   sure if it's really specific to that GPU generation or it's just a
+   regression in the platform-independent GL frontend that affects only some
+   cards somehow.
 
    The behavior is similar to the one explained below in the
    "intel-windows-crazy-broken-buffer-dsa" workaround (ImGui rendering
