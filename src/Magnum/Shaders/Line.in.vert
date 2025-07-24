@@ -45,7 +45,7 @@ highp vec2 expandLineVertex(
     in mediump const float width,
     in mediump const float smoothness,
     in highp const float miterLimit,
-    in lowp const vec2 viewportSize,
+    in highp const vec2 viewportSize,
     out highp vec2 centerDistanceSigned,
     out highp float halfSegmentLength,
     out highp float hasCap)
