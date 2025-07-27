@@ -92,12 +92,32 @@ find_package_handle_standard_args(Vulkan DEFAULT_MSG Vulkan_LIBRARY)
 # it explicitly to be immune against such issues.
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
+set(_Vulkan_DEPENDENCIES Threads::Threads)
+
+# Dependencies for statically-built MoltenVk on MacOS. Can't conditionally do
+# this just if `Vulkan_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$"`
+# because the found library could be also just `MoltenVK.xcframework` instead
+# of the concrete `MoltenVK.xcframework/macos-arm64_x86_64/libMoltenVK.a` file.
+# Support for `*.xcframework` is since CMake 3.28:
+#   https://gitlab.kitware.com/cmake/cmake/-/issues/21752
+if(CORRADE_TARGET_APPLE AND Vulkan_LIBRARY MATCHES MoltenVK)
+    # List from https://github.com/KhronosGroup/MoltenVK/blob/f2d14864d7639b97234e50899e67d91d4c16cc14/Docs/MoltenVK_Runtime_UserGuide.md#optionally-link-to-required-system-libraries
+    set(_Vulkan_MoltenVk_FRAMEWORKS Metal Foundation QuartzCore CoreGraphics IOSurface IOKit AppKit)
+    if(CORRADE_TARGET_IOS)
+        list(APPEND _Vulkan_MoltenVk_FRAMEWORKS UIKit)
+    endif()
+    foreach(framework ${_Vulkan_MoltenVk_FRAMEWORKS})
+        find_library(_Vulkan_MoltenVk_${framework}_LIBRARY ${framework})
+        mark_as_advanced(_Vulkan_MoltenVk_${framework}_LIBRARY)
+        list(APPEND _Vulkan_DEPENDENCIES ${_Vulkan_MoltenVk_${framework}_LIBRARY})
+    endforeach()
+endif()
 
 if(NOT TARGET Vulkan::Vulkan)
     add_library(Vulkan::Vulkan UNKNOWN IMPORTED)
     set_target_properties(Vulkan::Vulkan PROPERTIES
         IMPORTED_LOCATION ${Vulkan_LIBRARY}
-        INTERFACE_LINK_LIBRARIES Threads::Threads)
+        INTERFACE_LINK_LIBRARIES "${_Vulkan_DEPENDENCIES}")
 endif()
 
 mark_as_advanced(Vulkan_LIBRARY)
