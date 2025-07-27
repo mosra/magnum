@@ -26,6 +26,17 @@ executors:
     macos:
       xcode: 13.4.1
     resource_class: macos.m1.medium.gen1
+  # Used by the static macOS build, to build against static MoltenVK. It
+  # requires Xcode 14+ as 13 suffers from undefined _objc_msgSend$ symbols:
+  #   https://stackoverflow.com/questions/73992337/flutter-build-is-ios-error-xcode-undefined-symbol-objc-msgsend
+  # Then, linking to *.xcframework is only supported since CMake 3.28, before
+  # that one has to pass the whole path to the *.a library:
+  #   https://gitlab.kitware.com/cmake/cmake/-/issues/21752
+  # The Xcode 14.0.1 image has only CMake 3.26, 15.0.0 has 3.27.
+  xcode-15_1:
+    macos:
+      xcode: 15.1.0
+    resource_class: macos.m1.medium.gen1
   emscripten:
     docker:
     #  See Corrade's package/ci/circleci.yml
@@ -265,6 +276,20 @@ commands:
           mkdir -p $HOME/vulkan-loader && cd $HOME/vulkan-loader
           wget https://ci.magnum.graphics/vulkan-loader-1.2.153-<< parameters.build >>.zip
           unzip vulkan-loader-1.2.153-<< parameters.build >>.zip
+
+  install-static-moltenvk:
+    parameters:
+      version:
+        type: string
+        default: "1.3.0"
+    steps:
+    - run:
+        name: Install static MoltenVK << parameters.version >>
+        command: |
+          mkdir -p $HOME/deps/lib && cd $HOME/deps
+          wget -nc --no-check-certificate https://github.com/KhronosGroup/MoltenVK/releases/download/v<< parameters.version >>/MoltenVK-macos.tar
+          tar --strip-components=1 -xf MoltenVK-macos.tar
+          mv MoltenVK/static/MoltenVK.xcframework $HOME/deps/lib
 
   setup-null-openal-driver:
     steps:
@@ -653,6 +678,7 @@ jobs:
         -DMAGNUM_WITH_WINDOWLESSCGLAPPLICATION=ON
         -DMAGNUM_WITH_CGLCONTEXT=ON
     steps:
+    # Tests with dynamic MoltenVK, macos-static tests the static version
     - install-base-macos:
         extra: sdl2 glfw molten-vk
     - build:
@@ -695,7 +721,8 @@ jobs:
     - lcov
 
   macos-static:
-    executor: xcode-13_4
+    # Static MoltenVK needs newer Xcode and CMake
+    executor: xcode-15_1
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       BUILD_STATIC: "ON"
@@ -708,8 +735,10 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
     steps:
+    # macos-gl tests with dynamic MoltenVK
     - install-base-macos:
-        extra: sdl2 glfw molten-vk
+        extra: sdl2 glfw wget
+    - install-static-moltenvk
     - build:
         script: unix-desktop.sh
     - lcov
