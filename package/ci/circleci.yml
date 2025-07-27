@@ -732,6 +732,9 @@ jobs:
         -DMAGNUM_WITH_WINDOWLESSCGLAPPLICATION=ON
         -DMAGNUM_WITH_CGLCONTEXT=ON
         -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::ObjImporter
+      # For some reason on the 15.1 image OpenAL hangs on startup. Skip those
+      # tests.
+      EXTRA_EXCLUDED_TESTS: "|ALTest"
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
     steps:
