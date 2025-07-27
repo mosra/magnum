@@ -164,6 +164,9 @@ namespace GL {
     }
 
     enum class CompressedPixelFormat { RGBS3tcDxt1 = 21 };
+    /* Clang -Wmissing-prototypes warns otherwise, even though this is in an
+       anonymous namespace */
+    Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat);
     Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat format) {
         #ifdef CORRADE_NO_ASSERT
         static_cast<void>(format);
@@ -171,6 +174,7 @@ namespace GL {
         CORRADE_INTERNAL_ASSERT(format == CompressedPixelFormat::RGBS3tcDxt1);
         return {4, 4, 1};
     }
+    UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat);
     UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat format) {
         #ifdef CORRADE_NO_ASSERT
         static_cast<void>(format);
