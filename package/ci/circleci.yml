@@ -744,7 +744,11 @@ jobs:
     - install-static-moltenvk
     - build:
         script: unix-desktop.sh
-    - lcov
+    # For some reason newer lcov produces random consistency errors, like the
+    # one in package/archlinux/PKGBUILD. Not the case with Xcode 13.4 image,
+    # only here.
+    - lcov:
+        extra: --ignore-errors inconsistent,gcov
 
   emscripten-webgl1:
     executor: emscripten2
