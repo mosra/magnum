@@ -36,7 +36,6 @@
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
@@ -3648,7 +3647,7 @@ void RendererTest::allocateCoreGlyphAllocator() {
 
     /* Rendering an empty text should be a no-op as well */
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.render(shaper, 0.0f, "");
         CORRADE_COMPARE(allocation.called, 0);
         CORRADE_COMPARE(renderer.glyphCount(), 0);
@@ -3684,7 +3683,7 @@ void RendererTest::allocateCoreGlyphAllocator() {
     allocation.glyphAdvances = Containers::arrayView(glyphAdvances)
         .prefix(data.reserve);
     {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.reserve(data.reserve, 0);
     }
     CORRADE_COMPARE(allocation.called, 1);
@@ -3697,7 +3696,7 @@ void RendererTest::allocateCoreGlyphAllocator() {
 
     /* Rendering with enough capacity shouldn't reallocate anything */
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.add(shaper, 0.0f, "abc");
         if(data.renderAddOnly) {
             CORRADE_VERIFY(renderer.isRendering());
@@ -3749,7 +3748,7 @@ void RendererTest::allocateCoreGlyphAllocator() {
     allocation.glyphAdvances = Containers::arrayView(glyphAdvances2)
         .prefix(data.advanceSize);
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         allocation.expectedViewSize = 3;
         allocation.expectedGlyphCount = data.secondReserve - 3;
         renderer.render(shaper, 0.0f, "defghijklmnopqrstuvwxyz");
@@ -3759,7 +3758,7 @@ void RendererTest::allocateCoreGlyphAllocator() {
         CORRADE_COMPARE(renderer.renderingGlyphCount(), 26);
         CORRADE_COMPARE(renderer.renderingRunCount(), 2);
     } else {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         allocation.expectedViewSize = 0;
         allocation.expectedGlyphCount = data.secondReserve;
         renderer.reserve(data.secondReserve, 0);
@@ -3984,7 +3983,7 @@ void RendererTest::allocateCoreRunAllocator() {
     /* Rendering an empty text should be a no-op as well, even with multiple
        add() calls */
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer
             .add(shaper, 0.0f, "")
             .add(shaper, 0.0f, "")
@@ -4012,7 +4011,7 @@ void RendererTest::allocateCoreRunAllocator() {
     allocation.runEnds = Containers::arrayView(runEnds)
         .prefix(data.reserve);
     {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.reserve(0, data.reserve);
     }
     CORRADE_COMPARE(allocation.called, 1);
@@ -4025,7 +4024,7 @@ void RendererTest::allocateCoreRunAllocator() {
 
     /* Rendering with enough capacity shouldn't reallocate anything */
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer
             .add(shaper, 0.0f, "a")
             .add(shaper, 0.0f, "b")
@@ -4070,7 +4069,7 @@ void RendererTest::allocateCoreRunAllocator() {
     allocation.runEnds = Containers::arrayView(runEnds2)
         .prefix(data.endSize);
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         allocation.expectedViewSize = 3;
         allocation.expectedRunCount = 1;
         renderer.render(shaper, 0.0f, "defghijklmnopqrstuvwxyz");
@@ -4080,7 +4079,7 @@ void RendererTest::allocateCoreRunAllocator() {
         CORRADE_COMPARE(renderer.renderingGlyphCount(), 26);
         CORRADE_COMPARE(renderer.renderingRunCount(), 4);
     } else {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         allocation.expectedViewSize = 0;
         allocation.expectedRunCount = data.secondReserve;
         renderer.reserve(0, data.secondReserve);
@@ -4874,7 +4873,7 @@ void RendererTest::allocateIndexAllocator() {
 
     /* Rendering an empty text should be a no-op as well */
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.render(shaper, 0.0f, "");
         CORRADE_COMPARE(allocation.called, 0);
         CORRADE_COMPARE(renderer.glyphCount(), 0);
@@ -4897,7 +4896,7 @@ void RendererTest::allocateIndexAllocator() {
     allocation.expectedSize = data.reserve*6*meshIndexTypeSize(data.expectedIndexType);
     allocation.indices = indices.prefix(data.reserve*6*meshIndexTypeSize(data.expectedIndexType));
     {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.reserve(data.reserve, 0);
     }
     CORRADE_COMPARE(allocation.called, 1);
@@ -4912,7 +4911,7 @@ void RendererTest::allocateIndexAllocator() {
 
     /* Rendering with enough capacity shouldn't reallocate anything */
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.add(shaper, 0.0f, "abc");
         if(data.renderAddOnly) {
             CORRADE_VERIFY(renderer.isRendering());
@@ -4956,7 +4955,7 @@ void RendererTest::allocateIndexAllocator() {
         allocation.expectedSize = data.expectedCapacity*6*meshIndexTypeSize(data.expectedSecondIndexType);
     }
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.render(shaper, 0.0f, "defghijklmnopqrstuvwxyz");
         CORRADE_COMPARE(renderer.glyphCount(), 26);
         CORRADE_COMPARE(renderer.runCount(), 2);
@@ -4964,7 +4963,7 @@ void RendererTest::allocateIndexAllocator() {
         CORRADE_COMPARE(renderer.renderingGlyphCount(), 26);
         CORRADE_COMPARE(renderer.renderingRunCount(), 2);
     } else if(data.secondReserve) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.reserve(data.secondReserve, 0);
         CORRADE_COMPARE(renderer.glyphCount(), 0);
         CORRADE_COMPARE(renderer.runCount(), 0);
@@ -4972,7 +4971,7 @@ void RendererTest::allocateIndexAllocator() {
         CORRADE_COMPARE(renderer.renderingGlyphCount(), 0);
         CORRADE_COMPARE(renderer.renderingRunCount(), 0);
     } else if(data.secondIndexType) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.setIndexType(*data.secondIndexType);
         CORRADE_COMPARE(renderer.glyphCount(), 0);
         CORRADE_COMPARE(renderer.runCount(), 0);
@@ -5217,7 +5216,7 @@ void RendererTest::allocateVertexAllocator() {
 
     /* Rendering an empty text should be a no-op as well */
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.render(shaper, 0.0f, "");
         CORRADE_COMPARE(allocation.called, 0);
         CORRADE_COMPARE(renderer.glyphCount(), 0);
@@ -5251,7 +5250,7 @@ void RendererTest::allocateVertexAllocator() {
         .prefix(data.reserve*4)
         .slice(&Vector3::xy);
     {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.reserve(data.reserve, 0);
     }
     CORRADE_COMPARE(allocation.called, 1);
@@ -5266,7 +5265,7 @@ void RendererTest::allocateVertexAllocator() {
 
     /* Rendering with enough capacity shouldn't reallocate anything */
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         renderer.add(shaper, 0.0f, "abc");
         if(data.renderAddOnly) {
             CORRADE_VERIFY(renderer.isRendering());
@@ -5317,7 +5316,7 @@ void RendererTest::allocateVertexAllocator() {
         .prefix(data.textureCoordinateSize)
         .slice(&Vector3::xy);
     if(data.render) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         /* If only add() was called before, there are no vertex data to
            preserve from previous allocations */
         if(data.renderAddOnly) {
@@ -5334,7 +5333,7 @@ void RendererTest::allocateVertexAllocator() {
         CORRADE_COMPARE(renderer.renderingGlyphCount(), 26);
         CORRADE_COMPARE(renderer.renderingRunCount(), 2);
     } else {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         allocation.expectedViewSize = 0;
         allocation.expectedVertexCount = data.secondReserve*4;
         renderer.reserve(data.secondReserve, 0);
@@ -5714,7 +5713,7 @@ void RendererTest::addSingleLine() {
 
     Containers::Pair<Range2D, Range1Dui> out;
     if(data.direct) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         CORRADE_COMPARE(data.items.size(), 1);
         auto& item = data.items[0];
         shaper1.sizeMultiplier = item.third();
@@ -5726,7 +5725,7 @@ void RendererTest::addSingleLine() {
             Feature::CharacterVariants66
         });
     } else {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         for(std::size_t i = 0; i != data.items.size(); ++i) {
             auto& item = data.items[i];
             CORRADE_ITERATION(item);
@@ -6002,7 +6001,7 @@ void RendererTest::addMultipleLines() {
 
     Containers::Pair<Range2D, Range1Dui> out;
     if(data.direct) {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         CORRADE_COMPARE(data.items.size(), 1);
         shaper1.expectedText = "he\nll\n\no";
         out = renderer.render(shaper1, 1.0f, "he\nll\n\no", {
@@ -6014,7 +6013,7 @@ void RendererTest::addMultipleLines() {
             Containers::arrayView(data.items[0].third()),
             TestSuite::Compare::Container);
     } else {
-        CORRADE_ITERATION(Utility::format("{}:{}", __FILE__, __LINE__));
+        CORRADE_ITERATION(__FILE__ ":" CORRADE_LINE_STRING);
         for(std::size_t i = 0; i != data.items.size(); ++i) {
             auto& item = data.items[i];
             CORRADE_ITERATION(Containers::pair(item.first(), item.second()));
