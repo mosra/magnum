@@ -42,11 +42,13 @@ struct LineTest: TestSuite::Tester {
 
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
+    void drawUniformConstructCopy();
     void drawUniformSetters();
     void drawUniformMaterialIdPacking();
 
     void materialUniformConstructDefault();
     void materialUniformConstructNoInit();
+    void materialUniformConstructCopy();
     void materialUniformSetters();
 
     /* Miter limit tests are copied verbatim between the Shaders and Ui
@@ -93,11 +95,13 @@ LineTest::LineTest() {
 
               &LineTest::drawUniformConstructDefault,
               &LineTest::drawUniformConstructNoInit,
+              &LineTest::drawUniformConstructCopy,
               &LineTest::drawUniformSetters,
               &LineTest::drawUniformMaterialIdPacking,
 
               &LineTest::materialUniformConstructDefault,
               &LineTest::materialUniformConstructNoInit,
+              &LineTest::materialUniformConstructCopy,
               &LineTest::materialUniformSetters,
 
               &LineTest::materialUniformMiterLimit});
@@ -184,6 +188,22 @@ void LineTest::drawUniformConstructNoInit() {
     CORRADE_VERIFY(!std::is_convertible<NoInitT, LineDrawUniform>::value);
 }
 
+void LineTest::drawUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    LineDrawUniform a;
+    a.materialId = 5;
+    a.objectId = 7;
+
+    LineDrawUniform b = a;
+    CORRADE_COMPARE(b.materialId, 5);
+    CORRADE_COMPARE(b.objectId, 7);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<LineDrawUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<LineDrawUniform>::value);
+    #endif
+}
+
 void LineTest::drawUniformSetters() {
     LineDrawUniform a;
     a.setMaterialId(5)
@@ -256,6 +276,22 @@ void LineTest::materialUniformConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, LineMaterialUniform>::value);
+}
+
+void LineTest::materialUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    LineMaterialUniform a;
+    a.color = 0x354565fc_rgbaf;
+    a.smoothness = 7.0f;
+
+    LineMaterialUniform b = a;
+    CORRADE_COMPARE(b.color, 0x354565fc_rgbaf);
+    CORRADE_COMPARE(b.smoothness, 7.0f);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<LineMaterialUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<LineMaterialUniform>::value);
+    #endif
 }
 
 void LineTest::materialUniformSetters() {

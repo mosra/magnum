@@ -38,22 +38,27 @@ struct GenericTest: TestSuite::Tester {
 
     void projectionUniform2DConstructDefault();
     void projectionUniform2DConstructNoInit();
+    void projectionUniform2DConstructCopy();
     void projectionUniform2DSetters();
 
     void projectionUniform3DConstructDefault();
     void projectionUniform3DConstructNoInit();
+    void projectionUniform3DConstructCopy();
     void projectionUniform3DSetters();
 
     void transformationUniform2DConstructDefault();
     void transformationUniform2DConstructNoInit();
+    void transformationUniform2DConstructCopy();
     void transformationUniform2DSetters();
 
     void transformationUniform3DConstructDefault();
     void transformationUniform3DConstructNoInit();
+    void transformationUniform3DConstructCopy();
     void transformationUniform3DSetters();
 
     void textureTransformationUniformConstructDefault();
     void textureTransformationUniformConstructNoInit();
+    void textureTransformationUniformConstructCopy();
     void textureTransformationUniformSetters();
 };
 
@@ -66,22 +71,27 @@ GenericTest::GenericTest() {
 
               &GenericTest::projectionUniform2DConstructDefault,
               &GenericTest::projectionUniform2DConstructNoInit,
+              &GenericTest::projectionUniform2DConstructCopy,
               &GenericTest::projectionUniform2DSetters,
 
               &GenericTest::projectionUniform3DConstructDefault,
               &GenericTest::projectionUniform3DConstructNoInit,
+              &GenericTest::projectionUniform3DConstructCopy,
               &GenericTest::projectionUniform3DSetters,
 
               &GenericTest::transformationUniform2DConstructDefault,
               &GenericTest::transformationUniform2DConstructNoInit,
+              &GenericTest::transformationUniform2DConstructCopy,
               &GenericTest::transformationUniform2DSetters,
 
               &GenericTest::transformationUniform3DConstructDefault,
               &GenericTest::transformationUniform3DConstructNoInit,
+              &GenericTest::transformationUniform3DConstructCopy,
               &GenericTest::transformationUniform3DSetters,
 
               &GenericTest::textureTransformationUniformConstructDefault,
               &GenericTest::textureTransformationUniformConstructNoInit,
+              &GenericTest::textureTransformationUniformConstructCopy,
               &GenericTest::textureTransformationUniformSetters});
 }
 
@@ -173,6 +183,19 @@ void GenericTest::projectionUniform2DConstructNoInit() {
     CORRADE_VERIFY(!std::is_convertible<NoInitT, ProjectionUniform2D>::value);
 }
 
+void GenericTest::projectionUniform2DConstructCopy() {
+    ProjectionUniform2D a;
+    a.projectionMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
+
+    ProjectionUniform2D b = a;
+    CORRADE_COMPARE(b.projectionMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<ProjectionUniform2D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<ProjectionUniform2D>::value);
+    #endif
+}
+
 void GenericTest::projectionUniform2DSetters() {
     ProjectionUniform2D a;
     a.setProjectionMatrix(Matrix3::projection({2.5f, 3.0f}));
@@ -242,6 +265,19 @@ void GenericTest::projectionUniform3DConstructNoInit() {
     CORRADE_VERIFY(!std::is_convertible<NoInitT, ProjectionUniform3D>::value);
 }
 
+void GenericTest::projectionUniform3DConstructCopy() {
+    ProjectionUniform3D a;
+    a.projectionMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
+
+    ProjectionUniform3D b = a;
+    CORRADE_COMPARE(b.projectionMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<ProjectionUniform3D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<ProjectionUniform3D>::value);
+    #endif
+}
+
 void GenericTest::projectionUniform3DSetters() {
     ProjectionUniform3D a;
     a.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.5f, 0.1f, 100.0f));
@@ -301,6 +337,19 @@ void GenericTest::transformationUniform2DConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, TransformationUniform2D>::value);
+}
+
+void GenericTest::transformationUniform2DConstructCopy() {
+    TransformationUniform2D a;
+    a.transformationMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
+
+    TransformationUniform2D b = a;
+    CORRADE_COMPARE(b.transformationMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<TransformationUniform2D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<TransformationUniform2D>::value);
+    #endif
 }
 
 void GenericTest::transformationUniform2DSetters() {
@@ -372,6 +421,19 @@ void GenericTest::transformationUniform3DConstructNoInit() {
     CORRADE_VERIFY(!std::is_convertible<NoInitT, TransformationUniform3D>::value);
 }
 
+void GenericTest::transformationUniform3DConstructCopy() {
+    TransformationUniform3D a;
+    a.transformationMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
+
+    TransformationUniform3D b = a;
+    CORRADE_COMPARE(b.transformationMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<TransformationUniform3D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<TransformationUniform3D>::value);
+    #endif
+}
+
 void GenericTest::transformationUniform3DSetters() {
     TransformationUniform3D a;
     a.setTransformationMatrix(Matrix4::translation({3.5f, 2.0f, -1.0f}));
@@ -439,6 +501,23 @@ void GenericTest::textureTransformationUniformConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, TextureTransformationUniform>::value);
+}
+
+void GenericTest::textureTransformationUniformConstructCopy() {
+    TextureTransformationUniform a;
+    a.rotationScaling[1] = {2.5f, -3.0f};
+    a.offset = {2.7f, 0.3f};
+    a.layer = 37;
+
+    TextureTransformationUniform b = a;
+    CORRADE_COMPARE(b.rotationScaling[1], (Vector2{2.5f, -3.0f}));
+    CORRADE_COMPARE(b.offset, (Vector2{2.7f, 0.3f}));
+    CORRADE_COMPARE(b.layer, 37);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<TextureTransformationUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<TextureTransformationUniform>::value);
+    #endif
 }
 
 void GenericTest::textureTransformationUniformSetters() {

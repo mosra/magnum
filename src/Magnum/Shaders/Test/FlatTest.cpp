@@ -38,11 +38,13 @@ struct FlatTest: TestSuite::Tester {
 
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
+    void drawUniformConstructCopy();
     void drawUniformSetters();
     void drawUniformMaterialIdPacking();
 
     void materialUniformConstructDefault();
     void materialUniformConstructNoInit();
+    void materialUniformConstructCopy();
     void materialUniformSetters();
 };
 
@@ -52,11 +54,13 @@ FlatTest::FlatTest() {
 
               &FlatTest::drawUniformConstructDefault,
               &FlatTest::drawUniformConstructNoInit,
+              &FlatTest::drawUniformConstructCopy,
               &FlatTest::drawUniformSetters,
               &FlatTest::drawUniformMaterialIdPacking,
 
               &FlatTest::materialUniformConstructDefault,
               &FlatTest::materialUniformConstructNoInit,
+              &FlatTest::materialUniformConstructCopy,
               &FlatTest::materialUniformSetters});
 }
 
@@ -140,6 +144,24 @@ void FlatTest::drawUniformConstructNoInit() {
     CORRADE_VERIFY(!std::is_convertible<NoInitT, FlatDrawUniform>::value);
 }
 
+void FlatTest::drawUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    FlatDrawUniform a;
+    a.materialId = 5;
+    a.objectId = 7;
+    a.perInstanceJointCount = 9;
+
+    FlatDrawUniform b = a;
+    CORRADE_COMPARE(b.materialId, 5);
+    CORRADE_COMPARE(b.objectId, 7);
+    CORRADE_COMPARE(b.perInstanceJointCount, 9);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<FlatDrawUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<FlatDrawUniform>::value);
+    #endif
+}
+
 void FlatTest::drawUniformSetters() {
     FlatDrawUniform a;
     a.setMaterialId(5)
@@ -212,6 +234,22 @@ void FlatTest::materialUniformConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, FlatMaterialUniform>::value);
+}
+
+void FlatTest::materialUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    FlatMaterialUniform a;
+    a.color = 0x354565fc_rgbaf;
+    a.alphaMask = 0.7f;
+
+    FlatMaterialUniform b = a;
+    CORRADE_COMPARE(b.color, 0x354565fc_rgbaf);
+    CORRADE_COMPARE(b.alphaMask, 0.7f);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<FlatMaterialUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<FlatMaterialUniform>::value);
+    #endif
 }
 
 void FlatTest::materialUniformSetters() {

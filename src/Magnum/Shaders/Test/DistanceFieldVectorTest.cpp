@@ -38,11 +38,13 @@ struct DistanceFieldVectorTest: TestSuite::Tester {
 
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
+    void drawUniformConstructCopy();
     void drawUniformSetters();
     void drawUniformMaterialIdPacking();
 
     void materialUniformConstructDefault();
     void materialUniformConstructNoInit();
+    void materialUniformConstructCopy();
     void materialUniformSetters();
 };
 
@@ -52,11 +54,13 @@ DistanceFieldVectorTest::DistanceFieldVectorTest() {
 
               &DistanceFieldVectorTest::drawUniformConstructDefault,
               &DistanceFieldVectorTest::drawUniformConstructNoInit,
+              &DistanceFieldVectorTest::drawUniformConstructCopy,
               &DistanceFieldVectorTest::drawUniformSetters,
               &DistanceFieldVectorTest::drawUniformMaterialIdPacking,
 
               &DistanceFieldVectorTest::materialUniformConstructDefault,
               &DistanceFieldVectorTest::materialUniformConstructNoInit,
+              &DistanceFieldVectorTest::materialUniformConstructCopy,
               &DistanceFieldVectorTest::materialUniformSetters});
 }
 
@@ -122,6 +126,20 @@ void DistanceFieldVectorTest::drawUniformConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, DistanceFieldVectorDrawUniform>::value);
+}
+
+void DistanceFieldVectorTest::drawUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    DistanceFieldVectorDrawUniform a;
+    a.materialId = 76;
+
+    DistanceFieldVectorDrawUniform b = a;
+    CORRADE_COMPARE(b.materialId, 76);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<DistanceFieldVectorDrawUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<DistanceFieldVectorDrawUniform>::value);
+    #endif
 }
 
 void DistanceFieldVectorTest::drawUniformSetters() {
@@ -194,6 +212,22 @@ void DistanceFieldVectorTest::materialUniformConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, DistanceFieldVectorMaterialUniform>::value);
+}
+
+void DistanceFieldVectorTest::materialUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    DistanceFieldVectorMaterialUniform a;
+    a.color = 0x354565fc_rgbaf;
+    a.outlineEnd = 0.37f;
+
+    DistanceFieldVectorMaterialUniform b = a;
+    CORRADE_COMPARE(b.color, 0x354565fc_rgbaf);
+    CORRADE_COMPARE(b.outlineEnd, 0.37f);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<DistanceFieldVectorMaterialUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<DistanceFieldVectorMaterialUniform>::value);
+    #endif
 }
 
 void DistanceFieldVectorTest::materialUniformSetters() {

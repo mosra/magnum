@@ -39,15 +39,18 @@ struct PhongTest: TestSuite::Tester {
 
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
+    void drawUniformConstructCopy();
     void drawUniformSetters();
     void drawUniformPacking();
 
     void materialUniformConstructDefault();
     void materialUniformConstructNoInit();
+    void materialUniformConstructCopy();
     void materialUniformSetters();
 
     void lightUniformConstructDefault();
     void lightUniformConstructNoInit();
+    void lightUniformConstructCopy();
     void lightUniformSetters();
 };
 
@@ -58,15 +61,18 @@ PhongTest::PhongTest() {
 
               &PhongTest::drawUniformConstructDefault,
               &PhongTest::drawUniformConstructNoInit,
+              &PhongTest::drawUniformConstructCopy,
               &PhongTest::drawUniformSetters,
               &PhongTest::drawUniformPacking,
 
               &PhongTest::materialUniformConstructDefault,
               &PhongTest::materialUniformConstructNoInit,
+              &PhongTest::materialUniformConstructCopy,
               &PhongTest::materialUniformSetters,
 
               &PhongTest::lightUniformConstructDefault,
               &PhongTest::lightUniformConstructNoInit,
+              &PhongTest::lightUniformConstructCopy,
               &PhongTest::lightUniformSetters});
 }
 
@@ -183,6 +189,26 @@ void PhongTest::drawUniformConstructNoInit() {
     CORRADE_VERIFY(!std::is_convertible<NoInitT, PhongDrawUniform>::value);
 }
 
+void PhongTest::drawUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    PhongDrawUniform a;
+    a.normalMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
+    a.materialId = 5;
+    a.lightCount = 7;
+    a.perInstanceJointCount = 9;
+
+    PhongDrawUniform b = a;
+    CORRADE_COMPARE(b.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    CORRADE_COMPARE(b.materialId, 5);
+    CORRADE_COMPARE(b.lightCount, 7);
+    CORRADE_COMPARE(b.perInstanceJointCount, 9);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<PhongDrawUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<PhongDrawUniform>::value);
+    #endif
+}
+
 void PhongTest::drawUniformSetters() {
     PhongDrawUniform a;
     a.setNormalMatrix(Matrix4::rotationX(90.0_degf).normalMatrix())
@@ -290,6 +316,24 @@ void PhongTest::materialUniformConstructNoInit() {
     CORRADE_VERIFY(!std::is_convertible<NoInitT, PhongMaterialUniform>::value);
 }
 
+void PhongTest::materialUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    PhongMaterialUniform a;
+    a.diffuseColor = 0x354565fc_rgbaf;
+    a.normalTextureScale = 0.4f;
+    a.alphaMask = 7.0f;
+
+    PhongMaterialUniform b = a;
+    CORRADE_COMPARE(b.diffuseColor, 0x354565fc_rgbaf);
+    CORRADE_COMPARE(b.normalTextureScale, 0.4f);
+    CORRADE_COMPARE(b.alphaMask, 7.0f);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<PhongMaterialUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<PhongMaterialUniform>::value);
+    #endif
+}
+
 void PhongTest::materialUniformSetters() {
     PhongMaterialUniform a;
     a.setAmbientColor(0xff3366cc_rgbaf)
@@ -358,6 +402,22 @@ void PhongTest::lightUniformConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, PhongLightUniform>::value);
+}
+
+void PhongTest::lightUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    PhongLightUniform a;
+    a.color = 0x354565_rgbf;
+    a.range = 7.0f;
+
+    PhongLightUniform b = a;
+    CORRADE_COMPARE(b.color, 0x354565_rgbf);
+    CORRADE_COMPARE(b.range, 7.0f);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<PhongLightUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<PhongLightUniform>::value);
+    #endif
 }
 
 void PhongTest::lightUniformSetters() {

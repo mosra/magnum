@@ -39,16 +39,19 @@ struct MeshVisualizerTest: TestSuite::Tester {
 
     void drawUniform2DConstructDefault();
     void drawUniform2DConstructNoInit();
+    void drawUniform2DConstructCopy();
     void drawUniform2DSetters();
     void drawUniform2DMaterialIdPacking();
 
     void drawUniform3DConstructDefault();
     void drawUniform3DConstructNoInit();
+    void drawUniform3DConstructCopy();
     void drawUniform3DSetters();
     void drawUniform3DMaterialIdPacking();
 
     void materialUniformConstructDefault();
     void materialUniformConstructNoInit();
+    void materialUniformConstructCopy();
     void materialUniformSetters();
 };
 
@@ -59,16 +62,19 @@ MeshVisualizerTest::MeshVisualizerTest() {
 
               &MeshVisualizerTest::drawUniform2DConstructDefault,
               &MeshVisualizerTest::drawUniform2DConstructNoInit,
+              &MeshVisualizerTest::drawUniform2DConstructCopy,
               &MeshVisualizerTest::drawUniform2DSetters,
               &MeshVisualizerTest::drawUniform2DMaterialIdPacking,
 
               &MeshVisualizerTest::drawUniform3DConstructDefault,
               &MeshVisualizerTest::drawUniform3DConstructNoInit,
+              &MeshVisualizerTest::drawUniform3DConstructCopy,
               &MeshVisualizerTest::drawUniform3DSetters,
               &MeshVisualizerTest::drawUniform3DMaterialIdPacking,
 
               &MeshVisualizerTest::materialUniformConstructDefault,
               &MeshVisualizerTest::materialUniformConstructNoInit,
+              &MeshVisualizerTest::materialUniformConstructCopy,
               &MeshVisualizerTest::materialUniformSetters});
 }
 
@@ -153,6 +159,24 @@ void MeshVisualizerTest::drawUniform2DConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, MeshVisualizerDrawUniform2D>::value);
+}
+
+void MeshVisualizerTest::drawUniform2DConstructCopy() {
+    /* Testing only some fields, should be enough */
+    MeshVisualizerDrawUniform2D a;
+    a.materialId = 73;
+    a.objectId = 7;
+    a.perInstanceJointCount = 9;
+
+    MeshVisualizerDrawUniform2D b = a;
+    CORRADE_COMPARE(b.materialId, 73);
+    CORRADE_COMPARE(b.objectId, 7);
+    CORRADE_COMPARE(b.perInstanceJointCount, 9);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<MeshVisualizerDrawUniform2D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<MeshVisualizerDrawUniform2D>::value);
+    #endif
 }
 
 void MeshVisualizerTest::drawUniform2DSetters() {
@@ -261,6 +285,26 @@ void MeshVisualizerTest::drawUniform3DConstructNoInit() {
     CORRADE_VERIFY(!std::is_convertible<NoInitT, MeshVisualizerDrawUniform3D>::value);
 }
 
+void MeshVisualizerTest::drawUniform3DConstructCopy() {
+    /* Testing only some fields, should be enough */
+    MeshVisualizerDrawUniform3D a;
+    a.normalMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
+    a.materialId = 5;
+    a.objectId = 7;
+    a.perInstanceJointCount = 9;
+
+    MeshVisualizerDrawUniform3D b = a;
+    CORRADE_COMPARE(b.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
+    CORRADE_COMPARE(b.materialId, 5);
+    CORRADE_COMPARE(b.objectId, 7);
+    CORRADE_COMPARE(b.perInstanceJointCount, 9);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<MeshVisualizerDrawUniform3D>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<MeshVisualizerDrawUniform3D>::value);
+    #endif
+}
+
 void MeshVisualizerTest::drawUniform3DSetters() {
     MeshVisualizerDrawUniform3D a;
     a.setNormalMatrix(Matrix4::rotationX(90.0_degf).normalMatrix())
@@ -363,6 +407,22 @@ void MeshVisualizerTest::materialUniformConstructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!std::is_convertible<NoInitT, MeshVisualizerMaterialUniform>::value);
+}
+
+void MeshVisualizerTest::materialUniformConstructCopy() {
+    /* Testing only some fields, should be enough */
+    MeshVisualizerMaterialUniform a;
+    a.color = 0x354565fc_rgbaf;
+    a.lineWidth = 0.765f;
+
+    MeshVisualizerMaterialUniform b = a;
+    CORRADE_COMPARE(b.color, 0x354565fc_rgbaf);
+    CORRADE_COMPARE(b.lineWidth, 0.765f);
+
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
+    CORRADE_VERIFY(std::is_trivially_copy_constructible<MeshVisualizerMaterialUniform>::value);
+    CORRADE_VERIFY(std::is_trivially_copy_assignable<MeshVisualizerMaterialUniform>::value);
+    #endif
 }
 
 void MeshVisualizerTest::materialUniformSetters() {
