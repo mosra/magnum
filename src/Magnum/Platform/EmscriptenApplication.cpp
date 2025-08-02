@@ -252,10 +252,18 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
 EmscriptenApplication::~EmscriptenApplication() {
     #ifdef MAGNUM_TARGET_GL
     /* Destroy Magnum context first to avoid it potentially accessing the
-       now-destroyed GL context after */
+       now-destroyed GL context after. If the application was created with
+       WindowFlag::Contextless set, the optional is still populated but with
+       _context->tryCreate() not set yet. The only way to check whether it's
+       actually created is to check for version, consistently with the assert
+       in the GL tryCreate() implementation below. */
+    bool hasContext = _context->version() != GL::Version::None;
     _context = Containers::NullOpt;
 
-    emscripten_webgl_destroy_context(_glContext);
+    /* Destroy WebGL context only if there actually was one */
+    CORRADE_INTERNAL_ASSERT(hasContext == !!_glContext);
+    if(hasContext)
+        emscripten_webgl_destroy_context(_glContext);
     #endif
 }
 
