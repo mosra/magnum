@@ -220,6 +220,10 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
     #ifdef MAGNUM_TARGET_GL
+    /** @todo this means GL::Context is constructed even with Contextless
+        present, do we actually want that at all? It's just for argument
+        parsing (which affect GL context creation), so maybe separate that from
+        the GL::Context somehow? Chicken and egg... */
     _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
     #else
     /** @todo this is duplicated here, in Sdl2Application and in
