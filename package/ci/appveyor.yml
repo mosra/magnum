@@ -137,8 +137,8 @@ install:
 
 # OpenAL. The DLL is copied & renamed by the buildsystem, no need to do that
 # here anymore.
-- IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.19.1-bin.zip appveyor DownloadFile https://openal-soft.org/openal-binaries/openal-soft-1.19.1-bin.zip
-- IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.19.1-bin.zip && ren openal-soft-1.19.1-bin openal && echo [General] > %APPDATA%/alsoft.ini & echo drivers=null >> %APPDATA%/alsoft.ini
+- IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.22.2-bin.zip appveyor DownloadFile https://github.com/kcat/openal-soft/releases/download/1.22.2/openal-soft-1.22.2-bin.zip
+- IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.22.2-bin.zip && ren openal-soft-1.22.2-bin openal && echo [General] > %APPDATA%/alsoft.ini & echo drivers=null >> %APPDATA%/alsoft.ini
 
 # Build apps on both GL and Vulkan to verify these can build w/o GL as well.
 # Not on GLES, as there's not much GLES-dependent.
@@ -181,5 +181,4 @@ build_script:
 
 cache:
 - ninja-win.zip -> package/ci/appveyor-cache-reset.txt
-- openal-soft-1.19.1-bin.zip -> package/ci/appveyor-cache-reset.txt
 - glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt
