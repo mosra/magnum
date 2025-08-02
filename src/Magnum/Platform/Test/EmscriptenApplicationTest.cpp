@@ -296,12 +296,15 @@ struct EmscriptenApplicationTest: Platform::Application {
 
     void drawEvent() override {
         Debug() << "draw event";
-        #ifdef CUSTOM_CLEAR_COLOR
-        GL::Renderer::setClearColor(CUSTOM_CLEAR_COLOR);
-        #endif
-        GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+        /* If the app was initialized contextless, there's no GL context */
+        if(GL::Context::hasCurrent()) {
+            #ifdef CUSTOM_CLEAR_COLOR
+            GL::Renderer::setClearColor(CUSTOM_CLEAR_COLOR);
+            #endif
+            GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
-        swapBuffers();
+            swapBuffers();
+        }
 
         if(_redraw)
             redraw();
@@ -424,6 +427,7 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         .addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
+        .addBooleanOption("contextless").setHelp("contextless", "initialize without a WebGL context")
         .parse(arguments.argc, arguments.argv);
 
     /* Useful for bisecting Emscripten regressions, because they happen WAY TOO
@@ -442,13 +446,18 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
     conf.setWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({640, 480}, args.value<Vector2>("dpi-scaling"));
-    GLConfiguration glConf;
-    if(args.isSet("quiet"))
-        glConf.addFlags(GLConfiguration::Flag::QuietLog);
-    /* No GL-specific verbose log in EmscriptenApplication that we'd need to
-       handle explicitly */
-    /* No GPU validation on WebGL */
-    create(conf, glConf);
+    if(args.isSet("contextless")) {
+        conf.addWindowFlags(Configuration::WindowFlag::Contextless);
+        create(conf);
+    } else {
+        GLConfiguration glConf;
+        if(args.isSet("quiet"))
+            glConf.addFlags(GLConfiguration::Flag::QuietLog);
+        /* No GL-specific verbose log in EmscriptenApplication that we'd need
+           to handle explicitly */
+        /* No GPU validation on WebGL */
+        create(conf, glConf);
+    }
 
     Debug{} << "window size" << windowSize()
         #ifdef MAGNUM_TARGET_GL
@@ -456,9 +465,16 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         #endif
         << dpiScaling() << devicePixelRatio();
 
-    /* This uses a VAO on WebGL 1, so it will crash in case GL flags are
-       missing EnableExtensionsByDefault (uncomment above) */
-    GL::Mesh mesh;
+    if(!args.isSet("contextless")) {
+        /* This uses a VAO on WebGL 1, so it will crash in case GL flags are
+           missing EnableExtensionsByDefault */
+        GL::Mesh mesh;
+    }
+
+    /* Uncomment this to verify destructor behavior, such as in case of
+       Contextless enabled. Note that it might then blow up elsewhere due to
+       this. */
+    // delete this;
 }
 
 }}}}
