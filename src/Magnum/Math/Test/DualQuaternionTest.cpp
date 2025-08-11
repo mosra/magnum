@@ -71,7 +71,7 @@ struct DualQuaternionTest: TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void data();
+    void access();
 
     void isNormalized();
     template<class T> void isNormalizedEpsilonRotation();
@@ -135,7 +135,7 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::constructCopy,
               &DualQuaternionTest::convert,
 
-              &DualQuaternionTest::data,
+              &DualQuaternionTest::access,
 
               &DualQuaternionTest::isNormalized,
               &DualQuaternionTest::isNormalizedEpsilonRotation<Float>,
@@ -319,7 +319,7 @@ void DualQuaternionTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<DualQuaternion, DualQuat>::value);
 }
 
-void DualQuaternionTest::data() {
+void DualQuaternionTest::access() {
     constexpr DualQuaternion ca{{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
 
     constexpr Quaternion b = ca.real();

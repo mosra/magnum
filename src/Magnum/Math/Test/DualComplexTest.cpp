@@ -68,7 +68,7 @@ struct DualComplexTest: TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void data();
+    void access();
 
     void isNormalized();
     template<class T> void isNormalizedEpsilonRotation();
@@ -125,7 +125,7 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::constructCopy,
               &DualComplexTest::convert,
 
-              &DualComplexTest::data,
+              &DualComplexTest::access,
 
               &DualComplexTest::isNormalized,
               &DualComplexTest::isNormalizedEpsilonRotation<Float>,
@@ -286,7 +286,7 @@ void DualComplexTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<DualComplex, DualCmpl>::value);
 }
 
-void DualComplexTest::data() {
+void DualComplexTest::access() {
     constexpr DualComplex ca{{-1.0f, 2.5f}, {3.0f, -7.5f}};
 
     constexpr Complex b = ca.real();

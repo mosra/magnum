@@ -79,7 +79,7 @@ struct VectorTest: TestSuite::Tester {
     void isZeroHalf();
     void isNormalized();
 
-    void data();
+    void access();
 
     void promotedNegated();
     void addSubtract();
@@ -168,7 +168,7 @@ VectorTest::VectorTest() {
               &VectorTest::isZeroHalf,
               &VectorTest::isNormalized,
 
-              &VectorTest::data,
+              &VectorTest::access,
 
               &VectorTest::promotedNegated,
               &VectorTest::addSubtract,
@@ -459,7 +459,7 @@ void VectorTest::isNormalized() {
     CORRADE_VERIFY(Vector3(0.0f, 1.0f, 0.0f).isNormalized());
 }
 
-void VectorTest::data() {
+void VectorTest::access() {
     Vector4 a(4.0f, 5.0f, 6.0f, 7.0f);
     a[2] = 1.0f;
     a[3] = 1.5f;

@@ -98,7 +98,7 @@ struct ColorTest: TestSuite::Tester {
     void constructHsvCopy();
     void compareHsv();
 
-    void data();
+    void access();
 
     void colors();
 
@@ -251,7 +251,7 @@ ColorTest::ColorTest() {
               &ColorTest::constructHsvCopy,
               &ColorTest::compareHsv,
 
-              &ColorTest::data,
+              &ColorTest::access,
 
               &ColorTest::colors,
 
@@ -729,7 +729,7 @@ void ColorTest::compareHsv() {
     CORRADE_VERIFY(ColorHsv{135.0_degf, 0.5f, 0.9f} != ColorHsv{135.0_degf, 0.5f, 0.9f + TypeTraits<Float>::epsilon()*2.0f});
 }
 
-void ColorTest::data() {
+void ColorTest::access() {
     Color4 c{1.0f, 2.0f, 3.0f, 4.0f};
     constexpr const Color4 cc{1.0f, 2.0f, 3.0f, 4.0f};
 

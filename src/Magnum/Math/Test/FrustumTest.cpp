@@ -77,8 +77,8 @@ struct FrustumTest: TestSuite::Tester {
     void constructFromMatrix();
     void convert();
 
-    void data();
-    void dataOutOfRange();
+    void access();
+    void accessOutOfRange();
     void rangeFor();
 
     void compare();
@@ -101,8 +101,8 @@ FrustumTest::FrustumTest() {
               &FrustumTest::constructFromMatrix,
               &FrustumTest::convert,
 
-              &FrustumTest::data,
-              &FrustumTest::dataOutOfRange,
+              &FrustumTest::access,
+              &FrustumTest::accessOutOfRange,
               &FrustumTest::rangeFor,
 
               &FrustumTest::compare,
@@ -312,7 +312,7 @@ void FrustumTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<Frustum, Frstm>::value);
 }
 
-void FrustumTest::data() {
+void FrustumTest::access() {
     /* Using default-constructed to verify that the planes are in correct order */
     constexpr Frustum ca;
 
@@ -352,7 +352,7 @@ void FrustumTest::data() {
     CORRADE_COMPARE(Containers::arraySize(ca.data()), 24);
 }
 
-void FrustumTest::dataOutOfRange() {
+void FrustumTest::accessOutOfRange() {
     CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     Frustum a;

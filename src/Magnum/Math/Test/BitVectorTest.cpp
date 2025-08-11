@@ -65,7 +65,7 @@ struct BitVectorTest: TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void data();
+    void access();
 
     void compare();
     void compareUndefined();
@@ -98,7 +98,7 @@ BitVectorTest::BitVectorTest() {
               &BitVectorTest::constructCopy,
               &BitVectorTest::convert,
 
-              &BitVectorTest::data,
+              &BitVectorTest::access,
 
               &BitVectorTest::compare,
               &BitVectorTest::compareUndefined,
@@ -206,7 +206,7 @@ void BitVectorTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<BitVector<3>, BVec3>::value);
 }
 
-void BitVectorTest::data() {
+void BitVectorTest::access() {
     /* 0b00001000, 0b00000011, 0b100 */
     constexpr BitVector19 ca(0x08, 0x03, 0x04);
 

@@ -77,7 +77,7 @@ struct BezierTest: TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void data();
+    void access();
 
     void compare();
 
@@ -102,7 +102,7 @@ BezierTest::BezierTest() {
               &BezierTest::constructCopy,
               &BezierTest::convert,
 
-              &BezierTest::data,
+              &BezierTest::access,
 
               &BezierTest::compare,
 
@@ -216,7 +216,7 @@ void BezierTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<QuadraticBezier2D, QBezier2D>::value);
 }
 
-void BezierTest::data() {
+void BezierTest::access() {
     QuadraticBezier2D a{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
     a[0] = {};
     a[2] = {0.7f, 20.3f};

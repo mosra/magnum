@@ -67,7 +67,7 @@ struct ComplexTest: TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void data();
+    void access();
 
     void compare();
     void isNormalized();
@@ -117,7 +117,7 @@ ComplexTest::ComplexTest() {
               &ComplexTest::constructCopy,
               &ComplexTest::convert,
 
-              &ComplexTest::data,
+              &ComplexTest::access,
 
               &ComplexTest::compare,
               &ComplexTest::isNormalized,
@@ -289,7 +289,7 @@ void ComplexTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<Complex, Cmpl>::value);
 }
 
-void ComplexTest::data() {
+void ComplexTest::access() {
     constexpr Complex ca{1.5f, -3.5f};
     constexpr Float real = ca.real();
     constexpr Float imaginary = ca.imaginary();

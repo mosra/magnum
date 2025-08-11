@@ -46,7 +46,7 @@ struct DualTest: TestSuite::Tester {
     void constructConversion();
     void constructCopy();
 
-    void data();
+    void access();
 
     void compare();
 
@@ -89,7 +89,7 @@ DualTest::DualTest() {
               &DualTest::constructConversion,
               &DualTest::constructCopy,
 
-              &DualTest::data,
+              &DualTest::access,
 
               &DualTest::compare,
 
@@ -199,7 +199,7 @@ void DualTest::constructCopy() {
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Dual>::value);
 }
 
-void DualTest::data() {
+void DualTest::access() {
     constexpr Dual ca{1.5f, -3.5f};
     constexpr Float real = ca.real();
     constexpr Float dual = ca.dual();

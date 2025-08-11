@@ -77,10 +77,10 @@ struct CubicHermiteTest: TestSuite::Tester {
     void constructCopyComplex();
     void constructCopyQuaternion();
 
-    void dataScalar();
-    void dataVector();
-    void dataComplex();
-    void dataQuaternion();
+    void accessScalar();
+    void accessVector();
+    void accessComplex();
+    void accessQuaternion();
 
     void compareScalar();
     void compareVector();
@@ -162,10 +162,10 @@ CubicHermiteTest::CubicHermiteTest() {
               &CubicHermiteTest::constructCopyComplex,
               &CubicHermiteTest::constructCopyQuaternion,
 
-              &CubicHermiteTest::dataScalar,
-              &CubicHermiteTest::dataVector,
-              &CubicHermiteTest::dataComplex,
-              &CubicHermiteTest::dataQuaternion,
+              &CubicHermiteTest::accessScalar,
+              &CubicHermiteTest::accessVector,
+              &CubicHermiteTest::accessComplex,
+              &CubicHermiteTest::accessQuaternion,
 
               &CubicHermiteTest::compareScalar,
               &CubicHermiteTest::compareVector,
@@ -658,7 +658,7 @@ void CubicHermiteTest::constructCopyQuaternion() {
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<CubicHermiteQuaternion>::value);
 }
 
-void CubicHermiteTest::dataScalar() {
+void CubicHermiteTest::accessScalar() {
     constexpr CubicHermite1D ca{2.0f, -2.0f, -0.5f};
     constexpr Float inTangent = ca.inTangent();
     constexpr Float point = ca.point();
@@ -683,7 +683,7 @@ void CubicHermiteTest::dataScalar() {
     CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
-void CubicHermiteTest::dataVector() {
+void CubicHermiteTest::accessVector() {
     constexpr CubicHermite2D ca{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}};
     constexpr Vector2 inTangent = ca.inTangent();
     constexpr Vector2 point = ca.point();
@@ -708,7 +708,7 @@ void CubicHermiteTest::dataVector() {
     CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
-void CubicHermiteTest::dataComplex() {
+void CubicHermiteTest::accessComplex() {
     constexpr CubicHermiteComplex ca{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}};
     constexpr Complex inTangent = ca.inTangent();
     constexpr Complex point = ca.point();
@@ -733,7 +733,7 @@ void CubicHermiteTest::dataComplex() {
     CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
-void CubicHermiteTest::dataQuaternion() {
+void CubicHermiteTest::accessQuaternion() {
     constexpr CubicHermiteQuaternion ca{
         {{1.0f, 2.0f, -1.0f}, 3.0f},
         {{1.5f, -2.0f, 0.1f}, 1.1f},

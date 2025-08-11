@@ -75,7 +75,7 @@ struct RectangularMatrixTest: TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void data();
+    void access();
     void row();
 
     void compare();
@@ -144,7 +144,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::constructCopy,
               &RectangularMatrixTest::convert,
 
-              &RectangularMatrixTest::data,
+              &RectangularMatrixTest::access,
               &RectangularMatrixTest::row,
 
               &RectangularMatrixTest::compare,
@@ -519,7 +519,7 @@ void RectangularMatrixTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<Matrix2x3, Mat2x3>::value);
 }
 
-void RectangularMatrixTest::data() {
+void RectangularMatrixTest::access() {
     Matrix3x4 a;
     Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
 

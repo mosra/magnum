@@ -69,7 +69,7 @@ struct QuaternionTest: TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void data();
+    void access();
 
     void compare();
     void isNormalized();
@@ -154,7 +154,7 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::constructCopy,
               &QuaternionTest::convert,
 
-              &QuaternionTest::data,
+              &QuaternionTest::access,
 
               &QuaternionTest::compare,
               &QuaternionTest::isNormalized,
@@ -339,7 +339,7 @@ void QuaternionTest::convert() {
     CORRADE_VERIFY(!std::is_convertible<Quaternion, Quat>::value);
 }
 
-void QuaternionTest::data() {
+void QuaternionTest::access() {
     Quaternion a{{1.0f, 2.0f, 3.0f}, -4.0f};
     CORRADE_COMPARE(a.vector(), (Vector3{1.0f, 2.0f, 3.0f}));
     CORRADE_COMPARE(a.scalar(), -4.0f);
