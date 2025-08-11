@@ -788,6 +788,8 @@ See also:
 -   All color literals are now implemented in a way that checks for them to be
     hexadecimal and of correct length (6 digits for @ref Math::Color3 and
     8 digits for @ref Math::Color4) at compile time to prevent common errors
+-   All mutable getters in @ref Math classes are now marked as @cpp constexpr @ce
+    if compiling for C++14 and later. See also [mosra/magnum#597](https://github.com/mosra/magnum/pull/597).
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
