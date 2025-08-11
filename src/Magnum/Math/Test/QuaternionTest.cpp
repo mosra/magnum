@@ -133,6 +133,10 @@ struct QuaternionTest: TestSuite::Tester {
     void debug();
 };
 
+using namespace Literals;
+
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
 using Magnum::Deg;
 using Magnum::Rad;
 using Magnum::Matrix3x3;
@@ -141,8 +145,6 @@ using Magnum::Quaternion;
 using Magnum::Vector2;
 using Magnum::Vector3;
 using Magnum::Vector4;
-
-using namespace Math::Literals;
 
 QuaternionTest::QuaternionTest() {
     addTests({&QuaternionTest::construct,

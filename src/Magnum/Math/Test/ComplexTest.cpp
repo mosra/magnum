@@ -107,6 +107,17 @@ struct ComplexTest: TestSuite::Tester {
     void debug();
 };
 
+using namespace Literals;
+
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
+using Magnum::Deg;
+using Magnum::Rad;
+using Magnum::Complex;
+using Magnum::Vector2;
+using Magnum::Matrix3;
+using Magnum::Matrix2x2;
+
 ComplexTest::ComplexTest() {
     addTests({&ComplexTest::construct,
               &ComplexTest::constructIdentity,
@@ -160,15 +171,6 @@ ComplexTest::ComplexTest() {
 
               &ComplexTest::debug});
 }
-
-using Magnum::Deg;
-using Magnum::Rad;
-using Magnum::Complex;
-using Magnum::Vector2;
-using Magnum::Matrix3;
-using Magnum::Matrix2x2;
-
-using namespace Math::Literals;
 
 void ComplexTest::construct() {
     constexpr Complex a = {0.5f, -3.7f};

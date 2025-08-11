@@ -85,10 +85,12 @@ struct TimeTest: TestSuite::Tester {
     void debugSecondsPacked();
 };
 
+using namespace Literals;
+
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace */
 using Magnum::Nanoseconds;
 using Magnum::Seconds;
-
-using namespace Math::Literals;
 
 TimeTest::TimeTest() {
     addTests({&TimeTest::limits,

@@ -103,7 +103,7 @@ struct DualComplexTest: TestSuite::Tester {
     void debug();
 };
 
-using namespace Math::Literals;
+using namespace Literals;
 
 /* What's a typedef and not a using differs from the typedefs in root Magnum
    namespace, or is not present there at all */

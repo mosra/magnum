@@ -124,6 +124,20 @@ struct CubicHermiteTest: TestSuite::Tester {
     void debugQuaternion();
 };
 
+using namespace Literals;
+
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Complex;
+using Magnum::Quaternion;
+using Magnum::CubicBezier2D;
+using Magnum::CubicHermite1D;
+using Magnum::CubicHermite2D;
+using Magnum::CubicHermiteComplex;
+using Magnum::CubicHermiteQuaternion;
+
 CubicHermiteTest::CubicHermiteTest() {
     addTests({&CubicHermiteTest::constructScalar,
               &CubicHermiteTest::constructVector,
@@ -208,18 +222,6 @@ CubicHermiteTest::CubicHermiteTest() {
               &CubicHermiteTest::debugComplex,
               &CubicHermiteTest::debugQuaternion});
 }
-
-using namespace Math::Literals;
-
-using Magnum::Vector2;
-using Magnum::Vector3;
-using Magnum::Complex;
-using Magnum::Quaternion;
-using Magnum::CubicBezier2D;
-using Magnum::CubicHermite1D;
-using Magnum::CubicHermite2D;
-using Magnum::CubicHermiteComplex;
-using Magnum::CubicHermiteQuaternion;
 
 void CubicHermiteTest::constructScalar() {
     constexpr CubicHermite1D a{2.0f, -2.0f, -0.5f};

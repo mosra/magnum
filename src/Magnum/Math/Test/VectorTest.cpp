@@ -129,6 +129,8 @@ struct VectorTest: TestSuite::Tester {
     void debugPropagateFlags();
 };
 
+using namespace Literals;
+
 /* What's a typedef and not a using differs from the typedefs in root Magnum
    namespace */
 using Magnum::Constants;
@@ -144,8 +146,6 @@ typedef Vector<4, Int> Vector4i;
 typedef Vector<3, Half> Vector3h;
 typedef Vector<3, Int> Vector3i;
 typedef Vector<2, Int> Vector2i;
-
-using namespace Literals;
 
 VectorTest::VectorTest() {
     addTests({&VectorTest::construct,

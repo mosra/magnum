@@ -44,9 +44,11 @@ TimeStlTest::TimeStlTest() {
               &TimeStlTest::chronoTimePoint});
 }
 
-using Magnum::Nanoseconds;
+using namespace Literals;
 
-using namespace Math::Literals;
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace */
+using Magnum::Nanoseconds;
 
 void TimeStlTest::chronoDurationTypedefs() {
     /* Negative values should work as well */

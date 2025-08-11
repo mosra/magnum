@@ -46,12 +46,6 @@ struct InterpolationBenchmark: TestSuite::Tester {
     void dualQuaternionSclerpShortestPath();
 };
 
-using namespace Math::Literals;
-
-using Magnum::Quaternion;
-using Magnum::DualQuaternion;
-using Magnum::Vector3;
-
 InterpolationBenchmark::InterpolationBenchmark() {
     addBenchmarks({&InterpolationBenchmark::baseline,
                    &InterpolationBenchmark::quaternionLerp,
@@ -61,6 +55,14 @@ InterpolationBenchmark::InterpolationBenchmark() {
                    &InterpolationBenchmark::dualQuaternionSclerp,
                    &InterpolationBenchmark::dualQuaternionSclerpShortestPath}, 100);
 }
+
+using namespace Literals;
+
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace */
+using Magnum::Quaternion;
+using Magnum::DualQuaternion;
+using Magnum::Vector3;
 
 void InterpolationBenchmark::baseline() {
     Quaternion c;

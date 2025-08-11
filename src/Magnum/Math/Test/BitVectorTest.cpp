@@ -87,6 +87,8 @@ static_assert(BitVector<15>::DataSize == 2, "Improper DataSize");
 static_assert(BitVector<16>::DataSize == 2, "Improper DataSize");
 static_assert(BitVector<17>::DataSize == 3, "Improper DataSize");
 
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
 typedef Math::BitVector<19> BitVector19;
 
 BitVectorTest::BitVectorTest() {

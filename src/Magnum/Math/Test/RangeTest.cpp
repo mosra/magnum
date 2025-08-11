@@ -150,6 +150,8 @@ struct RangeTest: TestSuite::Tester {
     void debugPacked();
 };
 
+/* What's a typedef and not a using differs from the typedefs in root Magnum
+   namespace, or is not present there at all */
 using Magnum::Range1D;
 using Magnum::Range2D;
 using Magnum::Range3D;
