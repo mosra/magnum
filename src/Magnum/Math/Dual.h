@@ -185,7 +185,7 @@ template<class T> class Dual {
          *
          * @see @ref data()
          */
-        T& real() { return _real; }
+        CORRADE_CONSTEXPR14 T& real() { return _real; }
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
         constexpr const T real() const { return _real; } /**< @overload */
@@ -195,7 +195,7 @@ template<class T> class Dual {
          *
          * @see @ref data()
          */
-        T& dual() { return _dual; }
+        CORRADE_CONSTEXPR14 T& dual() { return _dual; }
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
         constexpr const T dual() const { return _dual; } /**< @overload */

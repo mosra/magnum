@@ -141,7 +141,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see @ref r()
          */
-        T& x() { return Vector<4, T>::_data[0]; }
+        CORRADE_CONSTEXPR14 T& x() { return Vector<4, T>::_data[0]; }
         /** @overload */
         constexpr const T& x() const { return Vector<4, T>::_data[0]; }
 
@@ -150,7 +150,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see @ref g()
          */
-        T& y() { return Vector<4, T>::_data[1]; }
+        CORRADE_CONSTEXPR14 T& y() { return Vector<4, T>::_data[1]; }
         /** @overload */
         constexpr const T& y() const { return Vector<4, T>::_data[1]; }
 
@@ -159,7 +159,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see @ref b()
          */
-        T& z() { return Vector<4, T>::_data[2]; }
+        CORRADE_CONSTEXPR14 T& z() { return Vector<4, T>::_data[2]; }
         /** @overload */
         constexpr const T& z() const { return Vector<4, T>::_data[2]; }
 
@@ -168,7 +168,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see @ref a()
          */
-        T& w() { return Vector<4, T>::_data[3]; }
+        CORRADE_CONSTEXPR14 T& w() { return Vector<4, T>::_data[3]; }
         /** @overload */
         constexpr const T& w() const { return Vector<4, T>::_data[3]; }
 
@@ -177,7 +177,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * Equivalent to @ref x().
          */
-        T& r() { return Vector<4, T>::_data[0]; }
+        CORRADE_CONSTEXPR14 T& r() { return Vector<4, T>::_data[0]; }
         /** @overload */
         constexpr const T& r() const { return Vector<4, T>::_data[0]; }
 
@@ -186,7 +186,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * Equivalent to @ref y().
          */
-        T& g() { return Vector<4, T>::_data[1]; }
+        CORRADE_CONSTEXPR14 T& g() { return Vector<4, T>::_data[1]; }
         /** @overload */
         constexpr const T& g() const { return Vector<4, T>::_data[1]; }
 
@@ -195,7 +195,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * Equivalent to @ref z().
          */
-        T& b() { return Vector<4, T>::_data[2]; }
+        CORRADE_CONSTEXPR14 T& b() { return Vector<4, T>::_data[2]; }
         /** @overload */
         constexpr const T& b() const { return Vector<4, T>::_data[2]; }
 
@@ -204,7 +204,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * Equivalent to @ref w().
          */
-        T& a() { return Vector<4, T>::_data[3]; }
+        CORRADE_CONSTEXPR14 T& a() { return Vector<4, T>::_data[3]; }
         /** @overload */
         constexpr const T& a() const { return Vector<4, T>::_data[3]; }
 

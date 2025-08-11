@@ -190,17 +190,17 @@ template<class T> class CubicHermite {
         }
 
         /** @brief In-tangent @f$ \boldsymbol{m} @f$ */
-        T& inTangent() { return _inTangent; }
+        CORRADE_CONSTEXPR14 T& inTangent() { return _inTangent; }
         /* returns const& so [] operations are also constexpr */
         constexpr const T& inTangent() const { return _inTangent; } /**< @overload */
 
         /** @brief Point @f$ \boldsymbol{p} @f$ */
-        T& point() { return _point; }
+        CORRADE_CONSTEXPR14 T& point() { return _point; }
         /* returns const& so [] operations are also constexpr */
         constexpr const T& point() const { return _point; } /**< @overload */
 
         /** @brief Out-tangent @f$ \boldsymbol{n} @f$ */
-        T& outTangent() { return _outTangent; }
+        CORRADE_CONSTEXPR14 T& outTangent() { return _outTangent; }
         /* returns const& so [] operations are also constexpr */
         constexpr const T& outTangent() const { return _outTangent; } /**< @overload */
 

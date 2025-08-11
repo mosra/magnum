@@ -248,7 +248,7 @@ template<class T> class Complex {
          *
          * @see @ref data()
          */
-        T& real() { return _real; }
+        CORRADE_CONSTEXPR14 T& real() { return _real; }
         constexpr T real() const { return _real; } /**< @overload */
 
         /**
@@ -256,7 +256,7 @@ template<class T> class Complex {
          *
          * @see @ref data()
          */
-        T& imaginary() { return _imaginary; }
+        CORRADE_CONSTEXPR14 T& imaginary() { return _imaginary; }
         constexpr T imaginary() const { return _imaginary; } /**< @overload */
 
         /**

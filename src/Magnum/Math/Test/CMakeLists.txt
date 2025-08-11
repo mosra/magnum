@@ -110,3 +110,41 @@ set_property(TARGET
     MathDistanceTest
     MathIntersectionTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+
+# Build these only if there's no explicit -std= passed in the flags
+if(NOT CMAKE_CXX_FLAGS MATCHES "-std=")
+    # Copied verbatim from src/Corrade/Test/CMakeLists.txt, please keep in sync
+    if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0") OR
+       (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.4") OR
+       (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "6.0.1") OR
+       (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.10"))
+        corrade_add_test(MathBezierCpp14Test BezierCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathBitVectorCpp14Test BitVectorCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathComplexCpp14Test ComplexCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathCubicHermiteCpp14Test CubicHermiteCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathDualCpp14Test DualCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathFrustumCpp14Test FrustumCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathQuaternionCpp14Test QuaternionCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathRangeCpp14Test RangeCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathRectangularMatrixCpp14Test RectangularMatrixCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathVectorCpp14Test VectorCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathVector2Cpp14Test Vector2Cpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathVector3Cpp14Test Vector3Cpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathVector4Cpp14Test Vector4Cpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        set_target_properties(
+            MathBezierCpp14Test
+            MathBitVectorCpp14Test
+            MathComplexCpp14Test
+            MathCubicHermiteCpp14Test
+            MathDualCpp14Test
+            MathFrustumCpp14Test
+            MathQuaternionCpp14Test
+            MathRangeCpp14Test
+            MathRectangularMatrixCpp14Test
+            MathVectorCpp14Test
+            MathVector2Cpp14Test
+            MathVector3Cpp14Test
+            MathVector4Cpp14Test
+            PROPERTIES CORRADE_CXX_STANDARD 14)
+   endif()
+endif()

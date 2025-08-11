@@ -275,10 +275,10 @@ template<std::size_t size, class T> class Vector {
          *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        T* data();
+        CORRADE_CONSTEXPR14 T* data();
         constexpr const T* data() const; /**< @overload */
         #else
-        auto data() -> T(&)[size] { return _data; }
+        CORRADE_CONSTEXPR14 auto data() -> T(&)[size] { return _data; }
         constexpr auto data() const -> const T(&)[size] { return _data; }
         #endif
 
@@ -287,7 +287,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref data()
          */
-        T& operator[](std::size_t pos) { return _data[pos]; }
+        CORRADE_CONSTEXPR14 T& operator[](std::size_t pos) { return _data[pos]; }
         constexpr T operator[](std::size_t pos) const { return _data[pos]; } /**< @overload */
 
         /**

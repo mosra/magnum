@@ -38,6 +38,7 @@
 #ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
+#include <Corrade/Utility/Macros.h> /* CORRADE_CONSTEXPR14 */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Math.h"
@@ -151,10 +152,10 @@ template<std::size_t size> class BitVector {
          *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        UnsignedByte* data();
+        CORRADE_CONSTEXPR14 UnsignedByte* data();
         constexpr const UnsignedByte* data() const; /**< @overload */
         #else
-        auto data() -> UnsignedByte(&)[DataSize] { return _data; }
+        CORRADE_CONSTEXPR14 auto data() -> UnsignedByte(&)[DataSize] { return _data; }
         constexpr auto data() const -> const UnsignedByte(&)[DataSize] { return _data; }
         #endif
 

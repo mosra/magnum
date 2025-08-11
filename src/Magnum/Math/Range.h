@@ -241,7 +241,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * @see @ref size(), @ref Range2D::bottomLeft(),
          *      @ref Range3D::backBottomLeft()
          */
-        VectorType& min() { return _min; }
+        CORRADE_CONSTEXPR14 VectorType& min() { return _min; }
         constexpr const VectorType min() const { return _min; } /**< @overload */
 
         /**
@@ -251,7 +251,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * @see @ref size(), @ref Range2D::topRight(),
          *      @ref Range3D::frontTopRight()
          */
-        VectorType& max() { return _max; }
+        CORRADE_CONSTEXPR14 VectorType& max() { return _max; }
         constexpr const VectorType max() const { return _max; } /**< @overload */
 
         /**
@@ -501,7 +501,7 @@ template<class T> class Range2D: public Range<2, T> {
          *
          * Equivalent to @ref min().
          */
-        Vector2<T>& bottomLeft() { return Range<2, T>::min(); }
+        CORRADE_CONSTEXPR14 Vector2<T>& bottomLeft() { return Range<2, T>::min(); }
         constexpr Vector2<T> bottomLeft() const { return Range<2, T>::min(); } /**< @overload */
 
         /** @brief Bottom right corner */
@@ -519,23 +519,23 @@ template<class T> class Range2D: public Range<2, T> {
          *
          * Equivalent to @ref max().
          */
-        Vector2<T>& topRight() { return Range<2, T>::max(); }
+        CORRADE_CONSTEXPR14 Vector2<T>& topRight() { return Range<2, T>::max(); }
         constexpr Vector2<T> topRight() const { return Range<2, T>::max(); } /**< @overload */
 
         /** @brief Left edge */
-        T& left() { return Range<2, T>::min().x(); }
+        CORRADE_CONSTEXPR14 T& left() { return Range<2, T>::min().x(); }
         constexpr T left() const { return Range<2, T>::min().x(); } /**< @overload */
 
         /** @brief Right edge */
-        T& right() { return Range<2, T>::max().x(); }
+        CORRADE_CONSTEXPR14 T& right() { return Range<2, T>::max().x(); }
         constexpr T right() const { return Range<2, T>::max().x(); } /**< @overload */
 
         /** @brief Bottom edge */
-        T& bottom() { return Range<2, T>::min().y(); }
+        CORRADE_CONSTEXPR14 T& bottom() { return Range<2, T>::min().y(); }
         constexpr T bottom() const { return Range<2, T>::min().y(); } /**< @overload */
 
         /** @brief Top edge */
-        T& top() { return Range<2, T>::max().y(); }
+        CORRADE_CONSTEXPR14 T& top() { return Range<2, T>::max().y(); }
         constexpr T top() const { return Range<2, T>::max().y(); } /**< @overload */
 
         /** @brief Range in the X axis */
@@ -650,7 +650,7 @@ template<class T> class Range3D: public Range<3, T> {
          *
          * Equivalent to @ref min().
          */
-        Vector3<T>& backBottomLeft() { return Range<3, T>::min(); }
+        CORRADE_CONSTEXPR14 Vector3<T>& backBottomLeft() { return Range<3, T>::min(); }
         constexpr Vector3<T> backBottomLeft() const { return Range<3, T>::min(); } /**< @overload */
 
         /** @brief Back bottom right corner */
@@ -673,7 +673,7 @@ template<class T> class Range3D: public Range<3, T> {
          *
          * Equivalent to @ref max().
          */
-        Vector3<T>& frontTopRight() { return Range<3, T>::max(); }
+        CORRADE_CONSTEXPR14 Vector3<T>& frontTopRight() { return Range<3, T>::max(); }
         constexpr Vector3<T> frontTopRight() const { return Range<3, T>::max(); } /**< @overload */
 
         /** @brief Front top left corner */
@@ -692,27 +692,27 @@ template<class T> class Range3D: public Range<3, T> {
         }
 
         /** @brief Left edge */
-        T& left() { return Range<3, T>::min().x(); }
+        CORRADE_CONSTEXPR14 T& left() { return Range<3, T>::min().x(); }
         constexpr T left() const { return Range<3, T>::min().x(); } /**< @overload */
 
         /** @brief Right edge */
-        T& right() { return Range<3, T>::max().x(); }
+        CORRADE_CONSTEXPR14 T& right() { return Range<3, T>::max().x(); }
         constexpr T right() const { return Range<3, T>::max().x(); } /**< @overload */
 
         /** @brief Bottom edge */
-        T& bottom() { return Range<3, T>::min().y(); }
+        CORRADE_CONSTEXPR14 T& bottom() { return Range<3, T>::min().y(); }
         constexpr T bottom() const { return Range<3, T>::min().y(); } /**< @overload */
 
         /** @brief Top edge */
-        T& top() { return Range<3, T>::max().y(); }
+        CORRADE_CONSTEXPR14 T& top() { return Range<3, T>::max().y(); }
         constexpr T top() const { return Range<3, T>::max().y(); } /**< @overload */
 
         /** @brief Back edge */
-        T& back() { return Range<3, T>::min().z(); }
+        CORRADE_CONSTEXPR14 T& back() { return Range<3, T>::min().z(); }
         constexpr T back() const { return Range<3, T>::min().z(); } /**< @overload */
 
         /** @brief Front edge */
-        T& front() { return Range<3, T>::max().z(); }
+        CORRADE_CONSTEXPR14 T& front() { return Range<3, T>::max().z(); }
         constexpr T front() const { return Range<3, T>::max().z(); } /**< @overload */
 
         /** @brief Range in the X axis */

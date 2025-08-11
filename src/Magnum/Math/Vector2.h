@@ -171,7 +171,7 @@ template<class T> class Vector2: public Vector<2, T> {
          *
          * @see @ref r()
          */
-        T& x() { return Vector<2, T>::_data[0]; }
+        CORRADE_CONSTEXPR14 T& x() { return Vector<2, T>::_data[0]; }
         constexpr const T& x() const { return Vector<2, T>::_data[0]; } /**< @overload */
 
         /**
@@ -179,7 +179,7 @@ template<class T> class Vector2: public Vector<2, T> {
          *
          * @see @ref g()
          */
-        T& y() { return Vector<2, T>::_data[1]; }
+        CORRADE_CONSTEXPR14 T& y() { return Vector<2, T>::_data[1]; }
         constexpr const T& y() const { return Vector<2, T>::_data[1]; } /**< @overload */
 
         /**
@@ -188,7 +188,7 @@ template<class T> class Vector2: public Vector<2, T> {
          *
          * Equivalent to @ref x().
          */
-        T& r() { return Vector<2, T>::_data[0]; }
+        CORRADE_CONSTEXPR14 T& r() { return Vector<2, T>::_data[0]; }
         /**
          * @overload
          * @m_since_latest
@@ -201,7 +201,7 @@ template<class T> class Vector2: public Vector<2, T> {
          *
          * Equivalent to @ref y().
          */
-        T& g() { return Vector<2, T>::_data[1]; }
+        CORRADE_CONSTEXPR14 T& g() { return Vector<2, T>::_data[1]; }
         /**
          * @overload
          * @m_since_latest

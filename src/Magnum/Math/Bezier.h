@@ -174,10 +174,10 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        VectorType* data();
+        CORRADE_CONSTEXPR14 VectorType* data();
         constexpr const VectorType* data() const; /**< @overload */
         #else
-        auto data() -> VectorType(&)[order + 1] { return _data; }
+        CORRADE_CONSTEXPR14 auto data() -> VectorType(&)[order + 1] { return _data; }
         constexpr auto data() const -> const VectorType(&)[order + 1] { return _data; }
         #endif
 
@@ -208,7 +208,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          *
          * @p i should not be larger than @ref Order.
          */
-        VectorType& operator[](std::size_t i) { return _data[i]; }
+        CORRADE_CONSTEXPR14 VectorType& operator[](std::size_t i) { return _data[i]; }
         /* returns const& so [][] operations are also constexpr */
         constexpr const VectorType& operator[](std::size_t i) const { return _data[i]; } /**< @overload */
 

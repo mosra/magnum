@@ -482,7 +482,7 @@ template<class T> class Quaternion {
          *
          * @see @ref xyzw(), @ref wxyz()
          */
-        Vector3<T>& vector() { return _vector; }
+        CORRADE_CONSTEXPR14 Vector3<T>& vector() { return _vector; }
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
         constexpr const Vector3<T> vector() const { return _vector; } /**< @overload */
@@ -492,7 +492,7 @@ template<class T> class Quaternion {
          *
          * @see @ref xyzw(), @ref wxyz()
          */
-        T& scalar() { return _scalar; }
+        CORRADE_CONSTEXPR14 T& scalar() { return _scalar; }
         constexpr T scalar() const { return _scalar; } /**< @overload */
 
         /**
