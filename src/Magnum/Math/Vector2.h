@@ -196,7 +196,7 @@ template<class T> class Vector2: public Vector<2, T> {
         constexpr const T& r() const { return Vector<2, T>::_data[0]; }
 
         /**
-         * @brief Y component
+         * @brief G component
          * @m_since_latest
          *
          * Equivalent to @ref y().

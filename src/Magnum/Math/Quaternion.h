@@ -801,7 +801,7 @@ template<class T> class Quaternion {
          *      \boldsymbol v' = qvq = q [\boldsymbol v, 0] q
          * @f]
          * You can use @ref reflection() to create a quaternion reflecting
-         * along given normal. Note that it's **not possible to combine
+         * along given normal. Note that it's *not* possible to combine
          * reflections and rotations with the usual quaternion multiplication.
          * Assuming a (normalized) rotation quaternion @f$ r @f$, a combined
          * rotation and reflection of vector @f$ v @f$ would look like this
