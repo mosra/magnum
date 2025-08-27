@@ -1,5 +1,5 @@
 class Magnum < Formula
-  desc "C++11/C++14 graphics middleware for games and data visualization"
+  desc "C++11 graphics middleware for games and data visualization"
   homepage "https://magnum.graphics"
   # git describe origin/master, except the `v` prefix
   version "2020.06-3494-gb85f0c8df"
