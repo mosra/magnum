@@ -117,9 +117,7 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     #endif
 
     #ifdef MAGNUM_BUILD_STATIC
-    /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShadersGL"_s))
-        importShaderResources();
+    importShaderResources();
     #endif
     Utility::Resource rs("MagnumShadersGL"_s);
 

@@ -160,9 +160,7 @@ void MeshVisualizerGLBase::assertExtensions(const FlagsBase flags) {
     #endif
 
     #ifdef MAGNUM_BUILD_STATIC
-    /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShadersGL"_s))
-        importShaderResources();
+    importShaderResources();
     #endif
 }
 

@@ -82,9 +82,7 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
 
 DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     #ifdef MAGNUM_BUILD_STATIC
-    /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumTextureTools"_s))
-        importTextureToolResources();
+    importTextureToolResources();
     #endif
     Utility::Resource rs("MagnumTextureTools"_s);
 

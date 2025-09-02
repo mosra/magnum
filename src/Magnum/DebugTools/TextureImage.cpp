@@ -81,9 +81,7 @@ class FloatReinterpretShader: public GL::AbstractShaderProgram {
 
 FloatReinterpretShader::FloatReinterpretShader() {
     #ifdef MAGNUM_BUILD_STATIC
-    /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumDebugTools"_s))
-        importDebugToolsResources();
+    importDebugToolsResources();
     #endif
     Utility::Resource rs{"MagnumDebugTools"};
 
