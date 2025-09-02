@@ -206,6 +206,9 @@ namespace Vk {
     }
 
     enum class CompressedPixelFormat { Astc5x5x4RGBAF = 111 };
+    /* Clang -Wmissing-prototypes warns otherwise, even though this is in an
+       anonymous namespace */
+    Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat);
     Vector3i compressedPixelFormatBlockSize(CompressedPixelFormat format) {
         #ifdef CORRADE_NO_ASSERT
         static_cast<void>(format);
@@ -213,6 +216,7 @@ namespace Vk {
         CORRADE_INTERNAL_ASSERT(format == CompressedPixelFormat::Astc5x5x4RGBAF);
         return {5, 5, 4};
     }
+    UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat);
     UnsignedInt compressedPixelFormatBlockDataSize(CompressedPixelFormat format) {
         #ifdef CORRADE_NO_ASSERT
         static_cast<void>(format);
