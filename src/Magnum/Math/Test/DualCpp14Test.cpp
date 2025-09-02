@@ -49,7 +49,7 @@ constexpr Dual populate() {
     a.real() = 3.0f;
     a.dual() = 2.0f;
     return a;
-};
+}
 
 void DualCpp14Test::accessConstexpr() {
     constexpr Dual a = populate();

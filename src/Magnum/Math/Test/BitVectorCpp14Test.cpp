@@ -50,7 +50,7 @@ constexpr BitVector19 populate() {
     a.data()[0] = 0xc0;
     a.data()[1] = 0xff;
     return a;
-};
+}
 
 void BitVectorCpp14Test::accessConstexpr() {
     constexpr BitVector19 a = populate();

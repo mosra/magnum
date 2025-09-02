@@ -51,7 +51,7 @@ constexpr QuadraticBezier2D populate() {
     a.data()[1] = {3.0f, 2.0f};
     a[0] = {0.0f, 1.0f};
     return a;
-};
+}
 
 void BezierCpp14Test::accessConstexpr() {
     constexpr QuadraticBezier2D a = populate();

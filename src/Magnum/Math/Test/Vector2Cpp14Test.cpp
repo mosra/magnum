@@ -51,7 +51,7 @@ constexpr Vector2 populate() {
     a.r() *= 0.5f;
     a.g() -= 1.0f;
     return a;
-};
+}
 
 void Vector2Cpp14Test::accessConstexpr() {
     constexpr Vector2 a = populate();

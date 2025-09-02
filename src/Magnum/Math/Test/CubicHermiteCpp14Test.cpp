@@ -50,7 +50,7 @@ constexpr CubicHermite2D populate() {
     a.point() = {3.0f, 4.0f};
     a.outTangent() = {6.0f, 5.0f};
     return a;
-};
+}
 
 void CubicHermiteCpp14Test::accessConstexpr() {
     constexpr CubicHermite2D a = populate();

@@ -57,7 +57,7 @@ constexpr Frustum populate() {
     a[1].y() /= 2.0f;
     (a.end() - 3)->z() *= 2.0f;
     return a;
-};
+}
 
 void FrustumCpp14Test::accessConstexpr() {
     constexpr Frustum a = populate();

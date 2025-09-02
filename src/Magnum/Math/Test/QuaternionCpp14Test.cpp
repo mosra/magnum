@@ -50,7 +50,7 @@ constexpr Quaternion populate() {
     a.vector() = {3.0f, 1.0f, 0.0f};
     a.scalar() = 2.0f;
     return a;
-};
+}
 
 void QuaternionCpp14Test::accessConstexpr() {
     constexpr Quaternion a = populate();

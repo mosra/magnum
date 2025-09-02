@@ -49,7 +49,7 @@ constexpr Vector2 populate() {
     a[0] = 3.0f;
     a.data()[1] = 2.0f;
     return a;
-};
+}
 
 void VectorCpp14Test::accessConstexpr() {
     constexpr Vector2 a = populate();

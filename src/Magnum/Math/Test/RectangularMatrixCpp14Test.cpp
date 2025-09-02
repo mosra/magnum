@@ -50,7 +50,7 @@ constexpr Matrix2x2 populate() {
     a[0] = {3.0f, 2.0f};
     a[1] = {0.0f, 1.0f};
     return a;
-};
+}
 
 void RectangularMatrixCpp14Test::accessConstexpr() {
     constexpr Matrix2x2 a = populate();

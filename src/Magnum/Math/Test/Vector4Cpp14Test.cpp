@@ -55,7 +55,7 @@ constexpr Vector4 populate() {
     a.b() += 1.0f;
     a.a() /= 2.0f;
     return a;
-};
+}
 
 void Vector4Cpp14Test::accessConstexpr() {
     constexpr Vector4 a = populate();

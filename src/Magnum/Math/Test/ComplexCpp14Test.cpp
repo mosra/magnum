@@ -49,7 +49,7 @@ constexpr Complex populate() {
     a.real() = 3.0f;
     a.imaginary() = 2.0f;
     return a;
-};
+}
 
 void ComplexCpp14Test::accessConstexpr() {
     constexpr Complex a = populate();

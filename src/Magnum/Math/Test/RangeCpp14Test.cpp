@@ -56,7 +56,7 @@ constexpr Range2D populate() {
     a.min() = {1.0f, 0.0f};
     a.max() = {2.0f, 3.0f};
     return a;
-};
+}
 
 void RangeCpp14Test::accessConstexpr() {
     constexpr Range2D a = populate();
@@ -72,7 +72,7 @@ constexpr Range2D populate2D() {
     a.top() *= 2.0f;
     a.right() /= 2.0f;
     return a;
-};
+}
 
 void RangeCpp14Test::accessConstexpr2D() {
     constexpr Range2D a = populate2D();
@@ -90,7 +90,7 @@ constexpr Range3D populate3D() {
     a.back() -= 1.0f;
     a.front() += 0.5f;
     return a;
-};
+}
 
 void RangeCpp14Test::accessConstexpr3D() {
     constexpr Range3D a = populate3D();

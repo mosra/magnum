@@ -53,7 +53,7 @@ constexpr Vector3 populate() {
     a.g() -= 1.0f;
     a.b() /= 2.0f;
     return a;
-};
+}
 
 void Vector3Cpp14Test::accessConstexpr() {
     constexpr Vector3 a = populate();
