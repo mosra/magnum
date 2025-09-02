@@ -715,12 +715,19 @@ static_cast<void>(d);
 Float sine(Rad angle);
 Float a = 60.0f;
 Deg b;
-/* "warning C4312: discarding return value of function with [[nodiscard]]
+/* "warning C4834: discarding return value of function with [[nodiscard]]
    attribute". Yeah, of course it is. Am I not allowed to write succint code
-   snippets anymore?! */
-#ifdef CORRADE_TARGET_MSVC
+   snippets anymore?!
+
+   Same happens on clang-cl (which uses the MSVC STL), but because clang-cl
+   reports itself as MSVC and for it the MSVC-specific warning suppressions
+   don't work, check for clang-cl first and for MSVC second. */
+#ifdef CORRADE_TARGET_CLANG_CL
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+#elif defined(CORRADE_TARGET_MSVC)
 #pragma warning(push)
-#pragma warning(disable: 4312)
+#pragma warning(disable: 4834)
 #endif
 /* [Deg-usage-explicit-conversion] */
 //sine(a);                      // compilation error
@@ -731,7 +738,9 @@ std::sin(Float(Rad{b}));        // required explicit conversion hints to user
                                 // that this case needs special attention
                                 // (i.e., conversion to radians)
 /* [Deg-usage-explicit-conversion] */
-#ifdef CORRADE_TARGET_MSVC
+#ifdef CORRADE_TARGET_CLANG_CL
+#pragma GCC diagnostic pop
+#elif defined(CORRADE_TARGET_MSVC)
 #pragma warning(pop)
 #endif
 }

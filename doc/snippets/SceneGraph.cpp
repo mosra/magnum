@@ -261,7 +261,8 @@ class MyObject: MyFeature, public Object3D {
 /* [feature-construction-order-crash] */
 }
 {
-#ifdef CORRADE_TARGET_GCC
+/* clang-cl doesn't report itself as GCC but warns too, check it explicitly */
+#if defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG_CL)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreorder"
 #endif
@@ -274,7 +275,7 @@ class MyObject: MyFeature, public Object3D {
 };
 /* [feature-construction-order-crash-destruction] */
 }
-#ifdef CORRADE_TARGET_GCC
+#if defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG_CL)
 #pragma GCC diagnostic pop
 #endif
 }
