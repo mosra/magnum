@@ -2614,12 +2614,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         Containers::Optional<Containers::ArrayView<const char>>(*_fileCallback)(const std::string&, InputFileCallbackPolicy, void*){};
         void* _fileCallbackUserData{};
 
+        /* clang-cl on Windows complains about this field being unused if the
+           templated setFileCallback() isn't called. Well, sure, it isn't used
+           in that particular case, but what am I supposed to do?! */
+        #ifdef CORRADE_TARGET_CLANG_CL
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wunused-private-field"
+        #endif
         /* Used by the templated version only */
         struct FileCallbackTemplate {
             void(*callback)();
             const void* userData;
         /* GCC 4.8 complains loudly about missing initializers otherwise */
         } _fileCallbackTemplate{nullptr, nullptr};
+        #ifdef CORRADE_TARGET_CLANG_CL
+        #pragma GCC diagnostic pop
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         struct CachedScenes;
