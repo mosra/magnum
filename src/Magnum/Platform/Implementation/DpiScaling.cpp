@@ -170,17 +170,21 @@ bool isWindowsAppDpiAware() {
     if(shcore) {
         /* GCC 8 adds -Wcast-function-type, enabled by default with -Wextra,
            which causes this line to emit a warning on MinGW. We know what
-           we're doing, so suppress that.
+           we're doing, so suppress that. Clang implements it since version 13,
+           and it's a part of -Wextra since 19.1:
+            https://github.com/llvm/llvm-project/commit/217f0f735afec57a51fa6f9ab863d4713a2f85e2
+            https://github.com/llvm/llvm-project/commit/1de7e6c8cba27296f3fc16d107822ea0ee856759
 
-           Also explicitly check we're not on Clang because certain Clang-based
-           IDEs inherit __GNUC__ if GCC is used instead of leaving it at 4 like
-           Clang itself does. */
-        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8
+           For GCC explicitly check we're not on Clang because certain
+           Clang-based IDEs inherit __GNUC__ if GCC is used instead of leaving
+           it at 4 like Clang itself does, which could lead to the pragma
+           being used on Clang 12 and older, causing unknown pragma warning. */
+        #if (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8) || (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 13)
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wcast-function-type"
         #endif
         auto* const getProcessDpiAwareness = reinterpret_cast<HRESULT(WINAPI *)(HANDLE, PROCESS_DPI_AWARENESS*)>(GetProcAddress(shcore, "GetProcessDpiAwareness"));
-        #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8
+        #if (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8) || (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 13)
         #pragma GCC diagnostic pop
         #endif
         PROCESS_DPI_AWARENESS result{};
@@ -193,19 +197,13 @@ bool isWindowsAppDpiAware() {
        correctly. */
     HMODULE const user32 = GetModuleHandleA("User32.dll");
     CORRADE_INTERNAL_ASSERT(user32);
-    /* GCC 8 adds -Wcast-function-type, enabled by default with -Wextra, which
-       causes this line to emit a warning on MinGW. We know what we're doing,
-       so suppress that.
-
-       Also explicitly check we're not on Clang because certain Clang-based
-       IDEs inherit __GNUC__ if GCC is used instead of leaving it at 4 like
-       Clang itself does. */
-    #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8
+    /* Same as above */
+    #if (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8) || (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 13)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wcast-function-type"
     #endif
     auto const isProcessDPIAware = reinterpret_cast<BOOL(WINAPI *)()>(GetProcAddress(user32, "IsProcessDPIAware"));
-    #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8
+    #if (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8) || (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 13)
     #pragma GCC diagnostic pop
     #endif
     CORRADE_INTERNAL_ASSERT(isProcessDPIAware);
