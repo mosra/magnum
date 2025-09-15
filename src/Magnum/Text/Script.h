@@ -153,6 +153,12 @@ enum class Script: UnsignedInt {
     Bengali = Utility::Endianness::fourCC('B', 'e', 'n', 'g'),
 
     /**
+     * [Beria Erfe](https://en.wikipedia.org/wiki/Zaghawa_alphabet),
+     * Unicode 17.0
+     */
+    BeriaErfe = Utility::Endianness::fourCC('B', 'e', 'r', 'f'),
+
+    /**
      * [Bhaiksuki](https://en.wikipedia.org/wiki/Bhaiksuki_script), Unicode 9.0
      */
     Bhaiksuki = Utility::Endianness::fourCC('B', 'h', 'k', 's'),
@@ -728,7 +734,10 @@ enum class Script: UnsignedInt {
      */
     Siddham = Utility::Endianness::fourCC('S', 'i', 'd', 'd'),
 
-    /* Sidt not in Unicode yet */
+    /**
+     * [Sidetic](https://en.wikipedia.org/wiki/Sidetic_language), Unicode 17.0
+     */
+    Sidetic = Utility::Endianness::fourCC('S', 'i', 'd', 't'),
 
     /**
      * [Khudawadi](https://en.wikipedia.org/wiki/Khudabadi_script), Unicode 7.0
@@ -808,7 +817,8 @@ enum class Script: UnsignedInt {
      */
     TaiViet = Utility::Endianness::fourCC('T', 'a', 'v', 't'),
 
-    /* Tayo not in Unicode yet */
+    /** [Tai Yo](https://en.wikipedia.org/wiki/Lai_Tay_script), Unicode 17.0 */
+    TaiYo = Utility::Endianness::fourCC('T', 'a', 'y', 'o'),
 
     /** [Telugu](https://en.wikipedia.org/wiki/Telugu_script), Unicode 1.0 */
     Telugu = Utility::Endianness::fourCC('T', 'e', 'l', 'u'),
@@ -844,7 +854,10 @@ enum class Script: UnsignedInt {
      */
     Todhri = Utility::Endianness::fourCC('T', 'o', 'd', 'r'),
 
-    /* Tols not in Unicode yet */
+    /**
+     * [Tolong Siki](https://en.wikipedia.org/wiki/Tolong_Siki), Unicode 17.0
+     */
+    TolongSiki = Utility::Endianness::fourCC('T', 'o', 'l', 's'),
 
     /**
      * [Toto](https://en.wikipedia.org/wiki/Toto_language#Writing_system),
