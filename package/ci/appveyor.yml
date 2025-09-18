@@ -145,12 +145,12 @@ install:
 - IF "%TARGET%" == "desktop" set BUILD_APPLICATIONS=YES
 - IF "%TARGET%" == "desktop-gles" set BUILD_APPLICATIONS=NO
 
-# SDL2. 2.24 is the oldest version that has CMake configs bundled in order to
-# verify that FindSDL2 does the correct thing.
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" appveyor DownloadFile https://github.com/libsdl-org/SDL/releases/download/release-2.24.0/SDL2-devel-2.24.0-VC.zip
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" 7z x SDL2-devel-2.24.0-VC.zip && ren SDL2-2.24.0 SDL
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" appveyor DownloadFile https://github.com/libsdl-org/SDL/releases/download/release-2.24.0/SDL2-devel-2.24.0-mingw.zip
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.24.0-mingw.zip && ren SDL2-2.24.0 SDL
+# SDL2. 2.28.3 is the oldest version that has CMake configs requiring at least
+# CMake 3.5, older ones don't work with CMake 4 anymore.
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" appveyor DownloadFile https://github.com/libsdl-org/SDL/releases/download/release-2.28.3/SDL2-devel-2.28.3-VC.zip
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" 7z x SDL2-devel-2.28.3-VC.zip && ren SDL2-2.28.3 SDL
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" appveyor DownloadFile https://github.com/libsdl-org/SDL/releases/download/release-2.28.3/SDL2-devel-2.28.3-mingw.zip
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.28.3-mingw.zip && ren SDL2-2.28.3 SDL
 
 # GLFW
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%PLATFORM%" == "" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN32.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN32.zip
