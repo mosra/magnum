@@ -88,6 +88,8 @@ else()
     endif()
 endif()
 
+corrade_add_test(TextureToolsSampleTest SampleTest.cpp LIBRARIES MagnumTextureToolsTestLib)
+
 if(MAGNUM_TARGET_GL)
     corrade_add_test(TextureToolsDistanceFieldGL_Test DistanceFieldGL_Test.cpp LIBRARIES MagnumTextureTools)
 

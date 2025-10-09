@@ -41,10 +41,12 @@ set(CMAKE_FOLDER "Magnum/TextureTools")
 find_package(Corrade REQUIRED PluginManager)
 
 set(MagnumTextureTools_GracefulAssert_SRCS
-    Atlas.cpp)
+    Atlas.cpp
+    Sample.cpp)
 
 set(MagnumTextureTools_HEADERS
     Atlas.h
+    Sample.h
     TextureTools.h
 
     visibility.h)

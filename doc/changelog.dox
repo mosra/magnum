@@ -507,6 +507,9 @@ See also:
 -   New @ref TextureTools::atlasTextureCoordinateTransformation() helper for
     creating an appropriate texture coordinate transformation matrix for
     textures placed into an atlas
+-   New @ref TextureTools::sampleLinear(), @ref TextureTools::sampleSrgb() and
+    @ref TextureTools::sampleSrgbAlpha() utilities for sampling 1D textures
+    such as colormaps on a CPU
 -   Added a @ref TextureTools::DistanceFieldGL::operator()() overload taking a
     @ref GL::Framebuffer instead of a @ref GL::Texture as an output for an
     easier ability to download the resulting image on OpenGL ES platforms;

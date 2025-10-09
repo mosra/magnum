@@ -140,14 +140,16 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @endparblock
 
-For all color maps the returned data is the sRGB colorspace. Desired usage is
-by uploading to a texture with linear filtering, depending on the use case with
-either clamp or repeat wrapping. For a sRGB workflow don't forget to set the
-texture format to sRGB, to ensure the values are interpreted and interpolated
-done correctly.
+For all color maps the returned data is the sRGB colorspace. Desired GPU usage
+is by uploading to a texture with linear filtering, depending on the use case
+with either clamp or repeat wrapping. For a sRGB workflow don't forget to set
+the texture format to sRGB, to ensure the values are interpreted and
+interpolated done correctly.
 
 @snippet DebugTools-gl.cpp ColorMap
 
+For CPU-side usage see @ref TextureTools::sampleLinear() and
+@ref TextureTools::sampleSrgb().
 */
 namespace ColorMap {
 
