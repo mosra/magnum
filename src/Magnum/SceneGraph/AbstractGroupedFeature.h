@@ -44,7 +44,7 @@ Used together with @ref FeatureGroup.
 
 @section SceneGraph-AbstractGroupedFeature-subclassing Subclassing
 
-Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
+Usage is via subclassing the feature using [CRTP](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 and @cpp typedef @ce'ing @ref FeatureGroup to accept only given type, e.g.:
 
 @snippet SceneGraph.cpp AbstractGroupedFeature-subclassing

@@ -126,7 +126,7 @@ defined by @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$ using a
     d = \frac{|(\boldsymbol b - \boldsymbol a) \times (\boldsymbol a - \boldsymbol p)|}{|\boldsymbol b - \boldsymbol a|}
         = \frac{|(\boldsymbol b - \boldsymbol a)_\bot \cdot (\boldsymbol a - \boldsymbol p)|}{|\boldsymbol b - \boldsymbol a|}
 @f]
-Source: http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
+Source: https://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
 @see @ref linePointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&),
     @ref linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
 */
@@ -158,7 +158,7 @@ defined by @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$ using a
 @ref cross(const Vector3<T>&, const Vector3<T>&) "cross product": @f[
     d = \frac{|(\boldsymbol b - \boldsymbol a) \times (\boldsymbol a - \boldsymbol p)|}{|\boldsymbol b - \boldsymbol a|}
 @f]
-Source: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+Source: https://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
 @see @ref linePointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&),
     @ref linePoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
 */

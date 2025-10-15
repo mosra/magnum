@@ -626,7 +626,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
         /* Otherwise try to detect a D3D ANGLE backend by querying line width.
            It's always exactly just 1 on D3D, usually (but not always) more on
            GL, not sure about Metal. So this is not a 100% match. Sources:
-           http://stackoverflow.com/a/20149090 and http://webglreport.com */
+           https://stackoverflow.com/a/20149090 and https://webglreport.com */
         else {
             Range1Di range;
             glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());

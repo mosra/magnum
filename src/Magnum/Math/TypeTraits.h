@@ -377,7 +377,7 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * the @ref epsilon() value), pure equality comparison everywhere else.
      * The @ref Half type has representable values sparse enough that no fuzzy
      * comparison needs to be done. Algorithm adapted from
-     * http://floating-point-gui.de/errors/comparison/.
+     * https://floating-point-gui.de/errors/comparison/.
      * @see @ref Math::equal(T, T), @ref Math::notEqual(T, T)
      */
     static bool equals(T a, T b);

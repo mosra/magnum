@@ -113,7 +113,7 @@ namespace Implementation {
 
 @m_keywords{Application}
 
-Application using the [Simple DirectMedia Layer](http://www.libsdl.org/)
+Application using the [Simple DirectMedia Layer](https://www.libsdl.org)
 toolkit. Supports keyboard and mouse handling. This application library is
 available for all platforms for which SDL2 is ported except Android (thus is
 avaiable also on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", see respective
@@ -124,7 +124,7 @@ sections in @ref building-corrade-cross-emscripten "Corrade's" and
 
 @thirdparty This plugin makes use of the [SDL2](https://www.libsdl.org/)
     library, released under the @m_class{m-label m-success} **zlib license**
-    ([license text](http://www.gzip.org/zlib/zlib_license.html),
+    ([license text](https://zlib.net/zlib_license.html),
     [choosealicense.com](https://choosealicense.com/licenses/zlib/)).
     Attribution is appreciated but not required.
 
@@ -221,7 +221,7 @@ final package along with a PowerShell script for easy local installation.
 
 @section Platform-Sdl2Application-usage General usage
 
-This application library depends on the [SDL2](http://www.libsdl.org) library
+This application library depends on the [SDL2](https://www.libsdl.org) library
 version 2.0.6 and newer. On Emscripten, the builtin minimal SDL implementation
 is used. The application library is built if `MAGNUM_WITH_SDL2APPLICATION` is
 enabled when building Magnum. To use this library with CMake, request the

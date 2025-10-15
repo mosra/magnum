@@ -38,8 +38,7 @@ namespace Magnum {
 @todoc static plugins
 
 The following guide explains basic workflow of using
-[Emscripten](http://kripken.github.io/emscripten-site/) for deploying HTML5
-apps using WebGL.
+[Emscripten](https://emscripten.org) for deploying HTML5 apps using WebGL.
 
 At the very least you need to have Emscripten installed. Running console
 applications requires Node.js, running browser apps require a webserver that's
@@ -559,8 +558,8 @@ See @ref GL-Buffer-webgl-restrictions "GL::Buffer",
 documentation for more information. The corresponding sections in official
 WebGL specification provide even more detail:
 
--   [Differences Between WebGL and OpenGL ES 2.0](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
--   [Differences Between WebGL and OpenGL ES 3.0](https://www.khronos.org/registry/webgl/specs/latest/2.0/#5)
+-   [Differences Between WebGL and OpenGL ES 2.0](https://registry.khronos.org/webgl/specs/latest/1.0/#6)
+-   [Differences Between WebGL and OpenGL ES 3.0](https://registry.khronos.org/webgl/specs/latest/2.0/#5)
 
 @subsection platforms-html5-webgl-timer-queries Timer queries not available in the browser
 

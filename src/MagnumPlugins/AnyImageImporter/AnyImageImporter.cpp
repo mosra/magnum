@@ -215,7 +215,7 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     /* https://docs.microsoft.com/cs-cz/windows/desktop/direct3ddds/dx-graphics-dds-pguide */
     else if(dataString.hasPrefix("DDS "_s))
         plugin = "DdsImporter"_s;
-    /* http://www.openexr.com/openexrfilelayout.pdf */
+    /* https://openexr.com/en/latest/OpenEXRFileLayout.html#magic-number */
     else if(dataString.hasPrefix("\x76\x2f\x31\x01"_s))
         plugin = "OpenExrImporter"_s;
     /* https://en.wikipedia.org/wiki/Radiance_(software)#HDR_image_format and
@@ -247,8 +247,8 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     /* https://en.wikipedia.org/wiki/Portable_Network_Graphics#File_header */
     } else if(dataString.hasPrefix("\x89PNG\x0d\x0a\x1a\x0a"_s))
         plugin = "PngImporter"_s;
-    /* http://paulbourke.net/dataformats/tiff/,
-       http://paulbourke.net/dataformats/tiff/tiff_summary.pdf */
+    /* https://paulbourke.net/dataformats/tiff/,
+       https://paulbourke.net/dataformats/tiff/tiff_summary.pdf */
     else if(dataString.hasPrefix("II\x2a\x00"_s) ||
             dataString.hasPrefix("MM\x00\x2a"_s))
         plugin = "TiffImporter"_s;

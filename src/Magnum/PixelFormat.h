@@ -701,7 +701,7 @@ enum class PixelFormat: UnsignedInt {
 
     /**
      * 24-bit unsigned normalized depth. Data layout consistent with the
-     * [KTX2 specification](http://github.khronos.org/KTX-Specification/#_depth_and_stencil_formats)
+     * [KTX2 specification](https://github.khronos.org/KTX-Specification/ktxspec.v2.html#_depth_and_stencil_formats)
      * --- aligned to 32 bits with the 8 most significant bits unused.
      *
      * Corresponds to @ref GL::PixelFormat::DepthComponent and
@@ -742,7 +742,7 @@ enum class PixelFormat: UnsignedInt {
 
     /**
      * 16-bit unsigned normalized depth with 8-bit unsigned integral stencil.
-     * Data layout consistent with the [KTX2 specification](http://github.khronos.org/KTX-Specification/#_depth_and_stencil_formats)
+     * Data layout consistent with the [KTX2 specification](https://github.khronos.org/KTX-Specification/ktxspec.v2.html#_depth_and_stencil_formats)
      * --- aligned to 32 bits with depth in the 16 least significant bits and
      * the 8 most significant bits unused.
      *
@@ -754,7 +754,7 @@ enum class PixelFormat: UnsignedInt {
 
     /**
      * 24-bit unsigned normalized depth with 8-bit unsigned integral stencil.
-     * Data layout consistent with the [KTX2 specification](http://github.khronos.org/KTX-Specification/#_depth_and_stencil_formats)
+     * Data layout consistent with the [KTX2 specification](https://github.khronos.org/KTX-Specification/ktxspec.v2.html#_depth_and_stencil_formats)
      * --- packed to 32 bits with depth in the 24 least significant bits
      * and stencil being in the 8 most significant bits.
      *
@@ -771,7 +771,7 @@ enum class PixelFormat: UnsignedInt {
 
     /**
      * 32-bit float depth with 8-bit unsigned integral stencil. Data layout
-     * consistent with the [KTX2 specification](http://github.khronos.org/KTX-Specification/#_depth_and_stencil_formats)
+     * consistent with the [KTX2 specification](https://github.khronos.org/KTX-Specification/ktxspec.v2.html#_depth_and_stencil_formats)
      * --- packed to 64 bits with the depth in the 32 least significant
      * bits and the 24 most significant bits unused.
      *

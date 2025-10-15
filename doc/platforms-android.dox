@@ -182,7 +182,7 @@ different version.
 The @cb{.xml} <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="11" /> @ce
 line requests the minimal and target Android SDK version. Setting the version
 lower than this (or accidentally omitting this element) will enable the
-[Screen Compatibility Mode](http://www.androiddocs.com/guide/practices/screen-compat-mode.html),
+[Screen Compatibility Mode](https://developer.android.com/guide/topics/manifest/supports-screens-element#compat-mode),
 which doesn't report events in coordinates that match underlying framebuffer
 pixel size. That is not supported by @ref Platform::AndroidApplication since
 there's [no reliable way](https://stackoverflow.com/q/17481341) to get the

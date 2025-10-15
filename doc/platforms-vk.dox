@@ -116,7 +116,7 @@ Qualcomm best practices:
 
 Various useful links:
 
--   [Yet another blog explaining Vulkan synchronization](http://themaister.net/blog/2019/08/14/yet-another-blog-explaining-vulkan-synchronization/)
+-   [Yet another blog explaining Vulkan synchronization](https://themaister.net/blog/2019/08/14/yet-another-blog-explaining-vulkan-synchronization/)
 -   [Writing an efficient Vulkan renderer](https://zeux.io/2020/02/27/writing-an-efficient-vulkan-renderer/)
 -   [Custom memory allocators](https://rastergrid.com/blog/sw-eng/2021/03/custom-memory-allocators/)
 

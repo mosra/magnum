@@ -69,7 +69,7 @@ find_package_handle_standard_args("OpenGLES3" DEFAULT_MSG
 if(NOT TARGET OpenGLES3::OpenGLES3)
     # Work around BUGGY framework support on macOS. Do this also in case of
     # Emscripten, since there we don't have a location either.
-    # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+    # https://cmake.org/pipermail/cmake/2016-April/063179.html
     if((CORRADE_TARGET_APPLE AND OPENGLES3_LIBRARY MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
         add_library(OpenGLES3::OpenGLES3 INTERFACE IMPORTED)
         set_property(TARGET OpenGLES3::OpenGLES3 APPEND PROPERTY

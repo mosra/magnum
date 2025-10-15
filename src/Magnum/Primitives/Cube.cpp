@@ -592,7 +592,7 @@ constexpr struct VertexSolidStrip {
 } VerticesSolidStrip[]{
     /* Sources:
         https://twitter.com/Donzanoid/status/436843034966507520
-        http://www.asmcommunity.net/forums/topic/?id=6284#post-45209
+        https://www.asmcommunity.net/forums/topic/6284/#post-45209
         https://gist.github.com/cdwfs/2cab675b333632d940cf
 
         0---2---3---1

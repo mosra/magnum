@@ -96,7 +96,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         return {};
     }
 
-    /* RLE encoding. Reference: http://www.paulbourke.net/dataformats/tga/ */
+    /* RLE encoding. Reference: https://paulbourke.net/dataformats/tga/ */
     const bool rle = (header.imageType & 8);
 
     /* Color */
@@ -201,7 +201,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     } else {
         Containers::ArrayView<char> dstPixels = data;
         while(!srcPixels.isEmpty()) {
-            /* Reference: http://www.paulbourke.net/dataformats/tga/ */
+            /* Reference: https://paulbourke.net/dataformats/tga/ */
 
             /* 8-bit RLE header. First bit denotes the operation, last 7 bits
                denotes operation count minus 1. */

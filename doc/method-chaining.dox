@@ -30,8 +30,8 @@ namespace Magnum {
 
 @m_footernavigation
 
-Method chaining ([Wikipedia](http://en.wikipedia.org/wiki/Method_chaining)) is a
-feature which allows you to chain method calls one after another without
+Method chaining ([Wikipedia](https://en.wikipedia.org/wiki/Method_chaining)) is
+a feature which allows you to chain method calls one after another without
 repeatedly specifying variable the method is called on. Its primary goal is to
 reduce unnecessary repeated names, improving code readability.
 

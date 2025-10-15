@@ -67,9 +67,9 @@ namespace Implementation {
 
 @m_keywords{Application}
 
-Application using the [GLFW](http://glfw.org) toolkit. Supports keyboard and
-mouse handling with support for changing cursor and mouse tracking and warping.
-Available on all platforms where GLFW is ported.
+Application using the [GLFW](https://www.glfw.org) toolkit. Supports keyboard
+and mouse handling with support for changing cursor and mouse tracking and
+warping. Available on all platforms where GLFW is ported.
 
 @m_class{m-block m-success}
 
@@ -100,9 +100,9 @@ See @ref cmake for more information.
 
 @section Platform-GlfwApplication-usage General usage
 
-This application library depends on [GLFW](http://glfw.org) 3.2 and newer and
-is built if `MAGNUM_WITH_GLFWAPPLICATION` is enabled when building Magnum. To use
-this library with CMake, request the `GlfwApplication` component of the
+This application library depends on [GLFW](https://www.glfw.org) 3.2 and newer
+and is built if `MAGNUM_WITH_GLFWAPPLICATION` is enabled when building Magnum.
+To use this library with CMake, request the `GlfwApplication` component of the
 `Magnum` package and link to the `Magnum::GlfwApplication` target:
 
 @code{.cmake}

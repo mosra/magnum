@@ -1099,8 +1099,8 @@ void ColorTest::srgb8bitRoundtrip() {
 }
 
 void ColorTest::xyz() {
-    /* Verified using http://colormine.org/convert/rgb-to-xyz and
-       http://www.easyrgb.com/index.php?X=CALC. The results have slight
+    /* Verified using https://colormine.org/convert/rgb-to-xyz and
+       https://www.easyrgb.com/en/convert.php. The results have slight
        precision differences, because most of the code out there uses just the
        rounded matrices from Wikipedia which don't round-trip perfectly. I'm
        having Y in 0-1 instead of 0-100, thus the values are 100 times smaller. */
@@ -1155,7 +1155,7 @@ void ColorTest::fromXyzDefaultAlpha() {
 }
 
 void ColorTest::xyY() {
-    /* Verified using http://www.easyrgb.com/index.php?X=CALC */
+    /* Verified using https://www.easyrgb.com/en/convert.php */
     Vector3 xyz{0.454279f, 0.413092f, 0.0607124f};
     Vector3 xyY{0.489481f, 0.445102f, 0.413092f};
 

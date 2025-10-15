@@ -52,7 +52,7 @@ backsubstitution is done only on @p t, as @p a would always end with identity
 matrix anyway.
 
 Based on an ultra-compact Python code by Jarno Elonen,
-http://elonen.iki.fi/code/misc-notes/python-gaussj/index.html.
+https://elonen.iki.fi/code/misc-notes/python-gaussj/.
 */
 template<std::size_t size, std::size_t rows, class T> bool gaussJordanInPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, rows, T>& t) {
     for(std::size_t row = 0; row != size; ++row) {

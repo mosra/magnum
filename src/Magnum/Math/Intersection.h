@@ -242,7 +242,7 @@ The purpose for this is to reduce the number of times you have to compute
 a ray inverse, when doing multiple ray / range intersections (for example
 when traversing an AABB tree). The algorithm implemented is a version of the
 classical slabs algorithm, see *Listing 1* in
-[Majercik et al.](http://jcgt.org/published/0007/03/04/).
+[Majercik et al.](https://jcgt.org/published/0007/03/04/).
 @see @ref MeshTools::boundingRange()
 */
 template<class T> bool rayRange(const Vector3<T>& rayOrigin, const Vector3<T>& inverseRayDirection, const Range3D<T>& range);

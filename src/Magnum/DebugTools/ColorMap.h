@@ -178,7 +178,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> turbo
 
 @thirdparty Created by [Stéfan van der Walt](https://github.com/stefanv) and
     [Nathaniel Smith](https://github.com/njsmith) for the matplotlib library
-    ([source](http://bids.github.io/colormap/)), released under a
+    ([source](https://bids.github.io/colormap/)), released under a
     @m_class{m-label m-primary} **CC0** license
     ([choosealicense.com](https://choosealicense.com/licenses/cc0-1.0/)).
 */
@@ -194,7 +194,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> magma
 
 @thirdparty Created by [Stéfan van der Walt](https://github.com/stefanv) and
     [Nathaniel Smith](https://github.com/njsmith) for the matplotlib library
-    ([source](http://bids.github.io/colormap/)), released under a
+    ([source](https://bids.github.io/colormap/)), released under a
     @m_class{m-label m-primary} **CC0** license
     ([choosealicense.com](https://choosealicense.com/licenses/cc0-1.0/)).
 */
@@ -210,7 +210,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> plasm
 
 @thirdparty Created by [Stéfan van der Walt](https://github.com/stefanv) and
     [Nathaniel Smith](https://github.com/njsmith) for the matplotlib library
-    ([source](http://bids.github.io/colormap/)), released under a
+    ([source](https://bids.github.io/colormap/)), released under a
     @m_class{m-label m-primary} **CC0** license
     ([choosealicense.com](https://choosealicense.com/licenses/cc0-1.0/)).
 */
@@ -226,7 +226,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> infer
 
 @thirdparty Created by [Stéfan van der Walt](https://github.com/stefanv) and
     [Nathaniel Smith](https://github.com/njsmith) for the matplotlib library
-    based on a design by Eric Firing ([source](http://bids.github.io/colormap/)),
+    based on a design by Eric Firing ([source](https://bids.github.io/colormap/)),
     released under a @m_class{m-label m-primary} **CC0** license
     ([choosealicense.com](https://choosealicense.com/licenses/cc0-1.0/)).
 */

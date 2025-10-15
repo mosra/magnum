@@ -120,7 +120,7 @@ previous values --- it would involve impractically large amount of queries and
 state switches with serious performance impact. It's thus expected that
 third-party code either does no state tracking or provides similar means to
 reset their state tracker (for example Qt has
-[QQuickWindow::resetOpenGLState()](http://doc.qt.io/qt-5/qquickwindow.html#resetOpenGLState)
+[QQuickWindow::resetOpenGLState()](https://doc.qt.io/archives/qt-5.15/qquickwindow.html#resetOpenGLState)
 that's advised to call before giving the control back to Qt).
 
 @section opengl-wrapping-dsa Extension-dependent functionality

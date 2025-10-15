@@ -28,4 +28,4 @@
    library target from OBJECT sources only and you have to provide at least one
    file. Otherwise the generated library gets replaced with self-pointing
    symlink and the build then obviously fails with "File not found" error.
-   Related: http://public.kitware.com/pipermail/cmake/2016-April/063178.html */
+   Related: https://cmake.org/pipermail/cmake/2016-April/063178.html */

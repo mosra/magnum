@@ -122,7 +122,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
     /* Get pointer to proper context creation function */
     typedef HGLRC(WINAPI*PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
     #ifdef CORRADE_TARGET_GCC
-    __extension__ /* http://web.archive.org/web/20160826013457/http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
+    __extension__ /* https://web.archive.org/web/20160826013457/http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
     #endif
     const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("wglCreateContextAttribsARB")));
 

@@ -295,7 +295,7 @@ point as needed:
 @section Animation-Easing-references References
 
 Functions follow the common naming from Robert Penner's Easing functions,
-http://robertpenner.com/easing/. Implementation based on and inspired by
+https://robertpenner.com/easing/. Implementation based on and inspired by
 https://easings.net/,
 [https://github.com/warrenm/AHEasing](https://github.com/warrenm/AHEasing/blob/master/AHEasing/easing.c),
 [https://github.com/bkaradzic/bx](https://github.com/bkaradzic/bx/blob/master/include/bx/inline/easing.inl),

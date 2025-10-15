@@ -1187,7 +1187,7 @@ a high-level overview.
 
 @subsection changelog-2018-02-docs Documentation
 
--   New documentation theme powered by [m.css](http://mcss.mosra.cz) and
+-   New documentation theme powered by [m.css](https://mcss.mosra.cz) and
     related massive updates of *everything* (see
     [mosra/magnum#113](https://github.com/mosra/magnum/issues/113))
 -   Explicit list of extensions that are available in WebGL builds

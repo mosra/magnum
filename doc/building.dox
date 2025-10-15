@@ -603,13 +603,13 @@ going to build any of the @ref example-index "examples", you'll need it.
     Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 -   `MAGNUM_WITH_GLFWAPPLICATION` --- Build the
     @ref Platform::GlfwApplication "GlfwApplication" library. Depends on
-    [GLFW](http://glfw.org).
+    [GLFW](https://www.glfw.org).
 -   `MAGNUM_WITH_GLXAPPLICATION` --- Build the
     @ref Platform::GlxApplication "GlxApplication" library. Depends on **X11**.
     Requires `MAGNUM_TARGET_GL` to be enabled.
 -   `MAGNUM_WITH_SDL2APPLICATION` --- Build the
     @ref Platform::Sdl2Application "Sdl2Application" library. Depends on
-    [SDL2](http://www.libsdl.org).
+    [SDL2](https://www.libsdl.org).
 -   `MAGNUM_WITH_XEGLAPPLICATION` --- Build the
     @ref Platform::XEglApplication "XEglApplication" library. Enables also
     building of the @ref GL library.
@@ -909,7 +909,7 @@ information.
 
 @section building-doc Building documentation
 
-The documentation is generated using [Doxygen](http://doxygen.org) with the
+The documentation is generated using [Doxygen](https://doxygen.org) with the
 [m.css Doxygen theme](https://mcss.mosra.cz/documentation/doxygen/) and
 additionally uses **LaTeX** for math formulas. Use `doc/conf.py` for a local
 build, the `doc/conf-public.py` is meant for the publicly available
@@ -1070,8 +1070,7 @@ to make it available to depending projects.
 
 @subsection building-cross-emscripten Cross-compiling for Emscripten
 
-You will need [Emscripten](http://kripken.github.io/emscripten-site/) installed
-and configured and
+You will need [Emscripten](https://emscripten.org) installed and configured and
 @ref building-corrade-cross-emscripten "Corrade built for Emscripten". The
 toolchains require CMake 3.7 or newer to properly set compiler and linker
 flags. If you are on Windows, [this blog post](https://blog.squareys.de/magnum-emscripten-on-windows/)

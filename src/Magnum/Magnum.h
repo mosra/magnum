@@ -154,7 +154,7 @@ Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
 Defined if the engine is built for WebGL (using Emscripten). WebGL 1 is nearly
 equivalent to OpenGL ES 2.0 and WebGL 2 to OpenGL ES 3.0, thus in most cases
 you don't need to treat it differently, but there are some specific
-restrictions and differences [compared to OpenGL ES 2.0](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
+restrictions and differences [compared to OpenGL ES 2.0](https://registry.khronos.org/webgl/specs/latest/1.0/#6)
 and to [OpenGL ES 3.0](https://registry.khronos.org/webgl/specs/latest/2.0/#5)
 which you might want to be aware of. Implies also @ref MAGNUM_TARGET_GLES.
 @see @ref MAGNUM_TARGET_GLES2 @ref CORRADE_TARGET_EMSCRIPTEN, @ref building, @ref cmake

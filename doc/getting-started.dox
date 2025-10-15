@@ -83,7 +83,7 @@ add_subdirectory(magnum EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 @endcode
 
-The last missing piece before you can continue is the [SDL](http://libsdl.org/)
+The last missing piece before you can continue is the [SDL](https://libsdl.org)
 library --- the bootstrap project (and most examples) use it to do window
 management and event handling. If you are on Linux or macOS, you can get it
 easily from your package manager:

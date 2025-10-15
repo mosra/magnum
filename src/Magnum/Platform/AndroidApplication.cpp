@@ -466,7 +466,7 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                    there's no way to reliably know what concrete mouse / pen
                    button caused the event. */
                 Pointer pointer;
-                /* http://www.graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2 */
+                /* https://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2 */
                 if(sourcePointers.second() && !(UnsignedByte(sourcePointers.second()) & (UnsignedByte(sourcePointers.second()) - 1)))
                     pointer = Pointer(UnsignedByte(sourcePointers.second()));
                 else

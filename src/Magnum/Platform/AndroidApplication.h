@@ -356,7 +356,7 @@ class AndroidApplication {
          * @ref framebufferSize().
          *
          * @attention The reported value will be incorrect in case you use
-         *      the [Screen Compatibility Mode](http://www.androiddocs.com/guide/practices/screen-compat-mode.html).
+         *      the [Screen Compatibility Mode](https://developer.android.com/guide/topics/manifest/supports-screens-element#compat-mode)).
          *      See @ref platforms-android-apps-manifest-screen-compatibility-mode
          *      for details.
          */

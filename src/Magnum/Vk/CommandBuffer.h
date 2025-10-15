@@ -449,7 +449,7 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          * @par
          *      Even though it may seem counterintuitive, it's recommended
          *      ([1](https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#three-dispatches-first-dispatch-writes-to-one-storage-buffer-second-dispatch-writes-to-a-different-storage-buffer-third-dispatch-reads-both),
-         *      [2](http://themaister.net/blog/2019/08/14/yet-another-blog-explaining-vulkan-synchronization/))
+         *      [2](https://themaister.net/blog/2019/08/14/yet-another-blog-explaining-vulkan-synchronization/))
          *      to do global memory barriers than per-resource barriers, except
          *      for cases where layout transition or queue ownership transfer
          *      needs to be done on a particular image or buffer.
