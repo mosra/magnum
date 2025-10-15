@@ -20,11 +20,10 @@ executors:
   ubuntu-20_04:
     machine:
       image: ubuntu-2004:2024.11.1
-  # Anything below 13.4.1 (and all x86 variants) are deprecated as of June 28th
-  # 2024
-  xcode-13_4:
+  # Images below 14.0.1 (and all x86 variants) are removed as of Nov 7, 2025
+  xcode-14_0:
     macos:
-      xcode: 13.4.1
+      xcode: 14.0.1
     resource_class: macos.m1.medium.gen1
   # Used by the static macOS build, to build against static MoltenVK. It
   # requires Xcode 14+ as 13 suffers from undefined _objc_msgSend$ symbols:
@@ -670,7 +669,7 @@ jobs:
         script: unix-desktop.sh
 
   macos-gl:
-    executor: xcode-13_4
+    executor: xcode-14_0
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -686,7 +685,7 @@ jobs:
     - lcov
 
   macos-gles3:
-    executor: xcode-13_4
+    executor: xcode-14_0
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -705,7 +704,7 @@ jobs:
     - lcov
 
   macos-vulkan:
-    executor: xcode-13_4
+    executor: xcode-14_0
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -835,7 +834,7 @@ jobs:
         script: android-x86-vulkan.sh
 
   ios-gles3:
-    executor: xcode-13_4
+    executor: xcode-14_0
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"
