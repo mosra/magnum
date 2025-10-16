@@ -171,7 +171,8 @@ bool isWindowsAppDpiAware() {
         /* GCC 8 adds -Wcast-function-type, enabled by default with -Wextra,
            which causes this line to emit a warning on MinGW. We know what
            we're doing, so suppress that. Clang implements it since version 13,
-           and it's a part of -Wextra since 19.1:
+           and it's a part of -Wextra since 19.1, thus warning when clang-cl
+           19.1+ is used:
             https://github.com/llvm/llvm-project/commit/217f0f735afec57a51fa6f9ab863d4713a2f85e2
             https://github.com/llvm/llvm-project/commit/1de7e6c8cba27296f3fc16d107822ea0ee856759
 

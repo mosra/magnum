@@ -121,10 +121,31 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
 
     /* Get pointer to proper context creation function */
     typedef HGLRC(WINAPI*PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
+
+    /* GCC 8 adds -Wcast-function-type, enabled by default with -Wextra, which
+       causes this line to emit a warning on MinGW. We know what we're doing,
+       so suppress that. Clang implements it since version 13, and it's a part
+       of -Wextra since 19.1, thus warning when clang-cl 19.1+ is used:
+        https://github.com/llvm/llvm-project/commit/217f0f735afec57a51fa6f9ab863d4713a2f85e2
+        https://github.com/llvm/llvm-project/commit/1de7e6c8cba27296f3fc16d107822ea0ee856759
+       OTOH, without the __extension__ it causes a -Wpedantic warning on GCC
+       4.8 (and perhaps newer), so we need both.
+
+       For GCC explicitly check we're not on Clang because certain Clang-based
+       IDEs inherit __GNUC__ if GCC is used instead of leaving it at 4 like
+       Clang itself does, which could lead to the pragma being used on Clang 12
+       and older, causing unknown pragma warning. */
+    #if (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8) || (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 13)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcast-function-type"
+    #endif
     #ifdef CORRADE_TARGET_GCC
     __extension__ /* https://web.archive.org/web/20160826013457/http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
     #endif
     const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("wglCreateContextAttribsARB")));
+    #if (defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 8) || (defined(CORRADE_TARGET_CLANG) && __clang_major__ >= 13)
+    #pragma GCC diagnostic pop
+    #endif
 
     /* Request debug context if GpuValidation is enabled either via the
        configuration or via command-line */
