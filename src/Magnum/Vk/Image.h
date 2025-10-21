@@ -234,7 +234,7 @@ Wraps a @type_vk_keyword{Image} and its memory.
 @section Vk-Image-creation Image creation
 
 Pass one of the @ref ImageCreateInfo subclasses depending on desired image type
-with desired usage, format, size and other propoerties to the @ref Image
+with desired usage, format, size and other properties to the @ref Image
 constructor together with specifying @ref MemoryFlags for memory allocation.
 
 @snippet Vk.cpp Image-creation
@@ -509,7 +509,7 @@ class MAGNUM_VK_EXPORT Image {
 @brief Image copy region
 @m_since_latest
 
-Wraps a @type_vk_keyword{ImageCopy2KHR}. This calss is subsequently passed to a
+Wraps a @type_vk_keyword{ImageCopy2KHR}. This class is subsequently passed to a
 @ref CopyImageInfo and then used in @ref CommandBuffer::copyImage(). See
 @ref Vk-Image-usage-copy for usage information and examples.
 
