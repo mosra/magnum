@@ -63,7 +63,11 @@ class Renderer {
             OutOfMemory = AL_OUT_OF_MEMORY  /**< Unable to allocate memory */
         };
 
-        /** @brief Error status */
+        /**
+         * @brief Error status
+         *
+         * @see @fn_al_keyword{GetError}
+         */
         static Error error() { return Error(alGetError()); }
 
         /** @{ @name Listener positioning */
