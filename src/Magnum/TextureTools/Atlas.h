@@ -128,7 +128,7 @@ for power-of-two sizes.
 
 @htmlinclude atlas-landfill.svg
 
-* *The Trash Algorithm.* Naming credit goes to [\@lacyyy](https://github.com/lacyyy).
+* *The Trash Algorithm.*
 
 @section TextureTools-AtlasLandfill-usage Example usage
 
