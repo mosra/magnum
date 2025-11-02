@@ -1028,6 +1028,7 @@ EXAMPLE_PATH           = generated/ \
                          ../../magnum-examples/src/ \
                          ../../magnum-extras/doc/generated/ \
                          ../../magnum-extras/doc/snippets/ \
+                         ../../magnum-integration/doc/generated/ \
                          ../../magnum-integration/doc/snippets/
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
@@ -1051,7 +1052,8 @@ EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = . \
                          snippets/ \
                          ../../magnum-examples/doc \
-                         ../../magnum-extras/doc
+                         ../../magnum-extras/doc \
+                         ../../magnum-integration/doc
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
