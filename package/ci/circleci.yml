@@ -707,7 +707,6 @@ jobs:
     executor: xcode-14_0
     environment:
       CMAKE_CXX_FLAGS: --coverage
-      CONFIGURATION: Debug
     steps:
     - install-base-macos:
         extra: sdl2 glfw wget

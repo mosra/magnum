@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ev
 
+# Get the toolchains submodule for UseAndroid.cmake that's used by tests
 git submodule update --init
 
 # Corrade
@@ -99,7 +100,14 @@ cmake .. \
     -DMAGNUM_BUILD_GL_TESTS=OFF \
     -DMAGNUM_BUILD_VK_TESTS=ON \
     -G Ninja
+
 ninja $NINJA_JOBS
+
+# The GL library shouldn't get built by accident
+if ls Debug/lib/libMagnumGL*; then
+    echo "The MagnumGL library was built even though it shouldn't"
+    false
+fi
 
 # Wait for emulator to start (done in parallel to build) and run tests
 circle-android wait-for-boot

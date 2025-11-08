@@ -10,9 +10,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCORRADE_BUILD_DEPRECATED=$BUILD_DEPRECATED \
     -DCORRADE_WITH_INTERCONNECT=OFF \
-    -DCORRADE_WITH_PLUGINMANAGER=ON \
     -G Ninja
 ninja install
 cd ../..
@@ -73,7 +71,6 @@ cmake .. \
     -DMAGNUM_BUILD_TESTS=ON \
     -DMAGNUM_BUILD_GL_TESTS=OFF \
     -DMAGNUM_BUILD_VK_TESTS=ON \
-    -DMAGNUM_BUILD_DEPRECATED=$BUILD_DEPRECATED \
     -G Ninja
 
 ninja $NINJA_JOBS
@@ -87,7 +84,7 @@ fi
 export VK_ICD_FILENAMES=$HOME/swiftshader/share/vulkan/icd.d/vk_swiftshader_icd.json
 export CORRADE_TEST_COLOR=ON
 
-# Keep in sync with PKGBUILD, PKGBUILD-coverage and PKGBUILD-release
+# Keep in sync with PKGBUILD and PKGBUILD-coverage
 ctest -V
 MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON ctest -V -R VkTest
 MAGNUM_DISABLE_EXTENSIONS="VK_KHR_get_physical_device_properties2 VK_KHR_get_memory_requirements2 VK_KHR_bind_memory2 VK_KHR_create_renderpass2 VK_KHR_copy_commands2 VK_KHR_maintenance1 VK_KHR_multiview VK_KHR_maintenance2" MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON ctest -V -R VkTest
