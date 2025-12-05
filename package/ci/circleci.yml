@@ -20,22 +20,22 @@ executors:
   ubuntu-20_04:
     machine:
       image: ubuntu-2004:2024.11.1
-  # Images below 14.0.1 (and all x86 variants) are removed as of Nov 7, 2025
-  xcode-14_0:
+  # As of November 7, 2025, M4 is the default, and the oldest version there is
+  # 14.3.1.
+  xcode-14_3:
     macos:
-      xcode: 14.0.1
-    resource_class: macos.m1.medium.gen1
+      xcode: 14.3.1
   # Used by the static macOS build, to build against static MoltenVK. It
   # requires Xcode 14+ as 13 suffers from undefined _objc_msgSend$ symbols:
   #   https://stackoverflow.com/questions/73992337/flutter-build-is-ios-error-xcode-undefined-symbol-objc-msgsend
   # Then, linking to *.xcframework is only supported since CMake 3.28, before
   # that one has to pass the whole path to the *.a library:
   #   https://gitlab.kitware.com/cmake/cmake/-/issues/21752
-  # The Xcode 14.0.1 image has only CMake 3.26, 15.0.0 has 3.27.
-  xcode-15_1:
+  # The Xcode 14.0.1 image has only CMake 3.26, 15.0.0 has 3.27. As of November
+  # 7, 2025, M4 is the default, and the oldest version 15 there is 15.4.0.
+  xcode-15_4:
     macos:
-      xcode: 15.1.0
-    resource_class: macos.m1.medium.gen1
+      xcode: 15.4.0
   emscripten:
     docker:
     #  See Corrade's package/ci/circleci.yml
@@ -669,7 +669,7 @@ jobs:
         script: unix-desktop.sh
 
   macos-gl:
-    executor: xcode-14_0
+    executor: xcode-14_3
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -685,7 +685,7 @@ jobs:
     - lcov
 
   macos-gles3:
-    executor: xcode-14_0
+    executor: xcode-14_3
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -704,7 +704,7 @@ jobs:
     - lcov
 
   macos-vulkan:
-    executor: xcode-14_0
+    executor: xcode-14_3
     environment:
       CMAKE_CXX_FLAGS: --coverage
     steps:
@@ -720,7 +720,7 @@ jobs:
 
   macos-static:
     # Static MoltenVK needs newer Xcode and CMake
-    executor: xcode-15_1
+    executor: xcode-15_4
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       BUILD_STATIC: "ON"
@@ -833,7 +833,7 @@ jobs:
         script: android-x86-vulkan.sh
 
   ios-gles3:
-    executor: xcode-14_0
+    executor: xcode-14_3
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"
