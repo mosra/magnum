@@ -98,6 +98,8 @@ constexpr struct {
        variants if there are */
     {"ASTC", "8x8.astc", false, "AstcImporter"},
     {"ASTC data", "8x8.astc", true, "AstcImporter"},
+    {"AVIF", "rgb.avif", false, "AvifImporter"},
+    {"AVIF data", "rgb.avif", true, "AvifImporter"},
     {"Basis", "rgb.basis", false, "BasisImporter"},
     {"Basis data", "rgb.basis", true, "BasisImporter"},
     {"BMP", "rgb.bmp", false, "BmpImporter"},
@@ -186,7 +188,12 @@ const struct {
     {"TIFF, but no zero byte", "MM\xff\x2a"_s, "4d4dff2a"},
     {"KTX, but wrong version", "\xabKTX 30\xbb\r\n\x1a\n"_s, "ab4b5458"},
     {"RIFF (for WebP), but only 4 bytes", "RIFF"_s, "52494646"},
-    {"WebP, but only 11 bytes", "RIFF    WEB"_s, "52494646"}
+    {"WebP, but only 11 bytes", "RIFF    WEB"_s, "52494646"},
+    /* Yeah can't do \x20ftypavi because it's interpreted as 0x20f. Who thought
+       such variable-length encoding was a good idea?! Also, UGH, this message
+       in particular is rather useless, because the signature is only right
+       after that :/ */
+    {"AVIF, but not enough bytes", "\x00\x00\x00\x20" "ftypavi"_s, "00000020"},
 };
 
 constexpr struct {

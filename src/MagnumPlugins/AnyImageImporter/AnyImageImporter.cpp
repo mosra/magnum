@@ -73,6 +73,8 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
     Containers::StringView plugin;
     if(normalizedExtension == ".astc"_s)
         plugin = "AstcImporter"_s;
+    else if(normalizedExtension == ".avif"_s)
+        plugin = "AvifImporter"_s;
     else if(normalizedExtension == ".basis"_s)
         plugin = "BasisImporter"_s;
     else if(normalizedExtension == ".bmp"_s)
@@ -206,6 +208,19 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
        unfortunately it being in LE means it's SCALABLE in reverse :) */
     if(dataString.hasPrefix("\x13\xAB\xA1\x5C"_s))
         plugin = "AstcImporter"_s;
+    /* Total guesswork. AVIF is an image format inside a HEIF container, which
+       itself is a ISOBMFF format, for which the spec isn't open (yay haha):
+        https://en.wikipedia.org/wiki/ISO_base_media_file_format
+       According to https://github.com/strukturag/libheif/issues/83 what
+       matters is a FourCC after the `ftyp` "box", which starts at the fourth
+       bytes, with the initial four bytes not specified anywhere. It *seems*
+       that for AVIF it's `ftypavif`, so let's check for that. In case of HEIF
+       there can be many other "brands" in a "box", whatever that is, but
+       that's suffering for another day. */
+    /** @todo https://github.com/file/file/blob/9ed4d8c65854d9d28519291f21dd92c44c4abc18/magic/Magdir/animation#L298
+        lists `avis` for image sequences, maybe detect that also? */
+    else if(dataString.size() >= 12 && dataString.slice(4, 12) == "ftypavif"_s)
+        plugin = "AvifImporter"_s;
     /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
     else if(dataString.hasPrefix("sB"_s))
         plugin = "BasisImporter"_s;

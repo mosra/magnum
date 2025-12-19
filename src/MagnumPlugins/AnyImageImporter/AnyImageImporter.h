@@ -61,6 +61,8 @@ Supported formats:
 -   Adaptive Scalable Texture Compression (`*.astc` or data with corresponding
     signature), loaded with @ref AstcImporter or any other plugin that provides
     it
+-   AV1 Image File Format (`*.avif` or data with corresponding signature),
+    loaded  with @ref AvifImporter or any other plugin that provides it
 -   Basis Universal (`*.basis` or data with corresponding signature), loaded
     with @ref BasisImporter or any other plugin that provides it
 -   Windows Bitmap (`*.bmp` or data with corresponding signature), loaded with
