@@ -5,7 +5,7 @@ rem OpenAL DLL is renamed & copied to magnum's bin dir automatically by the
 rem buildsystem, no need to do that here anymore
 
 rem Build Corrade
-git clone --depth 1 https://github.com/mosra/corrade.git || exit /b
+git clone --depth 1 --branch next https://github.com/mosra/corrade.git || exit /b
 cd corrade || exit /b
 mkdir build && cd build || exit /b
 cmake .. ^
