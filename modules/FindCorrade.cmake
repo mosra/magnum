@@ -447,8 +447,21 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             endif()
         endif()
 
+        # The Main library consists of two libraries on MinGW to be able to
+        # handle both console and windows apps, special-case it before any
+        # other libraries. The CORRADE_MAIN{CONSOLE,WINDOWS}_LIBRARY_<CONFIG>
+        # variables then get subsequently used below.
+        if(MINGW AND _component STREQUAL Main)
+            foreach(_mainComponent Console Windows)
+                string(TOUPPER ${_mainComponent} _MAIN_COMPONENT)
+                find_library(CORRADE_MAIN${_MAIN_COMPONENT}_LIBRARY_DEBUG CorradeMain${_mainComponent}-d)
+                find_library(CORRADE_MAIN${_MAIN_COMPONENT}_LIBRARY_RELEASE CorradeMain${_mainComponent})
+                mark_as_advanced(CORRADE_MAIN${_MAIN_COMPONENT}_LIBRARY_DEBUG
+                    CORRADE_MAIN${_MAIN_COMPONENT}_LIBRARY_RELEASE)
+            endforeach()
+
         # Library (and not header-only) components
-        if(_component IN_LIST _CORRADE_LIBRARY_COMPONENTS AND NOT _component IN_LIST _CORRADE_HEADER_ONLY_COMPONENTS)
+        elseif(_component IN_LIST _CORRADE_LIBRARY_COMPONENTS AND NOT _component IN_LIST _CORRADE_HEADER_ONLY_COMPONENTS)
             # Try to find both debug and release version
             find_library(CORRADE_${_COMPONENT}_LIBRARY_DEBUG Corrade${_component}-d)
             find_library(CORRADE_${_COMPONENT}_LIBRARY_RELEASE Corrade${_component})
@@ -518,7 +531,19 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
         # Decide if the component was found. If not, skip the rest, which
         # creates and populates the target and finds additional dependencies.
         # If found, the _FOUND variable may still get reset by something below.
-        if(
+        #
+        # The Main library consists of two libraries on MinGW to be able to
+        # handle both console and windows apps. See
+        # src/Corrade/CMakeLists.txt for a lengthy explanation. On non-MinGW
+        # it's handled as a regular library or a header-only library.
+        if(MINGW AND _component STREQUAL Main)
+            if((CORRADE_MAINCONSOLE_LIBRARY_DEBUG AND CORRADE_MAINWINDOWS_LIBRARY_DEBUG) OR (CORRADE_MAINCONSOLE_LIBRARY_RELEASE AND CORRADE_MAINWINDOWS_LIBRARY_RELEASE))
+                set(Corrade_Main_FOUND TRUE)
+            else()
+                set(Corrade_Main_FOUND FALSE)
+                continue()
+            endif()
+        elseif(
             # If the component is a library, it should have the include dir
             (_component IN_LIST _CORRADE_LIBRARY_COMPONENTS AND _CORRADE_${_COMPONENT}_INCLUDE_DIR AND (
                 # And it should be either header-only
@@ -541,8 +566,11 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             continue()
         endif()
 
-        # Target for header-only library components
-        if(_component IN_LIST _CORRADE_HEADER_ONLY_COMPONENTS)
+        # Target for header-only library components. The Main library consists
+        # of two libraries on MinGW to be able to handle both console and
+        # windows apps, so there the target is INTERFACE as well, and is filled
+        # with INTERFACE_LINK_LIBRARIES later below.
+        if(_component IN_LIST _CORRADE_HEADER_ONLY_COMPONENTS OR (MINGW AND _component STREQUAL Main))
             add_library(Corrade::${_component} INTERFACE IMPORTED)
 
         # Target and location for (non-header-only) libraries
@@ -600,8 +628,40 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
 
         # Main library
         elseif(_component STREQUAL Main)
+            # On non-Windows platforms Main is a no-op interface target
             if(CORRADE_TARGET_WINDOWS)
-                if(NOT MINGW)
+                # On MinGW the library consists of two libraries, for which we
+                # need to add two extra targets to delegate to. See
+                # src/Corrade/CMakeLists.txt for a lengthy explanation.
+                if(MINGW)
+                    foreach(_mainComponent Console Windows)
+                        string(TOUPPER ${_mainComponent} _MAINCOMPONENT)
+
+                        # Similarly as with _CORRADE_LIBRARY_COMPONENTS above,
+                        # just specialized for the Main library (and without
+                        # DLL handling, as the library is always static)
+                        add_library(Corrade::Main${_mainComponent} STATIC IMPORTED)
+                        foreach(_CONFIG DEBUG RELEASE)
+                            if(NOT CORRADE_MAIN${_MAINCOMPONENT}_LIBRARY_${_CONFIG})
+                                continue()
+                            endif()
+
+                            set_property(TARGET Corrade::Main${_mainComponent} APPEND PROPERTY
+                                IMPORTED_CONFIGURATIONS ${_CONFIG})
+                            set_property(TARGET Corrade::Main${_mainComponent} PROPERTY
+                                IMPORTED_LOCATION_${_CONFIG} ${CORRADE_MAIN${_MAINCOMPONENT}_LIBRARY_${_CONFIG}})
+                        endforeach()
+                    endforeach()
+
+                    # See src/Corrade/CMakeLists.txt for why -lmingw32 has to
+                    # be linked this way
+                    set_property(TARGET Corrade::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES "-municode;$<$<NOT:$<BOOL:$<TARGET_PROPERTY:WIN32_EXECUTABLE>>>:Corrade::MainConsole>$<$<BOOL:$<TARGET_PROPERTY:WIN32_EXECUTABLE>>:-lmingw32;Corrade::MainWindows>")
+
+                # On MSVC and clang-cl it's simple, there's just a single
+                # library that was already added above. Add just the /ENTRY
+                # flag.
+                else()
                     # Abusing INTERFACE_LINK_LIBRARIES because
                     # INTERFACE_LINK_OPTIONS is only since 3.13. They treat
                     # things with `-` in front as linker flags and fortunately
@@ -609,9 +669,6 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
                     # https://gitlab.kitware.com/cmake/cmake/issues/16543
                     set_property(TARGET Corrade::${_component} APPEND PROPERTY
                         INTERFACE_LINK_LIBRARIES "-ENTRY:$<$<NOT:$<BOOL:$<TARGET_PROPERTY:WIN32_EXECUTABLE>>>:wmainCRTStartup>$<$<BOOL:$<TARGET_PROPERTY:WIN32_EXECUTABLE>>:wWinMainCRTStartup>")
-                else()
-                    set_property(TARGET Corrade::${_component} APPEND PROPERTY
-                        INTERFACE_LINK_LIBRARIES "-municode")
                 endif()
             endif()
 
