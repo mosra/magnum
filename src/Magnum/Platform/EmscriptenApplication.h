@@ -52,9 +52,9 @@
 #endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
 /* Some APIs used to take or return a std::string before */
 #include <Corrade/Containers/StringStl.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 #endif
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)

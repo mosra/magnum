@@ -36,10 +36,10 @@
 #include "Magnum/MeshTools/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/StlForwardVector.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
+#include <Corrade/Utility/StlForwardVector.h>
 #endif
 
 namespace Magnum { namespace MeshTools {

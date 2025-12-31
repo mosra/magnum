@@ -38,12 +38,12 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/DeprecationMacros.h>
+
 #include "Magnum/Array.h" /* That's fine, we're deprecated too */
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Vk/Vulkan.h"
 #include "Magnum/Vk/visibility.h"
-
-#include <Corrade/Utility/Macros.h>
 
 #ifndef _MAGNUM_NO_DEPRECATED_VK_ENUMS
 CORRADE_DEPRECATED_FILE("use headers corresponding to the suggested replacement APIs instead")

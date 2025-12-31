@@ -35,7 +35,7 @@
 #include "Magnum/Types.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

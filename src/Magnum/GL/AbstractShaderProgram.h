@@ -41,7 +41,7 @@
 #endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 /* For attachShaders(), which used to take a std::initializer_list<Reference>,
    and draw({MeshView}) as well */
 #include <Corrade/Containers/Iterable.h>

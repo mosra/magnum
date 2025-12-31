@@ -38,7 +38,7 @@
 #include "Magnum/Trade/Trade.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 #endif
 
 namespace Magnum { namespace MaterialTools {

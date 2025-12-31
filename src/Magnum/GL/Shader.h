@@ -38,7 +38,7 @@
 #include "Magnum/GL/GL.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 /* For label() / setLabel() and all name/source stuff, which used to be a
    std::string. Not ideal for the return types, but at least something. */
 #include <Corrade/Containers/StringStl.h>

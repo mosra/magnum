@@ -33,7 +33,7 @@
 #include "Magnum/Types.h"
 
 #if defined(MAGNUM_TARGET_GL) && defined(MAGNUM_BUILD_DEPRECATED)
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

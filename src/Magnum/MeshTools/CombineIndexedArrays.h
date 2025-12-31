@@ -41,7 +41,7 @@
 #include <tuple>
 #include <vector>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 
 #include "Magnum/Types.h"
 #include "Magnum/MeshTools/visibility.h"

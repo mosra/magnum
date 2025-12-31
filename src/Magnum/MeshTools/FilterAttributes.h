@@ -36,7 +36,7 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 
 #include "Magnum/MeshTools/Filter.h"
 

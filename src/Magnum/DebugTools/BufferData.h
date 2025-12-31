@@ -54,7 +54,7 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 
 #include "Magnum/GL/Buffer.h"
 #endif

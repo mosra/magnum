@@ -39,7 +39,7 @@
 #include <vector>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 #endif
 
 namespace Magnum { namespace MeshTools {

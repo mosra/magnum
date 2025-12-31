@@ -42,7 +42,7 @@
 #include <initializer_list>
 #include <string>
 #include <vector>
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 
 #include "Magnum/Types.h"
 #include "Magnum/DebugTools/visibility.h"

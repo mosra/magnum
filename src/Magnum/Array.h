@@ -39,7 +39,7 @@
 #include <type_traits>
 #include <Corrade/Containers/sequenceHelpers.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector3.h"

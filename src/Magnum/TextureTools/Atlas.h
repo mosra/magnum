@@ -39,7 +39,7 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/Math/Vector2.h"
 
-#include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/DeprecationMacros.h>
 #include <Corrade/Utility/StlForwardVector.h>
 #endif
 
