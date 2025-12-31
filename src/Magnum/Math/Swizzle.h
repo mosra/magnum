@@ -145,11 +145,11 @@ Inverse to @ref gather(), supporting the same component addressing except for
     @ref Vector4::rgb(), @ref Vector4::xy(), @ref Vector3::xy()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<char ...components, class T> constexpr T scatter(const T& vector, const Vector<sizeof...(components), typename T::Type>& values)
+template<char ...components, class T> CORRADE_NODISCARD constexpr T scatter(const T& vector, const Vector<sizeof...(components), typename T::Type>& values)
 #else
 /* Using std::common_type otherwise GCC 4.8 fails to match the arguments
    in SwizzleTest::scatterOneComponent() */
-template<char ...components, class T> constexpr T scatter(const T& vector, const typename std::common_type<Vector<sizeof...(components), typename T::Type>>::type& values)
+template<char ...components, class T> CORRADE_NODISCARD constexpr T scatter(const T& vector, const typename std::common_type<Vector<sizeof...(components), typename T::Type>>::type& values)
 #endif
 {
     return Implementation::scatterRecursive<T, sizeof...(components), components...>(vector, values, 0);
