@@ -317,6 +317,10 @@ See also:
     @link Literals::ColorLiterals::operator""_srgbh() _srgbh @endlink and
     @link Literals::ColorLiterals::operator""_srgbah() _srgbah @endlink
     literals for convenient @ref Color3h and @ref Color4h creation
+-   Added @ref Math::scatterInto() as an in-place variant of
+    @ref Math::scatter(), which is now marked with @ref CORRADE_NODISCARD to
+    better convey that it returns the modified value instead of mutating it
+    in-place
 
 @subsubsection changelog-latest-new-materialtools MaterialTools library
 

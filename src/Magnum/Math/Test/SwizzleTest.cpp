@@ -43,6 +43,8 @@ struct SwizzleTest: TestSuite::Tester {
     void scatterRepeatedComponents();
     void scatterOverwriteAllComponents();
     void scatterFarComponents();
+
+    void scatterInto();
 };
 
 /* These differ from the typedefs in root Magnum namespace */
@@ -60,7 +62,9 @@ SwizzleTest::SwizzleTest() {
               &SwizzleTest::scatterOneComponent,
               &SwizzleTest::scatterRepeatedComponents,
               &SwizzleTest::scatterOverwriteAllComponents,
-              &SwizzleTest::scatterFarComponents});
+              &SwizzleTest::scatterFarComponents,
+
+              &SwizzleTest::scatterInto});
 }
 
 void SwizzleTest::gather() {
@@ -136,6 +140,14 @@ void SwizzleTest::scatterOverwriteAllComponents() {
 void SwizzleTest::scatterFarComponents() {
     constexpr auto a = Math::scatter<5, 4, 6>(Vector<7, Int>{2, 4, 5, 7, 0, 3, 2}, Vector3i{1, 6, 9});
     CORRADE_COMPARE(a, (Vector<7, Int>{2, 4, 5, 7, 6, 1, 9}));
+}
+
+void SwizzleTest::scatterInto() {
+    /* It calls into scatter() internally so just verify it works at all, the
+       whole functionality is sufficiently tested above */
+    Vector4i a{2, 4, 5, 7};
+    Math::scatterInto<'w', 'y'>(a, Vector2i{1, 3});
+    CORRADE_COMPARE(a, (Vector4i{2, 3, 5, 1}));
 }
 
 }}}}

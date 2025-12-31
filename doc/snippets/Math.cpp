@@ -1444,6 +1444,14 @@ vec2 = Math::scatter<'w', 'x', 'y'>(vec2, Math::gather<'x', 'w', 'y'>(vec));
 }
 
 {
+/* [scatterInto] */
+Vector4 vec{1.5f, 3.0f, 0.1f, 1.1f};
+Vector2 coords{5.0f, -2.0f};
+Math::scatterInto<'z', 'w'>(vec, coords); // { 1.5, 3.0, 5.0, -2.0 }
+/* [scatterInto] */
+}
+
+{
 Float a{}, b{};
 /* [TypeTraits-equalsZero] */
 Math::TypeTraits<Float>::equals(a, b);
