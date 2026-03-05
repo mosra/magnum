@@ -359,6 +359,10 @@ building blocks in the documentation and start experimenting on your own!
 
 @m_div{m-col-t-8 m-push-t-2 m-col-s-6 m-push-s-0 m-col-m-4 m-push-m-3} @m_div{m-button m-success m-fullwidth} <a href="examples-triangle.html">@m_div{m-big}Your First Triangle@m_enddiv @m_div{m-small} a step-by-step tutorial @m_enddiv </a> @m_enddiv @m_enddiv
 
+@m_div{m-clearfix-l} @m_enddiv
+
+@m_div{m-col-t-8 m-push-t-2 m-col-s-6 m-push-s-3 m-col-m-6 m-push-m-3} @m_div{m-button m-primary} <a href="ui.html">@m_div{m-big}The Magnum UI library@m_enddiv @m_div{m-small} introduction guide @m_enddiv </a> @m_enddiv @m_enddiv
+
 @endparblock
 
 @section getting-started-more Additional information
