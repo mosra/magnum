@@ -64,11 +64,11 @@ git clone https://github.com/mosra/magnum.git
 Then open the `CMakeLists.txt` file in the root of the bootstrap project and
 add these two new subdirectories using @cmake add_subdirectory() @ce so the
 file looks like below. The `EXCLUDE_FROM_ALL` argument ensures only the parts
-you actually use are built (and excluding the subdirectory from the `install`
+you actually use are built (and excludes the subdirectories from the `install`
 target as well).
 
 @code{.cmake}
-cmake_minimum_required(VERSION 3.5...3.20)
+cmake_minimum_required(VERSION 3.5...3.10)
 project(MyApplication)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
@@ -126,20 +126,21 @@ times.
 
 If you are lucky, you may already have Magnum packages ready for your platform:
 
--   @ref building-packages-hunter
--   @ref building-packages-vcpkg
 -   @ref building-packages-arch
--   @ref building-packages-msys
 -   @ref building-packages-deb
--   @ref building-packages-gentoo
+-   @ref building-packages-rpm
 -   @ref building-packages-brew
+-   @ref building-packages-gentoo
+-   @ref building-packages-msys
+-   @ref building-packages-cpm
+-   @ref building-packages-vcpkg
 
-If not, follow the full installation guides for @ref building-corrade "Corrade"
-and @ref building "Magnum" to build & install everything; don't forget to
-enable `MAGNUM_WITH_SDL2APPLICATION` when building Magnum so the bootstrap
-project can correctly find and use it. This is "the hard way" and it's
-recommended only if you have at least some prior experience with building
-projects from source using CMake.
+If you cannot use a package, follow the manual building guide for
+@ref building-corrade-manual "Corrade" and @ref building-manual "Magnum" to
+build & install everything; don't forget to enable `MAGNUM_WITH_SDL2APPLICATION`
+when building Magnum so the bootstrap project can correctly find and use it.
+This is "the hard way" and it's recommended only if you have at least some
+prior experience with building projects from source using CMake.
 
 Compared to @ref getting-started-setup-subproject "Option A", you don't need to
 clone the subprojects and modify the `CMakeLists.txt` file, however you'll need
@@ -251,7 +252,7 @@ along with all DLLs it needs), and libraries into `Debug/lib`; if you switch to
 a Release build, it'll be `Release/bin` instead. If you went with externally
 installed Magnum, the executable gets placed into its default location in
 `src/MyApplication` and dependency libraries stay where CMake found them --- on
-Windows you might need to adjust @cb{.sh} %PATH% @ce to make the application
+Windows you might need to adjust @cb{.bat} %PATH% @ce to make the application
 run.
 
 Once built, if everything went well and the application starts, you will see a
