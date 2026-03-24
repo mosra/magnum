@@ -410,7 +410,7 @@ jobs:
     # Not installing the old GCC 4.8 and CMake 3.5 to speed up. These are
     # tested more than enough on other jobs. Machine executors need sudo.
     - install-base-linux:
-        extra: gcc cmake libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+        extra: g++ cmake libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
         sudo: sudo
     - setup-null-openal-driver
     - build:
