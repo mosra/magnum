@@ -228,15 +228,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# CMake policies used by FindMagnum are popped again at the end.
-cmake_policy(PUSH)
-# Prefer GLVND when finding OpenGL. If this causes problems (known to fail with
-# NVidia drivers in Debian Buster, reported on 2019-04-09), users can override
-# this by setting OpenGL_GL_PREFERENCE to LEGACY.
-if(POLICY CMP0072)
-    cmake_policy(SET CMP0072 NEW)
-endif()
-
 # Corrade library dependencies
 set(_MAGNUM_CORRADE_DEPENDENCIES )
 foreach(_magnum_component ${Magnum_FIND_COMPONENTS})
@@ -279,6 +270,19 @@ if(NOT MAGNUM_INCLUDE_DIR)
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(Magnum
         REQUIRED_VARS MAGNUM_INCLUDE_DIR _MAGNUM_CONFIGURE_FILE)
+    # FPHSA may continue if find_package(Magnum) wasn't called with REQUIRED,
+    # exit here to avoid another error right at file(READ) below.
+    return()
+endif()
+
+# CMake policies used by FindMagnum are popped again at the end. The PUSH is
+# done only after the return() above to avoid exiting early without a POP.
+cmake_policy(PUSH)
+# Prefer GLVND when finding OpenGL. If this causes problems (known to fail with
+# NVidia drivers in Debian Buster, reported on 2019-04-09), users can override
+# this by setting OpenGL_GL_PREFERENCE to LEGACY.
+if(POLICY CMP0072)
+    cmake_policy(SET CMP0072 NEW)
 endif()
 
 # Read flags from configuration
