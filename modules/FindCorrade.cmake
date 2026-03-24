@@ -316,6 +316,9 @@ if(NOT CORRADE_INCLUDE_DIR)
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(Corrade
         REQUIRED_VARS CORRADE_INCLUDE_DIR _CORRADE_CONFIGURE_FILE)
+    # FPHSA may continue if find_package(Corrade) wasn't called with REQUIRED,
+    # exit here to avoid another error right at file(READ) below.
+    return()
 endif()
 
 # Read flags from configuration
