@@ -244,13 +244,12 @@ necessary.
 
 @code{.cmake}
 # This is the most minimal set of features which still make Sdl2Application
-# work. If you need something from these, remove the setting. The SDL_AUDIO and
-# SDL_EVENT options should not be needed either as Magnum doesn't use them, but
-# if they're disabled they causes compiler or linker errors. Either SDL_DLOPEN
+# work. If you need something from these, remove the setting. Either SDL_DLOPEN
 # or SDL_LOADSO needs to be enabled depending on the system to allow linking
 # dependencies at runtime, so it's better to just leave them both on. The
 # SDL_TIMERS option is important for rendering performance.
 set(SDL_ATOMIC OFF CACHE BOOL "" FORCE)
+set(SDL_AUDIO OFF CACHE BOOL "" FORCE)
 set(SDL_CPUINFO OFF CACHE BOOL "" FORCE)
 set(SDL_FILE OFF CACHE BOOL "" FORCE)
 set(SDL_FILESYSTEM OFF CACHE BOOL "" FORCE)
