@@ -33,6 +33,7 @@
 #include <Corrade/Containers/Triple.h>
 
 #include "Magnum/ImageView.h"
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Text/Implementation/abstractGlyphCacheState.h"
 

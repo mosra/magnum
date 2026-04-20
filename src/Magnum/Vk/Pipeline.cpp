@@ -32,6 +32,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/BigEnumSet.hpp>
 
+#include "Magnum/Math/Functions.h" /* popcount() */
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
