@@ -35,8 +35,7 @@
    all have it directly in <type_traits> because it just makes sense */
 #include <type_traits>
 
-/* Taking also scalar min()/max() from here, which is otherwise advertised in
-   Functions.h */
+#include "Magnum/Math/Functions.h" /* Vector min() / max() */
 #include "Magnum/Math/Vector3.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
