@@ -337,6 +337,8 @@ See also:
     @ref Math::scatter(), which is now marked with @ref CORRADE_NODISCARD to
     better convey that it returns the modified value instead of mutating it
     in-place
+-   Added @ref Math::TypeTraits::min() and @relativeref{Math::TypeTraits,max()}
+    returning minimal and maximal representable values of integer types.
 
 @subsubsection changelog-latest-new-materialtools MaterialTools library
 

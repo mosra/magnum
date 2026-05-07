@@ -370,6 +370,25 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      */
     constexpr static T epsilon();
 
+   /**
+    * @brief Minimal representable integer value
+    * @m_since_latest
+    *
+    * Returns @cpp 0 @ce for unsigned integer types and largest representable
+    * negative value for signed integer types. Not implemented for
+    * floating-point types.
+    */
+   constexpr static T min();
+
+   /**
+    * @brief Maximal representable integer value
+    * @m_since_latest
+    *
+    * Returns largest representable positive value for integer types. Not
+    * implemented for floating-point types.
+    */
+   constexpr static T max();
+
     /**
      * @brief Fuzzy compare
      *
@@ -459,27 +478,43 @@ namespace Implementation {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct TypeTraits<UnsignedByte>: Implementation::TypeTraitsIntegral<UnsignedByte> {
     typedef Float FloatingPointType;
+    constexpr static UnsignedByte min() { return 0; }
+    constexpr static UnsignedByte max() { return UINT8_MAX; }
 };
 template<> struct TypeTraits<Byte>: Implementation::TypeTraitsIntegral<Byte> {
     typedef Float FloatingPointType;
+    constexpr static Byte min() { return INT8_MIN; }
+    constexpr static Byte max() { return INT8_MAX; }
 };
 template<> struct TypeTraits<UnsignedShort>: Implementation::TypeTraitsIntegral<UnsignedShort> {
     typedef Float FloatingPointType;
+    constexpr static UnsignedShort min() { return 0; }
+    constexpr static UnsignedShort max() { return UINT16_MAX; }
 };
 template<> struct TypeTraits<Short>: Implementation::TypeTraitsIntegral<Short> {
     typedef Float FloatingPointType;
+    constexpr static Short min() { return INT16_MIN; }
+    constexpr static Short max() { return INT16_MAX; }
 };
 template<> struct TypeTraits<UnsignedInt>: Implementation::TypeTraitsIntegral<UnsignedInt> {
     typedef Double FloatingPointType;
+    constexpr static UnsignedInt min() { return 0; }
+    constexpr static UnsignedInt max() { return UINT32_MAX; }
 };
 template<> struct TypeTraits<Int>: Implementation::TypeTraitsIntegral<Int> {
     typedef Double FloatingPointType;
+    constexpr static Int min() { return INT32_MIN; }
+    constexpr static Int max() { return INT32_MAX; }
 };
 template<> struct TypeTraits<UnsignedLong>: Implementation::TypeTraitsIntegral<UnsignedLong> {
     typedef long double FloatingPointType;
+    constexpr static UnsignedLong min() { return 0; }
+    constexpr static UnsignedLong max() { return UINT64_MAX; }
 };
 template<> struct TypeTraits<Long>: Implementation::TypeTraitsIntegral<Long> {
     typedef long double FloatingPointType;
+    constexpr static Long min() { return INT64_MIN; }
+    constexpr static Long max() { return INT64_MAX; }
 };
 
 /* Floating-point scalar types */

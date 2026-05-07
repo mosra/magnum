@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <limits> /* for TypeTraits<T>::min() / max() verification */
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -49,6 +50,8 @@ struct TypeTraitsTest: TestSuite::Tester {
     void underlyingTypeOf();
 
     template<class T> void epsilonConsistentWithCorrade();
+
+    template<class T> void minMax();
 
     template<class T> void equalsIntegral();
     void equalsHalf();
@@ -116,6 +119,15 @@ TypeTraitsTest::TypeTraitsTest() {
               &TypeTraitsTest::epsilonConsistentWithCorrade<Float>,
               &TypeTraitsTest::epsilonConsistentWithCorrade<Double>,
               &TypeTraitsTest::epsilonConsistentWithCorrade<long double>,
+
+              &TypeTraitsTest::minMax<UnsignedByte>,
+              &TypeTraitsTest::minMax<Byte>,
+              &TypeTraitsTest::minMax<UnsignedShort>,
+              &TypeTraitsTest::minMax<Short>,
+              &TypeTraitsTest::minMax<UnsignedInt>,
+              &TypeTraitsTest::minMax<Int>,
+              &TypeTraitsTest::minMax<UnsignedLong>,
+              &TypeTraitsTest::minMax<Long>,
 
               &TypeTraitsTest::equalsIntegral<UnsignedByte>,
               &TypeTraitsTest::equalsIntegral<Byte>,
@@ -258,6 +270,15 @@ template<class T> void TypeTraitsTest::epsilonConsistentWithCorrade() {
     /* Using VERIFY because we *don't* want fuzzy comparison in this case. The
        equals*() tests below do further checks against TestSuite. */
     CORRADE_VERIFY(TypeTraits<T>::epsilon() == Utility::Implementation::FloatPrecision<T>::epsilon());
+}
+
+template<class T> void TypeTraitsTest::minMax() {
+    setTestCaseTemplateName(TypeTraits<T>::name());
+
+    /* Using std::numeric_limits to verify the implementation uses the right
+       <cstdint> values for the right types */
+    CORRADE_COMPARE(TypeTraits<T>::min(), std::numeric_limits<T>::min());
+    CORRADE_COMPARE(TypeTraits<T>::max(), std::numeric_limits<T>::max());
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {
