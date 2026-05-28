@@ -378,6 +378,12 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Physical);
     #else
     CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Physical);
+    /* On Emscripten the DPI scaling policy is only used in the above
+       assertion, otherwise it's unused. Suppressing an unused variable warning
+       instead of adding even more ifdefs to make the code easier to read. */
+    #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(CORRADE_NO_ASSERT)
+    static_cast<void>(dpiScalingPolicy);
+    #endif
     #endif
 
     /* Take device pixel ratio on Emscripten */

@@ -299,7 +299,11 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
         if(end - begin > 1) for(std::size_t j = begin + 1; j != end; ++j) {
             if(_data[j - 1].name() < _data[j].name()) continue;
 
-            std::sort(_data + begin, _data + end, [i](const MaterialAttributeData& a, const MaterialAttributeData& b) {
+            std::sort(_data + begin, _data + end, [
+                #ifndef CORRADE_NO_ASSERT
+                i
+                #endif
+            ](const MaterialAttributeData& a, const MaterialAttributeData& b) {
                 /* Need to check here (instead of in the outer for loop) as we
                    exit the loop right after the sort and thus duplicates that
                    occur after the first non-sorted pair wouldn't get detected.
