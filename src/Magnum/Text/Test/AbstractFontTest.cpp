@@ -57,6 +57,7 @@ struct AbstractFontTest: TestSuite::Tester {
     void construct();
 
     void openData();
+    void openDataFontIndex();
     void openFileAsData();
     void openFileAsDataNotFound();
 
@@ -131,6 +132,7 @@ AbstractFontTest::AbstractFontTest() {
     addTests({&AbstractFontTest::construct,
 
               &AbstractFontTest::openData,
+              &AbstractFontTest::openDataFontIndex,
               &AbstractFontTest::openFileAsData,
               &AbstractFontTest::openFileAsDataNotFound,
 
@@ -250,6 +252,41 @@ void AbstractFontTest::openData() {
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
     CORRADE_COMPARE(font.glyphCount(), 15);
+    CORRADE_COMPARE(font.fontIndex(), 0);
+    CORRADE_COMPARE(font.fontCount(), 1);
+}
+
+void AbstractFontTest::openDataFontIndex() {
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Properties doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+            CORRADE_COMPARE(fontIndex(), 2);
+            _opened = (data.size() == 1 && data[0] == '\xa5');
+            return {size, 1.0f, 2.0f, 3.0f, 15, 3};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool _opened = false;
+    } font;
+
+    CORRADE_VERIFY(!font.isOpened());
+    const char a5 = '\xa5';
+    font.openData({&a5, 1}, 13.0f, 2);
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
+    CORRADE_COMPARE(font.fontIndex(), 2);
+    CORRADE_COMPARE(font.fontCount(), 3);
 }
 
 void AbstractFontTest::openFileAsData() {
@@ -280,6 +317,8 @@ void AbstractFontTest::openFileAsData() {
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
     CORRADE_COMPARE(font.glyphCount(), 15);
+    CORRADE_COMPARE(font.fontIndex(), 0);
+    CORRADE_COMPARE(font.fontCount(), 1);
 }
 
 void AbstractFontTest::openFileAsDataNotFound() {
@@ -811,12 +850,14 @@ void AbstractFontTest::propertiesNoFont() {
     font.descent();
     font.lineHeight();
     font.glyphCount();
+    font.fontCount();
     CORRADE_COMPARE(out,
         "Text::AbstractFont::size(): no font opened\n"
         "Text::AbstractFont::ascent(): no font opened\n"
         "Text::AbstractFont::descent(): no font opened\n"
         "Text::AbstractFont::lineHeight(): no font opened\n"
-        "Text::AbstractFont::glyphCount(): no font opened\n");
+        "Text::AbstractFont::glyphCount(): no font opened\n"
+        "Text::AbstractFont::fontCount(): no font opened\n");
 }
 
 void AbstractFontTest::glyphId() {

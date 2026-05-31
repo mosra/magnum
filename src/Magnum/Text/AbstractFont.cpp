@@ -108,7 +108,11 @@ void AbstractFont::setFileCallback(Containers::Optional<Containers::ArrayView<co
 
 void AbstractFont::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
 
-bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float size) {
+bool AbstractFont::openData(const Containers::ArrayView<const void> data, const Float size) {
+    return openData(data, size, 0);
+}
+
+bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float size, const UnsignedInt fontIndex) {
     CORRADE_ASSERT(features() & FontFeature::OpenData,
         "Text::AbstractFont::openData(): feature not supported", false);
 
@@ -116,16 +120,19 @@ bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float 
        the check doesn't be done on the plugin side) because for some file
        formats it could be valid (MagnumFont in particular). */
     close();
+    _fontIndex = fontIndex;
     const Properties properties = doOpenData(Containers::arrayCast<const char>(data), size);
 
     /* If opening succeeded, save the returned values. If not, the values were
        set to their default values by close() already. */
     if(isOpened()) {
+        CORRADE_INTERNAL_ASSERT(!properties.fontCount || fontIndex < properties.fontCount);
         _size = properties.size;
         _ascent = properties.ascent;
         _descent = properties.descent;
         _lineHeight = properties.lineHeight;
         _glyphCount = properties.glyphCount;
+        _fontCount = properties.fontCount ? properties.fontCount : 1;
         return true;
     }
 
@@ -137,7 +144,12 @@ auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Prope
 }
 
 bool AbstractFont::openFile(const Containers::StringView filename, const Float size) {
+    return openFile(filename, size, 0);
+}
+
+bool AbstractFont::openFile(const Containers::StringView filename, const Float size, const UnsignedInt fontIndex) {
     close();
+    _fontIndex = fontIndex;
     Properties properties;
 
     /* If file loading callbacks are not set or the font implementation
@@ -174,11 +186,13 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
     /* If opening succeeded, save the returned values. If not, the values were
        set to their default values by close() already. */
     if(isOpened()) {
+        CORRADE_INTERNAL_ASSERT(!properties.fontCount || fontIndex < properties.fontCount);
         _size = properties.size;
         _ascent = properties.ascent;
         _descent = properties.descent;
         _lineHeight = properties.lineHeight;
         _glyphCount = properties.glyphCount;
+        _fontCount = properties.fontCount ? properties.fontCount : 1;
         return true;
     }
 
@@ -228,6 +242,13 @@ void AbstractFont::close() {
     _lineHeight = {};
     _descent = {};
     _lineHeight = {};
+    _fontIndex = {};
+    _fontCount = {};
+}
+
+UnsignedInt AbstractFont::fontCount() const {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::fontCount(): no font opened", {});
+    return _fontCount;
 }
 
 Float AbstractFont::size() const {

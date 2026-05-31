@@ -400,28 +400,40 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Open raw data
          * @param data          File data
          * @param size          Font size in points
+         * @param fontIndex     Font index to open
          *
          * Closes previous file, if it was opened, and tries to open given
-         * raw data. Available only if @ref FontFeature::OpenData is supported.
-         * On failure prints a message to @relativeref{Magnum,Error} and
-         * returns @cpp false @ce.
-         * @see @ref features(), @ref openFile()
+         * raw data. The @p fontIndex is useful for opening a particular font
+         * from a collection such as TrueType Collection (`*.ttc`) files.
+         * Available only if @ref FontFeature::OpenData is supported. On
+         * failure prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce.
+         * @see @ref features(), @ref openFile(), @ref fontIndex(),
+         *      @ref fontCount()
          */
+        bool openData(Containers::ArrayView<const void> data, Float size, UnsignedInt fontIndex);
+        /** @overload */
         bool openData(Containers::ArrayView<const void> data, Float size);
 
         /**
          * @brief Open a file
          * @param filename      Font file
          * @param size          Size to open the font in, in points
+         * @param fontIndex     Font index to open
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. On failure prints a message to @relativeref{Magnum,Error} and
-         * returns @cpp false @ce. If file loading callbacks are set via
+         * file. The @p fontIndex is useful for opening a particular font from
+         * a collection such as TrueType Collection (`*.ttc`) files. On
+         * failure prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce. If file loading callbacks are set via
          * @ref setFileCallback() and @ref FontFeature::OpenData is supported,
          * this function uses the callback to load the file and passes the
          * memory view to @ref openData() instead. See @ref setFileCallback()
          * for more information.
+         * @see @ref fontIndex(), @ref fontCount()
          */
+        bool openFile(Containers::StringView filename, Float size, UnsignedInt fontIndex);
+        /** @overload */
         bool openFile(Containers::StringView filename, Float size);
 
         /**
@@ -436,6 +448,28 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @cpp false @ce.
          */
         void close();
+
+        /**
+         * @brief Opened font index
+         * @m_since_latest
+         *
+         * Returns the font index passed to @ref openFile() or @ref openData().
+         * For files containing just one font, this value is @cpp 0 @ce.
+         * @see @ref fontCount()
+         */
+        UnsignedInt fontIndex() const { return _fontIndex; }
+
+        /**
+         * @brief Count of fonts in the opened file
+         * @m_since_latest
+         *
+         * For files containing just one font, this value is @cpp 1 @ce. For
+         * font collections such as TrueType Collection (`*.ttc`) files, this
+         * is the count of fonts in the collection. Expects that a font is
+         * opened.
+         * @see @ref fontIndex()
+         */
+        UnsignedInt fontCount() const;
 
         /**
          * @brief Font size in points
@@ -655,11 +689,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Returned from @ref doOpenFile(), @ref doOpenData().
          */
         struct Properties {
-            #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5
-            /* Otherwise GCC 4.8 loudly complains about missing initializers */
-            constexpr /*implicit*/ Properties() noexcept: size{}, ascent{}, descent{}, lineHeight{}, glyphCount{} {}
-            constexpr /*implicit*/ Properties(Float size, Float ascent, Float descent, Float lineHeight, UnsignedInt glyphCount) noexcept: size{size}, ascent{ascent}, descent{descent}, lineHeight{lineHeight}, glyphCount{glyphCount} {}
-            #endif
+            constexpr /*implicit*/ Properties() noexcept: size{}, ascent{}, descent{}, lineHeight{}, glyphCount{}, fontCount{} {}
+            constexpr /*implicit*/ Properties(Float size, Float ascent, Float descent, Float lineHeight, UnsignedInt glyphCount, UnsignedInt fontCount = 0) noexcept: size{size}, ascent{ascent}, descent{descent}, lineHeight{lineHeight}, glyphCount{glyphCount}, fontCount{fontCount} {}
 
             /**
              * Font size in points
@@ -691,6 +722,17 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
              * @m_since_latest
              */
             UnsignedInt glyphCount;
+
+            /**
+             * Count of fonts in the opened file
+             *
+             * If left at @cpp 0 @ce by an implementation, the public
+             * @ref fontCount() reports @cpp 1 @ce. Implementations supporting
+             * font collections should return the real count.
+             * @see @ref fontCount()
+             * @m_since_latest
+             */
+            UnsignedInt fontCount;
         };
 
     protected:
@@ -823,7 +865,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         #endif
 
         Float _size{}, _ascent{}, _descent{}, _lineHeight{};
-        UnsignedInt _glyphCount{};
+        UnsignedInt _glyphCount{}, _fontIndex{}, _fontCount{};
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -917,7 +959,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Text.AbstractFont/0.3.7"
+"cz.mosra.magnum.Text.AbstractFont/0.3.8"
 /* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
