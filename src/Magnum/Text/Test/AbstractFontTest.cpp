@@ -57,6 +57,7 @@ struct AbstractFontTest: TestSuite::Tester {
     void construct();
 
     void openData();
+    void openFile();
     void openFileAsData();
     void openFileAsDataNotFound();
 
@@ -131,6 +132,7 @@ AbstractFontTest::AbstractFontTest() {
     addTests({&AbstractFontTest::construct,
 
               &AbstractFontTest::openData,
+              &AbstractFontTest::openFile,
               &AbstractFontTest::openFileAsData,
               &AbstractFontTest::openFileAsDataNotFound,
 
@@ -244,6 +246,35 @@ void AbstractFontTest::openData() {
     CORRADE_VERIFY(!font.isOpened());
     const char a5 = '\xa5';
     font.openData({&a5, 1}, 13.0f);
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
+}
+
+void AbstractFontTest::openFile() {
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Properties doOpenFile(Containers::StringView filename, Float size) override {
+            _opened = filename == "hello.ttf";
+            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool _opened = false;
+    } font;
+
+    CORRADE_VERIFY(!font.isOpened());
+    font.openFile("hello.ttf", 13.0f);
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
