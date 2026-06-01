@@ -72,19 +72,19 @@ GlyphCacheGL::State::State(const PixelFormat format, const Vector2i& size, const
         pixelFormat = GL::PixelFormat::Red;
     }
 
-    /* And use setImage() instead of setStorage() if the format is unsized, as
-       EXT_texture_storage doesn't allow those */
-    if(textureFormat == GL::TextureFormat::Red ||
-       textureFormat == GL::TextureFormat::Luminance ||
-       textureFormat == GL::TextureFormat::RG ||
-       textureFormat == GL::TextureFormat::LuminanceAlpha ||
-       textureFormat == GL::TextureFormat::RGB ||
-       textureFormat == GL::TextureFormat::SRGB ||
-       textureFormat == GL::TextureFormat::RGBA ||
-       textureFormat == GL::TextureFormat::SRGBAlpha)
-        texture.setImage(0, textureFormat, ImageView2D{pixelFormat, GL::PixelType::UnsignedByte, processedSize});
-    else
-        texture.setStorage(1, textureFormat, processedSize);
+    /* On ES2, GL::textureFormat() always produces an unsized format, so we
+       have to use setImage() instead of setStorage() as EXT_texture_storage
+       doesn't allow those */
+    CORRADE_INTERNAL_ASSERT(
+        textureFormat == GL::TextureFormat::Red ||
+        textureFormat == GL::TextureFormat::Luminance ||
+        textureFormat == GL::TextureFormat::RG ||
+        textureFormat == GL::TextureFormat::LuminanceAlpha ||
+        textureFormat == GL::TextureFormat::RGB ||
+        textureFormat == GL::TextureFormat::SRGB ||
+        textureFormat == GL::TextureFormat::RGBA ||
+        textureFormat == GL::TextureFormat::SRGBAlpha);
+    texture.setImage(0, textureFormat, ImageView2D{pixelFormat, GL::PixelType::UnsignedByte, processedSize});
     #else
     texture.setStorage(1, GL::textureFormat(processedFormat), processedSize);
     #endif
