@@ -286,7 +286,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * variables, see @ref building for more information.
          *
          * Not defined on platforms without
-         *      @ref CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT "dynamic plugin support".
+         * @ref CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT "dynamic plugin support".
          */
         static Containers::Array<Containers::String> pluginSearchPaths();
         #endif
@@ -398,8 +398,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /**
          * @brief Open raw data
-         * @param data          File data
-         * @param size          Font size in points
+         * @param data          Font data
+         * @param size          Size to open the font in, in points
          *
          * Closes previous file, if it was opened, and tries to open given
          * raw data. Available only if @ref FontFeature::OpenData is supported.
