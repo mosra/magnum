@@ -72,6 +72,10 @@ ctest -V -E GLBenchmark
 MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex" ctest -V -R GLTest
 MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance" ctest -V -R GLTest
 MAGNUM_DISABLE_EXTENSIONS="GL_OES_vertex_array_object GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_EXT_robustness GL_EXT_draw_elements_base_vertex GL_OES_draw_elements_base_vertex GL_ANGLE_base_vertex_base_instance GL_EXT_multi_draw_arrays GL_ANGLE_multi_draw" ctest -V -R GLTest
+# Glyph caches in the Text library pick features based on a combination of
+# those two
+MAGNUM_DISABLE_EXTENSIONS="GL_EXT_texture_rg GL_EXT_unpack_subimage" ctest -V -R GLTest
+MAGNUM_DISABLE_EXTENSIONS="GL_EXT_unpack_subimage" ctest -V -R GLTest
 MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest -V -R GLTest
 Debug/bin/magnum-gl-info --extension-strings
 Debug/bin/magnum-gl-info --limits
