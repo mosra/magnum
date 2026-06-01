@@ -156,7 +156,8 @@ bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, AbstractGlyph
 
     /* Export all data */
     const auto data = doExportFontToData(font, cache, filename, characters);
-    if(data.empty()) return false;
+    if(data.empty())
+        return false;
 
     for(const auto& d: data) if(!Utility::Path::write(d.first, d.second)) {
         Error() << "Text::AbstractFontConverter::exportFontToFile(): cannot write to file" << d.first;
@@ -186,7 +187,8 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     Containers::Array<char> result = doExportGlyphCacheToSingleData(cache);
-    if(result) out.emplace_back(filename, Utility::move(result));
+    if(result)
+        out.emplace_back(filename, Utility::move(result));
     return out;
 }
 
@@ -219,7 +221,8 @@ bool AbstractFontConverter::doExportGlyphCacheToFile(AbstractGlyphCache& cache, 
 
     /* Export all data */
     const auto data = doExportGlyphCacheToData(cache, filename);
-    if(data.empty()) return false;
+    if(data.empty())
+        return false;
 
     for(const auto& d: data) if(!Utility::Path::write(d.first, d.second)) {
         Error() << "Text::AbstractFontConverter::exportGlyphCacheToFile(): cannot write to file" << d.first;

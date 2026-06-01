@@ -217,7 +217,8 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
 }
 
 void AbstractFont::close() {
-    if(!isOpened()) return;
+    if(!isOpened())
+        return;
 
     doClose();
     CORRADE_INTERNAL_ASSERT(!isOpened());
@@ -354,7 +355,8 @@ bool AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const Containers::S
     CORRADE_INTERNAL_ASSERT(uniqueCount <= glyphs.size());
     std::size_t offset = 0;
     for(UnsignedInt i = 0; i != uniqueGlyphs.size(); ++i)
-        if(uniqueGlyphs[i]) glyphs[offset++].glyph = i;
+        if(uniqueGlyphs[i])
+            glyphs[offset++].glyph = i;
     CORRADE_INTERNAL_ASSERT(offset == uniqueCount);
 
     /* Pass the unique set to the implementation */
