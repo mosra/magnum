@@ -228,7 +228,7 @@ void AbstractFontTest::openData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+        Properties doOpenData(Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xa5');
             return {size, 1.0f, 2.0f, 3.0f, 15};
         }
@@ -258,7 +258,7 @@ void AbstractFontTest::openFileAsData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+        Properties doOpenData(Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xa5');
             return {size, 1.0f, 2.0f, 3.0f, 15};
         }
@@ -769,7 +769,7 @@ void AbstractFontTest::properties() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(const Containers::ArrayView<const char>, Float size) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float size) override {
             _opened = true;
             return {size, 1.0f, 2.0f, 3.0f, 15};
         }
