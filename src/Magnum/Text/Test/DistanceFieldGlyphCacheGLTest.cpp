@@ -289,6 +289,11 @@ void DistanceFieldGlyphCacheGLTest::construct() {
     }
     #endif
     CORRADE_COMPARE(cache.processedSize(), (Vector3i{64, 128, 1}));
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(cache.distanceFieldTextureSize(), (Vector2i{64, 128}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), (Vector2i{64, 128}));
     #endif

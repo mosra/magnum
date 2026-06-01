@@ -7319,6 +7319,11 @@ void RendererTest::clearReset() {
     /* Fill the renderer with something */
     renderer
         .setCursor({100.0f, 50.0f})
+        /* These two are called just to have their overloads in Renderer
+           covered, other than that they're thoroughly tested for RendererCore
+           already */
+        .setLineAdvance(30.0f)
+        .setLayoutDirection(LayoutDirection::HorizontalTopToBottom)
         .add(shaper, 1.0f, "ab\nc");
     CORRADE_COMPARE(renderer.renderingGlyphCount(), 3);
     CORRADE_COMPARE(renderer.renderingRunCount(), 1);
@@ -7371,10 +7376,23 @@ void RendererTest::clearReset() {
     CORRADE_COMPARE(renderer.renderingRunCount(), 0);
     if(data.reset) {
         CORRADE_COMPARE(renderer.cursor(), Vector2{});
+        CORRADE_COMPARE(renderer.lineAdvance(), 0.0f);
+        CORRADE_COMPARE(renderer.layoutDirection(), LayoutDirection::HorizontalTopToBottom);
     } else {
         CORRADE_COMPARE(renderer.cursor(), (Vector2{100.0f, 50.0f}));
+        CORRADE_COMPARE(renderer.lineAdvance(), 30.0f);
+        /** @todo verify with a different value once vertical layout direction
+            is supported */
+        CORRADE_COMPARE(renderer.layoutDirection(), LayoutDirection::HorizontalTopToBottom);
     }
     CORRADE_COMPARE(renderer.indexType(), MeshIndexType::UnsignedShort);
+
+    /* Clear the custom line advance if it wasn't reset, to not have it affect
+       the next */
+    /** @todo same as in clearResetCore(), this could theoretically hide a bug
+        where this actually does reset the detected one as well */
+    if(!data.reset)
+        renderer.setLineAdvance(0.0f);
 
     /* Rendering should work the same way after a clear / reset. The Renderer
        wrappers delegate to RendererCore, which is tested in clearResetCore()
