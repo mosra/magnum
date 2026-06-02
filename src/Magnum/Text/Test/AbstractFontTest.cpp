@@ -250,7 +250,7 @@ void AbstractFontTest::openData() {
 
     CORRADE_VERIFY(!font.isOpened());
     const char a5[]{'\xa5'};
-    font.openData(a5, 13.0f);
+    CORRADE_VERIFY(font.openData(a5, 13.0f));
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
@@ -281,7 +281,7 @@ void AbstractFontTest::openFile() {
     } font;
 
     CORRADE_VERIFY(!font.isOpened());
-    font.openFile("hello.ttf", 13.0f);
+    CORRADE_VERIFY(font.openFile("hello.ttf", 13.0f));
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
@@ -315,7 +315,7 @@ void AbstractFontTest::openFileAsData() {
 
     /* doOpenFile() should call doOpenData() */
     CORRADE_VERIFY(!font.isOpened());
-    font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 13.0f);
+    CORRADE_VERIFY(font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 13.0f));
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
