@@ -55,6 +55,11 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 struct AbstractFontTest: TestSuite::Tester {
     explicit AbstractFontTest();
 
+    void debugFeature();
+    void debugFeaturePacked();
+    void debugFeatures();
+    void debugFeaturesPacked();
+
     void construct();
 
     void openData();
@@ -128,15 +133,15 @@ struct AbstractFontTest: TestSuite::Tester {
     void layoutGlyphOutOfRange();
     void layoutNoFont();
     #endif
-
-    void debugFeature();
-    void debugFeaturePacked();
-    void debugFeatures();
-    void debugFeaturesPacked();
 };
 
 AbstractFontTest::AbstractFontTest() {
-    addTests({&AbstractFontTest::construct,
+    addTests({&AbstractFontTest::debugFeature,
+              &AbstractFontTest::debugFeaturePacked,
+              &AbstractFontTest::debugFeatures,
+              &AbstractFontTest::debugFeaturesPacked,
+
+              &AbstractFontTest::construct,
 
               &AbstractFontTest::openData,
               &AbstractFontTest::openDataFailed,
@@ -209,14 +214,38 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::layoutGlyphOutOfRange,
               &AbstractFontTest::layoutNoFont,
               #endif
-
-              &AbstractFontTest::debugFeature,
-              &AbstractFontTest::debugFeaturePacked,
-              &AbstractFontTest::debugFeatures,
-              &AbstractFontTest::debugFeaturesPacked});
+              });
 }
 
 using namespace Containers::Literals;
+
+void AbstractFontTest::debugFeature() {
+    Containers::String out;
+
+    Debug{&out} << FontFeature::OpenData << FontFeature(0xf0);
+    CORRADE_COMPARE(out, "Text::FontFeature::OpenData Text::FontFeature(0xf0)\n");
+}
+
+void AbstractFontTest::debugFeaturePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << FontFeature::OpenData << Debug::packed << FontFeature(0xf0) << FontFeature::FileCallback;
+    CORRADE_COMPARE(out, "OpenData 0xf0 Text::FontFeature::FileCallback\n");
+}
+
+void AbstractFontTest::debugFeatures() {
+    Containers::String out;
+
+    Debug{&out} << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << FontFeatures{};
+    CORRADE_COMPARE(out, "Text::FontFeature::OpenData|Text::FontFeature::PreparedGlyphCache Text::FontFeatures{}\n");
+}
+
+void AbstractFontTest::debugFeaturesPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << Debug::packed << FontFeatures{} << FontFeature::FileCallback;
+    CORRADE_COMPARE(out, "OpenData|PreparedGlyphCache {} Text::FontFeature::FileCallback\n");
+}
 
 void AbstractFontTest::construct() {
     struct: AbstractFont {
@@ -2241,34 +2270,6 @@ void AbstractFontTest::layoutNoFont() {
     CORRADE_COMPARE(out, "Text::AbstractFont::layout(): no font opened\n");
 }
 #endif
-
-void AbstractFontTest::debugFeature() {
-    Containers::String out;
-
-    Debug{&out} << FontFeature::OpenData << FontFeature(0xf0);
-    CORRADE_COMPARE(out, "Text::FontFeature::OpenData Text::FontFeature(0xf0)\n");
-}
-
-void AbstractFontTest::debugFeaturePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << FontFeature::OpenData << Debug::packed << FontFeature(0xf0) << FontFeature::FileCallback;
-    CORRADE_COMPARE(out, "OpenData 0xf0 Text::FontFeature::FileCallback\n");
-}
-
-void AbstractFontTest::debugFeatures() {
-    Containers::String out;
-
-    Debug{&out} << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << FontFeatures{};
-    CORRADE_COMPARE(out, "Text::FontFeature::OpenData|Text::FontFeature::PreparedGlyphCache Text::FontFeatures{}\n");
-}
-
-void AbstractFontTest::debugFeaturesPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << Debug::packed << FontFeatures{} << FontFeature::FileCallback;
-    CORRADE_COMPARE(out, "OpenData|PreparedGlyphCache {} Text::FontFeature::FileCallback\n");
-}
 
 }}}}
 

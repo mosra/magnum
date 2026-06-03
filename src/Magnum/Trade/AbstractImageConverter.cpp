@@ -57,6 +57,116 @@ namespace Magnum { namespace Trade {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const ImageConverterFeature value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* If printing a deprecated flag combination, make it look like the enum
+       set */
+    if((value & ImageConverterFeature::Levels) && (value & ~ImageConverterFeature::Levels))
+        return debug << (value & ~ImageConverterFeature::Levels) << Debug::nospace << (packed ? "|Levels" : "|Trade::ImageConverterFeature::Levels");
+    #endif
+
+    if(!packed)
+        debug << "Trade::ImageConverterFeature" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ImageConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(Convert1D)
+        _c(Convert2D)
+        _c(Convert3D)
+        _c(ConvertCompressed1D)
+        _c(ConvertCompressed2D)
+        _c(ConvertCompressed3D)
+        _c(Convert1DToFile)
+        _c(Convert2DToFile)
+        _c(Convert3DToFile)
+        _c(ConvertCompressed1DToFile)
+        _c(ConvertCompressed2DToFile)
+        _c(ConvertCompressed3DToFile)
+        _c(Convert1DToData)
+        _c(Convert2DToData)
+        _c(Convert3DToData)
+        _c(ConvertCompressed1DToData)
+        _c(ConvertCompressed2DToData)
+        _c(ConvertCompressed3DToData)
+        _c(Levels)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /* LCOV_EXCL_START */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        case ImageConverterFeature::ConvertLevels1DToData:
+        case ImageConverterFeature::ConvertLevels2DToData:
+        case ImageConverterFeature::ConvertLevels3DToData:
+        case ImageConverterFeature::ConvertCompressedLevels1DToData:
+        case ImageConverterFeature::ConvertCompressedLevels2DToData:
+        case ImageConverterFeature::ConvertCompressedLevels3DToData:
+        case ImageConverterFeature::ConvertLevels1DToFile:
+        case ImageConverterFeature::ConvertLevels2DToFile:
+        case ImageConverterFeature::ConvertLevels3DToFile:
+        case ImageConverterFeature::ConvertCompressedLevels1DToFile:
+        case ImageConverterFeature::ConvertCompressedLevels2DToFile:
+        case ImageConverterFeature::ConvertCompressedLevels3DToFile:
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        CORRADE_IGNORE_DEPRECATED_POP
+        /* LCOV_EXCL_STOP */
+        #endif
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const ImageConverterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::ImageConverterFeatures{}", {
+        ImageConverterFeature::Convert1D,
+        ImageConverterFeature::Convert2D,
+        ImageConverterFeature::Convert3D,
+        ImageConverterFeature::ConvertCompressed1D,
+        ImageConverterFeature::ConvertCompressed2D,
+        ImageConverterFeature::ConvertCompressed3D,
+        ImageConverterFeature::Convert1DToData,
+        ImageConverterFeature::Convert2DToData,
+        ImageConverterFeature::Convert3DToData,
+        ImageConverterFeature::ConvertCompressed1DToData,
+        ImageConverterFeature::ConvertCompressed2DToData,
+        ImageConverterFeature::ConvertCompressed3DToData,
+        /* These 6 are implied by Convert[Compressed]ToData, so have to be
+           after */
+        ImageConverterFeature::Convert1DToFile,
+        ImageConverterFeature::Convert2DToFile,
+        ImageConverterFeature::Convert3DToFile,
+        ImageConverterFeature::ConvertCompressed1DToFile,
+        ImageConverterFeature::ConvertCompressed2DToFile,
+        ImageConverterFeature::ConvertCompressed3DToFile,
+        ImageConverterFeature::Levels
+    });
+}
+
+Debug& operator<<(Debug& debug, const ImageConverterFlag value) {
+    debug << "Trade::ImageConverterFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ImageConverterFlag::v: return debug << "::" #v;
+        _c(Quiet)
+        _c(Verbose)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const ImageConverterFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::ImageConverterFlags{}", {
+        ImageConverterFlag::Quiet,
+        ImageConverterFlag::Verbose
+    });
+}
+
 Containers::StringView AbstractImageConverter::pluginInterface() {
     return MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE ""_s;
 }
@@ -1289,114 +1399,6 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
     }
 
     return true;
-}
-
-Debug& operator<<(Debug& debug, const ImageConverterFeature value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    /* If printing a deprecated flag combination, make it look like the enum
-       set */
-    if((value & ImageConverterFeature::Levels) && (value & ~ImageConverterFeature::Levels))
-        return debug << (value & ~ImageConverterFeature::Levels) << Debug::nospace << (packed ? "|Levels" : "|Trade::ImageConverterFeature::Levels");
-    #endif
-
-    if(!packed)
-        debug << "Trade::ImageConverterFeature" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case ImageConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
-        _c(Convert1D)
-        _c(Convert2D)
-        _c(Convert3D)
-        _c(ConvertCompressed1D)
-        _c(ConvertCompressed2D)
-        _c(ConvertCompressed3D)
-        _c(Convert1DToFile)
-        _c(Convert2DToFile)
-        _c(Convert3DToFile)
-        _c(ConvertCompressed1DToFile)
-        _c(ConvertCompressed2DToFile)
-        _c(ConvertCompressed3DToFile)
-        _c(Convert1DToData)
-        _c(Convert2DToData)
-        _c(Convert3DToData)
-        _c(ConvertCompressed1DToData)
-        _c(ConvertCompressed2DToData)
-        _c(ConvertCompressed3DToData)
-        _c(Levels)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /* LCOV_EXCL_START */
-        CORRADE_IGNORE_DEPRECATED_PUSH
-        case ImageConverterFeature::ConvertLevels1DToData:
-        case ImageConverterFeature::ConvertLevels2DToData:
-        case ImageConverterFeature::ConvertLevels3DToData:
-        case ImageConverterFeature::ConvertCompressedLevels1DToData:
-        case ImageConverterFeature::ConvertCompressedLevels2DToData:
-        case ImageConverterFeature::ConvertCompressedLevels3DToData:
-        case ImageConverterFeature::ConvertLevels1DToFile:
-        case ImageConverterFeature::ConvertLevels2DToFile:
-        case ImageConverterFeature::ConvertLevels3DToFile:
-        case ImageConverterFeature::ConvertCompressedLevels1DToFile:
-        case ImageConverterFeature::ConvertCompressedLevels2DToFile:
-        case ImageConverterFeature::ConvertCompressedLevels3DToFile:
-            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-        CORRADE_IGNORE_DEPRECATED_POP
-        /* LCOV_EXCL_STOP */
-        #endif
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const ImageConverterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::ImageConverterFeatures{}", {
-        ImageConverterFeature::Convert1D,
-        ImageConverterFeature::Convert2D,
-        ImageConverterFeature::Convert3D,
-        ImageConverterFeature::ConvertCompressed1D,
-        ImageConverterFeature::ConvertCompressed2D,
-        ImageConverterFeature::ConvertCompressed3D,
-        ImageConverterFeature::Convert1DToData,
-        ImageConverterFeature::Convert2DToData,
-        ImageConverterFeature::Convert3DToData,
-        ImageConverterFeature::ConvertCompressed1DToData,
-        ImageConverterFeature::ConvertCompressed2DToData,
-        ImageConverterFeature::ConvertCompressed3DToData,
-        /* These 6 are implied by Convert[Compressed]ToData, so have to be
-           after */
-        ImageConverterFeature::Convert1DToFile,
-        ImageConverterFeature::Convert2DToFile,
-        ImageConverterFeature::Convert3DToFile,
-        ImageConverterFeature::ConvertCompressed1DToFile,
-        ImageConverterFeature::ConvertCompressed2DToFile,
-        ImageConverterFeature::ConvertCompressed3DToFile,
-        ImageConverterFeature::Levels});
-}
-
-Debug& operator<<(Debug& debug, const ImageConverterFlag value) {
-    debug << "Trade::ImageConverterFlag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case ImageConverterFlag::v: return debug << "::" #v;
-        _c(Quiet)
-        _c(Verbose)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const ImageConverterFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::ImageConverterFlags{}", {
-        ImageConverterFlag::Quiet,
-        ImageConverterFlag::Verbose});
 }
 
 }}

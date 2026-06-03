@@ -46,6 +46,18 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AbstractImageConverterTest: TestSuite::Tester {
     explicit AbstractImageConverterTest();
 
+    void debugFeature();
+    void debugFeaturePacked();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void debugFeatureDeprecated();
+    void debugFeatureDeprecatedPacked();
+    #endif
+    void debugFeatures();
+    void debugFeaturesPacked();
+    void debugFeaturesSupersets();
+    void debugFlag();
+    void debugFlags();
+
     void construct();
     void constructWithPluginManagerReference();
 
@@ -319,22 +331,22 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressed3DToFileThroughLevelsFailed();
     /* Conversion of a compressed image to a file through levels and through
        data not tested, as that should just work transitively */
-
-    void debugFeature();
-    void debugFeaturePacked();
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    void debugFeatureDeprecated();
-    void debugFeatureDeprecatedPacked();
-    #endif
-    void debugFeatures();
-    void debugFeaturesPacked();
-    void debugFeaturesSupersets();
-    void debugFlag();
-    void debugFlags();
 };
 
 AbstractImageConverterTest::AbstractImageConverterTest() {
-    addTests({&AbstractImageConverterTest::construct,
+    addTests({&AbstractImageConverterTest::debugFeature,
+              &AbstractImageConverterTest::debugFeaturePacked,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::debugFeatureDeprecated,
+              &AbstractImageConverterTest::debugFeatureDeprecatedPacked,
+              #endif
+              &AbstractImageConverterTest::debugFeatures,
+              &AbstractImageConverterTest::debugFeaturesPacked,
+              &AbstractImageConverterTest::debugFeaturesSupersets,
+              &AbstractImageConverterTest::debugFlag,
+              &AbstractImageConverterTest::debugFlags,
+
+              &AbstractImageConverterTest::construct,
               &AbstractImageConverterTest::constructWithPluginManagerReference,
 
               &AbstractImageConverterTest::setFlags,
@@ -581,22 +593,90 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressed3DToFileThroughLevels,
               &AbstractImageConverterTest::convertCompressed1DToFileThroughLevelsFailed,
               &AbstractImageConverterTest::convertCompressed2DToFileThroughLevelsFailed,
-              &AbstractImageConverterTest::convertCompressed3DToFileThroughLevelsFailed,
-
-              &AbstractImageConverterTest::debugFeature,
-              &AbstractImageConverterTest::debugFeaturePacked,
-              #ifdef MAGNUM_BUILD_DEPRECATED
-              &AbstractImageConverterTest::debugFeatureDeprecated,
-              &AbstractImageConverterTest::debugFeatureDeprecatedPacked,
-              #endif
-              &AbstractImageConverterTest::debugFeatures,
-              &AbstractImageConverterTest::debugFeaturesPacked,
-              &AbstractImageConverterTest::debugFeaturesSupersets,
-              &AbstractImageConverterTest::debugFlag,
-              &AbstractImageConverterTest::debugFlags});
+              &AbstractImageConverterTest::convertCompressed3DToFileThroughLevelsFailed});
 
     /* Create testing dir */
     Utility::Path::make(TRADE_TEST_OUTPUT_DIR);
+}
+
+void AbstractImageConverterTest::debugFeature() {
+    Containers::String out;
+
+    Debug{&out} << ImageConverterFeature::ConvertCompressed2D << ImageConverterFeature(0xdeadbeef);
+    CORRADE_COMPARE(out, "Trade::ImageConverterFeature::ConvertCompressed2D Trade::ImageConverterFeature(0xdeadbeef)\n");
+}
+
+void AbstractImageConverterTest::debugFeaturePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImageConverterFeature::ConvertCompressed2D << Debug::packed << ImageConverterFeature(0xdeadbeef) << ImageConverterFeature::Convert3D;
+    CORRADE_COMPARE(out, "ConvertCompressed2D 0xdeadbeef Trade::ImageConverterFeature::Convert3D\n");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::debugFeatureDeprecated() {
+    Containers::String out;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Debug{&out} << ImageConverterFeature::ConvertCompressedLevels1DToData << ImageConverterFeature::ConvertLevels3DToFile;
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out, "Trade::ImageConverterFeature::ConvertCompressed1DToData|Trade::ImageConverterFeature::Levels Trade::ImageConverterFeature::Convert3DToFile|Trade::ImageConverterFeature::Levels\n");
+}
+
+void AbstractImageConverterTest::debugFeatureDeprecatedPacked() {
+    Containers::String out;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImageConverterFeature::ConvertCompressedLevels1DToData << Debug::packed << ImageConverterFeature::ConvertLevels3DToFile << ImageConverterFeature::Convert1D;
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out, "ConvertCompressed1DToData|Levels Convert3DToFile|Levels Trade::ImageConverterFeature::Convert1D\n");
+}
+#endif
+
+void AbstractImageConverterTest::debugFeatures() {
+    Containers::String out;
+
+    Debug{&out} << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << ImageConverterFeatures{};
+    CORRADE_COMPARE(out, "Trade::ImageConverterFeature::Convert2DToData|Trade::ImageConverterFeature::ConvertCompressed2DToFile Trade::ImageConverterFeatures{}\n");
+}
+
+void AbstractImageConverterTest::debugFeaturesPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << Debug::packed << ImageConverterFeatures{} << ImageConverterFeature::Convert1D;
+    CORRADE_COMPARE(out, "Convert2DToData|ConvertCompressed2DToFile {} Trade::ImageConverterFeature::Convert1D\n");
+}
+
+void AbstractImageConverterTest::debugFeaturesSupersets() {
+    /* Convert*DToData is a superset of Convert*DToFile, so only one should be
+       printed */
+    {
+        Containers::String out;
+        Debug{&out} << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::Convert2DToFile);
+        CORRADE_COMPARE(out, "Trade::ImageConverterFeature::Convert2DToData\n");
+
+    /* ConvertCompressed*DToData is a superset of ConvertCompressed*DToFile, so
+       only one should be printed */
+    } {
+        Containers::String out;
+        Debug{&out} << (ImageConverterFeature::ConvertCompressed1DToData|ImageConverterFeature::ConvertCompressed1DToFile);
+        CORRADE_COMPARE(out, "Trade::ImageConverterFeature::ConvertCompressed1DToData\n");
+    }
+}
+
+void AbstractImageConverterTest::debugFlag() {
+    Containers::String out;
+
+    Debug{&out} << ImageConverterFlag::Verbose << ImageConverterFlag(0xf0);
+    CORRADE_COMPARE(out, "Trade::ImageConverterFlag::Verbose Trade::ImageConverterFlag(0xf0)\n");
+}
+
+void AbstractImageConverterTest::debugFlags() {
+    Containers::String out;
+
+    Debug{&out} << (ImageConverterFlag::Verbose|ImageConverterFlag(0xf0)) << ImageConverterFlags{};
+    CORRADE_COMPARE(out, "Trade::ImageConverterFlag::Verbose|Trade::ImageConverterFlag(0xf0) Trade::ImageConverterFlags{}\n");
 }
 
 void AbstractImageConverterTest::construct() {
@@ -5278,86 +5358,6 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughLevelsFailed() 
     CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}, ""));
     CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
-}
-
-void AbstractImageConverterTest::debugFeature() {
-    Containers::String out;
-
-    Debug{&out} << ImageConverterFeature::ConvertCompressed2D << ImageConverterFeature(0xdeadbeef);
-    CORRADE_COMPARE(out, "Trade::ImageConverterFeature::ConvertCompressed2D Trade::ImageConverterFeature(0xdeadbeef)\n");
-}
-
-void AbstractImageConverterTest::debugFeaturePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << ImageConverterFeature::ConvertCompressed2D << Debug::packed << ImageConverterFeature(0xdeadbeef) << ImageConverterFeature::Convert3D;
-    CORRADE_COMPARE(out, "ConvertCompressed2D 0xdeadbeef Trade::ImageConverterFeature::Convert3D\n");
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void AbstractImageConverterTest::debugFeatureDeprecated() {
-    Containers::String out;
-
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    Debug{&out} << ImageConverterFeature::ConvertCompressedLevels1DToData << ImageConverterFeature::ConvertLevels3DToFile;
-    CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out, "Trade::ImageConverterFeature::ConvertCompressed1DToData|Trade::ImageConverterFeature::Levels Trade::ImageConverterFeature::Convert3DToFile|Trade::ImageConverterFeature::Levels\n");
-}
-
-void AbstractImageConverterTest::debugFeatureDeprecatedPacked() {
-    Containers::String out;
-
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << ImageConverterFeature::ConvertCompressedLevels1DToData << Debug::packed << ImageConverterFeature::ConvertLevels3DToFile << ImageConverterFeature::Convert1D;
-    CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out, "ConvertCompressed1DToData|Levels Convert3DToFile|Levels Trade::ImageConverterFeature::Convert1D\n");
-}
-#endif
-
-void AbstractImageConverterTest::debugFeatures() {
-    Containers::String out;
-
-    Debug{&out} << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << ImageConverterFeatures{};
-    CORRADE_COMPARE(out, "Trade::ImageConverterFeature::Convert2DToData|Trade::ImageConverterFeature::ConvertCompressed2DToFile Trade::ImageConverterFeatures{}\n");
-}
-
-void AbstractImageConverterTest::debugFeaturesPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << Debug::packed << ImageConverterFeatures{} << ImageConverterFeature::Convert1D;
-    CORRADE_COMPARE(out, "Convert2DToData|ConvertCompressed2DToFile {} Trade::ImageConverterFeature::Convert1D\n");
-}
-
-void AbstractImageConverterTest::debugFeaturesSupersets() {
-    /* Convert*DToData is a superset of Convert*DToFile, so only one should be
-       printed */
-    {
-        Containers::String out;
-        Debug{&out} << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::Convert2DToFile);
-        CORRADE_COMPARE(out, "Trade::ImageConverterFeature::Convert2DToData\n");
-
-    /* ConvertCompressed*DToData is a superset of ConvertCompressed*DToFile, so
-       only one should be printed */
-    } {
-        Containers::String out;
-        Debug{&out} << (ImageConverterFeature::ConvertCompressed1DToData|ImageConverterFeature::ConvertCompressed1DToFile);
-        CORRADE_COMPARE(out, "Trade::ImageConverterFeature::ConvertCompressed1DToData\n");
-    }
-}
-
-void AbstractImageConverterTest::debugFlag() {
-    Containers::String out;
-
-    Debug{&out} << ImageConverterFlag::Verbose << ImageConverterFlag(0xf0);
-    CORRADE_COMPARE(out, "Trade::ImageConverterFlag::Verbose Trade::ImageConverterFlag(0xf0)\n");
-}
-
-void AbstractImageConverterTest::debugFlags() {
-    Containers::String out;
-
-    Debug{&out} << (ImageConverterFlag::Verbose|ImageConverterFlag(0xf0)) << ImageConverterFlags{};
-    CORRADE_COMPARE(out, "Trade::ImageConverterFlag::Verbose|Trade::ImageConverterFlag(0xf0) Trade::ImageConverterFlags{}\n");
 }
 
 }}}}

@@ -73,6 +73,13 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AbstractImporterTest: TestSuite::Tester {
     explicit AbstractImporterTest();
 
+    void debugFeature();
+    void debugFeaturePacked();
+    void debugFeatures();
+    void debugFeaturesPacked();
+    void debugFlag();
+    void debugFlags();
+
     void construct();
     void constructWithPluginManagerReference();
 
@@ -382,13 +389,6 @@ struct AbstractImporterTest: TestSuite::Tester {
     void importerState();
     void importerStateNotImplemented();
     void importerStateNoFile();
-
-    void debugFeature();
-    void debugFeaturePacked();
-    void debugFeatures();
-    void debugFeaturesPacked();
-    void debugFlag();
-    void debugFlags();
 };
 
 constexpr struct {
@@ -402,7 +402,14 @@ constexpr struct {
 using namespace Math::Literals;
 
 AbstractImporterTest::AbstractImporterTest() {
-    addTests({&AbstractImporterTest::construct,
+    addTests({&AbstractImporterTest::debugFeature,
+              &AbstractImporterTest::debugFeaturePacked,
+              &AbstractImporterTest::debugFeatures,
+              &AbstractImporterTest::debugFeaturesPacked,
+              &AbstractImporterTest::debugFlag,
+              &AbstractImporterTest::debugFlags,
+
+              &AbstractImporterTest::construct,
               &AbstractImporterTest::constructWithPluginManagerReference,
 
               &AbstractImporterTest::setFlags,
@@ -719,14 +726,49 @@ AbstractImporterTest::AbstractImporterTest() {
 
               &AbstractImporterTest::importerState,
               &AbstractImporterTest::importerStateNotImplemented,
-              &AbstractImporterTest::importerStateNoFile,
+              &AbstractImporterTest::importerStateNoFile});
+}
 
-              &AbstractImporterTest::debugFeature,
-              &AbstractImporterTest::debugFeaturePacked,
-              &AbstractImporterTest::debugFeatures,
-              &AbstractImporterTest::debugFeaturesPacked,
-              &AbstractImporterTest::debugFlag,
-              &AbstractImporterTest::debugFlags});
+void AbstractImporterTest::debugFeature() {
+    Containers::String out;
+
+    Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xf0);
+    CORRADE_COMPARE(out, "Trade::ImporterFeature::OpenData Trade::ImporterFeature(0xf0)\n");
+}
+
+void AbstractImporterTest::debugFeaturePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImporterFeature::OpenData << Debug::packed << ImporterFeature(0xf0) << ImporterFeature::FileCallback;
+    CORRADE_COMPARE(out, "OpenData 0xf0 Trade::ImporterFeature::FileCallback\n");
+}
+
+void AbstractImporterTest::debugFeatures() {
+    Containers::String out;
+
+    Debug{&out} << (ImporterFeature::OpenData|ImporterFeature::OpenState) << ImporterFeatures{};
+    CORRADE_COMPARE(out, "Trade::ImporterFeature::OpenData|Trade::ImporterFeature::OpenState Trade::ImporterFeatures{}\n");
+}
+
+void AbstractImporterTest::debugFeaturesPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ImporterFeature::OpenData|ImporterFeature::OpenState) << Debug::packed << ImporterFeatures{} << ImporterFeature::FileCallback;
+    CORRADE_COMPARE(out, "OpenData|OpenState {} Trade::ImporterFeature::FileCallback\n");
+}
+
+void AbstractImporterTest::debugFlag() {
+    Containers::String out;
+
+    Debug{&out} << ImporterFlag::Verbose << ImporterFlag(0xf0);
+    CORRADE_COMPARE(out, "Trade::ImporterFlag::Verbose Trade::ImporterFlag(0xf0)\n");
+}
+
+void AbstractImporterTest::debugFlags() {
+    Containers::String out;
+
+    Debug{&out} << (ImporterFlag::Verbose|ImporterFlag(0xf0)) << ImporterFlags{};
+    CORRADE_COMPARE(out, "Trade::ImporterFlag::Verbose|Trade::ImporterFlag(0xf0) Trade::ImporterFlags{}\n");
 }
 
 void AbstractImporterTest::construct() {
@@ -8069,48 +8111,6 @@ void AbstractImporterTest::importerStateNoFile() {
 
     importer.importerState();
     CORRADE_COMPARE(out, "Trade::AbstractImporter::importerState(): no file opened\n");
-}
-
-void AbstractImporterTest::debugFeature() {
-    Containers::String out;
-
-    Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xf0);
-    CORRADE_COMPARE(out, "Trade::ImporterFeature::OpenData Trade::ImporterFeature(0xf0)\n");
-}
-
-void AbstractImporterTest::debugFeaturePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << ImporterFeature::OpenData << Debug::packed << ImporterFeature(0xf0) << ImporterFeature::FileCallback;
-    CORRADE_COMPARE(out, "OpenData 0xf0 Trade::ImporterFeature::FileCallback\n");
-}
-
-void AbstractImporterTest::debugFeatures() {
-    Containers::String out;
-
-    Debug{&out} << (ImporterFeature::OpenData|ImporterFeature::OpenState) << ImporterFeatures{};
-    CORRADE_COMPARE(out, "Trade::ImporterFeature::OpenData|Trade::ImporterFeature::OpenState Trade::ImporterFeatures{}\n");
-}
-
-void AbstractImporterTest::debugFeaturesPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (ImporterFeature::OpenData|ImporterFeature::OpenState) << Debug::packed << ImporterFeatures{} << ImporterFeature::FileCallback;
-    CORRADE_COMPARE(out, "OpenData|OpenState {} Trade::ImporterFeature::FileCallback\n");
-}
-
-void AbstractImporterTest::debugFlag() {
-    Containers::String out;
-
-    Debug{&out} << ImporterFlag::Verbose << ImporterFlag(0xf0);
-    CORRADE_COMPARE(out, "Trade::ImporterFlag::Verbose Trade::ImporterFlag(0xf0)\n");
-}
-
-void AbstractImporterTest::debugFlags() {
-    Containers::String out;
-
-    Debug{&out} << (ImporterFlag::Verbose|ImporterFlag(0xf0)) << ImporterFlags{};
-    CORRADE_COMPARE(out, "Trade::ImporterFlag::Verbose|Trade::ImporterFlag(0xf0) Trade::ImporterFlags{}\n");
 }
 
 }}}}

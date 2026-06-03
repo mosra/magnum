@@ -47,6 +47,15 @@ namespace Magnum { namespace ShaderTools { namespace Test { namespace {
 struct AbstractConverterTest: TestSuite::Tester {
     explicit AbstractConverterTest();
 
+    void debugFeature();
+    void debugFeaturePacked();
+    void debugFeatures();
+    void debugFeaturesPacked();
+    void debugFeaturesSupersets();
+    void debugFlag();
+    void debugFlags();
+    void debugFormat();
+
     void construct();
     void constructWithPluginManagerReference();
 
@@ -193,19 +202,19 @@ struct AbstractConverterTest: TestSuite::Tester {
     void setInputFileCallbackLinkFilesToDataThroughBaseImplementationFailed();
     void setInputFileCallbackLinkFilesToDataAsData();
     void setInputFileCallbackLinkFilesToDataAsDataFailed();
-
-    void debugFeature();
-    void debugFeaturePacked();
-    void debugFeatures();
-    void debugFeaturesPacked();
-    void debugFeaturesSupersets();
-    void debugFlag();
-    void debugFlags();
-    void debugFormat();
 };
 
 AbstractConverterTest::AbstractConverterTest() {
-    addTests({&AbstractConverterTest::featuresNone,
+    addTests({&AbstractConverterTest::debugFeature,
+              &AbstractConverterTest::debugFeaturePacked,
+              &AbstractConverterTest::debugFeatures,
+              &AbstractConverterTest::debugFeaturesPacked,
+              &AbstractConverterTest::debugFeaturesSupersets,
+              &AbstractConverterTest::debugFlag,
+              &AbstractConverterTest::debugFlags,
+              &AbstractConverterTest::debugFormat,
+
+              &AbstractConverterTest::featuresNone,
 
               &AbstractConverterTest::construct,
               &AbstractConverterTest::constructWithPluginManagerReference,
@@ -350,19 +359,82 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplementation,
               &AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplementationFailed,
               &AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsData,
-              &AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed,
-
-              &AbstractConverterTest::debugFeature,
-              &AbstractConverterTest::debugFeaturePacked,
-              &AbstractConverterTest::debugFeatures,
-              &AbstractConverterTest::debugFeaturesPacked,
-              &AbstractConverterTest::debugFeaturesSupersets,
-              &AbstractConverterTest::debugFlag,
-              &AbstractConverterTest::debugFlags,
-              &AbstractConverterTest::debugFormat});
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed});
 
     /* Create testing dir */
     Utility::Path::make(SHADERTOOLS_TEST_OUTPUT_DIR);
+}
+
+void AbstractConverterTest::debugFeature() {
+    Containers::String out;
+
+    Debug{&out} << ConverterFeature::ConvertData << ConverterFeature(0xf0);
+    CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ConvertData ShaderTools::ConverterFeature(0xf0)\n");
+}
+
+void AbstractConverterTest::debugFeaturePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ConverterFeature::ConvertData << Debug::packed << ConverterFeature(0xf0) << ConverterFeature::ValidateFile;
+    CORRADE_COMPARE(out, "ConvertData 0xf0 ShaderTools::ConverterFeature::ValidateFile\n");
+}
+
+void AbstractConverterTest::debugFeatures() {
+    Containers::String out;
+
+    Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << ConverterFeatures{};
+    CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ValidateData|ShaderTools::ConverterFeature::ConvertFile ShaderTools::ConverterFeatures{}\n");
+}
+
+void AbstractConverterTest::debugFeaturesPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << Debug::packed << ConverterFeatures{} << ConverterFeature::InputFileCallback;
+    CORRADE_COMPARE(out, "ValidateData|ConvertFile {} ShaderTools::ConverterFeature::InputFileCallback\n");
+}
+
+void AbstractConverterTest::debugFeaturesSupersets() {
+    /* ValidateData is a superset of ValidateFile, so only one should be
+       printed */
+    {
+        Containers::String out;
+        Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ValidateFile);
+        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ValidateData\n");
+
+    /* ConvertData is a superset of ConvertFile, so only one should be
+       printed */
+    } {
+        Containers::String out;
+        Debug{&out} << (ConverterFeature::ConvertData|ConverterFeature::ConvertFile);
+        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ConvertData\n");
+
+    /* LinkData is a superset of LinkFile, so only one should be printed */
+    } {
+        Containers::String out;
+        Debug{&out} << (ConverterFeature::LinkData|ConverterFeature::LinkFile);
+        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::LinkData\n");
+    }
+}
+
+void AbstractConverterTest::debugFlag() {
+    Containers::String out;
+
+    Debug{&out} << ConverterFlag::Verbose << ConverterFlag(0xf0);
+    CORRADE_COMPARE(out, "ShaderTools::ConverterFlag::Verbose ShaderTools::ConverterFlag(0xf0)\n");
+}
+
+void AbstractConverterTest::debugFlags() {
+    Containers::String out;
+
+    Debug{&out} << (ConverterFlag::Verbose|ConverterFlag(0xf0)) << ConverterFlags{};
+    CORRADE_COMPARE(out, "ShaderTools::ConverterFlag::Verbose|ShaderTools::ConverterFlag(0xf0) ShaderTools::ConverterFlags{}\n");
+}
+
+void AbstractConverterTest::debugFormat() {
+    Containers::String out;
+
+    Debug{&out} << Format::Glsl << Format(0xf0);
+    CORRADE_COMPARE(out, "ShaderTools::Format::Glsl ShaderTools::Format(0xf0)\n");
 }
 
 void AbstractConverterTest::construct() {
@@ -3693,78 +3765,6 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed() {
         {Stage::Fragment, "file.dat"}
     }));
     CORRADE_COMPARE(out, "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file file.dat\n");
-}
-
-void AbstractConverterTest::debugFeature() {
-    Containers::String out;
-
-    Debug{&out} << ConverterFeature::ConvertData << ConverterFeature(0xf0);
-    CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ConvertData ShaderTools::ConverterFeature(0xf0)\n");
-}
-
-void AbstractConverterTest::debugFeaturePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << ConverterFeature::ConvertData << Debug::packed << ConverterFeature(0xf0) << ConverterFeature::ValidateFile;
-    CORRADE_COMPARE(out, "ConvertData 0xf0 ShaderTools::ConverterFeature::ValidateFile\n");
-}
-
-void AbstractConverterTest::debugFeatures() {
-    Containers::String out;
-
-    Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << ConverterFeatures{};
-    CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ValidateData|ShaderTools::ConverterFeature::ConvertFile ShaderTools::ConverterFeatures{}\n");
-}
-
-void AbstractConverterTest::debugFeaturesPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << Debug::packed << ConverterFeatures{} << ConverterFeature::InputFileCallback;
-    CORRADE_COMPARE(out, "ValidateData|ConvertFile {} ShaderTools::ConverterFeature::InputFileCallback\n");
-}
-
-void AbstractConverterTest::debugFeaturesSupersets() {
-    /* ValidateData is a superset of ValidateFile, so only one should be
-       printed */
-    {
-        Containers::String out;
-        Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ValidateFile);
-        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ValidateData\n");
-
-    /* ConvertData is a superset of ConvertFile, so only one should be
-       printed */
-    } {
-        Containers::String out;
-        Debug{&out} << (ConverterFeature::ConvertData|ConverterFeature::ConvertFile);
-        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::ConvertData\n");
-
-    /* LinkData is a superset of LinkFile, so only one should be printed */
-    } {
-        Containers::String out;
-        Debug{&out} << (ConverterFeature::LinkData|ConverterFeature::LinkFile);
-        CORRADE_COMPARE(out, "ShaderTools::ConverterFeature::LinkData\n");
-    }
-}
-
-void AbstractConverterTest::debugFlag() {
-    Containers::String out;
-
-    Debug{&out} << ConverterFlag::Verbose << ConverterFlag(0xf0);
-    CORRADE_COMPARE(out, "ShaderTools::ConverterFlag::Verbose ShaderTools::ConverterFlag(0xf0)\n");
-}
-
-void AbstractConverterTest::debugFlags() {
-    Containers::String out;
-
-    Debug{&out} << (ConverterFlag::Verbose|ConverterFlag(0xf0)) << ConverterFlags{};
-    CORRADE_COMPARE(out, "ShaderTools::ConverterFlag::Verbose|ShaderTools::ConverterFlag(0xf0) ShaderTools::ConverterFlags{}\n");
-}
-
-void AbstractConverterTest::debugFormat() {
-    Containers::String out;
-
-    Debug{&out} << Format::Glsl << Format(0xf0);
-    CORRADE_COMPARE(out, "ShaderTools::Format::Glsl ShaderTools::Format(0xf0)\n");
 }
 
 }}}}

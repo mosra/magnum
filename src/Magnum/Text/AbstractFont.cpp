@@ -66,6 +66,33 @@ namespace Magnum { namespace Text {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const FontFeature value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Text::FontFeature" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case FontFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(OpenData)
+        _c(FileCallback)
+        _c(PreparedGlyphCache)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const FontFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Text::FontFeatures{}", {
+        FontFeature::OpenData,
+        FontFeature::FileCallback,
+        FontFeature::PreparedGlyphCache
+    });
+}
+
 Containers::StringView AbstractFont::pluginInterface() {
     return MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE ""_s;
 }
@@ -485,32 +512,6 @@ Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCa
 }
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
-
-Debug& operator<<(Debug& debug, const FontFeature value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Text::FontFeature" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case FontFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
-        _c(OpenData)
-        _c(FileCallback)
-        _c(PreparedGlyphCache)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const FontFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Text::FontFeatures{}", {
-        FontFeature::OpenData,
-        FontFeature::FileCallback,
-        FontFeature::PreparedGlyphCache});
-}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 AbstractLayouter::AbstractLayouter(Containers::Array<Containers::Triple<Range2D, Range2D, Vector2>>&& glyphs): _glyphs{Utility::move(glyphs)} {}

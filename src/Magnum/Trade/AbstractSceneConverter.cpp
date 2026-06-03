@@ -69,6 +69,150 @@ namespace Magnum { namespace Trade {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const SceneConverterFeature value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::SceneConverterFeature" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case SceneConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(ConvertMesh)
+        _c(ConvertMeshInPlace)
+        _c(ConvertMeshToData)
+        _c(ConvertMeshToFile)
+        _c(ConvertMultiple)
+        _c(ConvertMultipleToData)
+        _c(ConvertMultipleToFile)
+        _c(AddScenes)
+        _c(AddAnimations)
+        _c(AddLights)
+        _c(AddCameras)
+        _c(AddSkins2D)
+        _c(AddSkins3D)
+        _c(AddMeshes)
+        _c(AddMaterials)
+        _c(AddTextures)
+        _c(AddImages1D)
+        _c(AddImages2D)
+        _c(AddImages3D)
+        _c(AddCompressedImages1D)
+        _c(AddCompressedImages2D)
+        _c(AddCompressedImages3D)
+        _c(MeshLevels)
+        _c(ImageLevels)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const SceneConverterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::SceneConverterFeatures{}", {
+        SceneConverterFeature::ConvertMesh,
+        SceneConverterFeature::ConvertMeshInPlace,
+        SceneConverterFeature::ConvertMeshToData,
+        /* Implied by ConvertMeshToData, has to be after */
+        SceneConverterFeature::ConvertMeshToFile,
+        SceneConverterFeature::ConvertMultiple,
+        SceneConverterFeature::ConvertMultipleToData,
+        /* Implied by ConvertMultipleToData, has to be after */
+        SceneConverterFeature::ConvertMultipleToFile,
+        SceneConverterFeature::AddScenes,
+        SceneConverterFeature::AddAnimations,
+        SceneConverterFeature::AddLights,
+        SceneConverterFeature::AddCameras,
+        SceneConverterFeature::AddSkins2D,
+        SceneConverterFeature::AddSkins3D,
+        SceneConverterFeature::AddMeshes,
+        SceneConverterFeature::AddMaterials,
+        SceneConverterFeature::AddTextures,
+        SceneConverterFeature::AddImages1D,
+        SceneConverterFeature::AddImages2D,
+        SceneConverterFeature::AddImages3D,
+        SceneConverterFeature::AddCompressedImages1D,
+        SceneConverterFeature::AddCompressedImages2D,
+        SceneConverterFeature::AddCompressedImages3D,
+        SceneConverterFeature::MeshLevels,
+        SceneConverterFeature::ImageLevels
+    });
+}
+
+Debug& operator<<(Debug& debug, const SceneConverterFlag value) {
+    debug << "Trade::SceneConverterFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case SceneConverterFlag::v: return debug << "::" #v;
+        _c(Quiet)
+        _c(Verbose)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const SceneConverterFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::SceneConverterFlags{}", {
+        SceneConverterFlag::Quiet,
+        SceneConverterFlag::Verbose
+    });
+}
+
+Debug& operator<<(Debug& debug, const SceneContent value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::SceneContent" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case SceneContent::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(Scenes)
+        _c(Animations)
+        _c(Lights)
+        _c(Cameras)
+        _c(Skins2D)
+        _c(Skins3D)
+        _c(Meshes)
+        _c(Materials)
+        _c(Textures)
+        _c(Images1D)
+        _c(Images2D)
+        _c(Images3D)
+        _c(MeshLevels)
+        _c(ImageLevels)
+        _c(Names)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const SceneContents value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::SceneContents{}", {
+        SceneContent::Scenes,
+        SceneContent::Animations,
+        SceneContent::Lights,
+        SceneContent::Cameras,
+        SceneContent::Skins2D,
+        SceneContent::Skins3D,
+        SceneContent::Meshes,
+        SceneContent::Materials,
+        SceneContent::Textures,
+        SceneContent::Images1D,
+        SceneContent::Images2D,
+        SceneContent::Images3D,
+        SceneContent::MeshLevels,
+        SceneContent::ImageLevels,
+        SceneContent::Names
+    });
+}
+
 SceneContents sceneContentsFor(const AbstractImporter& importer) {
     CORRADE_ASSERT(importer.isOpened(),
         "Trade::sceneContentsFor(): the importer is not opened", {});
@@ -1714,147 +1858,6 @@ bool AbstractSceneConverter::addSupportedImporterContents(AbstractImporter& impo
 
     /* MeshLevels and ImageLevels handled inside */
     return addImporterContentsInternal(importer, used, true);
-}
-
-Debug& operator<<(Debug& debug, const SceneConverterFeature value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::SceneConverterFeature" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case SceneConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
-        _c(ConvertMesh)
-        _c(ConvertMeshInPlace)
-        _c(ConvertMeshToData)
-        _c(ConvertMeshToFile)
-        _c(ConvertMultiple)
-        _c(ConvertMultipleToData)
-        _c(ConvertMultipleToFile)
-        _c(AddScenes)
-        _c(AddAnimations)
-        _c(AddLights)
-        _c(AddCameras)
-        _c(AddSkins2D)
-        _c(AddSkins3D)
-        _c(AddMeshes)
-        _c(AddMaterials)
-        _c(AddTextures)
-        _c(AddImages1D)
-        _c(AddImages2D)
-        _c(AddImages3D)
-        _c(AddCompressedImages1D)
-        _c(AddCompressedImages2D)
-        _c(AddCompressedImages3D)
-        _c(MeshLevels)
-        _c(ImageLevels)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const SceneConverterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::SceneConverterFeatures{}", {
-        SceneConverterFeature::ConvertMesh,
-        SceneConverterFeature::ConvertMeshInPlace,
-        SceneConverterFeature::ConvertMeshToData,
-        /* Implied by ConvertMeshToData, has to be after */
-        SceneConverterFeature::ConvertMeshToFile,
-        SceneConverterFeature::ConvertMultiple,
-        SceneConverterFeature::ConvertMultipleToData,
-        /* Implied by ConvertMultipleToData, has to be after */
-        SceneConverterFeature::ConvertMultipleToFile,
-        SceneConverterFeature::AddScenes,
-        SceneConverterFeature::AddAnimations,
-        SceneConverterFeature::AddLights,
-        SceneConverterFeature::AddCameras,
-        SceneConverterFeature::AddSkins2D,
-        SceneConverterFeature::AddSkins3D,
-        SceneConverterFeature::AddMeshes,
-        SceneConverterFeature::AddMaterials,
-        SceneConverterFeature::AddTextures,
-        SceneConverterFeature::AddImages1D,
-        SceneConverterFeature::AddImages2D,
-        SceneConverterFeature::AddImages3D,
-        SceneConverterFeature::AddCompressedImages1D,
-        SceneConverterFeature::AddCompressedImages2D,
-        SceneConverterFeature::AddCompressedImages3D,
-        SceneConverterFeature::MeshLevels,
-        SceneConverterFeature::ImageLevels});
-}
-
-Debug& operator<<(Debug& debug, const SceneConverterFlag value) {
-    debug << "Trade::SceneConverterFlag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case SceneConverterFlag::v: return debug << "::" #v;
-        _c(Quiet)
-        _c(Verbose)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const SceneConverterFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::SceneConverterFlags{}", {
-        SceneConverterFlag::Quiet,
-        SceneConverterFlag::Verbose});
-}
-
-Debug& operator<<(Debug& debug, const SceneContent value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::SceneContent" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case SceneContent::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
-        _c(Scenes)
-        _c(Animations)
-        _c(Lights)
-        _c(Cameras)
-        _c(Skins2D)
-        _c(Skins3D)
-        _c(Meshes)
-        _c(Materials)
-        _c(Textures)
-        _c(Images1D)
-        _c(Images2D)
-        _c(Images3D)
-        _c(MeshLevels)
-        _c(ImageLevels)
-        _c(Names)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const SceneContents value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::SceneContents{}", {
-        SceneContent::Scenes,
-        SceneContent::Animations,
-        SceneContent::Lights,
-        SceneContent::Cameras,
-        SceneContent::Skins2D,
-        SceneContent::Skins3D,
-        SceneContent::Meshes,
-        SceneContent::Materials,
-        SceneContent::Textures,
-        SceneContent::Images1D,
-        SceneContent::Images2D,
-        SceneContent::Images3D,
-        SceneContent::MeshLevels,
-        SceneContent::ImageLevels,
-        SceneContent::Names});
 }
 
 }}

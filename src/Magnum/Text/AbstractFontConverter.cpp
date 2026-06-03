@@ -54,6 +54,37 @@ namespace Magnum { namespace Text {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const FontConverterFeature value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Text::FontConverterFeature" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case FontConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(ExportFont)
+        _c(ExportGlyphCache)
+        _c(ImportGlyphCache)
+        _c(ConvertData)
+        _c(MultiFile)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << Containers::enumCastUnderlyingType(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const FontConverterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Text::FontConverterFeatures{}", {
+        FontConverterFeature::ExportFont,
+        FontConverterFeature::ExportGlyphCache,
+        FontConverterFeature::ImportGlyphCache,
+        FontConverterFeature::ConvertData,
+        FontConverterFeature::MultiFile
+    });
+}
+
 namespace {
 
 std::u32string uniqueUnicode(const std::string& characters)
@@ -282,36 +313,6 @@ Containers::Pointer<AbstractGlyphCache> AbstractFontConverter::doImportGlyphCach
     }
 
     return doImportGlyphCacheFromSingleData(*data);
-}
-
-Debug& operator<<(Debug& debug, const FontConverterFeature value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Text::FontConverterFeature" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case FontConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
-        _c(ExportFont)
-        _c(ExportGlyphCache)
-        _c(ImportGlyphCache)
-        _c(ConvertData)
-        _c(MultiFile)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << Containers::enumCastUnderlyingType(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const FontConverterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Text::FontConverterFeatures{}", {
-        FontConverterFeature::ExportFont,
-        FontConverterFeature::ExportGlyphCache,
-        FontConverterFeature::ImportGlyphCache,
-        FontConverterFeature::ConvertData,
-        FontConverterFeature::MultiFile});
 }
 
 }}

@@ -48,6 +48,11 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 struct AbstractFontConverterTest: TestSuite::Tester {
     explicit AbstractFontConverterTest();
 
+    void debugFeature();
+    void debugFeaturePacked();
+    void debugFeatures();
+    void debugFeaturesPacked();
+
     void construct();
 
     void convertGlyphs();
@@ -106,15 +111,15 @@ struct AbstractFontConverterTest: TestSuite::Tester {
     void importGlyphCacheFromFileAsSingleData();
     void importGlyphCacheFromFileAsSingleDataNotFound();
     void importGlyphCacheFromFileAsSingleDataFailed();
-
-    void debugFeature();
-    void debugFeaturePacked();
-    void debugFeatures();
-    void debugFeaturesPacked();
 };
 
 AbstractFontConverterTest::AbstractFontConverterTest() {
-    addTests({&AbstractFontConverterTest::construct,
+    addTests({&AbstractFontConverterTest::debugFeature,
+              &AbstractFontConverterTest::debugFeaturePacked,
+              &AbstractFontConverterTest::debugFeatures,
+              &AbstractFontConverterTest::debugFeaturesPacked,
+
+              &AbstractFontConverterTest::construct,
 
               &AbstractFontConverterTest::convertGlyphs,
 
@@ -171,15 +176,38 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
               &AbstractFontConverterTest::importGlyphCacheFromFileNotImplemented,
               &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleData,
               &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound,
-              &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataFailed,
-
-              &AbstractFontConverterTest::debugFeature,
-              &AbstractFontConverterTest::debugFeaturePacked,
-              &AbstractFontConverterTest::debugFeatures,
-              &AbstractFontConverterTest::debugFeaturesPacked});
+              &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataFailed});
 
     /* Create testing dir */
     Utility::Path::make(TEXT_TEST_OUTPUT_DIR);
+}
+
+void AbstractFontConverterTest::debugFeature() {
+    Containers::String out;
+
+    Debug{&out} << FontConverterFeature::ExportFont << FontConverterFeature(0xf0);
+    CORRADE_COMPARE(out, "Text::FontConverterFeature::ExportFont Text::FontConverterFeature(0xf0)\n");
+}
+
+void AbstractFontConverterTest::debugFeaturePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << FontConverterFeature::ExportFont << Debug::packed << FontConverterFeature(0xf0) << FontConverterFeature::ImportGlyphCache;
+    CORRADE_COMPARE(out, "ExportFont 0xf0 Text::FontConverterFeature::ImportGlyphCache\n");
+}
+
+void AbstractFontConverterTest::debugFeatures() {
+    Containers::String out;
+
+    Debug{&out} << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << FontConverterFeatures{};
+    CORRADE_COMPARE(out, "Text::FontConverterFeature::ExportFont|Text::FontConverterFeature::ImportGlyphCache Text::FontConverterFeatures{}\n");
+}
+
+void AbstractFontConverterTest::debugFeaturesPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << Debug::packed << FontConverterFeatures{} << FontConverterFeature::ExportGlyphCache;
+    CORRADE_COMPARE(out, "ExportFont|ImportGlyphCache {} Text::FontConverterFeature::ExportGlyphCache\n");
 }
 
 void AbstractFontConverterTest::construct() {
@@ -1331,34 +1359,6 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataFailed() {
     CORRADE_VERIFY(!converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin")));
     CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
-}
-
-void AbstractFontConverterTest::debugFeature() {
-    Containers::String out;
-
-    Debug{&out} << FontConverterFeature::ExportFont << FontConverterFeature(0xf0);
-    CORRADE_COMPARE(out, "Text::FontConverterFeature::ExportFont Text::FontConverterFeature(0xf0)\n");
-}
-
-void AbstractFontConverterTest::debugFeaturePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << FontConverterFeature::ExportFont << Debug::packed << FontConverterFeature(0xf0) << FontConverterFeature::ImportGlyphCache;
-    CORRADE_COMPARE(out, "ExportFont 0xf0 Text::FontConverterFeature::ImportGlyphCache\n");
-}
-
-void AbstractFontConverterTest::debugFeatures() {
-    Containers::String out;
-
-    Debug{&out} << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << FontConverterFeatures{};
-    CORRADE_COMPARE(out, "Text::FontConverterFeature::ExportFont|Text::FontConverterFeature::ImportGlyphCache Text::FontConverterFeatures{}\n");
-}
-
-void AbstractFontConverterTest::debugFeaturesPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << Debug::packed << FontConverterFeatures{} << FontConverterFeature::ExportGlyphCache;
-    CORRADE_COMPARE(out, "ExportFont|ImportGlyphCache {} Text::FontConverterFeature::ExportGlyphCache\n");
 }
 
 }}}}

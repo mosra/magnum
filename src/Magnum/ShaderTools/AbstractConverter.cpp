@@ -52,6 +52,97 @@ namespace Magnum { namespace ShaderTools {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const ConverterFeature value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "ShaderTools::ConverterFeature" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(ValidateData)
+        _c(ValidateFile)
+        _c(ConvertData)
+        _c(ConvertFile)
+        _c(LinkData)
+        _c(LinkFile)
+        _c(InputFileCallback)
+        _c(Preprocess)
+        _c(Optimize)
+        _c(DebugInfo)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const ConverterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "ShaderTools::ConverterFeatures{}", {
+        ConverterFeature::ValidateData,
+        /* Implied by ValidateData, has to be after */
+        ConverterFeature::ValidateFile,
+        ConverterFeature::ConvertData,
+        /* Implied by ConvertData, has to be after */
+        ConverterFeature::ConvertFile,
+        ConverterFeature::LinkData,
+        /* Implied by LinkData, has to be after */
+        ConverterFeature::LinkFile,
+        ConverterFeature::InputFileCallback,
+        ConverterFeature::Preprocess,
+        ConverterFeature::Optimize,
+        ConverterFeature::DebugInfo
+    });
+}
+
+Debug& operator<<(Debug& debug, const ConverterFlag value) {
+    debug << "ShaderTools::ConverterFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ConverterFlag::v: return debug << "::" #v;
+        _c(Quiet)
+        _c(Verbose)
+        _c(WarningAsError)
+        _c(PreprocessOnly)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const ConverterFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "ShaderTools::ConverterFlags{}", {
+        ConverterFlag::Quiet,
+        ConverterFlag::Verbose,
+        ConverterFlag::WarningAsError,
+        ConverterFlag::PreprocessOnly
+    });
+}
+
+Debug& operator<<(Debug& debug, const Format value) {
+    debug << "ShaderTools::Format" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case Format::v: return debug << "::" #v;
+        _c(Unspecified)
+        _c(Glsl)
+        _c(Spirv)
+        _c(SpirvAssembly)
+        _c(Hlsl)
+        _c(Msl)
+        _c(Wgsl)
+        _c(Dxil)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
 Containers::StringView AbstractConverter::pluginInterface() {
     return MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE ""_s;
 }
@@ -727,97 +818,6 @@ Containers::Optional<Containers::Array<char>> AbstractConverter::doLinkFilesToDa
 
         return doLinkDataToData(data);
     }
-}
-
-Debug& operator<<(Debug& debug, const ConverterFeature value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "ShaderTools::ConverterFeature" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case ConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
-        _c(ValidateData)
-        _c(ValidateFile)
-        _c(ConvertData)
-        _c(ConvertFile)
-        _c(LinkData)
-        _c(LinkFile)
-        _c(InputFileCallback)
-        _c(Preprocess)
-        _c(Optimize)
-        _c(DebugInfo)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const ConverterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "ShaderTools::ConverterFeatures{}", {
-        ConverterFeature::ValidateData,
-        /* Implied by ValidateData, has to be after */
-        ConverterFeature::ValidateFile,
-        ConverterFeature::ConvertData,
-        /* Implied by ConvertData, has to be after */
-        ConverterFeature::ConvertFile,
-        ConverterFeature::LinkData,
-        /* Implied by LinkData, has to be after */
-        ConverterFeature::LinkFile,
-        ConverterFeature::InputFileCallback,
-        ConverterFeature::Preprocess,
-        ConverterFeature::Optimize,
-        ConverterFeature::DebugInfo
-    });
-}
-
-Debug& operator<<(Debug& debug, const ConverterFlag value) {
-    debug << "ShaderTools::ConverterFlag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case ConverterFlag::v: return debug << "::" #v;
-        _c(Quiet)
-        _c(Verbose)
-        _c(WarningAsError)
-        _c(PreprocessOnly)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const ConverterFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "ShaderTools::ConverterFlags{}", {
-        ConverterFlag::Quiet,
-        ConverterFlag::Verbose,
-        ConverterFlag::WarningAsError,
-        ConverterFlag::PreprocessOnly
-    });
-}
-
-Debug& operator<<(Debug& debug, const Format value) {
-    debug << "ShaderTools::Format" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case Format::v: return debug << "::" #v;
-        _c(Unspecified)
-        _c(Glsl)
-        _c(Spirv)
-        _c(SpirvAssembly)
-        _c(Hlsl)
-        _c(Msl)
-        _c(Wgsl)
-        _c(Dxil)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
 }}

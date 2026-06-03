@@ -59,6 +59,18 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AbstractSceneConverterTest: TestSuite::Tester {
     explicit AbstractSceneConverterTest();
 
+    void debugFeature();
+    void debugFeaturePacked();
+    void debugFeatures();
+    void debugFeaturesPacked();
+    void debugFeaturesSupersets();
+    void debugFlag();
+    void debugFlags();
+    void debugContent();
+    void debugContentPacked();
+    void debugContents();
+    void debugContentsPacked();
+
     void sceneContentsForImporterNone();
     void sceneContentsForImporterAll();
     void sceneContentsForImporterNotOpened();
@@ -307,18 +319,6 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void addSupportedImporterContents();
     void addSupportedImporterContentsLevels();
     void addSupportedImporterContentsNotOpened();
-
-    void debugFeature();
-    void debugFeaturePacked();
-    void debugFeatures();
-    void debugFeaturesPacked();
-    void debugFeaturesSupersets();
-    void debugFlag();
-    void debugFlags();
-    void debugContent();
-    void debugContentPacked();
-    void debugContents();
-    void debugContentsPacked();
 };
 
 using namespace Containers::Literals;
@@ -631,7 +631,19 @@ const struct {
 };
 
 AbstractSceneConverterTest::AbstractSceneConverterTest() {
-    addTests({&AbstractSceneConverterTest::sceneContentsForImporterNone,
+    addTests({&AbstractSceneConverterTest::debugFeature,
+              &AbstractSceneConverterTest::debugFeaturePacked,
+              &AbstractSceneConverterTest::debugFeatures,
+              &AbstractSceneConverterTest::debugFeaturesPacked,
+              &AbstractSceneConverterTest::debugFeaturesSupersets,
+              &AbstractSceneConverterTest::debugFlag,
+              &AbstractSceneConverterTest::debugFlags,
+              &AbstractSceneConverterTest::debugContent,
+              &AbstractSceneConverterTest::debugContentPacked,
+              &AbstractSceneConverterTest::debugContents,
+              &AbstractSceneConverterTest::debugContentsPacked,
+
+              &AbstractSceneConverterTest::sceneContentsForImporterNone,
               &AbstractSceneConverterTest::sceneContentsForImporterAll,
               &AbstractSceneConverterTest::sceneContentsForImporterNotOpened,
 
@@ -877,22 +889,97 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
         Containers::arraySize(AddSupportedImporterContentsData));
 
     addTests({&AbstractSceneConverterTest::addSupportedImporterContentsNotOpened,
-              &AbstractSceneConverterTest::addSupportedImporterContentsLevels,
-
-              &AbstractSceneConverterTest::debugFeature,
-              &AbstractSceneConverterTest::debugFeaturePacked,
-              &AbstractSceneConverterTest::debugFeatures,
-              &AbstractSceneConverterTest::debugFeaturesPacked,
-              &AbstractSceneConverterTest::debugFeaturesSupersets,
-              &AbstractSceneConverterTest::debugFlag,
-              &AbstractSceneConverterTest::debugFlags,
-              &AbstractSceneConverterTest::debugContent,
-              &AbstractSceneConverterTest::debugContentPacked,
-              &AbstractSceneConverterTest::debugContents,
-              &AbstractSceneConverterTest::debugContentsPacked});
+              &AbstractSceneConverterTest::addSupportedImporterContentsLevels});
 
     /* Create testing dir */
     Utility::Path::make(TRADE_TEST_OUTPUT_DIR);
+}
+
+void AbstractSceneConverterTest::debugFeature() {
+    Containers::String out;
+
+    Debug{&out} << SceneConverterFeature::ConvertMeshInPlace << SceneConverterFeature(0xdeaddead);
+    CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xdeaddead)\n");
+}
+
+void AbstractSceneConverterTest::debugFeaturePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << SceneConverterFeature::ConvertMeshInPlace << Debug::packed << SceneConverterFeature(0xdeaddead) << SceneConverterFeature::AddCameras;
+    CORRADE_COMPARE(out, "ConvertMeshInPlace 0xdeaddead Trade::SceneConverterFeature::AddCameras\n");
+}
+
+void AbstractSceneConverterTest::debugFeatures() {
+    Containers::String out;
+
+    Debug{&out} << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << SceneConverterFeatures{};
+    CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMeshToFile Trade::SceneConverterFeatures{}\n");
+}
+
+void AbstractSceneConverterTest::debugFeaturesPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << Debug::packed << SceneConverterFeatures{} << SceneConverterFeature::AddLights;
+    CORRADE_COMPARE(out, "ConvertMesh|ConvertMeshToFile {} Trade::SceneConverterFeature::AddLights\n");
+}
+
+void AbstractSceneConverterTest::debugFeaturesSupersets() {
+    /* ConvertMeshToData is a superset of ConvertMeshToFile, so only one should
+       be printed */
+    {
+        Containers::String out;
+        Debug{&out} << (SceneConverterFeature::ConvertMeshToData|SceneConverterFeature::ConvertMeshToFile);
+        CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMeshToData\n");
+
+    /* ConvertMultipleToData is a superset of ConvertMultipleToFile, so only
+       one should be printed */
+    } {
+        Containers::String out;
+        Debug{&out} << (SceneConverterFeature::ConvertMultipleToData|SceneConverterFeature::ConvertMultipleToFile);
+        CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMultipleToData\n");
+    }
+}
+
+void AbstractSceneConverterTest::debugFlag() {
+    Containers::String out;
+
+    Debug{&out} << SceneConverterFlag::Verbose << SceneConverterFlag(0xf0);
+    CORRADE_COMPARE(out, "Trade::SceneConverterFlag::Verbose Trade::SceneConverterFlag(0xf0)\n");
+}
+
+void AbstractSceneConverterTest::debugFlags() {
+    Containers::String out;
+
+    Debug{&out} << (SceneConverterFlag::Verbose|SceneConverterFlag(0xf0)) << SceneConverterFlags{};
+    CORRADE_COMPARE(out, "Trade::SceneConverterFlag::Verbose|Trade::SceneConverterFlag(0xf0) Trade::SceneConverterFlags{}\n");
+}
+
+void AbstractSceneConverterTest::debugContent() {
+    Containers::String out;
+
+    Debug{&out} << SceneContent::Skins3D << SceneContent(0xdeaddead);
+    CORRADE_COMPARE(out, "Trade::SceneContent::Skins3D Trade::SceneContent(0xdeaddead)\n");
+}
+
+void AbstractSceneConverterTest::debugContentPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << SceneContent::Animations << Debug::packed << SceneContent(0xdeaddead) << SceneContent::Cameras;
+    CORRADE_COMPARE(out, "Animations 0xdeaddead Trade::SceneContent::Cameras\n");
+}
+
+void AbstractSceneConverterTest::debugContents() {
+    Containers::String out;
+
+    Debug{&out} << (SceneContent::Animations|SceneContent::MeshLevels) << SceneConverterFeatures{};
+    CORRADE_COMPARE(out, "Trade::SceneContent::Animations|Trade::SceneContent::MeshLevels Trade::SceneConverterFeatures{}\n");
+}
+
+void AbstractSceneConverterTest::debugContentsPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (SceneContent::Animations|SceneContent::MeshLevels) << Debug::packed << SceneConverterFeatures{} << SceneContent::Lights;
+    CORRADE_COMPARE(out, "Animations|MeshLevels {} Trade::SceneContent::Lights\n");
 }
 
 void AbstractSceneConverterTest::sceneContentsForImporterNone() {
@@ -7875,93 +7962,6 @@ void AbstractSceneConverterTest::addSupportedImporterContentsNotOpened() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.addSupportedImporterContents(importer));
     CORRADE_COMPARE(out, "Trade::AbstractSceneConverter::addSupportedImporterContents(): the importer is not opened\n");
-}
-
-void AbstractSceneConverterTest::debugFeature() {
-    Containers::String out;
-
-    Debug{&out} << SceneConverterFeature::ConvertMeshInPlace << SceneConverterFeature(0xdeaddead);
-    CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xdeaddead)\n");
-}
-
-void AbstractSceneConverterTest::debugFeaturePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << SceneConverterFeature::ConvertMeshInPlace << Debug::packed << SceneConverterFeature(0xdeaddead) << SceneConverterFeature::AddCameras;
-    CORRADE_COMPARE(out, "ConvertMeshInPlace 0xdeaddead Trade::SceneConverterFeature::AddCameras\n");
-}
-
-void AbstractSceneConverterTest::debugFeatures() {
-    Containers::String out;
-
-    Debug{&out} << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << SceneConverterFeatures{};
-    CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMeshToFile Trade::SceneConverterFeatures{}\n");
-}
-
-void AbstractSceneConverterTest::debugFeaturesPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << Debug::packed << SceneConverterFeatures{} << SceneConverterFeature::AddLights;
-    CORRADE_COMPARE(out, "ConvertMesh|ConvertMeshToFile {} Trade::SceneConverterFeature::AddLights\n");
-}
-
-void AbstractSceneConverterTest::debugFeaturesSupersets() {
-    /* ConvertMeshToData is a superset of ConvertMeshToFile, so only one should
-       be printed */
-    {
-        Containers::String out;
-        Debug{&out} << (SceneConverterFeature::ConvertMeshToData|SceneConverterFeature::ConvertMeshToFile);
-        CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMeshToData\n");
-
-    /* ConvertMultipleToData is a superset of ConvertMultipleToFile, so only
-       one should be printed */
-    } {
-        Containers::String out;
-        Debug{&out} << (SceneConverterFeature::ConvertMultipleToData|SceneConverterFeature::ConvertMultipleToFile);
-        CORRADE_COMPARE(out, "Trade::SceneConverterFeature::ConvertMultipleToData\n");
-    }
-}
-
-void AbstractSceneConverterTest::debugFlag() {
-    Containers::String out;
-
-    Debug{&out} << SceneConverterFlag::Verbose << SceneConverterFlag(0xf0);
-    CORRADE_COMPARE(out, "Trade::SceneConverterFlag::Verbose Trade::SceneConverterFlag(0xf0)\n");
-}
-
-void AbstractSceneConverterTest::debugFlags() {
-    Containers::String out;
-
-    Debug{&out} << (SceneConverterFlag::Verbose|SceneConverterFlag(0xf0)) << SceneConverterFlags{};
-    CORRADE_COMPARE(out, "Trade::SceneConverterFlag::Verbose|Trade::SceneConverterFlag(0xf0) Trade::SceneConverterFlags{}\n");
-}
-
-void AbstractSceneConverterTest::debugContent() {
-    Containers::String out;
-
-    Debug{&out} << SceneContent::Skins3D << SceneContent(0xdeaddead);
-    CORRADE_COMPARE(out, "Trade::SceneContent::Skins3D Trade::SceneContent(0xdeaddead)\n");
-}
-
-void AbstractSceneConverterTest::debugContentPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << SceneContent::Animations << Debug::packed << SceneContent(0xdeaddead) << SceneContent::Cameras;
-    CORRADE_COMPARE(out, "Animations 0xdeaddead Trade::SceneContent::Cameras\n");
-}
-
-void AbstractSceneConverterTest::debugContents() {
-    Containers::String out;
-
-    Debug{&out} << (SceneContent::Animations|SceneContent::MeshLevels) << SceneConverterFeatures{};
-    CORRADE_COMPARE(out, "Trade::SceneContent::Animations|Trade::SceneContent::MeshLevels Trade::SceneConverterFeatures{}\n");
-}
-
-void AbstractSceneConverterTest::debugContentsPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (SceneContent::Animations|SceneContent::MeshLevels) << Debug::packed << SceneConverterFeatures{} << SceneContent::Lights;
-    CORRADE_COMPARE(out, "Animations|MeshLevels {} Trade::SceneContent::Lights\n");
 }
 
 }}}}

@@ -81,6 +81,55 @@ namespace Magnum { namespace Trade {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const ImporterFeature value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::ImporterFeature" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ImporterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(OpenData)
+        _c(OpenState)
+        _c(FileCallback)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const ImporterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::ImporterFeatures{}", {
+        ImporterFeature::OpenData,
+        ImporterFeature::OpenState,
+        ImporterFeature::FileCallback
+    });
+}
+
+Debug& operator<<(Debug& debug, const ImporterFlag value) {
+    debug << "Trade::ImporterFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ImporterFlag::v: return debug << "::" #v;
+        _c(Quiet)
+        _c(Verbose)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const ImporterFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::ImporterFlags{}", {
+        ImporterFlag::Quiet,
+        ImporterFlag::Verbose
+    });
+}
+
 Containers::StringView AbstractImporter::pluginInterface() {
     return MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE ""_s;
 }
@@ -1617,52 +1666,5 @@ const void* AbstractImporter::importerState() const {
 }
 
 const void* AbstractImporter::doImporterState() const { return nullptr; }
-
-Debug& operator<<(Debug& debug, const ImporterFeature value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::ImporterFeature" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case ImporterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
-        _c(OpenData)
-        _c(OpenState)
-        _c(FileCallback)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const ImporterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::ImporterFeatures{}", {
-        ImporterFeature::OpenData,
-        ImporterFeature::OpenState,
-        ImporterFeature::FileCallback});
-}
-
-Debug& operator<<(Debug& debug, const ImporterFlag value) {
-    debug << "Trade::ImporterFlag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case ImporterFlag::v: return debug << "::" #v;
-        _c(Quiet)
-        _c(Verbose)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const ImporterFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::ImporterFlags{}", {
-        ImporterFlag::Quiet,
-        ImporterFlag::Verbose});
-}
 
 }}
