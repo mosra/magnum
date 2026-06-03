@@ -684,8 +684,10 @@ void AbstractConverterTest::validateData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Pair<bool, Containers::String> doValidateData(const Stage stage, const Containers::ArrayView<const char> data) override {
-            return {data.size() == 5*4 && stage == Stage::MeshTask, "Yes, this is valid"};
+        Containers::Pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data) override {
+            CORRADE_COMPARE(stage, Stage::MeshTask);
+            CORRADE_COMPARE(data.size(), 5*4);
+            return {true, "Yes, this is valid"};
         }
     } converter;
 
@@ -776,7 +778,7 @@ void AbstractConverterTest::validateDataCustomStringDeleter() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Pair<bool, Containers::String> doValidateData(Stage, const Containers::ArrayView<const char>) override {
+        Containers::Pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
             return {{}, Containers::String{"", 0, [](char*, std::size_t){}}};
         }
     } converter;
@@ -795,8 +797,10 @@ void AbstractConverterTest::validateFile() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Pair<bool, Containers::String> doValidateFile(const Stage stage, const Containers::StringView filename) override {
-            return {stage == Stage::Vertex && filename.size() == 8, "Yes, this is valid"};
+        Containers::Pair<bool, Containers::String> doValidateFile(Stage stage, Containers::StringView filename) override {
+            CORRADE_COMPARE(stage, Stage::Vertex);
+            CORRADE_COMPARE(filename, "file.spv");
+            return {true, "Yes, this is valid"};
         }
     } converter;
 
@@ -833,7 +837,7 @@ void AbstractConverterTest::validateFileAsData() {
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
-        Containers::Pair<bool, Containers::String> doValidateData(const Stage stage, const Containers::ArrayView<const char> data) override {
+        Containers::Pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data) override {
             return {stage == Stage::Compute && data.size() == 5, "Yes, this is valid"};
         }
     } converter;
@@ -1504,7 +1508,7 @@ void AbstractConverterTest::linkDataToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
-    converter.linkDataToData({Containers::Pair<Stage, Containers::ArrayView<const void>>{}});
+    CORRADE_VERIFY(!converter.linkDataToData({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}));
     CORRADE_COMPARE(out, "");
 }
 
