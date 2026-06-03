@@ -2751,7 +2751,7 @@ void AbstractImageConverterTest::convert1DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView1D& image) override {
             return Containers::array({char(image.size()[0])});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -2771,7 +2771,7 @@ void AbstractImageConverterTest::convert2DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D& image) override {
             return Containers::array({char(image.size().x()), char(image.size().y())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -2791,7 +2791,7 @@ void AbstractImageConverterTest::convert3DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView3D& image) override {
             return Containers::array({char(image.size().x()), char(image.size().y()), char(image.size().z())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -2811,7 +2811,7 @@ void AbstractImageConverterTest::convert1DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView1D&) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -2836,7 +2836,7 @@ void AbstractImageConverterTest::convert2DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D&) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -2861,7 +2861,7 @@ void AbstractImageConverterTest::convert3DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView3D&) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -2886,7 +2886,7 @@ void AbstractImageConverterTest::convert1DToFileThroughDataNotWritable() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView1D&) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[4]{};
@@ -2904,7 +2904,7 @@ void AbstractImageConverterTest::convert2DToFileThroughDataNotWritable() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D&) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[4]{};
@@ -2922,7 +2922,7 @@ void AbstractImageConverterTest::convert3DToFileThroughDataNotWritable() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView3D&) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[4]{};
@@ -3135,7 +3135,7 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView1D& image) override {
             return Containers::array({char(image.size()[0])});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3155,7 +3155,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D& image) override {
             return Containers::array({char(image.size().x()), char(image.size().y())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3175,7 +3175,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView3D& image) override {
             return Containers::array({char(image.size().x()), char(image.size().y()), char(image.size().z())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3195,7 +3195,7 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView1D&) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3220,7 +3220,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D&) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3245,7 +3245,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView3D&) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3270,7 +3270,7 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughDataNotWritable
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView1D&) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[8]{};
@@ -3288,7 +3288,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughDataNotWritable
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D&) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[8]{};
@@ -3306,7 +3306,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataNotWritable
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView3D&) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[8]{};
@@ -3591,7 +3591,7 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size()[0]), char(imageLevels.size())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3620,7 +3620,7 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels.size())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3648,7 +3648,7 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels[0].size().z()), char(imageLevels.size())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3676,7 +3676,7 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3704,7 +3704,7 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3732,7 +3732,7 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataFailed() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -3759,7 +3759,7 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataNotWritable() {
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[4]{};
@@ -3780,7 +3780,7 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataNotWritable() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[4]{};
@@ -3801,7 +3801,7 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataNotWritable() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[4]{};
@@ -4059,7 +4059,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size()[0]), char(imageLevels.size())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -4087,7 +4087,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels.size())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -4115,7 +4115,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughData() {
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels[0].size().z()), char(imageLevels.size())});
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -4143,7 +4143,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataFaile
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -4171,7 +4171,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataFaile
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -4199,7 +4199,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataFaile
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
             return {};
-        };
+        }
     } converter;
 
     /* Remove previous file, if any */
@@ -4227,7 +4227,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataNotWr
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[8]{};
@@ -4248,7 +4248,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataNotWr
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[8]{};
@@ -4269,7 +4269,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataNotWr
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
             return Containers::array({'\x00'});
-        };
+        }
     } converter;
 
     const char data[8]{};
