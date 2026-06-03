@@ -87,6 +87,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertImageData1D();
     void convertImageData2D();
     void convertImageData3D();
+    void convertImageData1DFailed();
+    void convertImageData2DFailed();
+    void convertImageData3DFailed();
 
     void convert1DToData();
     void convert2DToData();
@@ -128,6 +131,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertImageData1DToData();
     void convertImageData2DToData();
     void convertImageData3DToData();
+    void convertImageData1DToDataFailed();
+    void convertImageData2DToDataFailed();
+    void convertImageData3DToDataFailed();
 
     void convertLevels1DToData();
     void convertLevels2DToData();
@@ -180,10 +186,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convert1DToDataThroughLevels();
     void convert2DToDataThroughLevels();
     void convert3DToDataThroughLevels();
+    void convert1DToDataThroughLevelsFailed();
+    void convert2DToDataThroughLevelsFailed();
+    void convert3DToDataThroughLevelsFailed();
 
     void convertCompressed1DToDataThroughLevels();
     void convertCompressed2DToDataThroughLevels();
     void convertCompressed3DToDataThroughLevels();
+    void convertCompressed1DToDataThroughLevelsFailed();
+    void convertCompressed2DToDataThroughLevelsFailed();
+    void convertCompressed3DToDataThroughLevelsFailed();
 
     void convert1DToFile();
     void convert2DToFile();
@@ -236,6 +248,11 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertImageData1DToFile();
     void convertImageData2DToFile();
     void convertImageData3DToFile();
+    void convertImageData1DToFileFailed();
+    void convertImageData2DToFileFailed();
+    void convertImageData3DToFileFailed();
+    /* Conversion of ImageData to a file through data not tested, as that
+       should just work transitively */
 
     void convertLevels1DToFile();
     void convertLevels2DToFile();
@@ -288,10 +305,20 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convert1DToFileThroughLevels();
     void convert2DToFileThroughLevels();
     void convert3DToFileThroughLevels();
+    void convert1DToFileThroughLevelsFailed();
+    void convert2DToFileThroughLevelsFailed();
+    void convert3DToFileThroughLevelsFailed();
+    /* Conversion of an image to a file through levels and through data not
+       tested, as that should just work transitively */
 
     void convertCompressed1DToFileThroughLevels();
     void convertCompressed2DToFileThroughLevels();
     void convertCompressed3DToFileThroughLevels();
+    void convertCompressed1DToFileThroughLevelsFailed();
+    void convertCompressed2DToFileThroughLevelsFailed();
+    void convertCompressed3DToFileThroughLevelsFailed();
+    /* Conversion of a compressed image to a file through levels and through
+       data not tested, as that should just work transitively */
 
     void debugFeature();
     void debugFeaturePacked();
@@ -348,6 +375,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertImageData1D,
               &AbstractImageConverterTest::convertImageData2D,
               &AbstractImageConverterTest::convertImageData3D,
+              &AbstractImageConverterTest::convertImageData1DFailed,
+              &AbstractImageConverterTest::convertImageData2DFailed,
+              &AbstractImageConverterTest::convertImageData3DFailed,
 
               &AbstractImageConverterTest::convert1DToData,
               &AbstractImageConverterTest::convert2DToData,
@@ -385,6 +415,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertImageData1DToData,
               &AbstractImageConverterTest::convertImageData2DToData,
               &AbstractImageConverterTest::convertImageData3DToData,
+              &AbstractImageConverterTest::convertImageData1DToDataFailed,
+              &AbstractImageConverterTest::convertImageData2DToDataFailed,
+              &AbstractImageConverterTest::convertImageData3DToDataFailed,
 
               &AbstractImageConverterTest::convertLevels1DToData,
               &AbstractImageConverterTest::convertLevels2DToData,
@@ -430,10 +463,16 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convert1DToDataThroughLevels,
               &AbstractImageConverterTest::convert2DToDataThroughLevels,
               &AbstractImageConverterTest::convert3DToDataThroughLevels,
+              &AbstractImageConverterTest::convert1DToDataThroughLevelsFailed,
+              &AbstractImageConverterTest::convert2DToDataThroughLevelsFailed,
+              &AbstractImageConverterTest::convert3DToDataThroughLevelsFailed,
 
               &AbstractImageConverterTest::convertCompressed1DToDataThroughLevels,
               &AbstractImageConverterTest::convertCompressed2DToDataThroughLevels,
               &AbstractImageConverterTest::convertCompressed3DToDataThroughLevels,
+              &AbstractImageConverterTest::convertCompressed1DToDataThroughLevelsFailed,
+              &AbstractImageConverterTest::convertCompressed2DToDataThroughLevelsFailed,
+              &AbstractImageConverterTest::convertCompressed3DToDataThroughLevelsFailed,
 
               &AbstractImageConverterTest::convert1DToFile,
               &AbstractImageConverterTest::convert2DToFile,
@@ -482,6 +521,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertImageData1DToFile,
               &AbstractImageConverterTest::convertImageData2DToFile,
               &AbstractImageConverterTest::convertImageData3DToFile,
+              &AbstractImageConverterTest::convertImageData1DToFileFailed,
+              &AbstractImageConverterTest::convertImageData2DToFileFailed,
+              &AbstractImageConverterTest::convertImageData3DToFileFailed,
 
               &AbstractImageConverterTest::convertLevels1DToFile,
               &AbstractImageConverterTest::convertLevels2DToFile,
@@ -530,10 +572,16 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convert1DToFileThroughLevels,
               &AbstractImageConverterTest::convert2DToFileThroughLevels,
               &AbstractImageConverterTest::convert3DToFileThroughLevels,
+              &AbstractImageConverterTest::convert1DToFileThroughLevelsFailed,
+              &AbstractImageConverterTest::convert2DToFileThroughLevelsFailed,
+              &AbstractImageConverterTest::convert3DToFileThroughLevelsFailed,
 
               &AbstractImageConverterTest::convertCompressed1DToFileThroughLevels,
               &AbstractImageConverterTest::convertCompressed2DToFileThroughLevels,
               &AbstractImageConverterTest::convertCompressed3DToFileThroughLevels,
+              &AbstractImageConverterTest::convertCompressed1DToFileThroughLevelsFailed,
+              &AbstractImageConverterTest::convertCompressed2DToFileThroughLevelsFailed,
+              &AbstractImageConverterTest::convertCompressed3DToFileThroughLevelsFailed,
 
               &AbstractImageConverterTest::debugFeature,
               &AbstractImageConverterTest::debugFeaturePacked,
@@ -783,14 +831,18 @@ void AbstractImageConverterTest::convert1DFailed() {
             return ImageConverterFeature::Convert1D;
         }
         Containers::Optional<ImageData1D> doConvert(const ImageView1D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convert(ImageView1D{PixelFormat::RGBA8Unorm, 1, {nullptr, 4}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -800,14 +852,18 @@ void AbstractImageConverterTest::convert2DFailed() {
             return ImageConverterFeature::Convert2D;
         }
         Containers::Optional<ImageData2D> doConvert(const ImageView2D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convert(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, {nullptr, 4}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -817,14 +873,18 @@ void AbstractImageConverterTest::convert3DFailed() {
             return ImageConverterFeature::Convert3D;
         }
         Containers::Optional<ImageData3D> doConvert(const ImageView3D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convert(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {nullptr, 4}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -966,14 +1026,18 @@ void AbstractImageConverterTest::convertCompressed1DFailed() {
             return ImageConverterFeature::ConvertCompressed1D;
         }
         Containers::Optional<ImageData1D> doConvert(const CompressedImageView1D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convert(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, {nullptr, 4*4}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -983,14 +1047,18 @@ void AbstractImageConverterTest::convertCompressed2DFailed() {
             return ImageConverterFeature::ConvertCompressed2D;
         }
         Containers::Optional<ImageData2D> doConvert(const CompressedImageView2D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convert(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, {nullptr, 4*4}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1000,14 +1068,18 @@ void AbstractImageConverterTest::convertCompressed3DFailed() {
             return ImageConverterFeature::ConvertCompressed3D;
         }
         Containers::Optional<ImageData3D> doConvert(const CompressedImageView3D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convert(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, {nullptr, 4*4}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1194,6 +1266,90 @@ void AbstractImageConverterTest::convertImageData3D() {
     }
 }
 
+void AbstractImageConverterTest::convertImageData1DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1D|ImageConverterFeature::ConvertCompressed1D;
+        }
+        Containers::Optional<ImageData1D> doConvert(const ImageView1D&) override {
+            called = true;
+            return {};
+        }
+        Containers::Optional<ImageData1D> doConvert(const CompressedImageView1D&) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(ImageView1D{PixelFormat::RGBA8Unorm, {}, nullptr}));
+    CORRADE_VERIFY(!converter.convert(CompressedImageView1D{CompressedPixelFormat::Bc1RGBUnorm, {}, nullptr}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertImageData2DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2D|ImageConverterFeature::ConvertCompressed2D;
+        }
+        Containers::Optional<ImageData2D> doConvert(const ImageView2D&) override {
+            called = true;
+            return {};
+        }
+        Containers::Optional<ImageData2D> doConvert(const CompressedImageView2D&) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(ImageView2D{PixelFormat::RGBA8Unorm, {}, nullptr}));
+    CORRADE_VERIFY(!converter.convert(CompressedImageView2D{CompressedPixelFormat::Bc1RGBUnorm, {}, nullptr}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertImageData3DFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3D|ImageConverterFeature::ConvertCompressed3D;
+        }
+        Containers::Optional<ImageData3D> doConvert(const ImageView3D&) override {
+            called = true;
+            return {};
+        }
+        Containers::Optional<ImageData3D> doConvert(const CompressedImageView3D&) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convert(ImageView3D{PixelFormat::RGBA8Unorm, {}, nullptr}));
+    CORRADE_VERIFY(!converter.convert(CompressedImageView3D{CompressedPixelFormat::Bc1RGBUnorm, {}, nullptr}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractImageConverterTest::convert1DToData() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToData; }
@@ -1242,8 +1398,11 @@ void AbstractImageConverterTest::convert1DToDataFailed() {
             return ImageConverterFeature::Convert1DToData;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView1D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -1252,6 +1411,7 @@ void AbstractImageConverterTest::convert1DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1261,8 +1421,11 @@ void AbstractImageConverterTest::convert2DToDataFailed() {
             return ImageConverterFeature::Convert2DToData;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -1271,6 +1434,7 @@ void AbstractImageConverterTest::convert2DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1280,8 +1444,11 @@ void AbstractImageConverterTest::convert3DToDataFailed() {
             return ImageConverterFeature::Convert3DToData;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView3D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -1290,6 +1457,7 @@ void AbstractImageConverterTest::convert3DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1487,8 +1655,11 @@ void AbstractImageConverterTest::convertCompressed1DToDataFailed() {
             return ImageConverterFeature::ConvertCompressed1DToData;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView1D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -1497,6 +1668,7 @@ void AbstractImageConverterTest::convertCompressed1DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1506,8 +1678,11 @@ void AbstractImageConverterTest::convertCompressed2DToDataFailed() {
             return ImageConverterFeature::ConvertCompressed2DToData;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -1516,6 +1691,7 @@ void AbstractImageConverterTest::convertCompressed2DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1525,8 +1701,11 @@ void AbstractImageConverterTest::convertCompressed3DToDataFailed() {
             return ImageConverterFeature::ConvertCompressed3DToData;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView3D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -1535,6 +1714,7 @@ void AbstractImageConverterTest::convertCompressed3DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1774,6 +1954,96 @@ void AbstractImageConverterTest::convertImageData3DToData() {
     }
 }
 
+void AbstractImageConverterTest::convertImageData1DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|ImageConverterFeature::ConvertCompressed1DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView1D&) override {
+            called = true;
+            return {};
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView1D&) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}));
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBUnorm, 1, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertImageData2DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D&) override {
+            called = true;
+            return {};
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D&) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertImageData3DToDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|ImageConverterFeature::ConvertCompressed3DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView3D&) override {
+            called = true;
+            return {};
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView3D&) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}));
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractImageConverterTest::convertLevels1DToData() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
@@ -1847,8 +2117,11 @@ void AbstractImageConverterTest::convertLevels1DToDataFailed() {
                    ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -1857,6 +2130,7 @@ void AbstractImageConverterTest::convertLevels1DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData({ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1867,8 +2141,11 @@ void AbstractImageConverterTest::convertLevels2DToDataFailed() {
                    ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -1877,6 +2154,7 @@ void AbstractImageConverterTest::convertLevels2DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1887,8 +2165,11 @@ void AbstractImageConverterTest::convertLevels3DToDataFailed() {
                    ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -1897,6 +2178,7 @@ void AbstractImageConverterTest::convertLevels3DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2235,8 +2517,11 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataFailed() {
                    ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -2245,6 +2530,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2255,8 +2541,11 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataFailed() {
                    ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -2265,6 +2554,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2275,8 +2565,11 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataFailed() {
                    ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -2285,6 +2578,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2580,6 +2874,78 @@ void AbstractImageConverterTest::convert3DToDataThroughLevels() {
     CORRADE_COMPARE(actual->size(), 48);
 }
 
+void AbstractImageConverterTest::convert1DToDataThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convert2DToDataThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convert3DToDataThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractImageConverterTest::convertCompressed1DToDataThroughLevels() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
@@ -2629,6 +2995,78 @@ void AbstractImageConverterTest::convertCompressed3DToDataThroughLevels() {
     Containers::Optional<Containers::Array<char>> actual = converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8, 2}, data});
     CORRADE_VERIFY(actual);
     CORRADE_COMPARE(actual->size(), 256);
+}
+
+void AbstractImageConverterTest::convertCompressed1DToDataThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertCompressed2DToDataThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertCompressed3DToDataThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToData(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractImageConverterTest::convert1DToFile() {
@@ -2694,8 +3132,11 @@ void AbstractImageConverterTest::convert1DToFileFailed() {
             return ImageConverterFeature::Convert1DToFile;
         }
         bool doConvertToFile(const ImageView1D&, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -2703,7 +3144,8 @@ void AbstractImageConverterTest::convert1DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2713,8 +3155,11 @@ void AbstractImageConverterTest::convert2DToFileFailed() {
             return ImageConverterFeature::Convert2DToFile;
         }
         bool doConvertToFile(const ImageView2D&, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -2722,7 +3167,8 @@ void AbstractImageConverterTest::convert2DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2732,8 +3178,11 @@ void AbstractImageConverterTest::convert3DToFileFailed() {
             return ImageConverterFeature::Convert3DToFile;
         }
         bool doConvertToFile(const ImageView3D&, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -2741,7 +3190,8 @@ void AbstractImageConverterTest::convert3DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2810,8 +3260,11 @@ void AbstractImageConverterTest::convert1DToFileThroughDataFailed() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToData; }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView1D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -2827,6 +3280,7 @@ void AbstractImageConverterTest::convert1DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, data}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2835,8 +3289,11 @@ void AbstractImageConverterTest::convert2DToFileThroughDataFailed() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -2852,6 +3309,7 @@ void AbstractImageConverterTest::convert2DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2860,8 +3318,11 @@ void AbstractImageConverterTest::convert3DToFileThroughDataFailed() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToData; }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView3D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -2877,6 +3338,7 @@ void AbstractImageConverterTest::convert3DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3078,8 +3540,11 @@ void AbstractImageConverterTest::convertCompressed1DToFileFailed() {
             return ImageConverterFeature::ConvertCompressed1DToFile;
         }
         bool doConvertToFile(const CompressedImageView1D&, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -3087,7 +3552,8 @@ void AbstractImageConverterTest::convertCompressed1DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3097,8 +3563,11 @@ void AbstractImageConverterTest::convertCompressed2DToFileFailed() {
             return ImageConverterFeature::ConvertCompressed2DToFile;
         }
         bool doConvertToFile(const CompressedImageView2D&, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -3106,7 +3575,8 @@ void AbstractImageConverterTest::convertCompressed2DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3116,8 +3586,11 @@ void AbstractImageConverterTest::convertCompressed3DToFileFailed() {
             return ImageConverterFeature::ConvertCompressed3DToFile;
         }
         bool doConvertToFile(const CompressedImageView3D&, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -3125,7 +3598,8 @@ void AbstractImageConverterTest::convertCompressed3DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3194,8 +3668,11 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughDataFailed() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1DToData; }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView1D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -3211,6 +3688,7 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3219,8 +3697,11 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughDataFailed() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToData; }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -3236,6 +3717,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3244,8 +3726,11 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataFailed() {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToData; }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView3D&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -3261,6 +3746,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3441,6 +3927,96 @@ void AbstractImageConverterTest::convertImageData3DToFile() {
         "C", TestSuite::Compare::FileToString);
 }
 
+void AbstractImageConverterTest::convertImageData1DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile|ImageConverterFeature::ConvertCompressed1DToFile;
+        }
+        bool doConvertToFile(const ImageView1D&, Containers::StringView) override {
+            called = true;
+            return false;
+        }
+        bool doConvertToFile(const CompressedImageView1D&, Containers::StringView) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}, ""));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBUnorm, 1, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertImageData2DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile|ImageConverterFeature::ConvertCompressed2DToFile;
+        }
+        bool doConvertToFile(const ImageView2D&, Containers::StringView) override {
+            called = true;
+            return false;
+        }
+        bool doConvertToFile(const CompressedImageView2D&, Containers::StringView) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}, ""));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertImageData3DToFileFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToFile|ImageConverterFeature::ConvertCompressed3DToFile;
+        }
+        bool doConvertToFile(const ImageView3D&, Containers::StringView) override {
+            called = true;
+            return false;
+        }
+        bool doConvertToFile(const CompressedImageView3D&, Containers::StringView) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}, ""));
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractImageConverterTest::convertLevels1DToFile() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
@@ -3529,8 +4105,11 @@ void AbstractImageConverterTest::convertLevels1DToFileFailed() {
                    ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -3538,7 +4117,8 @@ void AbstractImageConverterTest::convertLevels1DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3549,8 +4129,11 @@ void AbstractImageConverterTest::convertLevels2DToFileFailed() {
                    ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -3558,7 +4141,8 @@ void AbstractImageConverterTest::convertLevels2DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3569,8 +4153,11 @@ void AbstractImageConverterTest::convertLevels3DToFileFailed() {
                    ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const ImageView3D>, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4]{};
@@ -3578,7 +4165,8 @@ void AbstractImageConverterTest::convertLevels3DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3675,8 +4263,11 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataFailed() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -3692,6 +4283,7 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({ImageView1D{PixelFormat::RGBA8Unorm, 1, data}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3703,8 +4295,11 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataFailed() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -3720,6 +4315,7 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3731,8 +4327,11 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataFailed() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -3748,6 +4347,7 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, data}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3997,8 +4597,11 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileFailed() {
                    ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView1D>, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -4006,7 +4609,8 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -4017,8 +4621,11 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileFailed() {
                    ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[4*4]{};
@@ -4026,7 +4633,8 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -4037,8 +4645,11 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileFailed() {
                    ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView3D>, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     const char imageData[8]{};
@@ -4046,7 +4657,8 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileFailed() {
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_VERIFY(!converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -4142,8 +4754,11 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataFaile
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -4159,6 +4774,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataFaile
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 4, data}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -4170,8 +4786,11 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataFaile
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -4187,6 +4806,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataFaile
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -4198,8 +4818,11 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataFaile
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -4215,6 +4838,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataFaile
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4, 1}, data}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -4446,6 +5070,78 @@ void AbstractImageConverterTest::convert3DToFileThroughLevels() {
         "\x0f\x0d\x0e\x01", TestSuite::Compare::FileToString);
 }
 
+void AbstractImageConverterTest::convert1DToFileThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile|
+                   ImageConverterFeature::Levels;
+        }
+        bool doConvertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convert2DToFileThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile|
+                   ImageConverterFeature::Levels;
+        }
+        bool doConvertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convert3DToFileThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToFile|
+                   ImageConverterFeature::Levels;
+        }
+        bool doConvertToFile(Containers::ArrayView<const ImageView3D>, Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractImageConverterTest::convertCompressed1DToFileThroughLevels() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
@@ -4510,6 +5206,78 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughLevels() {
     CORRADE_VERIFY(converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d, 0x0e}, Containers::Array<char>{NoInit, 1792}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\x0f\x0d\x0e\x01", TestSuite::Compare::FileToString);
+}
+
+void AbstractImageConverterTest::convertCompressed1DToFileThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToFile|
+                   ImageConverterFeature::Levels;
+        }
+        bool doConvertToFile(Containers::ArrayView<const CompressedImageView1D>, Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView1D{CompressedPixelFormat::Bc1RGBAUnorm, 1, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertCompressed2DToFileThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToFile|
+                   ImageConverterFeature::Levels;
+        }
+        bool doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
+void AbstractImageConverterTest::convertCompressed3DToFileThroughLevelsFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToFile|
+                   ImageConverterFeature::Levels;
+        }
+        bool doConvertToFile(Containers::ArrayView<const CompressedImageView3D>, Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 1}, imageData}, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractImageConverterTest::debugFeature() {

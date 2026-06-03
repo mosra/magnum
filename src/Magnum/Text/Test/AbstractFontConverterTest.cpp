@@ -53,46 +53,57 @@ struct AbstractFontConverterTest: TestSuite::Tester {
     void thingNotSupported();
 
     void exportFontToSingleData();
+    void exportFontToSingleDataFailed();
     void exportFontToSingleDataNotImplemented();
     void exportFontToSingleDataCustomDeleter();
     void exportFontToSingleDataNotSingleFile();
     void exportFontToData();
+    void exportFontToDataFailed();
     void exportFontToDataNotImplemented();
     void exportFontToDataCustomDeleter();
     void exportFontToDataThroughSingleData();
     void exportFontToDataThroughSingleDataFailed();
     void exportFontToFile();
+    void exportFontToFileFailed();
     void exportFontToFileNotImplemented();
     void exportFontToFileThroughData();
     void exportFontToFileThroughDataFailed();
     void exportFontToFileThroughDataNotWritable();
 
     void exportGlyphCacheToSingleData();
+    void exportGlyphCacheToSingleDataFailed();
     void exportGlyphCacheToSingleDataNotImplemented();
     void exportGlyphCacheToSingleDataCustomDeleter();
     void exportGlyphCacheToSingleDataNotSingleFile();
     void exportGlyphCacheToData();
+    void exportGlyphCacheToDataFailed();
     void exportGlyphCacheToDataNotImplemented();
     void exportGlyphCacheToDataCustomDeleter();
     void exportGlyphCacheToDataThroughSingleData();
     void exportGlyphCacheToDataThroughSingleDataFailed();
     void exportGlyphCacheToFile();
+    void exportGlyphCacheToFileFailed();
     void exportGlyphCacheToFileNotImplemented();
     void exportGlyphCacheToFileThroughData();
     void exportGlyphCacheToFileThroughDataFailed();
     void exportGlyphCacheToFileThroughDataNotWritable();
 
     void importGlyphCacheFromSingleData();
+    void importGlyphCacheFromSingleDataFailed();
     void importGlyphCacheFromSingleDataNotImplemented();
     void importGlyphCacheFromSingleDataNotSingleFile();
     void importGlyphCacheFromData();
+    void importGlyphCacheFromDataFailed();
     void importGlyphCacheFromDataNoData();
     void importGlyphCacheFromDataNotImplemented();
     void importGlyphCacheFromDataAsSingleData();
+    void importGlyphCacheFromDataAsSingleDataFailed();
     void importGlyphCacheFromFile();
+    void importGlyphCacheFromFileFailed();
     void importGlyphCacheFromFileNotImplemented();
     void importGlyphCacheFromFileAsSingleData();
     void importGlyphCacheFromFileAsSingleDataNotFound();
+    void importGlyphCacheFromFileAsSingleDataFailed();
 
     void debugFeature();
     void debugFeaturePacked();
@@ -106,46 +117,57 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
               &AbstractFontConverterTest::thingNotSupported,
 
               &AbstractFontConverterTest::exportFontToSingleData,
+              &AbstractFontConverterTest::exportFontToSingleDataFailed,
               &AbstractFontConverterTest::exportFontToSingleDataNotImplemented,
               &AbstractFontConverterTest::exportFontToSingleDataCustomDeleter,
               &AbstractFontConverterTest::exportFontToSingleDataNotSingleFile,
               &AbstractFontConverterTest::exportFontToData,
+              &AbstractFontConverterTest::exportFontToDataFailed,
               &AbstractFontConverterTest::exportFontToDataNotImplemented,
               &AbstractFontConverterTest::exportFontToDataCustomDeleter,
               &AbstractFontConverterTest::exportFontToDataThroughSingleData,
               &AbstractFontConverterTest::exportFontToDataThroughSingleDataFailed,
               &AbstractFontConverterTest::exportFontToFile,
+              &AbstractFontConverterTest::exportFontToFileFailed,
               &AbstractFontConverterTest::exportFontToFileNotImplemented,
               &AbstractFontConverterTest::exportFontToFileThroughData,
               &AbstractFontConverterTest::exportFontToFileThroughDataFailed,
               &AbstractFontConverterTest::exportFontToFileThroughDataNotWritable,
 
               &AbstractFontConverterTest::exportGlyphCacheToSingleData,
+              &AbstractFontConverterTest::exportGlyphCacheToSingleDataFailed,
               &AbstractFontConverterTest::exportGlyphCacheToSingleDataNotImplemented,
               &AbstractFontConverterTest::exportGlyphCacheToSingleDataCustomDeleter,
               &AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSingleFile,
               &AbstractFontConverterTest::exportGlyphCacheToData,
+              &AbstractFontConverterTest::exportGlyphCacheToDataFailed,
               &AbstractFontConverterTest::exportGlyphCacheToDataNotImplemented,
               &AbstractFontConverterTest::exportGlyphCacheToDataCustomDeleter,
               &AbstractFontConverterTest::exportGlyphCacheToDataThroughSingleData,
               &AbstractFontConverterTest::exportGlyphCacheToDataThroughSingleDataFailed,
               &AbstractFontConverterTest::exportGlyphCacheToFile,
+              &AbstractFontConverterTest::exportGlyphCacheToFileFailed,
               &AbstractFontConverterTest::exportGlyphCacheToFileNotImplemented,
               &AbstractFontConverterTest::exportGlyphCacheToFileThroughData,
               &AbstractFontConverterTest::exportGlyphCacheToFileThroughDataFailed,
               &AbstractFontConverterTest::exportGlyphCacheToFileThroughDataNotWritable,
 
               &AbstractFontConverterTest::importGlyphCacheFromSingleData,
+              &AbstractFontConverterTest::importGlyphCacheFromSingleDataFailed,
               &AbstractFontConverterTest::importGlyphCacheFromSingleDataNotImplemented,
               &AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSingleFile,
               &AbstractFontConverterTest::importGlyphCacheFromData,
+              &AbstractFontConverterTest::importGlyphCacheFromDataFailed,
               &AbstractFontConverterTest::importGlyphCacheFromDataNoData,
               &AbstractFontConverterTest::importGlyphCacheFromDataNotImplemented,
               &AbstractFontConverterTest::importGlyphCacheFromDataAsSingleData,
+              &AbstractFontConverterTest::importGlyphCacheFromDataAsSingleDataFailed,
               &AbstractFontConverterTest::importGlyphCacheFromFile,
+              &AbstractFontConverterTest::importGlyphCacheFromFileFailed,
               &AbstractFontConverterTest::importGlyphCacheFromFileNotImplemented,
               &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleData,
               &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound,
+              &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataFailed,
 
               &AbstractFontConverterTest::debugFeature,
               &AbstractFontConverterTest::debugFeaturePacked,
@@ -243,6 +265,30 @@ void AbstractFontConverterTest::exportFontToSingleData() {
         TestSuite::Compare::Container);
 }
 
+void AbstractFontConverterTest::exportFontToSingleDataFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|FontConverterFeature::ExportFont;
+        }
+
+        Containers::Array<char> doExportFontToSingleData(AbstractFont&, AbstractGlyphCache&, const std::u32string&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.exportFontToSingleData(dummyFont, dummyGlyphCache, "euhh"));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractFontConverterTest::exportFontToSingleDataNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -319,6 +365,30 @@ void AbstractFontConverterTest::exportFontToData() {
         TestSuite::Compare::Container);
 }
 
+void AbstractFontConverterTest::exportFontToDataFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|FontConverterFeature::ExportFont;
+        }
+
+        std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, AbstractGlyphCache&, const std::string&, const std::u32string&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(converter.exportFontToData(dummyFont, dummyGlyphCache, "", "").empty());
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractFontConverterTest::exportFontToDataNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -384,12 +454,21 @@ void AbstractFontConverterTest::exportFontToDataThroughSingleDataFailed() {
         }
 
         Containers::Array<char> doExportFontToSingleData(AbstractFont&, AbstractGlyphCache&, const std::u32string&) const override {
+            called = true;
             return {};
         }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
     } converter;
 
-    auto ret = converter.exportFontToData(dummyFont, dummyGlyphCache, "font.out", "ehh");
-    CORRADE_VERIFY(ret.empty());
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(converter.exportFontToData(dummyFont, dummyGlyphCache, "", "").empty());
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::exportFontToFile() {
@@ -421,6 +500,30 @@ void AbstractFontConverterTest::exportFontToFile() {
         TestSuite::Compare::FileToString);
     CORRADE_COMPARE_AS(filename2,
         "\xfe\x02", TestSuite::Compare::FileToString);
+}
+
+void AbstractFontConverterTest::exportFontToFileFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|FontConverterFeature::ExportFont|FontConverterFeature::MultiFile;
+        }
+
+        bool doExportFontToFile(AbstractFont&, AbstractGlyphCache&, const std::string&, const std::u32string&) const override {
+            called = true;
+            return false;
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.exportFontToFile(dummyFont, dummyGlyphCache, "", ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::exportFontToFileNotImplemented() {
@@ -475,7 +578,14 @@ void AbstractFontConverterTest::exportFontToFileThroughDataFailed() {
             return FontConverterFeature::ConvertData|FontConverterFeature::ExportFont|FontConverterFeature::MultiFile;
         }
 
-        std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, AbstractGlyphCache&, const std::string&, const std::u32string&) const override { return {}; }
+        std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, AbstractGlyphCache&, const std::string&, const std::u32string&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
     } converter;
 
     Containers::String filename = Utility::Path::join(TEXT_TEST_OUTPUT_DIR, "font.out");
@@ -485,11 +595,13 @@ void AbstractFontConverterTest::exportFontToFileThroughDataFailed() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     /* Function should fail, no file should get written and no error output
-       should be printed (the base implementation assumes the plugin does it) */
+       should be printed (the base implementation assumes the plugin does
+       it) */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportFontToFile(dummyFont, dummyGlyphCache, filename, {}));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -527,6 +639,31 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
     CORRADE_COMPARE_AS(out,
         (Containers::Array<char>{InPlaceInit, {'\xee'}}),
         TestSuite::Compare::Container);
+}
+
+void AbstractFontConverterTest::exportGlyphCacheToSingleDataFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|
+                   FontConverterFeature::ExportGlyphCache;
+        }
+
+        Containers::Array<char> doExportGlyphCacheToSingleData(AbstractGlyphCache&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.exportGlyphCacheToSingleData(dummyGlyphCache));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotImplemented() {
@@ -604,6 +741,31 @@ void AbstractFontConverterTest::exportGlyphCacheToData() {
         TestSuite::Compare::Container);
 }
 
+void AbstractFontConverterTest::exportGlyphCacheToDataFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|
+                   FontConverterFeature::ExportGlyphCache;
+        }
+
+        Containers::Array<char> doExportGlyphCacheToSingleData(AbstractGlyphCache&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(converter.exportGlyphCacheToData(dummyGlyphCache, "").empty());
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractFontConverterTest::exportGlyphCacheToDataNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -670,12 +832,21 @@ void AbstractFontConverterTest::exportGlyphCacheToDataThroughSingleDataFailed() 
         }
 
         Containers::Array<char> doExportGlyphCacheToSingleData(AbstractGlyphCache&) const override {
+            called = true;
             return {};
         }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
     } converter;
 
-    auto ret = converter.exportGlyphCacheToData(dummyGlyphCache, "font.out");
-    CORRADE_VERIFY(ret.empty());
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(converter.exportGlyphCacheToData(dummyGlyphCache, "").empty());
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFile() {
@@ -707,6 +878,32 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
         TestSuite::Compare::FileToString);
     CORRADE_COMPARE_AS(filename2,
         "\xfe\xed", TestSuite::Compare::FileToString);
+}
+
+void AbstractFontConverterTest::exportGlyphCacheToFileFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|
+                   FontConverterFeature::ExportGlyphCache|
+                   FontConverterFeature::MultiFile;
+        }
+
+        bool doExportGlyphCacheToFile(AbstractGlyphCache&, const std::string&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.exportGlyphCacheToFile(dummyGlyphCache, ""));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFileNotImplemented() {
@@ -759,7 +956,14 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughDataFailed() {
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ExportGlyphCache|FontConverterFeature::MultiFile; }
 
-        std::vector<std::pair<std::string, Containers::Array<char>>> doExportGlyphCacheToData(AbstractGlyphCache&, const std::string&) const override { return {}; }
+        std::vector<std::pair<std::string, Containers::Array<char>>> doExportGlyphCacheToData(AbstractGlyphCache&, const std::string&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -773,6 +977,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.exportGlyphCacheToFile(dummyGlyphCache, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -812,6 +1017,31 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromSingleData(data);
     CORRADE_VERIFY(cache);
     CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
+}
+
+void AbstractFontConverterTest::importGlyphCacheFromSingleDataFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|
+                   FontConverterFeature::ImportGlyphCache;
+        }
+
+        Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(Containers::ArrayView<const char>) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.importGlyphCacheFromSingleData(nullptr));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotImplemented() {
@@ -861,6 +1091,31 @@ void AbstractFontConverterTest::importGlyphCacheFromData() {
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromData({{}, {{}, data}});
     CORRADE_VERIFY(cache);
     CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
+}
+
+void AbstractFontConverterTest::importGlyphCacheFromDataFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|
+                   FontConverterFeature::ImportGlyphCache;
+        }
+
+        Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.importGlyphCacheFromData({{}, {{}, nullptr}}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromDataNoData() {
@@ -914,6 +1169,31 @@ void AbstractFontConverterTest::importGlyphCacheFromDataAsSingleData() {
     CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
 }
 
+void AbstractFontConverterTest::importGlyphCacheFromDataAsSingleDataFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|
+                   FontConverterFeature::ImportGlyphCache;
+        }
+
+        Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char>) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.importGlyphCacheFromData({{{}, nullptr}}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractFontConverterTest::importGlyphCacheFromFile() {
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -933,6 +1213,30 @@ void AbstractFontConverterTest::importGlyphCacheFromFile() {
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"));
     CORRADE_VERIFY(cache);
     CORRADE_COMPARE(cache->size(), (Vector3i{123, 345, 1}));
+}
+
+void AbstractFontConverterTest::importGlyphCacheFromFileFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ImportGlyphCache;
+        }
+
+        Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromFile(const std::string&) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin")));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFileNotImplemented() {
@@ -988,6 +1292,31 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound() {
     CORRADE_COMPARE_AS(out,
         "\nText::AbstractFontConverter::importGlyphCacheFromFile(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
+}
+
+void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataFailed() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData|
+                   FontConverterFeature::ImportGlyphCache;
+        }
+
+        Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char>) const override {
+            called = true;
+            return {};
+        }
+
+        /** @todo drop the mutable once the APIs are reworked and no longer
+            const (ugh) */
+        mutable bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin")));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractFontConverterTest::debugFeature() {

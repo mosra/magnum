@@ -80,6 +80,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void validateFileFailed();
     void validateFileAsData();
     void validateFileAsDataNotFound();
+    void validateFileAsDataFailed();
     void validateFileNotSupported();
     void validateFileNotImplemented();
     void validateFilePreprocessOnly();
@@ -109,6 +110,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void convertFileToDataFailed();
     void convertFileToDataAsData();
     void convertFileToDataAsDataNotFound();
+    void convertFileToDataAsDataFailed();
     void convertFileToDataNotSupported();
     void convertFileToDataNotImplemented();
     void convertFileToDataCustomDeleter();
@@ -143,6 +145,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void linkFilesToDataFailed();
     void linkFilesToDataAsData();
     void linkFilesToDataAsDataNotFound();
+    void linkFilesToDataAsDataFailed();
     void linkFilesToDataNotSupported();
     void linkFilesToDataNotImplemented();
     void linkFilesToDataPreprocessOnly();
@@ -232,6 +235,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::validateFileFailed,
               &AbstractConverterTest::validateFileAsData,
               &AbstractConverterTest::validateFileAsDataNotFound,
+              &AbstractConverterTest::validateFileAsDataFailed,
               &AbstractConverterTest::validateFileNotSupported,
               &AbstractConverterTest::validateFileNotImplemented,
               &AbstractConverterTest::validateFilePreprocessOnly,
@@ -261,6 +265,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::convertFileToDataFailed,
               &AbstractConverterTest::convertFileToDataAsData,
               &AbstractConverterTest::convertFileToDataAsDataNotFound,
+              &AbstractConverterTest::convertFileToDataAsDataFailed,
               &AbstractConverterTest::convertFileToDataNotSupported,
               &AbstractConverterTest::convertFileToDataNotImplemented,
               &AbstractConverterTest::convertFileToDataCustomDeleter,
@@ -295,6 +300,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::linkFilesToDataFailed,
               &AbstractConverterTest::linkFilesToDataAsData,
               &AbstractConverterTest::linkFilesToDataAsDataNotFound,
+              &AbstractConverterTest::linkFilesToDataAsDataFailed,
               &AbstractConverterTest::linkFilesToDataNotSupported,
               &AbstractConverterTest::linkFilesToDataNotImplemented,
               &AbstractConverterTest::linkFilesToDataPreprocessOnly,
@@ -705,14 +711,18 @@ void AbstractConverterTest::validateDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.validateData(Stage::MeshTask, nullptr).first());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -818,14 +828,18 @@ void AbstractConverterTest::validateFileFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Pair<bool, Containers::String> doValidateFile(Stage, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.validateFile(Stage::MeshTask, {}).first());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -870,6 +884,30 @@ void AbstractConverterTest::validateFileAsDataNotFound() {
     CORRADE_COMPARE_AS(out,
         "\nShaderTools::AbstractConverter::validateFile(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
+}
+
+void AbstractConverterTest::validateFileAsDataFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
+        Containers::Pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_COMPARE(converter.validateFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")), (Containers::Pair<bool, Containers::String>{}));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::validateFileNotSupported() {
@@ -974,14 +1012,18 @@ void AbstractConverterTest::convertDataToDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertDataToData({}, nullptr));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1074,8 +1116,11 @@ void AbstractConverterTest::convertDataToFileThroughDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -1089,6 +1134,7 @@ void AbstractConverterTest::convertDataToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertDataToFile({}, {}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1183,14 +1229,18 @@ void AbstractConverterTest::convertFileToFileFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage, Containers::StringView, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), Utility::Path::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat")));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1249,8 +1299,11 @@ void AbstractConverterTest::convertFileToFileThroughDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -1264,6 +1317,7 @@ void AbstractConverterTest::convertFileToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToFile({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat"), filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1354,14 +1408,18 @@ void AbstractConverterTest::convertFileToDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertFileToData(Stage, Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1405,6 +1463,30 @@ void AbstractConverterTest::convertFileToDataAsDataNotFound() {
     CORRADE_COMPARE_AS(out,
         "\nShaderTools::AbstractConverter::convertFileToData(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
+}
+
+void AbstractConverterTest::convertFileToDataAsDataFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ConvertData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
+        Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertFileToData({}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::convertFileToDataNotSupported() {
@@ -1500,8 +1582,11 @@ void AbstractConverterTest::linkDataToDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
@@ -1509,6 +1594,7 @@ void AbstractConverterTest::linkDataToDataFailed() {
     Error redirectError{&out};
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     CORRADE_VERIFY(!converter.linkDataToData({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1643,8 +1729,11 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -1659,6 +1748,7 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
     /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
     CORRADE_VERIFY(!converter.linkDataToFile({Containers::Pair<Stage, Containers::ArrayView<const void>>{}}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1877,8 +1967,11 @@ void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -1894,6 +1987,7 @@ void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
         {{}, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     }, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2031,8 +2125,11 @@ void AbstractConverterTest::linkFilesToDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
@@ -2041,6 +2138,7 @@ void AbstractConverterTest::linkFilesToDataFailed() {
     CORRADE_VERIFY(!converter.linkFilesToData({
         {Stage::Vertex, Utility::Path::join(SHADERTOOLS_TEST_DIR, "another.dat")}
     }));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2097,6 +2195,33 @@ void AbstractConverterTest::linkFilesToDataAsDataNotFound() {
     CORRADE_COMPARE_AS(out,
         "\nShaderTools::AbstractConverter::linkFilesToData(): cannot open file nonexistent.bin\n",
         TestSuite::Compare::StringHasSuffix);
+}
+
+void AbstractConverterTest::linkFilesToDataAsDataFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
+        Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
+    CORRADE_VERIFY(!converter.linkFilesToData({
+        {Stage::Fragment, Utility::Path::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+    }));
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractConverterTest::linkFilesToDataNotSupported() {

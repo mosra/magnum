@@ -28,6 +28,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are std::string-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
@@ -83,6 +84,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void openDataFailed();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void openDataDeprecatedFallback();
+    void openDataDeprecatedFallbackFailed();
     #endif
     void openMemory();
     void openMemoryFailed();
@@ -90,6 +92,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void openFileFailed();
     void openFileAsData();
     void openFileAsDataNotFound();
+    void openFileAsDataFailed();
     void openState();
     void openStateFailed();
 
@@ -107,9 +110,12 @@ struct AbstractImporterTest: TestSuite::Tester {
     void setFileCallbackNotImplemented();
     void setFileCallbackNotSupported();
     void setFileCallbackOpenFileDirectly();
+    void setFileCallbackOpenFileDirectlyFailed();
     void setFileCallbackOpenFileThroughBaseImplementation();
+    void setFileCallbackOpenFileThroughBaseImplementationNotFound();
     void setFileCallbackOpenFileThroughBaseImplementationFailed();
     void setFileCallbackOpenFileAsData();
+    void setFileCallbackOpenFileAsDataNotFound();
     void setFileCallbackOpenFileAsDataFailed();
 
     void thingCountNotImplemented();
@@ -407,6 +413,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::openDataFailed,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::openDataDeprecatedFallback,
+              &AbstractImporterTest::openDataDeprecatedFallbackFailed,
               #endif
               &AbstractImporterTest::openMemory,
               &AbstractImporterTest::openMemoryFailed,
@@ -414,6 +421,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::openFileFailed,
               &AbstractImporterTest::openFileAsData,
               &AbstractImporterTest::openFileAsDataNotFound,
+              &AbstractImporterTest::openFileAsDataFailed,
               &AbstractImporterTest::openState,
               &AbstractImporterTest::openStateFailed,
 
@@ -431,9 +439,12 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::setFileCallbackNotImplemented,
               &AbstractImporterTest::setFileCallbackNotSupported,
               &AbstractImporterTest::setFileCallbackOpenFileDirectly,
+              &AbstractImporterTest::setFileCallbackOpenFileDirectlyFailed,
               &AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation,
+              &AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementationNotFound,
               &AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementationFailed,
               &AbstractImporterTest::setFileCallbackOpenFileAsData,
+              &AbstractImporterTest::setFileCallbackOpenFileAsDataNotFound,
               &AbstractImporterTest::setFileCallbackOpenFileAsDataFailed,
 
               &AbstractImporterTest::thingCountNotImplemented,
@@ -812,7 +823,10 @@ void AbstractImporterTest::openData() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
-        void doClose() override { _opened = false; }
+        void doClose() override {
+            CORRADE_VERIFY(_opened);
+            _opened = false;
+        }
 
         void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
             CORRADE_COMPARE_AS(data,
@@ -844,13 +858,19 @@ void AbstractImporterTest::openDataFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        void doOpenData(Containers::Array<char>&&, DataFlags) override {}
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
+            called = true;
+        }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.openData(nullptr));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -859,7 +879,10 @@ void AbstractImporterTest::openDataDeprecatedFallback() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
-        void doClose() override { _opened = false; }
+        void doClose() override {
+            CORRADE_VERIFY(_opened);
+            _opened = false;
+        }
 
         void doOpenData(Containers::ArrayView<const char> data) override {
             CORRADE_COMPARE_AS(data,
@@ -879,13 +902,40 @@ void AbstractImporterTest::openDataDeprecatedFallback() {
     importer.close();
     CORRADE_VERIFY(!importer.isOpened());
 }
+
+void AbstractImporterTest::openDataDeprecatedFallbackFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override {
+            return ImporterFeature::OpenData;
+        }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenData(Containers::ArrayView<const char>) override {
+            called = true;
+        }
+
+        bool called = false;
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.openData(nullptr));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
+    CORRADE_COMPARE(out, "");
+}
 #endif
 
 void AbstractImporterTest::openMemory() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
-        void doClose() override { _opened = false; }
+        void doClose() override {
+            CORRADE_VERIFY(_opened);
+            _opened = false;
+        }
 
         void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
             CORRADE_COMPARE_AS(data,
@@ -917,13 +967,19 @@ void AbstractImporterTest::openMemoryFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        void doOpenData(Containers::Array<char>&&, DataFlags) override {}
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
+            called = true;
+        }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.openMemory(nullptr));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -931,7 +987,10 @@ void AbstractImporterTest::openFile() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return _opened; }
-        void doClose() override { _opened = false; }
+        void doClose() override {
+            CORRADE_VERIFY(_opened);
+            _opened = false;
+        }
 
         void doOpenFile(Containers::StringView filename) override {
             CORRADE_COMPARE(filename, "yello.foo");
@@ -955,13 +1014,19 @@ void AbstractImporterTest::openFileFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        void doOpenFile(Containers::StringView) override {}
+        void doOpenFile(Containers::StringView) override {
+            called = true;
+        }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.openFile({}));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -969,7 +1034,10 @@ void AbstractImporterTest::openFileAsData() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
-        void doClose() override { _opened = false; }
+        void doClose() override {
+            CORRADE_VERIFY(_opened);
+            _opened = false;
+        }
 
         void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
             CORRADE_COMPARE_AS(data,
@@ -996,11 +1064,11 @@ void AbstractImporterTest::openFileAsData() {
 void AbstractImporterTest::openFileAsDataNotFound() {
     struct Importer: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
-        bool doIsOpened() const override { return _opened; }
-        void doClose() override { _opened = false; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
 
         void doOpenData(Containers::Array<char>&&, DataFlags) override {
-            _opened = true;
+            CORRADE_FAIL("This should not be called");
         }
 
         bool _opened = false;
@@ -1008,7 +1076,6 @@ void AbstractImporterTest::openFileAsDataNotFound() {
 
     Containers::String out;
     Error redirectError{&out};
-
     CORRADE_VERIFY(!importer.openFile("nonexistent.bin"));
     CORRADE_VERIFY(!importer.isOpened());
     /* There's an error message from Path::read() before */
@@ -1017,13 +1084,40 @@ void AbstractImporterTest::openFileAsDataNotFound() {
         TestSuite::Compare::StringHasSuffix);
 }
 
+void AbstractImporterTest::openFileAsDataFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override {
+            return ImporterFeature::OpenData;
+        }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
+            called = true;
+        }
+
+        bool called = false;
+    } importer;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.openFile(Utility::Path::join(TRADE_TEST_DIR, "file.bin")));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
+    CORRADE_COMPARE(out, "");
+}
+
 void AbstractImporterTest::openState() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override {
             return ImporterFeature::OpenState;
         }
         bool doIsOpened() const override { return _opened; }
-        void doClose() override { _opened = false; }
+        void doClose() override {
+            CORRADE_VERIFY(_opened);
+            _opened = false;
+        }
 
         void doOpenState(const void* state, Containers::StringView filePath) override {
             CORRADE_COMPARE(state, reinterpret_cast<const void*>(std::size_t{0xbadcafe}));
@@ -1050,13 +1144,19 @@ void AbstractImporterTest::openStateFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        void doOpenState(const void*, Containers::StringView) override {}
+        void doOpenState(const void*, Containers::StringView) override {
+            called = true;
+        }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.openState({}));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1300,23 +1400,55 @@ void AbstractImporterTest::setFileCallbackOpenFileDirectly() {
         }
 
         void doOpenData(Containers::Array<char>&&, DataFlags) override {
-            /* Shouldn't be called because FileCallback is supported */
-            openDataCalledNotSureWhy = true;
+            CORRADE_FAIL("This should not be called");
         }
 
-        bool _opened = false;
-        bool openDataCalledNotSureWhy = false;
+        private:
+            bool _opened = false;
     } importer;
 
-    bool calledNotSureWhy = false;
-    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, bool& calledNotSureWhy) -> Containers::Optional<Containers::ArrayView<const char>> {
-        calledNotSureWhy = true;
+    /* The callback shouldn't be called from the class itself, it's the
+       doOpenFile() implementation responsibility to call it. In this case the
+       implementation only verifies that it's set, along with the user data. */
+    int dummy;
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) -> Containers::Optional<Containers::ArrayView<const char>> {
+        CORRADE_FAIL("This shouldn't be called");
         return {};
-    }, calledNotSureWhy);
+    }, &dummy);
 
     CORRADE_VERIFY(importer.openFile("file.dat"));
-    CORRADE_VERIFY(!calledNotSureWhy);
-    CORRADE_VERIFY(!importer.openDataCalledNotSureWhy);
+    CORRADE_VERIFY(importer.isOpened());
+}
+
+void AbstractImporterTest::setFileCallbackOpenFileDirectlyFailed() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return ImporterFeature::FileCallback|ImporterFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenFile(Containers::StringView) override {
+            called = true;
+        }
+
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        bool called = false;
+    } importer;
+
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) -> Containers::Optional<Containers::ArrayView<const char>> {
+        CORRADE_FAIL("This shouldn't be called");
+        return {};
+    });
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.openFile("file.dat"));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation() {
@@ -1329,7 +1461,7 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation() {
             CORRADE_COMPARE(filename, "file.dat");
             CORRADE_VERIFY(fileCallback());
             CORRADE_VERIFY(fileCallbackUserData());
-            openFileCalled = true;
+            called = true;
             AbstractImporter::doOpenFile(filename);
         }
 
@@ -1341,37 +1473,74 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation() {
             _opened = true;
         }
 
-        bool _opened = false;
-        bool openFileCalled = false;
+        bool called = false;
+
+        private:
+            bool _opened = false;
     } importer;
 
     struct State {
         const char data = '\xb0';
         bool loaded = false;
         bool closed = false;
-        bool calledNotSureWhy = false;
     } state;
-
     importer.setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
-        if(filename == "file.dat" && policy == InputFileCallbackPolicy::LoadTemporary) {
+        CORRADE_COMPARE(Containers::StringView{filename}, "file.dat");
+
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
             state.loaded = true;
             return Containers::arrayView(&state.data, 1);
         }
 
-        if(filename == "file.dat" && policy == InputFileCallbackPolicy::Close) {
+        if(policy == InputFileCallbackPolicy::Close) {
             state.closed = true;
             return {};
         }
 
-        state.calledNotSureWhy = true;
+        CORRADE_FAIL("Unexpected policy" << policy);
         return {};
     }, state);
 
     CORRADE_VERIFY(importer.openFile("file.dat"));
-    CORRADE_VERIFY(importer.openFileCalled);
+    CORRADE_VERIFY(importer.called);
     CORRADE_VERIFY(state.loaded);
     CORRADE_VERIFY(state.closed);
-    CORRADE_VERIFY(!state.calledNotSureWhy);
+}
+
+void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementationNotFound() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return ImporterFeature::FileCallback|ImporterFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenFile(Containers::StringView filename) override {
+            called = true;
+            AbstractImporter::doOpenFile(filename);
+        }
+
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        bool called = false;
+    } importer;
+
+    bool fileCallbackCalled = false;
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, bool& fileCallbackCalled) -> Containers::Optional<Containers::ArrayView<const char>> {
+        /* The callback should be only called to open the file, not to close it
+           afterwards */
+        CORRADE_COMPARE(policy, InputFileCallbackPolicy::LoadTemporary);
+        fileCallbackCalled = true;
+        return {};
+    }, fileCallbackCalled);
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer.openFile("file.dat"));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
+    CORRADE_VERIFY(fileCallbackCalled);
+    CORRADE_COMPARE(out, "Trade::AbstractImporter::openFile(): cannot open file file.dat\n");
 }
 
 void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementationFailed() {
@@ -1385,19 +1554,43 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementationFaile
             AbstractImporter::doOpenFile(filename);
         }
 
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
+            openDataCalled = true;
+        }
+
         bool openFileCalled = false;
+        bool openDataCalled = false;
     } importer;
 
-    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) -> Containers::Optional<Containers::ArrayView<const char>> {
-        return {};
-    });
+    struct State {
+        bool loaded = false;
+        bool closed = false;
+    } state;
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.loaded = true;
+            return Containers::ArrayView<const char>{};
+        }
 
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.closed = true;
+            return {};
+        }
+
+        CORRADE_FAIL("Unexpected policy" << policy);
+        return {};
+    }, state);
+
+    /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-
     CORRADE_VERIFY(!importer.openFile("file.dat"));
+    CORRADE_VERIFY(!importer.isOpened());
     CORRADE_VERIFY(importer.openFileCalled);
-    CORRADE_COMPARE(out, "Trade::AbstractImporter::openFile(): cannot open file file.dat\n");
+    CORRADE_VERIFY(importer.openDataCalled);
+    CORRADE_VERIFY(state.loaded);
+    CORRADE_VERIFY(state.closed);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractImporterTest::setFileCallbackOpenFileAsData() {
@@ -1407,7 +1600,7 @@ void AbstractImporterTest::setFileCallbackOpenFileAsData() {
         void doClose() override { _opened = false; }
 
         void doOpenFile(Containers::StringView) override {
-            openFileCalled = true;
+            CORRADE_FAIL("This should not be called");
         }
 
         void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
@@ -1418,37 +1611,68 @@ void AbstractImporterTest::setFileCallbackOpenFileAsData() {
             _opened = true;
         }
 
-        bool _opened = false;
-        bool openFileCalled = false;
+        private:
+            bool _opened = false;
     } importer;
 
     struct State {
         const char data = '\xb0';
         bool loaded = false;
         bool closed = false;
-        bool calledNotSureWhy = false;
     } state;
-
     importer.setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
-        if(filename == "file.dat" && policy == InputFileCallbackPolicy::LoadTemporary) {
+        CORRADE_COMPARE(Containers::StringView{filename}, "file.dat");
+
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
             state.loaded = true;
             return Containers::arrayView(&state.data, 1);
         }
 
-        if(filename == "file.dat" && policy == InputFileCallbackPolicy::Close) {
+        if(policy == InputFileCallbackPolicy::Close) {
             state.closed = true;
             return {};
         }
 
-        state.calledNotSureWhy = true;
+        CORRADE_FAIL("Unexpected policy" << policy);
         return {};
     }, state);
 
     CORRADE_VERIFY(importer.openFile("file.dat"));
-    CORRADE_VERIFY(!importer.openFileCalled);
     CORRADE_VERIFY(state.loaded);
     CORRADE_VERIFY(state.closed);
-    CORRADE_VERIFY(!state.calledNotSureWhy);
+}
+
+void AbstractImporterTest::setFileCallbackOpenFileAsDataNotFound() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doOpenFile(Containers::StringView) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
+            CORRADE_FAIL("This should not be called");
+        }
+    } importer;
+
+    bool fileCallbackCalled = false;
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, bool& fileCallbackCalled) -> Containers::Optional<Containers::ArrayView<const char>> {
+        /* The callback should be only called to open the file, not to close it
+           afterwards */
+        CORRADE_COMPARE(policy, InputFileCallbackPolicy::LoadTemporary);
+        fileCallbackCalled = true;
+        return {};
+    }, fileCallbackCalled);
+
+    Containers::String out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!importer.openFile("file.dat"));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(fileCallbackCalled);
+    CORRADE_COMPARE(out, "Trade::AbstractImporter::openFile(): cannot open file file.dat\n");
 }
 
 void AbstractImporterTest::setFileCallbackOpenFileAsDataFailed() {
@@ -1458,22 +1682,44 @@ void AbstractImporterTest::setFileCallbackOpenFileAsDataFailed() {
         void doClose() override {}
 
         void doOpenFile(Containers::StringView) override {
-            openFileCalled = true;
+            CORRADE_FAIL("This should not be called");
         }
 
-        bool openFileCalled = false;
+        void doOpenData(Containers::Array<char>&&, DataFlags) override {
+            called = true;
+        }
+
+        bool called = false;
     } importer;
 
-    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
-        return Containers::Optional<Containers::ArrayView<const char>>{};
-    });
+    struct State {
+        bool loaded = false;
+        bool closed = false;
+    } state;
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.loaded = true;
+            return Containers::ArrayView<const char>{};
+        }
 
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.closed = true;
+            return {};
+        }
+
+        CORRADE_FAIL("Unexpected policy" << policy);
+        return {};
+    }, state);
+
+    /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-
     CORRADE_VERIFY(!importer.openFile("file.dat"));
-    CORRADE_VERIFY(!importer.openFileCalled);
-    CORRADE_COMPARE(out, "Trade::AbstractImporter::openFile(): cannot open file file.dat\n");
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_VERIFY(importer.called);
+    CORRADE_VERIFY(state.loaded);
+    CORRADE_VERIFY(state.closed);
+    CORRADE_COMPARE(out, "");
 }
 
 void AbstractImporterTest::thingCountNotImplemented() {
@@ -1908,14 +2154,18 @@ void AbstractImporterTest::sceneFailed() {
 
         UnsignedInt doSceneCount() const override { return 1; }
         Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.scene(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -3881,14 +4131,18 @@ void AbstractImporterTest::animationFailed() {
 
         UnsignedInt doAnimationCount() const override { return 1; }
         Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.animation(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -4204,14 +4458,18 @@ void AbstractImporterTest::lightFailed() {
 
         UnsignedInt doLightCount() const override { return 1; }
         Containers::Optional<LightData> doLight(UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.light(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -4363,14 +4621,18 @@ void AbstractImporterTest::cameraFailed() {
 
         UnsignedInt doCameraCount() const override { return 1; }
         Containers::Optional<CameraData> doCamera(UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.camera(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -5054,14 +5316,18 @@ void AbstractImporterTest::skin2DFailed() {
 
         UnsignedInt doSkin2DCount() const override { return 1; }
         Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.skin2D(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -5293,14 +5559,18 @@ void AbstractImporterTest::skin3DFailed() {
 
         UnsignedInt doSkin3DCount() const override { return 1; }
         Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.skin3D(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -5537,14 +5807,18 @@ void AbstractImporterTest::meshFailed() {
 
         UnsignedInt doMeshCount() const override { return 1; }
         Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.mesh(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -6429,14 +6703,18 @@ void AbstractImporterTest::materialFailed() {
 
         UnsignedInt doMaterialCount() const override { return 1; }
         Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.material(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -6709,14 +6987,18 @@ void AbstractImporterTest::textureFailed() {
 
         UnsignedInt doTextureCount() const override { return 1; }
         Containers::Optional<TextureData> doTexture(UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.texture(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -6873,14 +7155,18 @@ void AbstractImporterTest::image1DFailed() {
 
         UnsignedInt doImage1DCount() const override { return 1; }
         Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.image1D(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -7177,14 +7463,18 @@ void AbstractImporterTest::image2DFailed() {
 
         UnsignedInt doImage2DCount() const override { return 1; }
         Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.image2D(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -7481,14 +7771,18 @@ void AbstractImporterTest::image3DFailed() {
 
         UnsignedInt doImage3DCount() const override { return 1; }
         Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } importer;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.image3D(0));
+    CORRADE_VERIFY(importer.called);
     CORRADE_COMPARE(out, "");
 }
 

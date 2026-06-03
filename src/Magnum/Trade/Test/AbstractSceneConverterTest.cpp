@@ -208,6 +208,7 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void addMeshLevelsNotImplemented();
 
     void addMeshThroughLevels();
+    void addMeshThroughLevelsFailed();
 
     void setMeshAttributeName();
     void setMeshAttributeNameNotImplemented();
@@ -284,6 +285,9 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void addImage1DThroughLevels();
     void addImage2DThroughLevels();
     void addImage3DThroughLevels();
+    void addImage1DThroughLevelsFailed();
+    void addImage2DThroughLevelsFailed();
+    void addImage3DThroughLevelsFailed();
 
     void addImporterContents();
     void addImporterContentsCustomSceneFields();
@@ -771,7 +775,8 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::addMeshLevelsNoLevels,
               &AbstractSceneConverterTest::addMeshLevelsNotImplemented,
 
-              &AbstractSceneConverterTest::addMeshThroughLevels});
+              &AbstractSceneConverterTest::addMeshThroughLevels,
+              &AbstractSceneConverterTest::addMeshThroughLevelsFailed});
 
     addInstancedTests({&AbstractSceneConverterTest::setMeshAttributeName},
         Containers::arraySize(SetMeshAttributeData));
@@ -839,7 +844,10 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
 
               &AbstractSceneConverterTest::addImage1DThroughLevels,
               &AbstractSceneConverterTest::addImage2DThroughLevels,
-              &AbstractSceneConverterTest::addImage3DThroughLevels});
+              &AbstractSceneConverterTest::addImage3DThroughLevels,
+              &AbstractSceneConverterTest::addImage1DThroughLevelsFailed,
+              &AbstractSceneConverterTest::addImage2DThroughLevelsFailed,
+              &AbstractSceneConverterTest::addImage3DThroughLevelsFailed});
 
     addInstancedTests({&AbstractSceneConverterTest::addImporterContents},
         Containers::arraySize(AddImporterContentsData));
@@ -1245,14 +1253,18 @@ void AbstractSceneConverterTest::convertMeshFailed() {
         }
 
         Containers::Optional<MeshData> doConvert(const MeshData&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convert(MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1408,8 +1420,11 @@ void AbstractSceneConverterTest::convertMeshInPlaceFailed() {
         }
 
         bool doConvertInPlace(MeshData&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     MeshData mesh{MeshPrimitive::Triangles, 0};
@@ -1418,6 +1433,7 @@ void AbstractSceneConverterTest::convertMeshInPlaceFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertInPlace(mesh));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1457,14 +1473,18 @@ void AbstractSceneConverterTest::convertMeshToDataFailed() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1515,6 +1535,7 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchAddFailed() {
         bool doBeginData() override { return true; }
 
         bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
+            called = true;
             return false;
         }
 
@@ -1522,6 +1543,8 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchAddFailed() {
             CORRADE_FAIL("doEndData() shouldn't be called");
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
@@ -1529,6 +1552,7 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchAddFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 6}));
     CORRADE_VERIFY(!converter.isConverting());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1546,8 +1570,11 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchEndFailed() {
         }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
@@ -1555,6 +1582,7 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchEndFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToData(MeshData{MeshPrimitive::Triangles, 6}));
     CORRADE_VERIFY(!converter.isConverting());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1654,14 +1682,18 @@ void AbstractSceneConverterTest::convertMeshToFileFailed() {
         }
 
         bool doConvertToFile(const MeshData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
+    CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0}, ""));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1690,8 +1722,11 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataFailed() {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -1705,6 +1740,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xef}, filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1780,6 +1816,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchAddFailed() {
         bool doBeginFile(Containers::StringView) override { return true; }
 
         bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
+            called = true;
             return false;
         }
 
@@ -1787,6 +1824,8 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchAddFailed() {
             CORRADE_FAIL("doEndFile() shouldn't be called");
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
@@ -1794,6 +1833,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchAddFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xfc}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
     CORRADE_VERIFY(!converter.isConverting());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1811,8 +1851,11 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchEndFailed() {
         }
 
         bool doEndFile(Containers::StringView) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
@@ -1820,6 +1863,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchEndFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.convertToFile(MeshData{MeshPrimitive::Triangles, 0xfc}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
     CORRADE_VERIFY(!converter.isConverting());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -1887,13 +1931,19 @@ void AbstractSceneConverterTest::beginFailed() {
             return SceneConverterFeature::ConvertMultiple;
         }
 
-        bool doBegin() override { return false; }
+        bool doBegin() override {
+            called = true;
+            return false;
+        }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.begin());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
@@ -1908,8 +1958,11 @@ void AbstractSceneConverterTest::endFailed() {
         bool doBegin() override { return true; }
 
         Containers::Pointer<AbstractImporter> doEnd() override {
+            called = true;
             return nullptr;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -1918,6 +1971,7 @@ void AbstractSceneConverterTest::endFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.end());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
@@ -2001,13 +2055,19 @@ void AbstractSceneConverterTest::beginDataFailed() {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        bool doBeginData() override { return false; }
+        bool doBeginData() override {
+            called = true;
+            return false;
+        }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.beginData());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
@@ -2022,8 +2082,11 @@ void AbstractSceneConverterTest::endDataFailed() {
         bool doBeginData() override { return true; }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.beginData());
@@ -2032,6 +2095,7 @@ void AbstractSceneConverterTest::endDataFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endData());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
@@ -2143,13 +2207,19 @@ void AbstractSceneConverterTest::beginFileFailed() {
             return SceneConverterFeature::ConvertMultipleToFile;
         }
 
-        bool doBeginFile(Containers::StringView) override { return false; }
+        bool doBeginFile(Containers::StringView) override {
+            called = true;
+            return false;
+        }
+
+        bool called = false;
     } converter;
 
     /* The implementation is expected to print an error message on its own */
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.beginFile("file.gltf"));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
@@ -2163,7 +2233,12 @@ void AbstractSceneConverterTest::endFileFailed() {
 
         bool doBeginFile(Containers::StringView) override { return true; }
 
-        bool doEndFile(Containers::StringView) override { return false; }
+        bool doEndFile(Containers::StringView) override {
+            called = true;
+            return false;
+        }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.beginFile("file.gltf"));
@@ -2172,6 +2247,7 @@ void AbstractSceneConverterTest::endFileFailed() {
     Containers::String out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endFile());
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 
     CORRADE_VERIFY(!converter.isConverting());
@@ -2212,8 +2288,11 @@ void AbstractSceneConverterTest::beginEndFileThroughDataFailed() {
         bool doBeginData() override { return true; }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -2230,6 +2309,7 @@ void AbstractSceneConverterTest::beginEndFileThroughDataFailed() {
     CORRADE_VERIFY(!converter.endFile());
     CORRADE_VERIFY(!converter.isConverting());
     CORRADE_VERIFY(!Utility::Path::exists(filename));
+    CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
 
@@ -2800,8 +2880,11 @@ void AbstractSceneConverterTest::addSceneFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SceneData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -2812,6 +2895,7 @@ void AbstractSceneConverterTest::addSceneFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -3066,8 +3150,11 @@ void AbstractSceneConverterTest::addAnimationFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const AnimationData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -3078,6 +3165,7 @@ void AbstractSceneConverterTest::addAnimationFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(AnimationData{nullptr, nullptr}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -3210,8 +3298,11 @@ void AbstractSceneConverterTest::addLightFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const LightData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -3222,6 +3313,7 @@ void AbstractSceneConverterTest::addLightFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(LightData{LightType::Point, {}, 0.0f}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -3293,8 +3385,11 @@ void AbstractSceneConverterTest::addCameraFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const CameraData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -3305,6 +3400,7 @@ void AbstractSceneConverterTest::addCameraFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -3376,8 +3472,11 @@ void AbstractSceneConverterTest::addSkin2DFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SkinData2D&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -3388,6 +3487,7 @@ void AbstractSceneConverterTest::addSkin2DFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(SkinData2D{nullptr, nullptr}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -3459,8 +3559,11 @@ void AbstractSceneConverterTest::addSkin3DFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SkinData3D&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -3471,6 +3574,7 @@ void AbstractSceneConverterTest::addSkin3DFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(SkinData3D{nullptr, nullptr}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -3542,8 +3646,11 @@ void AbstractSceneConverterTest::addMeshFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -3554,6 +3661,7 @@ void AbstractSceneConverterTest::addMeshFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Triangles, 0}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -3630,13 +3738,17 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshFailed() {
         }
 
         Containers::Optional<MeshData> doConvert(const MeshData&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
 
     CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Lines, 6}));
+    CORRADE_VERIFY(converter.called);
     /* It shouldn't abort the whole process */
     CORRADE_VERIFY(converter.isConverting());
     CORRADE_COMPARE(converter.meshCount(), 0);
@@ -3749,13 +3861,17 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataFailed() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
+            called = true;
             return {};
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.beginData());
 
     CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Lines, 6}));
+    CORRADE_VERIFY(converter.called);
     /* It shouldn't abort the whole process */
     CORRADE_VERIFY(converter.isConverting());
     CORRADE_COMPARE(converter.meshCount(), 0);
@@ -3935,8 +4051,11 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileFailed() {
         }
 
         bool doConvertToFile(const MeshData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     /* Remove previous file, if any */
@@ -3948,6 +4067,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileFailed() {
     CORRADE_VERIFY(!Utility::Path::exists(filename));
 
     CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Lines, 6}));
+    CORRADE_VERIFY(converter.called);
     /* It shouldn't abort the whole process */
     CORRADE_VERIFY(converter.isConverting());
     CORRADE_COMPARE(converter.meshCount(), 0);
@@ -4104,8 +4224,11 @@ void AbstractSceneConverterTest::addMeshLevelsFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -4119,6 +4242,7 @@ void AbstractSceneConverterTest::addMeshLevelsFailed() {
             MeshData{MeshPrimitive::Triangles, 0},
             MeshData{MeshPrimitive::Triangles, 0}
         }));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -4198,6 +4322,41 @@ void AbstractSceneConverterTest::addMeshThroughLevels() {
     CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.meshCount(), 1);
+}
+
+void AbstractSceneConverterTest::addMeshThroughLevelsFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddMeshes|
+                   SceneConverterFeature::MeshLevels;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView) override {
+            called = true;
+            return false;
+        }
+
+        bool called = false;
+    } converter;
+
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_COMPARE(converter.meshCount(), 0);
+
+    /* The implementation is expected to print an error message on its own */
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Triangles, 0}));
+        CORRADE_VERIFY(converter.called);
+        CORRADE_COMPARE(out, "");
+    }
+
+    /* It shouldn't abort the whole process */
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_COMPARE(converter.meshCount(), 0);
 }
 
 void AbstractSceneConverterTest::setMeshAttributeName() {
@@ -4312,8 +4471,11 @@ void AbstractSceneConverterTest::addMaterialFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const MaterialData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -4324,6 +4486,7 @@ void AbstractSceneConverterTest::addMaterialFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(MaterialData{{}, nullptr}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -4395,8 +4558,11 @@ void AbstractSceneConverterTest::addTextureFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const TextureData&, Containers::StringView) override {
+            called = true;
             return false;
         }
+
+        bool called = false;
     } converter;
 
     CORRADE_VERIFY(converter.begin());
@@ -4407,6 +4573,7 @@ void AbstractSceneConverterTest::addTextureFailed() {
         Containers::String out;
         Error redirectError{&out};
         CORRADE_VERIFY(!converter.add(TextureData{{}, {}, {}, {}, {}, 0}));
+        CORRADE_VERIFY(converter.called);
         CORRADE_COMPARE(out, "");
     }
 
@@ -4553,8 +4720,11 @@ void AbstractSceneConverterTest::addImage1DFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData1D&, Containers::StringView) override {
+            ++called;
             return false;
         }
+
+        Int called = 0;
     } converter;
 
     const char imageData[16]{};
@@ -4571,6 +4741,7 @@ void AbstractSceneConverterTest::addImage1DFailed() {
         CORRADE_VERIFY(!converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, imageData}));
         CORRADE_VERIFY(!converter.add(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}));
         CORRADE_VERIFY(!converter.add(CompressedImageView1D{CompressedPixelFormat::Astc4x4RGBAUnorm, 1, imageData}));
+        CORRADE_COMPARE(converter.called, 3);
         CORRADE_COMPARE(out, "");
     }
 
@@ -4741,8 +4912,11 @@ void AbstractSceneConverterTest::addImage2DFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData2D&, Containers::StringView) override {
+            ++called;
             return false;
         }
+
+        Int called = 0;
     } converter;
 
     const char imageData[16]{};
@@ -4759,6 +4933,7 @@ void AbstractSceneConverterTest::addImage2DFailed() {
         CORRADE_VERIFY(!converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, imageData}));
         CORRADE_VERIFY(!converter.add(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
         CORRADE_VERIFY(!converter.add(CompressedImageView2D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1}, imageData}));
+        CORRADE_COMPARE(converter.called, 3);
         CORRADE_COMPARE(out, "");
     }
 
@@ -4951,8 +5126,11 @@ void AbstractSceneConverterTest::addImage3DFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData3D&, Containers::StringView) override {
+            ++called;
             return false;
         }
+
+        Int called = 0;
     } converter;
 
     const char imageData[16]{};
@@ -4969,6 +5147,7 @@ void AbstractSceneConverterTest::addImage3DFailed() {
         CORRADE_VERIFY(!converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData}));
         CORRADE_VERIFY(!converter.add(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}));
         CORRADE_VERIFY(!converter.add(CompressedImageView3D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1, 1}, imageData}));
+        CORRADE_COMPARE(converter.called, 3);
         CORRADE_COMPARE(out, "");
     }
 
@@ -5155,8 +5334,11 @@ void AbstractSceneConverterTest::addImageLevels1DFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>&, Containers::StringView) override {
+            ++called;
             return false;
         }
+
+        Int called = 0;
     } converter;
 
     const char imageData[16]{};
@@ -5182,6 +5364,7 @@ void AbstractSceneConverterTest::addImageLevels1DFailed() {
             CompressedImageView1D{CompressedPixelFormat::Astc4x4RGBAUnorm, 1, imageData},
             CompressedImageView1D{CompressedPixelFormat::Astc4x4RGBAUnorm, 1, imageData},
         }));
+        CORRADE_COMPARE(converter.called, 3);
         CORRADE_COMPARE(out, "");
     }
 
@@ -5373,8 +5556,11 @@ void AbstractSceneConverterTest::addImageLevels2DFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>&, Containers::StringView) override {
+            ++called;
             return false;
         }
+
+        Int called = 0;
     } converter;
 
     const char imageData[16]{};
@@ -5400,6 +5586,7 @@ void AbstractSceneConverterTest::addImageLevels2DFailed() {
             CompressedImageView2D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1}, imageData},
             CompressedImageView2D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1}, imageData}
         }));
+        CORRADE_COMPARE(converter.called, 3);
         CORRADE_COMPARE(out, "");
     }
 
@@ -5780,8 +5967,11 @@ void AbstractSceneConverterTest::addImageLevels3DFailed() {
         bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>&, Containers::StringView) override {
+            ++called;
             return false;
         }
+
+        Int called = 0;
     } converter;
 
     const char imageData[16]{};
@@ -5807,6 +5997,7 @@ void AbstractSceneConverterTest::addImageLevels3DFailed() {
             CompressedImageView3D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1, 1}, imageData},
             CompressedImageView3D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1, 1}, imageData}
         }));
+        CORRADE_COMPARE(converter.called, 3);
         CORRADE_COMPARE(out, "");
     }
 
@@ -5950,6 +6141,132 @@ void AbstractSceneConverterTest::addImage3DThroughLevels() {
     CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(std::size_t{0xdeadbeef})}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);
+}
+
+void AbstractSceneConverterTest::addImage1DThroughLevelsFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddImages1D|
+                   SceneConverterFeature::AddCompressedImages1D|
+                   SceneConverterFeature::ImageLevels;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>&, Containers::StringView) override {
+            ++called;
+            return false;
+        }
+
+        Int called = 0;
+    } converter;
+
+    const char imageData[16]{};
+
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_COMPARE(converter.image1DCount(), 0);
+
+    /* The implementation is expected to print an error message on its own */
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        /* Testing all three variants to "fake" coverage for the name-less
+           overloads as well */
+        CORRADE_VERIFY(!converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, imageData}));
+        CORRADE_VERIFY(!converter.add(ImageView1D{PixelFormat::RGBA8Unorm, 1, imageData}));
+        CORRADE_VERIFY(!converter.add(CompressedImageView1D{CompressedPixelFormat::Astc4x4RGBAUnorm, 1, imageData}));
+        CORRADE_COMPARE(converter.called, 3);
+        CORRADE_COMPARE(out, "");
+    }
+
+    /* It shouldn't abort the whole process */
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_COMPARE(converter.image1DCount(), 0);
+}
+
+void AbstractSceneConverterTest::addImage2DThroughLevelsFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddImages2D|
+                   SceneConverterFeature::AddCompressedImages2D|
+                   SceneConverterFeature::ImageLevels;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>&, Containers::StringView) override {
+            ++called;
+            return false;
+        }
+
+        Int called = 0;
+    } converter;
+
+    const char imageData[16]{};
+
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_COMPARE(converter.image2DCount(), 0);
+
+    /* The implementation is expected to print an error message on its own */
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        /* Testing all three variants to "fake" coverage for the name-less
+           overloads as well */
+        CORRADE_VERIFY(!converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, imageData}));
+        CORRADE_VERIFY(!converter.add(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
+        CORRADE_VERIFY(!converter.add(CompressedImageView2D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1}, imageData}));
+        CORRADE_COMPARE(converter.called, 3);
+        CORRADE_COMPARE(out, "");
+    }
+
+    /* It shouldn't abort the whole process */
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_COMPARE(converter.image2DCount(), 0);
+}
+
+void AbstractSceneConverterTest::addImage3DThroughLevelsFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddImages3D|
+                   SceneConverterFeature::AddCompressedImages3D|
+                   SceneConverterFeature::ImageLevels;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>&, Containers::StringView) override {
+            ++called;
+            return false;
+        }
+
+        Int called = 0;
+    } converter;
+
+    const char imageData[16]{};
+
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_COMPARE(converter.image3DCount(), 0);
+
+    /* The implementation is expected to print an error message on its own */
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        /* Testing all three variants to "fake" coverage for the name-less
+           overloads as well */
+        CORRADE_VERIFY(!converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, imageData}));
+        CORRADE_VERIFY(!converter.add(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, imageData}));
+        CORRADE_VERIFY(!converter.add(CompressedImageView3D{CompressedPixelFormat::Astc4x4RGBAUnorm, {1, 1, 1}, imageData}));
+        CORRADE_COMPARE(converter.called, 3);
+        CORRADE_COMPARE(out, "");
+    }
+
+    /* It shouldn't abort the whole process */
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_COMPARE(converter.image3DCount(), 0);
 }
 
 void AbstractSceneConverterTest::addImporterContents() {
