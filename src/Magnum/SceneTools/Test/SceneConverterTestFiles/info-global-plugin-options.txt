@@ -1,3 +1,4 @@
+Trade::StbImageImporter::image2D(): converting 3-channel input to 1-channel
 2D image 0:
   Level 0: {4, 4} @ R8Unorm (0.0 kB)
 Total image data size: 0.0 kB
