@@ -47,6 +47,9 @@ namespace Magnum { namespace ShaderTools { namespace Test { namespace {
 struct AbstractConverterTest: TestSuite::Tester {
     explicit AbstractConverterTest();
 
+    void construct();
+    void constructWithPluginManagerReference();
+
     void featuresNone();
 
     void setFlags();
@@ -204,6 +207,9 @@ struct AbstractConverterTest: TestSuite::Tester {
 AbstractConverterTest::AbstractConverterTest() {
     addTests({&AbstractConverterTest::featuresNone,
 
+              &AbstractConverterTest::construct,
+              &AbstractConverterTest::constructWithPluginManagerReference,
+
               &AbstractConverterTest::setFlags,
               &AbstractConverterTest::setFlagsBothQuietAndVerbose,
               &AbstractConverterTest::setFlagsPreprocessNotSupported,
@@ -357,6 +363,36 @@ AbstractConverterTest::AbstractConverterTest() {
 
     /* Create testing dir */
     Utility::Path::make(SHADERTOOLS_TEST_OUTPUT_DIR);
+}
+
+void AbstractConverterTest::construct() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    CORRADE_COMPARE(converter.features(), ConverterFeature::ValidateData);
+    CORRADE_COMPARE(converter.flags(), ConverterFlags{});
+}
+
+void AbstractConverterTest::constructWithPluginManagerReference() {
+    PluginManager::Manager<AbstractConverter> manager;
+
+    struct Converter: AbstractConverter {
+        explicit Converter(PluginManager::Manager<AbstractConverter>& manager): AbstractConverter{manager} {}
+
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateFile;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter{manager};
+
+    CORRADE_COMPARE(converter.features(), ConverterFeature::ValidateFile);
+    CORRADE_COMPARE(converter.flags(), ConverterFlags{});
 }
 
 void AbstractConverterTest::featuresNone() {

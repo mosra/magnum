@@ -222,7 +222,9 @@ void AbstractFontTest::construct() {
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
-        void doClose() override {}
+        void doClose() override {
+            CORRADE_FAIL("This should not be called");
+        }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
@@ -233,6 +235,7 @@ void AbstractFontTest::construct() {
     CORRADE_COMPARE(font.features(), FontFeatures{});
     CORRADE_VERIFY(!font.isOpened());
 
+    /* This should be a no-op with doClose() not called at all */
     font.close();
     CORRADE_VERIFY(!font.isOpened());
 }

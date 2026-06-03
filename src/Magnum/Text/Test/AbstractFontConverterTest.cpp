@@ -48,6 +48,8 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 struct AbstractFontConverterTest: TestSuite::Tester {
     explicit AbstractFontConverterTest();
 
+    void construct();
+
     void convertGlyphs();
 
     void thingNotSupported();
@@ -112,7 +114,9 @@ struct AbstractFontConverterTest: TestSuite::Tester {
 };
 
 AbstractFontConverterTest::AbstractFontConverterTest() {
-    addTests({&AbstractFontConverterTest::convertGlyphs,
+    addTests({&AbstractFontConverterTest::construct,
+
+              &AbstractFontConverterTest::convertGlyphs,
 
               &AbstractFontConverterTest::thingNotSupported,
 
@@ -176,6 +180,16 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
 
     /* Create testing dir */
     Utility::Path::make(TEXT_TEST_OUTPUT_DIR);
+}
+
+void AbstractFontConverterTest::construct() {
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override {
+            return FontConverterFeature::ConvertData;
+        }
+    } converter;
+
+    CORRADE_COMPARE(converter.features(), FontConverterFeature::ConvertData);
 }
 
 struct DummyFont: AbstractFont {

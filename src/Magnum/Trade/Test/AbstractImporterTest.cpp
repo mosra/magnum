@@ -733,12 +733,15 @@ void AbstractImporterTest::construct() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
-        void doClose() override {}
+        void doClose() override {
+            CORRADE_FAIL("This should not be called");
+        }
     } importer;
 
     CORRADE_COMPARE(importer.features(), ImporterFeatures{});
     CORRADE_VERIFY(!importer.isOpened());
 
+    /* This should be a no-op with doClose() not called at all */
     importer.close();
     CORRADE_VERIFY(!importer.isOpened());
 }

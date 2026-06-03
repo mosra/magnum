@@ -67,6 +67,9 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void sceneContentsForConverterSingleMesh();
     void sceneContentsForConverterAll();
 
+    void construct();
+    void constructWithPluginManagerReference();
+
     void featuresNone();
 
     void setFlags();
@@ -636,6 +639,9 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::sceneContentsForConverterSingleMesh,
               &AbstractSceneConverterTest::sceneContentsForConverterAll,
 
+              &AbstractSceneConverterTest::construct,
+              &AbstractSceneConverterTest::constructWithPluginManagerReference,
+
               &AbstractSceneConverterTest::featuresNone,
 
               &AbstractSceneConverterTest::setFlags,
@@ -1012,6 +1018,32 @@ void AbstractSceneConverterTest::sceneContentsForConverterAll() {
         SceneContent::MeshLevels|
         SceneContent::ImageLevels|
         SceneContent::Names);
+}
+
+void AbstractSceneConverterTest::construct() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshInPlace;
+        }
+    } converter;
+
+    CORRADE_COMPARE(converter.features(), SceneConverterFeature::ConvertMeshInPlace);
+    CORRADE_COMPARE(converter.flags(), SceneConverterFlags{});
+}
+
+void AbstractSceneConverterTest::constructWithPluginManagerReference() {
+    PluginManager::Manager<AbstractSceneConverter> manager;
+
+    struct Converter: AbstractSceneConverter {
+        explicit Converter(PluginManager::Manager<AbstractSceneConverter>& manager): AbstractSceneConverter{manager} {}
+
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMesh;
+        }
+    } converter{manager};
+
+    CORRADE_COMPARE(converter.features(), SceneConverterFeature::ConvertMesh);
+    CORRADE_COMPARE(converter.flags(), SceneConverterFlags{});
 }
 
 void AbstractSceneConverterTest::featuresNone() {
