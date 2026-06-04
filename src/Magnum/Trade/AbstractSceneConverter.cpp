@@ -586,7 +586,7 @@ Containers::Pointer<AbstractImporter> AbstractSceneConverter::end() {
                    importer is closed afterwards, but that would result in
                    assertions which isn't nice. */
                 if(!_mesh) {
-                    Error{} << "Trade::AbstractSceneConverter::end(): mesh can be retrieved only once from a converter with just Trade::SceneConverterFeature::ConvertMesh";
+                    Error{} << "Trade::AbstractSceneConverter::end(): mesh can be retrieved only once from a converter with just" << SceneConverterFeature::ConvertMesh;
                     return {};
                 }
 
