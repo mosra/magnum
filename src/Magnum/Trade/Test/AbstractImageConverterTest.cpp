@@ -41,6 +41,12 @@
 
 #include "configure.h"
 
+/** @todo remove once the deprecated overloads are gone */
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <string>
+#include <Corrade/Containers/StringStl.h>
+#endif
+
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct AbstractImageConverterTest: TestSuite::Tester {
@@ -72,9 +78,19 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void convert1D();
     void convert2D();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Tests exportToImage() and exportToCompressedImage() */
+    void convert2DDeprecated();
+    void convert2DDeprecatedInvalid();
+    void convert2DDeprecatedCompressed();
+    void convert2DDeprecatedCompressedInvalid();
+    #endif
     void convert3D();
     void convert1DFailed();
     void convert2DFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convert2DFailedDeprecated();
+    #endif
     void convert3DFailed();
     void convert1DNotImplemented();
     void convert2DNotImplemented();
@@ -105,9 +121,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void convert1DToData();
     void convert2DToData();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Tests exportToData() taking ImageView2D */
+    void convert2DToDataDeprecated();
+    #endif
     void convert3DToData();
     void convert1DToDataFailed();
     void convert2DToDataFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convert2DToDataFailedDeprecated();
+    #endif
     void convert3DToDataFailed();
     /* 1D/2D/3D share the same image validity check function, so only verify
        one dimension thoroughly and for others just that the check is used */
@@ -124,9 +147,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void convertCompressed1DToData();
     void convertCompressed2DToData();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Tests exportToData() taking CompressedImageView2D */
+    void convertCompressed2DToDataDeprecated();
+    #endif
     void convertCompressed3DToData();
     void convertCompressed1DToDataFailed();
     void convertCompressed2DToDataFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convertCompressed2DToDataFailedDeprecated();
+    #endif
     void convertCompressed3DToDataFailed();
     /* Compressed share the same image validity check function with
        uncompressed, so only verify it's used */
@@ -142,9 +172,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void convertImageData1DToData();
     void convertImageData2DToData();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Tests exportToData() taking ImageData2D */
+    void convertImageData2DToDataDeprecated();
+    #endif
     void convertImageData3DToData();
     void convertImageData1DToDataFailed();
     void convertImageData2DToDataFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convertImageData2DToDataFailedDeprecated();
+    #endif
     void convertImageData3DToDataFailed();
 
     void convertLevels1DToData();
@@ -211,9 +248,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void convert1DToFile();
     void convert2DToFile();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Tests exportToFile() taking ImageView2D */
+    void convert2DToFileDeprecated();
+    #endif
     void convert3DToFile();
     void convert1DToFileFailed();
     void convert2DToFileFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convert2DToFileFailedDeprecated();
+    #endif
     void convert3DToFileFailed();
     void convert1DToFileThroughData();
     void convert2DToFileThroughData();
@@ -235,9 +279,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void convertCompressed1DToFile();
     void convertCompressed2DToFile();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Tests exportToFile() taking CompressedImageView2D */
+    void convertCompressed2DToFileDeprecated();
+    #endif
     void convertCompressed3DToFile();
     void convertCompressed1DToFileFailed();
     void convertCompressed2DToFileFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convertCompressed2DToFileFailedDeprecated();
+    #endif
     void convertCompressed3DToFileFailed();
     void convertCompressed1DToFileThroughData();
     void convertCompressed2DToFileThroughData();
@@ -259,9 +310,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void convertImageData1DToFile();
     void convertImageData2DToFile();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Tests exportToFile() taking ImageData2D */
+    void convertImageData2DToFileDeprecated();
+    #endif
     void convertImageData3DToFile();
     void convertImageData1DToFileFailed();
     void convertImageData2DToFileFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convertImageData2DToFileFailedDeprecated();
+    #endif
     void convertImageData3DToFileFailed();
     /* Conversion of ImageData to a file through data not tested, as that
        should just work transitively */
@@ -360,9 +418,18 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::convert1D,
               &AbstractImageConverterTest::convert2D,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convert2DDeprecated,
+              &AbstractImageConverterTest::convert2DDeprecatedInvalid,
+              &AbstractImageConverterTest::convert2DDeprecatedCompressed,
+              &AbstractImageConverterTest::convert2DDeprecatedCompressedInvalid,
+              #endif
               &AbstractImageConverterTest::convert3D,
               &AbstractImageConverterTest::convert1DFailed,
               &AbstractImageConverterTest::convert2DFailed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convert2DFailedDeprecated,
+              #endif
               &AbstractImageConverterTest::convert3DFailed,
               &AbstractImageConverterTest::convert1DNotImplemented,
               &AbstractImageConverterTest::convert2DNotImplemented,
@@ -393,9 +460,15 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::convert1DToData,
               &AbstractImageConverterTest::convert2DToData,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convert2DToDataDeprecated,
+              #endif
               &AbstractImageConverterTest::convert3DToData,
               &AbstractImageConverterTest::convert1DToDataFailed,
               &AbstractImageConverterTest::convert2DToDataFailed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convert2DToDataFailedDeprecated,
+              #endif
               &AbstractImageConverterTest::convert3DToDataFailed,
               &AbstractImageConverterTest::convert1DToDataInvalidImage,
               &AbstractImageConverterTest::convert2DToDataZeroSize,
@@ -410,9 +483,15 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::convertCompressed1DToData,
               &AbstractImageConverterTest::convertCompressed2DToData,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convertCompressed2DToDataDeprecated,
+              #endif
               &AbstractImageConverterTest::convertCompressed3DToData,
               &AbstractImageConverterTest::convertCompressed1DToDataFailed,
               &AbstractImageConverterTest::convertCompressed2DToDataFailed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convertCompressed2DToDataFailedDeprecated,
+              #endif
               &AbstractImageConverterTest::convertCompressed3DToDataFailed,
               &AbstractImageConverterTest::convertCompressed1DToDataInvalidImage,
               &AbstractImageConverterTest::convertCompressed2DToDataInvalidImage,
@@ -426,9 +505,15 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::convertImageData1DToData,
               &AbstractImageConverterTest::convertImageData2DToData,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convertImageData2DToDataDeprecated,
+              #endif
               &AbstractImageConverterTest::convertImageData3DToData,
               &AbstractImageConverterTest::convertImageData1DToDataFailed,
               &AbstractImageConverterTest::convertImageData2DToDataFailed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convertImageData2DToDataFailedDeprecated,
+              #endif
               &AbstractImageConverterTest::convertImageData3DToDataFailed,
 
               &AbstractImageConverterTest::convertLevels1DToData,
@@ -488,9 +573,15 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::convert1DToFile,
               &AbstractImageConverterTest::convert2DToFile,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convert2DToFileDeprecated,
+              #endif
               &AbstractImageConverterTest::convert3DToFile,
               &AbstractImageConverterTest::convert1DToFileFailed,
               &AbstractImageConverterTest::convert2DToFileFailed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convert2DToFileFailedDeprecated,
+              #endif
               &AbstractImageConverterTest::convert3DToFileFailed,
               &AbstractImageConverterTest::convert1DToFileThroughData,
               &AbstractImageConverterTest::convert2DToFileThroughData,
@@ -510,9 +601,15 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::convertCompressed1DToFile,
               &AbstractImageConverterTest::convertCompressed2DToFile,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convertCompressed2DToFileDeprecated,
+              #endif
               &AbstractImageConverterTest::convertCompressed3DToFile,
               &AbstractImageConverterTest::convertCompressed1DToFileFailed,
               &AbstractImageConverterTest::convertCompressed2DToFileFailed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convertCompressed2DToFileFailedDeprecated,
+              #endif
               &AbstractImageConverterTest::convertCompressed3DToFileFailed,
               &AbstractImageConverterTest::convertCompressed1DToFileThroughData,
               &AbstractImageConverterTest::convertCompressed2DToFileThroughData,
@@ -532,9 +629,15 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::convertImageData1DToFile,
               &AbstractImageConverterTest::convertImageData2DToFile,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convertImageData2DToFileDeprecated,
+              #endif
               &AbstractImageConverterTest::convertImageData3DToFile,
               &AbstractImageConverterTest::convertImageData1DToFileFailed,
               &AbstractImageConverterTest::convertImageData2DToFileFailed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::convertImageData2DToFileFailedDeprecated,
+              #endif
               &AbstractImageConverterTest::convertImageData3DToFileFailed,
 
               &AbstractImageConverterTest::convertLevels1DToFile,
@@ -890,6 +993,76 @@ void AbstractImageConverterTest::convert2D() {
     CORRADE_COMPARE(actual->size(), (Vector2i{4, 6}));
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convert2DDeprecated() {
+    /* Like convert2D() but using the deprecated overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2D; }
+        Containers::Optional<ImageData2D> doConvert(const ImageView2D& image) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, image.size(), Containers::Array<char>{96}};
+        }
+    } converter;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Containers::Optional<Image2D> actual = converter.exportToImage(ImageView2D{PixelFormat::R8Unorm, {4, 6}, Containers::ArrayView<char>{nullptr, 24}});
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->data().size(), 96);
+    CORRADE_COMPARE(actual->size(), (Vector2i{4, 6}));
+}
+
+void AbstractImageConverterTest::convert2DDeprecatedInvalid() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2D; }
+        Containers::Optional<ImageData2D> doConvert(const ImageView2D& image) override {
+            return ImageData2D{CompressedPixelFormat::Bc1RGBAUnorm, image.size(), Containers::Array<char>{96}};
+        }
+    } converter;
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToImage(ImageView2D{PixelFormat::R8Unorm, {4, 6}, Containers::ArrayView<char>{nullptr, 24}}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out, "Trade::AbstractImageConverter::exportToImage(): implementation returned a compressed image\n");
+}
+
+void AbstractImageConverterTest::convert2DDeprecatedCompressed() {
+    /* Like convert2D() but using the deprecated overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2D; }
+        Containers::Optional<ImageData2D> doConvert(const ImageView2D& image) override {
+            return ImageData2D{CompressedPixelFormat::Bc1RGBAUnorm, image.size(), Containers::Array<char>{96}};
+        }
+    } converter;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Containers::Optional<CompressedImage2D> actual = converter.exportToCompressedImage(ImageView2D{PixelFormat::R8Unorm, {4, 6}, Containers::ArrayView<char>{nullptr, 24}});
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(actual);
+    CORRADE_COMPARE(actual->data().size(), 96);
+    CORRADE_COMPARE(actual->size(), (Vector2i{4, 6}));
+}
+
+void AbstractImageConverterTest::convert2DDeprecatedCompressedInvalid() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2D; }
+        Containers::Optional<ImageData2D> doConvert(const ImageView2D& image) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, image.size(), Containers::Array<char>{96}};
+        }
+    } converter;
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToCompressedImage(ImageView2D{PixelFormat::R8Unorm, {4, 6}, Containers::ArrayView<char>{nullptr, 24}}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out, "Trade::AbstractImageConverter::exportToCompressedImage(): implementation returned an uncompressed image\n");
+}
+#endif
+
 void AbstractImageConverterTest::convert3D() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3D; }
@@ -946,6 +1119,34 @@ void AbstractImageConverterTest::convert2DFailed() {
     CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convert2DFailedDeprecated() {
+    /* Like convert2DFailed() but testing the (two) deprecated overloads */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2D;
+        }
+        Containers::Optional<ImageData2D> doConvert(const ImageView2D&) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToImage(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, {nullptr, 4}}));
+    CORRADE_VERIFY(!converter.exportToCompressedImage(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, {nullptr, 4}}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+#endif
 
 void AbstractImageConverterTest::convert3DFailed() {
     struct: AbstractImageConverter {
@@ -1458,6 +1659,26 @@ void AbstractImageConverterTest::convert2DToData() {
     CORRADE_COMPARE(actual->size(), 24);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convert2DToDataDeprecated() {
+    /* Like convert2DToData() but using the deprecated overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D& image) override {
+            return Containers::Array<char>{nullptr, std::size_t(image.size().product())};
+        }
+    } converter;
+
+    const char data[96]{};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Containers::Array<char> actual = converter.exportToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, data});
+    CORRADE_IGNORE_DEPRECATED_POP
+    /* The pointer is null but the size is not */
+    CORRADE_COMPARE(actual.size(), 24);
+}
+#endif
+
 void AbstractImageConverterTest::convert3DToData() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToData; }
@@ -1517,6 +1738,35 @@ void AbstractImageConverterTest::convert2DToDataFailed() {
     CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convert2DToDataFailedDeprecated() {
+    /* Like convert2DToData() but using the deprecated overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D&) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+#endif
 
 void AbstractImageConverterTest::convert3DToDataFailed() {
     struct: AbstractImageConverter {
@@ -1715,6 +1965,26 @@ void AbstractImageConverterTest::convertCompressed2DToData() {
     CORRADE_COMPARE(actual->size(), 128);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convertCompressed2DToDataDeprecated() {
+    /* Like convertCompressed2DToData() but using the deprecated overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToData; }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D& image) override {
+            return Containers::Array<char>{nullptr, std::size_t(image.size().product())};
+        }
+    } converter;
+
+    const char data[64]{};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Containers::Array<char> actual = converter.exportToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {16, 8}, data});
+    CORRADE_IGNORE_DEPRECATED_POP
+    /* The pointer is null but the size is not */
+    CORRADE_COMPARE(actual.size(), 128);
+}
+#endif
+
 void AbstractImageConverterTest::convertCompressed3DToData() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToData; }
@@ -1774,6 +2044,36 @@ void AbstractImageConverterTest::convertCompressed2DToDataFailed() {
     CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convertCompressed2DToDataFailedDeprecated() {
+    /* Like convertCompressed2DToDataFailed() but using the deprecated
+       overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D&) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+#endif
 
 void AbstractImageConverterTest::convertCompressed3DToDataFailed() {
     struct: AbstractImageConverter {
@@ -2012,6 +2312,36 @@ void AbstractImageConverterTest::convertImageData2DToData() {
     }
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convertImageData2DToDataDeprecated() {
+    /* Like convertImageData2DToData() but using the deprecated overload */
+
+    ImageData2DConverter converter;
+
+    /* Should get "B" when converting uncompressed */
+    {
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        Containers::Array<char> out = converter.exportToData(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, Containers::Array<char>{4}});
+        CORRADE_IGNORE_DEPRECATED_POP
+        CORRADE_VERIFY(out);
+        CORRADE_COMPARE_AS(out,
+            Containers::arrayView({'B'}),
+            TestSuite::Compare::Container);
+    }
+
+    /* Should get "C" when converting compressed */
+    {
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        Containers::Array<char> out = converter.exportToData(ImageData2D{CompressedPixelFormat::Bc1RGBUnorm, {4, 4}, Containers::Array<char>{NoInit, 8}});
+        CORRADE_IGNORE_DEPRECATED_POP
+        CORRADE_VERIFY(out);
+        CORRADE_COMPARE_AS(out,
+            Containers::arrayView({'C'}),
+            TestSuite::Compare::Container);
+    }
+}
+#endif
+
 void AbstractImageConverterTest::convertImageData3DToData() {
     ImageData3DConverter converter;
 
@@ -2093,6 +2423,43 @@ void AbstractImageConverterTest::convertImageData2DToDataFailed() {
     CORRADE_VERIFY(converter.calledCompressed);
     CORRADE_COMPARE(out, "");
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convertImageData2DToDataFailedDeprecated() {
+    /* Like convertImageData2DToDataFailed() but using the deprecated
+       overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToData;
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D&) override {
+            called = true;
+            return {};
+        }
+        Containers::Optional<Containers::Array<char>> doConvertToData(const CompressedImageView2D&) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToData(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}));
+    CORRADE_VERIFY(!converter.exportToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1}, imageData}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+#endif
 
 void AbstractImageConverterTest::convertImageData3DToDataFailed() {
     struct: AbstractImageConverter {
@@ -3187,6 +3554,31 @@ void AbstractImageConverterTest::convert2DToFile() {
         "\x0f\x0d", TestSuite::Compare::FileToString);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convert2DToFileDeprecated() {
+    /* Like convert2DToFile() but using the deprecated overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToFile; }
+        bool doConvertToFile(const ImageView2D& image, Containers::StringView filename) override {
+            return Utility::Path::write(filename, Containers::arrayView(
+                {char(image.size().x()), char(image.size().y())}));
+        }
+    } converter;
+
+    /* Remove previous file, if any */
+    Containers::String filename = Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(converter.exportToFile(ImageView2D{PixelFormat::RGBA8Unorm, {0x0f, 0x0d}, Containers::Array<char>{0x0f*0x0d*4}}, filename));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE_AS(filename,
+        "\x0f\x0d", TestSuite::Compare::FileToString);
+}
+#endif
+
 void AbstractImageConverterTest::convert3DToFile() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToFile; }
@@ -3251,6 +3643,35 @@ void AbstractImageConverterTest::convert2DToFileFailed() {
     CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convert2DToFileFailedDeprecated() {
+    /* Like convert2DToFileFailed() but using the deprecated overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile;
+        }
+        bool doConvertToFile(const ImageView2D&, Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}, ""));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+#endif
 
 void AbstractImageConverterTest::convert3DToFileFailed() {
     struct: AbstractImageConverter {
@@ -3595,6 +4016,31 @@ void AbstractImageConverterTest::convertCompressed2DToFile() {
         "\x0f\x0d", TestSuite::Compare::FileToString);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convertCompressed2DToFileDeprecated() {
+    /* Like convertCompressed2DToFile() but using the deprecated overloads */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToFile; }
+        bool doConvertToFile(const CompressedImageView2D& image, Containers::StringView filename) override {
+            return Utility::Path::write(filename, Containers::arrayView(
+                {char(image.size().x()), char(image.size().y())}));
+        }
+    } converter;
+
+    /* Remove previous file, if any */
+    Containers::String filename = Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0x0f, 0x0d}, Containers::Array<char>{NoInit, 128}}, filename));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE_AS(filename,
+        "\x0f\x0d", TestSuite::Compare::FileToString);
+}
+#endif
+
 void AbstractImageConverterTest::convertCompressed3DToFile() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToFile; }
@@ -3659,6 +4105,36 @@ void AbstractImageConverterTest::convertCompressed2DToFileFailed() {
     CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convertCompressed2DToFileFailedDeprecated() {
+    /* Like convertCompressed2DToFileFailed() but using the deprecated
+       overload */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToFile;
+        }
+        bool doConvertToFile(const CompressedImageView2D&, Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        bool called = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1}, imageData}, ""));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+#endif
 
 void AbstractImageConverterTest::convertCompressed3DToFileFailed() {
     struct: AbstractImageConverter {
@@ -3993,6 +4469,28 @@ void AbstractImageConverterTest::convertImageData2DToFile() {
         "C", TestSuite::Compare::FileToString);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convertImageData2DToFileDeprecated() {
+    /* Like convertImageData2DToFile() but using the deprecated overload */
+
+    ImageData2DConverter converter;
+
+    /* Should get "B" when converting uncompressed */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(converter.exportToFile(ImageData2D{PixelFormat::RGBA16F, {1, 1}, Containers::Array<char>{8}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE_AS(Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
+        "B", TestSuite::Compare::FileToString);
+
+    /* Should get "C" when converting compressed */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(converter.exportToFile(ImageData2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{NoInit, 16}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE_AS(Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
+        "C", TestSuite::Compare::FileToString);
+}
+#endif
+
 void AbstractImageConverterTest::convertImageData3DToFile() {
     ImageData3DConverter converter;
 
@@ -4066,6 +4564,43 @@ void AbstractImageConverterTest::convertImageData2DToFileFailed() {
     CORRADE_VERIFY(converter.calledCompressed);
     CORRADE_COMPARE(out, "");
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::convertImageData2DToFileFailedDeprecated() {
+    /* Like convertImageData2DToFileFailed() but using the deprecated
+       overloads */
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile|ImageConverterFeature::ConvertCompressed2DToFile;
+        }
+        bool doConvertToFile(const ImageView2D&, Containers::StringView) override {
+            called = true;
+            return false;
+        }
+        bool doConvertToFile(const CompressedImageView2D&, Containers::StringView) override {
+            calledCompressed = true;
+            return {};
+        }
+
+        bool called = false;
+        bool calledCompressed = false;
+    } converter;
+
+    const char imageData[4*4]{};
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.exportToFile(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, imageData}, ""));
+    CORRADE_VERIFY(!converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1}, imageData}, ""));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(converter.called);
+    CORRADE_VERIFY(converter.calledCompressed);
+    CORRADE_COMPARE(out, "");
+}
+#endif
 
 void AbstractImageConverterTest::convertImageData3DToFileFailed() {
     struct: AbstractImageConverter {

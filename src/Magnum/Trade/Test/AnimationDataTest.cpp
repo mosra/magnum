@@ -712,6 +712,12 @@ void AnimationDataTest::construct() {
         CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Vector3);
         CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
         CORRADE_COMPARE(data.trackTargetName(0), AnimationTrackTarget::Translation3D);
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /* Just to verify the deprecated overload returns what it should */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTarget::Translation3D);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
         CORRADE_COMPARE(data.trackTarget(0), 42);
 
         Animation::TrackView<const Float, const Vector3> track = data.track<Vector3>(0);
@@ -729,6 +735,12 @@ void AnimationDataTest::construct() {
         CORRADE_COMPARE(data.trackType(1), AnimationTrackType::Quaternion);
         CORRADE_COMPARE(data.trackResultType(1), AnimationTrackType::Quaternion);
         CORRADE_COMPARE(data.trackTargetName(1), AnimationTrackTarget::Rotation3D);
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /* Just to verify the deprecated overload returns what it should */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_COMPARE(data.trackTargetName(1), AnimationTrackTarget::Rotation3D);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
         CORRADE_COMPARE(data.trackTarget(1), 1337);
 
         Animation::TrackView<const Float, const Quaternion> track = data.track<Quaternion>(1);

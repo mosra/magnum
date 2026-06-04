@@ -45,14 +45,38 @@ struct ImageDataTest: TestSuite::Tester {
     explicit ImageDataTest();
 
     void constructGeneric();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructGenericDeprecated();
+    #endif
     void constructImplementationSpecific();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructImplementationSpecificDeprecated();
+    #endif
     void constructCompressedGeneric();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructCompressedGenericDeprecated();
+    #endif
     void constructCompressedImplementationSpecific();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructCompressedImplementationSpecificDeprecated();
+    #endif
 
     void constructGenericNotOwned();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructGenericNotOwnedDeprecated();
+    #endif
     void constructImplementationSpecificNotOwned();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructImplementationSpecificNotOwnedDeprecated();
+    #endif
     void constructCompressedGenericNotOwned();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructCompressedGenericNotOwnedDeprecated();
+    #endif
     void constructCompressedImplementationSpecificNotOwned();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructCompressedImplementationSpecificNotOwnedDeprecated();
+    #endif
     void constructGenericNotOwnedFlagOwned();
     void constructImplementationSpecificNotOwnedFlagOwned();
     void constructCompressedGenericNotOwnedFlagOwned();
@@ -124,15 +148,41 @@ struct {
 
 ImageDataTest::ImageDataTest() {
     addTests({&ImageDataTest::constructGeneric,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &ImageDataTest::constructGenericDeprecated,
+              #endif
               &ImageDataTest::constructImplementationSpecific,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &ImageDataTest::constructImplementationSpecificDeprecated,
+              #endif
               &ImageDataTest::constructCompressedGeneric,
-              &ImageDataTest::constructCompressedImplementationSpecific});
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &ImageDataTest::constructCompressedGenericDeprecated,
+              #endif
+              &ImageDataTest::constructCompressedImplementationSpecific,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &ImageDataTest::constructCompressedImplementationSpecificDeprecated
+              #endif
+              });
 
-    addInstancedTests({&ImageDataTest::constructGenericNotOwned,
-                       &ImageDataTest::constructImplementationSpecificNotOwned,
-                       &ImageDataTest::constructCompressedGenericNotOwned,
-                       &ImageDataTest::constructCompressedImplementationSpecificNotOwned},
-        Containers::arraySize(NotOwnedData));
+    addInstancedTests({
+        &ImageDataTest::constructGenericNotOwned,
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        &ImageDataTest::constructGenericNotOwnedDeprecated,
+        #endif
+        &ImageDataTest::constructImplementationSpecificNotOwned,
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        &ImageDataTest::constructImplementationSpecificNotOwnedDeprecated,
+        #endif
+        &ImageDataTest::constructCompressedGenericNotOwned,
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        &ImageDataTest::constructCompressedGenericNotOwnedDeprecated,
+        #endif
+        &ImageDataTest::constructCompressedImplementationSpecificNotOwned,
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        &ImageDataTest::constructCompressedImplementationSpecificNotOwnedDeprecated
+        #endif
+    }, Containers::arraySize(NotOwnedData));
 
     addTests({&ImageDataTest::constructGenericNotOwnedFlagOwned,
               &ImageDataTest::constructImplementationSpecificNotOwnedFlagOwned,
@@ -303,6 +353,50 @@ void ImageDataTest::constructGeneric() {
     }
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageDataTest::constructGenericDeprecated() {
+    /* Like constructGeneric() but using the deprecated overloads. Testing just
+       that the argumens are passed through correctly, not all getters. */
+
+    {
+        auto data = new char[4*4];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, Containers::Array<char>{data, 4*4}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 4);
+        CORRADE_COMPARE(a.format(), PixelFormat::RGBA8Unorm);
+        CORRADE_COMPARE(a.formatExtra(), 0);
+        CORRADE_COMPARE(a.pixelSize(), 4);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 4*4);
+        CORRADE_COMPARE(a.importerState(), &state);
+    } {
+        auto data = new char[3*2];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1),
+            PixelFormat::R16UI, {1, 3}, Containers::Array<char>{data, 3*2}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), PixelFormat::R16UI);
+        CORRADE_COMPARE(a.formatExtra(), 0);
+        CORRADE_COMPARE(a.pixelSize(), 2);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*2);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+}
+#endif
+
 void ImageDataTest::constructImplementationSpecific() {
     /* Single format */
     {
@@ -375,6 +469,97 @@ void ImageDataTest::constructImplementationSpecific() {
     }
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageDataTest::constructImplementationSpecificDeprecated() {
+    /* Like constructImplementationSpecific() but using the deprecated
+       overloads. Testing just that the argumens are passed through correctly,
+       not all getters. */
+
+    /* Single format */
+    {
+        auto data = new char[3*12];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1),
+            Vk::PixelFormat::R32G32B32F, {1, 3}, Containers::Array<char>{data, 3*12}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
+        CORRADE_COMPARE(a.formatExtra(), 0);
+        CORRADE_COMPARE(a.pixelSize(), 12);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*12);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+
+    /* Format + extra */
+    {
+        auto data = new char[3*6];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1),
+            GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
+        CORRADE_COMPARE(a.pixelSize(), 6);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*6);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+
+    /* Manual pixel size */
+    {
+        auto data = new char[3*6];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
+        CORRADE_COMPARE(a.pixelSize(), 6);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*6);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+
+    /* Manual pixel size, wrapped in PixelFormat already. Tested here and not
+       in constructImplementationSpecific() because there the UnsignedInt
+       overload delegates to the PixelFormat overload. */
+    {
+        auto data = new char[3*6];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1), pixelFormatWrap(666), 1337, 6, {1, 3}, Containers::Array<char>{data, 3*6}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
+        CORRADE_COMPARE(a.pixelSize(), 6);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*6);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+}
+#endif
+
 void ImageDataTest::constructCompressedGeneric() {
     {
         auto data = new char[7*8];
@@ -419,6 +604,55 @@ void ImageDataTest::constructCompressedGeneric() {
         CORRADE_COMPARE(a.importerState(), &state);
     }
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageDataTest::constructCompressedGenericDeprecated() {
+    /* Like constructCompressedGeneric() but using the deprecated overloads.
+       Testing just that the argumens are passed through correctly, not all
+       getters. */
+
+    {
+        auto data = new char[7*8];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{
+            CompressedPixelFormat::Bc1RGBAUnorm, {12, 8},
+            Containers::Array<char>{data, 7*8}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.compressedStorage().rowLength(), 0);
+        CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Bc1RGBAUnorm);
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE(a.blockDataSize(), 8);
+        CORRADE_COMPARE(a.size(), (Vector2i{12, 8}));
+        CORRADE_COMPARE(a.data().size(), 7*8);
+        CORRADE_COMPARE(a.importerState(), &state);
+    } {
+        auto data = new char[8*16];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{
+            CompressedPixelStorage{}.setRowLength(20),
+            CompressedPixelFormat::Astc5x5x4RGBAF, {15, 10},
+            Containers::Array<char>{data, 8*16}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.compressedStorage().rowLength(), 20);
+        CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Astc5x5x4RGBAF);
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+        CORRADE_COMPARE(a.blockDataSize(), 16);
+        CORRADE_COMPARE(a.size(), (Vector2i{15, 10}));
+        CORRADE_COMPARE(a.data().size(), 8*16);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+}
+#endif
 
 void ImageDataTest::constructCompressedImplementationSpecific() {
     /* Format with autodetection */
@@ -469,6 +703,40 @@ void ImageDataTest::constructCompressedImplementationSpecific() {
         CORRADE_COMPARE(a.importerState(), &state);
     }
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageDataTest::constructCompressedImplementationSpecificDeprecated() {
+    /* Like constructCompressedImplementationSpecific() but using the
+       deprecated overloads. Testing just that the argumens are passed through
+       correctly, not all getters. */
+
+    /* Format with autodetection */
+    {
+        auto data = new char[8*8];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{
+            CompressedPixelStorage{}.setRowLength(16),
+            GL::CompressedPixelFormat::RGBS3tcDxt1, {12, 8},
+            Containers::Array<char>{data, 8*8}, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
+        CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.compressedStorage().rowLength(), 16);
+        CORRADE_COMPARE(a.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE(a.blockDataSize(), 8);
+        CORRADE_COMPARE(a.size(), (Vector2i{12, 8}));
+        CORRADE_COMPARE(a.data().size(), 8*8);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+
+    /* Variant with manual block properties was added when ImageFlags were
+       present already, so there's no deprecated overload */
+}
+#endif
 
 void ImageDataTest::constructGenericNotOwned() {
     auto&& instanceData = NotOwnedData[testCaseInstanceId()];
@@ -521,6 +789,54 @@ void ImageDataTest::constructGenericNotOwned() {
         CORRADE_COMPARE(a.importerState(), &state);
     }
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageDataTest::constructGenericNotOwnedDeprecated() {
+    auto&& instanceData = NotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    /* Like constructGenericNotOwned() but using the deprecated overloads.
+       Testing just that the argumens are passed through correctly, not all
+       getters. */
+
+    {
+        char data[4*4];
+        int state;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 4);
+        CORRADE_COMPARE(a.format(), PixelFormat::RGBA8Unorm);
+        CORRADE_COMPARE(a.formatExtra(), 0);
+        CORRADE_COMPARE(a.pixelSize(), 4);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 4*4);
+        CORRADE_COMPARE(a.importerState(), &state);
+    } {
+        char data[3*2];
+        int state;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1),
+            PixelFormat::R16UI, {1, 3}, instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), PixelFormat::R16UI);
+        CORRADE_COMPARE(a.formatExtra(), 0);
+        CORRADE_COMPARE(a.pixelSize(), 2);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*2);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+}
+#endif
 
 void ImageDataTest::constructImplementationSpecificNotOwned() {
     auto&& instanceData = NotOwnedData[testCaseInstanceId()];
@@ -603,6 +919,100 @@ void ImageDataTest::constructImplementationSpecificNotOwned() {
     }
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageDataTest::constructImplementationSpecificNotOwnedDeprecated() {
+    auto&& instanceData = NotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    /* Like constructImplementationSpecificNotOwned() but using the deprecated
+       overloads. Testing just that the argumens are passed through correctly,
+       not all getters. */
+
+    /* Single format */
+    {
+        char data[3*12];
+        int state;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1),
+            Vk::PixelFormat::R32G32B32F, {1, 3}, instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
+        CORRADE_COMPARE(a.formatExtra(), 0);
+        CORRADE_COMPARE(a.pixelSize(), 12);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*12);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+
+    /* Format + extra */
+    {
+        char data[3*6];
+        int state;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1),
+            GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
+        CORRADE_COMPARE(a.pixelSize(), 6);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*6);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+
+    /* Manual pixel size */
+    {
+        char data[3*6];
+        int state;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
+        CORRADE_COMPARE(a.pixelSize(), 6);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*6);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+
+    /* Manual pixel size, wrapped in PixelFormat already. Tested here and not
+       in constructImplementationSpecificNonOwned() because there the
+       UnsignedInt overload delegates to the PixelFormat overload. */
+    {
+        char data[3*6];
+        int state;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{PixelStorage{}.setAlignment(1), pixelFormatWrap(666), 1337, 6, {1, 3}, instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(!a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.storage().alignment(), 1);
+        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
+        CORRADE_COMPARE(a.pixelSize(), 6);
+        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
+        CORRADE_COMPARE(a.data().size(), 3*6);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+}
+#endif
+
 void ImageDataTest::constructCompressedGenericNotOwned() {
     auto&& instanceData = NotOwnedData[testCaseInstanceId()];
     setTestCaseDescription(instanceData.name);
@@ -654,6 +1064,58 @@ void ImageDataTest::constructCompressedGenericNotOwned() {
         CORRADE_COMPARE(a.importerState(), &state);
     }
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageDataTest::constructCompressedGenericNotOwnedDeprecated() {
+    auto&& instanceData = NotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    /* Like constructCompressedGenericNotOwned() but using the deprecated
+       overloads. Testing just that the argumens are passed through correctly,
+       not all getters. */
+
+    {
+        char data[6*8];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{
+            CompressedPixelFormat::Bc1RGBAUnorm, {12, 8},
+            instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.compressedStorage().rowLength(), 0);
+        CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Bc1RGBAUnorm);
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE(a.blockDataSize(), 8);
+        CORRADE_COMPARE(a.size(), (Vector2i{12, 8}));
+        CORRADE_COMPARE(a.data().size(), 6*8);
+        CORRADE_COMPARE(a.importerState(), &state);
+    } {
+        char data[8*16];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{
+            CompressedPixelStorage{}.setRowLength(20),
+            CompressedPixelFormat::Astc5x5x4RGBAF, {15, 10},
+            instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.compressedStorage().rowLength(), 20);
+        CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::Astc5x5x4RGBAF);
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{5, 5, 4}));
+        CORRADE_COMPARE(a.blockDataSize(), 16);
+        CORRADE_COMPARE(a.size(), (Vector2i{15, 10}));
+        CORRADE_COMPARE(a.data().size(), 8*16);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+}
+#endif
 
 void ImageDataTest::constructCompressedImplementationSpecificNotOwned() {
     auto&& instanceData = NotOwnedData[testCaseInstanceId()];
@@ -711,6 +1173,43 @@ void ImageDataTest::constructCompressedImplementationSpecificNotOwned() {
         CORRADE_COMPARE(a.importerState(), &state);
     }
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageDataTest::constructCompressedImplementationSpecificNotOwnedDeprecated() {
+    auto&& instanceData = NotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    /* Like constructCompressedImplementationSpecificNotOwned() but using the
+       deprecated overloads. Testing just that the argumens are passed through
+       correctly, not all getters. */
+
+    /* Format with autodetection */
+    {
+        char data[8*8];
+        int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        ImageData2D a{
+            CompressedPixelStorage{}.setRowLength(16),
+            GL::CompressedPixelFormat::RGBS3tcDxt1, {12, 8},
+            instanceData.dataFlags, data, &state};
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        CORRADE_COMPARE(a.dataFlags(), instanceData.dataFlags);
+        CORRADE_VERIFY(a.isCompressed());
+        CORRADE_COMPARE(a.flags(), ImageFlags2D{});
+        CORRADE_COMPARE(a.compressedStorage().rowLength(), 16);
+        CORRADE_COMPARE(a.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
+        CORRADE_COMPARE(a.blockSize(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE(a.blockDataSize(), 8);
+        CORRADE_COMPARE(a.size(), (Vector2i{12, 8}));
+        CORRADE_COMPARE(a.data().size(), 8*8);
+        CORRADE_COMPARE(a.importerState(), &state);
+    }
+
+    /* Variant with manual block properties was added when ImageFlags were
+       present already, so there's no deprecated overload */
+}
+#endif
 
 void ImageDataTest::constructGenericNotOwnedFlagOwned() {
     CORRADE_SKIP_IF_NO_ASSERT();

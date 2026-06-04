@@ -124,6 +124,9 @@ struct MaterialDataTest: TestSuite::Tester {
     void accessTextureSwizzle();
     void accessMutable();
     void accessOptional();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void accessOptionalDeprecated();
+    #endif
     void accessOutOfRange();
     void accessNotFound();
     void accessInvalidAttributeName();
@@ -146,8 +149,17 @@ struct MaterialDataTest: TestSuite::Tester {
     void accessLayerNameMutable();
     void accessLayerStringMutable();
     void accessLayerIndexOptional();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void accessLayerIndexOptionalDeprecated();
+    #endif
     void accessLayerNameOptional();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void accessLayerNameOptionalDeprecated();
+    #endif
     void accessLayerStringOptional();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void accessLayerStringOptionalDeprecated();
+    #endif
     void accessLayerOutOfRange();
     void accessLayerNotFound();
     void accessInvalidLayerName();
@@ -161,6 +173,9 @@ struct MaterialDataTest: TestSuite::Tester {
     void releaseLayers();
 
     void templateLayerAccess();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void templateLayerAccessDeprecated();
+    #endif
     void templateLayerAccessMutable();
 
     void debugLayer();
@@ -293,6 +308,9 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessTextureSwizzle,
               &MaterialDataTest::accessMutable,
               &MaterialDataTest::accessOptional,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &MaterialDataTest::accessOptionalDeprecated,
+              #endif
               &MaterialDataTest::accessOutOfRange,
               &MaterialDataTest::accessNotFound,
               &MaterialDataTest::accessInvalidAttributeName,
@@ -315,8 +333,17 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessLayerNameMutable,
               &MaterialDataTest::accessLayerStringMutable,
               &MaterialDataTest::accessLayerIndexOptional,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &MaterialDataTest::accessLayerIndexOptionalDeprecated,
+              #endif
               &MaterialDataTest::accessLayerNameOptional,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &MaterialDataTest::accessLayerNameOptionalDeprecated,
+              #endif
               &MaterialDataTest::accessLayerStringOptional,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &MaterialDataTest::accessLayerStringOptionalDeprecated,
+              #endif
               &MaterialDataTest::accessLayerOutOfRange,
               &MaterialDataTest::accessLayerNotFound,
               &MaterialDataTest::accessInvalidLayerName,
@@ -330,6 +357,9 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::releaseLayers,
 
               &MaterialDataTest::templateLayerAccess,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &MaterialDataTest::templateLayerAccessDeprecated,
+              #endif
               &MaterialDataTest::templateLayerAccessMutable,
 
               &MaterialDataTest::debugLayer,
@@ -2005,6 +2035,33 @@ void MaterialDataTest::accessOptional() {
     CORRADE_COMPARE(data.attributeOr(MaterialAttribute::DiffuseTexture, 5u), 5);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void MaterialDataTest::accessOptionalDeprecated() {
+    /* Like accessOptional() but using the deprecated tryAttribute() */
+
+    MaterialData data{{}, {
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* This exists */
+    CORRADE_VERIFY(data.tryAttribute("SpecularTexture"));
+    CORRADE_VERIFY(data.tryAttribute(MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const Int*>(data.tryAttribute("SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const Int*>(data.tryAttribute(MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("SpecularTexture"), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture), 3);
+
+    /* This doesn't */
+    CORRADE_VERIFY(!data.tryAttribute("DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute(MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTexture));
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
 void MaterialDataTest::accessOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -2565,6 +2622,35 @@ void MaterialDataTest::accessLayerIndexOptional() {
     CORRADE_COMPARE(data.attributeOr(1, MaterialAttribute::DiffuseTexture, 5u), 5);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void MaterialDataTest::accessLayerIndexOptionalDeprecated() {
+    /* Like accessLayerIndexOptional() but using the deprecated
+       tryAttribute() */
+
+    MaterialData data{{}, {
+        {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }, {1, 3}};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* This exists */
+    CORRADE_VERIFY(data.tryAttribute(1, "SpecularTexture"));
+    CORRADE_VERIFY(data.tryAttribute(1, MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(1, "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(1, MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(1, "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(1, MaterialAttribute::SpecularTexture), 3);
+
+    /* This doesn't */
+    CORRADE_VERIFY(!data.tryAttribute(1, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute(1, MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(1, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(1, MaterialAttribute::DiffuseTexture));
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
 void MaterialDataTest::accessLayerNameOptional() {
     MaterialData data{{}, {
         {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
@@ -2592,6 +2678,36 @@ void MaterialDataTest::accessLayerNameOptional() {
     CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture, 5u), 5);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void MaterialDataTest::accessLayerNameOptionalDeprecated() {
+    /* Like accessLayerNameOptional() but using the deprecated
+       tryAttribute() */
+
+    MaterialData data{{}, {
+        {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }, {1, 4}};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* This exists */
+    CORRADE_VERIFY(data.tryAttribute(MaterialLayer::ClearCoat, "SpecularTexture"));
+    CORRADE_VERIFY(data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialLayer::ClearCoat, "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture), 3);
+
+    /* This doesn't */
+    CORRADE_VERIFY(!data.tryAttribute(MaterialLayer::ClearCoat, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture));
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
 void MaterialDataTest::accessLayerStringOptional() {
     MaterialData data{{}, {
         {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
@@ -2618,6 +2734,36 @@ void MaterialDataTest::accessLayerStringOptional() {
     CORRADE_COMPARE(data.attributeOr("ClearCoat", "DiffuseTexture", 5u), 5);
     CORRADE_COMPARE(data.attributeOr("ClearCoat", MaterialAttribute::DiffuseTexture, 5u), 5);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void MaterialDataTest::accessLayerStringOptionalDeprecated() {
+    /* Like accessLayerStringOptional() but using the deprecated
+       tryAttribute() */
+
+    MaterialData data{{}, {
+        {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }, {1, 4}};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* This exists */
+    CORRADE_VERIFY(data.tryAttribute("ClearCoat", "SpecularTexture"));
+    CORRADE_VERIFY(data.tryAttribute("ClearCoat", MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("ClearCoat", "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("ClearCoat", MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("ClearCoat", "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("ClearCoat", MaterialAttribute::SpecularTexture), 3);
+
+    /* This doesn't */
+    CORRADE_VERIFY(!data.tryAttribute("ClearCoat", "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute("ClearCoat", MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("ClearCoat", "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("ClearCoat", MaterialAttribute::DiffuseTexture));
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
 
 void MaterialDataTest::accessLayerOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
@@ -3281,6 +3427,29 @@ void MaterialDataTest::templateLayerAccess() {
     CORRADE_COMPARE(data.attributeOr(MaterialAttribute::LayerFactorTexture, 5u), 3);
     CORRADE_COMPARE(data.attributeOr("LayerFactorTexture", 5u), 3);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void MaterialDataTest::templateLayerAccessDeprecated() {
+    /* Subset of templateLayerAccess() testing the deprecated tryAttribute()
+       overload */
+
+    MaterialLayerData<MaterialLayer::ClearCoat> data{{}, {
+        {MaterialAttribute::BaseColor, 0x335566ff_rgbaf},
+
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::LayerFactor, 0.35f},
+        {MaterialAttribute::LayerFactorTexture, 3u},
+    }, {1, 4}};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialAttribute::LayerFactorTexture)), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("LayerFactorTexture")), 3);
+
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("LayerFactorTexture"), 3);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
 
 void MaterialDataTest::templateLayerAccessMutable() {
     MaterialLayerData<MaterialLayer::ClearCoat> data{{}, {

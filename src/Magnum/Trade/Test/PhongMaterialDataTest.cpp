@@ -41,6 +41,7 @@ struct PhongMaterialDataTest: TestSuite::Tester {
     void constructDeprecatedTextured();
     void constructDeprecatedTexturedTextureTransform();
     void constructDeprecatedTexturedCoordinates();
+    void constructDeprecatedNoColor();
     void constructDeprecatedTextureTransformNoTextures();
     void constructDeprecatedNoTextureTransformationFlag();
     void constructDeprecatedNoTextureCoordinatesFlag();
@@ -79,6 +80,7 @@ PhongMaterialDataTest::PhongMaterialDataTest() {
         &PhongMaterialDataTest::constructDeprecatedTextured,
         &PhongMaterialDataTest::constructDeprecatedTexturedTextureTransform,
         &PhongMaterialDataTest::constructDeprecatedTexturedCoordinates,
+        &PhongMaterialDataTest::constructDeprecatedNoColor,
         &PhongMaterialDataTest::constructDeprecatedTextureTransformNoTextures,
         &PhongMaterialDataTest::constructDeprecatedNoTextureTransformationFlag,
         &PhongMaterialDataTest::constructDeprecatedNoTextureCoordinatesFlag,
@@ -240,6 +242,30 @@ void PhongMaterialDataTest::constructDeprecatedTexturedCoordinates() {
     CORRADE_COMPARE(data.importerState(), &a);
 }
 
+void PhongMaterialDataTest::constructDeprecatedNoColor() {
+    const int a{};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    PhongMaterialData data{PhongMaterialData::Flag::DoubleSided,
+        MaterialAlphaMode::Mask, 0.3f, 80.0f, &a};
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    CORRADE_COMPARE(data.types(), MaterialType::Phong);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(data.type(), MaterialType::Phong);
+    CORRADE_COMPARE(data.flags(), PhongMaterialData::Flag::DoubleSided);
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(data.ambientColor(), 0x000000ff_rgbaf);
+    CORRADE_COMPARE(data.diffuseColor(), 0xffffff_rgbf);
+    CORRADE_COMPARE(data.specularColor(), 0xffffff_rgbf);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(data.alphaMode(), MaterialAlphaMode::Mask);
+    CORRADE_COMPARE(data.alphaMask(), 0.3f);
+    CORRADE_COMPARE(data.shininess(), 80.0f);
+    CORRADE_COMPARE(data.importerState(), &a);
+}
+
 void PhongMaterialDataTest::constructDeprecatedTextureTransformNoTextures() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -360,23 +386,47 @@ void PhongMaterialDataTest::textured() {
     CORRADE_COMPARE(data.ambientTexture(), 42);
     CORRADE_COMPARE(data.ambientTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.ambientTextureCoordinates(), 2);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Just to verify the deprecated overload returns what it should */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(data.ambientCoordinateSet(), 2);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_COMPARE(data.ambientTextureLayer(), 6);
     CORRADE_COMPARE(data.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(data.diffuseTexture(), 33);
     CORRADE_COMPARE(data.diffuseTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
     CORRADE_COMPARE(data.diffuseTextureCoordinates(), 3);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Just to verify the deprecated overload returns what it should */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(data.diffuseCoordinateSet(), 3);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_COMPARE(data.diffuseTextureLayer(), 7);
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(data.specularTexture(), 17);
     CORRADE_COMPARE(data.specularTextureSwizzle(), MaterialTextureSwizzle::RGBA);
     CORRADE_COMPARE(data.specularTextureMatrix(), Matrix3::scaling({1.0f, 1.0f}));
     CORRADE_COMPARE(data.specularTextureCoordinates(), 4);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Just to verify the deprecated overload returns what it should */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(data.specularCoordinateSet(), 4);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_COMPARE(data.specularTextureLayer(), 8);
     CORRADE_COMPARE(data.normalTexture(), 0);
     CORRADE_COMPARE(data.normalTextureScale(), 0.5f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::GB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::scaling({1.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 5);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Just to verify the deprecated overload returns what it should */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(data.normalCoordinateSet(), 5);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_COMPARE(data.normalTextureLayer(), 9);
 }
 

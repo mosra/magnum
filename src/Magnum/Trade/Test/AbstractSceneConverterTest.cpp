@@ -54,6 +54,12 @@
 
 #include "configure.h"
 
+/** @todo remove once the deprecated convertMeshToFile() is gone */
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <string>
+#include <Corrade/Containers/StringStl.h>
+#endif
+
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct AbstractSceneConverterTest: TestSuite::Tester {
@@ -115,7 +121,13 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void convertMeshToDataCustomDeleter();
 
     void convertMeshToFile();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convertMeshToFileDeprecated();
+    #endif
     void convertMeshToFileFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void convertMeshToFileFailedDeprecated();
+    #endif
     void convertMeshToFileThroughData();
     void convertMeshToFileThroughDataFailed();
     void convertMeshToFileThroughDataNotWritable();
@@ -686,7 +698,13 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::convertMeshToDataCustomDeleter,
 
               &AbstractSceneConverterTest::convertMeshToFile,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractSceneConverterTest::convertMeshToFileDeprecated,
+              #endif
               &AbstractSceneConverterTest::convertMeshToFileFailed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractSceneConverterTest::convertMeshToFileFailedDeprecated,
+              #endif
               &AbstractSceneConverterTest::convertMeshToFileThroughData,
               &AbstractSceneConverterTest::convertMeshToFileThroughDataFailed,
               &AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable,
@@ -1794,6 +1812,31 @@ void AbstractSceneConverterTest::convertMeshToFile() {
         "\xef", TestSuite::Compare::FileToString);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractSceneConverterTest::convertMeshToFileDeprecated() {
+    /* Like convertMeshToFile() but using the deprecated overload */
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToFile; }
+
+        bool doConvertToFile(const MeshData& mesh, Containers::StringView filename) override {
+            return Utility::Path::write(filename, Containers::arrayView({char(mesh.vertexCount())}));
+        }
+    } converter;
+
+    /* Remove previous file, if any */
+    Containers::String filename = Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(converter.convertToFile(filename, MeshData{MeshPrimitive::Triangles, 0xef}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE_AS(filename,
+        "\xef", TestSuite::Compare::FileToString);
+}
+#endif
+
 void AbstractSceneConverterTest::convertMeshToFileFailed() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override {
@@ -1815,6 +1858,34 @@ void AbstractSceneConverterTest::convertMeshToFileFailed() {
     CORRADE_VERIFY(converter.called);
     CORRADE_COMPARE(out, "");
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractSceneConverterTest::convertMeshToFileFailedDeprecated() {
+    /* Like convertMeshToFileFailed() but using the deprecated overload */
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshToFile;
+        }
+
+        bool doConvertToFile(const MeshData&, Containers::StringView) override {
+            called = true;
+            return false;
+        }
+
+        bool called = false;
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_VERIFY(!converter.convertToFile("", MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(converter.called);
+    CORRADE_COMPARE(out, "");
+}
+#endif
 
 void AbstractSceneConverterTest::convertMeshToFileThroughData() {
     struct: AbstractSceneConverter {
@@ -3828,6 +3899,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMesh() {
     CORRADE_VERIFY(!converter.isConverting());
     CORRADE_VERIFY(importer);
     CORRADE_VERIFY(importer->isOpened());
+    CORRADE_COMPARE(importer->features(), ImporterFeatures{});
     CORRADE_COMPARE(importer->meshCount(), 1);
 
     Containers::Optional<MeshData> mesh = importer->mesh(0);

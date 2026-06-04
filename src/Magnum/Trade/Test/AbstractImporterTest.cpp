@@ -82,6 +82,9 @@ struct AbstractImporterTest: TestSuite::Tester {
 
     void construct();
     void constructWithPluginManagerReference();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructMoveDeprecated();
+    #endif
 
     void setFlags();
     void setFlagsFileOpened();
@@ -411,6 +414,9 @@ AbstractImporterTest::AbstractImporterTest() {
 
               &AbstractImporterTest::construct,
               &AbstractImporterTest::constructWithPluginManagerReference,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImporterTest::constructMoveDeprecated,
+              #endif
 
               &AbstractImporterTest::setFlags,
               &AbstractImporterTest::setFlagsFileOpened,
@@ -801,6 +807,25 @@ void AbstractImporterTest::constructWithPluginManagerReference() {
 
     CORRADE_VERIFY(!importer.isOpened());
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImporterTest::constructMoveDeprecated() {
+    /* In the deprecated build there's an explicitly deinlined defaulted move
+       constructor to correctly move an array member with a private type.
+       Verify simply that a move compiles and links, that should be enough. */
+
+    struct Importer: AbstractImporter {
+        ImporterFeatures doFeatures() const override {
+            return ImporterFeature::FileCallback;
+        }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    Importer b = Utility::move(importer);
+    CORRADE_COMPARE(b.features(), ImporterFeature::FileCallback);
+}
+#endif
 
 void AbstractImporterTest::setFlags() {
     struct: AbstractImporter {
