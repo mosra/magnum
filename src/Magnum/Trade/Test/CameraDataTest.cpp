@@ -149,10 +149,10 @@ void CameraDataTest::constructMove() {
     const int c{};
     CameraData d{CameraType::Orthographic3D, {2.0f, 1.0f}, 0.5f, 10.0f, &c};
     d = Utility::move(b);
-    CORRADE_COMPARE(b.type(), CameraType::Perspective3D);
-    CORRADE_COMPARE(b.size(), (Vector2{0.443389f, 0.188676f}));
-    CORRADE_COMPARE(b.fov(), 25.0_degf);
-    CORRADE_COMPARE(b.aspectRatio(), 2.35f);
+    CORRADE_COMPARE(d.type(), CameraType::Perspective3D);
+    CORRADE_COMPARE(d.size(), (Vector2{0.443389f, 0.188676f}));
+    CORRADE_COMPARE(d.fov(), 25.0_degf);
+    CORRADE_COMPARE(d.aspectRatio(), 2.35f);
     CORRADE_COMPARE(d.near(), 1.0f);
     CORRADE_COMPARE(d.far(), 1000.0f);
     CORRADE_COMPARE(d.importerState(), &a);
