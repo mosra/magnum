@@ -522,7 +522,14 @@ void PbrMetallicRoughnessMaterialDataTest::texturedImplicitPackedOcclusionRoughn
         }};
         CORRADE_VERIFY(!data.hasOcclusionRoughnessMetallicTexture());
 
-    /* One texture missing */
+    /* Roughness / metallic texture missing */
+    } {
+        PbrMetallicRoughnessMaterialData data{{}, {
+            {MaterialAttribute::OcclusionTexture, 2u},
+        }};
+        CORRADE_VERIFY(!data.hasOcclusionRoughnessMetallicTexture());
+
+    /* Occlusion texture missing */
     } {
         PbrMetallicRoughnessMaterialData data{{}, {
             {MaterialAttribute::NoneRoughnessMetallicTexture, 2u},
