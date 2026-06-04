@@ -600,7 +600,7 @@ Containers::Pointer<AbstractImporter> AbstractSceneConverter::end() {
                 Containers::Optional<Trade::MeshData> _mesh;
         };
 
-        return Containers::Pointer<AbstractImporter>(new SingleMeshImporter{Utility::move(_state->converted.mesh)});
+        return Containers::pointer<SingleMeshImporter>(Utility::move(_state->converted.mesh));
 
     } else if(features() & SceneConverterFeature::ConvertMultiple) {
         return doEnd();
