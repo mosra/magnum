@@ -411,12 +411,13 @@ void AbstractFont::close() {
     doClose();
     CORRADE_INTERNAL_ASSERT(!isOpened());
 
-    /* Clear the saved values to avoid accidental use of stale (state even
+    /* Clear the saved values to avoid accidental use of stale state (even
        though their public access is guarded with isOpened()) */
     _size = {};
     _lineHeight = {};
     _descent = {};
     _lineHeight = {};
+    _glyphCount = {};
 }
 
 Float AbstractFont::size() const {
