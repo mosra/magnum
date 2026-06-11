@@ -1005,6 +1005,12 @@ See also:
     names and retrieving IDs for particular glyph names.
 -   @ref Text::AbstractFont::fillGlyphCache() now returns a @cpp bool @ce to
     allow font plugin implementations to gracefully report failures
+-   @ref Text::AbstractFont::openFile() and
+    @relativeref{Text::AbstractFont,openData()} now allow picking a concrete
+    font ID from a font collection, along with new
+    @ref Text::AbstractFont::fileFontCount() and
+    @relativeref{Text::AbstractFont,dataFontCount()} APIs for querying font
+    count in a file (see [mosra/magnum#695](https://github.com/mosra/magnum/pull/695))
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
@@ -1658,6 +1664,10 @@ See also:
         deprecated in favor of constructors taking an explicit
         @ref PixelFormat. The internal texture format is now considered an
         implementation detail.
+    -   @ref Text::AbstractFont::doOpenFile() and
+        @relativeref{Text::AbstractFont,doOpenData()} overloads taking just
+        file / data and size are deprecated in favor of functions taking an
+        explicit font index
 -   The @cpp TextureTools::atlas() @ce utility is deprecated in favor of
     @ref TextureTools::AtlasLandfill, which has a vastly better packing
     efficiency, supports incremental packing and doesn't force the caller to
@@ -3660,7 +3670,7 @@ Released 2019-10-24, tagged as
 -   @cpp Text::AbstractFont::openSingleData() @ce and
     @cpp Text::AbstractFont::openData() @ce taking a list of files are
     deprecated in favor of
-    @ref Text::AbstractFont::openData(Containers::ArrayView<const void>, Float)
+    @cpp Text::AbstractFont::openData(Containers::ArrayView<const void>, Float) @ce
     and @ref Text::AbstractFont::setFileCallback()
 -   @ref GL::Buffer::setData() and @ref GL::Buffer::setSubData() no longer has
     overloads taking @ref std::vector / @ref std::array, but instead relies on

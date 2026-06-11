@@ -6,6 +6,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022, 2023, 2024, 2025, 2026
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2026 Andrew Snyder <asnyder@minitab.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -56,7 +57,10 @@ namespace Magnum { namespace Text {
 @see @ref FontFeatures, @ref AbstractFont::features()
 */
 enum class FontFeature: UnsignedByte {
-    /** Opening fonts from raw data using @ref AbstractFont::openData() */
+    /**
+     * Opening fonts from raw data using @ref AbstractFont::openData() and
+     * @ref AbstractFont::dataFontCount().
+     */
     OpenData = 1 << 0,
 
     /**
@@ -393,6 +397,57 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         template<class Callback, class T> void setFileCallback(Callback callback, T& userData);
         #endif
 
+        /**
+         * @brief Count of fonts in given data
+         * @param data          Font data
+         * @m_since_latest
+         *
+         * Tries to open given raw data and returns count of fonts in the file.
+         * Available only if @ref FontFeature::OpenData is supported. A font
+         * index from this range can be passed to @ref openData() to select a
+         * particular font inside for example a TrueType Collection (`*.ttc`)
+         * file. On failure prints a message to @relativeref{Magnum,Error} and
+         * returns @relativeref{Corrade,Containers::NullOpt}, otherwise it's
+         * guaranteed to return at least @cpp 1 @ce. Calling this function
+         * doesn't affect the currently opened font in any way.
+         *
+         * Note that if a particular font plugin implementation doesn't support
+         * font index selection, the function may return @cpp 1 @ce without
+         * even checking for @p data being valid. In other words, if this
+         * function succeeds, it doesn't imply that @ref openData() will
+         * succeed as well. This function exists mainly for font introspection
+         * purposes.
+         * @see @ref fileFontCount()
+         */
+        Containers::Optional<UnsignedInt> dataFontCount(Containers::ArrayView<const void> data);
+
+        /**
+         * @brief Count of fonts in given file
+         * @param filename      Font file
+         * @m_since_latest
+         *
+         * Tries to open given font file and returns count of fonts inside. A
+         * font index from this range can be passed to @ref openFile() to
+         * select a particular font for example inside a TrueType Collection
+         * (`*.ttc`) file. On failure prints a message to
+         * @relativeref{Magnum,Error} and returns
+         * @relativeref{Corrade,Containers::NullOpt}, otherwise it's guaranteed
+         * to return at least @cpp 1 @ce. Calling this function doesn't affect
+         * the currently opened font in any way. If file loading callbacks are
+         * set via @ref setFileCallback() and @ref FontFeature::OpenData is
+         * supported, this function uses the callback to load the file and
+         * passes the memory view to @ref dataFontCount() instead. See
+         * @ref setFileCallback() for more information.
+         *
+         * Note that if a particular font plugin implementation doesn't support
+         * font index selection, the function may return @cpp 1 @ce without
+         * even checking for @p filename being valid. In other words, if this
+         * function succeeds, it doesn't imply that @ref openFile() will
+         * succeed as well. This function exists mainly for font introspection
+         * purposes.
+         */
+        Containers::Optional<UnsignedInt> fileFontCount(Containers::StringView filename);
+
         /** @brief Whether any file is opened */
         bool isOpened() const { return doIsOpened(); }
 
@@ -400,19 +455,29 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Open raw data
          * @param data          Font data
          * @param size          Size to open the font in, in points
+         * @param fontId        Font index
          *
          * Closes previous file, if it was opened, and tries to open given
          * raw data. Available only if @ref FontFeature::OpenData is supported.
          * On failure prints a message to @relativeref{Magnum,Error} and
          * returns @cpp false @ce.
+         *
+         * The function will fail if @p fontId is larger than the count of
+         * fonts in given file. The total font count can be queried using
+         * @ref dataFontCount(), but as font rasterization libraries commonly
+         * require picking a concrete font index in order to open a file at
+         * all and don't allow changing it afterwards, it's faster to directly
+         * attempt to open a concrete index without checking it against
+         * @ref dataFontCount() first, and handle a potential failure.
          * @see @ref features(), @ref openFile()
          */
-        bool openData(Containers::ArrayView<const void> data, Float size);
+        bool openData(Containers::ArrayView<const void> data, Float size, UnsignedInt fontId = 0);
 
         /**
          * @brief Open a file
          * @param filename      Font file
          * @param size          Size to open the font in, in points
+         * @param fontId        Font index
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. On failure prints a message to @relativeref{Magnum,Error} and
@@ -421,8 +486,16 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * this function uses the callback to load the file and passes the
          * memory view to @ref openData() instead. See @ref setFileCallback()
          * for more information.
+         *
+         * The function will fail if @p fontId is larger than the count of
+         * fonts in given file. The total font count can be queried using
+         * @ref fileFontCount(), but as font rasterization libraries commonly
+         * require picking a concrete font index in order to open a file at
+         * all and don't allow changing it afterwards, it's faster to directly
+         * attempt to open a concrete index without checking it against
+         * @ref dataFontCount() first, and handle a potential failure.
          */
-        bool openFile(Containers::StringView filename, Float size);
+        bool openFile(Containers::StringView filename, Float size, UnsignedInt fontId = 0);
 
         /**
          * @brief Close currently opened file
@@ -695,7 +768,24 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
     protected:
         /**
+         * @brief Implementation for @ref fileFontCount()
+         * @m_since_latest
+         *
+         * If @ref FontFeature::OpenData is supported, default implementation
+         * opens the file and calls @ref doDataFontCount() with its contents,
+         * propagating its return value. It is allowed to call this function
+         * from your @ref doFileFontCount() implementation --- in particular,
+         * this implementation will also correctly handle callbacks set through
+         * @ref setFileCallback().
+         *
+         * The implementation is expected to return either
+         * @relativeref{Corrade,Containers::NullOpt} or a non-zero value.
+         */
+        virtual Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView filename);
+
+        /**
          * @brief Implementation for @ref openFile()
+         * @m_since_latest
          *
          * If @ref doIsOpened() returns @cpp true @ce after calling this
          * function, it's assumed that opening was successful and the
@@ -713,7 +803,23 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * supported --- instead, file is loaded though the callback and data
          * passed through to @ref doOpenData().
          */
+        virtual Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Implementation for @ref openFile()
+         * @m_deprecated_since_latest Implement @ref doOpenFile(Containers::StringView, Float, UnsignedInt)
+         *      instead.
+         */
+        /* MSVC warns when overriding such methods and there's no way to
+           suppress that warning, making the RT build (which treats deprecation
+           warnings as errors) fail and other builds extremely noisy. So
+           disabling those on MSVC. */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doOpenFile(Containers::StringView, Float, UnsignedInt) instead")
+        #endif
         virtual Properties doOpenFile(Containers::StringView filename, Float size);
+        #endif
 
     private:
         /** @brief Implementation for @ref features() */
@@ -734,7 +840,18 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         virtual bool doIsOpened() const = 0;
 
         /**
+         * @brief Implementation for @ref dataFontCount()
+         * @m_since_latest
+         *
+         * Default implementation returns @cpp 1 @ce. The implementation is
+         * expected to return either @relativeref{Corrade,Containers::NullOpt}
+         * or a non-zero value.
+         */
+        virtual Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char> data);
+
+        /**
          * @brief Implementation for @ref openData()
+         * @m_since_latest
          *
          * If @ref doIsOpened() returns @cpp true @ce after calling this
          * function, it's assumed that opening was successful and the
@@ -742,7 +859,23 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @ref doIsOpened() returns @cpp false @ce, the returned values are
          * ignored.
          */
+        virtual Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Implementation for @ref openData()
+         * @m_deprecated_since_latest Implement @ref doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt)
+         *      instead.
+         */
+        /* MSVC warns when overriding such methods and there's no way to
+           suppress that warning, making the RT build (which treats deprecation
+           warnings as errors) fail and other builds extremely noisy. So
+           disabling those on MSVC. */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) instead")
+        #endif
         virtual Properties doOpenData(Containers::ArrayView<const char> data, Float size);
+        #endif
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
@@ -917,7 +1050,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Text.AbstractFont/0.3.7"
+"cz.mosra.magnum.Text.AbstractFont/0.4.0"
 /* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

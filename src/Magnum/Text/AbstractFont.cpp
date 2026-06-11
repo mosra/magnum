@@ -4,6 +4,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022, 2023, 2024, 2025, 2026
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2026 Andrew Snyder <asnyder@minitab.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -135,7 +136,24 @@ void AbstractFont::setFileCallback(Containers::Optional<Containers::ArrayView<co
 
 void AbstractFont::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
 
-bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float size) {
+Containers::Optional<UnsignedInt> AbstractFont::dataFontCount(const Containers::ArrayView<const void> data) {
+    CORRADE_ASSERT(features() & FontFeature::OpenData,
+        "Text::AbstractFont::dataFontCount(): feature not supported", {});
+    /* Similarly to openData() we accept empty data here (instead of checking
+       for them and failing so the check doesn't be done on the plugin side)
+       because for some file formats it could be valid (MagnumFont in
+       particular). */
+    const Containers::Optional<UnsignedInt> count = doDataFontCount(Containers::arrayCast<const char>(data));
+    CORRADE_ASSERT(count != 0,
+        "Text::AbstractFont::dataFontCount(): implementation returned zero", {});
+    return count;
+}
+
+Containers::Optional<UnsignedInt> AbstractFont::doDataFontCount(Containers::ArrayView<const char>) {
+    return 1;
+}
+
+bool AbstractFont::openData(const Containers::ArrayView<const void> data, const Float size, const UnsignedInt fontId) {
     CORRADE_ASSERT(features() & FontFeature::OpenData,
         "Text::AbstractFont::openData(): feature not supported", false);
 
@@ -143,7 +161,7 @@ bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float 
        the check doesn't be done on the plugin side) because for some file
        formats it could be valid (MagnumFont in particular). */
     close();
-    const Properties properties = doOpenData(Containers::arrayCast<const char>(data), size);
+    const Properties properties = doOpenData(Containers::arrayCast<const char>(data), size, fontId);
 
     /* If opening succeeded, save the returned values. If not, the values were
        set to their default values by close() already. */
@@ -159,18 +177,134 @@ bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float 
     return false;
 }
 
+auto AbstractFont::doOpenData(const Containers::ArrayView<const char> data, const Float size, const UnsignedInt fontId) -> Properties {
+    #ifndef MAGNUM_BUILD_DEPRECATED
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", {});
+    static_cast<void>(data);
+    static_cast<void>(size);
+    static_cast<void>(fontId);
+    #else
+    /* If this function is not implemented, fall back to the deprecated
+       overload that doesn't take a font ID if the requested ID is 0, and fail
+       otherwise. */
+    if(fontId != 0) {
+        Error() << "Text::AbstractFont::openData(): cannot open font at index" << fontId;
+        return {};
+    }
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    return doOpenData(data, size);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Properties {
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", {});
 }
+#endif
 
-bool AbstractFont::openFile(const Containers::StringView filename, const Float size) {
+Containers::Optional<UnsignedInt> AbstractFont::fileFontCount(const Containers::StringView filename) {
+    /* The logic here is mirroring what's in openFile(), just with delegating
+       to different APIs. Comments are kept whole, just referring to different
+       functions, as it's easier to reason about that way. */
+
+    Containers::Optional<UnsignedInt> count;
+
+    /* If file loading callbacks are not set or the font implementation
+       supports handling them directly, call into the implementation */
+    if(!_fileCallback || (doFeatures() & FontFeature::FileCallback)) {
+        count = doFileFontCount(filename);
+
+    /* Otherwise, if loading from data is supported, use the callback and pass
+       the data through to dataFontCount(). Mark the file as ready to be closed
+       once opening is finished. */
+    } else if(doFeatures() & FontFeature::OpenData) {
+        /* This needs to be duplicated here and in the doFileFontCount()
+           implementation in order to support both following cases:
+            - plugins that don't support FileCallback but have their own
+              doFileFontCount() implementation (callback needs to be used here,
+              because the base doFileFontCount() implementation might never get
+              called)
+            - plugins that support FileCallback but want to delegate the actual
+              file loading to the default implementation (callback used in the
+              base doFileFontCount() implementation, because this branch is
+              never taken in that case) */
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        if(!data) {
+            Error() << "Text::AbstractFont::fileFontCount(): cannot open file" << filename;
+            return {};
+        }
+
+        count = doDataFontCount(*data);
+        _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
+
+    /* Shouldn't get here, the assert is fired already in setFileCallback() */
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+
+    CORRADE_ASSERT(count != 0,
+        "Text::AbstractFont::fileFontCount(): implementation returned zero", {});
+    return count;
+}
+
+Containers::Optional<UnsignedInt> AbstractFont::doFileFontCount(const Containers::StringView filename) {
+    /* The logic here is mirroring what's in doOpenFile(), just with delegating
+       to different APIs and having a non-asserting default implementation.
+       Comments are kept whole, just referring to different functions, as it's
+       easier to reason about that way. */
+
+    if(!(features() & FontFeature::OpenData))
+        return 1;
+
+    Containers::Optional<UnsignedInt> count;
+
+    /* If callbacks are set, use them. This is the same implementation as in
+       openFile(), see the comment there for details. */
+    if(_fileCallback) {
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        if(!data) {
+            Error() << "Text::AbstractFont::fileFontCount(): cannot open file" << filename;
+            return {};
+        }
+
+        count = doDataFontCount(*data);
+        _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
+
+    /* Otherwise open the file directly */
+    } else {
+        const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
+        if(!data) {
+            Error() << "Text::AbstractFont::fileFontCount(): cannot open file" << filename;
+            return {};
+        }
+
+        count = doDataFontCount(*data);
+    }
+
+    return count;
+}
+
+bool AbstractFont::openFile(const Containers::StringView filename, const Float size, const UnsignedInt fontId) {
     close();
     Properties properties;
 
     /* If file loading callbacks are not set or the font implementation
        supports handling them directly, call into the implementation */
     if(!_fileCallback || (doFeatures() & FontFeature::FileCallback)) {
-        properties = doOpenFile(filename, size);
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /* Call the deprecated doOpenFile() if fontId is 0, to make plugins
+           that didn't get adapted to the new APIs still work. If a plugin
+           doesn't implement the deprecated doOpenFile(), it delegates back to
+           the new doOpenFile() implementation. */
+        if(fontId == 0) {
+            CORRADE_IGNORE_DEPRECATED_PUSH
+            properties = doOpenFile(filename, size);
+            CORRADE_IGNORE_DEPRECATED_POP
+        } else
+        #endif
+        {
+            properties = doOpenFile(filename, size, fontId);
+        }
 
     /* Otherwise, if loading from data is supported, use the callback and pass
        the data through to openData(). Mark the file as ready to be closed once
@@ -192,7 +326,7 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
             return isOpened();
         }
 
-        properties = doOpenData(*data, size);
+        properties = doOpenData(*data, size, fontId);
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Shouldn't get here, the assert is fired already in setFileCallback() */
@@ -212,7 +346,20 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
     return false;
 }
 
-auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float size) -> Properties {
+auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float size, const UnsignedInt fontId) -> Properties {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* If this function is not implemented and opening data isn't supported
+       either, assume the plugin implements only the deprecated doOpenFile()
+       and fail gracefully for a non-zero font ID instead of asserting below.
+       The reasoning is that plugin implementations should *never* assert for a
+       font ID out of bounds, no matter whether they were updated to the new
+       API or not. */
+    if(!(features() & FontFeature::OpenData) && fontId != 0) {
+        Error() << "Text::AbstractFont::openFile(): cannot open font at index" << fontId;
+        return {};
+    }
+    #endif
+
     CORRADE_ASSERT(features() & FontFeature::OpenData, "Text::AbstractFont::openFile(): not implemented", {});
 
     Properties properties;
@@ -226,7 +373,7 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
             return {};
         }
 
-        properties = doOpenData(*data, size);
+        properties = doOpenData(*data, size, fontId);
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Otherwise open the file directly */
@@ -237,11 +384,25 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
             return {};
         }
 
-        properties = doOpenData(*data, size);
+        properties = doOpenData(*data, size, fontId);
     }
 
     return properties;
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float size) -> Properties {
+    /* This function gets called from openFile() if fontId is 0, to call a
+       potential implementation in old plugins that didn't get adapted to the
+       new APIs yet. If a plugin doesn't implement doOpenFile() at all, this
+       function delegates to the default implementation that then delegates to
+       doOpenData() (which then again delegates to deprecated doOpenData(). If
+       a plugin implements the new doOpenFile(), that implementation gets
+       called from here for fontId 0, and from openFile() for all other font
+       IDs. */
+    return doOpenFile(filename, size, 0);
+}
+#endif
 
 void AbstractFont::close() {
     if(!isOpened())

@@ -4,6 +4,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022, 2023, 2024, 2025, 2026
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2026 Andrew Snyder <asnyder@minitab.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -62,13 +63,48 @@ struct AbstractFontTest: TestSuite::Tester {
 
     void construct();
 
+    void dataFontCount();
+    void dataFontCountFailed();
+    void dataFontCountNotImplemented();
+    void fileFontCount();
+    void fileFontCountFailed();
+    void fileFontCountNotImplemented();
+    void fileFontCountAsData();
+    void fileFontCountAsDataNotFound();
+    void fileFontCountAsDataFailed();
+    void fileFontCountAsDataNotImplemented();
+
+    void fontCountInvalid();
+    void dataFontCountNotSupported();
+
     void openData();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void openDataDeprecated();
+    void openDataDeprecatedNonZeroFontId();
+    #endif
     void openDataFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void openDataFailedDeprecated();
+    #endif
     void openFile();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void openFileDeprecated();
+    void openFileDeprecatedNonZeroFontId();
+    #endif
     void openFileFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void openFileFailedDeprecated();
+    #endif
     void openFileAsData();
     void openFileAsDataNotFound();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void openFileAsDataDeprecated();
+    void openFileAsDataDeprecatedNonZeroFontId();
+    #endif
     void openFileAsDataFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void openFileAsDataFailedDeprecated();
+    #endif
 
     void openFileNotImplemented();
     void openDataNotSupported();
@@ -82,13 +118,35 @@ struct AbstractFontTest: TestSuite::Tester {
     void setFileCallbackNotImplemented();
     void setFileCallbackNotSupported();
     void setFileCallbackOpenFileDirectly();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setFileCallbackOpenFileDirectlyDeprecated();
+    void setFileCallbackOpenFileDirectlyDeprecatedNonZeroFontId();
+    #endif
     void setFileCallbackOpenFileDirectlyFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setFileCallbackOpenFileDirectlyFailedDeprecated();
+    #endif
     void setFileCallbackOpenFileThroughBaseImplementation();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setFileCallbackOpenFileThroughBaseImplementationDeprecated();
+    /* No non-zero font ID variant here, as the deprecated doOpenFile() that'd
+       delegate to the base implementation doesn't get called at all */
+    #endif
     void setFileCallbackOpenFileThroughBaseImplementationNotFound();
     void setFileCallbackOpenFileThroughBaseImplementationFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setFileCallbackOpenFileThroughBaseImplementationFailedDeprecated();
+    #endif
     void setFileCallbackOpenFileAsData();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setFileCallbackOpenFileAsDataDeprecated();
+    void setFileCallbackOpenFileAsDataDeprecatedNonZeroFontId();
+    #endif
     void setFileCallbackOpenFileAsDataNotFound();
     void setFileCallbackOpenFileAsDataFailed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setFileCallbackOpenFileAsDataFailedDeprecated();
+    #endif
 
     void properties();
     void propertiesNoFont();
@@ -135,43 +193,158 @@ struct AbstractFontTest: TestSuite::Tester {
     #endif
 };
 
+/** @todo remove this once the deprecated APIs are gone */
+const struct {
+    const char* name;
+    UnsignedInt fontId;
+} OpenData[]{
+    {"", 0},
+    {"non-zero font ID", 1}
+};
+
+const struct {
+    const char* name;
+    bool fileOpened;
+} FontCountData[]{
+    {"", false},
+    {"with a font opened", true}
+};
+
 AbstractFontTest::AbstractFontTest() {
     addTests({&AbstractFontTest::debugFeature,
               &AbstractFontTest::debugFeaturePacked,
               &AbstractFontTest::debugFeatures,
               &AbstractFontTest::debugFeaturesPacked,
 
-              &AbstractFontTest::construct,
+              &AbstractFontTest::construct});
 
-              &AbstractFontTest::openData,
-              &AbstractFontTest::openDataFailed,
-              &AbstractFontTest::openFile,
-              &AbstractFontTest::openFileFailed,
-              &AbstractFontTest::openFileAsData,
-              &AbstractFontTest::openFileAsDataNotFound,
-              &AbstractFontTest::openFileAsDataFailed,
+    addInstancedTests({&AbstractFontTest::dataFontCount,
+                       &AbstractFontTest::dataFontCountFailed},
+        Containers::arraySize(FontCountData));
 
-              &AbstractFontTest::openFileNotImplemented,
-              &AbstractFontTest::openDataNotSupported,
-              &AbstractFontTest::openDataNotImplemented,
+    addTests({&AbstractFontTest::dataFontCountNotImplemented});
 
-              &AbstractFontTest::setFileCallback,
+    addInstancedTests({&AbstractFontTest::fileFontCount,
+                       &AbstractFontTest::fileFontCountFailed},
+        Containers::arraySize(FontCountData));
+
+    addTests({&AbstractFontTest::fileFontCountNotImplemented});
+
+    addInstancedTests({&AbstractFontTest::fileFontCountAsData,
+                       &AbstractFontTest::fileFontCountAsDataNotFound,
+                       &AbstractFontTest::fileFontCountAsDataFailed},
+        Containers::arraySize(FontCountData));
+
+    addTests({&AbstractFontTest::fileFontCountAsDataNotImplemented,
+              &AbstractFontTest::fontCountInvalid,
+              &AbstractFontTest::dataFontCountNotSupported});
+
+    addInstancedTests({&AbstractFontTest::openData},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::openDataDeprecated,
+              &AbstractFontTest::openDataDeprecatedNonZeroFontId});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::openDataFailed},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::openDataFailedDeprecated});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::openFile},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::openFileDeprecated,
+              &AbstractFontTest::openFileDeprecatedNonZeroFontId});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::openFileFailed},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::openFileFailedDeprecated});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::openFileAsData,
+                       &AbstractFontTest::openFileAsDataNotFound},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::openFileAsDataDeprecated,
+              &AbstractFontTest::openFileAsDataDeprecatedNonZeroFontId});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::openFileAsDataFailed},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::openFileAsDataFailedDeprecated});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::openFileNotImplemented,
+                       &AbstractFontTest::openDataNotSupported,
+                       &AbstractFontTest::openDataNotImplemented},
+        Containers::arraySize(OpenData));
+
+    addTests({&AbstractFontTest::setFileCallback,
               &AbstractFontTest::setFileCallbackTemplate,
               &AbstractFontTest::setFileCallbackTemplateNull,
               &AbstractFontTest::setFileCallbackTemplateConst,
               &AbstractFontTest::setFileCallbackFileOpened,
               &AbstractFontTest::setFileCallbackNotImplemented,
-              &AbstractFontTest::setFileCallbackNotSupported,
-              &AbstractFontTest::setFileCallbackOpenFileDirectly,
-              &AbstractFontTest::setFileCallbackOpenFileDirectlyFailed,
-              &AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation,
-              &AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationNotFound,
-              &AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed,
-              &AbstractFontTest::setFileCallbackOpenFileAsData,
-              &AbstractFontTest::setFileCallbackOpenFileAsDataNotFound,
-              &AbstractFontTest::setFileCallbackOpenFileAsDataFailed,
+              &AbstractFontTest::setFileCallbackNotSupported});
 
-              &AbstractFontTest::properties,
+    addInstancedTests({&AbstractFontTest::setFileCallbackOpenFileDirectly},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::setFileCallbackOpenFileDirectlyDeprecated,
+              &AbstractFontTest::setFileCallbackOpenFileDirectlyDeprecatedNonZeroFontId});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::setFileCallbackOpenFileDirectlyFailed},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::setFileCallbackOpenFileDirectlyFailedDeprecated});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationDeprecated});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationNotFound,
+                       &AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailedDeprecated});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::setFileCallbackOpenFileAsData},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::setFileCallbackOpenFileAsDataDeprecated,
+              &AbstractFontTest::setFileCallbackOpenFileAsDataDeprecatedNonZeroFontId});
+    #endif
+
+    addInstancedTests({&AbstractFontTest::setFileCallbackOpenFileAsDataNotFound,
+                       &AbstractFontTest::setFileCallbackOpenFileAsDataFailed},
+        Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AbstractFontTest::setFileCallbackOpenFileAsDataFailedDeprecated});
+    #endif
+
+    addTests({&AbstractFontTest::properties,
               &AbstractFontTest::propertiesNoFont,
 
               &AbstractFontTest::glyphId,
@@ -269,7 +442,492 @@ void AbstractFontTest::construct() {
     CORRADE_VERIFY(!font.isOpened());
 }
 
+void AbstractFontTest::dataFontCount() {
+    auto&& data = FontCountData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_FAIL("This should not get called.");
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char> data) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xac'}),
+                TestSuite::Compare::Container);
+            return 37;
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            _opened = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Verify that the API doesn't affect the currently opened font in any way
+       -- it stays open if it was, and stays closed if wasn't */
+    if(data.fileOpened)
+        CORRADE_VERIFY(font.openData(nullptr, 1.0f));
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+
+    const char fontData[]{'\xac'};
+    CORRADE_COMPARE(font.dataFontCount(fontData), 37);
+
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+}
+
+void AbstractFontTest::dataFontCountFailed() {
+    auto&& data = FontCountData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_FAIL("This should not get called.");
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            called = true;
+            return {};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            _opened = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool called = false;
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Verify that the API doesn't affect the currently opened font in any way
+       -- it stays open if it was, and stays closed if wasn't */
+    if(data.fileOpened)
+        CORRADE_VERIFY(font.openData(nullptr, 1.0f));
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+
+    /* The implementation is expected to print an error message on its own */
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!font.dataFontCount(nullptr));
+        CORRADE_VERIFY(font.called);
+        CORRADE_COMPARE(out, "");
+    }
+
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+}
+
+void AbstractFontTest::dataFontCountNotImplemented() {
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    /* Should call the default doDataFontCount() which returns 1 */
+    CORRADE_COMPARE(font.dataFontCount(nullptr), 1);
+}
+
+void AbstractFontTest::fileFontCount() {
+    auto&& data = FontCountData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_FAIL("This should not get called.");
+        }
+
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView filename) override {
+            CORRADE_COMPARE(filename, "thingy.ttc");
+            return 37;
+        }
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            _opened = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Verify that the API doesn't affect the currently opened font in any way
+       -- it stays open if it was, and stays closed if wasn't */
+    if(data.fileOpened)
+        CORRADE_VERIFY(font.openFile(nullptr, 1.0f));
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+
+    CORRADE_COMPARE(font.fileFontCount("thingy.ttc"), 37);
+
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+}
+
+void AbstractFontTest::fileFontCountFailed() {
+    auto&& data = FontCountData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_FAIL("This should not get called.");
+        }
+
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView) override {
+            called = true;
+            return {};
+        }
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            _opened = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool called = true;
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Verify that the API doesn't affect the currently opened font in any way
+       -- it stays open if it was, and stays closed if wasn't */
+    if(data.fileOpened)
+        CORRADE_VERIFY(font.openFile(nullptr, 1.0f));
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+
+    /* The implementation is expected to print an error message on its own */
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!font.fileFontCount(""));
+        CORRADE_VERIFY(font.called);
+        CORRADE_COMPARE(out, "");
+    }
+
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+}
+
+void AbstractFontTest::fileFontCountNotImplemented() {
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    /* Should call the default doFileFontCount() which returns 1 if OpenData
+       is not supported */
+    CORRADE_COMPARE(font.fileFontCount(nullptr), 1);
+}
+
+void AbstractFontTest::fileFontCountAsData() {
+    auto&& data = FontCountData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_FAIL("This should not get called.");
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char> data) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xa5'}),
+                TestSuite::Compare::Container);
+            return 37;
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            _opened = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Verify that the API doesn't affect the currently opened font in any way
+       -- it stays open if it was, and stays closed if wasn't */
+    if(data.fileOpened)
+        CORRADE_VERIFY(font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 1.0f));
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+
+    CORRADE_COMPARE(font.fileFontCount(Utility::Path::join(TEXT_TEST_DIR, "data.bin")), 37);
+
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+}
+
+void AbstractFontTest::fileFontCountAsDataNotFound() {
+    auto&& data = FontCountData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_FAIL("This should not get called.");
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            CORRADE_FAIL("This should not get called.");
+            return {};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            _opened = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Verify that the API doesn't affect the currently opened font in any way
+       -- it stays open if it was, and stays closed if wasn't */
+    if(data.fileOpened)
+        CORRADE_VERIFY(font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 1.0f));
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!font.fileFontCount("nonexistent.foo"));
+        /* There's an error message from Path::read() before */
+        CORRADE_COMPARE_AS(out,
+            "\nText::AbstractFont::fileFontCount(): cannot open file nonexistent.foo\n",
+            TestSuite::Compare::StringHasSuffix);
+    }
+
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+}
+
+void AbstractFontTest::fileFontCountAsDataFailed() {
+    auto&& data = FontCountData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_FAIL("This should not get called.");
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            called = true;
+            return {};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            _opened = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool called = false;
+
+        private:
+            bool _opened = false;
+    } font;
+
+    /* Verify that the API doesn't affect the currently opened font in any way
+       -- it stays open if it was, and stays closed if wasn't */
+    if(data.fileOpened)
+        CORRADE_VERIFY(font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 1.0f));
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+
+    /* The implementation is expected to print an error message on its own */
+    {
+        Containers::String out;
+        Error redirectError{&out};
+        CORRADE_VERIFY(!font.fileFontCount(Utility::Path::join(TEXT_TEST_DIR, "data.bin")));
+        CORRADE_VERIFY(font.called);
+        CORRADE_COMPARE(out, "");
+    }
+
+    CORRADE_COMPARE(font.isOpened(), data.fileOpened);
+}
+
+void AbstractFontTest::fileFontCountAsDataNotImplemented() {
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    /* Should call the default doFileFontCount() which then delegates to
+       the default doDataFontCount() which then returns 1 */
+    CORRADE_COMPARE(font.dataFontCount(nullptr), 1);
+}
+
+void AbstractFontTest::fontCountInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView) override {
+            return 0;
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            return 0;
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    Containers::String out;
+    Error redirectError{&out};
+    font.fileFontCount(nullptr);
+    font.dataFontCount(nullptr);
+    CORRADE_COMPARE_AS(out,
+        "Text::AbstractFont::fileFontCount(): implementation returned zero\n"
+        "Text::AbstractFont::dataFontCount(): implementation returned zero\n",
+        TestSuite::Compare::String);
+}
+
+void AbstractFontTest::dataFontCountNotSupported() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractFont {
+        /* Supports neither file nor data opening */
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    Containers::String out;
+    Error redirectError{&out};
+    font.dataFontCount(nullptr);
+    CORRADE_COMPARE(out, "Text::AbstractFont::dataFontCount(): feature not supported\n");
+}
+
 void AbstractFontTest::openData() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_VERIFY(_opened);
+            _opened = false;
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xa5'}),
+                TestSuite::Compare::Container);
+            CORRADE_COMPARE(fontId, expectedFontId);
+            _opened = true;
+            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        UnsignedInt expectedFontId;
+
+        private:
+            bool _opened = false;
+    } font;
+    font.expectedFontId = data.fontId;
+
+    CORRADE_VERIFY(!font.isOpened());
+    const char a5[]{'\xa5'};
+    /* Verify that even with font ID 0 it delegates to the non-deprecated
+       doOpenData() overload */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(font.openData(a5, 13.0f, data.fontId));
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
+
+    font.close();
+    CORRADE_VERIFY(!font.isOpened());
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::openDataDeprecated() {
+    /* Like openData(), but implementing the deprecated doOpenData() and
+       verifying that it's correctly delegated to */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
@@ -297,6 +955,8 @@ void AbstractFontTest::openData() {
 
     CORRADE_VERIFY(!font.isOpened());
     const char a5[]{'\xa5'};
+    /* Should delegate to the deprecated doOpenData(), and fail with font ID
+       being non-zero, which is tested below */
     CORRADE_VERIFY(font.openData(a5, 13.0f));
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
@@ -309,7 +969,77 @@ void AbstractFontTest::openData() {
     CORRADE_VERIFY(!font.isOpened());
 }
 
+void AbstractFontTest::openDataDeprecatedNonZeroFontId() {
+    /* When openData() gets a non-zero font ID, it should not delegate to the
+       deprecated overload but fail directly */
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    CORRADE_VERIFY(!font.isOpened());
+    const char a5[]{'\xa5'};
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font.openData(a5, 13.0f, 1));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_COMPARE(out, "Text::AbstractFont::openData(): cannot open font at index 1\n");
+}
+#endif
+
 void AbstractFontTest::openDataFailed() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            called = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool called = false;
+    } font;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openData(nullptr, 1.0f, data.fontId));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_VERIFY(font.called);
+    CORRADE_COMPARE(out, "");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::openDataFailedDeprecated() {
+    /* Like openDataFailed(), but implementing the deprecated doOpenData() and
+       verifying that it's correctly delegated to */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
@@ -336,8 +1066,61 @@ void AbstractFontTest::openDataFailed() {
     CORRADE_VERIFY(font.called);
     CORRADE_COMPARE(out, "");
 }
+#endif
 
 void AbstractFontTest::openFile() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {
+            CORRADE_VERIFY(_opened);
+            _opened = false;
+        }
+
+        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+            CORRADE_COMPARE(filename, "hello.ttf");
+            CORRADE_COMPARE(fontId, expectedFontId);
+            _opened = true;
+            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        UnsignedInt expectedFontId;
+
+        private:
+            bool _opened = false;
+    } font;
+    font.expectedFontId = data.fontId;
+
+    CORRADE_VERIFY(!font.isOpened());
+    /* Verify that even with font ID 0 it delegates to the non-deprecated
+       doOpenFile() overload */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(font.openFile("hello.ttf", 13.0f, data.fontId));
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
+
+    font.close();
+    CORRADE_VERIFY(!font.isOpened());
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::openFileDeprecated() {
+    /* Like openFile(), but implementing the deprecated doOpenFile() and
+       verifying that it's correctly delegated to */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return _opened; }
@@ -362,6 +1145,8 @@ void AbstractFontTest::openFile() {
     } font;
 
     CORRADE_VERIFY(!font.isOpened());
+    /* Should delegate to the deprecated doOpenFile(), and fail with font ID
+       being non-zero, which is tested below */
     CORRADE_VERIFY(font.openFile("hello.ttf", 13.0f));
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
@@ -374,9 +1159,78 @@ void AbstractFontTest::openFile() {
     CORRADE_VERIFY(!font.isOpened());
 }
 
+void AbstractFontTest::openFileDeprecatedNonZeroFontId() {
+    /* When openFile() gets a non-zero font ID, it should not delegate to the
+       deprecated overload but fail directly */
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Properties doOpenFile(Containers::StringView, Float) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    CORRADE_VERIFY(!font.isOpened());
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font.openFile("hello.ttf", 13.0f, 1));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): cannot open font at index 1\n");
+}
+#endif
+
 void AbstractFontTest::openFileFailed() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            called = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool called = false;
+    } font;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openFile("hello.ttf", 1.0f, data.fontId));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_VERIFY(font.called);
+    CORRADE_COMPARE(out, "");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::openFileFailedDeprecated() {
+    /* Like openFileFailed(), but implementing the deprecated doOpenFile() and
+       verifying that it's correctly delegated to */
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -401,8 +1255,92 @@ void AbstractFontTest::openFileFailed() {
     CORRADE_VERIFY(font.called);
     CORRADE_COMPARE(out, "");
 }
+#endif
 
 void AbstractFontTest::openFileAsData() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xa5'}),
+                TestSuite::Compare::Container);
+            CORRADE_COMPARE(fontId, expectedFontId);
+            _opened = true;
+            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        UnsignedInt expectedFontId;
+
+        private:
+            bool _opened = false;
+    } font;
+    font.expectedFontId = data.fontId;
+
+    /* doOpenFile() should call doOpenData() */
+    CORRADE_VERIFY(!font.isOpened());
+    /* Verify that even with font ID 0 it delegates to the non-deprecated
+       doOpenData() overload */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 13.0f, data.fontId));
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
+}
+
+void AbstractFontTest::openFileAsDataNotFound() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    Containers::String out;
+    Error redirectError{&out};
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openFile("nonexistent.foo", 12.0f, data.fontId));
+    CORRADE_VERIFY(!font.isOpened());
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out,
+        "\nText::AbstractFont::openFile(): cannot open file nonexistent.foo\n",
+        TestSuite::Compare::StringHasSuffix);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::openFileAsDataDeprecated() {
+    /* Like openFileAsData(), but implementing the deprecated doOpenData() and
+       verifying that it's correctly delegated to */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
@@ -428,8 +1366,9 @@ void AbstractFontTest::openFileAsData() {
             bool _opened = false;
     } font;
 
-    /* doOpenFile() should call doOpenData() */
     CORRADE_VERIFY(!font.isOpened());
+    /* Should delegate to the deprecated doOpenData(), and fail with font ID
+       being non-zero, which is tested below */
     CORRADE_VERIFY(font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 13.0f));
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
@@ -442,7 +1381,11 @@ void AbstractFontTest::openFileAsData() {
     CORRADE_VERIFY(!font.isOpened());
 }
 
-void AbstractFontTest::openFileAsDataNotFound() {
+void AbstractFontTest::openFileAsDataDeprecatedNonZeroFontId() {
+    /* When openFile() gets a non-zero font ID, it should not delegate to the
+       deprecated overload but fail directly (after actually opening the file
+       and delegating to data) */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
@@ -461,15 +1404,52 @@ void AbstractFontTest::openFileAsDataNotFound() {
 
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!font.openFile("nonexistent.foo", 12.0f));
+    CORRADE_VERIFY(!font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 13.0f, 1));
     CORRADE_VERIFY(!font.isOpened());
-    /* There's an error message from Path::read() before */
-    CORRADE_COMPARE_AS(out,
-        "\nText::AbstractFont::openFile(): cannot open file nonexistent.foo\n",
-        TestSuite::Compare::StringHasSuffix);
+    CORRADE_COMPARE(out, "Text::AbstractFont::openData(): cannot open font at index 1\n");
 }
+#endif
 
 void AbstractFontTest::openFileAsDataFailed() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            called = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool called = false;
+    } font;
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openData(nullptr, 1.0f, data.fontId));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_VERIFY(font.called);
+    CORRADE_COMPARE(out, "");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::openFileAsDataFailedDeprecated() {
+    /* Like openFileAsDataFailed(), but implementing the deprecated
+       doOpenData() and verifying that it's correctly delegated to */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
@@ -496,8 +1476,12 @@ void AbstractFontTest::openFileAsDataFailed() {
     CORRADE_VERIFY(font.called);
     CORRADE_COMPARE(out, "");
 }
+#endif
 
 void AbstractFontTest::openFileNotImplemented() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFont {
@@ -514,11 +1498,28 @@ void AbstractFontTest::openFileNotImplemented() {
 
     Containers::String out;
     Error redirectError{&out};
-    font.openFile("file.foo", 34.0f);
-    CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): not implemented\n");
+    /** @todo remove the instanced font ID and use the default argument once
+        the deprecated APIs are gone, as there will be no delegation variants
+        to test */
+    font.openFile("file.foo", 34.0f, data.fontId);
+    {
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_EXPECT_FAIL_IF(data.fontId != 0,
+            "On deprecated builds it's impossible to detect that even the deprecated doOpenFile() overload was not implemented for a non-zero font ID, and a different (non-asserting) message is printed.");
+        #endif
+        CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): not implemented\n");
+    }
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* This is printed for non-zero font IDs on deprecated builds instead */
+    if(data.fontId != 0)
+        CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): cannot open font at index 1\n");
+    #endif
 }
 
 void AbstractFontTest::openDataNotSupported() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFont {
@@ -535,11 +1536,17 @@ void AbstractFontTest::openDataNotSupported() {
 
     Containers::String out;
     Error redirectError{&out};
-    font.openData(nullptr, 34.0f);
+    /** @todo remove the instanced font ID and use the default argument once
+        the deprecated APIs are gone, as there will be no delegation variants
+        to test */
+    font.openData(nullptr, 34.0f, data.fontId);
     CORRADE_COMPARE(out, "Text::AbstractFont::openData(): feature not supported\n");
 }
 
 void AbstractFontTest::openDataNotImplemented() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFont {
@@ -555,8 +1562,22 @@ void AbstractFontTest::openDataNotImplemented() {
 
     Containers::String out;
     Error redirectError{&out};
-    font.openData(nullptr, 34.0f);
-    CORRADE_COMPARE(out, "Text::AbstractFont::openData(): feature advertised but not implemented\n");
+    /** @todo remove the instanced font ID and use the default argument once
+        the deprecated APIs are gone, as there will be no delegation variants
+        to test */
+    font.openData(nullptr, 34.0f, data.fontId);
+    {
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_EXPECT_FAIL_IF(data.fontId != 0,
+            "On deprecated builds it's impossible to detect that even the deprecated doOpenData() overload was not implemented for a non-zero font ID, and a different (non-asserting) message is printed.");
+        #endif
+        CORRADE_COMPARE(out, "Text::AbstractFont::openData(): feature advertised but not implemented\n");
+    }
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* This is printed for non-zero font IDs on deprecated builds instead */
+    if(data.fontId != 0)
+        CORRADE_COMPARE(out, "Text::AbstractFont::openData(): cannot open font at index 1\n");
+    #endif
 }
 
 void AbstractFontTest::setFileCallback() {
@@ -684,7 +1705,6 @@ void AbstractFontTest::setFileCallbackFileOpened() {
 
     Containers::String out;
     Error redirectError{&out};
-
     font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
@@ -738,6 +1758,83 @@ void AbstractFontTest::setFileCallbackNotSupported() {
 }
 
 void AbstractFontTest::setFileCallbackOpenFileDirectly() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView filename) override {
+            /* Called because FileCallback is supported */
+            CORRADE_COMPARE(filename, "file.dat");
+            CORRADE_VERIFY(fileCallback());
+            CORRADE_VERIFY(fileCallbackUserData());
+            return 37;
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+            /* Called because FileCallback is supported */
+            CORRADE_COMPARE(filename, "file.dat");
+            CORRADE_COMPARE(fontId, expectedFontId);
+            CORRADE_VERIFY(fileCallback());
+            CORRADE_VERIFY(fileCallbackUserData());
+            _opened = true;
+            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        UnsignedInt expectedFontId;
+
+        private:
+            bool _opened = false;
+    } font;
+    font.expectedFontId = data.fontId;
+
+    /* The callback shouldn't be called from the class itself, it's the
+       doOpenFile() implementation responsibility to call it. In this case the
+       implementation only verifies that it's set, along with the user data. */
+    int dummy;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) -> Containers::Optional<Containers::ArrayView<const char>> {
+        CORRADE_FAIL("This should not be called");
+        return {};
+    }, &dummy);
+
+    CORRADE_COMPARE(font.fileFontCount("file.dat"), 37);
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(font.openFile("file.dat", 42.0f, data.fontId));
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 42.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::setFileCallbackOpenFileDirectlyDeprecated() {
+    /* Like setFileCallbackOpenFileDirectly(), but implementing the deprecated
+       doOpenFile() and verifying that it's correctly delegated to. There's no
+       deprecated doFileFontCount() variant so that part is omitted here. */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
@@ -752,6 +1849,10 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
             return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
         Properties doOpenData(Containers::ArrayView<const char>, Float) override {
             CORRADE_FAIL("This should not be called");
             return {};
@@ -784,7 +1885,127 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
     CORRADE_COMPARE(font.glyphCount(), 15);
 }
 
+void AbstractFontTest::setFileCallbackOpenFileDirectlyDeprecatedNonZeroFontId() {
+    /* When openFile() gets a non-zero font ID, it should not delegate to the
+       deprecated overload but fail directly (after actually opening the file
+       through the callback and delegating to data) */
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Properties doOpenFile(Containers::StringView, Float) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    struct State {
+        bool loaded = false;
+        bool closed = false;
+    } state;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.loaded = true;
+            return Containers::ArrayView<const char>{};
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.closed = true;
+            return {};
+        }
+
+        CORRADE_FAIL("Unexpected policy" << policy);
+        return {};
+    }, state);
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font.openFile("file.dat", 42.0f, 1));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_VERIFY(state.loaded);
+    CORRADE_VERIFY(state.closed);
+    CORRADE_COMPARE(out, "Text::AbstractFont::openData(): cannot open font at index 1\n");
+}
+#endif
+
 void AbstractFontTest::setFileCallbackOpenFileDirectlyFailed() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView) override {
+            countCalled = true;
+            return {};
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            openCalled = true;
+            return {};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool countCalled = false;
+        bool openCalled = false;
+    } font;
+
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) -> Containers::Optional<Containers::ArrayView<const char>> {
+        CORRADE_FAIL("This shouldn't be called");
+        return {};
+    });
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font.fileFontCount("file.dat"));
+    CORRADE_VERIFY(font.countCalled);
+    CORRADE_VERIFY(!font.openCalled);
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openFile("file.dat", 42.0f, data.fontId));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_VERIFY(font.countCalled);
+    CORRADE_VERIFY(font.openCalled);
+    CORRADE_COMPARE(out, "");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::setFileCallbackOpenFileDirectlyFailedDeprecated() {
+    /* Like setFileCallbackOpenFileDirectly(), but implementing the deprecated
+       doOpenFile() and verifying that it's correctly delegated to. There's no
+       deprecated doFileFontCount() variant so that part is omitted here. */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
@@ -795,6 +2016,10 @@ void AbstractFontTest::setFileCallbackOpenFileDirectlyFailed() {
             return {};
         }
 
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
         Properties doOpenData(Containers::ArrayView<const char>, Float) override {
             CORRADE_FAIL("This should not be called");
             return {};
@@ -821,8 +2046,116 @@ void AbstractFontTest::setFileCallbackOpenFileDirectlyFailed() {
     CORRADE_VERIFY(font.called);
     CORRADE_COMPARE(out, "");
 }
+#endif
 
 void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView filename) override {
+            CORRADE_COMPARE(filename, "file.dat");
+            CORRADE_VERIFY(fileCallback());
+            CORRADE_VERIFY(fileCallbackUserData());
+            countCalled = true;
+            return AbstractFont::doFileFontCount(filename);
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char> data) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xb0'}),
+                TestSuite::Compare::Container);
+            return 37;
+        }
+
+        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+            CORRADE_COMPARE(filename, "file.dat");
+            CORRADE_COMPARE(fontId, expectedFontId);
+            CORRADE_VERIFY(fileCallback());
+            CORRADE_VERIFY(fileCallbackUserData());
+            openCalled = true;
+            return AbstractFont::doOpenFile(filename, size, fontId);
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xb0'}),
+                TestSuite::Compare::Container);
+            CORRADE_COMPARE(fontId, expectedFontId);
+            _opened = true;
+            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        UnsignedInt expectedFontId;
+        bool countCalled = false;
+        bool openCalled = false;
+
+        private:
+            bool _opened = false;
+    } font;
+    font.expectedFontId = data.fontId;
+
+    struct State {
+        const char data = '\xb0';
+        Int loaded = 0;
+        Int closed = 0;
+    } state;
+    font.setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        CORRADE_COMPARE(Containers::StringView{filename}, "file.dat");
+
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            ++state.loaded;
+            return Containers::arrayView(&state.data, 1);
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            ++state.closed;
+            return {};
+        }
+
+        CORRADE_FAIL("Unexpected policy" << policy);
+        return {};
+    }, state);
+
+    CORRADE_COMPARE(font.fileFontCount("file.dat"), 37);
+    CORRADE_VERIFY(font.countCalled);
+    CORRADE_VERIFY(!font.openCalled);
+    CORRADE_COMPARE(state.loaded, 1);
+    CORRADE_COMPARE(state.closed, 1);
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(font.openFile("file.dat", 42.0f, data.fontId));
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_VERIFY(font.countCalled);
+    CORRADE_VERIFY(font.openCalled);
+    CORRADE_COMPARE(state.loaded, 2);
+    CORRADE_COMPARE(state.closed, 2);
+    CORRADE_COMPARE(font.size(), 42.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationDeprecated() {
+    /* Like setFileCallbackOpenFileThroughBaseImplementation(), but
+       implementing the deprecated doOpenFile() and doOpenData() and verifying
+       that it's correctly delegated to. There's no deprecated
+       doFileFontCount() or doDataFontCount() variant so that part is omitted
+       here. */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
@@ -833,7 +2166,9 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
             CORRADE_VERIFY(fileCallback());
             CORRADE_VERIFY(fileCallbackUserData());
             called = true;
+            CORRADE_IGNORE_DEPRECATED_PUSH
             return AbstractFont::doOpenFile(filename, size);
+            CORRADE_IGNORE_DEPRECATED_POP
         }
 
         Properties doOpenData(Containers::ArrayView<const char> data, Float size) override {
@@ -888,19 +2223,33 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
     CORRADE_COMPARE(font.glyphCount(), 15);
 }
+#endif
 
 void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationNotFound() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Properties doOpenFile(Containers::StringView filename, Float size) override {
-            called = true;
-            return AbstractFont::doOpenFile(filename, size);
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView filename) override {
+            countCalled = true;
+            return AbstractFont::doFileFontCount(filename);
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            CORRADE_FAIL("This should not be called");
+            return 37;
+        }
+
+        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+            openCalled = true;
+            return AbstractFont::doOpenFile(filename, size, fontId);
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
             return {};
         }
@@ -910,28 +2259,132 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationNotFound(
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
-        bool called = false;
+        bool countCalled = false;
+        bool openCalled = false;
     } font;
 
-    bool fileCallbackCalled = false;
-    font.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, bool& fileCallbackCalled) -> Containers::Optional<Containers::ArrayView<const char>> {
+    Int fileCallbackCalled = 0;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, Int& fileCallbackCalled) -> Containers::Optional<Containers::ArrayView<const char>> {
         /* The callback should be only called to open the file, not to close it
            afterwards */
         CORRADE_COMPARE(policy, InputFileCallbackPolicy::LoadTemporary);
-        fileCallbackCalled = true;
+        ++fileCallbackCalled;
         return {};
     }, fileCallbackCalled);
 
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!font.openFile("file.dat", 42.0f));
+    CORRADE_VERIFY(!font.fileFontCount("file.dat"));
+    CORRADE_VERIFY(font.countCalled);
+    CORRADE_VERIFY(!font.openCalled);
+    CORRADE_COMPARE(fileCallbackCalled, 1);
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openFile("file.dat", 42.0f, data.fontId));
     CORRADE_VERIFY(!font.isOpened());
-    CORRADE_VERIFY(font.called);
-    CORRADE_VERIFY(fileCallbackCalled);
-    CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): cannot open file file.dat\n");
+    CORRADE_VERIFY(font.countCalled);
+    CORRADE_VERIFY(font.openCalled);
+    CORRADE_COMPARE(fileCallbackCalled, 2);
+    CORRADE_COMPARE_AS(out,
+        "Text::AbstractFont::fileFontCount(): cannot open file file.dat\n"
+        "Text::AbstractFont::openFile(): cannot open file file.dat\n",
+        TestSuite::Compare::String);
 }
 
 void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView filename) override {
+            fileCountCalled = true;
+            return AbstractFont::doFileFontCount(filename);
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            dataCountCalled = true;
+            return {};
+        }
+
+        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+            openFileCalled = true;
+            return AbstractFont::doOpenFile(filename, size, fontId);
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            openDataCalled = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool fileCountCalled = false;
+        bool dataCountCalled = false;
+        bool openFileCalled = false;
+        bool openDataCalled = false;
+    } font;
+
+    struct State {
+        Int loaded = 0;
+        Int closed = 0;
+    } state;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            ++state.loaded;
+            return Containers::ArrayView<const char>{};
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            ++state.closed;
+            return {};
+        }
+
+        CORRADE_FAIL("Unexpected policy" << policy);
+        return {};
+    }, state);
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font.fileFontCount("file.dat"));
+    CORRADE_VERIFY(font.fileCountCalled);
+    CORRADE_VERIFY(font.dataCountCalled);
+    CORRADE_VERIFY(!font.openFileCalled);
+    CORRADE_VERIFY(!font.openDataCalled);
+    CORRADE_COMPARE(state.loaded, 1);
+    CORRADE_COMPARE(state.closed, 1);
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openFile("file.dat", 42.0f, data.fontId));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_VERIFY(font.fileCountCalled);
+    CORRADE_VERIFY(font.dataCountCalled);
+    CORRADE_VERIFY(font.openFileCalled);
+    CORRADE_VERIFY(font.openDataCalled);
+    CORRADE_COMPARE(state.loaded, 2);
+    CORRADE_COMPARE(state.closed, 2);
+    CORRADE_COMPARE(out, "");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailedDeprecated() {
+    /* Like setFileCallbackOpenFileThroughBaseImplementationFailed(), but
+       implementing the deprecated doOpenFile() and doOpenData() and verifying
+       that it's correctly delegated to. There's no deprecated
+       doFileFontCount() or doDataFontCount() variant so that part is omitted
+       here. */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
@@ -939,7 +2392,9 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() 
 
         Properties doOpenFile(Containers::StringView filename, Float size) override {
             openFileCalled = true;
+            CORRADE_IGNORE_DEPRECATED_PUSH
             return AbstractFont::doOpenFile(filename, size);
+            CORRADE_IGNORE_DEPRECATED_POP
         }
 
         Properties doOpenData(Containers::ArrayView<const char>, Float) override {
@@ -986,13 +2441,110 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() 
     CORRADE_VERIFY(state.closed);
     CORRADE_COMPARE(out, "");
 }
+#endif
 
 void AbstractFontTest::setFileCallbackOpenFileAsData() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char> data) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xb0'}),
+                TestSuite::Compare::Container);
+            return 37;
+        }
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+            CORRADE_COMPARE_AS(data,
+                Containers::arrayView({'\xb0'}),
+                TestSuite::Compare::Container);
+            CORRADE_COMPARE(fontId, expectedFontId);
+            _opened = true;
+            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        UnsignedInt expectedFontId;
+
+        private:
+            bool _opened = false;
+    } font;
+    font.expectedFontId = data.fontId;
+
+    struct State {
+        const char data = '\xb0';
+        Int loaded = 0;
+        Int closed = 0;
+    } state;
+    font.setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        CORRADE_COMPARE(Containers::StringView{filename}, "file.dat");
+
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            ++state.loaded;
+            return Containers::arrayView(&state.data, 1);
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            ++state.closed;
+            return {};
+        }
+
+        CORRADE_FAIL("Unexpected policy" << policy);
+        return {};
+    }, state);
+
+    CORRADE_COMPARE(font.fileFontCount("file.dat"), 37);
+    CORRADE_COMPARE(state.loaded, 1);
+    CORRADE_COMPARE(state.closed, 1);
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(font.openFile("file.dat", 13.0f, data.fontId));
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(state.loaded, 2);
+    CORRADE_COMPARE(state.closed, 2);
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::setFileCallbackOpenFileAsDataDeprecated() {
+    /* Like setFileCallbackOpenFileAsData(), but implementing the deprecated
+       doOpenData() and verifying that it's correctly delegated to. There's no
+       deprecated doDataFontCount() variant so that part is omitted here. */
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
         Properties doOpenFile(Containers::StringView, Float) override {
             CORRADE_FAIL("This should not be called");
             return {};
@@ -1048,12 +2600,19 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
     CORRADE_COMPARE(font.glyphCount(), 15);
 }
 
-void AbstractFontTest::setFileCallbackOpenFileAsDataNotFound() {
+void AbstractFontTest::setFileCallbackOpenFileAsDataDeprecatedNonZeroFontId() {
+    /* When openData() gets a non-zero font ID, it should not delegate to the
+       deprecated overload but fail directly */
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
 
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
         Properties doOpenFile(Containers::StringView, Float) override {
             CORRADE_FAIL("This should not be called");
             return {};
@@ -1068,31 +2627,195 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataNotFound() {
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
     } font;
 
-    bool fileCallbackCalled = false;
-    font.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, bool& fileCallbackCalled) -> Containers::Optional<Containers::ArrayView<const char>> {
-        /* The callback should be only called to open the file, not to close it
-           afterwards */
-        CORRADE_COMPARE(policy, InputFileCallbackPolicy::LoadTemporary);
-        fileCallbackCalled = true;
+    struct State {
+        bool loaded = false;
+        bool closed = false;
+    } state;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.loaded = true;
+            return Containers::ArrayView<const char>{};
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.closed = true;
+            return {};
+        }
+
+        CORRADE_FAIL("Unexpected policy" << policy);
         return {};
-    }, fileCallbackCalled);
+    }, state);
 
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!font.openFile("file.dat", 132.0f));
+    CORRADE_VERIFY(!font.openFile("file.dat", 13.0f, 1));
     CORRADE_VERIFY(!font.isOpened());
-    CORRADE_VERIFY(fileCallbackCalled);
-    CORRADE_COMPARE(out, "Text::AbstractFont::openFile(): cannot open file file.dat\n");
+    CORRADE_VERIFY(state.loaded);
+    CORRADE_VERIFY(state.closed);
+    CORRADE_COMPARE(out, "Text::AbstractFont::openData(): cannot open font at index 1\n");
 }
+#endif
 
-void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
+void AbstractFontTest::setFileCallbackOpenFileAsDataNotFound() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+    } font;
+
+    Int fileCallbackCalled = 0;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, Int& fileCallbackCalled) -> Containers::Optional<Containers::ArrayView<const char>> {
+        /* The callback should be only called to open the file, not to close it
+           afterwards */
+        CORRADE_COMPARE(policy, InputFileCallbackPolicy::LoadTemporary);
+        ++fileCallbackCalled;
+        return {};
+    }, fileCallbackCalled);
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font.fileFontCount("file.dat"));
+    CORRADE_COMPARE(fileCallbackCalled, 1);
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openFile("file.dat", 132.0f, data.fontId));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_COMPARE(fileCallbackCalled, 2);
+    CORRADE_COMPARE_AS(out,
+        "Text::AbstractFont::fileFontCount(): cannot open file file.dat\n"
+        "Text::AbstractFont::openFile(): cannot open file file.dat\n",
+        TestSuite::Compare::String);
+}
+
+void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
+    auto&& data = OpenData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Containers::Optional<UnsignedInt> doFileFontCount(Containers::StringView) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char>) override {
+            countCalled = true;
+            return {};
+        }
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            openCalled = true;
+            return {};
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        bool countCalled = false;
+        bool openCalled = false;
+    } font;
+
+    struct State {
+        Int loaded = 0;
+        Int closed = 0;
+    } state;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            ++state.loaded;
+            return Containers::ArrayView<const char>{};
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            ++state.closed;
+            return {};
+        }
+
+        CORRADE_FAIL("Unexpected policy" << policy);
+        return {};
+    }, state);
+
+    /* The implementation is expected to print an error message on its own */
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font.fileFontCount("file.dat"));
+    CORRADE_VERIFY(font.countCalled);
+    CORRADE_VERIFY(!font.openCalled);
+    CORRADE_COMPARE(state.loaded, 1);
+    CORRADE_COMPARE(state.closed, 1);
+    /* Verify that the behavior is the same also with a potential deprecated
+       overload for font 0 */
+    /** @todo remove the instanced font ID once the deprecated APIs are gone,
+        supply a constant instead */
+    CORRADE_VERIFY(!font.openFile("file.dat", 132.0f, data.fontId));
+    CORRADE_VERIFY(!font.isOpened());
+    CORRADE_VERIFY(font.countCalled);
+    CORRADE_VERIFY(font.openCalled);
+    CORRADE_COMPARE(state.loaded, 2);
+    CORRADE_COMPARE(state.closed, 2);
+    CORRADE_COMPARE(out, "");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::setFileCallbackOpenFileAsDataFailedDeprecated() {
+    /* Like setFileCallbackOpenFileAsDataFailed(), but implementing the
+       deprecated doOpenData() and verifying that it's correctly delegated to.
+       There's no deprecated doDataFontCount() variant so that part is omitted
+       here. */
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
         Properties doOpenFile(Containers::StringView, Float) override {
             CORRADE_FAIL("This should not be called");
             return {};
@@ -1140,6 +2863,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
     CORRADE_VERIFY(state.closed);
     CORRADE_COMPARE(out, "");
 }
+#endif
 
 void AbstractFontTest::properties() {
     struct: AbstractFont {
@@ -1147,7 +2871,7 @@ void AbstractFontTest::properties() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float size) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float size, UnsignedInt) override {
             _opened = true;
             return {size, 1.0f, 2.0f, 3.0f, 15};
         }
@@ -1206,7 +2930,7 @@ void AbstractFontTest::glyphId() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 1280};
         }
@@ -1295,7 +3019,7 @@ void AbstractFontTest::glyphIdOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 4};
         }
@@ -1334,7 +3058,7 @@ void AbstractFontTest::glyphName() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 4};
         }
@@ -1369,7 +3093,7 @@ void AbstractFontTest::glyphNameNotImplemented() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 4};
         }
@@ -1423,7 +3147,7 @@ void AbstractFontTest::glyphNameOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 4};
         }
@@ -1456,7 +3180,7 @@ void AbstractFontTest::glyphSizeAdvance() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 98};
         }
@@ -1505,7 +3229,7 @@ void AbstractFontTest::glyphSizeAdvanceOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 3};
         }
@@ -1544,7 +3268,7 @@ void AbstractFontTest::fillGlyphCache() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 17};
         }
@@ -1596,7 +3320,7 @@ void AbstractFontTest::fillGlyphCacheOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 16};
         }
@@ -1633,7 +3357,7 @@ void AbstractFontTest::fillGlyphCacheNotUnique() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 16};
         }
@@ -1666,7 +3390,7 @@ void AbstractFontTest::fillGlyphCacheFromString() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 17};
         }
@@ -1734,7 +3458,7 @@ void AbstractFontTest::fillGlyphCacheFailed() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 1};
         }
@@ -1808,7 +3532,7 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
             return {0.0f, 0.0f, 0.0f, 0.0f, 1};
         }

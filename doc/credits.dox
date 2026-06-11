@@ -103,6 +103,8 @@ Are the below lists missing your name or something's wrong?
     tick event implementation in @ref Platform::GlfwApplication
 -   **Andrew ([\@sheerluck](https://github.com/sheerluck))** --- Gentoo package
     fixes
+-   **Andrew Snyder ([\@arsnyder16](https://github.com/arsnyder16))** ---
+    additions to the @ref Text library
 -   **Andy Maloney** ([\@asmaloney](https://github.com/asmaloney)) --- CMake
     and GDB printer fixes, squashing documentation typos
 -   **Andy Somogyi** ([\@andysomogyi](https://github.com/andysomogyi)) ---
