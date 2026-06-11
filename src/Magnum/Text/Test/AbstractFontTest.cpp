@@ -109,6 +109,9 @@ struct AbstractFontTest: TestSuite::Tester {
     void openFileNotImplemented();
     void openDataNotSupported();
     void openDataNotImplemented();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void propertiesNotImplemented();
+    #endif
 
     void setFileCallback();
     void setFileCallbackTemplate();
@@ -210,6 +213,19 @@ const struct {
     {"with a font opened", true}
 };
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+const struct {
+    const char* name;
+    bool openFile;
+    UnsignedInt fontId;
+} PropertiesNotImplementedData[]{
+    {"open data", false, 0},
+    {"open data, non-zero font ID", false, 1},
+    {"open file", true, 0},
+    {"open file, non-zero font ID", true, 1},
+};
+#endif
+
 AbstractFontTest::AbstractFontTest() {
     addTests({&AbstractFontTest::debugFeature,
               &AbstractFontTest::debugFeaturePacked,
@@ -289,6 +305,11 @@ AbstractFontTest::AbstractFontTest() {
                        &AbstractFontTest::openDataNotSupported,
                        &AbstractFontTest::openDataNotImplemented},
         Containers::arraySize(OpenData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addInstancedTests({&AbstractFontTest::propertiesNotImplemented},
+        Containers::arraySize(PropertiesNotImplementedData));
+    #endif
 
     addTests({&AbstractFontTest::setFileCallback,
               &AbstractFontTest::setFileCallbackTemplate,
@@ -428,6 +449,7 @@ void AbstractFontTest::construct() {
             CORRADE_FAIL("This should not be called");
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -460,11 +482,11 @@ void AbstractFontTest::dataFontCount() {
             return 37;
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
-            return {};
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -502,11 +524,11 @@ void AbstractFontTest::dataFontCountFailed() {
             return {};
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
-            return {};
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -542,6 +564,7 @@ void AbstractFontTest::dataFontCountNotImplemented() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -568,11 +591,11 @@ void AbstractFontTest::fileFontCount() {
             return 37;
         }
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
-            return {};
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -609,11 +632,11 @@ void AbstractFontTest::fileFontCountFailed() {
             return {};
         }
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
-            return {};
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -649,6 +672,7 @@ void AbstractFontTest::fileFontCountNotImplemented() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -678,11 +702,11 @@ void AbstractFontTest::fileFontCountAsData() {
             return 37;
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
-            return {};
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -719,11 +743,11 @@ void AbstractFontTest::fileFontCountAsDataNotFound() {
             return {};
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
-            return {};
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -768,11 +792,11 @@ void AbstractFontTest::fileFontCountAsDataFailed() {
             return {};
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
-            return {};
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -808,6 +832,7 @@ void AbstractFontTest::fileFontCountAsDataNotImplemented() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -835,6 +860,7 @@ void AbstractFontTest::fontCountInvalid() {
             return 0;
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -860,6 +886,7 @@ void AbstractFontTest::dataFontCountNotSupported() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -884,13 +911,17 @@ void AbstractFontTest::openData() {
             _opened = false;
         }
 
-        Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+        void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             _opened = true;
-            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        Properties doProperties() override {
+            return {31.0f, 1.0f, 2.0f, 3.0f, 15};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -913,7 +944,7 @@ void AbstractFontTest::openData() {
         supply a constant instead */
     CORRADE_VERIFY(font.openData(a5, 13.0f, data.fontId));
     CORRADE_VERIFY(font.isOpened());
-    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.size(), 31.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
@@ -1009,11 +1040,14 @@ void AbstractFontTest::openDataFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             called = true;
-            return {};
         }
 
+        Properties doProperties() override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1080,11 +1114,15 @@ void AbstractFontTest::openFile() {
             _opened = false;
         }
 
-        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+        void doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE(filename, "hello.ttf");
+            CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             _opened = true;
-            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        Properties doProperties() override {
+            return {31.0f, 1.0f, 2.0f, 3.0f, 15};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -1106,7 +1144,7 @@ void AbstractFontTest::openFile() {
         supply a constant instead */
     CORRADE_VERIFY(font.openFile("hello.ttf", 13.0f, data.fontId));
     CORRADE_VERIFY(font.isOpened());
-    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.size(), 31.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
@@ -1198,11 +1236,14 @@ void AbstractFontTest::openFileFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             called = true;
-            return {};
         }
 
+        Properties doProperties() override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1266,15 +1307,18 @@ void AbstractFontTest::openFileAsData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+        void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             _opened = true;
-            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
+        Properties doProperties() override {
+            return {31.0f, 1.0f, 2.0f, 3.0f, 15};
+        }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1295,7 +1339,7 @@ void AbstractFontTest::openFileAsData() {
         supply a constant instead */
     CORRADE_VERIFY(font.openFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"), 13.0f, data.fontId));
     CORRADE_VERIFY(font.isOpened());
-    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.size(), 31.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
@@ -1311,11 +1355,14 @@ void AbstractFontTest::openFileAsDataNotFound() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        Properties doProperties() override {
             CORRADE_FAIL("This should not be called");
             return {};
         }
-
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1419,11 +1466,14 @@ void AbstractFontTest::openFileAsDataFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             called = true;
-            return {};
         }
 
+        Properties doProperties() override {
+            CORRADE_FAIL("This should not be called");
+            return {};
+        }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1490,6 +1540,7 @@ void AbstractFontTest::openFileNotImplemented() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1528,6 +1579,7 @@ void AbstractFontTest::openDataNotSupported() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1554,6 +1606,7 @@ void AbstractFontTest::openDataNotImplemented() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1580,6 +1633,49 @@ void AbstractFontTest::openDataNotImplemented() {
     #endif
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::propertiesNotImplemented() {
+    auto&& data = PropertiesNotImplementedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* On non-deprecated builds doProperties() is pure virtual, which forces
+       its implementation at compile time. This assertion is to tell the same
+       to implementers on builds with deprecated features enabled, although
+       only at runtime. */
+
+    struct: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            _opened = true;
+        }
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            _opened = true;
+        }
+
+        void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
+
+        private:
+            bool _opened = false;
+    } font;
+
+    Containers::String out;
+    Error redirectError{&out};
+    if(data.openFile)
+        font.openFile({}, 1.0f, data.fontId);
+    else
+        font.openData({}, 1.0f, data.fontId);
+    CORRADE_COMPARE(out, "Text::AbstractFont: doProperties() not implemented\n");
+}
+#endif
+
 void AbstractFontTest::setFileCallback() {
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData|FontFeature::FileCallback; }
@@ -1589,6 +1685,7 @@ void AbstractFontTest::setFileCallback() {
             *static_cast<int*>(userData) = 1337;
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1614,6 +1711,7 @@ void AbstractFontTest::setFileCallbackTemplate() {
             called = true;
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1647,6 +1745,7 @@ void AbstractFontTest::setFileCallbackTemplateNull() {
             called = true;
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1671,6 +1770,7 @@ void AbstractFontTest::setFileCallbackTemplateConst() {
             called = true;
         }
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1697,6 +1797,7 @@ void AbstractFontTest::setFileCallbackFileOpened() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1717,6 +1818,7 @@ void AbstractFontTest::setFileCallbackNotImplemented() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1741,6 +1843,7 @@ void AbstractFontTest::setFileCallbackNotSupported() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1779,21 +1882,23 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
             return {};
         }
 
-        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+        void doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
             /* Called because FileCallback is supported */
             CORRADE_COMPARE(filename, "file.dat");
+            CORRADE_COMPARE(size, 42.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             CORRADE_VERIFY(fileCallback());
             CORRADE_VERIFY(fileCallbackUserData());
             _opened = true;
-            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
-            return {};
         }
 
+        Properties doProperties() override {
+            return {24.0f, 1.0f, 2.0f, 3.0f, 15};
+        }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -1822,7 +1927,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
         supply a constant instead */
     CORRADE_VERIFY(font.openFile("file.dat", 42.0f, data.fontId));
     CORRADE_VERIFY(font.isOpened());
-    CORRADE_COMPARE(font.size(), 42.0f);
+    CORRADE_COMPARE(font.size(), 24.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
@@ -1849,9 +1954,8 @@ void AbstractFontTest::setFileCallbackOpenFileDirectlyDeprecated() {
             return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
-            return {};
         }
         Properties doOpenData(Containers::ArrayView<const char>, Float) override {
             CORRADE_FAIL("This should not be called");
@@ -1959,16 +2063,18 @@ void AbstractFontTest::setFileCallbackOpenFileDirectlyFailed() {
             return {};
         }
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             openCalled = true;
-            return {};
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        Properties doProperties() override {
             CORRADE_FAIL("This should not be called");
             return {};
         }
-
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2016,9 +2122,8 @@ void AbstractFontTest::setFileCallbackOpenFileDirectlyFailedDeprecated() {
             return {};
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
-            return {};
         }
         Properties doOpenData(Containers::ArrayView<const char>, Float) override {
             CORRADE_FAIL("This should not be called");
@@ -2072,24 +2177,28 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
             return 37;
         }
 
-        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+        void doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE(filename, "file.dat");
+            CORRADE_COMPARE(size, 42.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             CORRADE_VERIFY(fileCallback());
             CORRADE_VERIFY(fileCallbackUserData());
             openCalled = true;
-            return AbstractFont::doOpenFile(filename, size, fontId);
+            AbstractFont::doOpenFile(filename, size, fontId);
         }
 
-        Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+        void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xb0'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(size, 42.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             _opened = true;
-            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
+        Properties doProperties() override {
+            return {24.0f, 1.0f, 2.0f, 3.0f, 15};
+        }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2141,7 +2250,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
     CORRADE_VERIFY(font.openCalled);
     CORRADE_COMPARE(state.loaded, 2);
     CORRADE_COMPARE(state.closed, 2);
-    CORRADE_COMPARE(font.size(), 42.0f);
+    CORRADE_COMPARE(font.size(), 24.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
@@ -2244,16 +2353,19 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationNotFound(
             return 37;
         }
 
-        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+        void doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
             openCalled = true;
-            return AbstractFont::doOpenFile(filename, size, fontId);
+            AbstractFont::doOpenFile(filename, size, fontId);
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        Properties doProperties() override {
             CORRADE_FAIL("This should not be called");
             return {};
         }
-
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2312,16 +2424,19 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() 
             return {};
         }
 
-        Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
+        void doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
             openFileCalled = true;
-            return AbstractFont::doOpenFile(filename, size, fontId);
+            AbstractFont::doOpenFile(filename, size, fontId);
         }
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             openDataCalled = true;
+        }
+
+        Properties doProperties() override {
+            CORRADE_FAIL("This should not be called");
             return {};
         }
-
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2464,18 +2579,21 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
             return 37;
         }
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
-            return {};
         }
 
-        Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+        void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xb0'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             _opened = true;
-            return {size, 1.0f, 2.0f, 3.0f, 15};
+        }
+
+        Properties doProperties() override {
+            return {31.0f, 1.0f, 2.0f, 3.0f, 15};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -2523,7 +2641,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(state.loaded, 2);
     CORRADE_COMPARE(state.closed, 2);
-    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.size(), 31.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
@@ -2541,9 +2659,8 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataDeprecated() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
-            return {};
         }
         Properties doOpenFile(Containers::StringView, Float) override {
             CORRADE_FAIL("This should not be called");
@@ -2609,9 +2726,8 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataDeprecatedNonZeroFontId() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
-            return {};
         }
         Properties doOpenFile(Containers::StringView, Float) override {
             CORRADE_FAIL("This should not be called");
@@ -2680,16 +2796,18 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataNotFound() {
             return {};
         }
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        Properties doProperties() override {
             CORRADE_FAIL("This should not be called");
             return {};
         }
-
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
-            CORRADE_FAIL("This should not be called");
-            return {};
-        }
-
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2741,16 +2859,18 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
             return {};
         }
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+            CORRADE_FAIL("This should not be called");
+        }
+
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+            openCalled = true;
+        }
+
+        Properties doProperties() override {
             CORRADE_FAIL("This should not be called");
             return {};
         }
-
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
-            openCalled = true;
-            return {};
-        }
-
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2812,9 +2932,8 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailedDeprecated() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Properties doOpenFile(Containers::StringView, Float, UnsignedInt) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
-            return {};
         }
         Properties doOpenFile(Containers::StringView, Float) override {
             CORRADE_FAIL("This should not be called");
@@ -2871,11 +2990,13 @@ void AbstractFontTest::properties() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float size, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
-            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
+        Properties doProperties() override {
+            return {13.0f, 1.0f, 2.0f, 3.0f, 15};
+        }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2884,7 +3005,7 @@ void AbstractFontTest::properties() {
         bool _opened = false;
     } font;
 
-    CORRADE_VERIFY(font.openData(nullptr, 13.0f));
+    CORRADE_VERIFY(font.openData(nullptr, 0.0f));
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 13.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
@@ -2901,6 +3022,7 @@ void AbstractFontTest::propertiesNoFont() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2930,8 +3052,11 @@ void AbstractFontTest::glyphId() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 1280};
         }
 
@@ -2970,6 +3095,7 @@ void AbstractFontTest::glyphIdNoFont() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -2994,6 +3120,7 @@ void AbstractFontTest::glyphIdInvalidSize() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3019,11 +3146,13 @@ void AbstractFontTest::glyphIdOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
-            return {0.0f, 0.0f, 0.0f, 0.0f, 4};
         }
 
+        Properties doProperties() override {
+            return {0.0f, 0.0f, 0.0f, 0.0f, 4};
+        }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) override {
             for(std::size_t i = 0; i != glyphs.size(); ++i)
                 glyphs[i] = i;
@@ -3058,8 +3187,11 @@ void AbstractFontTest::glyphName() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 4};
         }
 
@@ -3093,8 +3225,11 @@ void AbstractFontTest::glyphNameNotImplemented() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 4};
         }
 
@@ -3122,6 +3257,7 @@ void AbstractFontTest::glyphNameNoFont() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3147,8 +3283,11 @@ void AbstractFontTest::glyphNameOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 4};
         }
 
@@ -3180,8 +3319,11 @@ void AbstractFontTest::glyphSizeAdvance() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 98};
         }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -3206,6 +3348,7 @@ void AbstractFontTest::glyphSizeAdvanceNoFont() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3229,8 +3372,11 @@ void AbstractFontTest::glyphSizeAdvanceOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 3};
         }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -3268,8 +3414,11 @@ void AbstractFontTest::fillGlyphCache() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 17};
         }
 
@@ -3320,8 +3469,11 @@ void AbstractFontTest::fillGlyphCacheOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 16};
         }
 
@@ -3357,8 +3509,11 @@ void AbstractFontTest::fillGlyphCacheNotUnique() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 16};
         }
 
@@ -3390,8 +3545,11 @@ void AbstractFontTest::fillGlyphCacheFromString() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 17};
         }
 
@@ -3458,8 +3616,11 @@ void AbstractFontTest::fillGlyphCacheFailed() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 1};
         }
 
@@ -3500,6 +3661,7 @@ void AbstractFontTest::fillGlyphCacheNotSupported() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) override {
             /* Set all to 0 to avoid an assert that the IDs are out of range */
             for(UnsignedInt& i: glyphs)
@@ -3532,8 +3694,11 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Properties doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {0.0f, 0.0f, 0.0f, 0.0f, 1};
         }
 
@@ -3569,6 +3734,7 @@ void AbstractFontTest::fillGlyphCacheNoFont() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3595,6 +3761,7 @@ void AbstractFontTest::fillGlyphCacheInvalidUtf8() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3614,6 +3781,7 @@ void AbstractFontTest::createGlyphCache() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3638,6 +3806,7 @@ void AbstractFontTest::createGlyphCacheNotSupported() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3658,6 +3827,7 @@ void AbstractFontTest::createGlyphCacheNotImplemented() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3678,6 +3848,7 @@ void AbstractFontTest::createGlyphCacheNoFont() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3708,6 +3879,7 @@ void AbstractFontTest::createShaper() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3726,6 +3898,7 @@ void AbstractFontTest::createShaperNoFont() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3746,6 +3919,7 @@ void AbstractFontTest::createShaperNullptr() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }

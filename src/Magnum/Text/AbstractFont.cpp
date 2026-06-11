@@ -153,6 +153,26 @@ Containers::Optional<UnsignedInt> AbstractFont::doDataFontCount(Containers::Arra
     return 1;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* On deprecated builds, doOpenData() / doOpenFile() returns the Properties
+   instead of being returned through doProperties(). For compatibility we save
+   contents of the returned struct to the _size etc. members and default
+   implementation of this function then returns them back. */
+/** @todo remove this once deprecated doOpenData() / doOpenFile() is gone */
+AbstractFont::Properties AbstractFont::doProperties() {
+    /* If a plugin never implements doProperties(), and doesn't use the
+       deprecated doOpenData() / doOpenFile() implementations that return a
+       Properties struct, the glyph count stays set to the original value,
+       triggering this assert. If it implements doProperties(), this function
+       never gets called, if it uses the deprecated doOpenData() / doOpenFile()
+       the value gets overwritten to something else. */
+    CORRADE_ASSERT(_glyphCount != ~UnsignedInt{},
+        "Text::AbstractFont: doProperties() not implemented", {});
+
+    return {_size, _ascent, _descent, _lineHeight, _glyphCount};
+}
+#endif
+
 bool AbstractFont::openData(const Containers::ArrayView<const void> data, const Float size, const UnsignedInt fontId) {
     CORRADE_ASSERT(features() & FontFeature::OpenData,
         "Text::AbstractFont::openData(): feature not supported", false);
@@ -161,11 +181,17 @@ bool AbstractFont::openData(const Containers::ArrayView<const void> data, const 
        the check doesn't be done on the plugin side) because for some file
        formats it could be valid (MagnumFont in particular). */
     close();
-    const Properties properties = doOpenData(Containers::arrayCast<const char>(data), size, fontId);
+    doOpenData(Containers::arrayCast<const char>(data), size, fontId);
 
-    /* If opening succeeded, save the returned values. If not, the values were
-       set to their default values by close() already. */
+    /* If opening succeeded, cache reported font properties. If not, the values
+       were reset to default-constructed values by close(). (OTOH, on
+       deprecated builds the properties are saved to the _size etc. members
+       from the deprecated doOpenData() return value, and if doProperties()
+       isn't implemented, it returns the contents of _size etc. thus there the
+       following is effectively a no-op, assigning values that are already
+       there.) */
     if(isOpened()) {
+        const Properties properties = doProperties();
         _size = properties.size;
         _ascent = properties.ascent;
         _descent = properties.descent;
@@ -177,9 +203,9 @@ bool AbstractFont::openData(const Containers::ArrayView<const void> data, const 
     return false;
 }
 
-auto AbstractFont::doOpenData(const Containers::ArrayView<const char> data, const Float size, const UnsignedInt fontId) -> Properties {
+void AbstractFont::doOpenData(const Containers::ArrayView<const char> data, const Float size, const UnsignedInt fontId) {
     #ifndef MAGNUM_BUILD_DEPRECATED
-    CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", );
     static_cast<void>(data);
     static_cast<void>(size);
     static_cast<void>(fontId);
@@ -189,12 +215,20 @@ auto AbstractFont::doOpenData(const Containers::ArrayView<const char> data, cons
        otherwise. */
     if(fontId != 0) {
         Error() << "Text::AbstractFont::openData(): cannot open font at index" << fontId;
-        return {};
+        return;
     }
 
+    /* The deprecated overload returns the properties instead of exposing them
+       through doProperties(). Save them to the _size etc. members, the default
+       doProperties() implementation then returns those back. */
     CORRADE_IGNORE_DEPRECATED_PUSH
-    return doOpenData(data, size);
+    const Properties properties = doOpenData(data, size);
     CORRADE_IGNORE_DEPRECATED_POP
+    _size = properties.size;
+    _ascent = properties.ascent;
+    _descent = properties.descent;
+    _lineHeight = properties.lineHeight;
+    _glyphCount = properties.glyphCount;
     #endif
 }
 
@@ -286,7 +320,6 @@ Containers::Optional<UnsignedInt> AbstractFont::doFileFontCount(const Containers
 
 bool AbstractFont::openFile(const Containers::StringView filename, const Float size, const UnsignedInt fontId) {
     close();
-    Properties properties;
 
     /* If file loading callbacks are not set or the font implementation
        supports handling them directly, call into the implementation */
@@ -297,13 +330,22 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
            doesn't implement the deprecated doOpenFile(), it delegates back to
            the new doOpenFile() implementation. */
         if(fontId == 0) {
+            /* The deprecated overload returns the properties instead of
+               exposing them through doProperties(). Save them to the _size
+               etc. members, the default doProperties() implementation then
+               returns those back. */
             CORRADE_IGNORE_DEPRECATED_PUSH
-            properties = doOpenFile(filename, size);
+            const Properties properties = doOpenFile(filename, size);
             CORRADE_IGNORE_DEPRECATED_POP
+            _size = properties.size;
+            _ascent = properties.ascent;
+            _descent = properties.descent;
+            _lineHeight = properties.lineHeight;
+            _glyphCount = properties.glyphCount;
         } else
         #endif
         {
-            properties = doOpenFile(filename, size, fontId);
+            doOpenFile(filename, size, fontId);
         }
 
     /* Otherwise, if loading from data is supported, use the callback and pass
@@ -326,15 +368,21 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
             return isOpened();
         }
 
-        properties = doOpenData(*data, size, fontId);
+        doOpenData(*data, size, fontId);
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Shouldn't get here, the assert is fired already in setFileCallback() */
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
-    /* If opening succeeded, save the returned values. If not, the values were
-       set to their default values by close() already. */
+    /* If opening succeeded, cache reported font properties. If not, the values
+       were reset to default-constructed values by close(). (OTOH, on
+       deprecated builds the properties are saved to the _size etc. members
+       from the deprecated doOpenData() return value, and if doProperties()
+       isn't implemented, it returns the contents of _size etc. thus there the
+       following is effectively a no-op, assigning values that are already
+       there.) */
     if(isOpened()) {
+        const Properties properties = doProperties();
         _size = properties.size;
         _ascent = properties.ascent;
         _descent = properties.descent;
@@ -346,7 +394,7 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
     return false;
 }
 
-auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float size, const UnsignedInt fontId) -> Properties {
+void AbstractFont::doOpenFile(const Containers::StringView filename, const Float size, const UnsignedInt fontId) {
     #ifdef MAGNUM_BUILD_DEPRECATED
     /* If this function is not implemented and opening data isn't supported
        either, assume the plugin implements only the deprecated doOpenFile()
@@ -356,13 +404,12 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
        API or not. */
     if(!(features() & FontFeature::OpenData) && fontId != 0) {
         Error() << "Text::AbstractFont::openFile(): cannot open font at index" << fontId;
-        return {};
+        return;
     }
     #endif
 
-    CORRADE_ASSERT(features() & FontFeature::OpenData, "Text::AbstractFont::openFile(): not implemented", {});
-
-    Properties properties;
+    CORRADE_ASSERT(features() & FontFeature::OpenData,
+        "Text::AbstractFont::openFile(): not implemented", );
 
     /* If callbacks are set, use them. This is the same implementation as in
        openFile(), see the comment there for details. */
@@ -370,10 +417,10 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
         const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
         if(!data) {
             Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
-            return {};
+            return;
         }
 
-        properties = doOpenData(*data, size, fontId);
+        doOpenData(*data, size, fontId);
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Otherwise open the file directly */
@@ -381,13 +428,11 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
         const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
         if(!data) {
             Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
-            return {};
+            return;
         }
 
-        properties = doOpenData(*data, size, fontId);
+        doOpenData(*data, size, fontId);
     }
-
-    return properties;
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -400,7 +445,17 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
        a plugin implements the new doOpenFile(), that implementation gets
        called from here for fontId 0, and from openFile() for all other font
        IDs. */
-    return doOpenFile(filename, size, 0);
+    doOpenFile(filename, size, 0);
+
+    /* If opening suceeded, return the properties that the implementation
+       exposes (or, if the above resulted in deprecated doOpenData() being
+       called, properties that got saved from its return value) */
+    if(isOpened())
+        return doProperties();
+
+    /* Otherwise return default-constructed properties, as doProperties() are
+       meant to be called only if a file is opened */
+    return {};
 }
 #endif
 

@@ -725,7 +725,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Font properties
          *
-         * Returned from @ref doOpenFile(), @ref doOpenData().
+         * Returned from @ref doProperties().
          */
         struct Properties {
             #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5
@@ -787,36 +787,40 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Implementation for @ref openFile()
          * @m_since_latest
          *
-         * If @ref doIsOpened() returns @cpp true @ce after calling this
-         * function, it's assumed that opening was successful and the
-         * @ref Properties are expected to contain valid values. If
-         * @ref doIsOpened() returns @cpp false @ce, the returned values are
-         * ignored. If @ref FontFeature::OpenData is supported, default
-         * implementation opens the file and calls @ref doOpenData() with its
-         * contents. It is allowed to call this function from your
-         * @ref doOpenFile() implementation --- in particular, this
-         * implementation will also correctly handle callbacks set through
-         * @ref setFileCallback().
+         * If the operation was successful, @ref doIsOpened() should return
+         * @cpp true @ce after calling this function, @cpp false @ce otherwise.
+         *
+         * If @ref FontFeature::OpenData is supported, default implementation
+         * opens the file and calls @ref doOpenData() with its contents. It is
+         * allowed to call this function from your @ref doOpenFile()
+         * implementation --- in particular, this implementation will also
+         * correctly handle callbacks set through @ref setFileCallback().
          *
          * This function is not called when file callbacks are set through
          * @ref setFileCallback() and @ref FontFeature::FileCallback is not
          * supported --- instead, file is loaded though the callback and data
          * passed through to @ref doOpenData().
          */
-        virtual Properties doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId);
+        virtual void doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Implementation for @ref openFile()
          * @m_deprecated_since_latest Implement @ref doOpenFile(Containers::StringView, Float, UnsignedInt)
-         *      instead.
+         *      and @ref doProperties() instead.
+         *
+         * If @ref doIsOpened() returns @cpp true @ce after calling this
+         * function, it's assumed that opening was successful and the
+         * @ref Properties are expected to contain valid values. If
+         * @ref doIsOpened() returns @cpp false @ce, the returned values are
+         * ignored.
          */
         /* MSVC warns when overriding such methods and there's no way to
            suppress that warning, making the RT build (which treats deprecation
            warnings as errors) fail and other builds extremely noisy. So
            disabling those on MSVC. */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
-        CORRADE_DEPRECATED("implement doOpenFile(Containers::StringView, Float, UnsignedInt) instead")
+        CORRADE_DEPRECATED("implement doOpenFile(Containers::StringView, Float, UnsignedInt) and doProperties() instead")
         #endif
         virtual Properties doOpenFile(Containers::StringView filename, Float size);
         #endif
@@ -853,32 +857,54 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Implementation for @ref openData()
          * @m_since_latest
          *
+         * If the operation was successful, @ref doIsOpened() should return
+         * @cpp true @ce after calling this function, @cpp false @ce otherwise.
+         */
+        virtual void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Implementation for @ref openData()
+         * @m_deprecated_since_latest Implement @ref doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt)
+         *      and @ref doProperties() instead.
+         *
          * If @ref doIsOpened() returns @cpp true @ce after calling this
          * function, it's assumed that opening was successful and the
          * @ref Properties are expected to contain valid values. If
          * @ref doIsOpened() returns @cpp false @ce, the returned values are
          * ignored.
          */
-        virtual Properties doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Implementation for @ref openData()
-         * @m_deprecated_since_latest Implement @ref doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt)
-         *      instead.
-         */
         /* MSVC warns when overriding such methods and there's no way to
            suppress that warning, making the RT build (which treats deprecation
            warnings as errors) fail and other builds extremely noisy. So
            disabling those on MSVC. */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
-        CORRADE_DEPRECATED("implement doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) instead")
+        CORRADE_DEPRECATED("implement doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) and doProperties() instead")
         #endif
         virtual Properties doOpenData(Containers::ArrayView<const char> data, Float size);
         #endif
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
+
+        /**
+         * @brief Implementation for @ref size(), @ref ascent(), @ref descent(), @ref lineHeight() and @ref glyphCount()
+         * @m_since_latest
+         *
+         * This function gets called internally from @ref openFile() and
+         * @ref openData() after a font is successfully opened, caching the
+         * returned @ref Properties to make them subsequently accessible
+         * through the public APIs. The function is guaranteed to be called
+         * only if @ref isOpened() returns @cpp true @ce.
+         */
+        virtual Properties doProperties()
+            #ifndef MAGNUM_BUILD_DEPRECATED
+            /* On deprecated builds the properties may be taken from
+               doOpenData() / doOpenFile() return values instead of forcing
+               this function to be implemented */
+            = 0
+            #endif
+            ;
 
         /**
          * @brief Implementation for @ref glyphIdsInto()
@@ -956,7 +982,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         #endif
 
         Float _size{}, _ascent{}, _descent{}, _lineHeight{};
-        UnsignedInt _glyphCount{};
+        UnsignedInt _glyphCount{
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /* Kill switch for detecting if doProperties() is implemented, see
+               its implementation for details */
+            ~UnsignedInt{}
+            #endif
+        };
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
