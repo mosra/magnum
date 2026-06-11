@@ -103,7 +103,10 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlag value);
 @m_since{2020,06}
 
 @see @ref AnimationData::dataFlags(), @ref ImageData::dataFlags(),
-    @ref MeshData::indexDataFlags(), @ref MeshData::vertexDataFlags()
+    @ref MaterialData::attributeDataFlags(),
+    @ref MaterialData::layerDataFlags(), @ref MeshData::indexDataFlags(),
+    @ref MeshData::vertexDataFlags(), @ref SceneData::dataFlags(),
+    @ref AbstractImporter::doOpenData()
 */
 typedef Containers::EnumSet<DataFlag> DataFlags;
 

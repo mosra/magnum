@@ -1794,6 +1794,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref openFile()
          *
+         * If the operation was successful, @ref doIsOpened() should return
+         * @cpp true @ce after calling this function, @cpp false @ce otherwise.
+         *
          * If @ref ImporterFeature::OpenData is supported, default
          * implementation opens the file and calls @ref doOpenData() with its
          * contents. It is allowed to call this function from your
@@ -1838,12 +1841,21 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          */
         virtual void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData);
 
-        /** @brief Implementation for @ref isOpened() */
+        /**
+         * @brief Implementation for @ref isOpened()
+         *
+         * The function should return @cpp true @ce if a @ref doOpenFile(),
+         * @ref doOpenData() or @ref doOpenState() was successful and
+         * @ref doClose() wasn't called since, @cpp false @ce otherwise.
+         */
         virtual bool doIsOpened() const = 0;
 
         /**
          * @brief Implementation for @ref openData() and @ref openMemory()
          * @m_since_latest
+         *
+         * If the operation was successful, @ref doIsOpened() should return
+         * @cpp true @ce after calling this function, @cpp false @ce otherwise.
          *
          * The @p data is mutable or owned depending on the value of
          * @p dataFlags. This can be used for example to avoid allocating a
@@ -1898,7 +1910,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /** @brief Implementation for @ref openState() */
         virtual void doOpenState(const void* state, Containers::StringView filePath);
 
-        /** @brief Implementation for @ref close() */
+        /**
+         * @brief Implementation for @ref close()
+         *
+         * The @ref doIsOpened() implementation should return @cpp false @ce
+         * after calling this function.
+         */
         virtual void doClose() = 0;
 
         /**

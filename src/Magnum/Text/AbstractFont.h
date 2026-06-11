@@ -189,9 +189,10 @@ all glyphs in the font:
 @section Text-AbstractFont-usage-callbacks Loading data from memory, using file callbacks
 
 Besides loading data directly from the filesystem using @ref openFile() like
-shown above, it's possible to use @ref openData() to import data from memory.
-Note that the particular importer implementation must support
-@ref FontFeature::OpenData for this method to work.
+shown above, it's possible to use @ref openData() to load fonts from memory
+(for example from @relativeref{Corrade,Utility::Resource}). Note that the
+particular font implementation has to support @ref FontFeature::OpenData for
+this method to work:
 
 @snippet Text.cpp AbstractFont-usage-data
 
@@ -209,10 +210,10 @@ plugin supporting the callback feature handles that correctly.
 
 @snippet Text.cpp AbstractFont-usage-callbacks
 
-For importers that don't support @ref FontFeature::FileCallback directly, the
-base @ref openFile() implementation will use the file callback to pass the
-loaded data through to @ref openData(), in case the importer supports at least
-@ref FontFeature::OpenData. If the importer supports neither
+For font plugins that don't support @ref FontFeature::FileCallback directly,
+the base @ref openFile() implementation will use the file callback to pass the
+loaded data through to @ref openData(), in case the font supports at least
+@ref FontFeature::OpenData. If the font supports neither
 @ref FontFeature::FileCallback nor @ref FontFeature::OpenData,
 @ref setFileCallback() doesn't allow the callbacks to be set.
 
@@ -229,10 +230,12 @@ instance is destroyed.
 
 @section Text-AbstractFont-subclassing Subclassing
 
-The plugin needs to implement the @ref doFeatures(), @ref doClose(),
-@ref doCreateShaper() functions, either @ref doCreateGlyphCache() or
-@ref doFillGlyphCache() and one or more of `doOpen*()` functions. See also
-@ref AbstractShaper for more information.
+The plugin needs to implement the @ref doFeatures(), @ref doIsOpened(),
+@ref doClose(), @ref doProperties(), @ref doGlyphIdsInto(), @ref doGlyphSize(),
+@ref doGlyphAdvance(), @ref doCreateShaper() functions, either
+@ref doCreateGlyphCache() or @ref doFillGlyphCache() and at least one of the
+@ref doOpenData() or @ref doOpenFile() functions. See also @ref AbstractShaper
+for more information.
 
 In order to support @ref FontFeature::FileCallback, the font needs to properly
 use the callbacks to both load the top-level file in @ref doOpenFile() and also
@@ -359,8 +362,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * It's expected that this function is called *before* a file is
          * opened. It's also expected that the loaded data are kept in scope
          * for as long as the font plugin needs them, based on the value of
-         * @ref InputFileCallbackPolicy. Documentation of particular importers
-         * provides more information about the expected callback behavior.
+         * @ref InputFileCallbackPolicy. Documentation of particular font
+         * plugins provides more information about the expected callback
+         * behavior.
          *
          * Following is an example of setting up a file loading callback for
          * fetching compiled-in resources from @ref Corrade::Utility::Resource.
@@ -840,7 +844,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          */
         virtual void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData);
 
-        /** @brief Implementation for @ref isOpened() */
+        /**
+         * @brief Implementation for @ref isOpened()
+         *
+         * The function should return @cpp true @ce if a @ref doOpenFile()
+         * or @ref doOpenData() was successful and @ref doClose() wasn't called
+         * since, @cpp false @ce otherwise.
+         */
         virtual bool doIsOpened() const = 0;
 
         /**
@@ -884,7 +894,12 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         virtual Properties doOpenData(Containers::ArrayView<const char> data, Float size);
         #endif
 
-        /** @brief Implementation for @ref close() */
+        /**
+         * @brief Implementation for @ref close()
+         *
+         * The @ref doIsOpened() implementation should return @cpp false @ce
+         * after calling this function.
+         */
         virtual void doClose() = 0;
 
         /**
