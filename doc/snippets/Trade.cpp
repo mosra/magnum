@@ -290,12 +290,10 @@ struct: Trade::AbstractImporter {
 void doOpenData(Containers::Array<char>&& data, Trade::DataFlags dataFlags) override
 {
     /* Take over the existing array or copy the data if we can't */
-    if(dataFlags & (Trade::DataFlag::Owned|Trade::DataFlag::ExternallyOwned)) {
+    if(dataFlags & (Trade::DataFlag::Owned|Trade::DataFlag::ExternallyOwned))
         _in = std::move(data);
-    } else {
-        _in = Containers::Array<char>{NoInit, data.size()};
-        Utility::copy(data, _in);
-    }
+    else
+        _in = Containers::Array<char>{InPlaceInit, data};
 
     DOXYGEN_ELLIPSIS()
 }
