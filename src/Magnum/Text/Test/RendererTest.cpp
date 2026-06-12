@@ -1863,10 +1863,14 @@ struct TestFont: AbstractFont {
     bool doIsOpened() const override { return _opened; }
     void doClose() override { _opened = false; }
 
-    Properties doOpenFile(Containers::StringView, Float size) override {
+    void doOpenFile(Containers::StringView, Float size, UnsignedInt) override {
+        _size = size;
         _opened = true;
+    }
+
+    Properties doProperties() override {
         /* Line height isn't used for anything here so can be arbitrary */
-        return {size, 4.5f, -2.5f, 10000.0f, 10};
+        return {_size, 4.5f, -2.5f, 10000.0f, 10};
     }
 
     void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) override {
@@ -1882,7 +1886,9 @@ struct TestFont: AbstractFont {
 
     ShapeDirection direction = ShapeDirection::Unspecified;
 
-    bool _opened = false;
+    private:
+        Float _size;
+        bool _opened = false;
 };
 
 struct DummyGlyphCache: AbstractGlyphCache {
@@ -2969,6 +2975,7 @@ void RendererTest::propertiesCoreRenderingInProgress() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3092,6 +3099,7 @@ void RendererTest::propertiesRenderingInProgress() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3145,8 +3153,11 @@ void RendererTest::glyphsForRuns() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {1.0f, 1.0f, -1.0f, 1.0f, 0};
         }
 
@@ -3158,7 +3169,7 @@ void RendererTest::glyphsForRuns() {
         private:
             bool _opened = false;
     } font;
-    font.openFile("", 1.0f);
+    font.openFile("", {});
     glyphCache.addFont(1, &font);
 
     struct: AbstractShaper {
@@ -3228,8 +3239,11 @@ void RendererTest::glyphsForRunsInvalid() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {1.0f, 1.0f, -1.0f, 1.0f, 0};
         }
 
@@ -3241,7 +3255,7 @@ void RendererTest::glyphsForRunsInvalid() {
         private:
             bool _opened = false;
     } font;
-    font.openFile("", 1.0f);
+    font.openFile("", {});
     glyphCache.addFont(1, &font);
 
     struct: AbstractShaper {
@@ -3299,13 +3313,16 @@ void RendererTest::allocateCore() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale advances, ascent & descent is used to
                align the block. Line height is used for multi-line text which
                we don't test here, glyph count is overriden in addFont()
                below. */
-            return {size, 2.5f, -1.0f, 10000.0f, 0};
+            return {1.0f, 2.5f, -1.0f, 10000.0f, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -3316,7 +3333,7 @@ void RendererTest::allocateCore() {
         private:
             bool _opened = false;
     } font;
-    font.openFile("", 1.0f);
+    font.openFile("", {});
     UnsignedInt fontId = glyphCache.addFont(23*2, &font);
     /* Add just the first few glyphs, in shuffled order to not have their IDs
        match the clusters */
@@ -3547,6 +3564,7 @@ void RendererTest::allocateCoreGlyphAllocator() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3805,6 +3823,7 @@ void RendererTest::allocateCoreGlyphAllocatorInvalid() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -3906,6 +3925,7 @@ void RendererTest::allocateCoreRunAllocator() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -4122,6 +4142,7 @@ void RendererTest::allocateCoreRunAllocatorInvalid() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -4244,13 +4265,16 @@ template<class Index, class TextureCoordinates> void RendererTest::allocate() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale advances, ascent & descent is used to
                align the block. Line height is used for multi-line text which
                we don't test here, glyph count is overriden in addFont()
                below. */
-            return {size, 2.5f, -1.0f, 10000.0f, 0};
+            return {1.0f, 2.5f, -1.0f, 10000.0f, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -4261,7 +4285,7 @@ template<class Index, class TextureCoordinates> void RendererTest::allocate() {
         private:
             bool _opened = false;
     } font;
-    font.openFile("", 1.0f);
+    font.openFile("", {});
     UnsignedInt fontId = glyphCache.addFont(23*2, &font);
     /* Add just the first few glyphs, in shuffled order to not have their IDs
        match the clusters. Just the simplest possible sizes to verify that the
@@ -4796,6 +4820,7 @@ void RendererTest::allocateIndexAllocator() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -5014,6 +5039,7 @@ void RendererTest::allocateIndexAllocatorInvalid() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -5133,6 +5159,7 @@ void RendererTest::allocateVertexAllocator() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -5386,6 +5413,7 @@ void RendererTest::allocateVertexAllocatorInvalid() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -5482,6 +5510,7 @@ void RendererTest::allocateVertexAllocatorNotEnoughStrideForArrayGlyphCache() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -5588,12 +5617,16 @@ void RendererTest::addSingleLine() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float size, UnsignedInt) override {
+            _size = size;
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale everything. Ascent, descent is used
                for the bounds rect. Line height isn't used for anything, glyph
                count is overriden in addFont() below. */
-            return {size, 16.0f, -8.0f, 1000.0f, 0};
+            return {_size, 16.0f, -8.0f, 1000.0f, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -5602,6 +5635,7 @@ void RendererTest::addSingleLine() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
         private:
+            Float _size;
             bool _opened = false;
     } font1, font2;
     /* Two fonts that do the same but each is opened with a different size */
@@ -5880,12 +5914,16 @@ void RendererTest::addMultipleLines() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float size, UnsignedInt) override {
+            _size = size;
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale everything. Ascent, descent, line
                height is used for the bounds rect. Glyph count is overriden in
                addFont() below. */
-            return {size, 16.0f*size, -8.0f*size, 32.0f*size, 0};
+            return {_size, 16.0f*_size, -8.0f*_size, 32.0f*_size, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -5894,6 +5932,7 @@ void RendererTest::addMultipleLines() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
         private:
+            Float _size;
             bool _opened = false;
     } font1, font2;
     font1.openFile("", 1.0f);
@@ -6128,11 +6167,14 @@ void RendererTest::addMultipleLinesAlign() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* Compared to the glyph bounds, which are from 0 to 2, this is
                shifted by one unit, thus by 0.5 in the output */
-            return {size, 1.0f, -1.0f, 8.0f, 10};
+            return {0.5f, 1.0f, -1.0f, 8.0f, 10};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) override {
@@ -6146,7 +6188,7 @@ void RendererTest::addMultipleLinesAlign() {
 
         bool _opened = false;
     } font;
-    font.openFile({}, 0.5f);
+    font.openFile({}, {});
 
     struct: AbstractShaper {
         using AbstractShaper::AbstractShaper;
@@ -6237,6 +6279,7 @@ void RendererTest::addFontNotFoundInCache() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -6292,9 +6335,13 @@ void RendererTest::multipleBlocks() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float size, UnsignedInt) override {
+            _size = size;
             _opened = true;
-            return {size, 2.0f*size, -1.0f*size, 4.0f*size, 0};
+        }
+
+        Properties doProperties() override {
+            return {_size, 2.0f*_size, -1.0f*_size, 4.0f*_size, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) override {
@@ -6306,7 +6353,9 @@ void RendererTest::multipleBlocks() {
 
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
-        bool _opened = false;
+        private:
+            Float _size;
+            bool _opened = false;
     } font1, font2;
     /* Two fonts that do the same but each is opened with a different size */
     font1.openFile("", 1.0f);
@@ -6479,8 +6528,11 @@ void RendererTest::emptyLines() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {4.0f, 5.0f, -3.0f, 8.0f, 0};
         }
 
@@ -6492,17 +6544,21 @@ void RendererTest::emptyLines() {
 
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
-        bool _opened = false;
+        private:
+            bool _opened = false;
     } font1;
-    font1.openFile({}, 0.0f);
+    font1.openFile({}, {});
 
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {6.0f, 1.0f, -2.0f, 12.0f, 0};
         }
 
@@ -6514,9 +6570,10 @@ void RendererTest::emptyLines() {
 
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
-        bool _opened = false;
+        private:
+            bool _opened = false;
     } font2;
-    font2.openFile({}, 0.0f);
+    font2.openFile({}, {});
 
     struct: AbstractShaper {
         using AbstractShaper::AbstractShaper;
@@ -6648,13 +6705,17 @@ template<class T> void RendererTest::indicesVertices() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float size, UnsignedInt) override {
+            _size = size;
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale advances, ascent & descent is used to
                align the block. Line height is used for multi-line text which
                we don't test here, glyph count is overriden in addFont()
                below. */
-            return {size, 2.0f*size, -1.0f*size, 10000.0f, 0};
+            return {_size, 2.0f*_size, -1.0f*_size, 10000.0f, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -6663,6 +6724,7 @@ template<class T> void RendererTest::indicesVertices() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
         private:
+            Float _size;
             bool _opened = false;
     } font1, font2;
     /* The same font open twice with a different size, and the same glyphs
@@ -6909,14 +6971,17 @@ void RendererTest::clearResetCore() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale advances. Ascent & descent is used
                just for vertical rect size which isn't needed as we can check
                just that the horizontal size got reset. Line height is used to
                test that line advance is correctly reset as well. Glyph count
                is overriden in addFont() below. */
-            return {size, 0.0f, 0.0f, 2.0f, 0};
+            return {1.0f, 0.0f, 0.0f, 2.0f, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -6927,7 +6992,7 @@ void RendererTest::clearResetCore() {
         private:
             bool _opened = false;
     } font;
-    font.openFile("", 1.0f);
+    font.openFile({}, {});
     glyphCache.addFont(1, &font);
 
     struct: AbstractShaper {
@@ -7090,12 +7155,15 @@ void RendererTest::clearResetCoreAllocators() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale advances, ascent, descent and line
                height is used for vertical alignment which we don't need and
                can stay zero. Glyph count is overriden in addFont() below. */
-            return {size, 0.0f, 0.0f, 0.0f, 0};
+            return {1.0f, 0.0f, 0.0f, 0.0f, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -7106,7 +7174,7 @@ void RendererTest::clearResetCoreAllocators() {
         private:
             bool _opened = false;
     } font;
-    font.openFile("", 1.0f);
+    font.openFile({}, {});
     glyphCache.addFont(1, &font);
 
     struct: AbstractShaper {
@@ -7250,14 +7318,17 @@ void RendererTest::clearReset() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale advances. Ascent & descent is used
                just for vertical rect size which isn't needed as we can check
                just that the horizontal size got reset. Line height is used to
                test that line advance is correctly reset as well. Glyph count
                is overriden in addFont() below. */
-            return {size, 0.0f, 0.0f, 2.0f, 0};
+            return {1.0f, 0.0f, 0.0f, 2.0f, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -7268,7 +7339,7 @@ void RendererTest::clearReset() {
         private:
             bool _opened = false;
     } font;
-    font.openFile("", 1.0f);
+    font.openFile("", {});
     glyphCache.addFont(1, &font);
 
     struct: AbstractShaper {
@@ -7435,12 +7506,15 @@ void RendererTest::clearResetAllocators() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float size) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale advances, ascent, descent and line
                height is used for vertical alignment which we don't need and
                can stay zero. Glyph count is overriden in addFont() below. */
-            return {size, 0.0f, 0.0f, 0.0f, 0};
+            return {1.0f, 0.0f, 0.0f, 0.0f, 0};
         }
 
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
@@ -7451,7 +7525,7 @@ void RendererTest::clearResetAllocators() {
         private:
             bool _opened = false;
     } font;
-    font.openFile("", 1.0f);
+    font.openFile("", {});
     glyphCache.addFont(1, &font);
 
     struct: AbstractShaper {

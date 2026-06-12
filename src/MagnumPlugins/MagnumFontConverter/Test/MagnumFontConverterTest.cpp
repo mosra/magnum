@@ -108,8 +108,10 @@ class MyFont: public Text::AbstractFont {
     private:
         void doClose() override { _opened = false; }
         bool doIsOpened() const override { return _opened; }
-        Properties doOpenFile(Containers::StringView, Float) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+        Properties doProperties() override {
             return {16.0f, 25.0f, -10.0f, 39.7333f, 4};
         }
         FontFeatures doFeatures() const override { return {}; }
@@ -431,6 +433,7 @@ void MagnumFontConverterTest::exportFontImageProcessingGlyphCacheNoDownload() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -459,6 +462,7 @@ void MagnumFontConverterTest::exportFontArrayCache() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -489,6 +493,7 @@ void MagnumFontConverterTest::exportFontNotFoundInCache() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
+        Properties doProperties() override { return {}; }
         void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
         Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
@@ -518,8 +523,11 @@ void MagnumFontConverterTest::exportFontImageConversionFailed() {
         FontFeatures doFeatures() const override { return {}; }
         void doClose() override { _opened = false; }
         bool doIsOpened() const override { return _opened; }
-        Properties doOpenFile(Containers::StringView, Float) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             return {16.0f, 25.0f, -10.0f, 39.7333f, 3};
         }
 

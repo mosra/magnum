@@ -51,6 +51,7 @@ struct MagnumFontTest: TestSuite::Tester {
     explicit MagnumFontTest();
 
     void nonexistent();
+    void nonZeroFontId();
     void properties();
 
     void shape();
@@ -79,6 +80,7 @@ const struct {
 
 MagnumFontTest::MagnumFontTest() {
     addTests({&MagnumFontTest::nonexistent,
+              &MagnumFontTest::nonZeroFontId,
               &MagnumFontTest::properties});
 
     addInstancedTests({&MagnumFontTest::shape},
@@ -109,6 +111,15 @@ void MagnumFontTest::nonexistent() {
     CORRADE_COMPARE_AS(out,
         "\nText::AbstractFont::openFile(): cannot open file nonexistent.conf\n",
         TestSuite::Compare::StringHasSuffix);
+}
+
+void MagnumFontTest::nonZeroFontId() {
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+
+    Containers::String out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font->openData({}, 0.0f, 1));
+    CORRADE_COMPARE(out, "Text::MagnumFont::openData(): cannot open font at index 1, only one font is available\n");
 }
 
 void MagnumFontTest::properties() {

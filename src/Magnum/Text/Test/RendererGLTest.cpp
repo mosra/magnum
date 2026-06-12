@@ -429,8 +429,11 @@ void RendererGLTest::renderClearReset() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* The size is used to scale advances, ascent & descent is used to
                align the block. Line height is used for multi-line text which
                we don't test here, glyph count is overriden in addFont()
@@ -765,8 +768,11 @@ void RendererGLTest::renderIndexTypeChanged() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Properties doOpenFile(Containers::StringView, Float) override {
+        void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
+        }
+
+        Properties doProperties() override {
             /* Compared to renderClearReset(), the line height is 0 so we can
                render the 256 glyph prefix on the same spot without having to
                adjust the cursor to place the next line correctly */

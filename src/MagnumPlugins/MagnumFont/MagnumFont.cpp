@@ -78,12 +78,17 @@ bool MagnumFont::doIsOpened() const { return _opened && _opened->image; }
 
 void MagnumFont::doClose() { _opened = nullptr; }
 
-auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const Float) -> Properties {
+void MagnumFont::doOpenData(Containers::Array<char>&& data, DataFlags, Float, UnsignedInt fontId) {
+    if(fontId != 0) {
+        Error{} << "Text::MagnumFont::openData(): cannot open font at index" << fontId << Debug::nospace << ", only one font is available";
+        return;
+    }
+
     if(!_opened) _opened.emplace();
 
     if(!_opened->filePath && !fileCallback()) {
         Error{} << "Text::MagnumFont::openData(): the font can be opened only from the filesystem or if a file callback is present";
-        return {};
+        return;
     }
 
     /* Open the configuration file */
@@ -92,23 +97,25 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
     Utility::Configuration conf(in, Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
         Error{} << "Text::MagnumFont::openData(): font file is not valid";
-        return {};
+        return;
     }
 
     /* Check version */
     if(conf.value<UnsignedInt>("version") != 1) {
         Error() << "Text::MagnumFont::openData(): unsupported file version, expected 1 but got"
                 << conf.value<UnsignedInt>("version");
-        return {};
+        return;
     }
 
     /* Open and load image file. Error messages should be printed by the
        TgaImporter already, no need to repeat them again. */
     Trade::TgaImporter importer;
     importer.setFileCallback(fileCallback(), fileCallbackUserData());
-    if(!importer.openFile(Utility::Path::join(_opened->filePath ? *_opened->filePath : "", conf.value("image")))) return {};
+    if(!importer.openFile(Utility::Path::join(_opened->filePath ? *_opened->filePath : "", conf.value("image"))))
+        return;
     _opened->image = importer.image2D(0);
-    if(!_opened->image) return {};
+    if(!_opened->image)
+        return;
 
     /* Everything okay, save the data internally */
     _opened->conf = Utility::move(conf);
@@ -129,19 +136,21 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
         CORRADE_INTERNAL_ASSERT(glyphId < _opened->glyphs.size());
         _opened->glyphId.emplace(c->value<char32_t>("unicode"), glyphId);
     }
+}
 
+auto MagnumFont::doProperties() -> Properties {
     return {_opened->conf.value<Float>("fontSize"),
             _opened->conf.value<Float>("ascent"),
             _opened->conf.value<Float>("descent"),
             _opened->conf.value<Float>("lineHeight"),
-            UnsignedInt(glyphs.size())};
+            UnsignedInt(_opened->glyphs.size())};
 }
 
-auto MagnumFont::doOpenFile(const Containers::StringView filename, const Float size) -> Properties {
+void MagnumFont::doOpenFile(const Containers::StringView filename, const Float size, const UnsignedInt fontId) {
     _opened.emplace();
     _opened->filePath.emplace(Utility::Path::path(filename));
 
-    return AbstractFont::doOpenFile(filename, size);
+    return AbstractFont::doOpenFile(filename, size, fontId);
 }
 
 void MagnumFont::doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>& characters, const Containers::StridedArrayView1D<UnsignedInt>& glyphs) {
