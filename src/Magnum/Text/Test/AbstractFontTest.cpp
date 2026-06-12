@@ -196,6 +196,17 @@ struct AbstractFontTest: TestSuite::Tester {
     #endif
 };
 
+const struct {
+    const char* name;
+    bool openedBefore;
+    /** @todo remove this once the deprecated APIs are gone */
+    UnsignedInt fontId;
+} OpenDataFileData[]{
+    {"", false, 0},
+    {"opened before", true, 0},
+    {"non-zero font ID", false, 1}
+};
+
 /** @todo remove this once the deprecated APIs are gone */
 const struct {
     const char* name;
@@ -256,7 +267,7 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::dataFontCountNotSupported});
 
     addInstancedTests({&AbstractFontTest::openData},
-        Containers::arraySize(OpenData));
+        Containers::arraySize(OpenDataFileData));
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     addTests({&AbstractFontTest::openDataDeprecated,
@@ -271,7 +282,7 @@ AbstractFontTest::AbstractFontTest() {
     #endif
 
     addInstancedTests({&AbstractFontTest::openFile},
-        Containers::arraySize(OpenData));
+        Containers::arraySize(OpenDataFileData));
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     addTests({&AbstractFontTest::openFileDeprecated,
@@ -900,24 +911,25 @@ void AbstractFontTest::dataFontCountNotSupported() {
 }
 
 void AbstractFontTest::openData() {
-    auto&& data = OpenData[testCaseInstanceId()];
+    auto&& data = OpenDataFileData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
-        bool doIsOpened() const override { return _opened; }
+        bool doIsOpened() const override { return opened; }
         void doClose() override {
-            CORRADE_VERIFY(_opened);
-            _opened = false;
+            CORRADE_VERIFY(opened);
+            opened = false;
         }
 
         void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+            CORRADE_VERIFY(!opened);
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
             CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
-            _opened = true;
+            opened = true;
         }
 
         Properties doProperties() override {
@@ -930,13 +942,12 @@ void AbstractFontTest::openData() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
         UnsignedInt expectedFontId;
-
-        private:
-            bool _opened = false;
+        bool opened;
     } font;
     font.expectedFontId = data.fontId;
+    font.opened = data.openedBefore;
+    CORRADE_COMPARE(font.isOpened(), data.openedBefore);
 
-    CORRADE_VERIFY(!font.isOpened());
     const char a5[]{'\xa5'};
     /* Verify that even with font ID 0 it delegates to the non-deprecated
        doOpenData() overload */
@@ -1103,22 +1114,22 @@ void AbstractFontTest::openDataFailedDeprecated() {
 #endif
 
 void AbstractFontTest::openFile() {
-    auto&& data = OpenData[testCaseInstanceId()];
+    auto&& data = OpenDataFileData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return _opened; }
+        bool doIsOpened() const override { return opened; }
         void doClose() override {
-            CORRADE_VERIFY(_opened);
-            _opened = false;
+            CORRADE_VERIFY(opened);
+            opened = false;
         }
 
         void doOpenFile(Containers::StringView filename, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE(filename, "hello.ttf");
             CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
-            _opened = true;
+            opened = true;
         }
 
         Properties doProperties() override {
@@ -1131,13 +1142,12 @@ void AbstractFontTest::openFile() {
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
         UnsignedInt expectedFontId;
-
-        private:
-            bool _opened = false;
+        bool opened;
     } font;
     font.expectedFontId = data.fontId;
+    font.opened = data.openedBefore;
+    CORRADE_COMPARE(font.isOpened(), data.openedBefore);
 
-    CORRADE_VERIFY(!font.isOpened());
     /* Verify that even with font ID 0 it delegates to the non-deprecated
        doOpenFile() overload */
     /** @todo remove the instanced font ID once the deprecated APIs are gone,

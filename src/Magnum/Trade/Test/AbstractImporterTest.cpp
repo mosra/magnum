@@ -395,10 +395,29 @@ struct AbstractImporterTest: TestSuite::Tester {
 const struct {
     const char* name;
     bool openMemory;
+    bool openedBefore;
     DataFlags expectedFlags;
 } OpenDataMemoryData[]{
-    {"open data", false, {}},
-    {"open memory", true, DataFlag::ExternallyOwned},
+    {"open data", false, false, {}},
+    {"open data, opened before", false, true, {}},
+    {"open memory", true, false, DataFlag::ExternallyOwned},
+    {"open memory, opened before", true, true, DataFlag::ExternallyOwned},
+};
+
+const struct {
+    const char* name;
+    bool openMemory;
+} OpenDataMemoryFailedData[]{
+    {"open data", false},
+    {"open memory", true},
+};
+
+const struct {
+    const char* name;
+    bool openedBefore;
+} OpenFileStateData[]{
+    {"", false},
+    {"opened before", true},
 };
 
 const struct {
@@ -429,22 +448,29 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::setFlagsFileOpened,
               &AbstractImporterTest::setFlagsNotImplemented});
 
-    addInstancedTests({&AbstractImporterTest::openDataMemory,
-                       &AbstractImporterTest::openDataMemoryFailed},
+    addInstancedTests({&AbstractImporterTest::openDataMemory},
         Containers::arraySize(OpenDataMemoryData));
+
+    addInstancedTests({&AbstractImporterTest::openDataMemoryFailed},
+        Containers::arraySize(OpenDataMemoryFailedData));
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     addTests({&AbstractImporterTest::openDataDeprecatedFallback,
               &AbstractImporterTest::openDataDeprecatedFallbackFailed});
     #endif
 
-    addTests({&AbstractImporterTest::openFile,
-              &AbstractImporterTest::openFileFailed,
+    addInstancedTests({&AbstractImporterTest::openFile},
+        Containers::arraySize(OpenFileStateData));
+
+    addTests({&AbstractImporterTest::openFileFailed,
               &AbstractImporterTest::openFileAsData,
               &AbstractImporterTest::openFileAsDataNotFound,
-              &AbstractImporterTest::openFileAsDataFailed,
-              &AbstractImporterTest::openState,
-              &AbstractImporterTest::openStateFailed,
+              &AbstractImporterTest::openFileAsDataFailed});
+
+    addInstancedTests({&AbstractImporterTest::openState},
+        Containers::arraySize(OpenFileStateData));
+
+    addTests({&AbstractImporterTest::openStateFailed,
 
               &AbstractImporterTest::openFileNotImplemented,
               &AbstractImporterTest::openDataNotSupported,
@@ -903,30 +929,30 @@ void AbstractImporterTest::openDataMemory() {
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
-        bool doIsOpened() const override { return _opened; }
+        bool doIsOpened() const override { return opened; }
         void doClose() override {
-            CORRADE_VERIFY(_opened);
-            _opened = false;
+            CORRADE_VERIFY(opened);
+            opened = false;
         }
 
         void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override {
+            CORRADE_VERIFY(!opened);
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
             CORRADE_COMPARE(dataFlags, expectedFlags);
             /* The array should have a custom no-op deleter */
             CORRADE_VERIFY(data.deleter());
-            _opened = true;
+            opened = true;
         }
 
         DataFlags expectedFlags;
-
-        private:
-            bool _opened = false;
+        bool opened;
     } importer;
     importer.expectedFlags = data.expectedFlags;
+    importer.opened = data.openedBefore;
+    CORRADE_COMPARE(importer.isOpened(), data.openedBefore);
 
-    CORRADE_VERIFY(!importer.isOpened());
     const char a5 = '\xa5';
     if(data.openMemory)
         CORRADE_VERIFY(importer.openMemory({&a5, 1}));
@@ -939,7 +965,7 @@ void AbstractImporterTest::openDataMemory() {
 }
 
 void AbstractImporterTest::openDataMemoryFailed() {
-    auto&& data = OpenDataMemoryData[testCaseInstanceId()];
+    auto&& data = OpenDataMemoryFailedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     struct: AbstractImporter {
@@ -1023,23 +1049,28 @@ void AbstractImporterTest::openDataDeprecatedFallbackFailed() {
 #endif
 
 void AbstractImporterTest::openFile() {
+    auto&& data = OpenFileStateData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return _opened; }
+        bool doIsOpened() const override { return opened; }
         void doClose() override {
-            CORRADE_VERIFY(_opened);
-            _opened = false;
+            CORRADE_VERIFY(opened);
+            opened = false;
         }
 
         void doOpenFile(Containers::StringView filename) override {
+            CORRADE_VERIFY(!opened);
             CORRADE_COMPARE(filename, "yello.foo");
-            _opened = true;
+            opened = true;
         }
 
-        bool _opened = false;
+        bool opened;
     } importer;
+    importer.opened = data.openedBefore;
+    CORRADE_COMPARE(importer.isOpened(), data.openedBefore);
 
-    CORRADE_VERIFY(!importer.isOpened());
     CORRADE_VERIFY(importer.openFile("yello.foo"));
     CORRADE_VERIFY(importer.isOpened());
 
@@ -1148,26 +1179,31 @@ void AbstractImporterTest::openFileAsDataFailed() {
 }
 
 void AbstractImporterTest::openState() {
+    auto&& data = OpenFileStateData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override {
             return ImporterFeature::OpenState;
         }
-        bool doIsOpened() const override { return _opened; }
+        bool doIsOpened() const override { return opened; }
         void doClose() override {
-            CORRADE_VERIFY(_opened);
-            _opened = false;
+            CORRADE_VERIFY(opened);
+            opened = false;
         }
 
         void doOpenState(const void* state, Containers::StringView filePath) override {
+            CORRADE_VERIFY(!opened);
             CORRADE_COMPARE(state, reinterpret_cast<const void*>(std::size_t{0xbadcafe}));
             CORRADE_COMPARE(filePath, "yello/foo/");
-            _opened = true;
+            opened = true;
         }
 
-        bool _opened = false;
+        bool opened;
     } importer;
+    importer.opened = data.openedBefore;
+    CORRADE_COMPARE(importer.isOpened(), data.openedBefore);
 
-    CORRADE_VERIFY(!importer.isOpened());
     CORRADE_VERIFY(importer.openState(reinterpret_cast<const void*>(std::size_t{0xbadcafe}), "yello/foo/"));
     CORRADE_VERIFY(importer.isOpened());
 
