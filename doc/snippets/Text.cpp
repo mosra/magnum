@@ -217,6 +217,36 @@ font->setFileCallback([](const std::string& filename,
 }
 
 {
+struct: Text::AbstractFont {
+    Text::FontFeatures doFeatures() const override { return {}; }
+    bool doIsOpened() const override { return false; }
+    void doClose() override {}
+    Properties doProperties() override { return {}; }
+    void doGlyphIdsInto(const Containers::StridedArrayView1D<const char32_t>&, const Containers::StridedArrayView1D<UnsignedInt>&) override {}
+    Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+    Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+    Containers::Pointer<Text::AbstractShaper> doCreateShaper() override { return {}; }
+
+    Containers::Array<char> _in;
+
+/* [AbstractFont-doOpenData-ownership] */
+void doOpenData(Containers::Array<char>&& data, Text::DataFlags dataFlags,
+    Float size, UnsignedInt fontId) override
+{
+    /* Take over the existing array or copy the data if we can't */
+    if(dataFlags & (Text::DataFlag::Owned|Text::DataFlag::ExternallyOwned))
+        _in = std::move(data);
+    else
+        _in = Containers::Array<char>{InPlaceInit, data};
+
+    DOXYGEN_ELLIPSIS(static_cast<void>(size); static_cast<void>(fontId);)
+}
+/* [AbstractFont-doOpenData-ownership] */
+} font;
+}
+
+
+{
 /* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
    the font pointer. I don't care, I just want you to check compilation errors,
    not more! */

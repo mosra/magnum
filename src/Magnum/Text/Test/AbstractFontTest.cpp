@@ -26,7 +26,7 @@
 */
 
 #include <string> /** @todo remove once file callbacks are std::string-free */
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
@@ -60,6 +60,8 @@ struct AbstractFontTest: TestSuite::Tester {
     void debugFeaturePacked();
     void debugFeatures();
     void debugFeaturesPacked();
+    void debugDataFlag();
+    void debugDataFlags();
 
     void construct();
 
@@ -77,12 +79,14 @@ struct AbstractFontTest: TestSuite::Tester {
     void fontCountInvalid();
     void dataFontCountNotSupported();
 
-    void openData();
+    void openDataMemory();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void openDataDeprecated();
     void openDataDeprecatedNonZeroFontId();
+    /* No deprecated variants of openMemory(), as the behavior is the same as
+       with openData() there */
     #endif
-    void openDataFailed();
+    void openDataMemoryFailed();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void openDataFailedDeprecated();
     #endif
@@ -198,10 +202,26 @@ struct AbstractFontTest: TestSuite::Tester {
 
 const struct {
     const char* name;
+    bool openMemory;
+    bool openedBefore;
+    DataFlags expectedFlags;
+    /** @todo remove this once the deprecated APIs are gone */
+    UnsignedInt fontId;
+} OpenDataMemoryData[]{
+    {"open data", false, false, {}, 0},
+    {"open data, opened before", false, true, {}, 0},
+    {"open data, non-zero font ID", false, false, {}, 1},
+    {"open memory", true, false, DataFlag::ExternallyOwned, 0},
+    {"open memory, opened before", true, true, DataFlag::ExternallyOwned, 0},
+    {"open memory, non-zero font ID", true, false, DataFlag::ExternallyOwned, 1}
+};
+
+const struct {
+    const char* name;
     bool openedBefore;
     /** @todo remove this once the deprecated APIs are gone */
     UnsignedInt fontId;
-} OpenDataFileData[]{
+} OpenFileData[]{
     {"", false, 0},
     {"opened before", true, 0},
     {"non-zero font ID", false, 1}
@@ -242,6 +262,8 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::debugFeaturePacked,
               &AbstractFontTest::debugFeatures,
               &AbstractFontTest::debugFeaturesPacked,
+              &AbstractFontTest::debugDataFlag,
+              &AbstractFontTest::debugDataFlags,
 
               &AbstractFontTest::construct});
 
@@ -266,23 +288,23 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::fontCountInvalid,
               &AbstractFontTest::dataFontCountNotSupported});
 
-    addInstancedTests({&AbstractFontTest::openData},
-        Containers::arraySize(OpenDataFileData));
+    addInstancedTests({&AbstractFontTest::openDataMemory},
+        Containers::arraySize(OpenDataMemoryData));
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     addTests({&AbstractFontTest::openDataDeprecated,
               &AbstractFontTest::openDataDeprecatedNonZeroFontId});
     #endif
 
-    addInstancedTests({&AbstractFontTest::openDataFailed},
-        Containers::arraySize(OpenData));
+    addInstancedTests({&AbstractFontTest::openDataMemoryFailed},
+        Containers::arraySize(OpenDataMemoryData));
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     addTests({&AbstractFontTest::openDataFailedDeprecated});
     #endif
 
     addInstancedTests({&AbstractFontTest::openFile},
-        Containers::arraySize(OpenDataFileData));
+        Containers::arraySize(OpenFileData));
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     addTests({&AbstractFontTest::openFileDeprecated,
@@ -452,6 +474,18 @@ void AbstractFontTest::debugFeaturesPacked() {
     CORRADE_COMPARE(out, "OpenData|PreparedGlyphCache {} Text::FontFeature::FileCallback\n");
 }
 
+void AbstractFontTest::debugDataFlag() {
+    Containers::String out;
+    Debug{&out} << DataFlag::ExternallyOwned << DataFlag(0xf0);
+    CORRADE_COMPARE(out, "Text::DataFlag::ExternallyOwned Text::DataFlag(0xf0)\n");
+}
+
+void AbstractFontTest::debugDataFlags() {
+    Containers::String out;
+    Debug{&out} << (DataFlag::Owned|DataFlag(0xa0)) << DataFlags{};
+    CORRADE_COMPARE(out, "Text::DataFlag::Owned|Text::DataFlag(0xa0) Text::DataFlags{}\n");
+}
+
 void AbstractFontTest::construct() {
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
@@ -493,7 +527,7 @@ void AbstractFontTest::dataFontCount() {
             return 37;
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -535,7 +569,7 @@ void AbstractFontTest::dataFontCountFailed() {
             return {};
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -713,7 +747,7 @@ void AbstractFontTest::fileFontCountAsData() {
             return 37;
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -754,7 +788,7 @@ void AbstractFontTest::fileFontCountAsDataNotFound() {
             return {};
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -803,7 +837,7 @@ void AbstractFontTest::fileFontCountAsDataFailed() {
             return {};
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -910,8 +944,8 @@ void AbstractFontTest::dataFontCountNotSupported() {
     CORRADE_COMPARE(out, "Text::AbstractFont::dataFontCount(): feature not supported\n");
 }
 
-void AbstractFontTest::openData() {
-    auto&& data = OpenDataFileData[testCaseInstanceId()];
+void AbstractFontTest::openDataMemory() {
+    auto&& data = OpenDataMemoryData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     struct: AbstractFont {
@@ -922,11 +956,14 @@ void AbstractFontTest::openData() {
             opened = false;
         }
 
-        void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags, Float size, UnsignedInt fontId) override {
             CORRADE_VERIFY(!opened);
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, expectedFlags);
+            /* The array should have a custom no-op deleter */
+            CORRADE_VERIFY(data.deleter());
             CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             opened = true;
@@ -941,9 +978,11 @@ void AbstractFontTest::openData() {
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
         Containers::Pointer<AbstractShaper> doCreateShaper() override { return {}; }
 
+        DataFlags expectedFlags;
         UnsignedInt expectedFontId;
         bool opened;
     } font;
+    font.expectedFlags = data.expectedFlags;
     font.expectedFontId = data.fontId;
     font.opened = data.openedBefore;
     CORRADE_COMPARE(font.isOpened(), data.openedBefore);
@@ -953,7 +992,10 @@ void AbstractFontTest::openData() {
        doOpenData() overload */
     /** @todo remove the instanced font ID once the deprecated APIs are gone,
         supply a constant instead */
-    CORRADE_VERIFY(font.openData(a5, 13.0f, data.fontId));
+    if(data.openMemory)
+        CORRADE_VERIFY(font.openMemory(a5, 13.0f, data.fontId));
+    else
+        CORRADE_VERIFY(font.openData(a5, 13.0f, data.fontId));
     CORRADE_VERIFY(font.isOpened());
     CORRADE_COMPARE(font.size(), 31.0f);
     CORRADE_COMPARE(font.ascent(), 1.0f);
@@ -1042,8 +1084,8 @@ void AbstractFontTest::openDataDeprecatedNonZeroFontId() {
 }
 #endif
 
-void AbstractFontTest::openDataFailed() {
-    auto&& data = OpenData[testCaseInstanceId()];
+void AbstractFontTest::openDataMemoryFailed() {
+    auto&& data = OpenDataMemoryData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     struct: AbstractFont {
@@ -1051,7 +1093,7 @@ void AbstractFontTest::openDataFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             called = true;
         }
 
@@ -1074,7 +1116,10 @@ void AbstractFontTest::openDataFailed() {
        overload for font 0 */
     /** @todo remove the instanced font ID once the deprecated APIs are gone,
         supply a constant instead */
-    CORRADE_VERIFY(!font.openData(nullptr, 1.0f, data.fontId));
+    if(data.openMemory)
+        CORRADE_VERIFY(!font.openMemory(nullptr, 1.0f, data.fontId));
+    else
+        CORRADE_VERIFY(!font.openData(nullptr, 1.0f, data.fontId));
     CORRADE_VERIFY(!font.isOpened());
     CORRADE_VERIFY(font.called);
     CORRADE_COMPARE(out, "");
@@ -1114,7 +1159,7 @@ void AbstractFontTest::openDataFailedDeprecated() {
 #endif
 
 void AbstractFontTest::openFile() {
-    auto&& data = OpenDataFileData[testCaseInstanceId()];
+    auto&& data = OpenFileData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     struct: AbstractFont {
@@ -1317,10 +1362,13 @@ void AbstractFontTest::openFileAsData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xa5'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, DataFlag::Owned);
+            /* I.e., we can take over the array, it's not just a view */
+            CORRADE_VERIFY(!data.deleter());
             CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             _opened = true;
@@ -1365,7 +1413,7 @@ void AbstractFontTest::openFileAsDataNotFound() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
         }
 
@@ -1476,7 +1524,7 @@ void AbstractFontTest::openFileAsDataFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             called = true;
         }
 
@@ -1663,7 +1711,7 @@ void AbstractFontTest::propertiesNotImplemented() {
         void doOpenFile(Containers::StringView, Float, UnsignedInt) override {
             _opened = true;
         }
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -1902,7 +1950,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
             _opened = true;
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
         }
 
@@ -1964,7 +2012,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectlyDeprecated() {
             return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
         }
         Properties doOpenData(Containers::ArrayView<const char>, Float) override {
@@ -2077,7 +2125,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectlyFailed() {
             openCalled = true;
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
         }
 
@@ -2132,7 +2180,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectlyFailedDeprecated() {
             return {};
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
         }
         Properties doOpenData(Containers::ArrayView<const char>, Float) override {
@@ -2197,10 +2245,13 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
             AbstractFont::doOpenFile(filename, size, fontId);
         }
 
-        void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xb0'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, DataFlags{});
+            /* The array should have a custom no-op deleter */
+            CORRADE_VERIFY(data.deleter());
             CORRADE_COMPARE(size, 42.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             _opened = true;
@@ -2368,7 +2419,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationNotFound(
             AbstractFont::doOpenFile(filename, size, fontId);
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
         }
 
@@ -2439,7 +2490,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() 
             AbstractFont::doOpenFile(filename, size, fontId);
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             openDataCalled = true;
         }
 
@@ -2593,10 +2644,13 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
             CORRADE_FAIL("This should not be called");
         }
 
-        void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId) override {
+        void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags, Float size, UnsignedInt fontId) override {
             CORRADE_COMPARE_AS(data,
                 Containers::arrayView({'\xb0'}),
                 TestSuite::Compare::Container);
+            CORRADE_COMPARE(dataFlags, DataFlags{});
+            /* The array should have a custom no-op deleter */
+            CORRADE_VERIFY(data.deleter());
             CORRADE_COMPARE(size, 13.0f);
             CORRADE_COMPARE(fontId, expectedFontId);
             _opened = true;
@@ -2810,7 +2864,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataNotFound() {
             CORRADE_FAIL("This should not be called");
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             CORRADE_FAIL("This should not be called");
         }
 
@@ -2873,7 +2927,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
             CORRADE_FAIL("This should not be called");
         }
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             openCalled = true;
         }
 
@@ -3000,7 +3054,7 @@ void AbstractFontTest::properties() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3062,7 +3116,7 @@ void AbstractFontTest::glyphId() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3156,7 +3210,7 @@ void AbstractFontTest::glyphIdOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3197,7 +3251,7 @@ void AbstractFontTest::glyphName() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3235,7 +3289,7 @@ void AbstractFontTest::glyphNameNotImplemented() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3293,7 +3347,7 @@ void AbstractFontTest::glyphNameOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3329,7 +3383,7 @@ void AbstractFontTest::glyphSizeAdvance() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3382,7 +3436,7 @@ void AbstractFontTest::glyphSizeAdvanceOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3424,7 +3478,7 @@ void AbstractFontTest::fillGlyphCache() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3479,7 +3533,7 @@ void AbstractFontTest::fillGlyphCacheOutOfRange() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3519,7 +3573,7 @@ void AbstractFontTest::fillGlyphCacheNotUnique() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3555,7 +3609,7 @@ void AbstractFontTest::fillGlyphCacheFromString() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3626,7 +3680,7 @@ void AbstractFontTest::fillGlyphCacheFailed() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 
@@ -3704,7 +3758,7 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        void doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt) override {
+        void doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt) override {
             _opened = true;
         }
 

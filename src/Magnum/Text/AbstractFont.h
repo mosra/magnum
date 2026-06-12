@@ -28,7 +28,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractFont, enum @ref Magnum::Text::FontFeature, enum set @ref Magnum::Text::FontFeatures
+ * @brief Class @ref Magnum::Text::AbstractFont, enum @ref Magnum::Text::FontFeature, @ref Magnum::Text::DataFlag, enum set @ref Magnum::Text::FontFeatures, @ref Magnum::Text::DataFlags
  */
 
 #include <initializer_list>
@@ -102,6 +102,55 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontFeature value);
 
 /** @debugoperatorenum{FontFeatures} */
 MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontFeatures value);
+
+/**
+@brief Data flag
+@m_since_latest
+
+@see @ref DataFlags, @ref AbstractFont::doOpenData(), @ref Trade::DataFlag
+*/
+enum class DataFlag: UnsignedByte {
+    /**
+     * Data is owned by the instance, meaning it stays in scope for as long as
+     * the instance. If neither @ref DataFlag::Owned nor
+     * @ref DataFlag::ExternallyOwned is set, the data is considered to be just
+     * a temporary allocation and no assumptions about its lifetime can be
+     * made.
+     */
+    Owned = 1 << 0,
+
+    /**
+     * Data has an owner external to the instance, for example a memory-mapped
+     * file or a constant memory. In general the data lifetime exceeds lifetime
+     * of the instance wrapping it. If neither @ref DataFlag::Owned nor
+     * @ref DataFlag::ExternallyOwned is set, the data is considered to be just
+     * a temporary allocation and no assumptions about its lifetime can be
+     * made.
+     */
+    ExternallyOwned = 1 << 1
+};
+
+/**
+@debugoperatorenum{DataFlag}
+@m_since_latest
+*/
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, DataFlag value);
+
+/**
+@brief Data flags
+@m_since_latest
+
+@see @ref AbstractFont::doOpenData(), @ref Trade::DataFlag
+*/
+typedef Containers::EnumSet<DataFlag> DataFlags;
+
+CORRADE_ENUMSET_OPERATORS(DataFlags)
+
+/**
+@debugoperatorenum{DataFlags}
+@m_since_latest
+*/
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, DataFlags value);
 
 /**
 @brief Base for font plugins
@@ -189,10 +238,10 @@ all glyphs in the font:
 @section Text-AbstractFont-usage-callbacks Loading data from memory, using file callbacks
 
 Besides loading data directly from the filesystem using @ref openFile() like
-shown above, it's possible to use @ref openData() to load fonts from memory
-(for example from @relativeref{Corrade,Utility::Resource}). Note that the
-particular font implementation has to support @ref FontFeature::OpenData for
-this method to work:
+shown above, it's possible to use @ref openData() / @ref openMemory() to load
+fonts from memory (for example from @relativeref{Corrade,Utility::Resource}).
+Note that the particular font implementation has to support
+@ref FontFeature::OpenData for this method to work:
 
 @snippet Text.cpp AbstractFont-usage-data
 
@@ -461,10 +510,14 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Size to open the font in, in points
          * @param fontId        Font index
          *
-         * Closes previous file, if it was opened, and tries to open given
-         * raw data. Available only if @ref FontFeature::OpenData is supported.
-         * On failure prints a message to @relativeref{Magnum,Error} and
-         * returns @cpp false @ce.
+         * Closes previous file, if it was opened, and tries to open given raw
+         * data. Available only if @ref FontFeature::OpenData is supported. On
+         * failure prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce.
+         *
+         * The @p data is not expected to be alive after the function exits.
+         * Using @ref openMemory() instead as can avoid unnecessary copies in
+         * exchange for stricter requirements on @p data lifetime.
          *
          * The function will fail if @p fontId is larger than the count of
          * fonts in given file. The total font count can be queried using
@@ -476,6 +529,35 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const void> data, Float size, UnsignedInt fontId = 0);
+
+        /**
+         * @brief Open a non-temporary memory
+         * @param memory        Resident memory containing font data
+         * @param size          Size to open the font in, in points
+         * @param fontId        Font index
+         * @m_since_latest
+         *
+         * Closes previous file, if it was opened, and tries to open given raw
+         * data. Available only if @ref FontFeature::OpenData is supported. On
+         * failure prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce.
+         *
+         * Unlike @ref openData(), this function expects @p memory to stay in
+         * scope until the font is destructed, @ref close() is called or
+         * another file is opened. This allows the implementation to directly
+         * operate on the provided memory, without having to allocate a local
+         * copy to extend its lifetime.
+         *
+         * The function will fail if @p fontId is larger than the count of
+         * fonts in given file. The total font count can be queried using
+         * @ref dataFontCount(), but as font rasterization libraries commonly
+         * require picking a concrete font index in order to open a file at
+         * all and don't allow changing it afterwards, it's faster to directly
+         * attempt to open a concrete index without checking it against
+         * @ref dataFontCount() first, and handle a potential failure.
+         * @see @ref features(), @ref openFile()
+         */
+        bool openMemory(Containers::ArrayView<const void> memory, Float size, UnsignedInt fontId = 0);
 
         /**
          * @brief Open a file
@@ -864,18 +946,44 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         virtual Containers::Optional<UnsignedInt> doDataFontCount(Containers::ArrayView<const char> data);
 
         /**
-         * @brief Implementation for @ref openData()
+         * @brief Implementation for @ref openData() and @ref openMemory()
          * @m_since_latest
          *
          * If the operation was successful, @ref doIsOpened() should return
          * @cpp true @ce after calling this function, @cpp false @ce otherwise.
+         *
+         * The @p data is mutable or owned depending on the value of
+         * @p dataFlags. This can be used for example to avoid allocating a
+         * local copy in order to preserve its lifetime. The following cases
+         * are possible:
+         *
+         * -    If @p dataFlags is empty, @p data is a @cpp const @ce
+         *      non-owning view. This happens when the function is called from
+         *      @ref openData(). You have to assume the data go out of scope
+         *      after the function exists, so if the font needs to access the
+         *      data after, it has to allocate a local copy.
+         * -    If @p dataFlags is @ref DataFlag::Owned, @p data is an owned
+         *      (mutable) memory. This happens when the implementation is
+         *      called from the default @ref doOpenFile() implementation --- it
+         *      reads a file into a newly allocated array and passes it to this
+         *      function. You can take ownership of the @p data instance
+         *      instead of allocating a local copy.
+         * -    If @p dataFlags is @ref DataFlag::ExternallyOwned, it can be
+         *      assumed that @p data will stay in scope until @ref doClose() is
+         *      called or the font is destructed. This happens when the
+         *      function is called from @ref openMemory().
+         *
+         * Example workflow in a plugin that needs to preserve access to the
+         * input data but wants to avoid allocating a copy if possible:
+         *
+         * @snippet Text.cpp AbstractFont-doOpenData-ownership
          */
-        virtual void doOpenData(Containers::ArrayView<const char> data, Float size, UnsignedInt fontId);
+        virtual void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags, Float size, UnsignedInt fontId);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Implementation for @ref openData()
-         * @m_deprecated_since_latest Implement @ref doOpenData(Containers::ArrayView<const char>, Float, UnsignedInt)
+         * @m_deprecated_since_latest Implement @ref doOpenData(Containers::Array<char>&&, DataFlags, Float, UnsignedInt)
          *      and @ref doProperties() instead.
          *
          * If @ref doIsOpened() returns @cpp true @ce after calling this

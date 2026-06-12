@@ -94,6 +94,28 @@ Debug& operator<<(Debug& debug, const FontFeatures value) {
     });
 }
 
+Debug& operator<<(Debug& debug, const DataFlag value) {
+    debug << "Text::DataFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case DataFlag::v: return debug << "::" #v;
+        _c(Owned)
+        _c(ExternallyOwned)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const DataFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Text::DataFlags{}", {
+        DataFlag::Owned,
+        DataFlag::ExternallyOwned
+    });
+}
+
 Containers::StringView AbstractFont::pluginInterface() {
     return MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE ""_s;
 }
@@ -181,7 +203,7 @@ bool AbstractFont::openData(const Containers::ArrayView<const void> data, const 
        the check doesn't be done on the plugin side) because for some file
        formats it could be valid (MagnumFont in particular). */
     close();
-    doOpenData(Containers::arrayCast<const char>(data), size, fontId);
+    doOpenData(Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), [](char*, std::size_t) {}}, {}, size, fontId);
 
     /* If opening succeeded, cache reported font properties. If not, the values
        were reset to default-constructed values by close(). (OTOH, on
@@ -203,7 +225,7 @@ bool AbstractFont::openData(const Containers::ArrayView<const void> data, const 
     return false;
 }
 
-void AbstractFont::doOpenData(const Containers::ArrayView<const char> data, const Float size, const UnsignedInt fontId) {
+void AbstractFont::doOpenData(Containers::Array<char>&& data, DataFlags, const Float size, const UnsignedInt fontId) {
     #ifndef MAGNUM_BUILD_DEPRECATED
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", );
     static_cast<void>(data);
@@ -237,6 +259,31 @@ auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Prope
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", {});
 }
 #endif
+
+bool AbstractFont::openMemory(Containers::ArrayView<const void> memory, const Float size, const UnsignedInt fontId) {
+    CORRADE_ASSERT(features() & FontFeature::OpenData,
+        "Text::AbstractFont::openData(): feature not supported", false);
+
+    /* We accept empty data here (instead of checking for them and failing so
+       the check doesn't be done on the plugin side) because for some file
+       formats it could be valid (MagnumFont in particular). */
+    close();
+    doOpenData(Containers::Array<char>{const_cast<char*>(static_cast<const char*>(memory.data())), memory.size(), [](char*, std::size_t) {}}, DataFlag::ExternallyOwned, size, fontId);
+
+    /* If opening succeeded, cache reported font properties. Same logic as in
+       openData() */
+    if(isOpened()) {
+        const Properties properties = doProperties();
+        _size = properties.size;
+        _ascent = properties.ascent;
+        _descent = properties.descent;
+        _lineHeight = properties.lineHeight;
+        _glyphCount = properties.glyphCount;
+        return true;
+    }
+
+    return false;
+}
 
 Containers::Optional<UnsignedInt> AbstractFont::fileFontCount(const Containers::StringView filename) {
     /* The logic here is mirroring what's in openFile(), just with delegating
@@ -368,7 +415,7 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
             return isOpened();
         }
 
-        doOpenData(*data, size, fontId);
+        doOpenData(Containers::Array<char>{const_cast<char*>(data->data()), data->size(), [](char*, std::size_t) {}}, {}, size, fontId);
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Shouldn't get here, the assert is fired already in setFileCallback() */
@@ -420,18 +467,18 @@ void AbstractFont::doOpenFile(const Containers::StringView filename, const Float
             return;
         }
 
-        doOpenData(*data, size, fontId);
+        doOpenData(Containers::Array<char>{const_cast<char*>(data->data()), data->size(), [](char*, std::size_t) {}}, {}, size, fontId);
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Otherwise open the file directly */
     } else {
-        const Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filename);
         if(!data) {
             Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
             return;
         }
 
-        doOpenData(*data, size, fontId);
+        doOpenData(*Utility::move(data), DataFlag::Owned, size, fontId);
     }
 }
 
