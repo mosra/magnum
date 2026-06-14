@@ -160,13 +160,13 @@ void ObjImporter::doClose() {
 bool ObjImporter::doIsOpened() const { return !!_file; }
 
 void ObjImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dataFlags) {
-    _file.reset(new File);
+    _file.emplace();
 
     /* Copy file content. Take over the existing array or copy the data if we
        can't. We need to keep the data around as JSON tokens are views onto it
        and also for the GLB binary chunk. */
     if(dataFlags & (DataFlag::Owned|DataFlag::ExternallyOwned)) {
-        _file->fileData = std::move(data);
+        _file->fileData = Utility::move(data);
     } else {
         _file->fileData = Containers::Array<char>{NoInit, data.size()};
         Utility::copy(data, _file->fileData);
@@ -185,7 +185,7 @@ void ObjImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dat
     /** @todo check size < 1G on 32b? currently it'd just assert, but it's
         unlikely that such amount of contiguous memory would even be available
         there, so ¯\_(ツ)_/¯ */
-    Containers::StringView in{_file->fileData, _file->fileData.size()};
+    Containers::StringView in = _file->fileData;
     while(in) {
         /* Get a (trimmed) line from the input */
         const Containers::StringView lineEnd = in.findOr('\n', in.end());
@@ -193,7 +193,8 @@ void ObjImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dat
         in = in.suffix(lineEnd.end());
 
         /* Comment or empty line, skip */
-        if(!line || line.hasPrefix('#')) continue;
+        if(!line || line.hasPrefix('#'))
+            continue;
 
         /* Parse the keyword */
         const Containers::StringView keywordEnd = line.findAnyOr(Whitespace, line.end());
@@ -301,7 +302,8 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
         in = in.suffix(lineEnd.end());
 
         /* Comment or empty line, skip */
-        if(!line || line.hasPrefix('#')) continue;
+        if(!line || line.hasPrefix('#'))
+            continue;
 
         /* Parse the keyword */
         const Containers::StringView keywordEnd = line.findAnyOr(Whitespace, line.end());
@@ -327,9 +329,12 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
                three-component texture coordinates, so it can't be an exact
                count. */
             std::size_t maxComponentCount;
-            if(keyword == "v"_s) maxComponentCount = 4;
-            else if(keyword == "vt"_s) maxComponentCount = 3;
-            else if(keyword == "vn"_s) maxComponentCount = 3;
+            if(keyword == "v"_s)
+                maxComponentCount = 4;
+            else if(keyword == "vt"_s)
+                maxComponentCount = 3;
+            else if(keyword == "vn"_s)
+                maxComponentCount = 3;
             else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             /* Parse them all. If there's less than expected, `i` would be too
@@ -387,9 +392,12 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
             /* Decide on how many tuples we expect. Since we handle both
                triangles and quads, it can't be an exact count. */
             std::size_t maxIndexTupleCount;
-            if(keyword == "p"_s) maxIndexTupleCount = 1;
-            else if(keyword == "l"_s) maxIndexTupleCount = 2;
-            else if(keyword == "f"_s) maxIndexTupleCount = 4;
+            if(keyword == "p"_s)
+                maxIndexTupleCount = 1;
+            else if(keyword == "l"_s)
+                maxIndexTupleCount = 2;
+            else if(keyword == "f"_s)
+                maxIndexTupleCount = 4;
             else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             /* Parse them all. If there's less than expected, `i` would be too
@@ -450,43 +458,39 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
             if(keyword == "p") {
                 if(primitive && primitive != MeshPrimitive::Points) {
                     Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Points;
-                    return Containers::NullOpt;
+                    return {};
                 }
                 if(i < 1 || contents) {
                     Error() << "Trade::ObjImporter::mesh(): expected exactly 1 position index tuple for a point, got" << line.suffix(keywordEnd.end());
-                    return Containers::NullOpt;
+                    return {};
                 }
 
                 primitive = MeshPrimitive::Points;
-
-                /** @todo fix arrayAppend() to not need the cast here */
-                arrayAppend(indices, Containers::ArrayView<const Vector3ui>{data}.prefix(1));
+                arrayAppend(indices, Containers::arrayView(data).prefix(1));
 
             /* Lines */
             } else if(keyword == "l") {
                 if(primitive && primitive != MeshPrimitive::Lines) {
                     Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Lines;
-                    return Containers::NullOpt;
+                    return {};
                 }
                 if(i < 2 || contents) {
                     Error() << "Trade::ObjImporter::mesh(): expected exactly 2 position index tuples for a line, got" << line.suffix(keywordEnd.end());
-                    return Containers::NullOpt;
+                    return {};
                 }
 
                 primitive = MeshPrimitive::Lines;
-
-                /** @todo fix arrayAppend() to not need the cast here */
-                arrayAppend(indices, Containers::ArrayView<const Vector3ui>{data}.prefix(2));
+                arrayAppend(indices, Containers::arrayView(data).prefix(2));
 
             /* Faces */
             } else if(keyword == "f") {
                 if(primitive && primitive != MeshPrimitive::Triangles) {
                     Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Triangles;
-                    return Containers::NullOpt;
+                    return {};
                 }
                 if(i < 3 || contents) {
                     Error() << "Trade::ObjImporter::mesh(): expected 3 or 4 position index tuples for a face, got" << line.suffix(keywordEnd.end());
-                    return Containers::NullOpt;
+                    return {};
                 }
 
                 /* If it's a quad, convert it to two triangles */
@@ -515,10 +519,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
                         textureCoordinateIndexCount += 2;
                     if(normalIndexCount)
                         normalIndexCount += 2;
-                } else {
-                    /** @todo fix arrayAppend() to not need the cast here */
-                    arrayAppend(indices, Containers::ArrayView<const Vector3ui>{data}.prefix(3));
-                }
+                } else arrayAppend(indices, Containers::arrayView(data).prefix(3));
 
                 primitive = MeshPrimitive::Triangles;
 
@@ -534,29 +535,29 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
     /* There should be at least indexed position data */
     if(positions.isEmpty() || indices.isEmpty()) {
         Error() << "Trade::ObjImporter::mesh(): incomplete position data";
-        return Containers::NullOpt;
+        return {};
     }
 
     /* If there are index data, there should be also vertex data (and also the other way) */
     if(textureCoordinates.isEmpty() != (textureCoordinateIndexCount == 0)) {
         Error() << "Trade::ObjImporter::mesh(): incomplete texture coordinate data";
-        return Containers::NullOpt;
+        return {};
     }
     if(normals.isEmpty() != (normalIndexCount == 0)) {
         Error() << "Trade::ObjImporter::mesh(): incomplete normal data";
-        return Containers::NullOpt;
+        return {};
     }
 
     /* All index arrays should have the same length */
     if(textureCoordinateIndexCount && textureCoordinateIndexCount != indices.size()) {
         CORRADE_INTERNAL_ASSERT(textureCoordinateIndexCount < indices.size());
         Error() << "Trade::ObjImporter::mesh(): some texture coordinate indices are missing";
-        return Containers::NullOpt;
+        return {};
     }
     if(normalIndexCount && normalIndexCount != indices.size()) {
         CORRADE_INTERNAL_ASSERT(normalIndexCount < indices.size());
         Error() << "Trade::ObjImporter::mesh(): some normal indices are missing";
-        return Containers::NullOpt;
+        return {};
     }
 
     /* Merge index arrays, unless disabled. If any of the attributes was not
@@ -596,7 +597,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
         Containers::StridedArrayView1D<Vector3> view{vertexData,
             reinterpret_cast<Vector3*>(vertexData.data()), vertexCount, stride};
         if(!checkAndDuplicateInto(indicesPerAttribute[0].prefix(vertexCount), positions, view, mesh.positionIndexOffset))
-            return Containers::NullOpt;
+            return {};
         attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Position, view};
         offset += sizeof(Vector3);
     }
@@ -604,7 +605,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
         Containers::StridedArrayView1D<Vector2> view{vertexData,
             reinterpret_cast<Vector2*>(vertexData.data() + offset), vertexCount, stride};
         if(!checkAndDuplicateInto(indicesPerAttribute[1].prefix(vertexCount), textureCoordinates, view, mesh.textureCoordinateIndexOffset))
-            return Containers::NullOpt;
+            return {};
         attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::TextureCoordinates, view};
         offset += sizeof(Vector2);
     }
@@ -612,7 +613,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
         Containers::StridedArrayView1D<Vector3> view{vertexData,
             reinterpret_cast<Vector3*>(vertexData.data() + offset), vertexCount, stride};
         if(!checkAndDuplicateInto(indicesPerAttribute[2].prefix(vertexCount), normals, view, mesh.normalIndexOffset))
-            return Containers::NullOpt;
+            return {};
         attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Normal, view};
         offset += sizeof(Vector3);
     }
