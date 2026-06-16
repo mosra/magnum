@@ -413,6 +413,11 @@ See also:
     @relativeref{Platform::Sdl2Application,setClipboardText()} to
     @ref Platform::Sdl2Application and @ref Platform::GlfwApplication
 
+@subsubsection changelog-latest-new-primitives Primitives library
+
+-   Added an option to generate texture coordinates in various layouts to
+    @ref Primitives::cubeSolid()
+
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
 -   Added @ref SceneGraph::Object::move()

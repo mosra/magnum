@@ -44,7 +44,7 @@ going from @p a to @p b.
 
 @image html primitives-line2d.png width=256px
 
-@see @ref line3D(), @ref line3D(const Vector3&, const Vector3&), @ref axis2D(),
+@see @ref line2D(), @ref line3D(const Vector3&, const Vector3&), @ref axis2D(),
     @ref crosshair2D()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line2D(const Vector2& a, const Vector2& b);
@@ -52,7 +52,8 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line2D(const Vector2& a, const Vector2&
 /**
 @brief 2D line in an identity transformation
 
-Equivalent to calling @ref line2D(const Vector2&, const Vector2&) as
+Unit-size line in direction of positive X axis. Equivalent to calling
+@ref line2D(const Vector2&, const Vector2&) as
 
 @snippet Primitives.cpp line2D-identity
 */
