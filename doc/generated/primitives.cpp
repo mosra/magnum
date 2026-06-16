@@ -442,9 +442,7 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::c
 }
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::line2D() {
-    Trade::MeshData line = Primitives::line2D();
-    MeshTools::transformPointsInPlace(Matrix3::translation(Vector2::xAxis(-1.0f))*Matrix3::scaling(Vector2::xScale(2.0f)),
-        line.mutableAttribute<Vector2>(Trade::MeshAttribute::Position));
+    Trade::MeshData line = Primitives::line2D({-1.0f, 0.0f}, {1.0f, 0.0f});
     return {Utility::move(line), "line2d.png"};
 }
 
@@ -488,9 +486,7 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::i
 }
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::line3D() {
-    Trade::MeshData line = Primitives::line3D();
-    MeshTools::transformPointsInPlace(Matrix4::translation(Vector3::xAxis(-1.0f))*Matrix4::scaling(Vector3::xScale(2.0f)),
-        line.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
+    Trade::MeshData line = Primitives::line3D({-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
     return {Utility::move(line), "line3d.png"};
 }
 
