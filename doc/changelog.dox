@@ -1842,6 +1842,12 @@ See also:
     plugins, be it speed, efficiency, file size or portability. Use the
     @relativeref{Text,StbTrueTypeFont} plugin instead, which doesn't require
     any font preprocessing upfront.
+-   Direct plugin instantiation through the constructors isn't a supported use
+    case for @relativeref{Trade,ObjImporter}, @relativeref{Trade,TgaImporter},
+    @relativeref{Trade,TgaImageConverter} and @ref Audio::WavImporter "WavAudioImporter"
+    anymore, as such a code path is not easy to test in common setups and
+    requires significant code duplication in order to preserve plugin-specific
+    configuration options. Instantiate though the plugin manager instead.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

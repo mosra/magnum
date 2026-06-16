@@ -121,8 +121,15 @@ Multi-channel formats are not supported.
 */
 class MAGNUM_WAVAUDIOIMPORTER_EXPORT WavImporter: public AbstractImporter {
     public:
-        /** @brief Default constructor */
-        explicit WavImporter();
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Default constructor
+         * @m_deprecated_since_latest Direct plugin instantiation isn't a
+         *      supported use case anymore, instantiate through the plugin
+         *      manager instead.
+         */
+        CORRADE_DEPRECATED("instantiate through the plugin manager instead") explicit WavImporter();
+        #endif
 
         /** @brief Plugin manager constructor */
         explicit WavImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);

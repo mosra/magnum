@@ -48,7 +48,7 @@
 
 namespace Magnum { namespace Text {
 
-MagnumFontConverter::MagnumFontConverter() = default;
+MagnumFontConverter::MagnumFontConverter() = default; /* LCOV_EXCL_LINE */
 
 MagnumFontConverter::MagnumFontConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractFontConverter{manager, plugin} {}
 
@@ -148,10 +148,14 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     Containers::Optional<Containers::Array<char>> tgaData;
     if(cache.features() & GlyphCacheFeature::ImageProcessing) {
         const Image3D image3 = cache.processedImage();
+        CORRADE_IGNORE_DEPRECATED_PUSH
         tgaData = Trade::TgaImageConverter().convertToData(ImageView2D{image3.format(), image3.size().xy(), image3.data()});
+        CORRADE_IGNORE_DEPRECATED_POP
     } else {
         const ImageView3D image3 = cache.image();
+        CORRADE_IGNORE_DEPRECATED_PUSH
         tgaData = Trade::TgaImageConverter().convertToData(ImageView2D{image3.format(), image3.size().xy(), image3.data()});
+        CORRADE_IGNORE_DEPRECATED_POP
     }
     if(!tgaData) {
         Error{} << "Text::MagnumFontConverter::exportFontToData(): cannot create a TGA image";

@@ -40,7 +40,9 @@ using Implementation::WavAudioFormat;
 using Implementation::WavFormatChunk;
 using Implementation::WavHeaderChunk;
 
-WavImporter::WavImporter() = default;
+#ifdef MAGNUM_BUILD_DEPRECATED
+WavImporter::WavImporter() = default; /* LCOV_EXCL_LINE */
+#endif
 
 WavImporter::WavImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 

@@ -42,7 +42,9 @@ namespace Magnum { namespace Trade {
 
 using namespace Containers::Literals;
 
-TgaImporter::TgaImporter() = default;
+#ifdef MAGNUM_BUILD_DEPRECATED
+TgaImporter::TgaImporter() = default; /* LCOV_EXCL_LINE */
+#endif
 
 TgaImporter::TgaImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 

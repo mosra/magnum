@@ -132,8 +132,15 @@ to edit the configuration values.
 */
 class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
     public:
-        /** @brief Default constructor */
-        explicit ObjImporter();
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Default constructor
+         * @m_deprecated_since_latest Direct plugin instantiation isn't a
+         *      supported use case anymore, instantiate through the plugin
+         *      manager instead.
+         */
+        CORRADE_DEPRECATED("instantiate through the plugin manager instead") explicit ObjImporter();
+        #endif
 
         /** @brief Plugin manager constructor */
         explicit ObjImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);

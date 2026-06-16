@@ -131,8 +131,15 @@ to edit the configuration values.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:
-        /** @brief Default constructor */
-        explicit TgaImageConverter();
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Default constructor
+         * @m_deprecated_since_latest Direct plugin instantiation isn't a
+         *      supported use case anymore, instantiate through the plugin
+         *      manager instead.
+         */
+        CORRADE_DEPRECATED("instantiate through the plugin manager instead") explicit TgaImageConverter();
+        #endif
 
         /** @brief Plugin manager constructor */
         explicit TgaImageConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);

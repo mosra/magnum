@@ -68,7 +68,7 @@ struct MagnumFont::Data {
     Containers::Array<Glyph> glyphs;
 };
 
-MagnumFont::MagnumFont(): _opened(nullptr) {}
+MagnumFont::MagnumFont(): _opened(nullptr) {} /* LCOV_EXCL_LINE */
 
 MagnumFont::MagnumFont(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractFont{manager, plugin}, _opened(nullptr) {}
 
@@ -111,7 +111,9 @@ void MagnumFont::doOpenData(Containers::Array<char>&& data, DataFlags, Float, Un
 
     /* Open and load image file. Error messages should be printed by the
        TgaImporter already, no need to repeat them again. */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::TgaImporter importer;
+    CORRADE_IGNORE_DEPRECATED_POP
     importer.setFileCallback(fileCallback(), fileCallbackUserData());
     if(!importer.openFile(Utility::Path::join(_opened->filePath ? *_opened->filePath : "", conf.value("image"))))
         return;

@@ -145,7 +145,9 @@ inline bool parseInt(const char* const errorPrefix, const Containers::StringView
 
 }
 
-ObjImporter::ObjImporter() = default;
+#ifdef MAGNUM_BUILD_DEPRECATED
+ObjImporter::ObjImporter() = default; /* LCOV_EXCL_LINE */
+#endif
 
 ObjImporter::ObjImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 

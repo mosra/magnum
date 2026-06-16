@@ -116,8 +116,15 @@ causes all import warnings to be suppressed.
 */
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
-        /** @brief Default constructor */
-        explicit TgaImporter();
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Default constructor
+         * @m_deprecated_since_latest Direct plugin instantiation isn't a
+         *      supported use case anymore, instantiate through the plugin
+         *      manager instead.
+         */
+        CORRADE_DEPRECATED("instantiate through the plugin manager instead") explicit TgaImporter();
+        #endif
 
         /** @brief Plugin manager constructor */
         explicit TgaImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
