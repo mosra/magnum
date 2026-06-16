@@ -481,23 +481,25 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 5.  Ensure deprecated files @cpp #error @ce in case they get used in
     non-deprecated build, ensure they are not installed in non-deprecated
     builds
-6.  Build all tests and dependent projects and verify that:
+6.  Remove any TODOs related to the deprecated feature from the code, as they
+    no longer need to happen
+7.  Build all tests and dependent projects and verify that:
     -   using the old functionality still compiles and works as intended
     -   deprecation warnings are emitted in proper places
-7.  Upon verifying the above, start updating dependent code
-8.  Mention the deprecated API in the deprecation section of `doc/changelog.dox`
+8.  Upon verifying the above, start updating dependent code
+9.  Mention the deprecated API in the deprecation section of `doc/changelog.dox`
     (and similar files in other repos)
-9.  @ref building-doc "Build documentation":
+10. @ref building-doc "Build documentation":
     -   run [doxygen.py](https://mcss.mosra.cz/documentation/doxygen/) on
         `doc/conf.py` and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
-10. Push to a temporary branch (e.g., `next`)
-11. Iterate until the CIs are green
-12. Merge to `master`
-13. If possible, trigger builds of dependent projects (where they are still
+11. Push to a temporary branch (e.g., `next`)
+12. Iterate until the CIs are green
+13. Merge to `master`
+14. If possible, trigger builds of dependent projects (where they are still
     using the old API) and verify they are still green (and red in
     non-deprecated build)
-14. Update dependent projects
+15. Update dependent projects
 
 @section developers-deprecation-library Checklist for deprecating a whole library
 
