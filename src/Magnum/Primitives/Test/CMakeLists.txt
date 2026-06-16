@@ -28,6 +28,7 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/Primitives/Test")
 
+corrade_add_test(PrimitivesArrowTest ArrowTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesAxisTest AxisTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPrimitivesTestLib)
 corrade_add_test(PrimitivesCircleTest CircleTest.cpp LIBRARIES MagnumPrimitivesTestLib)

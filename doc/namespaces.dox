@@ -487,6 +487,16 @@ See @ref building and @ref cmake for more information.
 @parblock
 
 @m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-arrow2d.png width=128px
+@ref arrow2D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-arrow3d.png width=128px
+@ref arrow3D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-axis2d.png width=128px
 @ref axis2D()
 @m_enddiv
@@ -556,19 +566,21 @@ See @ref building and @ref cmake for more information.
 @ref cubeSolid() \n @ref cubeSolidStrip()
 @m_enddiv
 
+@m_div{m-clearfix-m m-show-m} @m_enddiv
+
 @m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-cubewireframe.png width=128px
 @ref cubeWireframe()
 @m_enddiv
-
-@m_div{m-clearfix-s m-show-s} @m_enddiv
 
 @m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-cylindersolid.png width=128px
 @ref cylinderSolid()
 @m_enddiv
 
-@m_div{m-clearfix-m m-show-m} @m_enddiv
+@m_div{m-clearfix-s m-show-s} @m_enddiv
+
+@m_div{m-clearfix-l m-show-l} @m_enddiv
 
 @m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-cylinderwireframe.png width=128px
@@ -579,8 +591,6 @@ See @ref building and @ref cmake for more information.
 @image html primitives-gradient2d.png width=128px
 @ref gradient2D()
 @m_enddiv
-
-@m_div{m-clearfix-l m-show-l} @m_enddiv
 
 @m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-gradient2dhorizontal.png width=128px
@@ -642,27 +652,27 @@ See @ref building and @ref cmake for more information.
 @ref planeSolid()
 @m_enddiv
 
-@m_div{m-col-l-2 m-push-l-1 m-col-m-3 m-push-m-0 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-planewireframe.png width=128px
 @ref planeWireframe()
 @m_enddiv
 
-@m_div{m-col-l-2 m-push-l-1 m-col-m-3 m-push-m-0 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-squaresolid.png width=128px
 @ref squareSolid()
 @m_enddiv
 
-@m_div{m-col-l-2 m-push-l-1 m-col-m-3 m-push-m-1 m-col-s-4 m-push-s-0 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-squarewireframe.png width=128px
 @ref squareWireframe()
 @m_enddiv
 
-@m_div{m-col-l-2 m-push-l-1 m-col-m-4 m-push-m-1 m-col-s-4 m-push-s-2 m-col-t-6 m-push-t-0 m-text-center m-nopadt m-nopadx}
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html primitives-uvspheresolid.png width=128px
 @ref uvSphereSolid()
 @m_enddiv
 
-@m_div{m-col-l-2 m-push-l-1 m-col-m-3 m-push-m-1 m-col-s-4 m-push-s-2 m-col-t-6 m-push-t-3 m-text-center m-nopadt m-nopadx}
+@m_div{m-col-l-2 m-push-l-5 m-col-s-4 m-push-s-4 m-col-t-6 m-push-t-3 m-text-center m-nopadt m-nopadx}
 @image html primitives-uvspherewireframe.png width=128px
 @ref uvSphereWireframe()
 @m_enddiv

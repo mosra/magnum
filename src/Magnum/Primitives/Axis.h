@@ -48,7 +48,8 @@ mesh through @ref MeshTools::copy() to get a mutable copy, if needed.
 @image html primitives-axis2d.png width=256px
 
 @see @ref axis3D(), @ref crosshair2D(),
-    @ref line2D(const Vector2&, const Vector2&)
+    @ref line2D(const Vector2&, const Vector2&),
+    @ref arrow2D(const Vector2&, const Vector2&)
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData axis2D();
 
@@ -65,7 +66,8 @@ pass the mesh through @ref MeshTools::copy() to get a mutable copy, if needed.
 @image html primitives-axis3d.png width=256px
 
 @see @ref axis2D(), @ref crosshair3D(),
-    @ref line3D(const Vector3&, const Vector3&)
+    @ref line3D(const Vector3&, const Vector3&),
+    @ref arrow3D(const Vector3&, const Vector3&, const Vector3&)
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData axis3D();
 

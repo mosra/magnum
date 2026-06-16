@@ -55,6 +55,7 @@
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/Transform.h>
+#include <Magnum/Primitives/Arrow.h>
 #include <Magnum/Primitives/Axis.h>
 #include <Magnum/Primitives/Capsule.h>
 #include <Magnum/Primitives/Circle.h>
@@ -94,12 +95,14 @@ struct PrimitiveVisualizer: Platform::WindowlessApplication {
     Containers::Pair<Trade::MeshData, Containers::StringView> axis2D();
     Containers::Pair<Trade::MeshData, Containers::StringView> axis3D();
 
+    Containers::Pair<Trade::MeshData, Containers::StringView> arrow2D();
     Containers::Pair<Trade::MeshData, Containers::StringView> capsule2DWireframe();
     Containers::Pair<Trade::MeshData, Containers::StringView> circle2DWireframe();
     Containers::Pair<Trade::MeshData, Containers::StringView> crosshair2D();
     Containers::Pair<Trade::MeshData, Containers::StringView> line2D();
     Containers::Pair<Trade::MeshData, Containers::StringView> squareWireframe();
 
+    Containers::Pair<Trade::MeshData, Containers::StringView> arrow3D();
     Containers::Pair<Trade::MeshData, Containers::StringView> capsule3DWireframe();
     Containers::Pair<Trade::MeshData, Containers::StringView> circle3DWireframe();
     Containers::Pair<Trade::MeshData, Containers::StringView> crosshair3D();
@@ -221,7 +224,8 @@ int PrimitiveVisualizer::exec() {
         shader.setColor(OutlineColor)
             .setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
-        for(auto fun: {&PrimitiveVisualizer::capsule2DWireframe,
+        for(auto fun: {&PrimitiveVisualizer::arrow2D,
+                       &PrimitiveVisualizer::capsule2DWireframe,
                        &PrimitiveVisualizer::circle2DWireframe,
                        &PrimitiveVisualizer::crosshair2D,
                        &PrimitiveVisualizer::line2D,
@@ -244,7 +248,8 @@ int PrimitiveVisualizer::exec() {
         shader.setColor(OutlineColor)
             .setTransformationProjectionMatrix(Projection3D*Transformation3D);
 
-        for(auto fun: {&PrimitiveVisualizer::capsule3DWireframe,
+        for(auto fun: {&PrimitiveVisualizer::arrow3D,
+                       &PrimitiveVisualizer::capsule3DWireframe,
                        &PrimitiveVisualizer::circle3DWireframe,
                        &PrimitiveVisualizer::crosshair3D,
                        &PrimitiveVisualizer::coneWireframe,
@@ -426,6 +431,11 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::g
     return {Primitives::gradient3DVertical(Gradient20Percent, Gradient80Percent), "gradient3dvertical.png"};
 }
 
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::arrow2D() {
+    Trade::MeshData mesh = Primitives::arrow2D({-1.0f, 0.0f}, {1.0f, 0.0f});
+    return {Utility::move(mesh), "arrow2d.png"};
+}
+
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::capsule2DWireframe() {
     Trade::MeshData capsule = Primitives::capsule2DWireframe(8, 1, 0.75f);
     MeshTools::transformPointsInPlace(Matrix3::scaling(Vector2{0.75f}),
@@ -448,6 +458,11 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::l
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::squareWireframe() {
     return {Primitives::squareWireframe(), "squarewireframe.png"};
+}
+
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::arrow3D() {
+    Trade::MeshData mesh = Primitives::arrow3D({-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
+    return {Utility::move(mesh), "arrow3d.png"};
 }
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::capsule3DWireframe() {

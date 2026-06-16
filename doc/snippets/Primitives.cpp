@@ -25,6 +25,7 @@
 */
 
 #include "Magnum/Math/Color.h"
+#include "Magnum/Primitives/Arrow.h"
 #include "Magnum/Primitives/Gradient.h"
 #include "Magnum/Primitives/Line.h"
 #include "Magnum/Trade/MeshData.h"
@@ -64,8 +65,20 @@ Primitives::line2D({0.0f, 0.0f}, {1.0f, 0.0f});
 }
 
 {
+/* [arrow2D-identity] */
+Primitives::arrow2D({0.0f, 0.0f}, {1.0f, 0.0f});
+/* [arrow2D-identity] */
+}
+
+{
 /* [line3D-identity] */
 Primitives::line3D({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
 /* [line3D-identity] */
+}
+
+{
+/* [arrow3D-identity] */
+Primitives::arrow3D({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
+/* [arrow3D-identity] */
 }
 }

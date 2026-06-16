@@ -415,6 +415,8 @@ See also:
 
 @subsubsection changelog-latest-new-primitives Primitives library
 
+-   New @ref Primitives::arrow2D() and @relativeref{Primitives,arrow3D()}
+    primitives
 -   Added an option to generate texture coordinates in various layouts to
     @ref Primitives::cubeSolid()
 

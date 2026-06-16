@@ -29,6 +29,7 @@
 set(CMAKE_FOLDER "Magnum/Primitives")
 
 set(MagnumPrimitives_SRCS
+    Arrow.cpp
     Axis.cpp
     Crosshair.cpp
     Gradient.cpp
@@ -50,6 +51,7 @@ set(MagnumPrimitives_GracefulAssert_SRCS
     UVSphere.cpp)
 
 set(MagnumPrimitives_HEADERS
+    Arrow.h
     Axis.h
     Capsule.h
     Circle.h
