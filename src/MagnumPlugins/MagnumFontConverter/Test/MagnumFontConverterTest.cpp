@@ -24,11 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string> /** @todo remove once AbstractFontConverter is STL-free */
+#include <string>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFontConverter is STL-free */
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
 #include <Corrade/Utility/Algorithms.h>

@@ -39,8 +39,8 @@ digraph "Magnum plugin dependency order" {
     AudioImporter [label="*AudioImporter" class="m-success"]
     ImageConverter [label="*ImageConverter" class="m-success"]
     Importer [label="*Importer" class="m-success"]
-    MagnumFont [class="m-success"]
-    MagnumFontConverter [class="m-success"]
+    MagnumFont [class="m-dim"]
+    MagnumFontConverter [class="m-dim"]
     ObjImporter [class="m-success"]
     TgaImageConverter [class="m-success"]
     TgaImporter [class="m-success"]
@@ -48,10 +48,10 @@ digraph "Magnum plugin dependency order" {
     AudioImporter -> MagnumAudio
     ImageConverter -> MagnumTrade
     Importer -> MagnumTrade
-    MagnumFont -> MagnumText
-    MagnumFont -> TgaImporter
-    MagnumFontConverter -> MagnumText
-    MagnumFontConverter -> TgaImageConverter
+    MagnumFont -> MagnumText [class="m-dim"]
+    MagnumFont -> TgaImporter [class="m-dim"]
+    MagnumFontConverter -> MagnumText [class="m-dim"]
+    MagnumFontConverter -> TgaImageConverter [class="m-dim"]
     ObjImporter -> MagnumTrade
     ObjImporter -> MagnumMeshTools
     TgaImageConverter -> MagnumTrade

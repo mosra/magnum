@@ -24,6 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_MAGNUMFONTCONVERTER /* So it doesn't yell here */
+
 #include "MagnumFontConverter.h"
 
 #include <algorithm> /* std::sort() */
@@ -108,8 +110,6 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     for(const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& glyph: sortedGlyphs)
         glyphIdMap.emplace(glyph.first, glyphIdMap.size());
 
-    /** @todo Save only glyphs contained in @p characters */
-
     /* Inverse map from new glyph IDs to old ones */
     std::vector<UnsignedInt> inverseGlyphIdMap(glyphIdMap.size());
     for(const std::pair<const UnsignedInt, UnsignedInt>& map: glyphIdMap)
@@ -128,11 +128,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
 
     /* Save glyph properties in order which preserves their IDs, remove padding
        from the values so they aren't added twice when using the font later */
-    /** @todo Some better way to handle this padding stuff */
     for(UnsignedInt oldGlyphId: inverseGlyphIdMap) {
-        /** @todo this branch is messy, clean up; also there's now a
-            distinction between a cache-global invalid glyph and font-local,
-            what to do there? */
         Containers::Triple<Vector2i, Int, Range2Di> glyph =
             oldGlyphId ? cache.glyph(*fontId, oldGlyphId) : cache.glyph(0);
         Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
@@ -170,5 +166,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
 
 }}
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_PLUGIN_REGISTER(MagnumFontConverter, Magnum::Text::MagnumFontConverter,
     MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE)
+CORRADE_IGNORE_DEPRECATED_POP

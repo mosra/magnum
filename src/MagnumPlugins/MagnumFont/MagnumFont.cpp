@@ -24,6 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_MAGNUMFONT /* So it doesn't yell here */
+
 #include "MagnumFont.h"
 
 #include <sstream>
@@ -173,8 +175,6 @@ Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
        control over both the source and processed format (where
        DistanceFieldGlyphCache may set the processed format to RGBA if there's
        no renderable single-channel format). */
-    /** @todo figure out a nicer way, and ideally how to do this with
-        fillGlyphCache() instead */
     struct Cache: GlyphCacheGL {
         explicit Cache(PixelFormat format, const Vector2i& size, PixelFormat processedFormat, const Vector2i& processedSize, const Vector2i& padding): GlyphCacheGL{format, size, processedFormat, processedSize, padding} {}
 
@@ -253,5 +253,7 @@ Containers::Pointer<AbstractShaper> MagnumFont::doCreateShaper() {
 
 }}
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_PLUGIN_REGISTER(MagnumFont, Magnum::Text::MagnumFont,
     MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE)
+CORRADE_IGNORE_DEPRECATED_POP

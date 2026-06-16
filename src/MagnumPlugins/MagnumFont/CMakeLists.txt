@@ -24,9 +24,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(NOT MAGNUM_BUILD_DEPRECATED)
+    message(SEND_ERROR "The MagnumFont plugin is deprecated. Either remove MAGNUM_WITH_MAGNUMFONT from your options or rebuild Magnum with MAGNUM_BUILD_DEPRECATED enabled to keep using the plugin.")
+endif()
+
 if(NOT MAGNUM_TARGET_GL)
-    # TODO: remove (and update all other docs) when we have better
-    # createGlyphCache() APIs
     message(SEND_ERROR "MagnumFont is available only if MAGNUM_TARGET_GL is enabled")
 endif()
 

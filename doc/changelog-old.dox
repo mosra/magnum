@@ -1626,10 +1626,10 @@ No dependency changes in this release.
 
 -   MSVC 2013 support in `compatibility` branch
 -   Dependency-less plugins from Magnum Plugins repository are now part of
-    Magnum to make their usage easier, in particular the @ref Text::MagnumFont "MagnumFont",
-    @ref Text::MagnumFontConverter "MagnumFontConverter",
-    @ref Trade::TgaImporter "TgaImporter", @ref Trade::TgaImageConverter "TgaImageConverter"
-    and @ref Audio::WavImporter "WavAudioImporter" plugins.
+    Magnum to make their usage easier, in particular the @cpp MagnumFont @ce,
+    @cpp MagnumFontConverter @ce, @ref Trade::TgaImporter "TgaImporter",
+    @ref Trade::TgaImageConverter "TgaImageConverter" and
+    @ref Audio::WavImporter "WavAudioImporter" plugins.
 -   Documented @ref opengl-support "state of OpenGL support",
     @ref opengl-mapping "mapping between OpenGL and Magnum API",
     @ref plugins "general plugin usage" and added

@@ -33,7 +33,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove file callbacks are std::string-free */
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/PixelFormat.h"

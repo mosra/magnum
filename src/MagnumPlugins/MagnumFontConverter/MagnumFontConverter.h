@@ -26,10 +26,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::Text::MagnumFontConverter
+ * @m_deprecated_since_latest Use @ref MagnumPlugins/StbTrueTypeFont/StbTrueTypeFont.h
+ *      and the @relativeref{Magnum::Text,StbTrueTypeFont} plugin instead,
+ *      which is more efficient and has a larger feature set without needing a
+ *      custom font preprocessing step.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/Text/AbstractFontConverter.h"
 
 #include "MagnumPlugins/MagnumFontConverter/configure.h"
@@ -50,10 +59,17 @@
 #define MAGNUM_MAGNUMFONTCONVERTER_LOCAL
 #endif
 
+#ifndef _MAGNUM_NO_DEPRECATED_MAGNUMFONTCONVERTER
+CORRADE_DEPRECATED_FILE("use MagnumPlugins/StbTrueTypeFont/StbTrueTypeFont.h and the StbTrueTypeFont plugin instead")
+#endif
+
 namespace Magnum { namespace Text {
 
 /**
 @brief MagnumFont converter plugin
+@m_deprecated_since_latest Use the @ref StbTrueTypeFont plugin instead, which
+    is more efficient and has a larger feature set without needing a custom
+    font preprocessing step.
 
 Expects filename prefix, creates two files, `prefix.conf` and `prefix.tga`. See
 @ref MagnumFont for more information about the font. The plugin requires the
@@ -109,7 +125,7 @@ you need to instantiate a manager for them and register it with
 
 See @ref building, @ref cmake and @ref plugins for more information.
 */
-class MAGNUM_MAGNUMFONTCONVERTER_EXPORT MagnumFontConverter: public Text::AbstractFontConverter {
+class CORRADE_DEPRECATED("use StbTrueTypeFont instead") MAGNUM_MAGNUMFONTCONVERTER_EXPORT MagnumFontConverter: public Text::AbstractFontConverter {
     public:
         /** @brief Default constructor */
         explicit MagnumFontConverter();
@@ -123,5 +139,8 @@ class MAGNUM_MAGNUMFONTCONVERTER_EXPORT MagnumFontConverter: public Text::Abstra
 };
 
 }}
+#else
+#error use MagnumPlugins/StbTrueTypeFont/StbTrueTypeFont.h and the StbTrueTypeFont plugin instead
+#endif
 
 #endif

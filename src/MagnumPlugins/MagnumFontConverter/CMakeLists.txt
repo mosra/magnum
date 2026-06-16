@@ -24,6 +24,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(NOT MAGNUM_BUILD_DEPRECATED)
+    message(SEND_ERROR "The MagnumFontConverter plugin is deprecated. Either remove MAGNUM_WITH_MAGNUMFONTCONVERTER from your options or rebuild Magnum with MAGNUM_BUILD_DEPRECATED enabled to keep using the plugin.")
+endif()
+
 find_package(Corrade REQUIRED PluginManager)
 
 if(MAGNUM_BUILD_PLUGINS_STATIC AND NOT DEFINED MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)

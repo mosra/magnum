@@ -1837,6 +1837,11 @@ See also:
     @type_vk{PrimitiveToplogy} are deprecated in favor of
     @ref Vk::hasMeshPrimitive() and @ref Vk::meshPrimitive() that return the
     new @ref Vk::MeshPrimitive enum
+-   The ancient @cpp MagnumFont @ce and @cpp MagnumFontConverter @ce plugins
+    are deprecated as they no longer provide any advantage over other font
+    plugins, be it speed, efficiency, file size or portability. Use the
+    @relativeref{Text,StbTrueTypeFont} plugin instead, which doesn't require
+    any font preprocessing upfront.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

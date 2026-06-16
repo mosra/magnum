@@ -26,13 +26,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::Text::MagnumFont
+ * @m_deprecated_since_latest Use @ref MagnumPlugins/StbTrueTypeFont/StbTrueTypeFont.h
+ *      and the @relativeref{Magnum::Text,StbTrueTypeFont} plugin instead,
+ *      which is more efficient and has a larger feature set without needing a
+ *      custom font preprocessing step.
  */
+#endif
 
 #include "Magnum/configure.h"
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Text/AbstractFont.h"
@@ -54,10 +60,17 @@
 #define MAGNUM_MAGNUMFONT_LOCAL
 #endif
 
+#ifndef _MAGNUM_NO_DEPRECATED_MAGNUMFONT
+CORRADE_DEPRECATED_FILE("use MagnumPlugins/StbTrueTypeFont/StbTrueTypeFont.h and the StbTrueTypeFont plugin instead")
+#endif
+
 namespace Magnum { namespace Text {
 
 /**
 @brief Simple bitmap font plugin
+@m_deprecated_since_latest Use the @ref StbTrueTypeFont plugin instead, which
+    is more efficient and has a larger feature set without needing a custom
+    font preprocessing step.
 
 The font consists of two files, one text file containing character and glyph
 info and one TGA file containing the glyphs in distance field format. The font
@@ -161,7 +174,7 @@ need to instantiate a manager for them and register it with
 See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
 information.
 */
-class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
+class CORRADE_DEPRECATED("use StbTrueTypeFont instead") MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
     public:
         /** @brief Default constructor */
         explicit MagnumFont();
@@ -190,7 +203,9 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
 };
 
 }}
-#else
+#elif !defined(MAGNUM_BUILD_DEPRECATED)
+#error use MagnumPlugins/StbTrueTypeFont/StbTrueTypeFont.h and the StbTrueTypeFont plugin instead
+#elif !defined(MAGNUM_TARGET_GL)
 #error this header is available only in the OpenGL build
 #endif
 
