@@ -30,39 +30,5 @@ namespace Magnum {
 
 @tableofcontents
 @m_footernavigation
-
-@ref DebugTools library provides various helper classes to help you with
-prototyping and debugging applications without the need to write too much
-common code. They probably have no usage in production code, but can be useful
-in development. See documentation of @ref DebugTools namespace for more
-information about building and usage with CMake.
-
-@section debug-tools-renderers Debug renderers
-
-Debug renderers provide a way to visualize objects and object features in
-@ref scenegraph "scene graph" without the need to mess around with meshes and
-shaders. They are implemented as object features, so you can attach any number
-of them to any object.
-
-Basic usage involves instancing @ref DebugTools::ResourceManager and keeping it
-for the whole lifetime of debug renderers. Next you need some
-@ref SceneGraph::DrawableGroup instance. You can use the same group as for the
-rest of your scene, but preferably use dedicated one for debug renderers, so
-you can easily enable or disable debug rendering.
-
-Next step is to create configuration for your debug renderers and create
-particular debug renderer. The configuration is managed using the resource
-manager - you create configuration instance, add it to the manager and then
-reference it using particular resource key. This way you can easily share the
-same options with more renderers. If no options are specified or resource with
-given key doesn't exist, default fallback is used.
-
-Example usage: visualizing object position, rotation and scaling using
-@ref DebugTools::ObjectRenderer :
-
-@snippet DebugTools-gl.cpp debug-tools-renderers
-
-See @ref DebugTools::ObjectRenderer and @ref DebugTools::ForceRenderer for more
-information.
 */
 }

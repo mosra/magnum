@@ -26,6 +26,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Functions.h"
@@ -66,5 +69,8 @@ template<> Matrix4 forceRendererTransformation<3>(const Vector3& forcePosition, 
 }
 
 }}}
+#else
+#error this header is only meant to be used by deprecated functionality
+#endif
 
 #endif

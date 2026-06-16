@@ -110,7 +110,6 @@ void ForceRendererTest::arbitrary3D() {
         Math::TypeTraits<Float>::epsilon(),
         TestSuite::Compare::Less);
     #endif
-    /** @todo This shouldn't be too different */
     CORRADE_COMPARE_AS(Math::abs(Math::dot(m.up(), m.backward())),
         Math::TypeTraits<Float>::epsilon(),
         TestSuite::Compare::Less);

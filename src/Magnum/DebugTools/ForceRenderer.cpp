@@ -24,6 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_FORCERENDERER
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+
 #include "ForceRenderer.h"
 
 #include "Magnum/GL/Mesh.h"
@@ -35,6 +38,7 @@
 
 namespace Magnum { namespace DebugTools {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace {
 
 template<UnsignedInt dimensions> ResourceKey shaderKey();
@@ -89,5 +93,6 @@ template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const Matr
 
 template class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer<2>;
 template class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

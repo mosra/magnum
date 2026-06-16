@@ -212,10 +212,11 @@ for more detailed information and usage examples:
 -   @ref SceneGraph::Animable "SceneGraph::Animable*D" --- Adds animation
     functionality to given object. Group of animables can be then controlled
     using @ref SceneGraph::AnimableGroup "SceneGraph::AnimableGroup*D".
--   @ref DebugTools::ObjectRenderer "DebugTools::ObjectRenderer*D",
-    @ref DebugTools::ForceRenderer "DebugTools::ForceRenderer*D" --- Visualize
-    object properties, object shape or force vector for debugging purposes. See
-    @ref debug-tools for more information.
+-   @ref DebugTools::ObjectRenderer "DebugTools::ObjectRenderer*D"
+    @m_class{m-label m-danger} **deprecated**,
+    @ref DebugTools::ForceRenderer "DebugTools::ForceRenderer*D"
+    @m_class{m-label m-danger} **deprecated** --- Visualize object properties,
+    object shape or force vector for debugging purposes.
 
 Each feature takes a reference to *holder object* in its constructor, so adding
 a feature to an object might look just like the following, as in some cases you

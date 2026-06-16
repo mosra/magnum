@@ -24,6 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_FORCERENDERER
+#define _MAGNUM_NO_DEPRECATED_OBJECTRENDERER
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+
 #include "ResourceManager.h"
 
 #include "Magnum/DebugTools/ForceRenderer.h"
@@ -36,8 +40,10 @@
 namespace Magnum { namespace DebugTools {
 
 ResourceManager::ResourceManager() {
+    CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
     setFallback(new ForceRendererOptions);
     setFallback(new ObjectRendererOptions);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 ResourceManager::~ResourceManager() = default;

@@ -26,15 +26,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 /** @file
  * @brief Class @ref Magnum::DebugTools::ForceRenderer, @ref Magnum::DebugTools::ForceRendererOptions, typedef @ref Magnum::DebugTools::ForceRenderer2D, @ref Magnum::DebugTools::ForceRenderer3D
+ * @m_deprecated_since_latest Use @ref Magnum/Primitives/Arrow.h and
+ *      @ref Primitives::arrow2D() or @relativeref{Primitives,arrow3D()} in a
+ *      custom drawable instead
  */
 #endif
 
 #include "Magnum/configure.h"
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 #include "Magnum/Resource.h"
 #include "Magnum/DebugTools/DebugTools.h"
 #include "Magnum/DebugTools/visibility.h"
@@ -43,10 +46,16 @@
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
 
+#ifndef _MAGNUM_NO_DEPRECATED_FORCERENDERER
+CORRADE_DEPRECATED_FILE("use Magnum/Primitives/Arrow.h and Primitives::arrow2D() or arrow3D() in a custom drawable instead")
+#endif
+
 namespace Magnum { namespace DebugTools {
 
 /**
 @brief Force renderer options
+@m_deprecated_since_latest Use @ref Primitives::arrow2D() or
+    @relativeref{Primitives,arrow3D()} in a custom drawable instead
 
 See @ref ForceRenderer documentation for more information.
 
@@ -54,7 +63,7 @@ See @ref ForceRenderer documentation for more information.
     @ref MAGNUM_TARGET_GL "TARGET_GL" and `MAGNUM_WITH_SCENEGRAPH` enabled
     (done by default). See @ref building-features for more information.
 */
-class ForceRendererOptions {
+class CORRADE_DEPRECATED("use Primitives::arrow2D() or arrow3D() in a custom drawable instead") ForceRendererOptions {
     public:
         constexpr ForceRendererOptions(): _color(1.0f), _size(1.0f) {}
 
@@ -67,10 +76,12 @@ class ForceRendererOptions {
          *
          * Default is @cpp 0xffffffff_rgbaf @ce.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the return type */
         ForceRendererOptions& setColor(const Color4& color) {
             _color = color;
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Size of rendered arrow */
         constexpr Float size() const { return _size; }
@@ -81,10 +92,12 @@ class ForceRendererOptions {
          *
          * Default is @cpp 1.0f @ce.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the return type */
         ForceRendererOptions& setSize(Float size) {
             _size = size;
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
     private:
         Color4 _color;
@@ -93,9 +106,10 @@ class ForceRendererOptions {
 
 /**
 @brief Force renderer
+@m_deprecated_since_latest Use @ref Primitives::arrow2D() or
+    @relativeref{Primitives,arrow3D()} in a custom drawable instead
 
 Visualizes force pushing on object by an arrow of the same direction and size.
-See @ref debug-tools-renderers for more information.
 
 @section DebugTools-ForceRenderer-usage Basic usage
 
@@ -113,7 +127,7 @@ to it.
 
 @see @ref ForceRenderer2D, @ref ForceRenderer3D, @ref ForceRendererOptions
 */
-template<UnsignedInt dimensions> class ForceRenderer: public SceneGraph::Drawable<dimensions, Float> {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("use Primitives::arrow2D() or arrow3D() in a custom drawable instead") ForceRenderer: public SceneGraph::Drawable<dimensions, Float> {
     public:
         /**
          * @brief Constructor
@@ -126,13 +140,17 @@ template<UnsignedInt dimensions> class ForceRenderer: public SceneGraph::Drawabl
          *      more information.
          * @param drawables     Drawable group
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         explicit ForceRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * You have to pass a reference to an external force vector --- the
          * renderer doesn't store a copy.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         explicit ForceRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, VectorTypeFor<dimensions, Float>&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         ~ForceRenderer();
 
@@ -142,31 +160,43 @@ template<UnsignedInt dimensions> class ForceRenderer: public SceneGraph::Drawabl
         const VectorTypeFor<dimensions, Float> _forcePosition;
         const VectorTypeFor<dimensions, Float>& _force;
 
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the type */
         Resource<ForceRendererOptions> _options;
+        CORRADE_IGNORE_DEPRECATED_POP
         Resource<GL::AbstractShaderProgram, Shaders::FlatGL<dimensions>> _shader;
         Resource<GL::Mesh> _mesh;
 };
 
 /**
 @brief Two-dimensional force renderer
+@m_deprecated_since_latest Use @ref Primitives::arrow2D() or
+    @relativeref{Primitives,arrow3D()} in a custom drawable instead
 
 @note This typedef is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-typedef ForceRenderer<2> ForceRenderer2D;
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
+typedef CORRADE_DEPRECATED("use Primitives::arrow2D() in a custom drawable instead") ForceRenderer<2> ForceRenderer2D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Three-dimensional force renderer
+@m_deprecated_since_latest Use @ref Primitives::arrow2D() or
+    @relativeref{Primitives,arrow3D()} in a custom drawable instead
 
 @note This typedef is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-typedef ForceRenderer<3> ForceRenderer3D;
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
+typedef CORRADE_DEPRECATED("use Primitives::arrow3D() in a custom drawable instead") ForceRenderer<3> ForceRenderer3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
-#else
+#elif !defined(MAGNUM_BUILD_DEPRECATED)
+#error use Magnum/Primitives/Arrow.h and Primitives::arrow2D() or arrow3D() in a custom drawable instead
+#elif !defined(MAGNUM_TARGET_GL)
 #error this header is available only in the OpenGL build
 #endif
 

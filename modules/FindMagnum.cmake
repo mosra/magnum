@@ -455,16 +455,19 @@ set(_MAGNUM_Audio_DEPENDENCIES )
 # compiled at all.
 set(_MAGNUM_DebugTools_DEPENDENCIES Trade)
 set(_MAGNUM_DebugTools_Trade_DEPENDENCY_IS_OPTIONAL ON)
-# MeshTools, Primitives, SceneGraph and Shaders are used only for GL renderers
-# in DebugTools. All of this is optional, compiled in only if the base library
-# was selected.
 if(MAGNUM_TARGET_GL)
-    list(APPEND _MAGNUM_DebugTools_DEPENDENCIES MeshTools Primitives SceneGraph Shaders GL)
-    set(_MAGNUM_DebugTools_MeshTools_DEPENDENCY_IS_OPTIONAL ON)
-    set(_MAGNUM_DebugTools_Primitives_DEPENDENCY_IS_OPTIONAL ON)
-    set(_MAGNUM_DebugTools_SceneGraph_DEPENDENCY_IS_OPTIONAL ON)
-    set(_MAGNUM_DebugTools_Shaders_DEPENDENCY_IS_OPTIONAL ON)
+    list(APPEND _MAGNUM_DebugTools_DEPENDENCIES GL)
     set(_MAGNUM_DebugTools_GL_DEPENDENCY_IS_OPTIONAL ON)
+    # MeshTools, Primitives, SceneGraph and Shaders are used only for
+    # (deprecated) GL renderers in DebugTools. All of this is optional,
+    # compiled in only if the base library was selected.
+    if(MAGNUM_BUILD_DEPRECATED)
+        list(APPEND _MAGNUM_DebugTools_DEPENDENCIES MeshTools Primitives SceneGraph Shaders)
+        set(_MAGNUM_DebugTools_MeshTools_DEPENDENCY_IS_OPTIONAL ON)
+        set(_MAGNUM_DebugTools_Primitives_DEPENDENCY_IS_OPTIONAL ON)
+        set(_MAGNUM_DebugTools_SceneGraph_DEPENDENCY_IS_OPTIONAL ON)
+        set(_MAGNUM_DebugTools_Shaders_DEPENDENCY_IS_OPTIONAL ON)
+    endif()
 endif()
 
 set(_MAGNUM_MaterialTools_DEPENDENCIES Trade)

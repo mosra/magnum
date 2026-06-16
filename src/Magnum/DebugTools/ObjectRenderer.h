@@ -26,9 +26,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 /** @file
  * @brief Class @ref Magnum::DebugTools::ObjectRenderer, @ref Magnum::DebugTools::ObjectRendererOptions, typedef @ref Magnum::DebugTools::ObjectRenderer2D, @ref Magnum::DebugTools::ObjectRenderer3D
+ * @m_deprecated_since_latest Use @ref Magnum/Primitives/Axis.h and
+ *      @ref Primitives::axis2D() or @relativeref{Primitives,axis3D()} in a
+ *      custom drawable instead
  */
 #endif
 
@@ -42,10 +45,16 @@
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
 
+#ifndef _MAGNUM_NO_DEPRECATED_OBJECTRENDERER
+CORRADE_DEPRECATED_FILE("use Magnum/Primitives/Axis.h and Primitives::axis2D() or axis3D() in a custom drawable instead")
+#endif
+
 namespace Magnum { namespace DebugTools {
 
 /**
 @brief Object renderer options
+@m_deprecated_since_latest Use @ref Primitives::axis2D() or
+    @relativeref{Primitives,axis3D()} in a custom drawable instead
 
 See @ref ObjectRenderer documentation for more information.
 
@@ -53,7 +62,7 @@ See @ref ObjectRenderer documentation for more information.
     @ref MAGNUM_TARGET_GL "TARGET_GL" and `MAGNUM_WITH_SCENEGRAPH` enabled
     (done by default). See @ref building-features for more information.
 */
-class ObjectRendererOptions {
+class CORRADE_DEPRECATED("use Primitives::axis2D() or axis3D() in a custom drawable instead") ObjectRendererOptions {
     public:
         constexpr ObjectRendererOptions(): _size(1.0f) {}
 
@@ -66,10 +75,12 @@ class ObjectRendererOptions {
          *
          * Default is @cpp 1.0f @ce.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the return type */
         ObjectRendererOptions& setSize(Float size) {
             _size = size;
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
     private:
         Float _size;
@@ -77,9 +88,10 @@ class ObjectRendererOptions {
 
 /**
 @brief Object renderer
+@m_deprecated_since_latest Use @ref Primitives::axis2D() or
+    @relativeref{Primitives,axis3D()} in a custom drawable instead
 
-Visualizes object position, rotation and scale using colored axes. See
-@ref debug-tools-renderers for more information.
+Visualizes object position, rotation and scale using colored axes.
 
 @section DebugTools-ObjectRenderer-usage Basic usage
 
@@ -93,7 +105,7 @@ Example code:
 
 @see @ref ObjectRenderer2D, @ref ObjectRenderer3D, @ref ObjectRendererOptions
 */
-template<UnsignedInt dimensions> class ObjectRenderer: public SceneGraph::Drawable<dimensions, Float> {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("use Primitives::axis2D() or axis3D() in a custom drawable instead") ObjectRenderer: public SceneGraph::Drawable<dimensions, Float> {
     public:
         /**
          * @brief Constructor
@@ -106,14 +118,18 @@ template<UnsignedInt dimensions> class ObjectRenderer: public SceneGraph::Drawab
          *
          * The renderer is automatically added to object's features.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the argument */
         explicit ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         ~ObjectRenderer();
 
     private:
         void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) override;
 
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the type */
         Resource<ObjectRendererOptions> _options;
+        CORRADE_IGNORE_DEPRECATED_POP
         Resource<GL::AbstractShaderProgram, Shaders::VertexColorGL<dimensions>> _shader;
         Resource<GL::Mesh> _mesh;
 };
@@ -125,7 +141,9 @@ template<UnsignedInt dimensions> class ObjectRenderer: public SceneGraph::Drawab
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-typedef ObjectRenderer<2> ObjectRenderer2D;
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
+typedef CORRADE_DEPRECATED("use Primitives::axis2D() in a custom drawable instead") ObjectRenderer<2> ObjectRenderer2D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Three-dimensional object renderer
@@ -134,10 +152,14 @@ typedef ObjectRenderer<2> ObjectRenderer2D;
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-typedef ObjectRenderer<3> ObjectRenderer3D;
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
+typedef CORRADE_DEPRECATED("use Primitives::axis3D() in a custom drawable instead") ObjectRenderer<3> ObjectRenderer3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
-#else
+#elif !defined(MAGNUM_BUILD_DEPRECATED)
+#error use Magnum/Primitives/Axis.h and Primitives::axis2D() or axis3D() in a custom drawable instead
+#elif !defined(MAGNUM_TARGET_GL)
 #error this header is available only in the OpenGL build
 #endif
 

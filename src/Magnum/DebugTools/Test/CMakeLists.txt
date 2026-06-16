@@ -106,13 +106,13 @@ if(MAGNUM_WITH_TRADE)
 endif()
 
 if(MAGNUM_TARGET_GL)
-    if(MAGNUM_WITH_SCENEGRAPH)
+    if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_WITH_SCENEGRAPH)
         corrade_add_test(DebugToolsForceRendererTest ForceRendererTest.cpp LIBRARIES MagnumMathTestLib)
     endif()
 
     if(MAGNUM_BUILD_GL_TESTS)
         corrade_add_test(DebugToolsFrameProfilerGLTest FrameProfilerGLTest.cpp
-            LIBRARIES MagnumDebugTools MagnumOpenGLTester)
+            LIBRARIES MagnumDebugTools MagnumOpenGLTester MagnumPrimitives MagnumMeshTools MagnumShaders)
         corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp
             LIBRARIES MagnumDebugToolsTestLib MagnumOpenGLTester)
 
@@ -165,7 +165,7 @@ if(MAGNUM_TARGET_GL)
             endif()
         endif()
 
-        if(MAGNUM_WITH_SCENEGRAPH AND MAGNUM_WITH_TRADE)
+        if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_WITH_SCENEGRAPH AND MAGNUM_WITH_TRADE)
             corrade_add_test(DebugToolsForceRendererGLTest ForceRendererGLTest.cpp
                 LIBRARIES MagnumDebugTools MagnumOpenGLTester
                 FILES ForceRenderer2D.tga ForceRenderer3D.tga)

@@ -50,17 +50,23 @@ class FrameProfilerGL;
 typedef CORRADE_DEPRECATED("use FrameProfilerGL instead") FrameProfilerGL GLFrameProfiler;
 #endif
 
-template<UnsignedInt> class ForceRenderer;
-typedef ForceRenderer<2> ForceRenderer2D;
-typedef ForceRenderer<3> ForceRenderer3D;
-class ForceRendererOptions;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt> class CORRADE_DEPRECATED("use Primitives::arrow2D() or arrow3D() in a custom drawable instead") ForceRenderer;
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
+typedef CORRADE_DEPRECATED("use Primitives::arrow2D() in a custom drawable instead") ForceRenderer<2> ForceRenderer2D;
+typedef CORRADE_DEPRECATED("use Primitives::arrow3D() in a custom drawable instead") ForceRenderer<3> ForceRenderer3D;
+CORRADE_IGNORE_DEPRECATED_POP
+class CORRADE_DEPRECATED("use Primitives::arrow2D() or arrow3D() in a custom drawable instead") ForceRendererOptions;
 
-template<UnsignedInt> class ObjectRenderer;
-typedef ObjectRenderer<2> ObjectRenderer2D;
-typedef ObjectRenderer<3> ObjectRenderer3D;
-class ObjectRendererOptions;
+template<UnsignedInt> class CORRADE_DEPRECATED("use Primitives::axis2D() or axis3D() in a custom drawable instead") ObjectRenderer;
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
+typedef CORRADE_DEPRECATED("use Primitives::axis2D() in a custom drawable instead") ObjectRenderer<2> ObjectRenderer2D;
+typedef CORRADE_DEPRECATED("use Primitives::axis3D() in a custom drawable instead") ObjectRenderer<3> ObjectRenderer3D;
+CORRADE_IGNORE_DEPRECATED_POP
+class CORRADE_DEPRECATED("use Primitives::axis2D() or axis3D() in a custom drawable instead") ObjectRendererOptions;
 
-class ResourceManager;
+class CORRADE_DEPRECATED("use Primitives::arrow2D() / axis2D or arrow3D() / axis3D() in a custom drawable instead") ResourceManager;
+#endif
 #endif
 
 }}

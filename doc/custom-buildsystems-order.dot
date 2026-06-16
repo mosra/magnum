@@ -71,10 +71,10 @@ digraph "Magnum library dependency order" {
     MagnumDebugTools -> CorradeTestSuite [style=dotted]
     MagnumDebugTools -> Magnum
     MagnumDebugTools -> MagnumGL [style=dotted]
-    MagnumDebugTools -> MagnumMeshTools [style=dotted]
-    MagnumDebugTools -> MagnumPrimitives [style=dotted]
-    MagnumDebugTools -> MagnumShaders [style=dotted]
-    MagnumDebugTools -> MagnumSceneGraph [style=dotted]
+    MagnumDebugTools -> MagnumMeshTools [style=dotted class="m-dim"]
+    MagnumDebugTools -> MagnumPrimitives [style=dotted class="m-dim"]
+    MagnumDebugTools -> MagnumShaders [style=dotted class="m-dim"]
+    MagnumDebugTools -> MagnumSceneGraph [style=dotted class="m-dim"]
 
     MagnumGL -> Magnum
 

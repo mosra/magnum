@@ -26,15 +26,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 /** @file
  * @brief Class @ref Magnum::DebugTools::ResourceManager
+ * @m_deprecated_since_latest Use @ref Magnum/Primitives/Arrow.h /
+ *      @ref Magnum/Primitives/Axis.h and @ref Primitives::arrow2D() /
+ *      @relativeref{Primitives,axis2D()} or @relativeref{Primitives,arrow3D()}
+ *      / @relativeref{Primitives,axis3D()} in a custom drawable instead
  */
 #endif
 
 #include "Magnum/configure.h"
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 #include "Magnum/ResourceManager.h"
 
 #include "Magnum/Magnum.h"
@@ -43,8 +47,7 @@
 #include "Magnum/GL/GL.h"
 #include "Magnum/SceneGraph/SceneGraph.h"
 
-/** @todo fix this better */
-#ifdef CORRADE_TARGET_MSVC /* This is not a bug, this is a feature :( Not even /permissive- helps. */
+#ifdef CORRADE_TARGET_MSVC
 #include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/ObjectRenderer.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -53,10 +56,17 @@
 #include "Magnum/GL/MeshView.h"
 #endif
 
+#ifndef _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+CORRADE_DEPRECATED_FILE("use Magnum/Primitives/Arrow.h / Magnum/Primitives/Axis.h and Primitives::arrow2D() / axis2D() or arrow3D() / axis3D() in a custom drawable instead")
+#endif
+
 namespace Magnum { namespace DebugTools {
 
 /**
 @brief Resource manager for debug tools
+@m_deprecated_since_latest Use @ref Primitives::arrow2D() /
+    @relativeref{Primitives,axis2D()} or @relativeref{Primitives,arrow3D()} /
+    @relativeref{Primitives,axis3D()} in a custom drawable instead
 
 Stores various data used by debug renderers. See @ref debug-tools for more
 information.
@@ -65,13 +75,17 @@ information.
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
     @ref building-features for more information.
 */
-class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions>
+CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the base types */
+class CORRADE_DEPRECATED("use Primitives::arrow2D() / axis2D or arrow3D() / axis3D() in a custom drawable instead") MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions>
 {
     public:
         explicit ResourceManager();
         ~ResourceManager();
 };
-#else
+CORRADE_IGNORE_DEPRECATED_POP
+#elif !defined(MAGNUM_BUILD_DEPRECATED)
+#error use Magnum/Primitives/Arrow.h / Magnum/Primitives/Axis.h and Primitives::arrow2D() / axis2D() or arrow3D() / axis3D() in a custom drawable instead
+#elif !defined(MAGNUM_TARGET_GL)
 #error this header is available only in the OpenGL build
 #endif
 

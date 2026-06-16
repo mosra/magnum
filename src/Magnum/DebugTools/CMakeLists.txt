@@ -51,16 +51,19 @@ endif()
 
 if(MAGNUM_TARGET_GL)
     list(APPEND MagnumDebugTools_SRCS
-        ResourceManager.cpp
         Screenshot.cpp)
 
     list(APPEND MagnumDebugTools_GracefulAssert_SRCS
         TextureImage.cpp)
 
     list(APPEND MagnumDebugTools_HEADERS
-        ResourceManager.h
         Screenshot.h
         TextureImage.h)
+
+    if(MAGNUM_BUILD_DEPRECATED)
+        list(APPEND MagnumDebugTools_SRCS ResourceManager.cpp)
+        list(APPEND MagnumDebugTools_HEADERS ResourceManager.h)
+    endif()
 
     if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
         corrade_add_resource(MagnumDebugTools_RESOURCES resources.conf)
@@ -83,7 +86,7 @@ if(MAGNUM_TARGET_GL)
             BufferData.h)
     endif()
 
-    if(MAGNUM_WITH_SCENEGRAPH)
+    if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_WITH_SCENEGRAPH)
         list(APPEND MagnumDebugTools_SRCS
             ForceRenderer.cpp
             ObjectRenderer.cpp)
@@ -145,7 +148,7 @@ if(Corrade_TestSuite_FOUND AND MAGNUM_WITH_TRADE)
 endif()
 if(MAGNUM_TARGET_GL)
     target_link_libraries(MagnumDebugTools PUBLIC MagnumGL)
-    if(MAGNUM_WITH_SCENEGRAPH)
+    if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_WITH_SCENEGRAPH)
         target_link_libraries(MagnumDebugTools PUBLIC
             MagnumMeshTools
             MagnumPrimitives
@@ -179,7 +182,7 @@ if(MAGNUM_BUILD_TESTS)
     endif()
     if(MAGNUM_TARGET_GL)
         target_link_libraries(MagnumDebugToolsTestLib PUBLIC MagnumGL)
-        if(MAGNUM_WITH_SCENEGRAPH)
+        if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_WITH_SCENEGRAPH)
             target_link_libraries(MagnumDebugToolsTestLib PUBLIC
                 MagnumMeshTools
                 MagnumPrimitives

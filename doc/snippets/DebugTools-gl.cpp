@@ -33,10 +33,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/ColorMap.h"
 #include "Magnum/DebugTools/CompareImage.h"
-#include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/FrameProfiler.h"
-#include "Magnum/DebugTools/ResourceManager.h"
-#include "Magnum/DebugTools/ObjectRenderer.h"
 #include "Magnum/DebugTools/TextureImage.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/CubeMapTexture.h"
@@ -45,6 +42,7 @@
 #include "Magnum/GL/TextureArray.h"
 #endif
 #include "Magnum/GL/TextureFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/SceneGraph/Object.h"
@@ -57,6 +55,16 @@
 #include "Magnum/GL/BufferImage.h"
 #endif
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_FORCERENDERER
+#define _MAGNUM_NO_DEPRECATED_OBJECTRENDERER
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+
+#include "Magnum/DebugTools/ForceRenderer.h"
+#include "Magnum/DebugTools/ObjectRenderer.h"
+#include "Magnum/DebugTools/ResourceManager.h"
+#endif
+
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
@@ -65,23 +73,6 @@ using namespace Magnum::Math::Literals;
    avoid -Wmisssing-prototypes */
 void mainDebugTools();
 void mainDebugTools() {
-{
-SceneGraph::Object<SceneGraph::MatrixTransformation3D>* object{};
-/* [debug-tools-renderers] */
-// Global instance of debug resource manager, drawable group for the renderers
-DebugTools::ResourceManager manager;
-SceneGraph::DrawableGroup3D debugDrawables;
-
-// Create renderer options which will be referenced later by "my" resource key
-manager.set("my", DebugTools::ObjectRendererOptions{}.setSize(0.3f));
-
-// Create debug renderer for given object, use "my" options for it. The
-// renderer is automatically added to the object features and also to
-// specified drawable group.
-new DebugTools::ObjectRenderer3D{manager, *object, "my", &debugDrawables};
-/* [debug-tools-renderers] */
-}
-
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 {
 /* [ColorMap] */
@@ -99,7 +90,9 @@ colorMapTexture
 }
 #endif
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 {
+CORRADE_IGNORE_DEPRECATED_PUSH
 DebugTools::ResourceManager manager;
 SceneGraph::Object<SceneGraph::MatrixTransformation3D>* object{};
 SceneGraph::DrawableGroup3D debugDrawables;
@@ -114,7 +107,9 @@ Vector3 force; // taken as a reference, has to be kept in scope
 new DebugTools::ForceRenderer3D(manager, *object, {0.3f, 1.5f, -0.7f}, force,
     "my", &debugDrawables);
 /* [ForceRenderer] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 {
@@ -143,8 +138,10 @@ DebugTools::FrameProfiler _profiler{{
 }
 #endif
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 {
 SceneGraph::Object<SceneGraph::MatrixTransformation3D>* object{};
+CORRADE_IGNORE_DEPRECATED_PUSH
 /* [ObjectRenderer] */
 DebugTools::ResourceManager manager;
 SceneGraph::DrawableGroup3D debugDrawables;
@@ -155,7 +152,9 @@ manager.set("my", DebugTools::ObjectRendererOptions{}.setSize(0.3f));
 // Create debug renderer for given object, use "my" options for it
 new DebugTools::ObjectRenderer3D{manager, *object, "my", &debugDrawables};
 /* [ObjectRenderer] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 {
 /* [FrameProfilerGL-usage] */

@@ -1021,7 +1021,7 @@ a high-level overview.
 -   @ref Text::AbstractLayouter has now a virtual destructor to avoid leaking
     its subclasses
 -   Fixed @ref Trade::ObjImporter on Android
--   Fixed assertion when using @ref DebugTools::ObjectRenderer
+-   Fixed assertion when using @cpp DebugTools::ObjectRenderer @ce
 -   Fixed appearance of `Primitives::Cylinder::solid()` and
     `Primitives::Circle::solid()` (see [mosra/magnum#197](https://github.com/mosra/magnum/pull/197),
     [mosra/magnum#220](https://github.com/mosra/magnum/pull/220))

@@ -24,6 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_OBJECTRENDERER
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+
 #include "ObjectRenderer.h"
 
 #include "Magnum/DebugTools/ResourceManager.h"
@@ -36,6 +39,7 @@
 
 namespace Magnum { namespace DebugTools {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace {
 
 template<UnsignedInt> struct Renderer;
@@ -74,5 +78,6 @@ template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const Mat
 
 template class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer<2>;
 template class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

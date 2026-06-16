@@ -24,6 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_OBJECTRENDERER
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -86,14 +89,18 @@ void ObjectRendererGLTest::render2D() {
     SceneGraph::Camera2D camera{scene};
     camera.setProjectionMatrix(Matrix3::projection({4.0f, 4.0f}));
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ResourceManager manager;
     manager.set("my", ObjectRendererOptions{}.setSize(2.2f));
+    CORRADE_IGNORE_DEPRECATED_POP
 
     SceneGraph::Object<SceneGraph::MatrixTransformation2D> object{&scene};
     object
         .rotate(-17.3_degf)
         .translate({-1.0f, -1.0f});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ObjectRenderer2D renderer{manager, object, "my", &drawables};
+    CORRADE_IGNORE_DEPRECATED_POP
 
     GL::Renderbuffer color;
     color.setStorage(
@@ -130,15 +137,19 @@ void ObjectRendererGLTest::render3D() {
     SceneGraph::Camera3D camera{scene};
     camera.setProjectionMatrix(Matrix4::orthographicProjection({4.0f, 4.0f}, 0.1f, 2.0f));
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ResourceManager manager;
     manager.set("my", ObjectRendererOptions{}.setSize(2.2f));
+    CORRADE_IGNORE_DEPRECATED_POP
 
     SceneGraph::Object<SceneGraph::MatrixTransformation3D> object{&scene};
     object
         .rotateZ(17.3_degf)
         .rotateY(45.0_degf)
         .translate({-1.0f, -1.0f, -1.0f});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ObjectRenderer3D renderer{manager, object, "my", &drawables};
+    CORRADE_IGNORE_DEPRECATED_POP
 
     GL::Renderbuffer color;
     color.setStorage(

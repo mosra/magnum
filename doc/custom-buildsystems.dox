@@ -62,8 +62,9 @@ cyclic dependency marked with a dotted rectangle. Deprecated libraries that are
 scheduled for removal are marked with a @m_span{m-text m-dim} dim @m_endspan
 color. In some cases a dependency is optional (marked with a dotted line) and
 you can remove the dependency by disabling parts or configuration options that
-require given dependency. See documentation of each library for more
-information.
+require given dependency. A dim dotted line is then for an optional dependency
+that's only required by deprecated functionality. See documentation of each
+library for more information.
 
 @todo make this diagram clickable once [the dumpster fire](https://github.com/mosra/m.css/pull/69) is fixed
 

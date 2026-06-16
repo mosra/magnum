@@ -1533,6 +1533,13 @@ See also:
     @ref DebugTools::FrameProfilerGL. The new name plays better with IDE
     autocompletion and makes the GL-specific class appear next to the
     API-independent base in alphabetically sorted lists.
+-   @cpp DebugTools::ForceRenderer @ce, @cpp DebugTools::ObjectRenderer @ce as
+    well as their @cpp DebugTools::ResourceManager @ce dependency are
+    deprecated in favor of directly using the @ref Primitives::arrow2D() /
+    @relativeref{Primitives,axis2D()} or @ref Primitives::arrow3D() /
+    @relativeref{Primitives,axis3D()} primitives in a custom drawable, which
+    allows for more flexibility, better resource reuse and improved performance
+    such as with GPU instancing
 -   List-taking @cpp GL::Shader::compile() @ce and
     @cpp GL::AbstractShaderProgram::link() @ce functions are deprecated in
     favor of new @ref GL::Shader::submitCompile(),
@@ -1917,7 +1924,7 @@ See also:
         @cpp Trade::ImporterFileCallbackPolicy::LoadPernament @ce containing a
         typo, use @ref InputFileCallbackPolicy::LoadPermanent instead
     -   @cpp DebugTools::ForceRendererOptions::scale() @ce, use
-        @ref DebugTools::ForceRendererOptions::size() instead
+        @cpp DebugTools::ForceRendererOptions::size() @ce instead
     -   @cpp Math::Color3::Hsv @ce and @cpp Math::Color4::Hsv @ce
         @ref std::tuple typedefs and @ref Math::Color3::fromHsv() /
         @ref Math::Color4::fromHsv() overloads taking separate hue, saturation
@@ -3685,8 +3692,8 @@ Released 2019-10-24, tagged as
     @cpp InputFileCallbackPolicy::LoadPernament @ce is deprecated due to a
     typo, use @ref InputFileCallbackPolicy::LoadPermanent instead.
 -   @cpp DebugTools::ForceRendererOptions::scale() @ce is deprecated in favor
-    of @ref DebugTools::ForceRendererOptions::size(), as that's more consistent
-    with the documentation and the corresponding setter.
+    of @cpp DebugTools::ForceRendererOptions::size() @ce, as that's more
+    consistent with the documentation and the corresponding setter.
 -   @cpp Text::AbstractFont::openSingleData() @ce and
     @cpp Text::AbstractFont::openData() @ce taking a list of files are
     deprecated in favor of
@@ -3721,10 +3728,10 @@ Released 2019-10-24, tagged as
     will print a warning at runtime. Use a constructor without the @p data
     parameter instead.
 -   The @cpp ResourceManager::instance() @ce singleton (and its implicit use in
-    @ref DebugTools::ForceRenderer and @ref DebugTools::ObjectRenderer) is
-    deprecated as it makes some use cases harder than they should be. Make your
-    own singleton or explicitly pass a @ref ResourceManager reference around
-    instead.
+    @cpp DebugTools::ForceRenderer @ce and @cpp DebugTools::ObjectRenderer @ce)
+    is deprecated as it makes some use cases harder than they should be. Make
+    your own singleton or explicitly pass a @ref ResourceManager reference
+    around instead.
 -   @ref Platform::BasicScreen::application() now returns a reference instead
     of a pointer and together with @ref Platform::BasicScreen::redraw() checks
     that the screen is actually added to the application instead of returning

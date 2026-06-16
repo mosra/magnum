@@ -24,6 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_FORCERENDERER
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -86,13 +89,17 @@ void ForceRendererGLTest::render2D() {
     SceneGraph::Camera2D camera{scene};
     camera.setProjectionMatrix(Matrix3::projection({4.0f, 4.0f}));
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ResourceManager manager;
     manager.set("my", ForceRendererOptions{}.setColor(0xff3366_rgbf));
+    CORRADE_IGNORE_DEPRECATED_POP
 
     SceneGraph::Object<SceneGraph::MatrixTransformation2D> object{&scene};
     object.translate({-1.0f, -1.0f});
     Vector2 force{2.0f, 2.0f};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ForceRenderer2D renderer{manager, object, {}, force, "my", &drawables};
+    CORRADE_IGNORE_DEPRECATED_POP
 
     GL::Renderbuffer color;
     color.setStorage(
@@ -143,15 +150,19 @@ void ForceRendererGLTest::render3D() {
     SceneGraph::Camera3D camera{cameraObject};
     camera.setProjectionMatrix(Matrix4::orthographicProjection({4.0f, 4.0f}, 0.1f, 1.0f));
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ResourceManager manager;
     manager.set("my", ForceRendererOptions{}.setColor(0xff3366_rgbf));
+    CORRADE_IGNORE_DEPRECATED_POP
 
     SceneGraph::Object<SceneGraph::MatrixTransformation3D> object{&scene};
     object
         .rotateY(-90.0_degf)
         .translate({-0.5f, -1.0f, 1.0f});
     Vector3 force{2.0f, 2.0f, 0.0f};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ForceRenderer3D renderer{manager, object, {}, force, "my", &drawables};
+    CORRADE_IGNORE_DEPRECATED_POP
 
     GL::Renderbuffer color;
     color.setStorage(

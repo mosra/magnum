@@ -213,7 +213,9 @@ Containers::Pointer<AbstractShaper> MagnumFont::doCreateShaper() {
         using AbstractShaper::AbstractShaper;
 
         UnsignedInt doShape(const Containers::StringView textFull, const UnsignedInt begin, const UnsignedInt end, Containers::ArrayView<const FeatureRange>) override {
+            CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
             const Data& fontData = *static_cast<const MagnumFont&>(font())._opened;
+            CORRADE_IGNORE_DEPRECATED_POP
             const Containers::StringView text = textFull.slice(begin, end == ~UnsignedInt{} ? textFull.size() : end);
 
             /* Get glyph codes from characters */
@@ -235,7 +237,9 @@ Containers::Pointer<AbstractShaper> MagnumFont::doCreateShaper() {
             Utility::copy(stridedArrayView(_glyphs).slice(&Containers::Pair<UnsignedInt, UnsignedInt>::first), ids);
         }
         void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>& offsets, const Containers::StridedArrayView1D<Vector2>& advances) const override {
+            CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
             const Data& fontData = *static_cast<const MagnumFont&>(font())._opened;
+            CORRADE_IGNORE_DEPRECATED_POP
             for(std::size_t i = 0; i != _glyphs.size(); ++i) {
                 /* There's no glyph offsets in addition to advances */
                 offsets[i] = {};
