@@ -72,8 +72,8 @@ Stores various data used by debug renderers. See @ref debug-tools for more
 information.
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the base types */
 class CORRADE_DEPRECATED("use Primitives::arrow2D() / axis2D or arrow3D() / axis3D() in a custom drawable instead") MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions>

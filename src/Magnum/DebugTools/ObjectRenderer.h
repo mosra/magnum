@@ -59,8 +59,8 @@ namespace Magnum { namespace DebugTools {
 See @ref ObjectRenderer documentation for more information.
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" and `MAGNUM_WITH_SCENEGRAPH` enabled
-    (done by default). See @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL and `MAGNUM_WITH_SCENEGRAPH` enabled (done by
+    default). See @ref building-features for more information.
 */
 class CORRADE_DEPRECATED("use Primitives::axis2D() or axis3D() in a custom drawable instead") ObjectRendererOptions {
     public:
@@ -100,8 +100,8 @@ Example code:
 @snippet DebugTools-gl.cpp ObjectRenderer
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" and `MAGNUM_WITH_SCENEGRAPH` enabled
-    (done by default). See @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL and `MAGNUM_WITH_SCENEGRAPH` enabled (done by
+    default). See @ref building-features for more information.
 
 @see @ref ObjectRenderer2D, @ref ObjectRenderer3D, @ref ObjectRendererOptions
 */

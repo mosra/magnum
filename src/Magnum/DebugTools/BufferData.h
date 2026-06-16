@@ -78,8 +78,8 @@ to a newly-allocated array. On desktop GL and WebGL 2.0 it's just an alias to
 @ref GL::Buffer::subData().
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
@@ -123,8 +123,8 @@ newly-allocated array. On desktop GL and WebGL 2.0 it's just an alias to
 @ref GL::Buffer::data().
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.

@@ -60,8 +60,8 @@ namespace Magnum { namespace DebugTools {
 See @ref ForceRenderer documentation for more information.
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" and `MAGNUM_WITH_SCENEGRAPH` enabled
-    (done by default). See @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL and `MAGNUM_WITH_SCENEGRAPH` enabled (done by
+    default). See @ref building-features for more information.
 */
 class CORRADE_DEPRECATED("use Primitives::arrow2D() or arrow3D() in a custom drawable instead") ForceRendererOptions {
     public:
@@ -122,8 +122,8 @@ to it.
 @snippet DebugTools-gl.cpp ForceRenderer
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" and `MAGNUM_WITH_SCENEGRAPH` enabled
-    (done by default). See @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL and `MAGNUM_WITH_SCENEGRAPH` enabled (done by
+    default). See @ref building-features for more information.
 
 @see @ref ForceRenderer2D, @ref ForceRenderer3D, @ref ForceRendererOptions
 */

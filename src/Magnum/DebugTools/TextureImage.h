@@ -61,8 +61,8 @@ desktop GL, @ref GL::PixelType::Float is guaranteed to be supported. No similar
 treatment is done for any other types.
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D& image);
 
@@ -74,8 +74,8 @@ Convenience alternative to the above, example usage:
 @snippet DebugTools-gl.cpp textureSubImage-2D-rvalue
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D&& image);
 
@@ -98,8 +98,8 @@ it.
 @requires_webgl20 Array textures are not available in WebGL 1.0.
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2DArray& texture, Int level, Int layer, const Range2Di& range, Image2D& image);
 
@@ -112,8 +112,8 @@ Convenience alternative to the above, example usage:
 @snippet DebugTools-gl.cpp textureSubImage-array-rvalue
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::Texture2DArray& texture, Int level, Int layer, const Range2Di& range, Image2D&& image);
 #endif
@@ -131,8 +131,8 @@ framebuffer-readable and that the @ref GL::PixelFormat and @ref GL::PixelType
 combination or the generic @relativeref{Magnum,PixelFormat} is compatible with
 it.
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D& image);
 
@@ -144,8 +144,8 @@ Convenience alternative to the above, example usage:
 @snippet DebugTools-gl.cpp textureSubImage-cubemap-rvalue
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D&& image);
 
@@ -173,8 +173,8 @@ it.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT CORRADE_DEPRECATED("use textureSubImage(GL::Texture2D&, Int, const Range2Di&, Image2D&) instead") void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
@@ -193,8 +193,8 @@ Convenience alternative to the above, example usage:
 @snippet DebugTools-gl.cpp textureSubImage-2D-rvalue-buffer
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT CORRADE_DEPRECATED("use textureSubImage(GL::Texture2D&, Int, const Range2Di&, Image2D&&) instead") GL::BufferImage2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 
@@ -220,8 +220,8 @@ it.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT CORRADE_DEPRECATED("use textureSubImage(GL::CubeMapTexture2D&, GL::CubeMapCoordinate, Int, const Range2Di&, Image2D&) instead") void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
@@ -240,8 +240,8 @@ Convenience alternative to the above, example usage:
 @snippet DebugTools-gl.cpp textureSubImage-cubemap-rvalue-buffer
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
-    @ref building-features for more information.
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT CORRADE_DEPRECATED("use textureSubImage(GL::CubeMapTexture2D&, GL::CubeMapCoordinate, Int, const Range2Di&, Image2D&&) instead") GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 #endif
