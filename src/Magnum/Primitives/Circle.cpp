@@ -27,7 +27,7 @@
 #include "Circle.h"
 
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/Trade/MeshData.h"
 

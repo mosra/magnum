@@ -27,7 +27,7 @@
 #include "Square.h"
 
 #include "Magnum/Mesh.h"
-#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
