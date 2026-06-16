@@ -60,7 +60,7 @@ Trade::MeshData circle2DSolid(const UnsignedInt segments, const Circle2DFlags fl
     else
         attributes = Trade::meshAttributeDataNonOwningArray(AttributeData2D);
     const std::size_t stride = attributes[0].stride();
-    Containers::Array<char> vertexData{stride*(segments + 2)};
+    Containers::Array<char> vertexData{NoInit, stride*(segments + 2)};
 
     /* Fill positions */
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
@@ -101,7 +101,7 @@ Trade::MeshData circle2DWireframe(const UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle2DWireframe(): expected at least three segments but got" << segments,
         (Trade::MeshData{MeshPrimitive::LineLoop, 0}));
 
-    Containers::Array<char> vertexData{segments*sizeof(Vector2)};
+    Containers::Array<char> vertexData{NoInit, segments*sizeof(Vector2)};
     auto positions = Containers::arrayCast<Vector2>(vertexData);
 
     /* Points on circle */
@@ -222,7 +222,7 @@ Trade::MeshData circle3DWireframe(const UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle3DWireframe(): expected at least three segments but got" << segments,
         (Trade::MeshData{MeshPrimitive::LineLoop, 0}));
 
-    Containers::Array<char> vertexData{segments*sizeof(Vector3)};
+    Containers::Array<char> vertexData{NoInit, segments*sizeof(Vector3)};
     auto positions = Containers::arrayCast<Vector3>(vertexData);
 
     /* Points on circle */

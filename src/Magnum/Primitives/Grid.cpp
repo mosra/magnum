@@ -37,7 +37,7 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
     const Vector2i faceCount = subdivisions + Vector2i{1};
 
     /* Indices */
-    Containers::Array<char> indexData{std::size_t(faceCount.product()*6)*sizeof(UnsignedInt)};
+    Containers::Array<char> indexData{NoInit, std::size_t(faceCount.product()*6)*sizeof(UnsignedInt)};
     auto indices = Containers::arrayCast<UnsignedInt>(indexData);
     {
         std::size_t i = 0;
@@ -72,7 +72,7 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
         stride += sizeof(Vector2);
         ++attributeCount;
     }
-    Containers::Array<char> vertexData{stride*vertexCount.product()};
+    Containers::Array<char> vertexData{NoInit, stride*vertexCount.product()};
     Containers::Array<Trade::MeshAttributeData> attributes{attributeCount};
     std::size_t attributeIndex = 0;
     std::size_t attributeOffset = 0;
@@ -143,7 +143,7 @@ Trade::MeshData grid3DWireframe(const Vector2i& subdivisions) {
     const Vector2i vertexCount = subdivisions + Vector2i{2};
     const Vector2i faceCount = subdivisions + Vector2i{1};
 
-    Containers::Array<char> indexData{sizeof(UnsignedInt)*
+    Containers::Array<char> indexData{NoInit, sizeof(UnsignedInt)*
         (vertexCount.y()*(vertexCount.x() - 1)*2 +
         vertexCount.x()*(vertexCount.y() - 1)*2)};
     auto indices = Containers::arrayCast<UnsignedInt>(indexData);
@@ -167,7 +167,7 @@ Trade::MeshData grid3DWireframe(const Vector2i& subdivisions) {
         }
     }
 
-    Containers::Array<char> vertexData{sizeof(Vector3)*vertexCount.product()};
+    Containers::Array<char> vertexData{NoInit, sizeof(Vector3)*vertexCount.product()};
     auto positions = Containers::arrayCast<Vector3>(vertexData);
     {
         std::size_t i = 0;

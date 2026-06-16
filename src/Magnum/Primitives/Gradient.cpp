@@ -52,7 +52,7 @@ constexpr Trade::MeshAttributeData Attributes2D[]{
 }
 
 Trade::MeshData gradient2D(const Vector2& a, const Color4& colorA, const Vector2& b, const Color4& colorB) {
-    Containers::Array<char> vertexData{sizeof(Vertex2D)*4};
+    Containers::Array<char> vertexData{NoInit, sizeof(Vertex2D)*4};
     auto vertices = Containers::arrayCast<Vertex2D>(vertexData);
     vertices[0].position = { 1.0f, -1.0f};
     vertices[1].position = { 1.0f,  1.0f};
@@ -105,7 +105,7 @@ constexpr Trade::MeshAttributeData Attributes3D[]{
 }
 
 Trade::MeshData gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB) {
-    Containers::Array<char> vertexData{sizeof(Vertex3D)*4};
+    Containers::Array<char> vertexData{NoInit, sizeof(Vertex3D)*4};
     auto vertices = Containers::arrayCast<Vertex3D>(vertexData);
     vertices[0].position = { 1.0f, -1.0f, 0};
     vertices[1].position = { 1.0f,  1.0f, 0};

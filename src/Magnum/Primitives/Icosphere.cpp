@@ -93,7 +93,7 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
     const std::size_t indexCount = Containers::arraySize(Indices)*(std::size_t{1} << subdivisions*2);
     const std::size_t vertexCount = Containers::arraySize(Vertices) + ((indexCount - Containers::arraySize(Indices))/3);
 
-    Containers::Array<char> indexData{indexCount*sizeof(UnsignedInt)};
+    Containers::Array<char> indexData{NoInit, indexCount*sizeof(UnsignedInt)};
     auto indices = Containers::arrayCast<UnsignedInt>(indexData);
     std::memcpy(indices.begin(), Indices, sizeof(Indices));
 

@@ -42,7 +42,7 @@ constexpr Trade::MeshAttributeData Attributes2D[]{
 }
 
 Trade::MeshData line2D(const Vector2& a, const Vector2& b) {
-    Containers::Array<char> vertexData{sizeof(Vector2)*2};
+    Containers::Array<char> vertexData{NoInit, sizeof(Vector2)*2};
     auto positions = Containers::arrayCast<Vector2>(vertexData);
     positions[0] = a;
     positions[1] = b;
@@ -61,7 +61,7 @@ constexpr Trade::MeshAttributeData Attributes3D[]{
 }
 
 Trade::MeshData line3D(const Vector3& a, const Vector3& b) {
-    Containers::Array<char> vertexData{sizeof(Vector3)*2};
+    Containers::Array<char> vertexData{NoInit, sizeof(Vector3)*2};
     auto positions = Containers::arrayCast<Vector3>(vertexData);
     positions[0] = a;
     positions[1] = b;
