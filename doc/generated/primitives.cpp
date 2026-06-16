@@ -27,7 +27,6 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Magnum/Platform/WindowlessCglApplication.h>
@@ -196,7 +195,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
+            converter->convertToFile(result, "primitives-" + dataFilename.second());
         }
     }
 
@@ -213,7 +212,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
+            converter->convertToFile(result, "primitives-" + dataFilename.second());
         }
     }
 
@@ -236,7 +235,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
+            converter->convertToFile(result, "primitives-" + dataFilename.second());
         }
     }
 
@@ -265,7 +264,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
+            converter->convertToFile(result, "primitives-" + dataFilename.second());
         }
     }
 
@@ -295,7 +294,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
+            converter->convertToFile(result, "primitives-" + dataFilename.second());
         }
     }
 
@@ -338,7 +337,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
+            converter->convertToFile(result, "primitives-" + dataFilename.second());
         }
     }
 
@@ -359,7 +358,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
+            converter->convertToFile(result, "primitives-" + dataFilename.second());
         }
     }
 
@@ -380,7 +379,7 @@ int PrimitiveVisualizer::exec() {
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
+            converter->convertToFile(result, "primitives-" + dataFilename.second());
         }
     }
 
