@@ -152,7 +152,9 @@ template<UnsignedInt dimensions> class CORRADE_DEPRECATED("use Primitives::arrow
         explicit ForceRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, VectorTypeFor<dimensions, Float>&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
         CORRADE_IGNORE_DEPRECATED_POP
 
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
         ~ForceRenderer();
+        CORRADE_IGNORE_DEPRECATED_POP
 
     private:
         void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) override;
@@ -160,11 +162,11 @@ template<UnsignedInt dimensions> class CORRADE_DEPRECATED("use Primitives::arrow
         const VectorTypeFor<dimensions, Float> _forcePosition;
         const VectorTypeFor<dimensions, Float>& _force;
 
-        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the type */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         Resource<ForceRendererOptions> _options;
-        CORRADE_IGNORE_DEPRECATED_POP
         Resource<GL::AbstractShaderProgram, Shaders::FlatGL<dimensions>> _shader;
         Resource<GL::Mesh> _mesh;
+        CORRADE_IGNORE_DEPRECATED_POP
 };
 
 /**

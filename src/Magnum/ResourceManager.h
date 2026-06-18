@@ -26,23 +26,41 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::ResourceManager, @ref Magnum::ResourceDataState, @ref Magnum::ResourcePolicy
+ * @m_deprecated_since_latest The @ref Magnum::ResourceManager class is
+ *      obsolete, as it only resulted in additional code verbosity,
+ *      hard-to-track bugs due to less clear resource ownership, and general
+ *      inefficiencies, while not actually solving any real-world problem.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <unordered_map>
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Resource.h"
 
+#ifndef _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+CORRADE_DEPRECATED_FILE("the ResourceManager class is obsolete")
+#endif
+
 namespace Magnum {
 
 /**
 @brief Resource data state
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
 
 @see @ref ResourceManager::set(), @ref ResourceState
 */
-enum class ResourceDataState: UnsignedByte {
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns for ResourceState usage */
+enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourceDataState: UnsignedByte {
     /**
      * The resource is currently loading. Parameter @p data in
      * @ref ResourceManager::set() should be set to @cpp nullptr @ce.
@@ -70,13 +88,18 @@ enum class ResourceDataState: UnsignedByte {
      */
     Final = UnsignedByte(ResourceState::Final)
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Resource policy
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
 
 @see @ref ResourceManager::set(), @ref ResourceManager::free()
  */
-enum class ResourcePolicy: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourcePolicy: UnsignedByte {
     /** The resource will stay resident for whole lifetime of resource manager. */
     Resident,
 
@@ -94,8 +117,7 @@ template<class> class AbstractResourceLoader;
 
 namespace Implementation {
 
-/** @todo Print either resource key or name string based on loader capabilities */
-
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<class T> class ResourceManagerData {
     template<class, class> friend class Magnum::Resource;
     friend AbstractResourceLoader<T>;
@@ -159,11 +181,16 @@ template<class T> class ResourceManagerData {
 
 /* Helper class for defining which real types are in the type pack */
 template<class...> struct ResourceTypePack {};
+CORRADE_IGNORE_DEPRECATED_POP
 
 }
 
 /**
 @brief Resource manager
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
 
 Provides storage for arbitrary set of types.
 
@@ -224,7 +251,7 @@ Basic usage is:
 /* Due to too much work involved with explicit template instantiation (all
    Resource combinations, all ResourceManagerData...), this class doesn't have
    template implementation file. */
-template<class... Types> class ResourceManager: private Implementation::ResourceManagerData<Types>... {
+template<class... Types> class CORRADE_DEPRECATED("the ResourceManager class is obsolete") ResourceManager: private Implementation::ResourceManagerData<Types>... {
     public:
         /** @brief Constructor */
         explicit ResourceManager();
@@ -253,27 +280,33 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *
          * @snippet Magnum.cpp ResourceManager-get-derived
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class T, class U = T> Resource<T, U> get(ResourceKey key) {
             return this->Implementation::ResourceManagerData<T>::template get<U>(key);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Reference count of given resource
          *
          * @see @ref set()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class T> std::size_t referenceCount(ResourceKey key) const {
             return this->Implementation::ResourceManagerData<T>::referenceCount(key);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Resource state
          *
          * @see @ref set(), @ref Resource::state()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class T> ResourceState state(ResourceKey key) const {
             return this->Implementation::ResourceManagerData<T>::state(key);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Set resource data
@@ -287,24 +320,30 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *      already @ref ResourceState::Final.
          * @see @ref referenceCount(), @ref state()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @overload
          * @m_since{2019,10}
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, Containers::Pointer<T>&& data, ResourceDataState state, ResourcePolicy policy) {
             set(key, data.release(), state, policy);
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class U> ResourceManager<Types...>& set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
             return set(key, new typename std::decay<U>::type(std::forward<U>(data)), state, policy);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Set resource data
@@ -313,19 +352,25 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * Same as above with state set to @ref ResourceDataState::Final and
          * policy to @ref ResourcePolicy::Resident.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data) {
             return set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, Containers::Pointer<T>&& data) {
             return set(key, data.release());
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class U> ResourceManager<Types...>& set(ResourceKey key, U&& data) {
             return set(key, new typename std::decay<U>::type(std::forward<U>(data)));
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Fallback for not found resources */
         template<class T> T* fallback() {
@@ -454,6 +499,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
 namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<class T> void safeDelete(T* data) {
     static_assert(sizeof(T) > 0, "Cannot delete pointer to incomplete type");
     delete data;
@@ -592,18 +638,24 @@ template<class T> inline ResourceManagerData<T>::Data::~Data() {
         "ResourceManager: cleared/destroyed while data are still referenced", );
     safeDelete(data);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<class ...Types> ResourceManager<Types...>::ResourceManager() = default;
 
 template<class ...Types> ResourceManager<Types...>::~ResourceManager() {
     freeLoaders(typename Implementation::ResourceTypePack<Types...>{});
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }
 
 /* Make the definition complete */
 #include "AbstractResourceLoader.h"
+#else
+#error the ResourceManager class is obsolete
+#endif
 
 #endif

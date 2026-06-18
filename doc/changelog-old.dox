@@ -1162,7 +1162,7 @@ a high-level overview.
     @ref GL::Texture "Texture", @ref GL::TextureArray "TextureArray",
     @ref GL::RectangleTexture "RectangleTexture" and
     @ref GL::MultisampleTexture "MultisampleTexture" classes instead
--   Removed deprecated @ref Resource conversion operator, use explicit
+-   Removed deprecated @cpp Resource @ce conversion operator, use explicit
     conversion instead
 -   Removed deprecated `Framebuffer::attachTexture*D()` overloads, use one of
     @ref GL::Framebuffer::attachTexture() "Framebuffer::attachTexture()" or
@@ -1284,7 +1284,7 @@ for a high-level overview.
 -   Using @cpp const char @ce instead of @cpp const unsigned char @ce for raw
     binary data.
 -   Removed annoying restriction when adding reference-counted resources to
-    @ref ResourceManager.
+    @cpp ResourceManager @ce.
 -   Extension querying cleanup:
     -   Removed @gl_extension{APPLE,flush_buffer_range} extension.
     -   Replaced @gl_extension{APPLE,vertex_array_object} with
@@ -1570,8 +1570,8 @@ for a high-level overview.
     See function documentation for more information.
 -   Parameter-less @cpp Mesh::draw() @ce and @cpp MeshView::draw() @ce are
     deprecated, use versions with explicit shader parameter instead
--   Deprecated implicit conversion of @ref Resource "Resource<T, U>" to
-    @cpp U& @ce, as it is not safe. Use explicit dereference operator instead.
+-   Deprecated implicit conversion of @cpp Resource<T, U> @ce to @cpp U& @ce,
+    as it is not safe. Use explicit dereference operator instead.
 -   Texture binding using @cpp *Texture::bind() @ce is deprecated, use setup
     functions of particular shaders instead (e.g.
     @cpp Shaders::Phong::setDiffuseTexture() @ce)

@@ -90,7 +90,6 @@ set(Magnum_SRCS
     FileCallback.cpp
     ImageFlags.cpp
     PixelStorage.cpp
-    Resource.cpp
     Sampler.cpp
     Timeline.cpp)
 
@@ -105,7 +104,6 @@ set(Magnum_GracefulAssert_SRCS
     Animation/Interpolation.cpp)
 
 set(Magnum_HEADERS
-    AbstractResourceLoader.h
     British.h
     DimensionTraits.h
     FileCallback.h
@@ -116,8 +114,6 @@ set(Magnum_HEADERS
     Mesh.h
     PixelFormat.h
     PixelStorage.h
-    Resource.h
-    ResourceManager.h
     Sampler.h
     Tags.h
     Timeline.h
@@ -136,7 +132,14 @@ set(Magnum_PRIVATE_HEADERS
     Implementation/vertexFormatMapping.hpp)
 
 if(MAGNUM_BUILD_DEPRECATED)
-    list(APPEND Magnum_HEADERS Array.h)
+    list(APPEND Magnum_HEADERS
+        Array.h
+        AbstractResourceLoader.h
+        Resource.h
+        ResourceManager.h)
+
+    list(APPEND Magnum_SRCS
+        Resource.cpp)
 endif()
 
 # Functionality specific to static Windows builds

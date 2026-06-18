@@ -33,11 +33,15 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/VertexFormat.h"
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/ResourceManager.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
+#endif
+
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+#include "Magnum/ResourceManager.h"
 #endif
 
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
@@ -45,7 +49,8 @@
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace Wew {
 Containers::Pointer<GL::Mesh> mesh;
 bool found = false;
@@ -66,6 +71,7 @@ class MeshResourceLoader: public AbstractResourceLoader<GL::Mesh> {
     }
 };
 /* [AbstractResourceLoader-implementation] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
 
@@ -301,7 +307,8 @@ CompressedImage2D image = texture.compressedImage(0, CompressedImage2D{});
 }
 #endif
 
-#ifdef MAGNUM_TARGET_GL
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+CORRADE_IGNORE_DEPRECATED_PUSH
 {
 /* [ResourceManager-typedef] */
 typedef ResourceManager<GL::Mesh, GL::Texture2D, GL::AbstractShaderProgram>
@@ -360,6 +367,7 @@ manager.setLoader<GL::Mesh>(std::move(loader));
 Resource<GL::Mesh> myMesh = manager.get<GL::Mesh>("my-mesh");
 /* [AbstractResourceLoader-use] */
 }
+CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 {

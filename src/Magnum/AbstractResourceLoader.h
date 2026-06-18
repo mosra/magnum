@@ -26,18 +26,33 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::AbstractResourceLoader
+ * @m_deprecated_since_latest The @ref Magnum::ResourceManager class is
+ *      obsolete, as it only resulted in additional code verbosity,
+ *      hard-to-track bugs due to less clear resource ownership, and general
+ *      inefficiencies, while not actually solving any real-world problem.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <string>
 
 #include "Magnum/ResourceManager.h"
+
+/* File deprecation warning printed in ResourceManager.h */
 
 namespace Magnum {
 
 /**
 @brief Base for resource loaders
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
 
 Provides (a)synchronous resource loading for @ref ResourceManager.
 
@@ -77,7 +92,7 @@ from the manager) before the manager is destroyed.
 
 @snippet Magnum.cpp AbstractResourceLoader-use
 */
-template<class T> class AbstractResourceLoader {
+template<class T> class CORRADE_DEPRECATED("the ResourceManager class is obsolete") AbstractResourceLoader {
     public:
         explicit AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}
 
@@ -112,7 +127,9 @@ template<class T> class AbstractResourceLoader {
          * If no such resource exists or the resource name is not available,
          * returns empty string.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         std::string name(ResourceKey key) const { return doName(key); }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Request resource to be loaded
@@ -125,7 +142,9 @@ template<class T> class AbstractResourceLoader {
          * @see @ref ResourceManager::state(), @ref requestedCount(),
          *      @ref notFoundCount(), @ref loadedCount()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         void load(ResourceKey key);
+        CORRADE_IGNORE_DEPRECATED_POP
 
     protected:
         /**
@@ -144,14 +163,19 @@ template<class T> class AbstractResourceLoader {
          * use the convenience @ref setNotFound() variant.
          * @see @ref loadedCount()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         void set(ResourceKey key, Containers::Pointer<T> data, ResourceDataState state, ResourcePolicy policy) {
             return set(key, data.release(), state, policy);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class U
             #ifndef DOXYGEN_GENERATING_OUTPUT
             , typename std::enable_if<!std::is_same<typename std::decay<U>::type, std::nullptr_t>::value, int>::type = 0
@@ -159,6 +183,7 @@ template<class T> class AbstractResourceLoader {
         > void set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
             set(key, new typename std::decay<U>::type(std::forward<U>(data)), state, policy);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Set loaded resource to resource manager
@@ -166,16 +191,21 @@ template<class T> class AbstractResourceLoader {
          * Same as above function with state set to @ref ResourceDataState::Final
          * and policy to @ref ResourcePolicy::Resident.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         void set(ResourceKey key, T* data) {
             set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         void set(ResourceKey key, Containers::Pointer<T> data) {
             set(key, data.release());
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         template<class U
             #ifndef DOXYGEN_GENERATING_OUTPUT
             , typename std::enable_if<!std::is_same<typename std::decay<U>::type, std::nullptr_t>::value, int>::type = 0
@@ -183,6 +213,7 @@ template<class T> class AbstractResourceLoader {
         > void set(ResourceKey key, U&& data) {
             set(key, new typename std::decay<U>::type(std::forward<U>(data)));
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Mark resource as not found
@@ -191,10 +222,11 @@ template<class T> class AbstractResourceLoader {
          * and @ref ResourceDataState::NotFound.
          * @see @ref notFoundCount()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         void setNotFound(ResourceKey key) {
-            /** @todo What policy for notfound resources? */
             set(key, nullptr, ResourceDataState::NotFound, ResourcePolicy::Resident);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -206,14 +238,18 @@ template<class T> class AbstractResourceLoader {
          *
          * Default implementation returns empty string.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         virtual std::string doName(ResourceKey key) const;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Implementation for @ref load()
          *
          * See class documentation for reimplementation guide.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         virtual void doLoad(ResourceKey key) = 0;
+        CORRADE_IGNORE_DEPRECATED_POP
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
@@ -226,6 +262,7 @@ template<class T> class AbstractResourceLoader {
             _notFoundCount;
 };
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<class T> AbstractResourceLoader<T>::~AbstractResourceLoader() {
     if(manager) manager->_loader = nullptr;
 }
@@ -234,7 +271,6 @@ template<class T> std::string AbstractResourceLoader<T>::doName(ResourceKey) con
 
 template<class T> void AbstractResourceLoader<T>::load(ResourceKey key) {
     ++_requestedCount;
-    /** @todo What policy for loading resources? */
     manager->set(key, nullptr, ResourceDataState::Loading, ResourcePolicy::Resident);
 
     doLoad(key);
@@ -245,7 +281,11 @@ template<class T> void AbstractResourceLoader<T>::set(ResourceKey key, T* data, 
     if(!data && state == ResourceDataState::NotFound) ++_notFoundCount;
     manager->set(key, data, state, policy);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }
+#else
+#error the ResourceManager class is obsolete
+#endif
 
 #endif

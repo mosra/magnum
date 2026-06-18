@@ -1862,6 +1862,13 @@ See also:
     anymore, as such a code path is not easy to test in common setups and
     requires significant code duplication in order to preserve plugin-specific
     configuration options. Instantiate though the plugin manager instead.
+-   The @cpp ResourceManager @ce class and associated types such as
+    @cpp Resource @ce, @cpp AbstractResourceLoader @ce,
+    @cpp ResourceDataState @ce, @cpp ResourcePolicy @ce, @cpp ResourceState @ce
+    and @cpp ResourceKey @ce is deprecated, as it only resulted in additional
+    code verbosity, hard-to-track bugs due to less clear resource ownership,
+    and general inefficiencies, while not actually solving any real-world
+    problem.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
@@ -2514,7 +2521,7 @@ Released 2020-06-27, tagged as
 -   The @ref PixelFormat and @ref CompressedPixelFormat enums can now be saved
     and retrieved from @ref Corrade::Utility::Configuration /
     @ref Corrade::Utility::Arguments
--   @ref Resource is now nothrow-movable and thus can be used with growable
+-   @cpp Resource @ce is now nothrow-movable and thus can be used with growable
     @ref Corrade::Containers::Array instances
 -   Reworked plugin search paths to prefer autodetection based on library or
     executable location where possible and use hardcoded paths only if
@@ -2755,7 +2762,7 @@ Released 2020-06-27, tagged as
 -   Fixed an otherwise harmless OOB access in @ref MeshTools::tipsifyInPlace()
     that could trigger ASan or debug iterator errors
 -   With @ref Corrade/Utility/DebugStl.h not being included, @ref std::string
-    instances could get accidentally printed as @ref ResourceKey instances.
+    instances could get accidentally printed as @cpp ResourceKey @ce instances.
     Added and explicit header dependency to avoid such cases.
 -   The @ref Magnum/Image.h, @ref Magnum/ImageView.h and
     @ref Magnum/Trade/ImageData.h headers required
@@ -2765,8 +2772,8 @@ Released 2020-06-27, tagged as
 -   Dynamic plugins on static Magnum builds on Windows were accidentally
     searched for in the `lib/` directory instead of `bin/`, and in some cases
     in `bin/` instead of `lib/` on Unix platforms.
--   @ref Resource was unnecessarily querying the @ref ResourceManager for
-    updated data even in cases where no resource update was done since last
+-   @cpp Resource @ce was unnecessarily querying the @cpp ResourceManager @ce
+    for updated data even in cases where no resource update was done since last
     check
 -   For a @cpp Shaders::Phong @ce with zero lights, alpha mask default value
     was incorrectly @cpp 0.0f @ce instead of @cpp 0.5f @ce on OpenGL ES
@@ -2928,10 +2935,10 @@ Released 2020-06-27, tagged as
     @p segments parameter isn't divisible by four. Before it mistakenly
     asserted only if @p segments wasn't divisible by two, and now code that
     mistakenly used a disallowed value will start asserting.
--   @ref ResourceManager singleton accessible through @cpp instance() @ce that
-    was deprecated in 2019.10 is now removed. Usually a deprecated feature is
-    kept for at least a year before removal, but in this case it was severely
-    limiting multithreaded applications and removing it was necessary.
+-   @cpp ResourceManager @ce singleton accessible through @cpp instance() @ce
+    that was deprecated in 2019.10 is now removed. Usually a deprecated feature
+    is kept for at least a year before removal, but in this case it was
+    severely limiting multithreaded applications and removing it was necessary.
 -   Locations of generic shader attributes was changed in order to accommodate
     for new attributes and use cases. This may break custom shaders if these
     rely on generic attribute definitions or are used together with
@@ -3306,12 +3313,12 @@ Released 2019-10-24, tagged as
 
 @subsection changelog-2019-10-changes Changes and improvements
 
--   The @ref ResourceManager class now accepts also
+-   The @cpp ResourceManager @ce class now accepts also
     @ref Corrade::Containers::Pointer instances in addition to raw pointers
 -   The @ref AbstractResourceLoader::set() function now accepts also
     @cpp nullptr @ce for explicitly setting @ref ResourceDataState::Loading or
     @ref ResourceDataState::NotFound resources
--   Added comparison operators to @ref Resource (see
+-   Added comparison operators to @cpp Resource @ce (see
     [mosra/magnum#346](https://github.com/mosra/magnum/pull/346))
 -   @ref ImageView and @ref CompressedImageView of smaller dimension count are
     now implicitly convertible to views of higher dimension count to make
@@ -3730,7 +3737,7 @@ Released 2019-10-24, tagged as
 -   The @cpp ResourceManager::instance() @ce singleton (and its implicit use in
     @cpp DebugTools::ForceRenderer @ce and @cpp DebugTools::ObjectRenderer @ce)
     is deprecated as it makes some use cases harder than they should be. Make
-    your own singleton or explicitly pass a @ref ResourceManager reference
+    your own singleton or explicitly pass a @cpp ResourceManager @ce reference
     around instead.
 -   @ref Platform::BasicScreen::application() now returns a reference instead
     of a pointer and together with @ref Platform::BasicScreen::redraw() checks

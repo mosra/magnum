@@ -39,13 +39,15 @@
 
 namespace Magnum { namespace DebugTools {
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here, GCC 4.8 for the inside */
 ResourceManager::ResourceManager() {
-    CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
     setFallback(new ForceRendererOptions);
     setFallback(new ObjectRendererOptions);
-    CORRADE_IGNORE_DEPRECATED_POP
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
 ResourceManager::~ResourceManager() = default;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

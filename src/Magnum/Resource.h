@@ -27,10 +27,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::ResourceKey, @ref Magnum::Resource, enum @ref Magnum::ResourceState
+ * @m_deprecated_since_latest The @ref Magnum::ResourceManager class is
+ *      obsolete, as it only resulted in additional code verbosity,
+ *      hard-to-track bugs due to less clear resource ownership, and general
+ *      inefficiencies, while not actually solving any real-world problem.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/MurmurHash2.h>
 
@@ -38,20 +47,26 @@
    std::string -- and if DebugStl.h wouldn't be included, an attempt to print a
    std::string would choose the ResourceKey printer instead, producing unwanted
    results. */
-/** @todo remove when we have a StringView and ResourceKey is ported to it */
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
+/* File deprecation warning printed in ResourceManager.h, which is included at
+   the end of this header */
+
 namespace Magnum {
 
 /**
 @brief Resource state
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
 
 @see @ref Resource::state(), @ref ResourceManager::state()
 */
-enum class ResourceState: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourceState: UnsignedByte {
     /** The resource is not yet loaded (and no fallback is available). */
     NotLoaded,
 
@@ -77,15 +92,27 @@ enum class ResourceState: UnsignedByte {
     Final
 };
 
-/** @debugoperatorenum{ResourceState} */
+/**
+@debugoperatorenum{ResourceState}
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
+*/
+CORRADE_IGNORE_DEPRECATED_PUSH
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, ResourceState value);
+CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Key for accessing resource
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
 
 See @ref ResourceManager for more information.
 */
-class ResourceKey: public Utility::MurmurHash2::Digest {
+class CORRADE_DEPRECATED("the ResourceManager class is obsolete") ResourceKey: public Utility::MurmurHash2::Digest {
     public:
         /**
          * @brief Default constructor
@@ -101,15 +128,20 @@ class ResourceKey: public Utility::MurmurHash2::Digest {
         /** @brief Constructor */
         /*implicit*/ ResourceKey(const std::string& key): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
 
-        /**
-         * @brief Constructor
-         * @todo constexpr
-         */
+        /** @brief Constructor */
         template<std::size_t size> constexpr ResourceKey(const char(&key)[size]): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
 };
 
-/** @debugoperator{ResourceKey} */
+/**
+@debugoperator{ResourceKey}
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
+*/
+CORRADE_IGNORE_DEPRECATED_PUSH
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, const ResourceKey& value);
+CORRADE_IGNORE_DEPRECATED_POP
 
 namespace Implementation {
     template<class> class ResourceManagerData;
@@ -117,6 +149,10 @@ namespace Implementation {
 
 /**
 @brief Resource reference
+@m_deprecated_since_latest The @ref ResourceManager class is obsolete, as it
+    only resulted in additional code verbosity, hard-to-track bugs due to
+    less clear resource ownership, and general inefficiencies, while not
+    actually solving any real-world problem.
 
 See @ref ResourceManager for more information.
 */
@@ -125,7 +161,7 @@ template<class T, class U = T>
 #else
 template<class T, class U>
 #endif
-class Resource {
+class CORRADE_DEPRECATED("the ResourceManager class is obsolete") Resource {
     public:
         /**
          * @brief Default constructor
@@ -160,7 +196,9 @@ class Resource {
         }
 
         /** @brief Equality comparison with other types is explicitly disallowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
         template<class V, class W> bool operator==(const Resource<V, W>&) const = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Non-equality comparison */
         bool operator!=(const Resource<T, U>& other) const {
@@ -168,20 +206,26 @@ class Resource {
         }
 
         /** @brief Non-equality comparison with other types is explicitly disallowed */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
         template<class V, class W> bool operator!=(const Resource<V, W>&) const = delete;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Resource key */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         ResourceKey key() const { return _key; }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Resource state
          *
          * @see @ref operator bool(), @ref ResourceManager::state()
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
         ResourceState state() {
             acquire();
             return _state;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Whether the resource is available
@@ -237,19 +281,26 @@ class Resource {
         friend Implementation::ResourceManagerData<T>;
         #endif
 
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         Resource(Implementation::ResourceManagerData<T>* manager, ResourceKey key): _manager{manager}, _key{key}, _lastCheck{0}, _state{ResourceState::NotLoaded}, _data{nullptr} {
             manager->incrementReferenceCount(key);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         void acquire();
 
         Implementation::ResourceManagerData<T>* _manager;
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         ResourceKey _key;
+        CORRADE_IGNORE_DEPRECATED_POP
         std::size_t _lastCheck;
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
         ResourceState _state;
+        CORRADE_IGNORE_DEPRECATED_POP
         T* _data;
 };
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(const Resource<T, U>& other) {
     if(_manager) _manager->decrementReferenceCount(_key);
 
@@ -311,11 +362,20 @@ template<class T, class U> void Resource<T, U>::acquire() {
             _state = ResourceState::NotLoaded;
     }
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }
 
 namespace std {
-    /** @brief `std::hash` specialization for @ref Magnum::ResourceKey */
+    /**
+     * @brief `std::hash` specialization for @ref Magnum::ResourceKey
+     * @m_deprecated_since_latest The @ref Magnum::ResourceManager class is
+     *      obsolete, as it only resulted in additional code verbosity,
+     *      hard-to-track bugs due to less clear resource ownership, and
+     *      general inefficiencies, while not actually solving any real-world
+     *      problem.
+     */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     template<> struct hash<Magnum::ResourceKey> {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         std::size_t operator()(Magnum::ResourceKey key) const {
@@ -323,9 +383,13 @@ namespace std {
         }
         #endif
     };
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 /* Make the definition complete */
 #include "ResourceManager.h"
+#else
+#error the ResourceManager class is obsolete
+#endif
 
 #endif

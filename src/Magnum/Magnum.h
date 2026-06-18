@@ -1359,12 +1359,14 @@ enum class CompressedPixelFormat: UnsignedInt;
 class PixelStorage;
 class CompressedPixelStorage;
 
-enum class ResourceState: UnsignedByte;
-enum class ResourceDataState: UnsignedByte;
-enum class ResourcePolicy: UnsignedByte;
-template<class T, class U = T> class Resource;
-class ResourceKey;
-template<class...> class ResourceManager;
+#ifdef MAGNUM_BUILD_DEPRECATED
+enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourceState: UnsignedByte;
+enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourceDataState: UnsignedByte;
+enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourcePolicy: UnsignedByte;
+template<class T, class U = T> class CORRADE_DEPRECATED("the ResourceManager class is obsolete") Resource;
+class CORRADE_DEPRECATED("the ResourceManager class is obsolete") ResourceKey;
+template<class...> class CORRADE_DEPRECATED("the ResourceManager class is obsolete") ResourceManager;
+#endif
 
 enum class SamplerFilter: UnsignedInt;
 enum class SamplerMipmap: UnsignedInt;

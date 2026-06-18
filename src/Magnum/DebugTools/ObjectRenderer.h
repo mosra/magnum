@@ -122,16 +122,18 @@ template<UnsignedInt dimensions> class CORRADE_DEPRECATED("use Primitives::axis2
         explicit ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
         CORRADE_IGNORE_DEPRECATED_POP
 
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here (?!) */
         ~ObjectRenderer();
+        CORRADE_IGNORE_DEPRECATED_POP
 
     private:
         void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) override;
 
-        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns due to the type */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC 4.8 warns here */
         Resource<ObjectRendererOptions> _options;
-        CORRADE_IGNORE_DEPRECATED_POP
         Resource<GL::AbstractShaderProgram, Shaders::VertexColorGL<dimensions>> _shader;
         Resource<GL::Mesh> _mesh;
+        CORRADE_IGNORE_DEPRECATED_POP
 };
 
 /**

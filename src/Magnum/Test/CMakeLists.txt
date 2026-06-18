@@ -45,7 +45,6 @@ corrade_add_test(ImageViewTest ImageViewTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(MeshTest MeshTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(PixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(PixelStorageTest PixelStorageTest.cpp LIBRARIES Magnum)
-corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES MagnumTestLib)
 # Prefixed with project name to avoid conflicts with TagsTest in Corrade
 corrade_add_test(MagnumTagsTest TagsTest.cpp LIBRARIES Magnum)
@@ -57,13 +56,14 @@ corrade_add_test(MagnumVersionTest VersionTest.cpp LIBRARIES Magnum)
 
 corrade_add_test(VertexFormatTest VertexFormatTest.cpp LIBRARIES MagnumTestLib)
 
-if(MAGNUM_BUILD_DEPRECATED)
-    corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
-endif()
-
 set_property(TARGET
     MeshTest
     PixelFormatTest
-    ResourceManagerTest
     VertexFormatTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+
+if(MAGNUM_BUILD_DEPRECATED)
+    corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
+    corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
+    set_property(TARGET ResourceManagerTest APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+endif()

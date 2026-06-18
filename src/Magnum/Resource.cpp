@@ -24,10 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+
 #include "Resource.h"
 
 namespace Magnum {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 Debug& operator<<(Debug& debug, const ResourceState value) {
     debug << "ResourceState" << Debug::nospace;
 
@@ -52,5 +55,6 @@ Debug& operator<<(Debug& debug, const ResourceState value) {
 Debug& operator<<(Debug& debug, const ResourceKey& value) {
     return debug << "ResourceKey(0x" << Debug::nospace << static_cast<const Utility::HashDigest<sizeof(std::size_t)>&>(value) << Debug::nospace << ")";
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }

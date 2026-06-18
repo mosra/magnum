@@ -25,10 +25,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
+
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Format.h>
-#include <Corrade/Utility/FormatStl.h> /** @todo remove once HashDigest is std::string-free */
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/AbstractResourceLoader.h"
 #include "Magnum/ResourceManager.h"
@@ -70,6 +72,7 @@ struct Data {
     ~Data() { --count; }
 };
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 
 size_t Data::count = 0;
@@ -544,6 +547,7 @@ void ResourceManagerTest::debugResourceKey() {
     Debug{&out} << hello;
     CORRADE_COMPARE(out, Utility::format("ResourceKey(0x{})\n", hello.hexString()));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 
