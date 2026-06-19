@@ -27,6 +27,17 @@
 #define _MAGNUM_NO_DEPRECATED_FORCERENDERER
 #define _MAGNUM_NO_DEPRECATED_RESOURCEMANAGER
 
+/* This damn joke of a compiler, even the 2022 version, ignores the
+   _MAGNUM_NO_DEPRECATED_FORCERENDERER macro for some reason, printing the
+   ForceRenderer.h file deprecation warning here, so I have to work around it
+   like this. Same in the test and in ObjectRenderer.h and its test, but in
+   ResourceManager.cpp as well as in doc/snippets/Magnum.cpp the macro works.
+   What the hell. */
+#include <Corrade/configure.h>
+#ifdef CORRADE_TARGET_MSVC
+#define CORRADE_DEPRECATED_FILE(...)
+#endif
+
 #include "ForceRenderer.h"
 
 #include "Magnum/GL/Mesh.h"
