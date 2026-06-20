@@ -161,7 +161,17 @@ template<class T, class U = T>
 #else
 template<class T, class U>
 #endif
-class CORRADE_DEPRECATED("the ResourceManager class is obsolete") Resource {
+class
+    #ifndef CORRADE_MSVC2017_COMPATIBILITY
+    /* MSVC 2017 warns in DebugTools/ForceRenderer.cpp and ObjectRenderer.cpp
+       about use of ~Resource() from the (defaulted!) class destructor. The
+       warning cannot be suppressed and is reported at the very last line of
+       the files, and all warnings are treated as errors in the RT build, so
+       just skip the deprecation macro there. Ugh. */
+    CORRADE_DEPRECATED("the ResourceManager class is obsolete")
+    #endif
+    Resource
+{
     public:
         /**
          * @brief Default constructor

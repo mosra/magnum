@@ -1363,7 +1363,12 @@ class CompressedPixelStorage;
 enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourceState: UnsignedByte;
 enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourceDataState: UnsignedByte;
 enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourcePolicy: UnsignedByte;
-template<class T, class U = T> class CORRADE_DEPRECATED("the ResourceManager class is obsolete") Resource;
+template<class T, class U = T> class
+    #ifndef CORRADE_MSVC2017_COMPATIBILITY
+    /* See Resource.h for details why this is removed on MSVC 2017 */
+    CORRADE_DEPRECATED("the ResourceManager class is obsolete")
+    #endif
+    Resource;
 class CORRADE_DEPRECATED("the ResourceManager class is obsolete") ResourceKey;
 template<class...> class CORRADE_DEPRECATED("the ResourceManager class is obsolete") ResourceManager;
 #endif
