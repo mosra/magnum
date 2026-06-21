@@ -269,7 +269,10 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Sampling rate in Hz
          * @m_since_latest
          *
-         * @see @ref Configuration::setFrequency()
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
+         * @see @ref Configuration::setFrequency(), @fn_alc{GetIntegerv} with
+         *      @def_alc_keyword{FREQUENCY}
          */
         Int frequency() const;
 
@@ -277,7 +280,9 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Whether HRTFs (Head Related Transfer Functions) are enabled
          *
          * HRFTs may not be enabled/disabled in a running context. Instead
-         * create a new @ref Context with HRFTs enabled or disabled.
+         * create a new @ref Context with HRFTs enabled or disabled. The result
+         * is *not* cached, repeated queries will result in repeated OpenAL
+         * calls.
          * @see @ref hrtfStatus(), @ref Audio::Context::Configuration::setHrtf(),
          *      @fn_alc{GetIntegerv} with @def_alc_keyword{HRTF_SOFT}
          * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
@@ -288,6 +293,8 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief HRTF status
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
          * @see @ref isHrtfEnabled(), @fn_alc{GetIntegerv} with
          *      @def_alc_keyword{HRTF_STATUS_SOFT}
          * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
@@ -298,7 +305,8 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief HRTF specifier
          *
-         * Name of the HRTF being used.
+         * Name of the HRTF being used. The result is *not* cached, repeated
+         * queries will result in repeated OpenAL calls.
          * @see @fn_al{GetString} with @def_alc_keyword{HRTF_SPECIFIER_SOFT}
          * @requires_al_extension @alc_extension{SOFT,HRTF}
          */
@@ -308,7 +316,10 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Count of supported mono sources
          * @m_since_latest
          *
-         * @see @ref Configuration::setMonoSourceCount()
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
+         * @see @ref Configuration::setMonoSourceCount(), @fn_alc{GetIntegerv}
+         *      with @def_alc_keyword{MONO_SOURCES}
          */
         Int monoSourceCount() const;
 
@@ -316,7 +327,10 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Count of supported stereo sources
          * @m_since_latest
          *
-         * @see @ref Configuration::setStereoSourceCount()
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
+         * @see @ref Configuration::setStereoSourceCount(),
+         *      @fn_alc{GetIntegerv} with @def_alc_keyword{STEREO_SOURCES}
          */
         Int stereoSourceCount() const;
 
@@ -324,13 +338,18 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Refresh rate in Hz
          * @m_since_latest
          *
-         * @see @ref Configuration::setRefreshRate()
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
+         * @see @ref Configuration::setRefreshRate(), @fn_alc{GetIntegerv} with
+         *      @def_alc_keyword{REFRESH}
          */
         Int refreshRate() const;
 
         /**
          * @brief Device specifier string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
          * @see @ref deviceSpecifierStrings(), @ref vendorString(), @ref rendererString(),
          *      @fn_al{GetString} with @def_alc_keyword{DEVICE_SPECIFIER}
          */
@@ -339,6 +358,8 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief Vendor string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
          * @see @ref deviceSpecifierString(), @ref rendererString(),
          *      @fn_al{GetString} with @def_al_keyword{VENDOR}
          */
@@ -347,6 +368,8 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief Renderer string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
          * @see @ref deviceSpecifierString(), @ref vendorString(),
          *      @fn_al{GetString} with @def_al_keyword{RENDERER}
          */
@@ -355,6 +378,8 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief Version string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls.
          * @see @fn_al{GetString} with @def_al_keyword{VERSION}
          */
         std::string versionString() const;
