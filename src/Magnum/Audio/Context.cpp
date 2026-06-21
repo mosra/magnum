@@ -290,7 +290,9 @@ bool Context::tryCreate(const Configuration& configuration) {
     const Containers::Array<Containers::StringView> extensions = extensionStrings();
     for(const Containers::StringView extension: extensions) {
         if(const Extension* found = findExtension(extension)) {
+            #ifdef MAGNUM_BUILD_DEPRECATED
             arrayAppend(_supportedExtensions, *found);
+            #endif
             _extensionStatus.set(found->index(), true);
         }
     }
@@ -317,7 +319,11 @@ bool Context::tryCreate(const Configuration& configuration) {
     return true;
 }
 
-Context::Context(Context&& other) noexcept: _device{other._device}, _context{other._context}, _extensionStatus{Utility::move(other._extensionStatus)}, _supportedExtensions{Utility::move(other._supportedExtensions)} {
+Context::Context(Context&& other) noexcept: _device{other._device}, _context{other._context}, _extensionStatus{Utility::move(other._extensionStatus)}
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    , _supportedExtensions{Utility::move(other._supportedExtensions)}
+    #endif
+{
     other._device = nullptr;
     other._context = nullptr;
     if(currentContext == &other)
