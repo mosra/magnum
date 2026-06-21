@@ -42,7 +42,7 @@ using namespace Containers::Literals;
 
 AnyImporter::AnyImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
-AnyImporter::AnyImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
+AnyImporter::AnyImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImporter{manager, plugin} {}
 
 AnyImporter::~AnyImporter() = default;
 
