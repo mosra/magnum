@@ -35,7 +35,6 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include <bitset>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Debug.h>
 
