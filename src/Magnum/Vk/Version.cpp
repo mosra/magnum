@@ -59,8 +59,8 @@ namespace Corrade { namespace Utility {
 using namespace Magnum;
 
 Vk::Version ConfigurationValue<Vk::Version>::fromString(const Containers::StringView& stringValue, ConfigurationValueFlags) {
-    /** @todo trim the string first, once Utility::String::trim() works for
-        views */
+    /** @todo trim the string from both ends once we no longer use
+        std::strtoull() that needs null-terminated strings */
     CORRADE_INTERNAL_ASSERT(stringValue.flags() & Containers::StringViewFlag::NullTerminated);
 
     char* end;
