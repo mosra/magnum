@@ -60,7 +60,10 @@ namespace Magnum {
 @see @ref ResourceManager::set(), @ref ResourceState
 */
 CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns for ResourceState usage */
-enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourceDataState: UnsignedByte {
+/* No CORRADE_DEPRECATED_ENUM() here, as it's already on the declaration in
+   Magnum.h and GCC stupidly warns that "type attributes ignored after type is
+   already defined". Happens for the other Resource* enums as well. */
+enum class ResourceDataState: UnsignedByte {
     /**
      * The resource is currently loading. Parameter @p data in
      * @ref ResourceManager::set() should be set to @cpp nullptr @ce.
@@ -99,7 +102,10 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 @see @ref ResourceManager::set(), @ref ResourceManager::free()
  */
-enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourcePolicy: UnsignedByte {
+/* No CORRADE_DEPRECATED_ENUM() here, as it's already on the declaration in
+   Magnum.h and GCC stupidly warns that "type attributes ignored after type is
+   already defined". Happens for the other Resource* enums as well. */
+enum class ResourcePolicy: UnsignedByte {
     /** The resource will stay resident for whole lifetime of resource manager. */
     Resident,
 
@@ -386,42 +392,52 @@ template<class... Types> class CORRADE_DEPRECATED("the ResourceManager class is 
          * @brief Set fallback for not found resources
          * @return Reference to self (for method chaining)
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         template<class T> ResourceManager<Types...>& setFallback(T* data) {
             this->Implementation::ResourceManagerData<T>::setFallback(data);
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @overload
          * @m_since{2019,10}
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         template<class T> ResourceManager<Types...>& setFallback(Containers::Pointer<T>&& data) {
             setFallback(data.release());
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         template<class U> ResourceManager<Types...>& setFallback(U&& data) {
             return setFallback(new typename std::decay<U>::type(std::forward<U>(data)));
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Free all resources of given type which are not referenced
          * @return Reference to self (for method chaining)
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         template<class T> ResourceManager<Types...>& free() {
             this->Implementation::ResourceManagerData<T>::free();
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Free all resources which are not referenced
          * @return Reference to self (for method chaining)
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         ResourceManager<Types...>& free() {
             freeInternal(Implementation::ResourceTypePack<Types...>{});
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Clear all resources of given type
@@ -430,10 +446,12 @@ template<class... Types> class CORRADE_DEPRECATED("the ResourceManager class is 
          * Unlike @ref free() this function assumes that no resource is
          * referenced.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         template<class T> ResourceManager<Types...>& clear() {
             this->Implementation::ResourceManagerData<T>::clear();
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Clear all resources
@@ -442,10 +460,12 @@ template<class... Types> class CORRADE_DEPRECATED("the ResourceManager class is 
          * Unlike @ref free() this function assumes that no resource is
          * referenced.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         ResourceManager<Types...>& clear() {
             clearInternal(Implementation::ResourceTypePack<Types...>{});
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Loader for given type of resources */
         template<class T> AbstractResourceLoader<T>* loader() {
@@ -467,15 +487,19 @@ template<class... Types> class CORRADE_DEPRECATED("the ResourceManager class is 
          * @attention The loader is deleted on destruction before unloading
          *      all resources.
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         template<class T> ResourceManager<Types...>& setLoader(AbstractResourceLoader<T>* loader) {
             this->Implementation::ResourceManagerData<T>::setLoader(loader);
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @overload */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         template<class T> ResourceManager<Types...>& setLoader(Containers::Pointer<AbstractResourceLoader<T>>&& loader) {
             return setLoader(loader.release());
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
     private:
         template<class FirstType, class ...NextTypes> void freeInternal(Implementation::ResourceTypePack<FirstType, NextTypes...>) {

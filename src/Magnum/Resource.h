@@ -66,7 +66,10 @@ namespace Magnum {
 
 @see @ref Resource::state(), @ref ResourceManager::state()
 */
-enum class CORRADE_DEPRECATED_ENUM("the ResourceManager class is obsolete") ResourceState: UnsignedByte {
+/* No CORRADE_DEPRECATED_ENUM() here, as it's already on the declaration in
+   Magnum.h and GCC stupidly warns that "type attributes ignored after type is
+   already defined". Happens for the other Resource* enums as well. */
+enum class ResourceState: UnsignedByte {
     /** The resource is not yet loaded (and no fallback is available). */
     NotLoaded,
 
@@ -179,15 +182,21 @@ class
          * Creates empty resource. Resources are acquired from the manager by
          * calling @ref ResourceManager::get().
          */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         explicit Resource(): _manager{nullptr}, _lastCheck{0}, _state{ResourceState::Final}, _data{nullptr} {}
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Copy constructor */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         Resource(const Resource<T, U>& other): _manager{other._manager}, _key{other._key}, _lastCheck{other._lastCheck}, _state{other._state}, _data{other._data} {
             if(_manager) _manager->incrementReferenceCount(_key);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Move constructor */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         Resource(Resource<T, U>&& other) noexcept;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Destructor */
         ~Resource() {
@@ -195,15 +204,21 @@ class
         }
 
         /** @brief Copy assignment */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         Resource<T, U>& operator=(const Resource<T, U>& other);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Move assignment */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         Resource<T, U>& operator=(Resource<T, U>&& other) noexcept;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Equality comparison */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         bool operator==(const Resource<T, U>& other) const {
             return _manager == other._manager && _key == other._key;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Equality comparison with other types is explicitly disallowed */
         CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
@@ -211,9 +226,11 @@ class
         CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Non-equality comparison */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         bool operator!=(const Resource<T, U>& other) const {
             return !operator==(other);
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /** @brief Non-equality comparison with other types is explicitly disallowed */
         CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
