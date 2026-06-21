@@ -30,7 +30,7 @@
  * @brief Class @ref Magnum::GL::Context, @ref Magnum::GL::Extension, macro @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED(), @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
  */
 
-#include <cstdlib>
+#include <cstdlib> /* std::abort() in MAGNUM_ASSERT_GL_*_SUPPORTED() */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/EnumSet.h>

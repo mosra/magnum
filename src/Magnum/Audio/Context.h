@@ -32,7 +32,7 @@
  * @brief Class @ref Magnum::Audio::Context, macro @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
  */
 
-#include <cstdlib>
+#include <cstdlib> /* std::abort() in MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED() */
 #include <string>
 #include <vector>
 #include <Corrade/Containers/EnumSet.h>
