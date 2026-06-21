@@ -527,8 +527,9 @@ Containers::StringView findWorkaround(Containers::StringView workaround) {
 }
 
 auto Context::detectedDriver() -> DetectedDrivers {
-    if(_detectedDrivers)
-        return *_detectedDrivers;
+    /* ~DetectedDrivers{} means the value is not initialized yet */
+    if(_detectedDrivers != ~DetectedDrivers{})
+        return _detectedDrivers;
 
     _detectedDrivers = DetectedDrivers{};
 
@@ -563,12 +564,12 @@ auto Context::detectedDriver() -> DetectedDrivers {
     #ifndef CORRADE_TARGET_APPLE
     /* AMD binary desktop drivers */
     if(vendor.contains("ATI Technologies Inc."_s))
-        *_detectedDrivers |= DetectedDriver::Amd;
+        _detectedDrivers |= DetectedDriver::Amd;
 
     #ifdef CORRADE_TARGET_WINDOWS
     /* Intel Windows drivers */
     if(vendor.contains("Intel"_s))
-        *_detectedDrivers |= DetectedDriver::IntelWindows;
+        _detectedDrivers |= DetectedDriver::IntelWindows;
     #endif
 
     /* Mesa drivers.
@@ -587,21 +588,21 @@ auto Context::detectedDriver() -> DetectedDrivers {
         || version.contains("Mesa"_s)
         #endif
     ) {
-        *_detectedDrivers |= DetectedDriver::Mesa;
+        _detectedDrivers |= DetectedDriver::Mesa;
 
         if(renderer.contains("SVGA3D"_s))
-            *_detectedDrivers |= DetectedDriver::Svga3D;
+            _detectedDrivers |= DetectedDriver::Svga3D;
     }
 
     if(vendor.contains("NVIDIA Corporation"_s))
-        *_detectedDrivers |= DetectedDriver::NVidia;
+        _detectedDrivers |= DetectedDriver::NVidia;
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
     /* ANGLE. On WebGL only if we are so lucky and have access to the unmasked
        renderer string. */
     if(renderer.contains("ANGLE"_s))
-        *_detectedDrivers |= DetectedDriver::Angle;
+        _detectedDrivers |= DetectedDriver::Angle;
     #ifdef MAGNUM_TARGET_WEBGL
     /* If the unmasked renderer string is not available, try other means */
     /** @todo this (and below) incorrectly detects ANGLE on FF 92+, as it has
@@ -620,7 +621,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
         #else
         if(isExtensionSupported<Extensions::WEBGL::multi_draw>())
         #endif
-            *_detectedDrivers |= DetectedDriver::Angle;
+            _detectedDrivers |= DetectedDriver::Angle;
         /* Otherwise try to detect a D3D ANGLE backend by querying line width.
            It's always exactly just 1 on D3D, usually (but not always) more on
            GL, not sure about Metal. So this is not a 100% match. Sources:
@@ -629,7 +630,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
             Range1Di range;
             glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
             if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer"_s) {
-                *_detectedDrivers |= DetectedDriver::Angle;
+                _detectedDrivers |= DetectedDriver::Angle;
             }
         }
     }
@@ -637,20 +638,20 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     /* SwiftShader */
     if(renderer.contains("SwiftShader"_s))
-        *_detectedDrivers |= DetectedDriver::SwiftShader;
+        _detectedDrivers |= DetectedDriver::SwiftShader;
     #endif
 
     #ifdef CORRADE_TARGET_ANDROID
     if(vendor.contains("ARM"_s) && renderer.contains("Mali"_s))
-        *_detectedDrivers |= DetectedDriver::ArmMali;
+        _detectedDrivers |= DetectedDriver::ArmMali;
     #endif
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
     if(vendor.contains("Qualcomm"_s) && renderer.contains("Adreno"_s))
-        *_detectedDrivers |= DetectedDriver::QualcommAdreno;
+        _detectedDrivers |= DetectedDriver::QualcommAdreno;
     #endif
 
-    return *_detectedDrivers;
+    return _detectedDrivers;
 }
 
 void Context::disableDriverWorkaround(const Containers::StringView workaround) {

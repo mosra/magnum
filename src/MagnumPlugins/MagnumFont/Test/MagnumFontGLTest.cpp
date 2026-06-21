@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/Triple.h>

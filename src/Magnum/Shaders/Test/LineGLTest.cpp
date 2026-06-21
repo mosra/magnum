@@ -26,6 +26,7 @@
 
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>

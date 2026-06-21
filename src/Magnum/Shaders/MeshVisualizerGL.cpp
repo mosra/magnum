@@ -29,6 +29,7 @@
 
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Resource.h>
 

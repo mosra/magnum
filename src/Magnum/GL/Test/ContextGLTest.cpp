@@ -25,6 +25,7 @@
 */
 
 #include <algorithm> /* std::find() */
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */

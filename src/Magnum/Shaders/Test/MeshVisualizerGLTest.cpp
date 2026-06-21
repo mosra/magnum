@@ -27,6 +27,7 @@
 
 #include <numeric> /* std::iota() */
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>

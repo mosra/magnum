@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>

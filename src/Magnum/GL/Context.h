@@ -34,7 +34,6 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/Containers/Optional.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/BitVector.h"
@@ -928,7 +927,8 @@ class MAGNUM_GL_EXPORT Context {
         Containers::ArrayTuple _stateData;
         Implementation::State* _state;
 
-        Containers::Optional<DetectedDrivers> _detectedDrivers;
+        /* ~DetectedDrivers{} means the value is not initialized yet */
+        DetectedDrivers _detectedDrivers = ~DetectedDrivers{};
 
         /** @todo these are all needed only until the state gets created and
             then can be discarded -- what to do? we could avoid including

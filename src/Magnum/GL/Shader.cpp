@@ -29,6 +29,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Reference.h>
 #endif
