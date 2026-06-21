@@ -31,6 +31,7 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringIterable.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/Macros.h> /* CORRADE_THREAD_LOCAL */
@@ -832,7 +833,6 @@ Context::Context(Context&& other) noexcept:
     _flags{other._flags},
     #endif
     _extensionStatus{other._extensionStatus},
-    _extensionRequiredVersion{other._extensionRequiredVersion},
     #ifdef MAGNUM_BUILD_DEPRECATED
     _supportedExtensions{Utility::move(other._supportedExtensions)},
     #endif
@@ -842,6 +842,7 @@ Context::Context(Context&& other) noexcept:
     _disabledExtensions{Utility::move(other._disabledExtensions)},
     _configurationFlags{other._configurationFlags}
 {
+    Utility::copy(other._extensionRequiredVersion, _extensionRequiredVersion);
     if(currentContext == &other) currentContext = this;
 }
 

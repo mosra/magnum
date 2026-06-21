@@ -35,7 +35,6 @@
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StaticArray.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/BitVector.h"
@@ -921,7 +920,7 @@ class MAGNUM_GL_EXPORT Context {
         /* For all extensions that are marked as supported in _extensionStatus,
            this field contains the minimal required GL version the extension
            needs. Extensions that are disabled have None here. */
-        Containers::StaticArray<Implementation::ExtensionCount, Version> _extensionRequiredVersion;
+        Version _extensionRequiredVersion[Implementation::ExtensionCount];
         #ifdef MAGNUM_BUILD_DEPRECATED
         Containers::Array<Extension> _supportedExtensions;
         #endif
