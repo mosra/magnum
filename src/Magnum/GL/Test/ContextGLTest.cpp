@@ -28,8 +28,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/TestSuite/Compare/String.h>
 
