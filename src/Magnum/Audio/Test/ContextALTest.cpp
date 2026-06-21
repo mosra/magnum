@@ -40,6 +40,8 @@ namespace Magnum { namespace Audio { namespace Test { namespace {
 struct ContextALTest: TestSuite::Tester {
     explicit ContextALTest();
 
+    void deviceSpecifierStrings();
+
     void constructDefault();
     void constructConfiguration();
     void constructDeviceNotFound();
@@ -66,7 +68,9 @@ ContextALTest::ContextALTest():
     TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}
         .setSkippedArgumentPrefixes({"magnum"})}
 {
-    addTests({&ContextALTest::constructDefault,
+    addTests({&ContextALTest::deviceSpecifierStrings,
+
+              &ContextALTest::constructDefault,
               &ContextALTest::constructConfiguration,
               &ContextALTest::constructDeviceNotFound,
               &ContextALTest::constructMove});
@@ -79,6 +83,12 @@ ContextALTest::ContextALTest():
               &ContextALTest::isExtensionSupported,
               &ContextALTest::isExtensionUnsupported,
               &ContextALTest::isExtensionDisabled});
+}
+
+void ContextALTest::deviceSpecifierStrings() {
+    /* Just verify that it produces something reasonable without crashing or
+       entering an infinite loop */
+    CORRADE_VERIFY(!Context::deviceSpecifierStrings().empty());
 }
 
 void ContextALTest::constructDefault() {
