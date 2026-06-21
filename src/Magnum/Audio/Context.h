@@ -33,9 +33,9 @@
  */
 
 #include <cstdlib> /* std::abort() in MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED() */
-#include <string>
-#include <vector>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/String.h> /** @todo PIMPL Configuration instead? */
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Magnum.h"
@@ -49,6 +49,12 @@
 #include <al.h>
 #include <alc.h>
 #include "MagnumExternal/OpenAL/extensions.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For return types of Context::versionString() etc., which used to be a
+   std::string. Not ideal for the return types, but at least something. */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace Audio {
 
@@ -180,7 +186,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @see @ref deviceSpecifierString(), @ref Configuration::setDeviceSpecifier()
          *      @fn_alc{GetString} with @def_alc_keyword{DEVICE_SPECIFIER}
          */
-        static std::vector<std::string> deviceSpecifierStrings();
+        static Containers::Array<Containers::StringView> deviceSpecifierStrings();
 
         /**
          * @brief Whether there is any current context
@@ -306,11 +312,14 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief HRTF specifier
          *
          * Name of the HRTF being used. The result is *not* cached, repeated
-         * queries will result in repeated OpenAL calls.
+         * queries will result in repeated OpenAL calls. The returned view is
+         * always @relativeref{Corrade::Containers::StringViewFlag,Global}, and
+         * if non-empty it's also
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}.
          * @see @fn_al{GetString} with @def_alc_keyword{HRTF_SPECIFIER_SOFT}
          * @requires_al_extension @alc_extension{SOFT,HRTF}
          */
-        std::string hrtfSpecifierString() const;
+        Containers::StringView hrtfSpecifierString() const;
 
         /**
          * @brief Count of supported mono sources
@@ -349,40 +358,48 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Device specifier string
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenAL calls.
+         * OpenAL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @ref deviceSpecifierStrings(), @ref vendorString(), @ref rendererString(),
          *      @fn_al{GetString} with @def_alc_keyword{DEVICE_SPECIFIER}
          */
-        std::string deviceSpecifierString() const;
+        Containers::StringView deviceSpecifierString() const;
 
         /**
          * @brief Vendor string
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenAL calls.
+         * OpenAL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @ref deviceSpecifierString(), @ref rendererString(),
          *      @fn_al{GetString} with @def_al_keyword{VENDOR}
          */
-        std::string vendorString() const;
+        Containers::StringView vendorString() const;
 
         /**
          * @brief Renderer string
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenAL calls.
+         * OpenAL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @ref deviceSpecifierString(), @ref vendorString(),
          *      @fn_al{GetString} with @def_al_keyword{RENDERER}
          */
-        std::string rendererString() const;
+        Containers::StringView rendererString() const;
 
         /**
          * @brief Version string
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenAL calls.
+         * OpenAL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @fn_al{GetString} with @def_al_keyword{VERSION}
          */
-        std::string versionString() const;
+        Containers::StringView versionString() const;
 
         /**
          * @brief Extension strings
@@ -391,12 +408,15 @@ class MAGNUM_AUDIO_EXPORT Context {
          * OpenAL calls. Note that this function returns list of all extensions
          * reported by the driver (even those not supported by Magnum), see
          * @ref supportedExtensions(), @ref Extension::extensions() or
-         * @ref isExtensionSupported() for alternatives.
+         * @ref isExtensionSupported() for alternatives. The returned views are
+         * always @relativeref{Corrade::Containers::StringViewFlag,Global}, but
+         * as the extensions are split from a space-separated list only the
+         * last one is guaranteed to be null-terminated.
          * @see @fn_al{Get} with @def_al_keyword{NUM_EXTENSIONS},
          *      @fn_al{GetString} with @def_al_keyword{EXTENSIONS},
          *      @fn_alc{GetString} with @def_alc_keyword{EXTENSIONS}
          */
-        std::vector<std::string> extensionStrings() const;
+        Containers::Array<Containers::StringView> extensionStrings() const;
 
         /**
          * @brief Supported extensions
@@ -405,7 +425,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * the current.
          * @see @ref isExtensionSupported(), @ref Extension::extensions()
          */
-        const std::vector<Extension>& supportedExtensions() const {
+        Containers::ArrayView<const Extension> supportedExtensions() const {
             return _supportedExtensions;
         }
 
@@ -446,7 +466,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * if they are advertised as being supported by the driver.
          */
         template<class T> bool isExtensionDisabled() const {
-            return _disabledExtensions[T::Index];
+            return _extensionDisabledStatus[T::Index];
         }
 
         /**
@@ -457,7 +477,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * as it does most operations in compile time.
          */
         bool isExtensionDisabled(const Extension& extension) const {
-            return _disabledExtensions[extension.index()];
+            return _extensionDisabledStatus[extension.index()];
         }
 
     private:
@@ -467,9 +487,9 @@ class MAGNUM_AUDIO_EXPORT Context {
         ALCcontext* _context;
 
         Math::BitVector<Implementation::ExtensionCount> _extensionStatus;
-        Math::BitVector<Implementation::ExtensionCount> _disabledExtensions;
-        std::vector<Extension> _supportedExtensions;
-        std::vector<std::string> _disabledExtensionStrings;
+        Math::BitVector<Implementation::ExtensionCount> _extensionDisabledStatus;
+        Containers::Array<Extension> _supportedExtensions;
+        Containers::Array<Extension> _disabledExtensions;
 };
 
 /**
@@ -477,7 +497,7 @@ class MAGNUM_AUDIO_EXPORT Context {
 
 @see @ref Context()
 */
-class MAGNUM_AUDIO_EXPORT Context::Configuration {
+class Context::Configuration {
     public:
         /**
          * @brief HRTF configuration
@@ -491,22 +511,33 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
             Disabled = 2    /**< Disabled */
         };
 
-        explicit Configuration();
-        ~Configuration();
-
-        /** @brief Device specifier */
-        const std::string& deviceSpecifier() const { return _deviceSpecifier; }
+        /**
+         * @brief Device specifier
+         *
+         * The returned string view is
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * is valid until the next call to @ref setDeviceSpecifier().
+         */
+        Containers::StringView deviceSpecifier() const { return _deviceSpecifier; }
 
         /**
          * @brief Set device specifier
          * @return Reference to self (for method chaining)
          *
-         * If set to empty string (the default), default device specifier is
+         * If set to an empty string (the default), default device specifier is
          * used.
+         *
+         * @note The function makes a copy of the view if it's not not global
+         *      or null-terminated, use the
+         *      @link Corrade::Containers::Literals::StringLiterals::operator""_s() Containers::Literals::operator""_s() @endlink
+         *      literal to prevent that where possible.
+         *
          * @see @ref Context::deviceSpecifierStrings()
          */
-        Configuration& setDeviceSpecifier(const std::string& specifier);
-        Configuration& setDeviceSpecifier(std::string&& specifier); /**< @overload */
+        Configuration& setDeviceSpecifier(Containers::StringView specifier) {
+            _deviceSpecifier = Containers::String::nullTerminatedGlobalView(specifier);
+            return *this;
+        }
 
         /** @brief Sampling rate in Hz */
         Int frequency() const { return _frequency; }
@@ -592,7 +623,7 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
         }
 
     private:
-        std::string _deviceSpecifier;
+        Containers::String _deviceSpecifier;
 
         Int _frequency{-1};
         Hrtf _hrtf{};

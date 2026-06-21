@@ -1991,6 +1991,17 @@ See also:
         @relativeref{Corrade,Containers::Array} /
         @relativeref{Corrade,Containers::ArrayView} of them, instead of a
         @ref std::string and a @ref std::vector.
+    -   @ref Audio::Context::deviceSpecifierStrings(),
+        @relativeref{Audio::Context,hrtfSpecifierString()},
+        @relativeref{Audio::Context,deviceSpecifierString()},
+        @relativeref{Audio::Context,vendorString()},
+        @relativeref{Audio::Context,rendererString()},
+        @relativeref{Audio::Context,versionString()},
+        @relativeref{Audio::Context,extensionStrings()} now return
+        @relativeref{Corrade,Containers::StringView} or a
+        @relativeref{Corrade,Containers::Array} /
+        @relativeref{Corrade,Containers::ArrayView} of them, instead of a
+        @ref std::string and a @ref std::vector.
     -   All @ref GL::Buffer::label() "label()" and
         @ref GL::Buffer::setLabel() "setLabel()" APIs now work with a
         @relativeref{Corrade,Containers::StringView} /

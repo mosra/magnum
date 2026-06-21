@@ -29,11 +29,10 @@
 #include "Context.h"
 
 #include <algorithm> /* std::lower_bound() */
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/Audio/Extensions.h"
 
@@ -60,6 +59,16 @@ constexpr Extension ExtensionList[]{
     _extension(AL,SOFT,loop_points),
     #undef _entension
 };
+
+const Extension* findExtension(const Containers::StringView extension) {
+    const auto found = std::lower_bound(std::begin(ExtensionList), std::end(ExtensionList), extension, [](const Extension& a, const Containers::StringView& b) {
+        return a.string() < b;
+    });
+    if(found != std::end(ExtensionList) && found->string() == extension)
+        return found;
+
+    return {};
+}
 
 }
 
@@ -108,11 +117,11 @@ const char* alcErrorString(const ALenum error) {
 
 }
 
-std::vector<std::string> Context::deviceSpecifierStrings() {
-    std::vector<std::string> list;
+Containers::Array<Containers::StringView> Context::deviceSpecifierStrings() {
+    Containers::Array<Containers::StringView> list;
     const char* device = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
     while(*device) {
-        list.emplace_back(device);
+        arrayAppend(list, {device, Containers::StringViewFlag::Global});
         device += list.back().size() + 1;
     }
 
@@ -197,9 +206,17 @@ Context::Context(NoCreateT, const Int argc, const char* const* const argv) noexc
     /* Decide how to display initialization log */
     _displayInitializationLog = !(args.value("log") == "quiet" || args.value("log") == "QUIET");
 
-    /* Disable extensions */
-    for(auto&& extension: Utility::String::splitWithoutEmptyParts(args.value("disable-extensions")))
-        _disabledExtensionStrings.push_back(extension);
+    /* Disable extensions. Here we search for them among the known extensions
+       and store the Extension objects instead, which avoids the string copying
+       and another binary search in tryCreate(). */
+    const Containers::StringView disabledExtensions = args.value<Containers::StringView>("disable-extensions");
+    if(!disabledExtensions.isEmpty()) {
+        const Containers::Array<Containers::StringView> split = disabledExtensions.splitOnWhitespaceWithoutEmptyParts();
+        arrayReserve(_disabledExtensions, split.size());
+        for(const Containers::StringView extension: split)
+            if(const Extension* found = findExtension(extension))
+                arrayAppend(_disabledExtensions, *found);
+    }
 }
 
 void Context::create(const Configuration& configuration) {
@@ -211,7 +228,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     CORRADE_ASSERT(!currentContext, "Audio::Context: context already created", false);
 
     /* Open the device */
-    const ALCchar* const deviceSpecifier = configuration.deviceSpecifier().empty() ? alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER) : configuration.deviceSpecifier().data();
+    const ALCchar* const deviceSpecifier = configuration.deviceSpecifier().isEmpty() ? alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER) : configuration.deviceSpecifier().data();
     if(!(_device = alcOpenDevice(deviceSpecifier))) {
         Error() << "Audio::Context: cannot open sound device" << deviceSpecifier;
         return false;
@@ -270,11 +287,10 @@ bool Context::tryCreate(const Configuration& configuration) {
     currentContext = this;
 
     /* Check for presence of extensions */
-    const std::vector<std::string> extensions = extensionStrings();
-    for(const std::string& extension: extensions) {
-        const auto found = std::lower_bound(std::begin(ExtensionList), std::end(ExtensionList), extension, [](const Extension& a, const std::string& b) { return a.string() < b; });
-        if(found != std::end(ExtensionList) && found->string() == extension) {
-            _supportedExtensions.push_back(*found);
+    const Containers::Array<Containers::StringView> extensions = extensionStrings();
+    for(const Containers::StringView extension: extensions) {
+        if(const Extension* found = findExtension(extension)) {
+            arrayAppend(_supportedExtensions, *found);
             _extensionStatus.set(found->index(), true);
         }
     }
@@ -286,33 +302,15 @@ bool Context::tryCreate(const Configuration& configuration) {
     Debug{output} << "OpenAL version:" << versionString();
 
     /* Disable extensions as requested by the user */
-    if(!_disabledExtensionStrings.empty()) {
-        bool headerPrinted = false;
+    if(!_disabledExtensions.isEmpty()) {
+        Debug{output} << "Disabling extensions:";
 
         /* Disable extensions that are known and supported and print a message
            for each */
-        for(auto&& extension: _disabledExtensionStrings) {
-            const auto found = std::lower_bound(std::begin(ExtensionList), std::end(ExtensionList), extension, [](const Extension& a, const std::string& b) { return a.string() < b; });
-            /* No error message here because some of the extensions could be
-               from Vulkan or OpenGL. That also means we print the header only
-               when we actually have something to say */
-            if(found == std::end(ExtensionList) || found->string() != extension)
-                continue;
-
-            /* If the extension isn't supported in the first place, don't do
-               anything. If it is, set its status as unsupported but flip the
-               corresponding bit in the disabled bitmap so we know it is
-               supported and only got disabled */
-            if(!_extensionStatus[found->index()])
-                continue;
-            _extensionStatus.set(found->index(), false);
-            _disabledExtensions.set(found->index(), true);
-
-            if(!headerPrinted) {
-                Debug{output} << "Disabling extensions:";
-                headerPrinted = true;
-            }
-            Debug{output} << "   " << extension;
+        for(const Extension& extension: _disabledExtensions) {
+            _extensionStatus.set(extension.index(), false);
+            _extensionDisabledStatus.set(extension.index(), true);
+            Debug{output} << "   " << extension.string();
         }
     }
 
@@ -335,15 +333,12 @@ Context::~Context() {
         currentContext = nullptr;
 }
 
-std::vector<std::string> Context::extensionStrings() const {
-    std::vector<std::string> extensions;
+Containers::Array<Containers::StringView> Context::extensionStrings() const {
+    Containers::Array<Containers::StringView> extensions = Containers::StringView{reinterpret_cast<const char*>(alGetString(AL_EXTENSIONS)), Containers::StringViewFlag::Global}.splitWithoutEmptyParts(' ');
 
-    /* Don't crash when alGetString() returns nullptr */
-    extensions = Utility::String::splitWithoutEmptyParts(Utility::String::fromArray(reinterpret_cast<const char*>(alGetString(AL_EXTENSIONS))), ' ');
-
-    /* Add ALC extensions as well */
-    auto splitAlcExts = Utility::String::splitWithoutEmptyParts(Utility::String::fromArray(reinterpret_cast<const char*>(alcGetString(_device, ALC_EXTENSIONS))), ' ');
-    extensions.insert(extensions.end(), splitAlcExts.begin(), splitAlcExts.end());
+    /* Add ALC extensions as well. This reallocates the above array but that's
+       fine, it's not a hot code path. */
+    arrayAppend(extensions, Containers::StringView{reinterpret_cast<const char*>(alcGetString(_device, ALC_EXTENSIONS)), Containers::StringViewFlag::Global}.splitWithoutEmptyParts(' '));
 
     return extensions;
 }
@@ -369,9 +364,9 @@ Context::HrtfStatus Context::hrtfStatus() const {
     return Context::HrtfStatus(status);
 }
 
-std::string Context::hrtfSpecifierString() const {
+Containers::StringView Context::hrtfSpecifierString() const {
     /* Returns a string on ALC_SOFT_HRTF, nullptr on ALC_SOFTX_HRTF */
-    return Utility::String::fromArray(alcGetString(_device, ALC_HRTF_SPECIFIER_SOFT));
+    return {alcGetString(_device, ALC_HRTF_SPECIFIER_SOFT), Containers::StringViewFlag::Global};
 }
 
 Int Context::monoSourceCount() const {
@@ -392,33 +387,20 @@ Int Context::refreshRate() const {
     return count;
 }
 
-std::string Context::deviceSpecifierString() const {
-    return alcGetString(_device, ALC_DEVICE_SPECIFIER);
+Containers::StringView Context::deviceSpecifierString() const {
+    return {alcGetString(_device, ALC_DEVICE_SPECIFIER), Containers::StringViewFlag::Global};
 }
 
-std::string Context::vendorString() const {
-    return alGetString(AL_VENDOR);
+Containers::StringView Context::vendorString() const {
+    return {alGetString(AL_VENDOR), Containers::StringViewFlag::Global};
 }
 
-std::string Context::rendererString() const {
-    return alGetString(AL_RENDERER);
+Containers::StringView Context::rendererString() const {
+    return {alGetString(AL_RENDERER), Containers::StringViewFlag::Global};
 }
 
-std::string Context::versionString() const {
-    return alGetString(AL_VERSION);
-}
-
-Context::Configuration::Configuration() = default;
-Context::Configuration::~Configuration() = default;
-
-Context::Configuration& Context::Configuration::setDeviceSpecifier(const std::string& specifier) {
-    _deviceSpecifier = specifier;
-    return *this;
-}
-
-Context::Configuration& Context::Configuration::setDeviceSpecifier(std::string&& specifier) {
-    _deviceSpecifier = Utility::move(specifier);
-    return *this;
+Containers::StringView Context::versionString() const {
+    return {alGetString(AL_VERSION), Containers::StringViewFlag::Global};
 }
 
 }}

@@ -54,6 +54,8 @@ struct ContextALTest: TestSuite::Tester {
     void isExtensionSupported();
     void isExtensionUnsupported();
     void isExtensionDisabled();
+
+    void stringFlags();
 };
 
 const struct {
@@ -82,13 +84,15 @@ ContextALTest::ContextALTest():
               &ContextALTest::extensionsString,
               &ContextALTest::isExtensionSupported,
               &ContextALTest::isExtensionUnsupported,
-              &ContextALTest::isExtensionDisabled});
+              &ContextALTest::isExtensionDisabled,
+
+              &ContextALTest::stringFlags});
 }
 
 void ContextALTest::deviceSpecifierStrings() {
     /* Just verify that it produces something reasonable without crashing or
        entering an infinite loop */
-    CORRADE_VERIFY(!Context::deviceSpecifierStrings().empty());
+    CORRADE_VERIFY(!Context::deviceSpecifierStrings().isEmpty());
 }
 
 void ContextALTest::constructDefault() {
@@ -155,10 +159,10 @@ void ContextALTest::constructConfiguration() {
             /* HRTF gets enabled only if the extension is supported */
             if(context.isExtensionSupported<Extensions::ALC::SOFT::HRTF>()) {
                 CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Enabled);
-                CORRADE_VERIFY(!context.hrtfSpecifierString().empty());
+                CORRADE_VERIFY(!context.hrtfSpecifierString().isEmpty());
             } else if(context.isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
                 CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Enabled);
-                CORRADE_VERIFY(context.hrtfSpecifierString().empty());
+                CORRADE_VERIFY(context.hrtfSpecifierString().isEmpty());
             } else {
                 CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Disabled);
             }
@@ -232,9 +236,7 @@ void ContextALTest::ignoreUnrelatedOptions() {
 void ContextALTest::extensionsString() {
     Context context;
 
-    std::vector<std::string> extensions = context.extensionStrings();
-
-    CORRADE_VERIFY(!extensions.empty());
+    CORRADE_VERIFY(!context.extensionStrings().isEmpty());
 }
 
 void ContextALTest::isExtensionSupported() {
@@ -276,6 +278,43 @@ void ContextALTest::isExtensionDisabled() {
                 Extensions::ALC::EXT::ENUMERATION::string()};
     CORRADE_VERIFY(!context.isExtensionSupported(e));
     CORRADE_VERIFY(context.isExtensionDisabled(e));
+}
+
+void ContextALTest::stringFlags() {
+    Containers::Array<Containers::StringView> deviceSpecifierStrings = Context::deviceSpecifierStrings();
+    CORRADE_VERIFY(!deviceSpecifierStrings.isEmpty());
+    for(Containers::StringView specifier: deviceSpecifierStrings) {
+        CORRADE_VERIFY(!specifier.isEmpty());
+        CORRADE_COMPARE(specifier.flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+    }
+
+    Context context;
+
+    /* HRTF specifier string might be null, in which case it's *not*
+       null-terminated obviously */
+    CORRADE_COMPARE(context.hrtfSpecifierString().flags(), Containers::StringViewFlag::Global|(context.hrtfSpecifierString().data() ? Containers::StringViewFlag::NullTerminated : Containers::StringViewFlags{}));
+
+    CORRADE_VERIFY(!context.deviceSpecifierString().isEmpty());
+    CORRADE_COMPARE(context.deviceSpecifierString().flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+
+    CORRADE_VERIFY(!context.vendorString().isEmpty());
+    CORRADE_COMPARE(context.vendorString().flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+
+    CORRADE_VERIFY(!context.rendererString().isEmpty());
+    CORRADE_COMPARE(context.rendererString().flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+
+    CORRADE_VERIFY(!context.versionString().isEmpty());
+    CORRADE_COMPARE(context.versionString().flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+
+    for(Containers::StringView extension: context.extensionStrings()) {
+        CORRADE_ITERATION(extension);
+        CORRADE_VERIFY(!extension.isEmpty());
+
+        /* The extensions are split from a long string and thus aren't all
+           null-terminated, only the last one */
+        CORRADE_COMPARE_AS(extension.flags(), Containers::StringViewFlag::Global,
+            TestSuite::Compare::GreaterOrEqual);
+    }
 }
 
 }}}}
