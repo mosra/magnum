@@ -52,7 +52,7 @@ bool AnyImporter::doIsOpened() const { return !!_in; }
 
 void AnyImporter::doClose() { _in = nullptr; }
 
-void AnyImporter::doOpenFile(const std::string& filename) {
+void AnyImporter::doOpenFile(const Containers::StringView filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     /* We don't detect any double extensions yet, so we can normalize just the

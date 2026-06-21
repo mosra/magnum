@@ -31,10 +31,8 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/Utility/Path.h>
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
@@ -97,13 +95,13 @@ void AbstractImporter::doOpenData(Containers::ArrayView<const char>) {
     CORRADE_ASSERT_UNREACHABLE("Audio::AbstractImporter::openData(): feature advertised but not implemented", );
 }
 
-bool AbstractImporter::openFile(const std::string& filename) {
+bool AbstractImporter::openFile(const Containers::StringView filename) {
     close();
     doOpenFile(filename);
     return isOpened();
 }
 
-void AbstractImporter::doOpenFile(const std::string& filename) {
+void AbstractImporter::doOpenFile(const Containers::StringView filename) {
     CORRADE_ASSERT(features() & ImporterFeature::OpenData, "Audio::AbstractImporter::openFile(): not implemented", );
 
     /* Open file */

@@ -31,10 +31,14 @@
  */
 
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
-#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/BufferFormat.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For APIs that used to take a std::string */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace Audio {
 
@@ -185,7 +189,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * returns @cpp false @ce.
          * @see @ref features(), @ref openData()
          */
-        bool openFile(const std::string& filename);
+        bool openFile(Containers::StringView filename);
 
         /** @brief Close file */
         void close();
@@ -224,7 +228,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * implementation opens the file and calls @ref doOpenData() with its
          * contents.
          */
-        virtual void doOpenFile(const std::string& filename);
+        virtual void doOpenFile(Containers::StringView filename);
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
@@ -257,7 +261,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Audio.AbstractImporter/0.1"
+"cz.mosra.magnum.Audio.AbstractImporter/0.1.1"
 /* [interface] */
 
 }}
