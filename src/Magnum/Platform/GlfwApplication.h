@@ -1870,6 +1870,10 @@ class GlfwApplication::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp "Magnum GLFW Application" @ce.
+         * @note The function makes a copy of the view if it's not not global
+         *      or null-terminated, use the
+         *      @link Corrade::Containers::Literals::StringLiterals::operator""_s() Containers::Literals::operator""_s() @endlink
+         *      literal to prevent that where possible.
          */
         Configuration& setTitle(Containers::StringView title) {
             _title = Containers::String::nullTerminatedGlobalView(title);

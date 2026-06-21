@@ -2603,6 +2603,10 @@ class Sdl2Application::Configuration {
          *      expected to be set by the HTML markup. However, it's possible
          *      to change the page title later (for example in response to
          *      application state change) using @ref setWindowTitle().
+         * @note The function makes a copy of the view if it's not not global
+         *      or null-terminated, use the
+         *      @link Corrade::Containers::Literals::StringLiterals::operator""_s() Containers::Literals::operator""_s() @endlink
+         *      literal to prevent that where possible.
          */
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         Configuration& setTitle(const Containers::StringView title) {
