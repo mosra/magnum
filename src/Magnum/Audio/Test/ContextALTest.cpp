@@ -54,6 +54,14 @@ struct ContextALTest: TestSuite::Tester {
     void isExtensionDisabled();
 };
 
+const struct {
+    const char* log;
+    bool expected;
+} QuietLogData[]{
+    {"quiet", false},
+    {"default", true}
+};
+
 ContextALTest::ContextALTest():
     TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}
         .setSkippedArgumentPrefixes({"magnum"})}
@@ -63,7 +71,8 @@ ContextALTest::ContextALTest():
               &ContextALTest::constructDeviceNotFound,
               &ContextALTest::constructMove});
 
-    addInstancedTests({&ContextALTest::quietLog}, 2);
+    addInstancedTests({&ContextALTest::quietLog},
+        Containers::arraySize(QuietLogData));
 
     addTests({&ContextALTest::ignoreUnrelatedOptions,
               &ContextALTest::extensionsString,
@@ -190,15 +199,16 @@ void ContextALTest::constructMove() {
 }
 
 void ContextALTest::quietLog() {
-    setTestCaseDescription(testCaseInstanceId() ? "true" : "false");
+    auto&& data = QuietLogData[testCaseInstanceId()];
+    setTestCaseDescription(data.log);
 
-    const char* argv[] = { "", "--magnum-log", testCaseInstanceId() ? "quiet" : "default" };
+    const char* argv[] = { "", "--magnum-log", data.log };
 
     Containers::String out;
     Debug redirectOutput{&out};
     /* MSVC 2015 and 2017 needs the int cast otherwise C2398 */
     Context context{int(Containers::arraySize(argv)), argv};
-    CORRADE_COMPARE(!out, bool(testCaseInstanceId()));
+    CORRADE_COMPARE(!!out, data.expected);
 }
 
 void ContextALTest::ignoreUnrelatedOptions() {
