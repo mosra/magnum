@@ -496,6 +496,9 @@ class MAGNUM_AUDIO_EXPORT Context {
         #ifdef MAGNUM_BUILD_DEPRECATED
         Containers::Array<Extension> _supportedExtensions;
         #endif
+        /** @todo this one is needed only until the context gets created and
+            then can be discarded -- what to do? we could avoid including
+            Array altogether */
         Containers::Array<Extension> _disabledExtensions;
 };
 
