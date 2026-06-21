@@ -27,13 +27,11 @@
 */
 
 #include <chrono>
-#include <sstream> /** @todo remove when Debug is stream-free */
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove when Debug is stream-free */
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Format.h>
@@ -72,9 +70,9 @@ template<class T> void printPluginInfo(const Debug::Flags useColor, const T& plu
         }
 
         /* Ugly, eh? */
-        std::ostringstream out;
+        Containers::String out;
         Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << Debug::packed << plugin.features();
-        d << Debug::newline << Debug::boldColor(Debug::Color::Default) << "Features:" << Debug::color(Debug::Color::Cyan) << Debug::newline << " " << Utility::String::replaceAll(out.str(), "|", "\n  ") << Debug::resetColor;
+        d << Debug::newline << Debug::boldColor(Debug::Color::Default) << "Features:" << Debug::color(Debug::Color::Cyan) << Debug::newline << " " << Utility::String::replaceAll(out, "|", "\n  ") << Debug::resetColor;
 }
 
 void printPluginConfigurationInfo(Debug& d, const Utility::ConfigurationGroup& configuration, const Containers::StringView prefix) {
