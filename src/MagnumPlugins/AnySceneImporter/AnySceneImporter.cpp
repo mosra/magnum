@@ -203,14 +203,16 @@ void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
     /* Instantiate the plugin, propagate flags and the file callback, if set */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
-    if(fileCallback()) importer->setFileCallback(fileCallback(), fileCallbackUserData());
+    if(fileCallback())
+        importer->setFileCallback(fileCallback(), fileCallbackUserData());
 
     /* Propagate configuration */
     Magnum::Implementation::propagateConfiguration("Trade::AnySceneImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration(), !(flags() & ImporterFlag::Quiet));
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    if(!importer->openFile(filename)) return;
+    if(!importer->openFile(filename))
+        return;
 
     /* Success, save the instance */
     _in = Utility::move(importer);

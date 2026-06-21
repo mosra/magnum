@@ -191,13 +191,15 @@ Containers::StringView DeviceProperties::driverInfo() {
 }
 
 const VkPhysicalDeviceProperties& DeviceProperties::properties1() {
-    if(!_state) _state.emplace(*_instance, _handle);
+    if(!_state)
+        _state.emplace(*_instance, _handle);
 
     return _state->properties.properties;
 }
 
 const VkPhysicalDeviceProperties2& DeviceProperties::properties() {
-    if(!_state) _state.emplace(*_instance, _handle);
+    if(!_state)
+        _state.emplace(*_instance, _handle);
 
     /* Properties not fetched yet, do that now */
     if(!_state->properties.sType) {
@@ -251,18 +253,22 @@ ExtensionProperties DeviceProperties::enumerateExtensionProperties() {
 }
 
 const ExtensionProperties& DeviceProperties::extensionPropertiesInternal() {
-    if(!_state) _state.emplace(*_instance, _handle);
-    if(!_state->extensions) _state->extensions = enumerateExtensionProperties();
+    if(!_state)
+        _state.emplace(*_instance, _handle);
+    if(!_state->extensions)
+        _state->extensions = enumerateExtensionProperties();
     return *_state->extensions;
 }
 
 template<class E> bool DeviceProperties::isOrVersionSupportedInternal() {
-    if(isVersionSupported(E::coreVersion())) return true;
+    if(isVersionSupported(E::coreVersion()))
+        return true;
     return extensionPropertiesInternal().isSupported<E>();
 }
 
 bool DeviceProperties::canUseFeatures2ForDeviceCreation() {
-    if(!_state) _state.emplace(*_instance, _handle);
+    if(!_state)
+        _state.emplace(*_instance, _handle);
 
     /* To avoid repeating the logic (and the 10-paragraph explanation) from
        State constructor here, we simply check what is used to query device
@@ -277,7 +283,8 @@ bool DeviceProperties::canUseFeatures2ForDeviceCreation() {
 }
 
 const DeviceFeatures& DeviceProperties::features() {
-    if(!_state) _state.emplace(*_instance, _handle);
+    if(!_state)
+        _state.emplace(*_instance, _handle);
 
     /* If a device doesn't support *any* feature, this will be fetched always.
        That's rather rare though. */
@@ -374,7 +381,8 @@ const DeviceFeatures& DeviceProperties::features() {
 }
 
 Containers::ArrayView<const VkQueueFamilyProperties2> DeviceProperties::queueFamilyProperties() {
-    if(!_state) _state.emplace(*_instance, _handle);
+    if(!_state)
+        _state.emplace(*_instance, _handle);
 
     /* Fetch if not already */
     if(_state->queueFamilyProperties.isEmpty()) {
@@ -438,21 +446,24 @@ QueueFlags DeviceProperties::queueFamilyFlags(const UnsignedInt id) {
 
 UnsignedInt DeviceProperties::pickQueueFamily(const QueueFlags flags) {
     Containers::Optional<UnsignedInt> id = tryPickQueueFamily(flags);
-    if(id) return *id;
+    if(id)
+        return *id;
     std::exit(1); /* LCOV_EXCL_LINE */
 }
 
 Containers::Optional<UnsignedInt> DeviceProperties::tryPickQueueFamily(const QueueFlags flags) {
     const Containers::ArrayView<const VkQueueFamilyProperties2> properties = queueFamilyProperties();
     for(UnsignedInt i = 0; i != properties.size(); ++i)
-        if(QueueFlag(properties[i].queueFamilyProperties.queueFlags) >= flags) return i;
+        if(QueueFlag(properties[i].queueFamilyProperties.queueFlags) >= flags)
+            return i;
 
     Error{} << "Vk::DeviceProperties::tryPickQueueFamily(): no" << flags << "found among" << properties.size() << "queue families";
     return {};
 }
 
 const VkPhysicalDeviceMemoryProperties2& DeviceProperties::memoryProperties() {
-    if(!_state) _state.emplace(*_instance, _handle);
+    if(!_state)
+        _state.emplace(*_instance, _handle);
 
     if(!_state->memoryProperties.sType) {
         _state->memoryProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2;
@@ -512,7 +523,8 @@ UnsignedInt DeviceProperties::memoryHeapIndex(const UnsignedInt memory) {
 
 UnsignedInt DeviceProperties::pickMemory(const MemoryFlags requiredFlags, const MemoryFlags preferredFlags, const UnsignedInt memories) {
     Containers::Optional<UnsignedInt> id = tryPickMemory(requiredFlags, preferredFlags, memories);
-    if(id) return *id;
+    if(id)
+        return *id;
     std::exit(1); /* LCOV_EXCL_LINE */
 }
 
@@ -547,7 +559,8 @@ Containers::Optional<UnsignedInt> DeviceProperties::tryPickMemory(const MemoryFl
         }
     }
 
-    if(maxPreferredBitCount >= 0) return maxPreferredBitCountMemory;
+    if(maxPreferredBitCount >= 0)
+        return maxPreferredBitCountMemory;
 
     Error{} << "Vk::DeviceProperties::tryPickMemory(): no" << requiredFlags << "found among" << Math::popcount(memories & ((1 << properties.memoryTypeCount) - 1)) << "considered memory types";
     return {};
@@ -640,8 +653,8 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
         return {};
     }
 
-    for(DeviceProperties& device: devices)
-        if(device.type() == type) return Utility::move(device);
+    for(DeviceProperties& device: devices) if(device.type() == type)
+        return Utility::move(device);
 
     Error{} << "Vk::tryPickDevice(): no" << type << "found among" << devices.size() << "Vulkan devices";
     return {};
@@ -649,7 +662,8 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
 
 DeviceProperties pickDevice(Instance& instance) {
     Containers::Optional<DeviceProperties> device = tryPickDevice(instance);
-    if(device) return *Utility::move(device);
+    if(device)
+        return *Utility::move(device);
     std::exit(1); /* LCOV_EXCL_LINE */
 }
 

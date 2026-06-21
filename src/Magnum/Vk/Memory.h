@@ -324,7 +324,8 @@ class MAGNUM_VK_EXPORT MemoryMapDeleter {
         explicit MemoryMapDeleter(): _unmap{}, _device{}, _memory{} {}
         explicit MemoryMapDeleter(void(*unmap)(VkDevice, VkDeviceMemory), VkDevice device, VkDeviceMemory memory): _unmap{unmap}, _device{device}, _memory{memory} {}
         void operator()(const char*, std::size_t) {
-            if(_unmap) _unmap(_device, _memory);
+            if(_unmap)
+                _unmap(_device, _memory);
         }
 
     private:

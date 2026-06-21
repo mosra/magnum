@@ -51,7 +51,8 @@ void Timeline::stop() {
 }
 
 void Timeline::nextFrame() {
-    if(!_running) return;
+    if(!_running)
+        return;
 
     auto now = high_resolution_clock::now();
     auto duration = UnsignedInt(duration_cast<microseconds>(now-_previousFrameTime).count());
@@ -64,7 +65,8 @@ Float Timeline::previousFrameTime() const {
 }
 
 Float Timeline::currentFrameDuration() const {
-    if(!_running) return 0;
+    if(!_running)
+        return 0;
 
     auto now = high_resolution_clock::now();
     auto duration = UnsignedInt(duration_cast<microseconds>(now-_previousFrameTime).count());
@@ -72,7 +74,8 @@ Float Timeline::currentFrameDuration() const {
 }
 
 Float Timeline::currentFrameTime() const {
-    if(!_running) return 0;
+    if(!_running)
+        return 0;
 
     auto now = high_resolution_clock::now();
     return duration_cast<microseconds>(now-_startTime).count()/1e6f;

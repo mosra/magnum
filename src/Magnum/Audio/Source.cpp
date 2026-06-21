@@ -54,7 +54,8 @@ std::size_t Source::unqueueBuffers(Containers::ArrayView<Containers::Reference<B
     ALint processedBuffers;
     alGetSourcei(_id, AL_BUFFERS_PROCESSED, &processedBuffers);
 
-    if(!processedBuffers) return 0;
+    if(!processedBuffers)
+        return 0;
 
     Containers::Array<ALuint> unqueuedIds(processedBuffers);
     alSourceUnqueueBuffers(_id, unqueuedIds.size(), unqueuedIds.data());

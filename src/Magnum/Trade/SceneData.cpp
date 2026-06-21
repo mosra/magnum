@@ -567,7 +567,8 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* This caused an assertion in the delegated-to constructor, bail instead
        of cascading the asserts further */
-    if(fieldType == SceneFieldType::Bit) return;
+    if(fieldType == SceneFieldType::Bit)
+        return;
     #endif
 
     #ifndef CORRADE_NO_ASSERT
@@ -1160,7 +1161,8 @@ UnsignedShort SceneData::fieldArraySize(const UnsignedInt id) const {
 
 UnsignedInt SceneData::findFieldIdInternal(const SceneField name) const {
     for(std::size_t i = 0; i != _fields.size(); ++i)
-        if(_fields[i]._name == name) return i;
+        if(_fields[i]._name == name)
+            return i;
     return ~UnsignedInt{};
 }
 
@@ -1202,13 +1204,15 @@ template<class T> std::size_t findObject(const SceneFieldFlags flags, const Cont
        std::lower_bound() is error prone beyond any reason. */
     if(flags >= SceneFieldFlag::OrderedMapping) {
         const Containers::StridedIterator<1, const T> found = std::lower_bound(mappingT.begin(), mappingT.end(), T(object));
-        if(found == mappingT.end() || *found != object) return max;
+        if(found == mappingT.end() || *found != object)
+            return max;
         return found - mappingT.begin();
     }
 
     /* Generally unordered container, O(n)-complexity search. */
     for(std::size_t i = 0; i != max; ++i)
-        if(mappingT[i] == object) return i;
+        if(mappingT[i] == object)
+            return i;
     return max;
 }
 
@@ -1749,8 +1753,10 @@ std::size_t SceneData::parentsInto(const std::size_t offset, const Containers::S
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::parentsInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
-    if(fieldDestination) parentsIntoInternal(fieldId, offset, fieldDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
+    if(fieldDestination)
+        parentsIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
@@ -1965,8 +1971,10 @@ std::size_t SceneData::transformations2DInto(const std::size_t offset, const Con
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::transformations2DInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldWithObjectMapping, offset, mappingDestination.prefix(size));
-    if(fieldDestination) transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, fieldDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldWithObjectMapping, offset, mappingDestination.prefix(size));
+    if(fieldDestination)
+        transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
@@ -2085,7 +2093,8 @@ std::size_t SceneData::translationsRotationsScalings2DInto(const std::size_t off
     CORRADE_ASSERT(!rotationDestination != !scalingDestination || rotationDestination.size() == scalingDestination.size(),
         "Trade::SceneData::translationsRotationsScalings2DInto(): rotation and scaling destination views have different size," << rotationDestination.size() << "vs" << scalingDestination.size(), {});
     const std::size_t size = Math::min(Math::max({mappingDestination.size(), translationDestination.size(), rotationDestination.size(), scalingDestination.size()}), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldWithObjectMapping, offset, mappingDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldWithObjectMapping, offset, mappingDestination.prefix(size));
     translationsRotationsScalings2DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, offset,
         translationDestination ? translationDestination.prefix(size) : nullptr,
         rotationDestination ? rotationDestination.prefix(size) : nullptr,
@@ -2211,8 +2220,10 @@ std::size_t SceneData::transformations3DInto(const std::size_t offset, const Con
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::transformations3DInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldWithObjectMapping, offset, mappingDestination.prefix(size));
-    if(fieldDestination) transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, fieldDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldWithObjectMapping, offset, mappingDestination.prefix(size));
+    if(fieldDestination)
+        transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
@@ -2331,7 +2342,8 @@ std::size_t SceneData::translationsRotationsScalings3DInto(const std::size_t off
     CORRADE_ASSERT(!rotationDestination != !scalingDestination || rotationDestination.size() == scalingDestination.size(),
         "Trade::SceneData::translationsRotationsScalings3DInto(): rotation and scaling destination views have different size," << rotationDestination.size() << "vs" << scalingDestination.size(), {});
     const std::size_t size = Math::min(Math::max({mappingDestination.size(), translationDestination.size(), rotationDestination.size(), scalingDestination.size()}), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldWithObjectMapping, offset, mappingDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldWithObjectMapping, offset, mappingDestination.prefix(size));
     translationsRotationsScalings3DIntoInternal(translationFieldId, rotationFieldId, scalingFieldId, offset,
         translationDestination ? translationDestination.prefix(size) : nullptr,
         rotationDestination ? rotationDestination.prefix(size) : nullptr,
@@ -2446,7 +2458,8 @@ std::size_t SceneData::meshesMaterialsInto(const std::size_t offset, const Conta
     CORRADE_ASSERT(!meshDestination != !meshMaterialDestination || meshMaterialDestination.size() == meshDestination.size(),
         "Trade::SceneData::meshesMaterialsInto(): mesh and mesh material destination views have different size," << meshDestination.size() << "vs" << meshMaterialDestination.size(), {});
     const std::size_t size = Math::min(Math::max({mappingDestination.size(), meshDestination.size(), meshMaterialDestination.size()}), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
     meshesMaterialsIntoInternal(fieldId, offset,
         meshDestination ? meshDestination.prefix(size) : nullptr,
         meshMaterialDestination ? meshMaterialDestination.prefix(size) : nullptr);
@@ -2491,8 +2504,10 @@ std::size_t SceneData::lightsInto(const std::size_t offset, const Containers::St
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::lightsInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
-    if(fieldDestination) unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
+    if(fieldDestination)
+        unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
@@ -2527,8 +2542,10 @@ std::size_t SceneData::camerasInto(const std::size_t offset, const Containers::S
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::camerasInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
-    if(fieldDestination) unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
+    if(fieldDestination)
+        unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
@@ -2563,8 +2580,10 @@ std::size_t SceneData::skinsInto(const std::size_t offset, const Containers::Str
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::skinsInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
-    if(fieldDestination) unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
+    if(fieldDestination)
+        unsignedIndexFieldIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
@@ -2609,8 +2628,10 @@ std::size_t SceneData::importerStateInto(const std::size_t offset, const Contain
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::importerStateInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
-    if(mappingDestination) mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
-    if(fieldDestination) importerStateIntoInternal(fieldId, offset, fieldDestination.prefix(size));
+    if(mappingDestination)
+        mappingIntoInternal(fieldId, offset, mappingDestination.prefix(size));
+    if(fieldDestination)
+        importerStateIntoInternal(fieldId, offset, fieldDestination.prefix(size));
     return size;
 }
 
@@ -2640,11 +2661,13 @@ Containers::Optional<Long> SceneData::parentFor(const UnsignedLong object) const
         "Trade::SceneData::parentFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Parent);
-    if(fieldId == ~UnsignedInt{}) return {};
+    if(fieldId == ~UnsignedInt{})
+        return {};
 
     const SceneFieldData& field = _fields[fieldId];
     const std::size_t offset = findFieldObjectOffsetInternal(field, object, 0);
-    if(offset == field._size) return {};
+    if(offset == field._size)
+        return {};
 
     Int index[1];
     parentsIntoInternal(fieldId, offset, index);
@@ -2656,7 +2679,8 @@ Containers::Array<UnsignedLong> SceneData::childrenFor(const Long object) const 
         "Trade::SceneData::childrenFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt parentFieldId = findFieldIdInternal(SceneField::Parent);
-    if(parentFieldId == ~UnsignedInt{}) return {};
+    if(parentFieldId == ~UnsignedInt{})
+        return {};
 
     const SceneFieldData& parentField = _fields[parentFieldId];
 
@@ -2687,7 +2711,8 @@ Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedLong 
 
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
     const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
-    if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
+    if(fieldWithObjectMapping == ~UnsignedInt{})
+        return {};
 
     /* If is2D() returned false as well, all *FieldId would be invalid, which
        is handled above. */
@@ -2695,7 +2720,8 @@ Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedLong 
 
     const SceneFieldData& field = _fields[fieldWithObjectMapping];
     const std::size_t offset = findFieldObjectOffsetInternal(field, object, 0);
-    if(offset == field._size) return {};
+    if(offset == field._size)
+        return {};
 
     Matrix3 transformation[1];
     transformations2DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, transformation);
@@ -2708,7 +2734,8 @@ Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::t
 
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
     const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
-    if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
+    if(fieldWithObjectMapping == ~UnsignedInt{})
+        return {};
 
     /* If is2D() returned false as well, all *FieldId would be invalid, which
        is handled above. */
@@ -2716,7 +2743,8 @@ Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::t
 
     const SceneFieldData& field = _fields[fieldWithObjectMapping];
     const std::size_t offset = findFieldObjectOffsetInternal(field, object, 0);
-    if(offset == field._size) return {};
+    if(offset == field._size)
+        return {};
 
     Vector2 translation[1];
     Complex rotation[1];
@@ -2731,7 +2759,8 @@ Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedLong 
 
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
     const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
-    if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
+    if(fieldWithObjectMapping == ~UnsignedInt{})
+        return {};
 
     /* If is3D() returned false as well, all *FieldId would be invalid, which
        is handled above. */
@@ -2739,7 +2768,8 @@ Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedLong 
 
     const SceneFieldData& field = _fields[fieldWithObjectMapping];
     const std::size_t offset = findFieldObjectOffsetInternal(field, object, 0);
-    if(offset == field._size) return {};
+    if(offset == field._size)
+        return {};
 
     Matrix4 transformation[1];
     transformations3DIntoInternal(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId, offset, transformation);
@@ -2752,7 +2782,8 @@ Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData
 
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
     const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
-    if(fieldWithObjectMapping == ~UnsignedInt{}) return {};
+    if(fieldWithObjectMapping == ~UnsignedInt{})
+        return {};
 
     /* If is3D() returned false as well, all *FieldId would be invalid, which
        is handled above. */
@@ -2760,7 +2791,8 @@ Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData
 
     const SceneFieldData& field = _fields[fieldWithObjectMapping];
     const std::size_t offset = findFieldObjectOffsetInternal(field, object, 0);
-    if(offset == field._size) return {};
+    if(offset == field._size)
+        return {};
 
     Vector3 translation[1];
     Quaternion rotation[1];
@@ -2774,14 +2806,16 @@ Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterials
         "Trade::SceneData::meshesMaterialsFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt meshFieldId = findFieldIdInternal(SceneField::Mesh);
-    if(meshFieldId == ~UnsignedInt{}) return {};
+    if(meshFieldId == ~UnsignedInt{})
+        return {};
 
     const SceneFieldData& field = _fields[meshFieldId];
     Containers::Array<Containers::Pair<UnsignedInt, Int>> out;
     std::size_t offset = 0;
     for(;;) {
         offset = findFieldObjectOffsetInternal(field, object, offset);
-        if(offset == field._size) break;
+        if(offset == field._size)
+            break;
 
         UnsignedInt mesh[1];
         Int material[1];
@@ -2798,14 +2832,16 @@ Containers::Array<UnsignedInt> SceneData::lightsFor(const UnsignedLong object) c
         "Trade::SceneData::lightsFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Light);
-    if(fieldId == ~UnsignedInt{}) return {};
+    if(fieldId == ~UnsignedInt{})
+        return {};
 
     const SceneFieldData& field = _fields[fieldId];
     Containers::Array<UnsignedInt> out;
     std::size_t offset = 0;
     for(;;) {
         offset = findFieldObjectOffsetInternal(field, object, offset);
-        if(offset == field._size) break;
+        if(offset == field._size)
+            break;
 
         UnsignedInt index[1];
         unsignedIndexFieldIntoInternal(fieldId, offset, index);
@@ -2821,14 +2857,16 @@ Containers::Array<UnsignedInt> SceneData::camerasFor(const UnsignedLong object) 
         "Trade::SceneData::camerasFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Camera);
-    if(fieldId == ~UnsignedInt{}) return {};
+    if(fieldId == ~UnsignedInt{})
+        return {};
 
     const SceneFieldData& field = _fields[fieldId];
     Containers::Array<UnsignedInt> out;
     std::size_t offset = 0;
     for(;;) {
         offset = findFieldObjectOffsetInternal(field, object, offset);
-        if(offset == field._size) break;
+        if(offset == field._size)
+            break;
 
         UnsignedInt index[1];
         unsignedIndexFieldIntoInternal(fieldId, offset, index);
@@ -2844,14 +2882,16 @@ Containers::Array<UnsignedInt> SceneData::skinsFor(const UnsignedLong object) co
         "Trade::SceneData::skinsFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Skin);
-    if(fieldId == ~UnsignedInt{}) return {};
+    if(fieldId == ~UnsignedInt{})
+        return {};
 
     const SceneFieldData& field = _fields[fieldId];
     Containers::Array<UnsignedInt> out;
     std::size_t offset = 0;
     for(;;) {
         offset = findFieldObjectOffsetInternal(field, object, offset);
-        if(offset == field._size) break;
+        if(offset == field._size)
+            break;
 
         UnsignedInt index[1];
         unsignedIndexFieldIntoInternal(fieldId, offset, index);
@@ -2867,11 +2907,13 @@ Containers::Optional<const void*> SceneData::importerStateFor(const UnsignedLong
         "Trade::SceneData::importerStateFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::ImporterState);
-    if(fieldId == ~UnsignedInt{}) return {};
+    if(fieldId == ~UnsignedInt{})
+        return {};
 
     const SceneFieldData& field = _fields[fieldId];
     const std::size_t offset = findFieldObjectOffsetInternal(field, object, 0);
-    if(offset == field._size) return {};
+    if(offset == field._size)
+        return {};
 
     const void* importerState[1];
     importerStateIntoInternal(fieldId, offset, importerState);
@@ -2880,7 +2922,8 @@ Containers::Optional<const void*> SceneData::importerStateFor(const UnsignedLong
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 std::vector<UnsignedInt> SceneData::children2D() const {
-    if(_dimensions != 2) return {};
+    if(_dimensions != 2)
+        return {};
 
     /* Even though (or exactly because?) this API is deprecated, it's better to
        warn than to spend several hours debugging what's wrong */
@@ -2892,7 +2935,8 @@ std::vector<UnsignedInt> SceneData::children2D() const {
 }
 
 std::vector<UnsignedInt> SceneData::children3D() const {
-    if(_dimensions != 3) return {};
+    if(_dimensions != 3)
+        return {};
 
     /* Even though (or exactly because?) this API is deprecated, it's better to
        warn than to spend several hours debugging what's wrong */

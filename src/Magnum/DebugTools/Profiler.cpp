@@ -68,7 +68,8 @@ void Profiler::disable() {
 /* MSVC complains about deprecated Section here */
 CORRADE_IGNORE_DEPRECATED_PUSH
 void Profiler::start(Section section) {
-    if(!_enabled) return;
+    if(!_enabled)
+        return;
     CORRADE_ASSERT(section < _sections.size(), "Profiler: unknown section passed to start()", );
 
     save();
@@ -78,7 +79,8 @@ void Profiler::start(Section section) {
 CORRADE_IGNORE_DEPRECATED_POP
 
 void Profiler::stop() {
-    if(!_enabled) return;
+    if(!_enabled)
+        return;
 
     save();
 
@@ -97,7 +99,8 @@ void Profiler::save() {
 }
 
 void Profiler::nextFrame() {
-    if(!_enabled) return;
+    if(!_enabled)
+        return;
 
     /* Next frame index */
     std::size_t nextFrame = (_currentFrame+1) % _measureDuration;
@@ -115,11 +118,13 @@ void Profiler::nextFrame() {
     /* Advance to next frame */
     _currentFrame = nextFrame;
 
-    if(_frameCount < _measureDuration) ++_frameCount;
+    if(_frameCount < _measureDuration)
+        ++_frameCount;
 }
 
 void Profiler::printStatistics() {
-    if(!_enabled) return;
+    if(!_enabled)
+        return;
 
     std::vector<std::size_t> totalSorted(_sections.size());
     std::iota(totalSorted.begin(), totalSorted.end(), 0);

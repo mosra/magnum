@@ -202,7 +202,8 @@ Context::Context(NoCreateT, const Int argc, const char* const* const argv) noexc
 }
 
 void Context::create(const Configuration& configuration) {
-    if(!tryCreate(configuration)) std::exit(1);
+    if(!tryCreate(configuration))
+        std::exit(1);
 }
 
 bool Context::tryCreate(const Configuration& configuration) {
@@ -301,7 +302,8 @@ bool Context::tryCreate(const Configuration& configuration) {
                anything. If it is, set its status as unsupported but flip the
                corresponding bit in the disabled bitmap so we know it is
                supported and only got disabled */
-            if(!_extensionStatus[found->index()]) continue;
+            if(!_extensionStatus[found->index()])
+                continue;
             _extensionStatus.set(found->index(), false);
             _disabledExtensions.set(found->index(), true);
 
@@ -319,13 +321,17 @@ bool Context::tryCreate(const Configuration& configuration) {
 Context::Context(Context&& other) noexcept: _device{other._device}, _context{other._context}, _extensionStatus{Utility::move(other._extensionStatus)}, _supportedExtensions{Utility::move(other._supportedExtensions)} {
     other._device = nullptr;
     other._context = nullptr;
-    if(currentContext == &other) currentContext = this;
+    if(currentContext == &other)
+        currentContext = this;
 }
 
 Context::~Context() {
-    if(_context) alcDestroyContext(_context);
-    if(_device) alcCloseDevice(_device);
-    if(currentContext == this) currentContext = nullptr;
+    if(_context)
+        alcDestroyContext(_context);
+    if(_device)
+        alcCloseDevice(_device);
+    if(currentContext == this)
+        currentContext = nullptr;
 }
 
 std::vector<std::string> Context::extensionStrings() const {

@@ -86,7 +86,8 @@ void MagnumFont::doOpenData(Containers::Array<char>&& data, DataFlags, Float, Un
         return;
     }
 
-    if(!_opened) _opened.emplace();
+    if(!_opened)
+        _opened.emplace();
 
     if(!_opened->filePath && !fileCallback()) {
         Error{} << "Text::MagnumFont::openData(): the font can be opened only from the filesystem or if a file callback is present";

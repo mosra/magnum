@@ -225,7 +225,8 @@ void Image::getMemoryRequirementsImplementation11(Device& device, const VkImageM
 
 VkResult Image::bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
     for(std::size_t i = 0; i != count; ++i)
-        if(VkResult result = device->BindImageMemory(device, infos[i].image, infos[i].memory, infos[i].memoryOffset)) return result;
+        if(VkResult result = device->BindImageMemory(device, infos[i].image, infos[i].memory, infos[i].memoryOffset))
+            return result;
     return VK_SUCCESS;
 }
 
@@ -641,7 +642,8 @@ namespace {
    more info */
 void fixupImageCopySwiftShader(VkImageSubresourceLayers& subresource, VkOffset3D& offset, VkExtent3D& extent) {
     /* Not a layered image, nothing to do */
-    if(subresource.baseArrayLayer == 0 && subresource.layerCount == 1) return;
+    if(subresource.baseArrayLayer == 0 && subresource.layerCount == 1)
+        return;
 
     /* When copying 2D array to 3D, depth is already at the value we want it to
        be */

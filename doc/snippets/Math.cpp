@@ -1106,7 +1106,8 @@ Math::Dual<Byte> integral{floatingPoint}; // {1, 2}
 Frustum frustum;
 /* [Frustum-range] */
 for(Vector4 plane: frustum)
-    if(Math::Distance::pointPlaneScaled(point, plane) < 0.0f) return false;
+    if(Math::Distance::pointPlaneScaled(point, plane) < 0.0f)
+        return false;
 return true;
 /* [Frustum-range] */
 }({});

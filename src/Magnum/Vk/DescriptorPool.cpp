@@ -170,7 +170,8 @@ DescriptorSet DescriptorPool::allocate(const VkDescriptorSetLayout layout) {
 
 Containers::Optional<DescriptorSet> DescriptorPool::tryAllocate(const VkDescriptorSetLayout layout) {
     Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout);
-    if(out.first() != Result::Success) return {};
+    if(out.first() != Result::Success)
+        return {};
     return Utility::move(out.second());
 }
 
@@ -207,7 +208,8 @@ DescriptorSet DescriptorPool::allocate(const VkDescriptorSetLayout layout, const
 
 Containers::Optional<DescriptorSet> DescriptorPool::tryAllocate(const VkDescriptorSetLayout layout, const UnsignedInt variableDescriptorCount) {
     Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout, variableDescriptorCount);
-    if(out.first() != Result::Success) return {};
+    if(out.first() != Result::Success)
+        return {};
     return Utility::move(out.second());
 }
 

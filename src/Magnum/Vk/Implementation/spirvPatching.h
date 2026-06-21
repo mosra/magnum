@@ -71,9 +71,11 @@ bool spirvPatchSwiftShaderConflictingMultiEntrypointLocations(Containers::ArrayV
     /* Calculate the max location so we know what to change to */
     UnsignedInt maxLocation = 0;
     for(const ShaderTools::Implementation::SpirvEntrypointInterface& i: vertexInterface)
-        if(i.location) maxLocation = Math::max(maxLocation, *i.location);
+        if(i.location)
+            maxLocation = Math::max(maxLocation, *i.location);
     for(const ShaderTools::Implementation::SpirvEntrypointInterface& i: fragmentInterface)
-        if(i.location) maxLocation = Math::max(maxLocation, *i.location);
+        if(i.location)
+            maxLocation = Math::max(maxLocation, *i.location);
 
     /* For all vertex outputs check if there are fragment outputs with the same
        locations */
@@ -86,7 +88,8 @@ bool spirvPatchSwiftShaderConflictingMultiEntrypointLocations(Containers::ArrayV
         for(const ShaderTools::Implementation::SpirvEntrypointInterface& fragmentOutput: fragmentInterface) {
             /* Ignore what's not an output or what doesn't have a location (for
                example a builtin) */
-            if(!fragmentOutput.storageClass || *fragmentOutput.storageClass != SpvStorageClassOutput || !fragmentOutput.location) continue;
+            if(!fragmentOutput.storageClass || *fragmentOutput.storageClass != SpvStorageClassOutput || !fragmentOutput.location)
+                continue;
 
             /* The same location used, we need to remap. Use the next highest
                unused location and change also the corresponding fragment

@@ -2511,7 +2511,8 @@ void RendererTest::glyphRangeForBytes() {
         13  /* 9 0 */
     };
     Containers::StridedArrayView1D<const UnsignedInt> clusters = clusterData;
-    if(!data.ascending) clusters = clusters.flipped<0>();
+    if(!data.ascending)
+        clusters = clusters.flipped<0>();
 
     /* With empty clusters it means there are no glyphs, so returning 0 means
        both before and after the glyph run */

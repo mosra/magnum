@@ -41,7 +41,8 @@ template<class T> Containers::Array<T> initializerListToArrayWithDefaultDeleter(
     Containers::Array<T> out{list.size()};
     /* FFS why initializer list doesn't have an operator[] */
     std::size_t i = 0;
-    for(auto&& item: list) out[i++] = item;
+    for(auto&& item: list)
+        out[i++] = item;
     return out;
 }
 

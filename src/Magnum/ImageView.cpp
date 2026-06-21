@@ -64,7 +64,8 @@ template<UnsignedInt dimensions, class T> void ImageView<dimensions, T>::setData
 }
 
 template<UnsignedInt dimensions, class T> auto ImageView<dimensions, T>::pixels() const -> Containers::StridedArrayView<dimensions + 1, Type> {
-    if(!_data && !_data.size()) return {};
+    if(!_data && !_data.size())
+        return {};
     return Implementation::imagePixelView<dimensions, Type>(*this, data());
 }
 
@@ -87,7 +88,8 @@ template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::Co
        size check below could then die on division by zero. Exit early in that
        case. */
     /** @todo any better idea to handle this? ugh */
-    if(!passed) return;
+    if(!passed)
+        return;
     #else
     static_cast<void>(passed);
     #endif

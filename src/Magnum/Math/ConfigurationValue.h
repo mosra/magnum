@@ -92,7 +92,8 @@ template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vect
         std::string output;
 
         for(std::size_t i = 0; i != size; ++i) {
-            if(!output.empty()) output += ' ';
+            if(!output.empty())
+                output += ' ';
             output += ConfigurationValue<T>::toString(value[i], flags);
         }
 
@@ -164,7 +165,8 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
 
         for(std::size_t row = 0; row != rows; ++row) {
             for(std::size_t col = 0; col != cols; ++col) {
-                if(!output.empty()) output += ' ';
+                if(!output.empty())
+                    output += ' ';
                 output += ConfigurationValue<T>::toString(value[col][row], flags);
             }
         }
@@ -349,7 +351,8 @@ template<Magnum::UnsignedInt order, Magnum::UnsignedInt dimensions, class T> str
 
         for(std::size_t o = 0; o != order + 1; ++o) {
             for(std::size_t i = 0; i != dimensions; ++i) {
-                if(!output.empty()) output += ' ';
+                if(!output.empty())
+                    output += ' ';
                 output += ConfigurationValue<T>::toString(value[o][i], flags);
             }
         }

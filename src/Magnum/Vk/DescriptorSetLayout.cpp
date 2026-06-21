@@ -100,8 +100,10 @@ DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::I
     std::size_t immutableSamplerCount = 0;
     bool hasBindingFlags = false;
     for(const DescriptorSetLayoutBinding& b: bindings) {
-        if(b->pImmutableSamplers) immutableSamplerCount += b->descriptorCount;
-        if(b.flags()) hasBindingFlags = true;
+        if(b->pImmutableSamplers)
+            immutableSamplerCount += b->descriptorCount;
+        if(b.flags())
+            hasBindingFlags = true;
     }
 
     /* Allocate a single block of memory for everything. (I'm still amazed at
@@ -132,7 +134,8 @@ DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::I
             bindingsCopy[i].pImmutableSamplers = immutableSamplersCopy + immutableSamplerOffset;
             immutableSamplerOffset += b->descriptorCount;
         }
-        if(hasBindingFlags) bindingFlagsCopy[i] = b.flags();
+        if(hasBindingFlags)
+            bindingFlagsCopy[i] = b.flags();
     }
     CORRADE_INTERNAL_ASSERT(immutableSamplerOffset == immutableSamplerCount);
 

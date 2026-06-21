@@ -69,7 +69,8 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
             const UnsignedInt t = neighbors[ti];
 
             /* Continue if already emitted */
-            if(emitted[t]) continue;
+            if(emitted[t])
+                continue;
             emitted[t] = true;
 
             /* Write all vertices of the triangle to output buffer */
@@ -99,7 +100,8 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
         Int candidatePriority = -1;
         for(UnsignedInt v: candidates) {
             /* Skip if it doesn't have any live triangles */
-            if(!liveTriangleCount[v]) continue;
+            if(!liveTriangleCount[v])
+                continue;
 
             /* Get most fresh candidate which will still be in cache even
                after fanning. Every fanned triangle will generate at most
@@ -120,7 +122,8 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
                 UnsignedInt d = deadEndStack.back();
                 arrayRemoveSuffix(deadEndStack);
 
-                if(!liveTriangleCount[d]) continue;
+                if(!liveTriangleCount[d])
+                    continue;
                 fanningVertex = d;
                 break;
             }
@@ -128,7 +131,8 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
             /* If not found, find next artbitrary vertex with live
                triangles */
             while(++i < vertexCount) {
-                if(!liveTriangleCount[i]) continue;
+                if(!liveTriangleCount[i])
+                    continue;
 
                 fanningVertex = i;
                 break;

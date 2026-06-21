@@ -72,7 +72,10 @@ class MAGNUM_AUDIO_EXPORT Source {
          * Deletes OpenAL source object.
          * @see @fn_al_keyword{DeleteSources}
          */
-        ~Source() { if(_id) alDeleteSources(1, &_id); }
+        ~Source() {
+            if(_id)
+                alDeleteSources(1, &_id);
+        }
 
         /** @brief Copying is not allowed */
         Source(const Source&) = delete;

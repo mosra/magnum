@@ -169,7 +169,8 @@ bool AnySceneConverter::doBeginFile(const Containers::StringView filename) {
 
     /* Try to begin the file (error output should be printed by the plugin
        itself) */
-    if(!converter->beginFile(filename)) return false;
+    if(!converter->beginFile(filename))
+        return false;
 
     /* Success, save the instance */
     _converter = Utility::move(converter);

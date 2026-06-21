@@ -95,7 +95,8 @@ Renderbuffer::~Renderbuffer() {
 
     /* If bound, remove itself from state */
     GLuint& binding = Context::current().state().framebuffer.renderbufferBinding;
-    if(binding == _id) binding = 0;
+    if(binding == _id)
+        binding = 0;
 
     glDeleteRenderbuffers(1, &_id);
 }

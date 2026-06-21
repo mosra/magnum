@@ -102,7 +102,8 @@ Mesh::Mesh(MeshLayout&& layout): _layout{Utility::move(layout)} {
         };
 
         /** @tod use DirectInit once ArrayTuple can do that */
-        for(Buffer& b: _state->ownedVertexBuffers) new(&b) Buffer{NoCreate};
+        for(Buffer& b: _state->ownedVertexBuffers)
+            new(&b) Buffer{NoCreate};
     }
 }
 
@@ -143,7 +144,8 @@ Mesh& Mesh::addVertexBuffer(const UnsignedInt binding, const VkBuffer buffer, co
 Mesh& Mesh::addVertexBuffer(const UnsignedInt binding, Buffer&& buffer, const UnsignedLong offset) {
     const std::size_t index = addVertexBufferInternal(binding, buffer, offset);
     #ifdef CORRADE_GRACEFUL_ASSERT
-    if(index == ~std::size_t{}) return *this;
+    if(index == ~std::size_t{})
+        return *this;
     #endif
     _state->ownedVertexBuffers[index] = Utility::move(buffer);
     return *this;
@@ -152,7 +154,8 @@ Mesh& Mesh::addVertexBuffer(const UnsignedInt binding, Buffer&& buffer, const Un
 Mesh& Mesh::setIndexBuffer(const VkBuffer buffer, const UnsignedLong offset, const MeshIndexType indexType) {
     /* If the mesh has no vertex buffer bindings, the state isn't populated
        in the constructor. Do it here. */
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     _state->indexBuffer = buffer;
     _state->indexBufferOffset = offset;
@@ -207,7 +210,8 @@ CommandBuffer& CommandBuffer::draw(Mesh& mesh) {
     CORRADE_ASSERT(mesh.isCountSet(),
         "Vk::CommandBuffer::draw(): Mesh::setCount() was never called, probably a mistake?", *this);
 
-    if(!mesh.count() || !mesh.instanceCount()) return *this;
+    if(!mesh.count() || !mesh.instanceCount())
+        return *this;
 
     if(_dynamicRasterizationStates & DynamicRasterizationState::MeshPrimitive)
         (**_device).CmdSetPrimitiveTopologyEXT(_handle, mesh.layout().vkPipelineInputAssemblyStateCreateInfo().topology);

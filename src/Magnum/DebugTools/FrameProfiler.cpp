@@ -79,7 +79,8 @@ FrameProfiler::FrameProfiler(FrameProfiler&& other) noexcept:
     /* For all state pointers that point to &other patch them to point to this
        instead, to account for 90% of use cases of derived classes */
     for(Measurement& measurement: _measurements)
-        if(measurement._state == &other) measurement._state = this;
+        if(measurement._state == &other)
+            measurement._state = this;
 }
 
 FrameProfiler& FrameProfiler::operator=(FrameProfiler&& other) noexcept {
@@ -96,12 +97,14 @@ FrameProfiler& FrameProfiler::operator=(FrameProfiler&& other) noexcept {
     /* For all state pointers that point to &other patch them to point to this
        instead, to account for 90% of use cases of derived classes */
     for(Measurement& measurement: _measurements)
-        if(measurement._state == &other) measurement._state = this;
+        if(measurement._state == &other)
+            measurement._state = this;
 
     /* And the same the other way to avoid the other instance accidentally
        affecting our measurements */
     for(Measurement& measurement: other._measurements)
-        if(measurement._state == this) measurement._state = &other;
+        if(measurement._state == this)
+            measurement._state = &other;
 
     return *this;
 }
@@ -360,7 +363,8 @@ void FrameProfiler::printStatisticsInternal(Debug& out) const {
 
             out << Debug::color(Debug::Color::Blue) << "-.--"
                 << Debug::resetColor;
-            if(units[0] != '\0') out << units;
+            if(units[0] != '\0')
+                out << units;
 
         /* Otherwise format the value */
         } else {
@@ -406,7 +410,8 @@ Containers::String FrameProfiler::statistics() const {
 
 void FrameProfiler::printStatistics(const UnsignedInt frequency) const {
     Debug::Flags flags;
-    if(!Debug::isTty()) flags |= Debug::Flag::DisableColors;
+    if(!Debug::isTty())
+        flags |= Debug::Flag::DisableColors;
     printStatistics(Debug{flags}, frequency);
 }
 
@@ -559,7 +564,8 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
             [](void* state, UnsignedInt previous, UnsignedInt) {
                 /* Avoid division by zero if a frame doesn't have any draws */
                 const auto submitted = static_cast<State*>(state)->verticesSubmittedQueries[previous].result<UnsignedLong>();
-                if(!submitted) return UnsignedLong{};
+                if(!submitted)
+                    return UnsignedLong{};
 
                 return static_cast<State*>(state)->vertexShaderInvocationsQueries[previous].result<UnsignedLong>()*1000/submitted;
             }, _state.get());
@@ -584,14 +590,16 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
             [](void* state, UnsignedInt previous, UnsignedInt) {
                 /* Avoid division by zero if a frame doesn't have any draws */
                 const auto input = static_cast<State*>(state)->clippingInputPrimitivesQueries[previous].result<UnsignedLong>();
-                if(!input) return UnsignedLong{};
+                if(!input)
+                    return UnsignedLong{};
 
                 /* If we have more output primitives than input, it's because
                    a triangle got split into multiple. To avoid an underflow,
                    return zero as well. A corresponding test case is in
                    FrameProfilerGLTest::primitiveClipRatioNegative(). */
                 const auto output = static_cast<State*>(state)->clippingOutputPrimitivesQueries[previous].result<UnsignedLong>();
-                if(input < output) return UnsignedLong{};
+                if(input < output)
+                    return UnsignedLong{};
 
                 return 100000 - static_cast<State*>(state)->clippingOutputPrimitivesQueries[previous].result<UnsignedLong>()*100000/input;
             }, _state.get());
@@ -603,12 +611,17 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
 
 auto FrameProfilerGL::values() const -> Values {
     Values values;
-    if(_state->frameTimeIndex != 0xffff) values |= Value::FrameTime;
-    if(_state->cpuDurationIndex != 0xffff) values |= Value::CpuDuration;
-    if(_state->gpuDurationIndex != 0xffff) values |= Value::GpuDuration;
+    if(_state->frameTimeIndex != 0xffff)
+        values |= Value::FrameTime;
+    if(_state->cpuDurationIndex != 0xffff)
+        values |= Value::CpuDuration;
+    if(_state->gpuDurationIndex != 0xffff)
+        values |= Value::GpuDuration;
     #ifndef MAGNUM_TARGET_GLES
-    if(_state->vertexFetchRatioIndex != 0xffff) values |= Value::VertexFetchRatio;
-    if(_state->primitiveClipRatioIndex != 0xffff) values |= Value::PrimitiveClipRatio;
+    if(_state->vertexFetchRatioIndex != 0xffff)
+        values |= Value::VertexFetchRatio;
+    if(_state->primitiveClipRatioIndex != 0xffff)
+        values |= Value::PrimitiveClipRatio;
     #endif
     return values;
 }

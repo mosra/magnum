@@ -4167,7 +4167,8 @@ void AbstractFontTest::layoutGlyphOutOfRange() {
         void doGlyphIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& ids) const override {
             /* Clear the IDs as otherwise it'd result in OOB calls into the
                glyph cache */
-            for(UnsignedInt& i: ids) i = 0;
+            for(UnsignedInt& i: ids)
+                i = 0;
         }
         void doGlyphOffsetsAdvancesInto(const Containers::StridedArrayView1D<Vector2>&, const Containers::StridedArrayView1D<Vector2>&) const override {}
         void doGlyphClustersInto(const Containers::StridedArrayView1D<UnsignedInt>&) const override {}

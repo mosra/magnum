@@ -295,7 +295,8 @@ int main(int argc, char** argv) {
 
     } else for(std::size_t i = instanceFuture; i != Containers::arraySize(versions); ++i) {
         Containers::ArrayView<const Vk::InstanceExtension> extensions = Vk::InstanceExtension::extensions(versions[i]);
-        if(extensions.isEmpty()) continue;
+        if(extensions.isEmpty())
+            continue;
 
         if(versions[i] != Vk::Version::None)
             Debug{} << versions[i] << "instance extension support:";
@@ -328,7 +329,8 @@ int main(int argc, char** argv) {
                 << Debug::packed << device.driverVersion();
         }
 
-        if(devices.isEmpty()) return 0;
+        if(devices.isEmpty())
+            return 0;
     }
 
     Debug{} << "";
@@ -374,7 +376,8 @@ int main(int argc, char** argv) {
 
     } else for(std::size_t i = deviceFuture; i != Containers::arraySize(versions); ++i) {
         Containers::ArrayView<const Vk::Extension> extensions = Vk::Extension::extensions(versions[i]);
-        if(extensions.isEmpty()) continue;
+        if(extensions.isEmpty())
+            continue;
 
         if(versions[i] != Vk::Version::None)
             Debug{} << versions[i] << "extension support:";
@@ -394,7 +397,8 @@ int main(int argc, char** argv) {
     }
 
     /* If we wanted only extension strings, exit now */
-    if(args.isSet("extension-strings")) return 0;
+    if(args.isSet("extension-strings"))
+        return 0;
 
     if(args.isSet("features")) {
         Debug{} << "Feature support:";

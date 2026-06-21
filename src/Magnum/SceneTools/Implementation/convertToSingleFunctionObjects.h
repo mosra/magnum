@@ -42,7 +42,8 @@ namespace Magnum { namespace SceneTools { namespace Implementation {
 
 inline Containers::Optional<std::size_t> findField(Containers::ArrayView<const Trade::SceneField> fields, Trade::SceneField field) {
     for(std::size_t i = 0; i != fields.size(); ++i)
-        if(fields[i] == field) return i;
+        if(fields[i] == field)
+            return i;
     return {};
 }
 
@@ -71,7 +72,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
         /* Skip fields that are not present -- is it's not present, then it
            definitely won't be responsible for multi-function objects */
         const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
-        if(!fieldId) continue;
+        if(!fieldId)
+            continue;
 
         /** @todo use a statically-allocated array & Into() in a loop instead
             once this is more than a private backwards-compatibility utility
@@ -92,7 +94,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
 
         /* Skip fields that are not present */
         const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
-        if(!fieldId) continue;
+        if(!fieldId)
+            continue;
 
         /** @todo use a statically-allocated array & Into() in a loop instead
             once this is more than a private backwards-compatibility utility
@@ -105,8 +108,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
     }
 
     UnsignedInt objectsToAdd = 0;
-    for(const UnsignedInt count: objectAttachmentCount)
-        if(count > 1) objectsToAdd += count - 1;
+    for(const UnsignedInt count: objectAttachmentCount) if(count > 1)
+        objectsToAdd += count - 1;
 
     /* Ensure we don't overflow the 32-bit object count with the objects to
        add. This should also cover the case when the parent field would not be
@@ -171,7 +174,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
         const Trade::SceneField field = fieldsToCopy[i];
 
         const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
-        if(!fieldId) continue;
+        if(!fieldId)
+            continue;
 
         const Containers::StridedArrayView1D<UnsignedInt> outMapping = out.mutableMapping<UnsignedInt>(*fieldId);
         const Containers::StridedArrayView2D<char> outField = out.mutableField(*fieldId);
@@ -201,7 +205,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
         std::size_t newParentIndex = 0;
         for(const Trade::SceneField field: fieldsToConvert) {
             const Containers::Optional<UnsignedInt> fieldId = scene.findFieldId(field);
-            if(!fieldId) continue;
+            if(!fieldId)
+                continue;
 
             for(UnsignedInt& fieldObject: out.mutableMapping<UnsignedInt>(*fieldId)) {
                 /* If the object is not new (could happen when an object
@@ -215,7 +220,8 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
                        was assigned to the original object */
                     for(std::size_t i = 0; i != fieldsToCopy.size(); ++i) {
                         const Containers::Optional<UnsignedInt> fieldToCopyId = scene.findFieldId(fieldsToCopy[i]);
-                        if(!fieldToCopyId) continue;
+                        if(!fieldToCopyId)
+                            continue;
 
                         /* View to copy the data from */
                         const Containers::StridedArrayView2D<const char> fieldToCopyDataSrc = scene.field(*fieldToCopyId);

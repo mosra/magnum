@@ -47,7 +47,8 @@ template<UnsignedInt dimensions, class T> Animable<dimensions, T>::~Animable() {
 }
 
 template<UnsignedInt dimensions, class T> Animable<dimensions, T>& Animable<dimensions, T>::setState(AnimationState state) {
-    if(_currentState == state) return *this;
+    if(_currentState == state)
+        return *this;
 
     /* Not allowed (for sanity) */
     if(_previousState == AnimationState::Stopped && state == AnimationState::Paused)
@@ -68,7 +69,8 @@ template<UnsignedInt dimensions, class T> const AnimableGroup<dimensions, T>* An
 }
 
 template<UnsignedInt dimensions, class T> void AnimableGroup<dimensions, T>::step(const Float time, const Float delta) {
-    if(!_runningCount && !wakeUp) return;
+    if(!_runningCount && !wakeUp)
+        return;
     wakeUp = false;
 
     for(std::size_t i = 0; i != AnimableGroup<dimensions, T>::size(); ++i) {

@@ -227,7 +227,8 @@ UnsignedInt Attribute<Math::Vector<3, Float>>::size(GLint components, DataType d
 
 UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType dataType) {
     #ifndef MAGNUM_TARGET_GLES
-    if(components == GL_BGRA) components = 4;
+    if(components == GL_BGRA)
+        components = 4;
     #endif
 
     switch(dataType) {
@@ -586,7 +587,8 @@ namespace {
 UnsignedInt attributeSize(DynamicAttribute::Components components, DynamicAttribute::DataType dataType) {
     Int componentCount = GLint(components);
     #ifndef MAGNUM_TARGET_GLES
-    if(components == DynamicAttribute::Components::BGRA) componentCount = 4;
+    if(components == DynamicAttribute::Components::BGRA)
+        componentCount = 4;
     #endif
 
     switch(dataType) {

@@ -257,15 +257,21 @@ void SceneConverterImplementationTest::infoScenesObjects() {
             return id == 0 ? "A simple scene" : "";
         }
         Containers::String doObjectName(UnsignedLong id) override {
-            if(id == 0) return "Parent-less mesh";
-            if(id == 2) return "Two meshes, shared among two scenes";
-            if(id == 4) return "Two custom arrays";
-            if(id == 6) return "Only in the second scene, but no fields, thus same as unreferenced";
-            if(id == 8) return "Not in any scene";
+            if(id == 0)
+                return "Parent-less mesh";
+            if(id == 2)
+                return "Two meshes, shared among two scenes";
+            if(id == 4)
+                return "Two custom arrays";
+            if(id == 6)
+                return "Only in the second scene, but no fields, thus same as unreferenced";
+            if(id == 8)
+                return "Not in any scene";
             return "";
         }
         Containers::String doSceneFieldName(Trade::SceneField name) override {
-            if(name == Trade::sceneFieldCustom(1337)) return "directionVector";
+            if(name == Trade::sceneFieldCustom(1337))
+                return "directionVector";
             return "";
         }
         Containers::Optional<Trade::SceneData> doScene(UnsignedInt id) override {
@@ -434,12 +440,13 @@ void SceneConverterImplementationTest::infoSkins() {
         }
         Containers::Optional<Trade::SkinData2D> doSkin2D(UnsignedInt id) override {
             /* First a regular skin, second externally owned */
-            if(id == 0) return Trade::SkinData2D{
-                {3, 6, 7, 12, 22},
-                {{}, {}, {}, {}, {}}
-            };
+            if(id == 0)
+                return Trade::SkinData2D{
+                    {3, 6, 7, 12, 22},
+                    {{}, {}, {}, {}, {}}};
 
-            if(id == 1) return Trade::SkinData2D{Trade::DataFlag::ExternallyOwned, skin2JointData, Trade::DataFlag::ExternallyOwned, skin2MatrixData};
+            if(id == 1)
+                return Trade::SkinData2D{Trade::DataFlag::ExternallyOwned, skin2JointData, Trade::DataFlag::ExternallyOwned, skin2MatrixData};
 
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -451,7 +458,8 @@ void SceneConverterImplementationTest::infoSkins() {
         Containers::Optional<Trade::SkinData3D> doSkin3D(UnsignedInt id) override {
             /* Reverse order in 3D, plus one more to ensure the count isn't
                mismatched between 2D and 3D */
-            if(id == 0) return Trade::SkinData3D{Trade::DataFlag::ExternallyOwned, skin3JointData, Trade::DataFlag::ExternallyOwned, skin3MatrixData};
+            if(id == 0)
+                return Trade::SkinData3D{Trade::DataFlag::ExternallyOwned, skin3JointData, Trade::DataFlag::ExternallyOwned, skin3MatrixData};
 
             if(id == 1) return Trade::SkinData3D{
                 {3, 22},
@@ -691,10 +699,13 @@ void SceneConverterImplementationTest::infoMeshes() {
             return id == 1 ? "LODs? No, meshlets." : "";
         }
         Containers::String doMeshAttributeName(Trade::MeshAttribute name) override {
-            if(name == Trade::meshAttributeCustom(25)) return "vertices";
-            if(name == Trade::meshAttributeCustom(26)) return "triangles";
+            if(name == Trade::meshAttributeCustom(25))
+                return "vertices";
+            if(name == Trade::meshAttributeCustom(26))
+                return "triangles";
             /* 37 (triangleCount) deliberately not named */
-            if(name == Trade::meshAttributeCustom(116)) return "vertexCount";
+            if(name == Trade::meshAttributeCustom(116))
+                return "vertexCount";
 
             return "";
         }
@@ -742,7 +753,8 @@ void SceneConverterImplementationTest::infoMeshes() {
             }
 
             /* Third is an empty instance mesh */
-            if(id == 2 && level == 0) return Trade::MeshData{MeshPrimitive::Instances, 15};
+            if(id == 2 && level == 0)
+                return Trade::MeshData{MeshPrimitive::Instances, 15};
 
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -1102,7 +1114,8 @@ void SceneConverterImplementationTest::infoReferenceCount() {
                 {Trade::MaterialAttribute::NormalTexture, 17u},
                 {Trade::MaterialAttribute::EmissiveTexture, 4u},
             }};
-            if(id == 2) return Trade::MaterialData{{}, {}};
+            if(id == 2)
+                return Trade::MaterialData{{}, {}};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 
@@ -1111,9 +1124,12 @@ void SceneConverterImplementationTest::infoReferenceCount() {
             return id == 1 ? "Not referenced" : "";
         }
         Containers::Optional<Trade::MeshData> doMesh(UnsignedInt id, UnsignedInt) override {
-            if(id == 0) return Trade::MeshData{MeshPrimitive::Points, 5};
-            if(id == 1) return Trade::MeshData{MeshPrimitive::Lines, 4};
-            if(id == 2) return Trade::MeshData{MeshPrimitive::TriangleFan, 4};
+            if(id == 0)
+                return Trade::MeshData{MeshPrimitive::Points, 5};
+            if(id == 1)
+                return Trade::MeshData{MeshPrimitive::Lines, 4};
+            if(id == 2)
+                return Trade::MeshData{MeshPrimitive::TriangleFan, 4};
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 

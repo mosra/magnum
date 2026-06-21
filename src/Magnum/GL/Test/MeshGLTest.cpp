@@ -1444,7 +1444,8 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
         #endif
         ;
 
-    if(view.mesh().isIndexed()) view.setIndexOffset(1);
+    if(view.mesh().isIndexed())
+        view.setIndexOffset(1);
 
     shader.draw(view);
 }

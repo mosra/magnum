@@ -1385,7 +1385,8 @@ class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
         #endif
     {
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
-        if(geom) _geom = Implementation::GLShaderWrapper{Utility::move(*geom)};
+        if(geom)
+            _geom = Implementation::GLShaderWrapper{Utility::move(*geom)};
         #endif
     }
 
@@ -3404,7 +3405,8 @@ class MeshVisualizerGL3D::CompileState: public MeshVisualizerGL3D {
         #endif
     {
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
-        if(geom) _geom = Implementation::GLShaderWrapper{Utility::move(*geom)};
+        if(geom)
+            _geom = Implementation::GLShaderWrapper{Utility::move(*geom)};
         #endif
     }
 

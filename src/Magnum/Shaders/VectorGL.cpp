@@ -245,7 +245,8 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& s
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */
-    if(!id()) return;
+    if(!id())
+        return;
     #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));

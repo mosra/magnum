@@ -113,7 +113,8 @@ Containers::String ConfigurationValue<Magnum::MeshPrimitive>::toString(Magnum::M
 
 Magnum::MeshPrimitive ConfigurationValue<Magnum::MeshPrimitive>::fromString(Containers::StringView stringValue, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::MeshPrimitiveNames); ++i)
-        if(stringValue == Magnum::MeshPrimitiveNames[i]) return Magnum::MeshPrimitive(i + 1);
+        if(stringValue == Magnum::MeshPrimitiveNames[i])
+            return Magnum::MeshPrimitive(i + 1);
 
     return {};
 }
@@ -127,7 +128,8 @@ Containers::String ConfigurationValue<Magnum::MeshIndexType>::toString(Magnum::M
 
 Magnum::MeshIndexType ConfigurationValue<Magnum::MeshIndexType>::fromString(Containers::StringView stringValue, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::MeshIndexTypeNames); ++i)
-        if(stringValue == Magnum::MeshIndexTypeNames[i]) return Magnum::MeshIndexType(i + 1);
+        if(stringValue == Magnum::MeshIndexTypeNames[i])
+            return Magnum::MeshIndexType(i + 1);
 
     return {};
 }

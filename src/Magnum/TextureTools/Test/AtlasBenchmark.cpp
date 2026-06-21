@@ -345,7 +345,8 @@ void AtlasBenchmark::benchmarkBegin() {
 std::uint64_t AtlasBenchmark::benchmarkEnd() {
     /* If the test failed, exit early as continuing would cause a division by
        zero. */
-    if(!_filledArea) return {};
+    if(!_filledArea)
+        return {};
 
     UnsignedInt total = 0;
     for(const Vector2i& i: _sizes)

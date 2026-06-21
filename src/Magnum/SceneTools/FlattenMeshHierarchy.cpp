@@ -64,7 +64,8 @@ template<UnsignedInt dimensions> void flattenMeshHierarchyIntoImplementation(con
     const Containers::Optional<UnsignedInt> meshFieldId = scene.findFieldId(Trade::SceneField::Mesh);
     /* If there's no mesh field in the file, nothing to do. This is how the
        original API behaved, it's an assertion in the new one. */
-    if(!meshFieldId) return;
+    if(!meshFieldId)
+        return;
 
     DimensionTraits<dimensions>::flattenInto(scene, *meshFieldId, outputTransformations, globalTransformation);
 }
@@ -73,7 +74,8 @@ template<UnsignedInt dimensions> Containers::Array<Containers::Triple<UnsignedIn
     const Containers::Optional<UnsignedInt> meshFieldId = scene.findFieldId(Trade::SceneField::Mesh);
     /* If there's no mesh field in the file, nothing to do. This is how the
        original API behaved, it's an assertion in the new one. */
-    if(!meshFieldId) return {};
+    if(!meshFieldId)
+        return {};
 
     /* Get the transformations. This will be a no-op if the mesh field isn't
        present, but will go through other assertions that may still be rather

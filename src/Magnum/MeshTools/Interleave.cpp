@@ -62,7 +62,8 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
     std::size_t maxOffset = 0;
     bool hasImplementationSpecificVertexFormat = false;
     for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
-        if(mesh.attributeStride(i) != stride) return Containers::NullOpt;
+        if(mesh.attributeStride(i) != stride)
+            return Containers::NullOpt;
 
         const std::size_t offset = mesh.attributeOffset(i);
         minOffset = Math::min(minOffset, offset);
@@ -139,7 +140,8 @@ namespace Implementation {
 
 Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& mesh, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     /* Nothing to do here, bye! */
-    if(!mesh.attributeCount() && extra.isEmpty()) return {};
+    if(!mesh.attributeCount() && extra.isEmpty())
+        return {};
 
     /* If we're not told to preserve the layout, treat the mesh as
        noninterleaved always, forcing a repack. Otherwise check if it's already
@@ -204,14 +206,16 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
        preserve relative attribute offsets, otherwise pack tightly. */
     std::size_t offset = 0;
     for(UnsignedInt i = 0; i != originalAttributeCount; ++i) {
-        if(interleaved) offset = attributeData[i].offset(mesh.vertexData()) - minOffset;
+        if(interleaved)
+            offset = attributeData[i].offset(mesh.vertexData()) - minOffset;
 
         attributeData[i] = Trade::MeshAttributeData{
             attributeData[i].name(), attributeData[i].format(),
             offset, 0, std::ptrdiff_t(stride),
             attributeData[i].arraySize(), attributeData[i].morphTargetId()};
 
-        if(!interleaved) offset += attributeSize(attributeData[i]);
+        if(!interleaved)
+            offset += attributeSize(attributeData[i]);
     }
 
     /* In case the original is already interleaved, set the offset for extra
@@ -361,7 +365,8 @@ Trade::MeshData interleave(Trade::MeshData&& mesh, const Containers::ArrayView<c
         UnsignedInt attributeIndex = mesh.attributeCount();
         for(UnsignedInt i = 0; i != extra.size(); ++i) {
             /* Padding, ignore */
-            if(extra[i].format() == VertexFormat{}) continue;
+            if(extra[i].format() == VertexFormat{})
+                continue;
 
             /* Asserting here even though data() has another assert since that
                one would be too confusing in this context */

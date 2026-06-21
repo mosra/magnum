@@ -495,9 +495,12 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
 
     } else {
         positions = meshData.positions(0);
-        if(meshData.hasNormals()) normals = meshData.normals(0);
-        if(meshData.hasTextureCoords2D()) textureCoords2D = meshData.textureCoords2D(0);
-        if(meshData.hasColors()) colors = meshData.colors(0);
+        if(meshData.hasNormals())
+            normals = meshData.normals(0);
+        if(meshData.hasTextureCoords2D())
+            textureCoords2D = meshData.textureCoords2D(0);
+        if(meshData.hasColors())
+            colors = meshData.colors(0);
         useIndices = meshData.isIndexed();
     }
 

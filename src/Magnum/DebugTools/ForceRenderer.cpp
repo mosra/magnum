@@ -74,11 +74,13 @@ constexpr UnsignedByte indices[]{
 template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), _forcePosition(forcePosition), _force(force), _options(manager.get<ForceRendererOptions>(options)) {
     /* Shader */
     _shader = manager.get<GL::AbstractShaderProgram, Shaders::FlatGL<dimensions>>(shaderKey<dimensions>());
-    if(!_shader) manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::FlatGL<dimensions>);
+    if(!_shader)
+        manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::FlatGL<dimensions>);
 
     /* Mesh and vertex buffer */
     _mesh = manager.get<GL::Mesh>("force");
-    if(_mesh) return;
+    if(_mesh)
+        return;
 
     /* Create the mesh */
     GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};

@@ -79,8 +79,10 @@ WindowlessCglContext::WindowlessCglContext(WindowlessCglContext&& other) noexcep
 }
 
 WindowlessCglContext::~WindowlessCglContext() {
-    if(_context) CGLDestroyContext(_context);
-    if(_pixelFormat) CGLDestroyPixelFormat(_pixelFormat);
+    if(_context)
+        CGLDestroyContext(_context);
+    if(_pixelFormat)
+        CGLDestroyPixelFormat(_pixelFormat);
 }
 
 WindowlessCglContext& WindowlessCglContext::operator=(WindowlessCglContext&& other) noexcept {
@@ -121,7 +123,8 @@ WindowlessCglApplication::~WindowlessCglApplication() = default;
 void WindowlessCglApplication::createContext() { createContext({}); }
 
 void WindowlessCglApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
+    if(!tryCreateContext(configuration))
+        std::exit(1);
 }
 
 bool WindowlessCglApplication::tryCreateContext(const Configuration& configuration) {

@@ -189,7 +189,8 @@ class
         /** @brief Copy constructor */
         CORRADE_IGNORE_DEPRECATED_PUSH /* GCC except for 4.8 (!) warns here */
         Resource(const Resource<T, U>& other): _manager{other._manager}, _key{other._key}, _lastCheck{other._lastCheck}, _state{other._state}, _data{other._data} {
-            if(_manager) _manager->incrementReferenceCount(_key);
+            if(_manager)
+                _manager->incrementReferenceCount(_key);
         }
         CORRADE_IGNORE_DEPRECATED_POP
 
@@ -200,7 +201,8 @@ class
 
         /** @brief Destructor */
         ~Resource() {
-            if(_manager) _manager->decrementReferenceCount(_key);
+            if(_manager)
+                _manager->decrementReferenceCount(_key);
         }
 
         /** @brief Copy assignment */
@@ -329,7 +331,8 @@ class
 
 CORRADE_IGNORE_DEPRECATED_PUSH
 template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(const Resource<T, U>& other) {
-    if(_manager) _manager->decrementReferenceCount(_key);
+    if(_manager)
+        _manager->decrementReferenceCount(_key);
 
     _manager = other._manager;
     _key = other._key;
@@ -337,7 +340,8 @@ template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(const Resou
     _state = other._state;
     _data = other._data;
 
-    if(_manager) _manager->incrementReferenceCount(_key);
+    if(_manager)
+        _manager->incrementReferenceCount(_key);
     return *this;
 }
 
@@ -361,10 +365,12 @@ template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(Resource<T,
 
 template<class T, class U> void Resource<T, U>::acquire() {
     /* The data are already final, nothing to do */
-    if(_state == ResourceState::Final) return;
+    if(_state == ResourceState::Final)
+        return;
 
     /* Nothing changed since last check */
-    if(_manager->lastChange() <= _lastCheck) return;
+    if(_manager->lastChange() <= _lastCheck)
+        return;
 
     /* Acquire new data and save last check time */
     const typename Implementation::ResourceManagerData<T>::Data& d = _manager->data(_key);

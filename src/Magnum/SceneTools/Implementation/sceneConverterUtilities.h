@@ -273,7 +273,8 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                 }
 
                 if(objectInfos) for(const UnsignedInt object: scene->mappingAsArray(j)) {
-                    if(object >= objectInfos.size()) continue;
+                    if(object >= objectInfos.size())
+                        continue;
 
                     objectInfos[object].object = object;
                     objectInfos[object].scenes |= 1 << i;
@@ -616,7 +617,8 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
 
     const auto printObjectFieldInfo = [&sceneFieldNames](Debug& d, const ObjectInfo& info) {
         for(std::size_t i = 0; i != info.fields.size(); ++i) {
-            if(i) d << Debug::nospace << ",";
+            if(i)
+                d << Debug::nospace << ",";
             const Containers::Pair<Trade::SceneField, UnsignedInt> nameCount = info.fields[i];
             d << Debug::color(Debug::Color::Cyan);
             if(Trade::isSceneFieldCustom(nameCount.first())) {
@@ -638,7 +640,8 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     for(const SceneInfo& info: sceneInfos) {
         Debug d{useColor};
         d << Debug::boldColor(Debug::Color::Default) << "Scene" << info.scene << Debug::nospace << ":" << Debug::resetColor;
-        if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
+        if(info.name)
+            d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
         d << Debug::newline;
         d << "  Bound:" << info.mappingBound << "objects"
             << Debug::color(Debug::Color::Blue) << "@" << Debug::packed
@@ -719,21 +722,25 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     if(!args.isSet("object-hierarchy")) for(const ObjectInfo& info: objectInfos) {
         /* Objects without a name and not referenced by any scenes are useless,
            ignore */
-        if(!info.name && !info.scenes) continue;
+        if(!info.name && !info.scenes)
+            continue;
 
         Debug d{useColor};
         d << Debug::boldColor(Debug::Color::Default) << "Object" << info.object << Debug::resetColor;
 
         if(sceneInfos) {
             const UnsignedInt count = Math::popcount(info.scenes);
-            if(!count) d << Debug::color(Debug::Color::Red);
+            if(!count)
+                d << Debug::color(Debug::Color::Red);
             d << "(referenced by" << count << "scenes)";
-            if(!count) d << Debug::resetColor;
+            if(!count)
+                d << Debug::resetColor;
         }
 
         d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
             << Debug::resetColor;
-        if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
+        if(info.name)
+            d << Debug::boldColor(Debug::Color::Yellow)
             << info.name << Debug::resetColor;
         if(info.scenes) {
             d << Debug::newline << "  Fields:";
@@ -745,7 +752,8 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     for(const AnimationInfo& info: animationInfos) {
         Debug d{useColor};
         d << Debug::boldColor(Debug::Color::Default) << "Animation" << info.animation << Debug::nospace << ":" << Debug::resetColor;
-        if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
+        if(info.name)
+            d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
         d << Debug::newline << "  Duration: {" << Debug::nospace
             /** @todo have a nice packed printing for Range instead */
@@ -813,9 +821,11 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
            (!info.twoDimensions && skin3DReferenceCount))
         {
             const UnsignedInt count = info.twoDimensions ? skin2DReferenceCount[info.skin] : skin3DReferenceCount[info.skin];
-            if(!count) d << Debug::color(Debug::Color::Red);
+            if(!count)
+                d << Debug::color(Debug::Color::Red);
             d << "(referenced by" << count << "objects)";
-            if(!count) d << Debug::resetColor;
+            if(!count)
+                d << Debug::resetColor;
         }
 
         d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
@@ -834,9 +844,11 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
            were parsed, otherwise this information is useless */
         if(lightReferenceCount) {
             const UnsignedInt count = lightReferenceCount[info.light];
-            if(!count) d << Debug::color(Debug::Color::Red);
+            if(!count)
+                d << Debug::color(Debug::Color::Red);
             d << "(referenced by" << count << "objects)";
-            if(!count) d << Debug::resetColor;
+            if(!count)
+                d << Debug::resetColor;
         }
 
         d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
@@ -875,9 +887,11 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
            were parsed, otherwise this information is useless */
         if(cameraReferenceCount) {
             const UnsignedInt count = cameraReferenceCount[info.camera];
-            if(!count) d << Debug::color(Debug::Color::Red);
+            if(!count)
+                d << Debug::color(Debug::Color::Red);
             d << "(referenced by" << count << "objects)";
-            if(!count) d << Debug::resetColor;
+            if(!count)
+                d << Debug::resetColor;
         }
 
         d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
@@ -910,14 +924,17 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
            were parsed, otherwise this information is useless */
         if(materialReferenceCount) {
             const UnsignedInt count = materialReferenceCount[info.material];
-            if(!count) d << Debug::color(Debug::Color::Red);
+            if(!count)
+                d << Debug::color(Debug::Color::Red);
             d << "(referenced by" << count << "objects)";
-            if(!count) d << Debug::resetColor;
+            if(!count)
+                d << Debug::resetColor;
         }
 
         d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
             << Debug::resetColor;
-        if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
+        if(info.name)
+            d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
         d << Debug::newline << "  Type:" << Debug::packed << Debug::color(Debug::Color::Cyan) << info.data.types() << Debug::resetColor;
 
@@ -1028,14 +1045,17 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                were parsed, otherwise this information is useless */
             if(meshReferenceCount) {
                 const UnsignedInt count = meshReferenceCount[info.mesh];
-                if(!count) d << Debug::color(Debug::Color::Red);
+                if(!count)
+                    d << Debug::color(Debug::Color::Red);
                 d << "(referenced by" << count << "objects)";
-                if(!count) d << Debug::resetColor;
+                if(!count)
+                    d << Debug::resetColor;
             }
 
             d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
                 << Debug::resetColor;
-            if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
+            if(info.name)
+                d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
             d << Debug::newline;
         }
         d << "  Level" << info.level << Debug::nospace << ":"
@@ -1100,9 +1120,11 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
            were parsed, otherwise this information is useless */
         if(textureReferenceCount) {
             const UnsignedInt count = textureReferenceCount[info.texture];
-            if(!count) d << Debug::color(Debug::Color::Red);
+            if(!count)
+                d << Debug::color(Debug::Color::Red);
             d << "(referenced by" << count << "material attributes)";
-            if(!count) d << Debug::resetColor;
+            if(!count)
+                d << Debug::resetColor;
         }
 
         d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"

@@ -375,7 +375,8 @@ template<UnsignedInt dimensions> bool runImageConverters(PluginManager::Manager<
 
         /* Set options, if passed. The AnyImageConverter check makes no
             sense here, is just there because the helper wants it */
-        if(args.isSet("verbose")) imageConverter->addFlags(Trade::ImageConverterFlag::Verbose);
+        if(args.isSet("verbose"))
+            imageConverter->addFlags(Trade::ImageConverterFlag::Verbose);
         if(j < args.arrayValueCount("image-converter-options"))
             Implementation::setOptions(*imageConverter, "AnyImageConverter", args.arrayValue("image-converter-options", j));
 
@@ -708,7 +709,8 @@ well, the IDs reference attributes of the first mesh.)")
         }
 
         /* Set options, if passed */
-        if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
+        if(args.isSet("verbose"))
+            importer->addFlags(Trade::ImporterFlag::Verbose);
         Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
         Trade::Implementation::printImporterInfo(useColor, *importer);
         return 0;
@@ -721,7 +723,8 @@ well, the IDs reference attributes of the first mesh.)")
         }
 
         /* Set options, if passed */
-        if(args.isSet("verbose")) converter->addFlags(Trade::SceneConverterFlag::Verbose);
+        if(args.isSet("verbose"))
+            converter->addFlags(Trade::SceneConverterFlag::Verbose);
         if(args.arrayValueCount("converter-options"))
             Implementation::setOptions(*converter, "AnySceneConverter", args.arrayValue("converter-options", 0));
         SceneTools::Implementation::printSceneConverterInfo(useColor, *converter);
@@ -735,7 +738,8 @@ well, the IDs reference attributes of the first mesh.)")
         }
 
         /* Set options, if passed */
-        if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
+        if(args.isSet("verbose"))
+            converter->addFlags(Trade::ImageConverterFlag::Verbose);
         if(args.arrayValueCount("image-converter-options"))
             Implementation::setOptions(*converter, "AnyImageConverter", args.arrayValue("image-converter-options", 0));
         Trade::Implementation::printImageConverterInfo(useColor, *converter);
@@ -749,7 +753,8 @@ well, the IDs reference attributes of the first mesh.)")
     }
 
     /* Set options, if passed */
-    if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
+    if(args.isSet("verbose"))
+        importer->addFlags(Trade::ImporterFlag::Verbose);
     Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
 
     /* Wow, C++, you suck. This implicitly initializes to random shit?!
@@ -904,7 +909,8 @@ well, the IDs reference attributes of the first mesh.)")
             it's possible to filter attributes by name */
         if(Containers::StringView onlyAttributes = args.value<Containers::StringView>("only-mesh-attributes")) {
             const Containers::Optional<Containers::Array<UnsignedInt>> only = Utility::String::parseNumberSequence(onlyAttributes, 0, mesh->attributeCount());
-            if(!only) return 2;
+            if(!only)
+                return 2;
 
             /** @todo use MeshTools::filterOnlyAttributes() once it has a
                 rvalue overload that transfers ownership */
@@ -929,7 +935,8 @@ well, the IDs reference attributes of the first mesh.)")
             explicit SingleMeshImporter(Trade::MeshData&& mesh_, Containers::String&& name, Trade::AbstractImporter& original): mesh{Utility::move(mesh_)}, name{Utility::move(name)} {
                 for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
                     const Trade::MeshAttribute attributeName = mesh.attributeName(i);
-                    if(!isMeshAttributeCustom(attributeName)) continue;
+                    if(!isMeshAttributeCustom(attributeName))
+                        continue;
                     /* Appending even empty ones so we don't have to
                        special-case "not found" in doMeshAttributeName() */
                     arrayAppend(attributeNames, InPlaceInit, attributeName, original.meshAttributeName(attributeName));
@@ -946,7 +953,8 @@ well, the IDs reference attributes of the first mesh.)")
             }
             Containers::String doMeshAttributeName(Trade::MeshAttribute name) override {
                 for(const Containers::Pair<Trade::MeshAttribute, Containers::String>& i: attributeNames)
-                    if(i.first() == name) return i.second();
+                    if(i.first() == name)
+                        return i.second();
                 /* All custom attributes, including the unnamed, are in the
                    attributeNames array and both our attribute name propagation
                    here and addSupportedImporterContents() call
@@ -1102,7 +1110,8 @@ well, the IDs reference attributes of the first mesh.)")
 
                 /* Set options, if passed. The AnySceneConverter check makes no
                    sense here, is just there because the helper wants it */
-                if(args.isSet("verbose")) meshConverter->addFlags(Trade::SceneConverterFlag::Verbose);
+                if(args.isSet("verbose"))
+                    meshConverter->addFlags(Trade::SceneConverterFlag::Verbose);
                 if(j < args.arrayValueCount("mesh-converter-options"))
                     Implementation::setOptions(*meshConverter, "AnySceneConverter", args.arrayValue("mesh-converter-options", j));
 
@@ -1206,7 +1215,8 @@ well, the IDs reference attributes of the first mesh.)")
         }
 
         /* Set options, if passed */
-        if(args.isSet("verbose")) converter->addFlags(Trade::SceneConverterFlag::Verbose);
+        if(args.isSet("verbose"))
+            converter->addFlags(Trade::SceneConverterFlag::Verbose);
         if(i < args.arrayValueCount("converter-options"))
             Implementation::setOptions(*converter, "AnySceneConverter", args.arrayValue("converter-options", i));
 
@@ -1331,7 +1341,8 @@ well, the IDs reference attributes of the first mesh.)")
                     /** @todo have some kind of a map to not have to query the
                         same custom attribute again for each mesh */
                     const Trade::MeshAttribute name = mesh.attributeName(k);
-                    if(!isMeshAttributeCustom(name)) continue;
+                    if(!isMeshAttributeCustom(name))
+                        continue;
                     /* The expectation here is that the meshes are coming from
                        the importer instance. If --mesh or --concatenate-meshes
                        was used, the original importer is replaced a new one

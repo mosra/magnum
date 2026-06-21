@@ -316,7 +316,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          */
         bool operator==(const RectangularMatrix<cols, rows, T>& other) const {
             for(std::size_t i = 0; i != cols; ++i)
-                if(_data[i] != other._data[i]) return false;
+                if(_data[i] != other._data[i])
+                    return false;
 
             return true;
         }
@@ -775,9 +776,11 @@ template<std::size_t cols, std::size_t rows, class T> Debug& operator<<(Debug& d
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
     debug << (packed ? "{" : "Matrix(") << Debug::nospace;
     for(std::size_t row = 0; row != rows; ++row) {
-        if(row != 0) debug << Debug::nospace << (packed ? ",\n" : ",\n      ");
+        if(row != 0)
+            debug << Debug::nospace << (packed ? ",\n" : ",\n      ");
         for(std::size_t col = 0; col != cols; ++col) {
-            if(col != 0) debug << Debug::nospace << ",";
+            if(col != 0)
+                debug << Debug::nospace << ",";
             debug << value[col][row];
         }
     }

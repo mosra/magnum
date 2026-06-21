@@ -51,9 +51,12 @@ MeshIndexData::MeshIndexData(const Containers::StridedArrayView2D<const char>& d
         return;
     }
 
-    if(data.size()[1] == 4) _type = MeshIndexType::UnsignedInt;
-    else if(data.size()[1] == 2) _type = MeshIndexType::UnsignedShort;
-    else if(data.size()[1] == 1) _type = MeshIndexType::UnsignedByte;
+    if(data.size()[1] == 4)
+        _type = MeshIndexType::UnsignedInt;
+    else if(data.size()[1] == 2)
+        _type = MeshIndexType::UnsignedShort;
+    else if(data.size()[1] == 1)
+        _type = MeshIndexType::UnsignedByte;
     else CORRADE_ASSERT_UNREACHABLE("Trade::MeshIndexData: expected index type size 1, 2 or 4 but got" << data.size()[1], );
 
     CORRADE_ASSERT(data.isContiguous<1>(),
@@ -337,7 +340,8 @@ Short MeshData::indexStride() const {
 Containers::StridedArrayView2D<const char> MeshData::indices() const {
     /* For a non-indexed mesh returning zero size in both dimensions, indexed
        mesh with zero indices still has the second dimension non-zero */
-    if(!isIndexed()) return {};
+    if(!isIndexed())
+        return {};
     const std::size_t indexTypeSize =
         isMeshIndexTypeImplementationSpecific(_indexType) ?
             Math::abs(_indexStride) : meshIndexTypeSize(_indexType);
@@ -351,7 +355,8 @@ Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
         "Trade::MeshData::mutableIndices(): index data not mutable", {});
     /* For a non-indexed mesh returning zero size in both dimensions, indexed
        mesh with zero indices still has the second dimension non-zero */
-    if(!isIndexed()) return {};
+    if(!isIndexed())
+        return {};
     const std::size_t indexTypeSize =
         isMeshIndexTypeImplementationSpecific(_indexType) ?
             Math::abs(_indexStride) : meshIndexTypeSize(_indexType);
@@ -457,7 +462,8 @@ UnsignedInt MeshData::findAttributeIdInternal(const MeshAttribute name, Unsigned
         if(_attributes[i]._name != name ||
            _attributes[i]._morphTargetId != morphTargetId)
             continue;
-        if(id-- == 0) return i;
+        if(id-- == 0)
+            return i;
     }
     return ~UnsignedInt{};
 }

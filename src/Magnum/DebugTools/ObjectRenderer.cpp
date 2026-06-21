@@ -72,11 +72,13 @@ template<> struct Renderer<3> {
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>{object, drawables}, _options{manager.get<ObjectRendererOptions>(options)} {
     /* Shader */
     _shader = manager.get<GL::AbstractShaderProgram, Shaders::VertexColorGL<dimensions>>(Renderer<dimensions>::shader());
-    if(!_shader) manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::VertexColorGL<dimensions>);
+    if(!_shader)
+        manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::VertexColorGL<dimensions>);
 
     /* Mesh */
     _mesh = manager.get<GL::Mesh>(Renderer<dimensions>::mesh());
-    if(!_mesh) manager.set<GL::Mesh>(_mesh.key(), MeshTools::compile(Renderer<dimensions>::meshData()));
+    if(!_mesh)
+        manager.set<GL::Mesh>(_mesh.key(), MeshTools::compile(Renderer<dimensions>::meshData()));
 }
 
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */

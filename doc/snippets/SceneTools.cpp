@@ -118,7 +118,8 @@ Containers::BitArray objectsToKeep{ValueInit, std::size_t(scene.mappingBound())}
 
 /* Look for the object in the list */
 for(const Containers::Pair<UnsignedInt, UnsignedInt>& i: childrenRanges) {
-    if(i.first() != objectToLookFor) continue;
+    if(i.first() != objectToLookFor)
+        continue;
 
     /* Right after the object appearing in the list is all its (nested)
        children, mark them in the bit array */

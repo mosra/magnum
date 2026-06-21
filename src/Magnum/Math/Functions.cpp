@@ -75,9 +75,11 @@ UnsignedLong binomialCoefficient(const UnsignedInt n, UnsignedInt k) {
 
     /* k and n - k gives the same value, optimize the calculation to do fewer
        steps */
-    if(k*2 > n) k = n - k;
+    if(k*2 > n)
+        k = n - k;
 
-    if(k == 0) return 1;
+    if(k == 0)
+        return 1;
 
     UnsignedLong result = n;
     for(UnsignedInt i = 2; i <= k; ++i) {

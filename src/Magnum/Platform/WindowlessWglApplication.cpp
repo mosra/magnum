@@ -83,7 +83,8 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
        the Windows API is horrible. HORRIBLE. */
     HDC currentDeviceContext = wglGetCurrentDC();
     _deviceContext = GetDC(_window);
-    if(!currentDeviceContext) currentDeviceContext = _deviceContext;
+    if(!currentDeviceContext)
+        currentDeviceContext = _deviceContext;
 
     /* Use first provided pixel format  */
     constexpr static const PIXELFORMATDESCRIPTOR pfd = {
@@ -294,8 +295,10 @@ WindowlessWglContext::WindowlessWglContext(WindowlessWglContext&& other) noexcep
 }
 
 WindowlessWglContext::~WindowlessWglContext() {
-    if(_context) wglDeleteContext(_context);
-    if(_window) DestroyWindow(_window);
+    if(_context)
+        wglDeleteContext(_context);
+    if(_window)
+        DestroyWindow(_window);
 }
 
 WindowlessWglContext& WindowlessWglContext::operator=(WindowlessWglContext&& other) noexcept {
@@ -338,7 +341,8 @@ WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, N
 void WindowlessWglApplication::createContext() { createContext({}); }
 
 void WindowlessWglApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
+    if(!tryCreateContext(configuration))
+        std::exit(1);
 }
 
 bool WindowlessWglApplication::tryCreateContext(const Configuration& configuration) {

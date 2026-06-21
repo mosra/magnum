@@ -160,7 +160,8 @@ void generate(Containers::StringView file, Float(*function)(Float), std::initial
 )");
     };
 
-    for(auto fn: related) print(0x747474_srgbf, 1.0f, fn);
+    for(auto fn: related)
+        print(0x747474_srgbf, 1.0f, fn);
 
     /* Bezier representation, if any */
     if(!bezier[3].isZero()) {

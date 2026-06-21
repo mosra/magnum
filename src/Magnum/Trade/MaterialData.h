@@ -3601,7 +3601,8 @@ template<> Containers::ArrayView<const void> MaterialAttributeData::value<Contai
 template<class T> T MaterialData::attribute(const UnsignedInt layer, const UnsignedInt id) const {
     const void* const value = attribute(layer, id);
     #ifdef CORRADE_GRACEFUL_ASSERT
-    if(!value) return {};
+    if(!value)
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
     const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
@@ -3614,7 +3615,8 @@ template<class T> T MaterialData::attribute(const UnsignedInt layer, const Unsig
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value || std::is_same<T, Containers::ArrayView<void>>::value, T, T&>::type MaterialData::mutableAttribute(const UnsignedInt layer, const UnsignedInt id) {
     void* const value = mutableAttribute(layer, id);
     #ifdef CORRADE_GRACEFUL_ASSERT
-    if(!value) return *reinterpret_cast<T*>(this);
+    if(!value)
+        return *reinterpret_cast<T*>(this);
     #endif
     #ifndef CORRADE_NO_ASSERT
     const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
@@ -3751,7 +3753,8 @@ template<class T> Containers::Optional<T> MaterialData::findAttribute(const Unsi
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::findAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
     const UnsignedInt id = findAttributeIdInternal(layer, name);
-    if(id == ~UnsignedInt{}) return {};
+    if(id == ~UnsignedInt{})
+        return {};
     return attribute<T>(layer, id);
 }
 
@@ -3790,7 +3793,8 @@ template<class T> T MaterialData::attributeOr(const UnsignedInt layer, const Con
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attributeOr(): index" << layer << "out of range for" << layerCount() << "layers", {});
     const UnsignedInt id = findAttributeIdInternal(layer, name);
-    if(id == ~UnsignedInt{}) return defaultValue;
+    if(id == ~UnsignedInt{})
+        return defaultValue;
     return attribute<T>(layer, id);
 }
 

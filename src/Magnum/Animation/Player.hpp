@@ -74,7 +74,8 @@ template<class T, class K> struct Player<T, K>::Track  {
 #endif
 
 template<class T, class K> void Player<T, K>::advance(const T time, const std::initializer_list<Containers::Reference<Player<T, K>>> players) {
-    for(Player<T, K>& p: players) p.advance(time);
+    for(Player<T, K>& p: players)
+        p.advance(time);
 }
 
 template<class T, class K> Player<T, K>::Player(Player<T, K>&&) noexcept = default;
@@ -126,13 +127,15 @@ template<class T, class K> Player<T, K>& Player<T, K>::play(T startTime) {
 }
 
 template<class T, class K> Player<T, K>& Player<T, K>::resume(T startTime) {
-    if(_state == State::Playing) return *this;
+    if(_state == State::Playing)
+        return *this;
     return play(startTime);
 }
 
 template<class T, class K> Player<T, K>& Player<T, K>::pause(T pauseTime) {
     /* Avoid breaking the pause state when not playing */
-    if(_state != State::Playing) return *this;
+    if(_state != State::Playing)
+        return *this;
 
     _state = State::Paused;
     _stopPauseTime = pauseTime;
@@ -141,7 +144,8 @@ template<class T, class K> Player<T, K>& Player<T, K>::pause(T pauseTime) {
 
 template<class T, class K> Player<T, K>& Player<T, K>::seekBy(T timeDelta) {
     /* Animation is stopped, nothing to do */
-    if(_state == State::Stopped) return *this;
+    if(_state == State::Stopped)
+        return *this;
 
     /* If the animation is paused and parked already, trigger a "park" again in
        order to have the values updated on the next call to advance(). The
@@ -160,7 +164,8 @@ template<class T, class K> Player<T, K>& Player<T, K>::seekBy(T timeDelta) {
 
 template<class T, class K> Player<T, K>& Player<T, K>::seekTo(T seekTime, T animationTime) {
     /* Animation is stopped, nothing to do */
-    if(_state == State::Stopped) return *this;
+    if(_state == State::Stopped)
+        return *this;
 
     /* If the animation is paused and parked already, trigger a "park" again in
        order to have the values updated on the next call to advance(). The
@@ -233,7 +238,8 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
         key = K{};
         playIteration = 0;
         if(playCount != 0) {
-            if(state != State::Paused) state = State::Stopped;
+            if(state != State::Paused)
+                state = State::Stopped;
             startTime = {};
         }
 
@@ -245,7 +251,8 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
         playIteration = scaled.first;
         key = scaled.second;
         if(playCount && playIteration >= playCount) {
-            if(state != State::Paused) state = State::Stopped;
+            if(state != State::Paused)
+                state = State::Stopped;
             /* Don't reset the startTime to disambiguate between explicitly
                stopped and "time run out" animation */
             playIteration = playCount - 1;
@@ -268,7 +275,8 @@ template<class T, class K> std::pair<UnsignedInt, K> Player<T, K>::elapsed(const
         T pauseTime = _stopPauseTime;
         State state = _state;
         const Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(duration, _playCount, _scaler, time, startTime, pauseTime, state);
-        if(elapsed) return *elapsed;
+        if(elapsed)
+            return *elapsed;
     }
 
     /* If not advancing, the animation can be paused -- calculate the iteration
@@ -300,7 +308,8 @@ template<class T, class K> Player<T, K>& Player<T, K>::advance(const T time) {
     /* Get the elapsed time. If we shouldn't advance anything (player already
        stopped / not yet playing, quit */
     Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(_duration.size(), _playCount, _scaler, time, _startTime, _stopPauseTime, _state);
-    if(!elapsed) return *this;
+    if(!elapsed)
+        return *this;
 
     /* Advance all tracks. Properly handle durations that don't start at 0. */
     for(Track& t: _tracks)

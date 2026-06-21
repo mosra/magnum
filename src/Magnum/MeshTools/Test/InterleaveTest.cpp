@@ -1304,7 +1304,8 @@ void InterleaveTest::interleaveMeshDataIndexed() {
     /* Testing also offset */
     UnsignedShort indexData[50 + 3];
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayView(indexData).exceptPrefix(50);
-    if(data.flip) indices = indices.flipped<0>();
+    if(data.flip)
+        indices = indices.flipped<0>();
     Utility::copy({0, 2, 1}, indices);
 
     Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
@@ -1551,7 +1552,8 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
     /* Testing also offset */
     Containers::Array<char> indexData{(50 + 3)*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData).exceptPrefix(50);
-    if(data.flip) indices = indices.flipped<0>();
+    if(data.flip)
+        indices = indices.flipped<0>();
     Utility::copy({0, 2, 1}, indices);
 
     Containers::Array<char> vertexData{3*8};

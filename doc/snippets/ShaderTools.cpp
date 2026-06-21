@@ -146,7 +146,8 @@ converter->setInputFileCallback([](const std::string& filename,
 
         /* Discard the loaded file, if not needed anymore */
         if(policy == InputFileCallbackPolicy::Close) {
-            if(found != data.files.end()) data.files.erase(found);
+            if(found != data.files.end())
+                data.files.erase(found);
             return {};
         }
 
@@ -156,7 +157,8 @@ converter->setInputFileCallback([](const std::string& filename,
         if(found == data.files.end()) found = data.files.emplace(
             filename, extract("shaders.zip", filename)).first;
 
-        if(!found->second) return {};
+        if(!found->second)
+            return {};
         return Containers::ArrayView<const char>{*found->second};
     }, data);
 

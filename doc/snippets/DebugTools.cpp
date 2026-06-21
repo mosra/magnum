@@ -136,7 +136,8 @@ void MyApp::drawEventAgain() {
     _profiler.printStatistics(10);
 
     swapBuffers();
-    if(_profiler.isEnabled()) redraw();
+    if(_profiler.isEnabled())
+        redraw();
 }
 /* [FrameProfiler-usage-console] */
 

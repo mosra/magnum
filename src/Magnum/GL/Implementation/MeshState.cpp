@@ -544,8 +544,10 @@ MeshState::~MeshState() {
     /* If the default VAO was created, we need to delete it to avoid leaks.
        Delete also the scratch VAO if the engine was so unlucky to have to run
        awful external GL code (it was created in Context::resetState()). */
-    if(defaultVAO) glDeleteVertexArrays(1, &defaultVAO);
-    if(scratchVAO) glDeleteVertexArrays(1, &scratchVAO);
+    if(defaultVAO)
+        glDeleteVertexArrays(1, &defaultVAO);
+    if(scratchVAO)
+        glDeleteVertexArrays(1, &scratchVAO);
 }
 #endif
 

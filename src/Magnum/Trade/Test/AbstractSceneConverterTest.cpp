@@ -6819,8 +6819,10 @@ void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
             return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}};
         }
         Containers::String doSceneFieldName(SceneField name) override {
-            if(name == sceneFieldCustom(34977)) return "offsetSmall";
-            if(name == sceneFieldCustom(5266)) return "valueData";
+            if(name == sceneFieldCustom(34977))
+                return "offsetSmall";
+            if(name == sceneFieldCustom(5266))
+                return "valueData";
             CORRADE_FAIL("This should not be reached");
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -6884,8 +6886,10 @@ void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
             return MeshData{MeshPrimitive::Points, 0};
         }
         Containers::String doMeshAttributeName(MeshAttribute name) override {
-            if(name == meshAttributeCustom(31977)) return "offsetSmall";
-            if(name == meshAttributeCustom(5266)) return "valueData";
+            if(name == meshAttributeCustom(31977))
+                return "offsetSmall";
+            if(name == meshAttributeCustom(5266))
+                return "valueData";
             CORRADE_FAIL("This should not be reached");
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -6941,7 +6945,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             return contents & SceneContent::Scenes ? 4 : 0;
         }
         Containers::Optional<SceneData> doScene(UnsignedInt id) override {
-            if(id == 2) return {};
+            if(id == 2)
+                return {};
             return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}};
         }
 
@@ -6949,7 +6954,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             return contents & SceneContent::Animations ? 4 : 0;
         }
         Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override {
-            if(id == 2) return {};
+            if(id == 2)
+                return {};
             return AnimationData{nullptr, {}};
         }
 
@@ -6957,7 +6963,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             return contents & SceneContent::Lights ? 4 : 0;
         }
         Containers::Optional<LightData> doLight(UnsignedInt id) override {
-            if(id == 2) return {};
+            if(id == 2)
+                return {};
             return LightData{LightType::Point, {}, {}};
         }
 
@@ -6965,7 +6972,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             return contents & SceneContent::Cameras ? 4 : 0;
         }
         Containers::Optional<CameraData> doCamera(UnsignedInt id) override {
-            if(id == 2) return {};
+            if(id == 2)
+                return {};
             return CameraData{CameraType::Orthographic2D, {}, 0.0f, 0.0f};
         }
 
@@ -6973,7 +6981,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             return contents & SceneContent::Skins2D ? 4 : 0;
         }
         Containers::Optional<SkinData2D> doSkin2D(UnsignedInt id) override {
-            if(id == 2) return {};
+            if(id == 2)
+                return {};
             return SkinData2D{{}, {}};
         }
 
@@ -6981,7 +6990,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             return contents & SceneContent::Skins3D ? 4 : 0;
         }
         Containers::Optional<SkinData3D> doSkin3D(UnsignedInt id) override {
-            if(id == 2) return {};
+            if(id == 2)
+                return {};
             return SkinData3D{{}, {}};
         }
 
@@ -6994,7 +7004,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
         Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
             if(id == 2) {
                 if(contents & SceneContent::MeshLevels) {
-                    if(level == 3) return {};
+                    if(level == 3)
+                        return {};
                 } else return {};
             }
 
@@ -7005,7 +7016,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             return contents & SceneContent::Materials ? 4 : 0;
         }
         Containers::Optional<MaterialData> doMaterial(UnsignedInt id) override {
-            if(id == 2) return {};
+            if(id == 2)
+                return {};
             return MaterialData{{}, {}};
         }
 
@@ -7013,7 +7025,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             return contents & SceneContent::Textures ? 4 : 0;
         }
         Containers::Optional<TextureData> doTexture(UnsignedInt id) override {
-            if(id == 2) return {};
+            if(id == 2)
+                return {};
             return TextureData{TextureType::Texture1D, SamplerFilter::Nearest, SamplerFilter::Nearest, SamplerMipmap::Nearest, SamplerWrapping::ClampToEdge, 0};
         }
 
@@ -7026,7 +7039,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
         Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override {
             if(id == 2) {
                 if(contents & SceneContent::ImageLevels) {
-                    if(level == 3) return {};
+                    if(level == 3)
+                        return {};
                 } else return {};
             }
 
@@ -7042,7 +7056,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
         Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override {
             if(id == 2) {
                 if(contents & SceneContent::ImageLevels) {
-                    if(level == 3) return {};
+                    if(level == 3)
+                        return {};
                 } else return {};
             }
 
@@ -7058,7 +7073,8 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
         Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override {
             if(id == 2) {
                 if(contents & SceneContent::ImageLevels) {
-                    if(level == 3) return {};
+                    if(level == 3)
+                        return {};
                 } else return {};
             }
 
@@ -7302,102 +7318,118 @@ void AbstractSceneConverterTest::addImporterContentsConversionFail() {
         bool doBeginData() override { return true; }
 
         bool doAdd(UnsignedInt id, const SceneData&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding scene";
             return true;
         }
 
         bool doAdd(UnsignedInt id, const AnimationData&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding animation";
             return true;
         }
         bool doAdd(UnsignedInt id, const LightData&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding light";
             return true;
         }
         bool doAdd(UnsignedInt id, const CameraData&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding camera";
             return true;
         }
         bool doAdd(UnsignedInt id, const SkinData2D&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding 2D skin";
             return true;
         }
         bool doAdd(UnsignedInt id, const SkinData3D&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding 3D skin";
             return true;
         }
 
         bool doAdd(UnsignedInt id, const MeshData&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding mesh";
             return true;
         }
         bool doAdd(UnsignedInt id, const Containers::Iterable<const MeshData>&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding mesh levels";
             return true;
         }
 
         bool doAdd(UnsignedInt id, const MaterialData&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding material";
             return true;
         }
         bool doAdd(UnsignedInt id, const TextureData&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding texture";
             return true;
         }
 
         bool doAdd(UnsignedInt id, const ImageData1D&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding 1D image";
             return true;
         }
         bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData1D>&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding 1D image levels";
             return true;
         }
 
         bool doAdd(UnsignedInt id, const ImageData2D&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding 2D image";
             return true;
         }
         bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData2D>&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding 2D image levels";
             return true;
         }
         bool doAdd(UnsignedInt id, const ImageData3D&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding 3D image";
             return true;
         }
         bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData3D>&, Containers::StringView) override {
-            if(id == 2) return false;
+            if(id == 2)
+                return false;
 
             Debug{} << "Adding 3D image levels";
             return true;

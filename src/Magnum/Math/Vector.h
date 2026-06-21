@@ -300,7 +300,8 @@ template<std::size_t size, class T> class Vector {
          */
         bool operator==(const Vector<size, T>& other) const {
             for(std::size_t i = 0; i != size; ++i)
-                if(!TypeTraits<T>::equals(_data[i], other._data[i])) return false;
+                if(!TypeTraits<T>::equals(_data[i], other._data[i]))
+                    return false;
 
             return true;
         }
@@ -1301,7 +1302,8 @@ template<std::size_t size, class T> Debug& operator<<(Debug& debug, const Vector
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
     debug << (packed ? "{" : "Vector(") << Debug::nospace;
     for(std::size_t i = 0; i != size; ++i) {
-        if(i != 0) debug << Debug::nospace << ",";
+        if(i != 0)
+            debug << Debug::nospace << ",";
         debug << value[i];
     }
     debug << Debug::nospace << (packed ? "}" : ")");
@@ -1599,8 +1601,8 @@ namespace Implementation {
         /* Find the first non-NaN value to compare against. If all are NaN,
            return the last value so the following loop in min/max/minmax()
            doesn't even execute. */
-        for(std::size_t i = 0; i != size; ++i)
-            if(!isNan(data[i])) return i;
+        for(std::size_t i = 0; i != size; ++i) if(!isNan(data[i]))
+            return i;
         return size - 1;
     }
 }

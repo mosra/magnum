@@ -354,7 +354,8 @@ Vk::DescriptorPool pool{NoCreate}, overflowPool{NoCreate};
 Containers::Optional<Vk::DescriptorSet> set = pool.tryAllocate(layout);
 
 /* Oops, the pool is full (or fragmented). Hope the plan B doesn't fail too. */
-if(!set) set = overflowPool.allocate(layout);
+if(!set)
+    set = overflowPool.allocate(layout);
 /* [DescriptorSet-allocation-try] */
 }
 

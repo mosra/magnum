@@ -292,10 +292,12 @@ DeviceCreateInfo& DeviceCreateInfo::operator=(DeviceCreateInfo&& other) noexcept
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::StringIterable& extensions) & {
-    if(extensions.isEmpty()) return *this;
+    if(extensions.isEmpty())
+        return *this;
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* Add null-terminated strings to the extension array */
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());
@@ -329,10 +331,12 @@ DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::Stri
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) & {
-    if(extensions.isEmpty()) return *this;
+    if(extensions.isEmpty())
+        return *this;
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());
     for(const Extension& extension: extensions) {
@@ -366,7 +370,8 @@ namespace {
 
 template<class T> void structureConnectIfUsed(Containers::Reference<const void*>& next, void*& firstFeatureStructure, T& structure, VkStructureType type) {
     if(structure.sType) {
-        if(!firstFeatureStructure) firstFeatureStructure = &structure;
+        if(!firstFeatureStructure)
+            firstFeatureStructure = &structure;
         Implementation::structureConnect(next, structure, type);
     }
 }
@@ -446,7 +451,8 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
     _state->features = {};
 
     /* If there's no features to enable, exit */
-    if(!features) return *this;
+    if(!features)
+        return *this;
 
     /* Otherwise, first set enabled bits in each structure and remember which
        structures have bits set */
@@ -576,7 +582,8 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Co
 
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     VkDeviceQueueCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -629,7 +636,8 @@ DeviceCreateInfo&& DeviceCreateInfo::addQueues(const QueueFlags flags, const std
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) & {
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* Copy the info to an internal storage and re-route the pointer to it.
        This handles a potential reallocation and also the case of replacing the
@@ -688,11 +696,13 @@ Device::~Device() {
 }
 
 void Device::create(Instance& instance, const DeviceCreateInfo& info) {
-    if(tryCreate(instance, info) != Result::Success) std::exit(1);
+    if(tryCreate(instance, info) != Result::Success)
+        std::exit(1);
 }
 
 void Device::create(Instance& instance, DeviceCreateInfo&& info) {
-    if(tryCreate(instance, Utility::move(info)) != Result::Success) std::exit(1);
+    if(tryCreate(instance, Utility::move(info)) != Result::Success)
+        std::exit(1);
 }
 
 Result Device::tryCreate(Instance& instance, const DeviceCreateInfo& info) {
@@ -795,7 +805,8 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
     const Math::BitVector<Implementation::ExtensionCount> missingExtensions = ~_enabledExtensions & info._state->featuresRequiredExtensions;
     if(missingExtensions.any()) {
         for(std::size_t i = 0; i != Implementation::ExtensionCount; ++i) {
-            if(!missingExtensions[i]) continue;
+            if(!missingExtensions[i])
+                continue;
             for(const Version extensionVersion: KnownVersionsForExtensions) {
                 for(const Extension extension: Extension::extensions(extensionVersion)) {
                     if(extension.index() != i)

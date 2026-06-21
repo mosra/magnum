@@ -505,7 +505,8 @@ template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& f
 
         const Float d = Math::dot(center, plane.xyz());
         const Float r = Math::dot(extent, absPlaneNormal);
-        if(d + r < -T(2)*plane.w()) return false;
+        if(d + r < -T(2)*plane.w())
+            return false;
     }
 
     return true;
@@ -525,7 +526,8 @@ template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T
 
         const Float d = Math::dot(aabbCenter, plane.xyz());
         const Float r = Math::dot(aabbExtents, absPlaneNormal);
-        if(d + r < -plane.w()) return false;
+        if(d + r < -plane.w())
+            return false;
     }
 
     return true;

@@ -288,7 +288,8 @@ AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayV
 AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _data{Utility::move(data)}, _tracks{Utility::move(tracks)}, _importerState{importerState} {
     if(!_tracks.isEmpty()) {
         const auto duration = [](const AnimationTrackData& track) {
-            if(!track._size) return Range1D{};
+            if(!track._size)
+                return Range1D{};
 
             /* We're sure the view is correct, circumventing the assert */
             Containers::StridedArrayView1D<const Float> keys{{nullptr, ~std::size_t{}}, static_cast<const Float*>(track._keysData), track._size, track._keysStride};

@@ -240,7 +240,8 @@ BufferState::BufferState(Context& context, Containers::StaticArrayView<Implement
 }
 
 void BufferState::reset() {
-    for(GLuint& i: bindings) i = State::DisengagedBinding;
+    for(GLuint& i: bindings)
+        i = State::DisengagedBinding;
 }
 
 }}}

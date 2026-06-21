@@ -297,9 +297,11 @@ void Comparator<DebugTools::CompareMaterial>::printMessage(const TestSuite::Comp
     }
     if(_state->actual->types() && _state->actual->types() != _state->expected->types()) {
         out << Debug::newline << "      " << Debug::color(Debug::Color::Green) << "+" << Debug::nospace;
-        if(_state->expected->types()) out << Debug::resetColor;
+        if(_state->expected->types())
+            out << Debug::resetColor;
         out << "Types:";
-        if(_state->expected->types()) out << Debug::color(Debug::Color::Green);
+        if(_state->expected->types())
+            out << Debug::color(Debug::Color::Green);
         out << Debug::packed << _state->actual->types() << Debug::resetColor;
     }
 

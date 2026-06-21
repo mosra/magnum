@@ -44,12 +44,14 @@ Containers::Pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(const Con
            indexed mesh, all previous meshes will have a trivial index buffer
            generated for all their vertices */
         if(mesh.isIndexed()) {
-            if(!indexCount) indexCount = vertexCount;
+            if(!indexCount)
+                indexCount = vertexCount;
             indexCount += mesh.indexCount();
 
         /* Otherwise, if some earlier mesh was indexed, this mesh will have a
            trivial index buffer generated for all its vertices */
-        } else if(indexCount) indexCount += mesh.vertexCount();
+        } else if(indexCount)
+            indexCount += mesh.vertexCount();
 
         vertexCount += mesh.vertexCount();
     }
@@ -111,7 +113,8 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
             indexOffset += mesh.indexCount();
 
             /* Adjust indices for current vertex offset */
-            for(UnsignedInt& index: dst) index += vertexOffset;
+            for(UnsignedInt& index: dst)
+                index += vertexOffset;
 
         /* Otherwise, if we need an index buffer (meaning at least one of the
            meshes is indexed), generate a trivial index buffer */

@@ -536,7 +536,8 @@ template<class T> ResourceManagerData<T>::~ResourceManagerData() {
 
 template<class T> std::size_t ResourceManagerData<T>::referenceCount(const ResourceKey key) const {
     auto it = _data.find(key);
-    if(it == _data.end()) return 0;
+    if(it == _data.end())
+        return 0;
     return it->second.referenceCount;
 }
 
@@ -617,11 +618,13 @@ template<class T> void ResourceManagerData<T>::setLoader(AbstractResourceLoader<
     delete _loader;
 
     /* Add new loader */
-    if((_loader = loader)) _loader->manager = this;
+    if((_loader = loader))
+        _loader->manager = this;
 }
 
 template<class T> void ResourceManagerData<T>::freeLoader() {
-    if(!_loader) return;
+    if(!_loader)
+        return;
 
     _loader->manager = nullptr;
     delete _loader;

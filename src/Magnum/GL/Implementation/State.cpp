@@ -169,7 +169,8 @@ Containers::Pair<Containers::ArrayTuple, Containers::Reference<State>> State::al
 
     Debug{out} << "Using optional features:";
     for(const char* extension: extensions)
-        if(extension) Debug(out) << "   " << extension;
+        if(extension)
+            Debug(out) << "   " << extension;
 
     return {Utility::move(data), state};
 }

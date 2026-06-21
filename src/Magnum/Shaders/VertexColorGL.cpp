@@ -200,7 +200,8 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */
-    if(!id()) return;
+    if(!id())
+        return;
     #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
@@ -290,7 +291,8 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimens
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::VertexColorGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #endif
-    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
+    if(_drawCount > 1)
+        setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 

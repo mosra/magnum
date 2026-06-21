@@ -897,9 +897,11 @@ void DeviceVkTest::constructMultipleQueues() {
     DeviceProperties* deviceWithMultipleQueues = nullptr;
     UnsignedInt largeFamily = ~UnsignedInt{};
     for(DeviceProperties& i: deviceProperties) {
-        if(i.queueFamilyCount() < 2) continue;
+        if(i.queueFamilyCount() < 2)
+            continue;
         for(UnsignedInt family = 0; family != i.queueFamilyCount(); ++family) {
-            if(i.queueFamilySize(family) < 4) continue;
+            if(i.queueFamilySize(family) < 4)
+                continue;
             largeFamily = family;
             break;
         }

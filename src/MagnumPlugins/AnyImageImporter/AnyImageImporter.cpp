@@ -181,14 +181,16 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
     /* Instantiate the plugin, propagate flags and the file callback, if set */
     Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     importer->setFlags(flags());
-    if(fileCallback()) importer->setFileCallback(fileCallback(), fileCallbackUserData());
+    if(fileCallback())
+        importer->setFileCallback(fileCallback(), fileCallbackUserData());
 
     /* Propagate configuration */
     Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration(), !(flags() & ImporterFlag::Quiet));
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    if(!importer->openFile(filename)) return;
+    if(!importer->openFile(filename))
+        return;
 
     /* Success, save the instance */
     _in = Utility::move(importer);
@@ -276,20 +278,25 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
        TGAs are a complete guesswork, so try after everything else fails. */
     else if([dataView]() {
             /* TGA header is 18 bytes */
-            if(dataView.size() < 18) return false;
+            if(dataView.size() < 18)
+                return false;
 
             /* Third byte (image type) must be one of these */
             if(dataView[2] != 1 && dataView[2] != 2  && dataView[2] != 3 &&
-               dataView[2] != 9 && dataView[2] != 10 && dataView[2] != 11) return false;
+               dataView[2] != 9 && dataView[2] != 10 && dataView[2] != 11)
+                return false;
 
             /* If image type is 1 or 9, second byte (colormap type) must be 1 */
-            if((dataView[2] == 1 || dataView[2] == 9) && dataView[1] != 1) return false;
+            if((dataView[2] == 1 || dataView[2] == 9) && dataView[1] != 1)
+                return false;
 
             /* ... and 0 otherwise */
-            if(dataView[2] != 1 && dataView[2] != 9 && dataView[1] != 0) return false;
+            if(dataView[2] != 1 && dataView[2] != 9 && dataView[1] != 0)
+                return false;
 
             /* Colormap index (unsigned short, byte 3+4) should be 0 */
-            if(dataView[3] != 0 && dataView[4] != 0) return false;
+            if(dataView[3] != 0 && dataView[4] != 0)
+                return false;
 
             /* Probably TGA, heh. Or random memory. */
             return true;
@@ -301,9 +308,12 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
         /* FFS so much casting to avoid implicit sign extension ruining
            everything */
         UnsignedInt signature = UnsignedInt(UnsignedByte(data[0])) << 24;
-        if(data.size() > 1) signature |= UnsignedInt(UnsignedByte(data[1])) << 16;
-        if(data.size() > 2) signature |= UnsignedInt(UnsignedByte(data[2])) << 8;
-        if(data.size() > 3) signature |= UnsignedInt(UnsignedByte(data[3]));
+        if(data.size() > 1)
+            signature |= UnsignedInt(UnsignedByte(data[1])) << 16;
+        if(data.size() > 2)
+            signature |= UnsignedInt(UnsignedByte(data[2])) << 8;
+        if(data.size() > 3)
+            signature |= UnsignedInt(UnsignedByte(data[3]));
         /* If there's less than four bytes, cut the rest away */
         Error{} << "Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x" << Debug::nospace << Utility::format("{:.8x}", signature).prefix(Math::min(data.size(), std::size_t{4})*2);
         return;
@@ -336,7 +346,8 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    if(!importer->openData(data)) return;
+    if(!importer->openData(data))
+        return;
 
     /* Success, save the instance */
     _in = Utility::move(importer);

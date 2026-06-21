@@ -37,7 +37,8 @@ inline Debug& printFourCC(Debug& debug, UnsignedInt value) {
     debug << "(" << Debug::nospace;
 
     for(std::size_t i = 0; i != 4; ++i) {
-        if(i) debug << Debug::nospace << ",";
+        if(i)
+            debug << Debug::nospace << ",";
 
         const int c = value & 255u;
         if(std::isprint(c)) {

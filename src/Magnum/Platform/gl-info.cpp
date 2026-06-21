@@ -394,7 +394,8 @@ GLInfo::GLInfo(const Arguments& arguments): Platform::WindowlessApplication{argu
         return;
     }
 
-    if(args.isSet("short")) return;
+    if(args.isSet("short"))
+        return;
 
     Debug{} << "";
 
@@ -455,7 +456,8 @@ GLInfo::GLInfo(const Arguments& arguments): Platform::WindowlessApplication{argu
         Debug{} << "";
     }
 
-    if(!args.isSet("limits")) return;
+    if(!args.isSet("limits"))
+        return;
 
     /* Limits and implementation-defined values */
     #define _h(val) Debug{} << "\n " << GL::Extensions::val::string() << Debug::nospace << ":";

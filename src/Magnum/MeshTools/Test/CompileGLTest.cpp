@@ -1767,7 +1767,8 @@ void CompileGLTest::externalBuffers() {
         }};
 
     /* Duplicate everything if data is non-indexed */
-    if(!data.indexed) meshData = duplicate(meshData);
+    if(!data.indexed)
+        meshData = duplicate(meshData);
 
     GL::Buffer indices{NoCreate};
     if(meshData.isIndexed()) {

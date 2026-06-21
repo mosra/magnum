@@ -109,7 +109,8 @@ template<class T> CORRADE_DEPRECATED("use non-templated bufferSubData() and Cont
     /* Yes, this should have NoInit, but let's preserve the deprecated API in
        its original form */
     Containers::Array<T> data{std::size_t(size)};
-    if(size) Implementation::bufferSubData(buffer, offset, size*sizeof(T), data);
+    if(size)
+        Implementation::bufferSubData(buffer, offset, size*sizeof(T), data);
     return data;
 }
 #endif

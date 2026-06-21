@@ -299,7 +299,8 @@ Containers::Optional<ImageData2D> AbstractImageConverter::doConvert(const ImageV
 #ifdef MAGNUM_BUILD_DEPRECATED
 Containers::Optional<Image2D> AbstractImageConverter::exportToImage(const ImageView2D& image) {
     Containers::Optional<ImageData2D> out = convert(image);
-    if(!out) return {};
+    if(!out)
+        return {};
     if(out->isCompressed()) {
         Error{} << "Trade::AbstractImageConverter::exportToImage(): implementation returned a compressed image";
         return {};
@@ -315,7 +316,8 @@ Containers::Optional<Image2D> AbstractImageConverter::exportToImage(const ImageV
 
 Containers::Optional<CompressedImage2D> AbstractImageConverter::exportToCompressedImage(const ImageView2D& image) {
     Containers::Optional<ImageData2D> out = convert(image);
-    if(!out) return {};
+    if(!out)
+        return {};
     if(!out->isCompressed()) {
         Error{} << "Trade::AbstractImageConverter::exportToCompressedImage(): implementation returned an uncompressed image";
         return {};
@@ -999,7 +1001,8 @@ bool AbstractImageConverter::doConvertToFile(const ImageView1D& image, const Con
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1033,7 +1036,8 @@ bool AbstractImageConverter::doConvertToFile(const ImageView2D& image, const Con
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1073,7 +1077,8 @@ bool AbstractImageConverter::doConvertToFile(const ImageView3D& image, const Con
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1107,7 +1112,8 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView1D& image,
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1141,7 +1147,8 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView2D& image,
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1181,7 +1188,8 @@ bool AbstractImageConverter::doConvertToFile(const CompressedImageView3D& image,
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(image);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1231,7 +1239,8 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const I
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1263,7 +1272,8 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const I
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1295,7 +1305,8 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const I
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1327,7 +1338,8 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1359,7 +1371,8 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;
@@ -1391,7 +1404,8 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
 
     const Containers::Optional<Containers::Array<char>> data = doConvertToData(imageLevels);
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error() << "Trade::AbstractImageConverter::convertToFile(): cannot write to file" << filename;

@@ -43,7 +43,8 @@ template<class Application> void ApplicationKeyEventMixin<Application, true>::ca
     for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->keyPressEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 }
@@ -54,7 +55,8 @@ template<class Application> void ApplicationKeyEventMixin<Application, true>::ca
     for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->keyReleaseEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 }
@@ -65,7 +67,8 @@ template<class Application> void ApplicationScrollEventMixin<Application, true>:
     for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->scrollEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 
@@ -89,7 +92,8 @@ template<class Application> void ApplicationMouseScrollEventMixin<Application, t
     for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->mouseScrollEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 }
@@ -102,7 +106,8 @@ template<class Application> void ApplicationTextInputEventMixin<Application, tru
     for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->textInputEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 }
@@ -114,7 +119,8 @@ true>::callTextEditingEvent(typename Application::TextEditingEvent& event, Conta
     for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->textEditingEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 }
@@ -199,7 +205,8 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
        BasicScreen(BasicScreenedApplication&, PropagatedEvents) as well. Keep
        in sync. */
     Containers::LinkedList<BasicScreen<Application>>::insert(&screen);
-    if(screens().first() == &screen) screen.focusEvent();
+    if(screens().first() == &screen)
+        screen.focusEvent();
     Application::redraw();
     return *this;
 }
@@ -219,7 +226,8 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
         "Platform::ScreenedApplication::focusScreen(): screen not owned by this application", *this);
 
     /* Already focused, nothing to do */
-    if(screens().first() == &screen) return *this;
+    if(screens().first() == &screen)
+        return *this;
 
     screens().first()->blurEvent();
     Containers::LinkedList<BasicScreen<Application>>::move(&screen, screens().first());
@@ -234,7 +242,8 @@ template<class Application> void BasicScreenedApplication<Application>::viewport
     /* Call global event before all other (to resize framebuffer first) */
     globalViewportEvent(event);
 
-    for(BasicScreen<Application>& s: *this) s.viewportEvent(event);
+    for(BasicScreen<Application>& s: *this)
+        s.viewportEvent(event);
 }
 
 template<class Application> void BasicScreenedApplication<Application>::globalBeforeDrawEvent() {}
@@ -245,7 +254,8 @@ template<class Application> void BasicScreenedApplication<Application>::drawEven
 
     /* Back-to-front rendering */
     for(BasicScreen<Application>* s = screens().last(); s; s = s->nextNearerScreen())
-        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Draw) s->drawEvent();
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Draw)
+            s->drawEvent();
 
     /* Call global event after all other (to swap buffers last) */
     globalDrawEvent();
@@ -264,7 +274,8 @@ template<class Application> void BasicScreenedApplication<Application>::pointerP
     for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->pointerPressEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 
@@ -283,7 +294,8 @@ template<class Application> void BasicScreenedApplication<Application>::pointerR
     for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->pointerReleaseEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 
@@ -302,7 +314,8 @@ template<class Application> void BasicScreenedApplication<Application>::pointerM
     for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->pointerMoveEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 
@@ -323,7 +336,8 @@ template<class Application> void BasicScreenedApplication<Application>::mousePre
     for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->mousePressEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 }
@@ -333,7 +347,8 @@ template<class Application> void BasicScreenedApplication<Application>::mouseRel
     for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->mouseReleaseEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 }
@@ -343,7 +358,8 @@ template<class Application> void BasicScreenedApplication<Application>::mouseMov
     for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->mouseMoveEvent(event);
-            if(event.isAccepted()) break;
+            if(event.isAccepted())
+                break;
         }
     }
 }

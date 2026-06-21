@@ -526,7 +526,8 @@ void PixelFormatTest::assembleRoundtrip() {
     {
         Debug d{&out, Debug::Flag::NoNewlineAtTheEnd};
         d << data.channelType;
-        if(data.srgb) d << Debug::nospace << ", srgb";
+        if(data.srgb)
+            d << Debug::nospace << ", srgb";
     }
     setTestCaseDescription(out);
 

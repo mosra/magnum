@@ -508,7 +508,8 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(Utility::
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */
-    if(!id()) return;
+    if(!id())
+        return;
     #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
@@ -556,9 +557,11 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(Utility::
                     _lightSpecularColorsUniform = uniformLocation("lightSpecularColors"_s);
                 _lightRangesUniform = uniformLocation("lightRanges"_s);
             }
-            if(_flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask"_s);
+            if(_flags & Flag::AlphaMask)
+                _alphaMaskUniform = uniformLocation("alphaMask"_s);
             #ifndef MAGNUM_TARGET_GLES2
-            if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId"_s);
+            if(_flags & Flag::ObjectId)
+                _objectIdUniform = uniformLocation("objectId"_s);
             #endif
             #ifndef MAGNUM_TARGET_GLES2
             if(_jointCount) {
@@ -575,14 +578,19 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(Utility::
     if(state._version < GL::Version::GLES310)
     #endif
     {
-        if(_flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"_s), AmbientTextureUnit);
+        if(_flags & Flag::AmbientTexture)
+            setUniform(uniformLocation("ambientTexture"_s), AmbientTextureUnit);
         if(_perDrawLightCount) {
-            if(_flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"_s), DiffuseTextureUnit);
-            if(_flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"_s), SpecularTextureUnit);
-            if(_flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"_s), NormalTextureUnit);
+            if(_flags & Flag::DiffuseTexture)
+                setUniform(uniformLocation("diffuseTexture"_s), DiffuseTextureUnit);
+            if(_flags & Flag::SpecularTexture)
+                setUniform(uniformLocation("specularTexture"_s), SpecularTextureUnit);
+            if(_flags & Flag::NormalTexture)
+                setUniform(uniformLocation("normalTexture"_s), NormalTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
+        if(_flags >= Flag::ObjectIdTexture)
+            setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
         /* SSBOs have bindings defined in the source always */
         if(_flags >= Flag::UniformBuffers
             #ifndef MAGNUM_TARGET_WEBGL
@@ -616,7 +624,8 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(Utility::
     #endif
     {
         /* Default to fully opaque white so we can see the textures */
-        if(_flags & Flag::AmbientTexture) setAmbientColor(Magnum::Color4{1.0f});
+        if(_flags & Flag::AmbientTexture)
+            setAmbientColor(Magnum::Color4{1.0f});
         else setAmbientColor(Magnum::Color4{0.0f});
         setTransformationMatrix(Matrix4{Math::IdentityInit});
         setProjectionMatrix(Matrix4{Math::IdentityInit});
@@ -640,7 +649,8 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(Utility::
         if(_flags & Flag::TextureTransformation)
             setTextureMatrix(Matrix3{Math::IdentityInit});
         /* Texture layer is zero by default */
-        if(_flags & Flag::AlphaMask) setAlphaMask(0.5f);
+        if(_flags & Flag::AlphaMask)
+            setAlphaMask(0.5f);
         /* Object ID is zero by default */
         #ifndef MAGNUM_TARGET_GLES2
         if(_jointCount) {
@@ -697,7 +707,8 @@ PhongGL& PhongGL::setDiffuseColor(const Magnum::Color4& color) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::PhongGL::setDiffuseColor(): the shader was created with uniform buffers enabled", *this);
     #endif
-    if(_perDrawLightCount) setUniform(_diffuseColorUniform, color);
+    if(_perDrawLightCount)
+        setUniform(_diffuseColorUniform, color);
     return *this;
 }
 
@@ -708,7 +719,8 @@ PhongGL& PhongGL::setSpecularColor(const Magnum::Color4& color) {
     #endif
     CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
         "Shaders::PhongGL::setSpecularColor(): the shader was created with specular disabled", *this);
-    if(_perDrawLightCount) setUniform(_specularColorUniform, color);
+    if(_perDrawLightCount)
+        setUniform(_specularColorUniform, color);
     return *this;
 }
 
@@ -719,7 +731,8 @@ PhongGL& PhongGL::setShininess(Float shininess) {
     #endif
     CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
         "Shaders::PhongGL::setShininess(): the shader was created with specular disabled", *this);
-    if(_perDrawLightCount) setUniform(_shininessUniform, shininess);
+    if(_perDrawLightCount)
+        setUniform(_shininessUniform, shininess);
     return *this;
 }
 
@@ -730,7 +743,8 @@ PhongGL& PhongGL::setNormalTextureScale(const Float scale) {
     #endif
     CORRADE_ASSERT(_flags & Flag::NormalTexture,
         "Shaders::PhongGL::setNormalTextureScale(): the shader was not created with normal texture enabled", *this);
-    if(_perDrawLightCount) setUniform(_normalTextureScaleUniform, scale);
+    if(_perDrawLightCount)
+        setUniform(_normalTextureScaleUniform, scale);
     return *this;
 }
 
@@ -770,7 +784,8 @@ PhongGL& PhongGL::setNormalMatrix(const Matrix3x3& matrix) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::PhongGL::setNormalMatrix(): the shader was created with uniform buffers enabled", *this);
     #endif
-    if(_perDrawLightCount) setUniform(_normalMatrixUniform, matrix);
+    if(_perDrawLightCount)
+        setUniform(_normalMatrixUniform, matrix);
     return *this;
 }
 
@@ -812,7 +827,8 @@ PhongGL& PhongGL::setLightPositions(const Containers::ArrayView<const Vector4> p
     #endif
     CORRADE_ASSERT(_lightCount == positions.size(),
         "Shaders::PhongGL::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
-    if(_lightCount) setUniform(_lightPositionsUniform, positions);
+    if(_lightCount)
+        setUniform(_lightPositionsUniform, positions);
     return *this;
 }
 
@@ -867,7 +883,8 @@ PhongGL& PhongGL::setLightColors(const Containers::ArrayView<const Magnum::Color
     #endif
     CORRADE_ASSERT(_lightCount == colors.size(),
         "Shaders::PhongGL::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
-    if(_lightCount) setUniform(_lightColorsUniform, colors);
+    if(_lightCount)
+        setUniform(_lightColorsUniform, colors);
     return *this;
 }
 
@@ -922,7 +939,8 @@ PhongGL& PhongGL::setLightSpecularColors(const Containers::ArrayView<const Magnu
         "Shaders::PhongGL::setLightSpecularColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
     CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
         "Shaders::PhongGL::setLightSpecularColors(): the shader was created with specular disabled", *this);
-    if(_lightCount) setUniform(_lightSpecularColorsUniform, colors);
+    if(_lightCount)
+        setUniform(_lightSpecularColorsUniform, colors);
     return *this;
 }
 
@@ -950,7 +968,8 @@ PhongGL& PhongGL::setLightRanges(const Containers::ArrayView<const Float> ranges
     #endif
     CORRADE_ASSERT(_lightCount == ranges.size(),
         "Shaders::PhongGL::setLightRanges(): expected" << _lightCount << "items but got" << ranges.size(), *this);
-    if(_lightCount) setUniform(_lightRangesUniform, ranges);
+    if(_lightCount)
+        setUniform(_lightRangesUniform, ranges);
     return *this;
 }
 
@@ -975,7 +994,8 @@ PhongGL& PhongGL::setJointMatrices(const Containers::ArrayView<const Matrix4> ma
         "Shaders::PhongGL::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
     CORRADE_ASSERT(matrices.size() <= _jointCount,
         "Shaders::PhongGL::setJointMatrices(): expected at most" << _jointCount << "items but got" << matrices.size(), *this);
-    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    if(_jointCount)
+        setUniform(_jointMatricesUniform, matrices);
     return *this;
 }
 
@@ -1207,7 +1227,8 @@ PhongGL& PhongGL::bindDiffuseTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
         "Shaders::PhongGL::bindDiffuseTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
     #endif
-    if(_perDrawLightCount) texture.bind(DiffuseTextureUnit);
+    if(_perDrawLightCount)
+        texture.bind(DiffuseTextureUnit);
     return *this;
 }
 
@@ -1217,7 +1238,8 @@ PhongGL& PhongGL::bindDiffuseTexture(GL::Texture2DArray& texture) {
         "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureArrays,
         "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
-    if(_perDrawLightCount) texture.bind(DiffuseTextureUnit);
+    if(_perDrawLightCount)
+        texture.bind(DiffuseTextureUnit);
     return *this;
 }
 #endif
@@ -1229,7 +1251,8 @@ PhongGL& PhongGL::bindSpecularTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
         "Shaders::PhongGL::bindSpecularTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
     #endif
-    if(_perDrawLightCount) texture.bind(SpecularTextureUnit);
+    if(_perDrawLightCount)
+        texture.bind(SpecularTextureUnit);
     return *this;
 }
 
@@ -1239,7 +1262,8 @@ PhongGL& PhongGL::bindSpecularTexture(GL::Texture2DArray& texture) {
         "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureArrays,
         "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
-    if(_perDrawLightCount) texture.bind(SpecularTextureUnit);
+    if(_perDrawLightCount)
+        texture.bind(SpecularTextureUnit);
     return *this;
 }
 #endif
@@ -1251,7 +1275,8 @@ PhongGL& PhongGL::bindNormalTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
         "Shaders::PhongGL::bindNormalTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
     #endif
-    if(_perDrawLightCount) texture.bind(NormalTextureUnit);
+    if(_perDrawLightCount)
+        texture.bind(NormalTextureUnit);
     return *this;
 }
 
@@ -1261,7 +1286,8 @@ PhongGL& PhongGL::bindNormalTexture(GL::Texture2DArray& texture) {
         "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureArrays,
         "Shaders::PhongGL::bindNormalTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
-    if(_perDrawLightCount) texture.bind(NormalTextureUnit);
+    if(_perDrawLightCount)
+        texture.bind(NormalTextureUnit);
     return *this;
 }
 #endif

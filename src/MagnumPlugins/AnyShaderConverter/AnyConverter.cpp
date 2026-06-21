@@ -184,7 +184,8 @@ Containers::Pair<bool, Containers::String> AnyConverter::doValidateFile(const St
         _state->inputFormat != Format::Unspecified ? _state->inputFormat :
         formatForExtension("ShaderTools::AnyConverter::validateFile():", filename)
     );
-    if(format.isEmpty()) return {};
+    if(format.isEmpty())
+        return {};
 
     /* Decide on a plugin name based on the format */
     const Containers::String plugin = Utility::format("{}ShaderConverter", format);
@@ -300,11 +301,13 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     const Containers::StringView formatFrom = stringForFormat(
         _state->inputFormat != Format::Unspecified ? _state->inputFormat : formatForExtension("ShaderTools::AnyConverter::convertFileToFile():", from)
     );
-    if(formatFrom.isEmpty()) return {};
+    if(formatFrom.isEmpty())
+        return {};
     const Containers::StringView formatTo = stringForFormat(
         _state->outputFormat != Format::Unspecified ? _state->outputFormat : formatForExtension("ShaderTools::AnyConverter::convertFileToFile():", to)
     );
-    if(formatTo.isEmpty()) return {};
+    if(formatTo.isEmpty())
+        return {};
 
     /* Decide on a plugin name based on the format. This might result in
        invalid combinations such as SpirvToGlslShaderConverter which can't be
@@ -384,7 +387,8 @@ Containers::Optional<Containers::Array<char>> AnyConverter::doConvertFileToData(
     const Containers::StringView formatFrom = stringForFormat(
         _state->inputFormat != Format::Unspecified ? _state->inputFormat : formatForExtension("ShaderTools::AnyConverter::convertFileToData():", filename)
     );
-    if(formatFrom.isEmpty()) return {};
+    if(formatFrom.isEmpty())
+        return {};
     if(_state->outputFormat == Format::Unspecified) {
         Error{} << "ShaderTools::AnyConverter::convertFileToData(): no output format specified";
         return {};

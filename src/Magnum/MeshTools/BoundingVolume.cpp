@@ -42,7 +42,8 @@ Range3D boundingRange(const Containers::StridedArrayView1D<const Vector3>& point
 
 Containers::Pair<Vector3, Float> boundingSphereBouncingBubble(const Containers::StridedArrayView1D<const Vector3>& points) {
     /* See comment about radius below, this is done for consistency */
-    if(points.isEmpty()) return {{}, Math::TypeTraits<Float>::epsilon()};
+    if(points.isEmpty())
+        return {{}, Math::TypeTraits<Float>::epsilon()};
 
     /** @todo Skip NaNs here? To match behaviour of boundingBoxAxisAligned()
         which uses minmax(). */

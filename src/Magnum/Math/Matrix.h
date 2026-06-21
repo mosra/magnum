@@ -474,7 +474,8 @@ template<std::size_t size, class T> bool Matrix<size, T>::isOrthogonal() const {
 
     /* Normality */
     for(std::size_t i = 0; i != size; ++i)
-        if(!RectangularMatrix<size, size, T>::_data[i].isNormalized()) return false;
+        if(!RectangularMatrix<size, size, T>::_data[i].isNormalized())
+            return false;
 
     /* Orthogonality */
     for(std::size_t i = 0; i != size-1; ++i)

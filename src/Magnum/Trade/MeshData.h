@@ -2730,7 +2730,8 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::indices() co
         "Trade::MeshData::indices(): the mesh is not indexed", {});
     Containers::StridedArrayView2D<const char> data = indices();
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
         "Trade::MeshData::indices(): can't cast data from an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(_indexType), {});
@@ -2744,7 +2745,8 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableIndices() {
         "Trade::MeshData::mutableIndices(): the mesh is not indexed", {});
     Containers::StridedArrayView2D<char> data = mutableIndices();
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
         "Trade::MeshData::mutableIndices(): can't cast data from an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(_indexType), {});
@@ -2773,10 +2775,12 @@ template<class T> bool MeshData::checkVertexFormatCompatibility(const MeshAttrib
 template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<const T> MeshData::attribute(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = attribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::attribute():"))
+        return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
@@ -2784,10 +2788,12 @@ template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> 
 template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = attribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::attribute():"))
+        return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -2795,10 +2801,12 @@ template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> C
 template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableAttribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::mutableAttribute():"))
+        return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
@@ -2806,10 +2814,12 @@ template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> 
 template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableAttribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[id], "Trade::MeshData::mutableAttribute():"))
+        return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
@@ -2826,7 +2836,8 @@ template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> 
     /* Unlike mutableAttribute(), the above can't fail, so no early return with
        CORRADE_GRACEFUL_ASSERT */
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::attribute():"))
+        return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
@@ -2843,7 +2854,8 @@ template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> C
     /* Unlike mutableAttribute(), the above can't fail, so no early return with
        CORRADE_GRACEFUL_ASSERT */
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::attribute():"))
+        return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -2858,10 +2870,12 @@ template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> 
     #endif
     Containers::StridedArrayView2D<char> data = mutableAttribute(attributeId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::mutableAttribute():"))
+        return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
@@ -2876,10 +2890,12 @@ template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> C
     #endif
     Containers::StridedArrayView2D<char> data = mutableAttribute(attributeId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::mutableAttribute():"))
+        return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }

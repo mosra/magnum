@@ -66,7 +66,10 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          * Deletes OpenAL buffer object.
          * @see @fn_al_keyword{DeleteBuffers}
          */
-        ~Buffer() { if(_id) alDeleteBuffers(1, &_id); }
+        ~Buffer() {
+            if(_id)
+                alDeleteBuffers(1, &_id);
+        }
 
         /** @brief Copying is not allowed */
         Buffer(const Buffer&) = delete;

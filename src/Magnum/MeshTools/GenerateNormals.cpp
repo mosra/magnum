@@ -69,14 +69,16 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     CORRADE_ASSERT(normals.size() == positions.size(),
         "MeshTools::generateSmoothNormalsInto(): bad output size, expected" << positions.size() << "but got" << normals.size(), );
 
-    if(indices.isEmpty()) return;
+    if(indices.isEmpty())
+        return;
 
     /* Gather count of triangles for every vertex. This abuses the output
        storage to avoid extra allocations, zero-initialize it first to avoid
        random memory getting used. */
     Containers::StridedArrayView1D<UnsignedInt> triangleCount =
         Containers::arrayCast<UnsignedInt>(normals);
-    for(UnsignedInt& i: triangleCount) i = 0;
+    for(UnsignedInt& i: triangleCount)
+        i = 0;
     for(const T index: indices) {
         CORRADE_ASSERT(index < positions.size(), "MeshTools::generateSmoothNormalsInto(): index" << index << "out of range for" << positions.size() << "elements", );
         ++triangleCount[index];
@@ -168,9 +170,12 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
             /* Angle between two sides of the triangle that share vertex `v`.
                The shared vertex can be one of the three. */
             Rad angle;
-            if(v == v0i) angle = crossAngle.second()[0];
-            else if(v == v1i) angle = crossAngle.second()[1];
-            else if(v == v2i) angle = crossAngle.second()[2];
+            if(v == v0i)
+                angle = crossAngle.second()[0];
+            else if(v == v1i)
+                angle = crossAngle.second()[1];
+            else if(v == v2i)
+                angle = crossAngle.second()[2];
             else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             /* The normal is cross.normalized(), we need to multiply it it by

@@ -105,7 +105,8 @@ Containers::Optional<SpirvEntrypoint> spirvNextEntrypoint(Containers::ArrayView<
         /* Expecting at least op, execution model, ID, name. If less, it's an
            invalid SPIR-V. */
         /** @todo print a message here? */
-        if(entryPoint.size() < 4) return {};
+        if(entryPoint.size() < 4)
+            return {};
 
         /* Find where the name ends and interface IDs start. According to the
            spec, a string literal is null-terminated and all bytes after are
@@ -169,7 +170,8 @@ void spirvEntrypointInterface(Containers::ArrayView<const UnsignedInt> data, con
         /* Expecting at least op, result, ID, SpvStorageClass. If less, it's an
            invalid SPIR-V. */
         /** @todo print a message here? */
-        if(variable.size() < 4) return;
+        if(variable.size() < 4)
+            return;
 
         for(std::size_t i = 0; i != entrypoint.interfaces.size(); ++i) {
             if(variable[2] == entrypoint.interfaces[i]) {

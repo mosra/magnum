@@ -64,8 +64,8 @@ DefaultFramebuffer& DefaultFramebuffer::clearColor(const Vector4ui& color) {
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(const Containers::ArrayView<const Containers::Pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
-    for(const auto& attachment: attachments)
-        if(attachment.first() > max) max = attachment.first();
+    for(const auto& attachment: attachments) if(attachment.first() > max)
+        max = attachment.first();
 
     /* Create linear array from associative */
     /** @todo C++14: use VLA to avoid heap allocation */

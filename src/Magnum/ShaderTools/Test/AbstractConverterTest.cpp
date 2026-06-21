@@ -3306,7 +3306,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
             if(filename == "another.dat")
                 return Containers::arrayView(state.data);
             /* This deliberately fails */
-            if(filename == "file.dat") return {};
+            if(filename == "file.dat")
+                return {};
         }
 
         if(policy == InputFileCallbackPolicy::Close) {
@@ -3421,7 +3422,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataFailed() {
             if(filename == "another.dat")
                 return Containers::arrayView(state.data);
             /* This deliberately fails */
-            if(filename == "file.dat") return {};
+            if(filename == "file.dat")
+                return {};
         }
 
         if(policy == InputFileCallbackPolicy::Close) {
@@ -3632,7 +3634,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
             if(filename == "another.dat")
                 return Containers::arrayView(state.data);
             /* This deliberately fails */
-            if(filename == "file.dat") return {};
+            if(filename == "file.dat")
+                return {};
         }
 
         if(policy == InputFileCallbackPolicy::Close) {
@@ -3745,7 +3748,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed() {
             if(filename == "another.dat")
                 return Containers::arrayView(state.data);
             /* This deliberately fails */
-            if(filename == "file.dat") return {};
+            if(filename == "file.dat")
+                return {};
         }
 
         if(policy == InputFileCallbackPolicy::Close) {

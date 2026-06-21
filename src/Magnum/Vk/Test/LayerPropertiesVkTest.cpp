@@ -57,7 +57,8 @@ using namespace Containers::Literals;
 void LayerPropertiesVkTest::constructMove() {
     LayerProperties a = enumerateLayerProperties();
     const UnsignedInt count = a.count();
-    if(!count) CORRADE_SKIP("No extensions reported, can't test");
+    if(!count)
+        CORRADE_SKIP("No extensions reported, can't test");
 
     LayerProperties b = Utility::move(a);
     CORRADE_COMPARE(b.count(), count);

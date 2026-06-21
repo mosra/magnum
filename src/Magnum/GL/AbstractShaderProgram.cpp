@@ -312,7 +312,8 @@ AbstractShaderProgram::~AbstractShaderProgram() {
 
     /* Remove current usage from the state */
     GLuint& current = Context::current().state().shaderProgram.current;
-    if(current == _id) current = 0;
+    if(current == _id)
+        current = 0;
 
     glDeleteProgram(_id);
 }
@@ -587,7 +588,8 @@ AbstractShaderProgram& AbstractShaderProgram::dispatchComputeIndirect(Buffer& in
 void AbstractShaderProgram::use(const GLuint id) {
     /* Use only if the program isn't already in use */
     GLuint& current = Context::current().state().shaderProgram.current;
-    if(current != id) glUseProgram(current = id);
+    if(current != id)
+        glUseProgram(current = id);
 }
 
 void AbstractShaderProgram::use() { use(_id); }
@@ -597,7 +599,8 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
 }
 
 void AbstractShaderProgram::attachShaders(const Containers::Iterable<Shader>& shaders) {
-    for(Shader& s: shaders) attachShader(s);
+    for(Shader& s: shaders)
+        attachShader(s);
 }
 
 void AbstractShaderProgram::bindAttributeLocation(const UnsignedInt location, const Containers::StringView name) {
@@ -728,9 +731,11 @@ bool AbstractShaderProgram::checkLink(const Containers::Iterable<Shader>& shader
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
-    for(AbstractShaderProgram& shader: shaders) shader.submitLink();
+    for(AbstractShaderProgram& shader: shaders)
+        shader.submitLink();
     bool allSuccess = true;
-    for(AbstractShaderProgram& shader: shaders) allSuccess = allSuccess && shader.checkLink({});
+    for(AbstractShaderProgram& shader: shaders)
+        allSuccess = allSuccess && shader.checkLink({});
     return allSuccess;
 }
 #endif
@@ -745,13 +750,15 @@ void AbstractShaderProgram::cleanLogImplementationNoOp(Containers::String&) {}
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
 void AbstractShaderProgram::cleanLogImplementationIntelWindows(Containers::String& message) {
-    if(message == "No errors.\n") message = {};
+    if(message == "No errors.\n")
+        message = {};
 }
 #endif
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractShaderProgram::cleanLogImplementationAngle(Containers::String& message) {
-    if(message == "\n") message = {};
+    if(message == "\n")
+        message = {};
 }
 #endif
 

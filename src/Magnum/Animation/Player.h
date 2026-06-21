@@ -850,7 +850,8 @@ template<class T, class K> template<class V, class R, class Callback> Player<T, 
         [](const TrackViewStorage<const K>& track, K key, std::size_t& hint, void* destination, void(*callback)(), void* userData) {
             /** @todo try to use atStrict() if possible */
             R result = static_cast<const TrackView<const K, const V, R>&>(track).at(key, hint);
-            if(result == *static_cast<R*>(destination)) return;
+            if(result == *static_cast<R*>(destination))
+                return;
             reinterpret_cast<void(*)(K, const R&, void*)>(callback)(key, result, userData);
             *static_cast<R*>(destination) = result;
         }, &destination, reinterpret_cast<void(*)()>(callbackPtr), userData);
@@ -862,7 +863,8 @@ template<class T, class K> template<class V, class R, class U, class Callback> P
         [](const TrackViewStorage<const K>& track, K key, std::size_t& hint, void* destination, void(*callback)(), void* userData) {
             /** @todo try to use atStrict() if possible */
             R result = static_cast<const TrackView<const K, const V, R>&>(track).at(key, hint);
-            if(result == *static_cast<R*>(destination)) return;
+            if(result == *static_cast<R*>(destination))
+                return;
             reinterpret_cast<void(*)(K, const R&, U&)>(callback)(key, result, *static_cast<U*>(userData));
             *static_cast<R*>(destination) = result;
         }, &destination, reinterpret_cast<void(*)()>(callbackPtr), &userData);

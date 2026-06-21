@@ -62,7 +62,8 @@ Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trad
         Trade::MaterialAttribute::Shininess
     }) {
         const Containers::Optional<UnsignedInt> id = material.findAttributeId(attribute);
-        if(!id) continue;
+        if(!id)
+            continue;
 
         if(flags >= PhongToPbrMetallicRoughnessFlag::FailOnUnconvertibleAttributes) {
             Error{} << "MaterialTools::phongToPbrMetallicRoughness(): unconvertible" << attribute << "attribute";
@@ -78,7 +79,8 @@ Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trad
         Trade::MaterialAttribute::SpecularTexture
     }) {
         const Containers::Optional<UnsignedInt> id = material.findAttributeId(attribute);
-        if(!id) continue;
+        if(!id)
+            continue;
 
         if(flags >= PhongToPbrMetallicRoughnessFlag::FailOnUnconvertibleAttributes) {
             Error{} << "MaterialTools::phongToPbrMetallicRoughness(): unconvertible" << attribute << "attribute";

@@ -103,7 +103,8 @@ void AndroidApplication::create(const Configuration& configuration) {
 }
 
 void AndroidApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    if(!tryCreate(configuration, glConfiguration)) std::exit(32);
+    if(!tryCreate(configuration, glConfiguration))
+        std::exit(32);
 }
 
 bool AndroidApplication::tryCreate(const Configuration& configuration) {

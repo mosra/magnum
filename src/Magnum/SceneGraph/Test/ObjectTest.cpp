@@ -612,7 +612,8 @@ template<class T> void ObjectTest::rangeBasedForChildren() {
     Object3D<T> c{&scene};
 
     std::vector<Object3D<T>*> objects;
-    for(auto&& i: scene.children()) objects.push_back(&i);
+    for(auto&& i: scene.children())
+        objects.push_back(&i);
     CORRADE_COMPARE(objects, (std::vector<Object3D<T>*>{&a, &b, &c}));
 }
 
@@ -629,7 +630,8 @@ template<class T> void ObjectTest::rangeBasedForFeatures() {
     Feature c{object};
 
     std::vector<AbstractBasicFeature3D<T>*> features;
-    for(auto&& i: object.features()) features.push_back(&i);
+    for(auto&& i: object.features())
+        features.push_back(&i);
     CORRADE_COMPARE(features, (std::vector<AbstractBasicFeature3D<T>*>{&a, &b, &c}));
 }
 

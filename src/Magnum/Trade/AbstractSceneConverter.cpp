@@ -462,7 +462,8 @@ AbstractSceneConverter::convertToData(const MeshData& mesh) {
     } else if(features() >= (SceneConverterFeature::ConvertMultipleToData|SceneConverterFeature::AddMeshes)) {
         beginData();
 
-        if(add(mesh)) return endData();
+        if(add(mesh))
+            return endData();
 
         /* Finish the conversion even if add() fails -- this API shouldn't
            leave it in an in-progress state */
@@ -485,7 +486,8 @@ bool AbstractSceneConverter::convertToFile(const MeshData& mesh, const Container
     } else if(features() & (SceneConverterFeature::ConvertMultipleToFile|SceneConverterFeature::AddMeshes)) {
         beginFile(filename);
 
-        if(add(mesh)) return endFile();
+        if(add(mesh))
+            return endFile();
 
         /* Finish the conversion even if add() fails -- this API shouldn't
            leave it in an in-progress state */
@@ -506,7 +508,8 @@ bool AbstractSceneConverter::doConvertToFile(const MeshData& mesh, const Contain
 
     const Containers::Optional<Containers::Array<char>> out = doConvertToData(mesh);
     /* No deleter checks as it doesn't matter here */
-    if(!out) return false;
+    if(!out)
+        return false;
 
     if(!Utility::Path::write(filename, *out)) {
         Error() << "Trade::AbstractSceneConverter::convertToFile(): cannot write to file" << filename;
@@ -521,7 +524,8 @@ bool AbstractSceneConverter::isConverting() const {
 }
 
 void AbstractSceneConverter::abort() {
-    if(!_state) return;
+    if(!_state)
+        return;
 
     doAbort();
     _state = {};
@@ -725,7 +729,8 @@ bool AbstractSceneConverter::doEndFile(const Containers::StringView filename) {
 
     const Containers::Optional<Containers::Array<char>> data = doEndData();
     /* No deleter checks as it doesn't matter here */
-    if(!data) return false;
+    if(!data)
+        return false;
 
     if(!Utility::Path::write(filename, *data)) {
         Error{} << "Trade::AbstractSceneConverter::endFile(): cannot write to file" << filename;
@@ -939,7 +944,8 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const MeshData& me
         "Trade::AbstractSceneConverter::add(): no conversion in progress", {});
 
     if(features() >= SceneConverterFeature::AddMeshes) {
-        if(!doAdd(_state->meshCount, mesh, name)) return {};
+        if(!doAdd(_state->meshCount, mesh, name))
+            return {};
 
     } else if(features() & (SceneConverterFeature::ConvertMesh|
                             SceneConverterFeature::ConvertMeshToData|
@@ -1478,7 +1484,8 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing mesh" << i << "level" << j << "out of" << levelCount;
 
                 Containers::Optional<Trade::MeshData> mesh = importer.mesh(i, j);
-                if(!mesh) return false;
+                if(!mesh)
+                    return false;
 
                 /* Propagate custom attribute names, skip ones that are empty.
                    Compared to data names this is done always to avoid
@@ -1487,7 +1494,8 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     /** @todo have some kind of a map to not have to query the
                         same custom attribute again for each mesh */
                     const Trade::MeshAttribute name = mesh->attributeName(k);
-                    if(!isMeshAttributeCustom(name)) continue;
+                    if(!isMeshAttributeCustom(name))
+                        continue;
                     if(const Containers::String nameString = importer.meshAttributeName(name)) {
                         setMeshAttributeName(name, nameString);
                     }
@@ -1534,7 +1542,8 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 1D image" << i << "level" << j << "out of" << levelCount;
 
                 Containers::Optional<Trade::ImageData1D> image = importer.image1D(i, j);
-                if(!image) return false;
+                if(!image)
+                    return false;
 
                 if(image->isCompressed() && !(features() & SceneConverterFeature::AddCompressedImages1D)) {
                     Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 1D image" << i << "level" << j << "is compressed but the converter doesn't support" << SceneConverterFeature::AddCompressedImages1D;
@@ -1587,7 +1596,8 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 2D image" << i << "level" << j << "out of" << levelCount;
 
                 Containers::Optional<Trade::ImageData2D> image = importer.image2D(i, j);
-                if(!image) return false;
+                if(!image)
+                    return false;
 
                 if(image->isCompressed() && !(features() & SceneConverterFeature::AddCompressedImages2D)) {
                     Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 2D image" << i << "level" << j << "is compressed but the converter doesn't support" << SceneConverterFeature::AddCompressedImages2D;
@@ -1640,7 +1650,8 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 3D image" << i << "level" << j << "out of" << levelCount;
 
                 Containers::Optional<Trade::ImageData3D> image = importer.image3D(i, j);
-                if(!image) return false;
+                if(!image)
+                    return false;
 
                 if(image->isCompressed() && !(features() & SceneConverterFeature::AddCompressedImages3D)) {
                     Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 3D image" << i << "level" << j << "is compressed but the converter doesn't support" << SceneConverterFeature::AddCompressedImages3D;
@@ -1722,7 +1733,8 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                 Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding scene" << i << "out of" << iMax;
 
             Containers::Optional<Trade::SceneData> scene = importer.scene(i);
-            if(!scene) return false;
+            if(!scene)
+                return false;
 
             /* Propagate custom field names, skip ones that are empty. Compared
                to data names this is done always to avoid information loss. */
@@ -1730,7 +1742,8 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                 /** @todo have some kind of a map to not have to query the same
                     field again for each scene */
                 const Trade::SceneField name = scene->fieldName(j);
-                if(!isSceneFieldCustom(name)) continue;
+                if(!isSceneFieldCustom(name))
+                    continue;
                 if(const Containers::String nameString = importer.sceneFieldName(name)) {
                     setSceneFieldName(name, nameString);
                 }

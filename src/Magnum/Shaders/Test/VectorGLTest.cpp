@@ -1292,7 +1292,8 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
     /* Dropping the alpha channel, as it's always 1.0 */
     Containers::StridedArrayView2D<Color3ub> pixels =
         rendered.pixels<Color4ub>().slice(&Color4ub::rgb);
-    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
+    if(data.flip)
+        pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has differently rasterized edges on four pixels */
@@ -1478,7 +1479,8 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
     /* Dropping the alpha channel, as it's always 1.0 */
     Containers::StridedArrayView2D<Color3ub> pixels =
         rendered.pixels<Color4ub>().slice(&Color4ub::rgb);
-    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
+    if(data.flip)
+        pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has differently rasterized edges on four pixels */

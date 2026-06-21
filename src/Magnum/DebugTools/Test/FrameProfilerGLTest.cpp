@@ -134,7 +134,8 @@ void FrameProfilerGLTest::test() {
                      FrameProfilerGL::Value::PrimitiveClipRatio
                      #endif
                      }) {
-        if(!(data.values & value)) continue;
+        if(!(data.values & value))
+            continue;
 
         CORRADE_VERIFY(!profiler.isMeasurementAvailable(value));
         /* The names should not be allocated */

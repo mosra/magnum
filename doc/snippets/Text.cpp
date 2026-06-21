@@ -169,7 +169,8 @@ font->setFileCallback([](const std::string& filename,
 
         /* Discard the memory mapping, if not needed anymore */
         if(policy == InputFileCallbackPolicy::Close) {
-            if(found != data.files.end()) data.files.erase(found);
+            if(found != data.files.end())
+                data.files.erase(found);
             return {};
         }
 
@@ -178,7 +179,8 @@ font->setFileCallback([](const std::string& filename,
         if(found == data.files.end()) found = data.files.emplace(
             filename, Utility::Path::mapRead(filename)).first;
 
-        if(!found->second) return {};
+        if(!found->second)
+            return {};
         return Containers::arrayView(*found->second);
     }, data);
 

@@ -347,7 +347,8 @@ Mesh::~Mesh() {
 
     /* Remove current vao from the state */
     GLuint& current = Context::current().state().mesh.currentVAO;
-    if(current == _id) current = 0;
+    if(current == _id)
+        current = 0;
 
     Context::current().state().mesh.destroyImplementation(*this);
 }
@@ -1103,7 +1104,8 @@ void Mesh::drawInternal(TransformFeedback& xfb, const UnsignedInt stream, const 
     /* Default stream */
     if(stream == 0) {
         /* Non-instanced mesh */
-        if(instanceCount == 1) glDrawTransformFeedback(GLenum(_primitive), xfb.id());
+        if(instanceCount == 1)
+            glDrawTransformFeedback(GLenum(_primitive), xfb.id());
 
         /* Instanced mesh */
         else glDrawTransformFeedbackInstanced(GLenum(_primitive), xfb.id(), instanceCount);
@@ -1111,7 +1113,8 @@ void Mesh::drawInternal(TransformFeedback& xfb, const UnsignedInt stream, const 
     /* Specific stream */
     } else {
         /* Non-instanced mesh */
-        if(instanceCount == 1) glDrawTransformFeedbackStream(GLenum(_primitive), xfb.id(), stream);
+        if(instanceCount == 1)
+            glDrawTransformFeedbackStream(GLenum(_primitive), xfb.id(), stream);
 
         /* Instanced mesh */
         else glDrawTransformFeedbackStreamInstanced(GLenum(_primitive), xfb.id(), stream, instanceCount);
@@ -1289,11 +1292,13 @@ void Mesh::attributePointerImplementationVAODSAIntelWindows(Mesh& self, Attribut
 /* See the "angle-instanced-attributes-always-draw-instanced" workaround for
    these two */
 void Mesh::attributePointerImplementationDefaultAngleAlwaysInstanced(Mesh& self, AttributeLayout&& attribute) {
-    if(attribute.divisor) self._instanced = true;
+    if(attribute.divisor)
+        self._instanced = true;
     return attributePointerImplementationDefault(self, Utility::move(attribute));
 }
 void Mesh::attributePointerImplementationVAOAngleAlwaysInstanced(Mesh& self, AttributeLayout&& attribute) {
-    if(attribute.divisor) self._instanced = true;
+    if(attribute.divisor)
+        self._instanced = true;
     return attributePointerImplementationVAO(self, Utility::move(attribute));
 }
 #endif
@@ -1404,7 +1409,8 @@ void Mesh::bindImplementationDefault(Mesh& self) {
         self.vertexAttribPointer(attribute);
 
     /* Bind index buffer, if the mesh is indexed */
-    if(self._indexBuffer.id()) self._indexBuffer.bindInternal(Buffer::TargetHint::ElementArray);
+    if(self._indexBuffer.id())
+        self._indexBuffer.bindInternal(Buffer::TargetHint::ElementArray);
 }
 
 void Mesh::bindImplementationVAO(Mesh& self) {
@@ -1492,7 +1498,8 @@ void Mesh::multiDrawElementsBaseVertexImplementationANGLE(const GLenum mode, con
         {NoInit, std::size_t(drawCount), instanceCount},
         {ValueInit, std::size_t(drawCount), baseInstance},
     };
-    for(GLsizei& i: instanceCount) i = 1;
+    for(GLsizei& i: instanceCount)
+        i = 1;
 
     glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, instanceCount, baseVertex, baseInstance, drawCount);
 }

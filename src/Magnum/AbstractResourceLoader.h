@@ -264,7 +264,8 @@ template<class T> class CORRADE_DEPRECATED("the ResourceManager class is obsolet
 
 CORRADE_IGNORE_DEPRECATED_PUSH
 template<class T> AbstractResourceLoader<T>::~AbstractResourceLoader() {
-    if(manager) manager->_loader = nullptr;
+    if(manager)
+        manager->_loader = nullptr;
 }
 
 template<class T> std::string AbstractResourceLoader<T>::doName(ResourceKey) const { return {}; }
@@ -277,8 +278,10 @@ template<class T> void AbstractResourceLoader<T>::load(ResourceKey key) {
 }
 
 template<class T> void AbstractResourceLoader<T>::set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
-    if(data) ++_loadedCount;
-    if(!data && state == ResourceDataState::NotFound) ++_notFoundCount;
+    if(data)
+        ++_loadedCount;
+    if(!data && state == ResourceDataState::NotFound)
+        ++_notFoundCount;
     manager->set(key, data, state, policy);
 }
 CORRADE_IGNORE_DEPRECATED_POP

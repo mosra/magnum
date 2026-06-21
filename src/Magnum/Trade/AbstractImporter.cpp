@@ -624,7 +624,8 @@ struct AbstractImporter::CachedScenes {
 };
 
 void AbstractImporter::populateCachedScenes() {
-    if(_cachedScenes) return;
+    if(_cachedScenes)
+        return;
 
     _cachedScenes.emplace();
     _cachedScenes->scenes = Containers::Array<Containers::Optional<SceneData>>{sceneCount()};
@@ -721,7 +722,8 @@ std::string AbstractImporter::doObject2DName(const UnsignedInt id) {
     /* Alias to the new interface if the ID is known to the new interface,
        return an empty string for objects that got newly added in order to make
        them single-functioning */
-    if(id < doObjectCount()) return doObjectName(id);
+    if(id < doObjectCount())
+        return doObjectName(id);
 
     populateCachedScenes();
     for(UnsignedInt i = 0; i != _cachedScenes->scenes.size(); ++i) {
@@ -899,7 +901,8 @@ std::string AbstractImporter::doObject3DName(const UnsignedInt id) {
     /* Alias to the new interface if the ID is known to the new interface,
        return an empty string for objects that got newly added in order to make
        them single-functioning */
-    if(id < doObjectCount()) return doObjectName(id);
+    if(id < doObjectCount())
+        return doObjectName(id);
 
     populateCachedScenes();
     for(UnsignedInt i = 0; i != _cachedScenes->scenes.size(); ++i) {
@@ -1317,7 +1320,8 @@ Containers::Optional<MeshData3D> AbstractImporter::mesh3D(const UnsignedInt id) 
 
 Containers::Optional<MeshData3D> AbstractImporter::doMesh3D(const UnsignedInt id) {
     Containers::Optional<MeshData> out = doMesh(id, 0);
-    if(out) return MeshData3D{*out};
+    if(out)
+        return MeshData3D{*out};
     return Containers::NullOpt;
 }
 CORRADE_IGNORE_DEPRECATED_POP

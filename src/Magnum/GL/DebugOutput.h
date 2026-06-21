@@ -749,7 +749,10 @@ class MAGNUM_GL_EXPORT DebugGroup {
          *
          * If the group is active, calls @ref pop().
          */
-        ~DebugGroup() { if(_active) pop(); }
+        ~DebugGroup() {
+            if(_active)
+                pop();
+        }
 
         /**
          * @brief Push debug group onto the stack

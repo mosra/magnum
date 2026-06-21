@@ -31,7 +31,8 @@
 namespace Magnum { namespace Audio { namespace Test {
 
 Audio::Context* currentContextInALibrary() {
-    if(!Audio::Context::hasCurrent()) return nullptr;
+    if(!Audio::Context::hasCurrent())
+        return nullptr;
     return &Audio::Context::current();
 }
 

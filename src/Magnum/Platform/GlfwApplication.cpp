@@ -139,7 +139,8 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     #endif
 
     /* Save command-line arguments */
-    if(args.value("log") == "verbose") _verboseLog = true;
+    if(args.value("log") == "verbose")
+        _verboseLog = true;
     const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
     if(dpiScaling == "default"_s)
         _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Default;
@@ -163,12 +164,14 @@ void GlfwApplication::create() {
 }
 
 void GlfwApplication::create(const Configuration& configuration) {
-    if(!tryCreate(configuration)) std::exit(1);
+    if(!tryCreate(configuration))
+        std::exit(1);
 }
 
 #ifdef MAGNUM_TARGET_GL
 void GlfwApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    if(!tryCreate(configuration, glConfiguration)) std::exit(1);
+    if(!tryCreate(configuration, glConfiguration))
+        std::exit(1);
 }
 #endif
 
@@ -676,7 +679,8 @@ void GlfwApplication::setupCallbacks() {
     glfwSetWindowCloseCallback(_window, [](GLFWwindow* const window){
         ExitEvent e;
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->exitEvent(e);
-        if(!e.isAccepted()) glfwSetWindowShouldClose(window, false);
+        if(!e.isAccepted())
+            glfwSetWindowShouldClose(window, false);
     });
     glfwSetWindowRefreshCallback(_window, [](GLFWwindow* const window){
         /* Properly redraw after the window is restored from minimized state */
@@ -758,7 +762,8 @@ void GlfwApplication::setupCallbacks() {
     glfwSetCharCallback(_window, [](GLFWwindow* window, unsigned int codepoint) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
-        if(!(app._flags & Flag::TextInputActive)) return;
+        if(!(app._flags & Flag::TextInputActive))
+            return;
 
         /* One extra byte to ensure it gets always null-terminated */
         char utf8[4 + 1]{};
@@ -846,7 +851,8 @@ void GlfwApplication::setSwapInterval(const Int interval) {
        minimal loop period or not. Unlike SDL2 where it's possible to check
        whether the VSync was actually set, here it's purely hope-based.
        Sorry. */
-    if(interval) _flags |= Flag::VSyncEnabled;
+    if(interval)
+        _flags |= Flag::VSyncEnabled;
     else _flags &= ~Flag::VSyncEnabled;
 }
 
@@ -867,7 +873,8 @@ int GlfwApplication::exec() {
 bool GlfwApplication::mainLoopIteration() {
     /* If exit was requested directly in the constructor, exit immediately
        without calling anything else */
-    if(_flags & Flag::Exit || glfwWindowShouldClose(_window)) return false;
+    if(_flags & Flag::Exit || glfwWindowShouldClose(_window))
+        return false;
 
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::mainLoopIteration(): no window opened", {});
 
@@ -891,14 +898,16 @@ bool GlfwApplication::mainLoopIteration() {
             which point the vtable pointers for the derived class are not set
             up yet).
     */
-    if(glfwGetWindowUserPointer(_window) != this) setupCallbacks();
+    if(glfwGetWindowUserPointer(_window) != this)
+        setupCallbacks();
 
     const Nanoseconds timeBefore = _minimalLoopPeriodNanoseconds ? glfwGetTime()*1.0_sec : Nanoseconds{};
 
     glfwPollEvents();
 
     /* Tick event */
-    if(!(_flags & Flag::NoTickEvent)) tickEvent();
+    if(!(_flags & Flag::NoTickEvent))
+        tickEvent();
 
     /* Draw event */
     if(_flags & Flag::Redraw) {
@@ -924,7 +933,8 @@ bool GlfwApplication::mainLoopIteration() {
 
     /* Then, if the tick event doesn't need to be called periodically, wait
        indefinitely for next input event */
-    if(_flags & Flag::NoTickEvent) glfwWaitEvents();
+    if(_flags & Flag::NoTickEvent)
+        glfwWaitEvents();
     return !(_flags & Flag::Exit || glfwWindowShouldClose(_window));
 }
 
@@ -934,7 +944,8 @@ void GlfwApplication::exit(int exitCode) {
 
     /* If the window is already created, tell GLFW that it should close. If
        not, this is done in tryCreate() once the window is created */
-    if(_window) glfwSetWindowShouldClose(_window, true);
+    if(_window)
+        glfwSetWindowShouldClose(_window, true);
 }
 
 bool GlfwApplication::isKeyPressed(const Key key) {
@@ -1195,7 +1206,8 @@ GlfwApplication::Pointers GlfwApplication::PointerMoveEvent::pointers() {
 }
 
 GlfwApplication::Modifiers GlfwApplication::PointerMoveEvent::modifiers() {
-    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    if(!_modifiers)
+        _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
 
@@ -1216,14 +1228,16 @@ auto GlfwApplication::MouseMoveEvent::buttons() -> Buttons {
 }
 
 GlfwApplication::Modifiers GlfwApplication::MouseMoveEvent::modifiers() {
-    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    if(!_modifiers)
+        _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 GlfwApplication::Modifiers GlfwApplication::ScrollEvent::modifiers() {
-    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    if(!_modifiers)
+        _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
 Vector2 GlfwApplication::ScrollEvent::position() {
@@ -1248,7 +1262,8 @@ Vector2i GlfwApplication::MouseScrollEvent::position() {
 }
 
 GlfwApplication::Modifiers GlfwApplication::MouseScrollEvent::modifiers() {
-    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    if(!_modifiers)
+        _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
 }
 CORRADE_IGNORE_DEPRECATED_POP

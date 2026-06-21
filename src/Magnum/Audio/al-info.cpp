@@ -174,7 +174,8 @@ int main(const int argc, const char* const* const argv) {
         return 0;
     }
 
-    if(args.isSet("short")) return 0;
+    if(args.isSet("short"))
+        return 0;
 
     Debug() << "Vendor extension support:";
     for(const auto& extension: Audio::Extension::extensions()) {

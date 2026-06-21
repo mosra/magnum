@@ -395,7 +395,8 @@ Containers::Optional<Range2Di> AtlasLandfill::add(const std::initializer_list<Ve
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 std::vector<Range2Di> atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding) {
-    if(sizes.empty()) return {};
+    if(sizes.empty())
+        return {};
 
     /* Size of largest texture */
     Vector2i maxSize;

@@ -387,7 +387,8 @@ bool AbstractConverter::convertDataToFile(const Stage stage, const Containers::A
 
     /* Cast to a non-void type for more convenience */
     const Containers::Optional<Containers::Array<char>> out = doConvertDataToData(stage, Containers::arrayCast<const char>(data));
-    if(!out) return false;
+    if(!out)
+        return false;
 
     if(!Utility::Path::write(filename, *out)) {
         Error{} << "ShaderTools::AbstractConverter::convertDataToFile(): cannot write to file" << filename;
@@ -434,7 +435,8 @@ bool AbstractConverter::convertFileToFile(const Stage stage, const Containers::S
               in the base doConvertFileToFile() implementation, because this
               branch is never taken in that case) */
         const Containers::Optional<Containers::Array<char>> out = convertDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::convertFileToFile():", stage, from);
-        if(!out) return false;
+        if(!out)
+            return false;
 
         if(!Utility::Path::write(to, *out)) {
             Error{} << "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file" << to;
@@ -469,7 +471,8 @@ bool AbstractConverter::doConvertFileToFile(const Stage stage, const Containers:
         out = doConvertDataToData(stage, *data);
     }
 
-    if(!out) return false;
+    if(!out)
+        return false;
 
     if(!Utility::Path::write(to, *out)) {
         Error{} << "ShaderTools::AbstractConverter::convertFileToFile(): cannot write to file" << to;
@@ -592,7 +595,8 @@ bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const Contain
 
     /* Cast to a non-void type for more convenience */
     const Containers::Optional<Containers::Array<char>> out = doLinkDataToData(Containers::arrayCast<const Containers::Pair<Stage, Containers::ArrayView<const char>>>(data));
-    if(!out) return false;
+    if(!out)
+        return false;
 
     if(!Utility::Path::write(filename, *out)) {
         Error{} << "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file" << filename;
@@ -614,7 +618,8 @@ Containers::Optional<Containers::Array<char>> AbstractConverter::linkDataToDataU
     std::size_t i;
     for(i = 0; i != filenames.size(); ++i) {
         const Containers::Optional<Containers::ArrayView<const char>> contents = _inputFileCallback(filenames[i].second(), InputFileCallbackPolicy::LoadTemporary, _inputFileCallbackUserData);
-        if(!contents) break;
+        if(!contents)
+            break;
 
         data[i].first() = filenames[i].first();
         data[i].second() = *contents;
@@ -622,7 +627,8 @@ Containers::Optional<Containers::Array<char>> AbstractConverter::linkDataToDataU
 
     /* If all input files loaded successfully, process */
     Containers::Optional<Containers::Array<char>> out;
-    if(i == filenames.size()) out = doLinkDataToData(data);
+    if(i == filenames.size())
+        out = doLinkDataToData(data);
 
     /* Close again all input files that loaded successfully */
     for(std::size_t ii = 0; ii != i; ++ii)
@@ -671,7 +677,8 @@ bool AbstractConverter::linkFilesToFile(const Containers::ArrayView<const Contai
               in the base doLinkFilesToFile() implementation, because this
               branch is never taken in that case) */
         const Containers::Optional<Containers::Array<char>> out = linkDataToDataUsingInputFileCallbacks("ShaderTools::AbstractConverter::linkFilesToFile():", from);
-        if(!out) return false;
+        if(!out)
+            return false;
 
         if(!Utility::Path::write(to, *out)) {
             Error{} << "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file" << to;
@@ -723,7 +730,8 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const Cont
         out = doLinkDataToData(data);
     }
 
-    if(!out) return false;
+    if(!out)
+        return false;
 
     if(!Utility::Path::write(to, *out)) {
         Error{} << "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file" << to;

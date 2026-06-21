@@ -53,7 +53,8 @@ void AbstractXApplication::create(const Configuration& configuration) {
 }
 
 void AbstractXApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    if(!tryCreate(configuration, glConfiguration)) std::exit(1);
+    if(!tryCreate(configuration, glConfiguration))
+        std::exit(1);
 }
 
 bool AbstractXApplication::tryCreate(const Configuration& configuration) {
@@ -119,8 +120,10 @@ AbstractXApplication::~AbstractXApplication() {
     _contextHandler.reset();
 
     /* Shut down X */
-    if(_window) XDestroyWindow(_display, _window);
-    if(_display) XCloseDisplay(_display);
+    if(_window)
+        XDestroyWindow(_display, _window);
+    if(_display)
+        XCloseDisplay(_display);
 }
 
 void AbstractXApplication::swapBuffers() {
@@ -130,7 +133,8 @@ void AbstractXApplication::swapBuffers() {
 int AbstractXApplication::exec() {
     /* If exit was requested directly in the constructor, exit immediately
        without calling anything else */
-    if(_flags & Flag::Exit) return _exitCode;
+    if(_flags & Flag::Exit)
+        return _exitCode;
 
     /* Show window */
     XMapWindow(_display, _window);
@@ -171,7 +175,8 @@ AbstractXApplication::Pointers buttonsToPointers(const unsigned int state) {
 bool AbstractXApplication::mainLoopIteration() {
     /* If exit was requested directly in the constructor, exit immediately
        without calling anything else */
-    if(_flags & Flag::Exit) return false;
+    if(_flags & Flag::Exit)
+        return false;
 
     XEvent event;
 

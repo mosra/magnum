@@ -71,7 +71,8 @@ ShaderCreateInfo::ShaderCreateInfo(ShaderCreateInfo&& other) noexcept:
 }
 
 ShaderCreateInfo::~ShaderCreateInfo() {
-    if(_deleter) _deleter(_originalDeleter, _info.pCode, _info.codeSize);
+    if(_deleter)
+        _deleter(_originalDeleter, _info.pCode, _info.codeSize);
 }
 
 ShaderCreateInfo& ShaderCreateInfo::operator=(ShaderCreateInfo&& other) noexcept {

@@ -120,7 +120,8 @@ void MeshView::multiDrawImplementationDefault(const Containers::Iterable<MeshVie
         counts[i] = meshes[i]._count;
         vertexOffsets[i] = meshes[i]._baseVertex;
         indexOffsets[i] = original._indexBufferOffset + indexTypeSize*meshes[i]._indexOffset;
-        if(meshes[i]._baseVertex) useVertexOffsets = true;
+        if(meshes[i]._baseVertex)
+            useVertexOffsets = true;
     }
 
     original.drawInternal(counts, useVertexOffsets ? vertexOffsets : nullptr, indexOffsets);

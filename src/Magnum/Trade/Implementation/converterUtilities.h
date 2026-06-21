@@ -101,7 +101,8 @@ void printPluginConfigurationInfo(Debug& d, const Utility::ConfigurationGroup& c
 
             /* Print leading space only if there's actually something */
             d << Debug::newline;
-            if(i.second()) d << " " << Debug::boldColor(Debug::Color::Black) << i.second() << Debug::resetColor;
+            if(i.second())
+                d << " " << Debug::boldColor(Debug::Color::Black) << i.second() << Debug::resetColor;
         }
     }
 
@@ -116,7 +117,8 @@ void printPluginConfigurationInfo(Debug& d, const Utility::ConfigurationGroup& c
 
 void printPluginConfigurationInfo(const Debug::Flags useColor, const PluginManager::AbstractPlugin& plugin) {
     const Utility::ConfigurationGroup& configuration = plugin.configuration();
-    if(configuration.isEmpty()) return;
+    if(configuration.isEmpty())
+        return;
 
     Debug d{useColor};
     d << Debug::boldColor(Debug::Color::Default) << "Configuration:" << Debug::resetColor;
@@ -276,8 +278,10 @@ void printImageInfo(const Debug::Flags useColor, const Containers::ArrayView<con
         Debug d{useColor};
         if(info.level == 0) {
             d << Debug::boldColor(Debug::Color::Default);
-            if(info.size.z()) d << "3D image";
-            else if(info.size.y()) d << "2D image";
+            if(info.size.z())
+                d << "3D image";
+            else if(info.size.y())
+                d << "2D image";
             else d << "1D image";
             d << info.image << Debug::resetColor;
 
@@ -292,9 +296,11 @@ void printImageInfo(const Debug::Flags useColor, const Containers::ArrayView<con
                 count = image1DReferenceCount[info.image];
             }
             if(count) {
-                if(!*count) d << Debug::color(Debug::Color::Red);
+                if(!*count)
+                    d << Debug::color(Debug::Color::Red);
                 d << "(referenced by" << *count << "textures)";
-                if(!*count) d << Debug::resetColor;
+                if(!*count)
+                    d << Debug::resetColor;
             }
 
             d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
@@ -306,14 +312,18 @@ void printImageInfo(const Debug::Flags useColor, const Containers::ArrayView<con
         d << "  Level" << info.level << Debug::nospace << ":";
         if(info.flags.one) {
             d << Debug::packed << Debug::color(Debug::Color::Cyan);
-            if(info.size.z()) d << info.flags.three;
-            else if(info.size.y()) d << info.flags.two;
+            if(info.size.z())
+                d << info.flags.three;
+            else if(info.size.y())
+                d << info.flags.two;
             else d << info.flags.one;
             d << Debug::resetColor;
         }
         d << Debug::packed;
-        if(info.size.z()) d << info.size;
-        else if(info.size.y()) d << info.size.xy();
+        if(info.size.z())
+            d << info.size;
+        else if(info.size.y())
+            d << info.size.xy();
         /* Kinda unnecessary, but makes the output more consistent if also 1D
            size is in {}s */
         else d << Math::Vector<1, Int>(info.size.x());
@@ -322,7 +332,8 @@ void printImageInfo(const Debug::Flags useColor, const Containers::ArrayView<con
         /* Compressed formats are printed yellow. That kinda conflicts with
            custom fields / attributes elsewhere, but is significant enough to
            have it highlighted. */
-        if(info.compressed) d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
+        if(info.compressed)
+            d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
         else d << Debug::color(Debug::Color::Cyan) << info.format;
         d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB";
         if(info.dataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))

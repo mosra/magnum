@@ -1858,7 +1858,8 @@ void CubeMapTextureGLTest::compressedImage3D() {
             "ARB_DSA compressed cubemap APIs are broken on AMD drivers.");
 
         MAGNUM_VERIFY_NO_GL_ERROR();
-        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        if(fails)
+            CORRADE_SKIP("Skipping the rest of the test");
     }
 
     CompressedImage3D image = texture.compressedImage(0, {data.storage});
@@ -1872,7 +1873,8 @@ void CubeMapTextureGLTest::compressedImage3D() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         #ifdef CORRADE_TARGET_WINDOWS
-        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        if(fails)
+            CORRADE_SKIP("Skipping the rest of the test");
         #endif
     }
 
@@ -1911,7 +1913,8 @@ void CubeMapTextureGLTest::compressedImage3DBuffer() {
             "ARB_DSA compressed cubemap APIs are broken on AMD drivers.");
 
         MAGNUM_VERIFY_NO_GL_ERROR();
-        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        if(fails)
+            CORRADE_SKIP("Skipping the rest of the test");
     }
 
     CompressedBufferImage3D image = texture.compressedImage(0, {data.storage}, BufferUsage::StaticRead);
@@ -1925,7 +1928,8 @@ void CubeMapTextureGLTest::compressedImage3DBuffer() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         #ifdef CORRADE_TARGET_WINDOWS
-        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        if(fails)
+            CORRADE_SKIP("Skipping the rest of the test");
         #endif
     }
 
@@ -1963,7 +1967,8 @@ void CubeMapTextureGLTest::compressedImage3DQueryView() {
             "ARB_DSA compressed cubemap APIs are broken on AMD drivers.");
 
         MAGNUM_VERIFY_NO_GL_ERROR();
-        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        if(fails)
+            CORRADE_SKIP("Skipping the rest of the test");
     }
 
     Containers::Array<char> imageData{data.offset + 16*6};
@@ -1979,7 +1984,8 @@ void CubeMapTextureGLTest::compressedImage3DQueryView() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         #ifdef CORRADE_TARGET_WINDOWS
-        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        if(fails)
+            CORRADE_SKIP("Skipping the rest of the test");
         #endif
     }
 

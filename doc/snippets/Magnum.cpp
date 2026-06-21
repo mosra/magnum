@@ -123,9 +123,9 @@ std::nullptr_t data = nullptr;
 Image2D image{PixelFormat::RGB8Unorm, {128, 128}, data};
 
 Containers::StridedArrayView2D<Color3ub> pixels = image.pixels<Color3ub>();
-for(auto row: pixels.sliceSize({48, 48}, {32, 32})) {
-    for(Color3ub& pixel: row) pixel *= 1.1f;
-}
+for(auto row: pixels.sliceSize({48, 48}, {32, 32}))
+    for(Color3ub& pixel: row)
+        pixel *= 1.1f;
 /* [Image-pixels] */
 }
 

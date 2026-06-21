@@ -151,7 +151,8 @@ void Buffer::getMemoryRequirementsImplementation11(Device& device, const VkBuffe
 
 VkResult Buffer::bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
     for(std::size_t i = 0; i != count; ++i)
-        if(VkResult result = device->BindBufferMemory(device, infos[i].buffer, infos[i].memory, infos[i].memoryOffset)) return result;
+        if(VkResult result = device->BindBufferMemory(device, infos[i].buffer, infos[i].memory, infos[i].memoryOffset))
+            return result;
     return VK_SUCCESS;
 }
 

@@ -187,7 +187,8 @@ if(!importer || !importer->openFile("image.png"))
     Fatal{} << "Can't open image.png with AnyImageImporter";
 
 Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
-if(!image) Fatal{} << "Importing the image failed";
+if(!image)
+    Fatal{} << "Importing the image failed";
 
 // use the image ...
 /* [AbstractImporter-usage] */
@@ -230,7 +231,8 @@ importer->setFileCallback([](const std::string& filename,
 
         /* Discard the memory mapping, if not needed anymore */
         if(policy == InputFileCallbackPolicy::Close) {
-            if(found != data.files.end()) data.files.erase(found);
+            if(found != data.files.end())
+                data.files.erase(found);
             return {};
         }
 
@@ -239,7 +241,8 @@ importer->setFileCallback([](const std::string& filename,
         if(found == data.files.end()) found = data.files.emplace(
             filename, Utility::Path::mapRead(filename)).first;
 
-        if(!found->second) return {};
+        if(!found->second)
+            return {};
         return Containers::arrayView(*found->second);
     }, data);
 

@@ -275,7 +275,8 @@ player.addRawCallback(track,
     std::size_t& hint, void* destination, void(*callback)(), void* userData) {
         Int value = static_cast<const Animation::TrackView<const Float, const Int>&>(track)
             .atStrict(key, hint);
-        if(value == *static_cast<Int*>(destination)) return;
+        if(value == *static_cast<Int*>(destination))
+            return;
         *static_cast<Int*>(destination) = value;
         reinterpret_cast<void(*)(std::vector<Int>&, Int)>(callback)
             (*static_cast<std::vector<Int>*>(userData), value);

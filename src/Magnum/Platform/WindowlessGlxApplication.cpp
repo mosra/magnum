@@ -286,9 +286,12 @@ WindowlessGlxContext::WindowlessGlxContext(WindowlessGlxContext&& other) noexcep
 }
 
 WindowlessGlxContext::~WindowlessGlxContext() {
-    if(_context) glXDestroyContext(_display, _context);
-    if(_pbuffer) glXDestroyPbuffer(_display, _pbuffer);
-    if(_display) XCloseDisplay(_display);
+    if(_context)
+        glXDestroyContext(_display, _context);
+    if(_pbuffer)
+        glXDestroyPbuffer(_display, _pbuffer);
+    if(_display)
+        XCloseDisplay(_display);
 }
 
 WindowlessGlxContext& WindowlessGlxContext::operator=(WindowlessGlxContext&& other) noexcept {
@@ -331,7 +334,8 @@ WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, N
 void WindowlessGlxApplication::createContext() { createContext({}); }
 
 void WindowlessGlxApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
+    if(!tryCreateContext(configuration))
+        std::exit(1);
 }
 
 bool WindowlessGlxApplication::tryCreateContext(const Configuration& configuration) {

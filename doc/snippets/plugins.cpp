@@ -56,7 +56,8 @@ void mainPlugins() {
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer =
         manager.loadAndInstantiate("TgaImporter");
-    if(!importer) Fatal{} << "Cannot load the TgaImporter plugin";
+    if(!importer)
+        Fatal{} << "Cannot load the TgaImporter plugin";
 
     // Use the plugin...
 

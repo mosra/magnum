@@ -1312,7 +1312,8 @@ template<class T> void PlayerTest::addRawCallback() {
         [](const Animation::TrackViewStorage<const Float>& track, Float key,
         std::size_t& hint, void* destination, void(*callback)(), void* userData) {
             Int value = static_cast<const Animation::TrackView<const Float, const Int>&>(track).at(key, hint);
-            if(value == *static_cast<Int*>(destination)) return;
+            if(value == *static_cast<Int*>(destination))
+                return;
             *static_cast<Int*>(destination) = value;
             reinterpret_cast<void(*)(Containers::Array<Int>&, Int)>(callback)(*static_cast<Containers::Array<Int>*>(userData), value);
         }, &result, reinterpret_cast<void(*)()>(callback), &data)

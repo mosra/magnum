@@ -420,7 +420,8 @@ template<class K, class V, class R> R interpolate(const Containers::StridedArray
     CORRADE_ASSERT(keys.size() == values.size(), "Animation::interpolate(): keys and values don't have the same size", {});
 
     /* No data, return default-constructed value */
-    if(!keys.size()) return {};
+    if(!keys.size())
+        return {};
 
     /* Only one frame, return it verbatim (or default-constructed, if desired) */
     if(keys.size() == 1) {
@@ -432,7 +433,8 @@ template<class K, class V, class R> R interpolate(const Containers::StridedArray
     }
 
     /* Rewind from the beginning if hint is too late */
-    if(hint >= keys.size() || frame < keys[hint]) hint = 0;
+    if(hint >= keys.size() || frame < keys[hint])
+        hint = 0;
 
     /* Go through the keys until we find a pair that is around given time */
     while(hint + 2 < keys.size() && frame >= keys[hint + 1])
@@ -441,11 +443,15 @@ template<class K, class V, class R> R interpolate(const Containers::StridedArray
     /* Special extrapolation outside of range. Usual extrapolation is handled
        below. */
     if(frame < keys[hint]) {
-        if(before == Extrapolation::DefaultConstructed) return {};
-        if(before == Extrapolation::Constant) frame = keys[hint];
+        if(before == Extrapolation::DefaultConstructed)
+            return {};
+        if(before == Extrapolation::Constant)
+            frame = keys[hint];
     } else if(frame >= keys[hint + 1]) {
-        if(after == Extrapolation::DefaultConstructed) return {};
-        if(after == Extrapolation::Constant) frame = keys[hint + 1];
+        if(after == Extrapolation::DefaultConstructed)
+            return {};
+        if(after == Extrapolation::Constant)
+            frame = keys[hint + 1];
     }
 
     return interpolator(values[hint], values[hint + 1],
@@ -457,7 +463,8 @@ template<class K, class V, class R> R interpolateStrict(const Containers::Stride
     CORRADE_ASSERT(keys.size() == values.size(), "Animation::interpolateStrict(): keys and values don't have the same size", {});
 
     /* Rewind from the beginning if hint is too late */
-    if(hint >= keys.size() || frame < keys[hint]) hint = 0;
+    if(hint >= keys.size() || frame < keys[hint])
+        hint = 0;
 
     /* Go through the keys until we find a pair that is around given time */
     while(hint + 2 < keys.size() && frame >= keys[hint + 1])

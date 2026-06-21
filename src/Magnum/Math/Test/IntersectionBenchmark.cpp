@@ -47,7 +47,8 @@ template<class T> bool rangeFrustumNaive(const Math::Range3D<T>& box, const Math
         }
 
         /* All corners are outside this plane */
-        if(!cornerHit) return false;
+        if(!cornerHit)
+            return false;
     }
 
     return true;

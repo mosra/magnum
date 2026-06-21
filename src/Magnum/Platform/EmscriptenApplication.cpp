@@ -142,14 +142,17 @@ namespace {
        or 'Minus'. Note that the Y key on some layouts may result in 'KeyZ'. */
     Key toKey(const EM_UTF8* const key, const EM_UTF8* const code) {
         const Containers::StringView keyView = key;
-        if(keyView.isEmpty()) return Key::Unknown;
+        if(keyView.isEmpty())
+            return Key::Unknown;
 
         /* We use key for a-z as it gives us a keyboard layout respecting
            representation of the key, i.e. we get `z` for z depending on layout
            where code may give us `y` independent of the layout. */
         if(keyView.size() == 1) {
-            if(key[0] >= 'a' && key[0] <= 'z') return Key(key[0]);
-            else if(key[0] >= 'A' && key[0] <= 'Z') return Key(key[0] - 'A' + 'a');
+            if(key[0] >= 'a' && key[0] <= 'z')
+                return Key(key[0]);
+            else if(key[0] >= 'A' && key[0] <= 'Z')
+                return Key(key[0] - 'A' + 'a');
         }
 
         /* We use code for 0-9 as it allows us to differentiate towards Numpad
@@ -174,7 +177,8 @@ namespace {
 
             /* Numpad0 - Numpad9 */
             const Int num = numKey[0] - '0';
-            if(num >= 0 && num <= 9) return Key(num + Int(Key::NumZero));
+            if(num >= 0 && num <= 9)
+                return Key(num + Int(Key::NumZero));
 
             return Key::Unknown;
         }
@@ -235,7 +239,8 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
     #endif
 
     /* Save command-line arguments */
-    if(args.value("log") == "verbose") _verboseLog = true;
+    if(args.value("log") == "verbose")
+        _verboseLog = true;
     const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
 
     /* Use physical DPI scaling */
@@ -273,12 +278,14 @@ void EmscriptenApplication::create() {
 }
 
 void EmscriptenApplication::create(const Configuration& configuration) {
-    if(!tryCreate(configuration)) exit(1);
+    if(!tryCreate(configuration))
+        exit(1);
 }
 
 #ifdef MAGNUM_TARGET_GL
 void EmscriptenApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    if(!tryCreate(configuration, glConfiguration)) exit(32);
+    if(!tryCreate(configuration, glConfiguration))
+        exit(32);
 }
 #endif
 
@@ -1196,7 +1203,8 @@ EmscriptenApplication::GLConfiguration::GLConfiguration():
 int EmscriptenApplication::exec() {
     /* If exit was requested directly in the constructor, exit immediately
        without calling anything else */
-    if(_flags & Flag::ExitRequested) return 0;
+    if(_flags & Flag::ExitRequested)
+        return 0;
 
     redraw();
     return 0;
@@ -1208,7 +1216,8 @@ void EmscriptenApplication::redraw() {
     /* Loop already running, no need to start,
        Note that should javascript runtimes ever be multithreaded, we
        will have a reentrancy issue here. */
-    if(_flags & Flag::LoopActive) return;
+    if(_flags & Flag::LoopActive)
+        return;
 
     /* Start requestAnimationFrame loop */
     _flags |= Flag::LoopActive;

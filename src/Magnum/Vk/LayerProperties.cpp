@@ -89,7 +89,8 @@ LayerProperties enumerateLayerProperties() {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkEnumerateInstanceLayerProperties(&count, nullptr));
 
     /* No layers, nothing to do */
-    if(!count) return out;
+    if(!count)
+        return out;
 
     /* Allocate extra for a list of string views that we'll use to sort &
        search the values; query the layers */

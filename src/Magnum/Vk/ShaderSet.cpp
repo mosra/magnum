@@ -102,7 +102,8 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
     if(entrypoint.flags() >= (Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated)) {
         _stages[_stageCount].pName = entrypoint.data();
     } else {
-        if(!_state) _state.emplace();
+        if(!_state)
+            _state.emplace();
         /* Ensure the data are never SSO'd and so when the array reallocates we
            don't need to rewire existing name pointers */
         _stages[_stageCount].pName = arrayAppend(_state->entrypointNames, InPlaceInit, Containers::AllocatedInit, entrypoint).data();
@@ -111,7 +112,8 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
     /* Specialization, also only if there are any to avoid allocating the state
        struct when not necessary */
     if(!specializations.isEmpty()) {
-        if(!_state) _state.emplace();
+        if(!_state)
+            _state.emplace();
 
         /* Remember the original base data pointers so we can reroute the
            structures after a potential reallocation */
@@ -126,7 +128,8 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
 
         /* Reroute the existing structures for possible reallocations */
         for(std::size_t i = 0; i != _stageCount; ++i) {
-            if(!_specializations[i].dataSize) continue;
+            if(!_specializations[i].dataSize)
+                continue;
 
             CORRADE_INTERNAL_ASSERT(_specializations[i].pData >= previousBaseDataPointer && _specializations[i].pData < previousBaseDataPointer + _state->specializationData.size() - specializations.size()*4);
             _specializations[i].pData = _state->specializationData.data() + (static_cast<const char*>(_specializations[i].pData) - previousBaseDataPointer);
@@ -160,7 +163,8 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
 }
 
 ShaderSet& ShaderSet::addShader(const ShaderStage stage, Shader&& shader, const Containers::StringView entrypoint, const Containers::ArrayView<const ShaderSpecialization> specializations) {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
     return addShader(stage, arrayAppend(_state->ownedShaders, Utility::move(shader)), entrypoint, specializations);
 }
 

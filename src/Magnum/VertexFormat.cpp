@@ -940,7 +940,8 @@ Containers::String ConfigurationValue<Magnum::VertexFormat>::toString(Magnum::Ve
 
 Magnum::VertexFormat ConfigurationValue<Magnum::VertexFormat>::fromString(Containers::StringView stringValue, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::VertexFormatNames); ++i)
-        if(stringValue == Magnum::VertexFormatNames[i]) return Magnum::VertexFormat(i + 1);
+        if(stringValue == Magnum::VertexFormatNames[i])
+            return Magnum::VertexFormat(i + 1);
 
     return {};
 }

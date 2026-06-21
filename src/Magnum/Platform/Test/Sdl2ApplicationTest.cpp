@@ -405,7 +405,8 @@ struct Sdl2ApplicationTest: Platform::Application {
         } else if(event.key() == Key::F2) {
             _redraw = !_redraw;
             Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
-            if(_redraw) redraw();
+            if(_redraw)
+                redraw();
         }
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         else if(event.key() == Key::V && !(event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock))) {
@@ -500,7 +501,8 @@ struct Sdl2ApplicationTest: Platform::Application {
     void anyEvent(SDL_Event& event) override {
         Debug d;
         d << "any event:" << event.type;
-        if(event.type == SDL_WINDOWEVENT) d << event.window.event;
+        if(event.type == SDL_WINDOWEVENT)
+            d << event.window.event;
     }
 
     /* Uncomment to test the tick event. It should run at given minimal loop

@@ -177,7 +177,8 @@ template<class IndexType> std::size_t removeDuplicatesIndexedInPlaceImplementati
        inverted (having the *Indexed() variant as the main implementation)
        because the remapping there has to be done once for every dimension. */
     const Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> result = removeDuplicatesInPlace(data);
-    for(auto& i: indices) i = result.first()[i];
+    for(auto& i: indices)
+        i = result.first()[i];
     return result.second();
 }
 
@@ -269,7 +270,8 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
                 /* In iteration `0` we're not moving in any dimension, in
                    iteration `vectorSize` we're moving in `vectorSize - 1`
                    dimension */
-                if(vi + 1 == moving) c += moveAmount;
+                if(vi + 1 == moving)
+                    c += moveAmount;
                 discretizedEntry[vi] = (c - offsets[vi])/epsilon;
             }
 
@@ -292,7 +294,8 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
         }
 
         /* Remap the resulting index array */
-        for(auto& i: indices) i = remapping[i];
+        for(auto& i: indices)
+            i = remapping[i];
 
         /* Move vertex coordinates by epsilon/2 in the next dimension (which
            is moving + 1 in the next loop iteration) */
@@ -344,7 +347,8 @@ template<class T> std::size_t removeDuplicatesFuzzyInPlaceIntoImplementation(con
        but on MSVC 2015 debug build it excepts StridedArrayIterator to have a
        member named iterator_category. Fuck that, using a loop instead. */
     UnsignedInt i = 0;
-    for(UnsignedInt& index: indices) index = i++;
+    for(UnsignedInt& index: indices)
+        index = i++;
 
     const std::size_t size = removeDuplicatesFuzzyIndexedInPlaceImplementation(Containers::stridedArrayView(indices), data, epsilon);
     return size;

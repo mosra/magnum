@@ -72,14 +72,16 @@ empty, returns @cpp false @ce or a @ref BitVector with no bits set.
 @see @ref isInf(T), @ref Constants::inf()
 */
 template<class T> auto isInf(const Containers::StridedArrayView1D<const T>& range) -> decltype(isInf(std::declval<T>())) {
-    if(range.isEmpty()) return {};
+    if(range.isEmpty())
+        return {};
 
     /* For scalars, this loop exits once any value is infinity. For vectors
        the loop accumulates the bits and exits as soon as all bits are set
        or the input is exhausted */
     auto out = isInf(range[0]); /* bool or BitVector */
     for(std::size_t i = 1; i != range.size(); ++i) {
-        if(out) break;
+        if(out)
+            break;
         out = out || isInf(range[i]);
     }
 
@@ -124,14 +126,16 @@ returns @cpp false @ce or a @ref BitVector with no bits set.
 @see @ref isNan(T), @ref Constants::nan()
 */
 template<class T> inline auto isNan(const Containers::StridedArrayView1D<const T>& range) -> decltype(isNan(std::declval<T>())) {
-    if(range.isEmpty()) return {};
+    if(range.isEmpty())
+        return {};
 
     /* For scalars, this loop exits once any value is infinity. For vectors
        the loop accumulates the bits and exits as soon as all bits are set
        or the input is exhausted */
     auto out = isNan(range[0]); /* bool or BitVector */
     for(std::size_t i = 1; i != range.size(); ++i) {
-        if(out) break;
+        if(out)
+            break;
         out = out || isNan(range[i]);
     }
 
@@ -177,8 +181,8 @@ namespace Implementation {
         /* Find the first non-NaN value to compare against. If all are NaN,
            return the last value so the following loop in min/max/minmax()
            doesn't even execute. */
-        for(std::size_t i = 0; i != range.size(); ++i)
-            if(!isNan(range[i])) return {i, range[i]};
+        for(std::size_t i = 0; i != range.size(); ++i) if(!isNan(range[i]))
+            return {i, range[i]};
         return {range.size() - 1, range.back()};
     }
     /* Floating-point vectors. Try to gather non-NaN values for each component
@@ -193,8 +197,10 @@ namespace Implementation {
         std::size_t firstValid = 0;
         for(std::size_t i = 1; i != range.size(); ++i) {
             BitVector<T::Size> nans = isNan(out);
-            if(nans.none()) break;
-            if(nans.all() && firstValid + 1 == i) ++firstValid;
+            if(nans.none())
+                break;
+            if(nans.all() && firstValid + 1 == i)
+                ++firstValid;
             out = Math::lerp(out, range[i], isNan(out));
         }
         return {firstValid, out};
@@ -209,7 +215,8 @@ ignored, unless the range is all <em>NaN</em>s.
 @see @ref min(T, T), @ref isNan(const Containers::StridedArrayView1D<const T>&)
 */
 template<class T> inline T min(const Containers::StridedArrayView1D<const T>& range) {
-    if(range.isEmpty()) return {};
+    if(range.isEmpty())
+        return {};
 
     Containers::Pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
     for(++iOut.first(); iOut.first() != range.size(); ++iOut.first())
@@ -254,7 +261,8 @@ ignored, unless the range is all <em>NaN</em>s.
 @see @ref max(T, T), @ref isNan(const Containers::StridedArrayView1D<const T>&)
 */
 template<class T> inline T max(const Containers::StridedArrayView1D<const T>& range) {
-    if(range.isEmpty()) return {};
+    if(range.isEmpty())
+        return {};
 
     Containers::Pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
     for(++iOut.first(); iOut.first() != range.size(); ++iOut.first())
@@ -314,7 +322,8 @@ ignored, unless the range is all <em>NaN</em>s.
     @ref isNan(const Containers::StridedArrayView1D<const T>&)
 */
 template<class T> inline Containers::Pair<T, T> minmax(const Containers::StridedArrayView1D<const T>& range) {
-    if(range.isEmpty()) return {};
+    if(range.isEmpty())
+        return {};
 
     Containers::Pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
     T min{iOut.second()}, max{iOut.second()};

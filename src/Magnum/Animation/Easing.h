@@ -366,8 +366,10 @@ template<class T> struct BasicEasing {
     static T smoothstep(T t) {
         /* Deliberately *not* using Math::clamp() because that would drag in
            unneeded vector headers */
-        if(t <= T(0.0)) return T(0.0);
-        if(t >= T(1.0)) return T(1.0);
+        if(t <= T(0.0))
+            return T(0.0);
+        if(t >= T(1.0))
+            return T(1.0);
         return (T(3.0) - T(2.0)*t)*t*t;
     }
 
@@ -391,8 +393,10 @@ template<class T> struct BasicEasing {
     static T smootherstep(T t) {
         /* Deliberately *not* using Math::clamp() because that would drag in
            unneeded vector headers */
-        if(t <= T(0.0)) return T(0.0);
-        if(t >= T(1.0)) return T(1.0);
+        if(t <= T(0.0))
+            return T(0.0);
+        if(t >= T(1.0))
+            return T(1.0);
         return t*t*t*(t*(t*T(6.0) - T(15.0)) + T(10.0));
     }
 
@@ -451,8 +455,8 @@ template<class T> struct BasicEasing {
      * @see @ref cubicInOut(), @ref quarticInOut(), @ref quinticInOut()
      */
     static T quadraticInOut(T t) {
-        if(t < T(0.5)) return T(2.0)*t*t;
-
+        if(t < T(0.5))
+            return T(2.0)*t*t;
         const T inv = T(1.0) - t;
         return T(1.0) - T(2.0)*inv*inv;
     }
@@ -515,8 +519,8 @@ template<class T> struct BasicEasing {
      * @see @ref quadraticInOut(), @ref quarticInOut(), @ref quinticInOut()
      */
     static T cubicInOut(T t) {
-        if(t < T(0.5)) return T(4.0)*t*t*t;
-
+        if(t < T(0.5))
+            return T(4.0)*t*t*t;
         const T inv = T(1.0) - t;
         return T(1.0) - T(4.0)*inv*inv*inv;
     }
@@ -748,7 +752,8 @@ template<class T> struct BasicEasing {
      * @see @ref sineInOut()
      */
     static T circularInOut(T t) {
-        if(t < T(0.5)) return T(0.5)*(T(1.0) - std::sqrt(T(1.0) - T(4.0)*t*t));
+        if(t < T(0.5))
+            return T(0.5)*(T(1.0) - std::sqrt(T(1.0) - T(4.0)*t*t));
         return T(0.5)*(T(1.0) + std::sqrt(T(-4.0)*t*t + T(8.0)*t - T(3.0)));
     }
 
@@ -818,9 +823,12 @@ template<class T> struct BasicEasing {
      * @f]
      */
     static T exponentialInOut(T t) {
-        if(t <= T(0.0)) return T(0.0);
-        if(t < T(0.5)) return T(0.5)*std::pow(T(2.0), T(20.0)*t - T(10.0));
-        if(t < T(1.0)) return T(1.0) - T(0.5)*std::pow(T(2.0), T(10.0) -T(20.0)*t);
+        if(t <= T(0.0))
+            return T(0.0);
+        if(t < T(0.5))
+            return T(0.5)*std::pow(T(2.0), T(20.0)*t - T(10.0));
+        if(t < T(1.0))
+            return T(1.0) - T(0.5)*std::pow(T(2.0), T(10.0) -T(20.0)*t);
         return T(1.0);
     }
 
@@ -943,9 +951,12 @@ template<class T> struct BasicEasing {
      * @htmlinclude easings-bounceout.svg
      */
     static T bounceOut(T t) {
-        if(t < T(4.0)/T(11.0)) return (T(121.0)*t*t)/T(16.0);
-        if(t < T(8.0)/T(11.0)) return T(363.0)/T(40.0)*t*t - T(99.0)/T(10.0)*t + T(17.0)/T(5.0);
-        if(t < T(9.0)/T(10.0)) return T(4356.0)/T(361.0)*t*t - T(35442.0)/T(1805.0)*t + T(16061.0)/T(1805.0);
+        if(t < T(4.0)/T(11.0))
+            return (T(121.0)*t*t)/T(16.0);
+        if(t < T(8.0)/T(11.0))
+            return T(363.0)/T(40.0)*t*t - T(99.0)/T(10.0)*t + T(17.0)/T(5.0);
+        if(t < T(9.0)/T(10.0))
+            return T(4356.0)/T(361.0)*t*t - T(35442.0)/T(1805.0)*t + T(16061.0)/T(1805.0);
         return T(54.0)/T(5.0)*t*t - T(513.0)/T(25.0)*t + T(268.0)/T(25.0);
     }
 
@@ -957,7 +968,8 @@ template<class T> struct BasicEasing {
      * @htmlinclude easings-bounceinout.svg
      */
     static T bounceInOut(T t) {
-        if(t < T(0.5)) return T(0.5)*bounceIn(T(2.0)*t);
+        if(t < T(0.5))
+            return T(0.5)*bounceIn(T(2.0)*t);
         return T(0.5)*bounceOut(T(2.0)*t - T(1.0)) + T(0.5);
     }
 };

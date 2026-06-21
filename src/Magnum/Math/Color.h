@@ -51,7 +51,8 @@ namespace Implementation {
 template<class T, typename std::enable_if<IsFloatingPoint<T>::value, int>::type = 0> Color3<T> fromHsv(ColorHsv<T> hsv) {
     /* Remove repeats */
     hsv.hue -= floor(T(hsv.hue)/T(360))*Deg<T>(360);
-    if(hsv.hue < Deg<T>(0)) hsv.hue += Deg<T>(360);
+    if(hsv.hue < Deg<T>(0))
+        hsv.hue += Deg<T>(360);
 
     int h = int(T(hsv.hue)/T(60)) % 6;
     T f = T(hsv.hue)/T(60) - h;

@@ -131,7 +131,8 @@ Framebuffer::~Framebuffer() {
     /* If bound, remove itself from state */
     Context& context = Context::current();
     Implementation::FramebufferState& state = context.state().framebuffer;
-    if(state.readBinding == _id) state.readBinding = 0;
+    if(state.readBinding == _id)
+        state.readBinding = 0;
 
     /* For draw binding reset also viewport. Don't do that for windowless
        contexts to avoid potential race conditions with default framebuffer on
@@ -188,8 +189,8 @@ Framebuffer& Framebuffer::clearColor(const Int attachment, const Vector4ui& colo
 Framebuffer& Framebuffer::mapForDraw(const Containers::ArrayView<const Containers::Pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
-    for(const auto& attachment: attachments)
-        if(attachment.first() > max) max = attachment.first();
+    for(const auto& attachment: attachments) if(attachment.first() > max)
+        max = attachment.first();
 
     /* Create linear array from associative */
     /** @todo C++14: use VLA to avoid heap allocation */

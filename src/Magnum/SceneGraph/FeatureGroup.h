@@ -175,7 +175,8 @@ template<class Feature> using FeatureGroup3D = BasicFeatureGroup3D<Feature, Floa
 #endif
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>::~FeatureGroup() {
-    for(auto i: AbstractFeatureGroup<dimensions, T>::_features) static_cast<Feature&>(i.get())._group = nullptr;
+    for(auto i: AbstractFeatureGroup<dimensions, T>::_features)
+        static_cast<Feature&>(i.get())._group = nullptr;
 }
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::add(Feature& feature) {

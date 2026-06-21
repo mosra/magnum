@@ -570,12 +570,16 @@ template<UnsignedInt dimensions> void LineGLTest::construct() {
 
     typename LineGL<dimensions>::Configuration configuration;
     configuration.setFlags(data.flags);
-    if(data.capStyle) configuration.setCapStyle(*data.capStyle);
-    if(data.joinStyle) configuration.setJoinStyle(*data.joinStyle);
+    if(data.capStyle)
+        configuration.setCapStyle(*data.capStyle);
+    if(data.joinStyle)
+        configuration.setJoinStyle(*data.joinStyle);
     LineGL<dimensions> shader{configuration};
     CORRADE_COMPARE(shader.flags(), data.flags);
-    if(data.capStyle) CORRADE_COMPARE(shader.capStyle(), data.capStyle);
-    if(data.joinStyle) CORRADE_COMPARE(shader.joinStyle(), data.joinStyle);
+    if(data.capStyle)
+        CORRADE_COMPARE(shader.capStyle(), data.capStyle);
+    if(data.joinStyle)
+        CORRADE_COMPARE(shader.joinStyle(), data.joinStyle);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -664,12 +668,16 @@ template<UnsignedInt dimensions> void LineGLTest::constructUniformBuffers() {
         .setFlags(data.flags)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount);
-    if(data.capStyle) configuration.setCapStyle(*data.capStyle);
-    if(data.joinStyle) configuration.setJoinStyle(*data.joinStyle);
+    if(data.capStyle)
+        configuration.setCapStyle(*data.capStyle);
+    if(data.joinStyle)
+        configuration.setJoinStyle(*data.joinStyle);
     LineGL<dimensions> shader{configuration};
     CORRADE_COMPARE(shader.flags(), data.flags);
-    if(data.capStyle) CORRADE_COMPARE(shader.capStyle(), data.capStyle);
-    if(data.joinStyle) CORRADE_COMPARE(shader.joinStyle(), data.joinStyle);
+    if(data.capStyle)
+        CORRADE_COMPARE(shader.capStyle(), data.capStyle);
+    if(data.joinStyle)
+        CORRADE_COMPARE(shader.joinStyle(), data.joinStyle);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_VERIFY(shader.id());
@@ -1452,8 +1460,10 @@ template<LineGL2D::Flag flag> void LineGLTest::renderLineCapsJoins2D() {
 
     LineGL2D::Configuration configuration;
     configuration.setFlags(flag);
-    if(data.capStyle) configuration.setCapStyle(*data.capStyle);
-    if(data.joinStyle) configuration.setJoinStyle(*data.joinStyle);
+    if(data.capStyle)
+        configuration.setCapStyle(*data.capStyle);
+    if(data.joinStyle)
+        configuration.setJoinStyle(*data.joinStyle);
     LineGL2D shader{configuration};
     shader.setViewportSize(Vector2{RenderSizeLarge});
 
@@ -1551,16 +1561,20 @@ void LineGLTest::renderLineCapsJoins2DReversed() {
         GL::Renderer::BlendFunction::OneMinusSourceAlpha);
 
     LineGL2D::Configuration configuration;
-    if(data.capStyle) configuration.setCapStyle(*data.capStyle);
-    if(data.joinStyle) configuration.setJoinStyle(*data.joinStyle);
+    if(data.capStyle)
+        configuration.setCapStyle(*data.capStyle);
+    if(data.joinStyle)
+        configuration.setJoinStyle(*data.joinStyle);
     LineGL2D shader{configuration};
     shader
         .setViewportSize(Vector2{RenderSizeLarge})
         .setWidth(data.width)
         .setSmoothness(data.smoothness)
         .setColor(0x80808080_rgbaf);
-    if(data.miterLengthLimit) shader.setMiterLengthLimit(*data.miterLengthLimit);
-    if(data.miterAngleLimit) shader.setMiterAngleLimit(*data.miterAngleLimit);
+    if(data.miterLengthLimit)
+        shader.setMiterLengthLimit(*data.miterLengthLimit);
+    if(data.miterAngleLimit)
+        shader.setMiterAngleLimit(*data.miterAngleLimit);
 
     /* Enabling blending and a half-transparent color -- there should be no
        overlaps */
@@ -1609,8 +1623,10 @@ void LineGLTest::renderLineCapsJoins2DTransformed() {
     GL::Mesh lines = generateLineMesh<2>(transformedLineSegments);
 
     LineGL2D::Configuration configuration;
-    if(data.capStyle) configuration.setCapStyle(*data.capStyle);
-    if(data.joinStyle) configuration.setJoinStyle(*data.joinStyle);
+    if(data.capStyle)
+        configuration.setCapStyle(*data.capStyle);
+    if(data.joinStyle)
+        configuration.setJoinStyle(*data.joinStyle);
     LineGL2D shader{configuration};
     shader
         .setViewportSize(Vector2{RenderSizeLarge})
@@ -1619,8 +1635,10 @@ void LineGLTest::renderLineCapsJoins2DTransformed() {
         .setTransformationProjectionMatrix(transformation.inverted())
         .setColor(0x80808080_rgbaf);
 
-    if(data.miterLengthLimit) shader.setMiterLengthLimit(*data.miterLengthLimit);
-    if(data.miterAngleLimit) shader.setMiterAngleLimit(*data.miterAngleLimit);
+    if(data.miterLengthLimit)
+        shader.setMiterLengthLimit(*data.miterLengthLimit);
+    if(data.miterAngleLimit)
+        shader.setMiterAngleLimit(*data.miterAngleLimit);
 
     /* Enabling blending and a half-transparent color -- there should be no
        overlaps */
@@ -1777,8 +1795,10 @@ template<LineGL3D::Flag flag> void LineGLTest::renderCube3D() {
 
     LineGL3D::Configuration configuration;
     configuration.setFlags(flag);
-    if(data.capStyle) configuration.setCapStyle(*data.capStyle);
-    if(data.joinStyle) configuration.setJoinStyle(*data.joinStyle);
+    if(data.capStyle)
+        configuration.setCapStyle(*data.capStyle);
+    if(data.joinStyle)
+        configuration.setJoinStyle(*data.joinStyle);
     LineGL3D shader{configuration};
     shader.setViewportSize(Vector2{RenderSizeLarge});
 

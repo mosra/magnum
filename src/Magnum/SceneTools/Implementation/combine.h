@@ -65,12 +65,14 @@ template<class T> void combineCopyMappings(const Containers::ArrayView<const Tra
            monotonically increasing. If it's not, it means the mapping is
            shared with something earlier which got already copied -- skip. */
         const std::size_t mapping = itemViewMappings[i].first();
-        if(i && mapping <= latestMapping) continue;
+        if(i && mapping <= latestMapping)
+            continue;
         latestMapping = mapping;
 
         /* If the field has null object data, no need to copy anything. This
            covers reserved fields but also fields of zero size. */
-        if(!fields[i].mappingData()) continue;
+        if(!fields[i].mappingData())
+            continue;
 
         /* The additional cast to 2D has to be there in order to ensure the
            second dimension is contiguous which Math::castInto() requires */
@@ -326,7 +328,8 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
 
             /* If the field has null field data, no need to copy anything. This
                covers reserved fields but also fields of zero size. */
-            if(!src.data()) continue;
+            if(!src.data())
+                continue;
 
             /** @todo this needs Utility::copy() for bits, which is HARD */
             const Containers::MutableStridedBitArrayView2D dst = itemViews[itemViewMappings[i].second()].bits;
@@ -342,7 +345,8 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
 
             /* If the field has null field data, no need to copy anything. This
                covers reserved fields but also fields of zero size. */
-            if(!src.data()) continue;
+            if(!src.data())
+                continue;
 
             /** @todo isn't there some less awful way to create a 2D view, sigh */
             Utility::copy(Containers::arrayCast<2, const char>(src, sceneFieldTypeSize(fieldType)*(field.fieldArraySize() ? field.fieldArraySize() : 1)), itemViews[itemViewMappings[i].second()].types);

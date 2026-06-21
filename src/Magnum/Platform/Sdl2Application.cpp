@@ -248,7 +248,8 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     }
 
     /* Save command-line arguments */
-    if(args.value("log") == "verbose") _verboseLog = true;
+    if(args.value("log") == "verbose")
+        _verboseLog = true;
     const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
     if(dpiScaling == "default"_s)
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Default;
@@ -275,12 +276,14 @@ void Sdl2Application::create() {
 }
 
 void Sdl2Application::create(const Configuration& configuration) {
-    if(!tryCreate(configuration)) std::exit(1);
+    if(!tryCreate(configuration))
+        std::exit(1);
 }
 
 #ifdef MAGNUM_TARGET_GL
 void Sdl2Application::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    if(!tryCreate(configuration, glConfiguration)) std::exit(1);
+    if(!tryCreate(configuration, glConfiguration))
+        std::exit(1);
 }
 #endif
 
@@ -897,7 +900,8 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
         return false;
     }
 
-    if(interval) _flags |= Flag::VSyncEnabled;
+    if(interval)
+        _flags |= Flag::VSyncEnabled;
     else _flags &= ~Flag::VSyncEnabled;
     return true;
 }
@@ -930,9 +934,11 @@ Sdl2Application::~Sdl2Application() {
     _context = Containers::NullOpt;
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    if(_glContext) SDL_GL_DeleteContext(_glContext);
+    if(_glContext)
+        SDL_GL_DeleteContext(_glContext);
     #else
-    if(_surface) SDL_FreeSurface(_surface);
+    if(_surface)
+        SDL_FreeSurface(_surface);
     #endif
     #endif
 
@@ -942,7 +948,8 @@ Sdl2Application::~Sdl2Application() {
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    if(_window) SDL_DestroyWindow(_window);
+    if(_window)
+        SDL_DestroyWindow(_window);
     #endif
     SDL_Quit();
 }
@@ -1007,7 +1014,8 @@ Sdl2Application::Pointers buttonsToPointers(const Uint32 buttons) {
 bool Sdl2Application::mainLoopIteration() {
     /* If exit was requested directly in the constructor, exit immediately
        without calling anything else */
-    if(_flags & Flag::Exit) return false;
+    if(_flags & Flag::Exit)
+        return false;
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::mainLoopIteration(): no window opened", {});
@@ -1084,10 +1092,12 @@ bool Sdl2Application::mainLoopIteration() {
                        things not present in the Application APIs */
                     case SDL_WINDOWEVENT_EXPOSED:
                         _flags |= Flag::Redraw;
-                        if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
+                        if(!(_flags & Flag::NoAnyEvent))
+                            anyEvent(event);
                         break;
                     default:
-                        if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
+                        if(!(_flags & Flag::NoAnyEvent))
+                            anyEvent(event);
                 } break;
 
             case SDL_KEYDOWN:
@@ -1282,12 +1292,14 @@ bool Sdl2Application::mainLoopIteration() {
 
             /* Direct everything else to anyEvent(), so users can implement
                event handling for things not present in the Application APIs */
-            default: if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
+            default: if(!(_flags & Flag::NoAnyEvent))
+                anyEvent(event);
         }
     }
 
     /* Tick event */
-    if(!(_flags & Flag::NoTickEvent)) tickEvent();
+    if(!(_flags & Flag::NoTickEvent))
+        tickEvent();
 
     /* Draw event */
     if(_flags & Flag::Redraw) {
@@ -1316,7 +1328,8 @@ bool Sdl2Application::mainLoopIteration() {
 
     /* Then, if the tick event doesn't need to be called periodically, wait
        indefinitely for next input event */
-    if(_flags & Flag::NoTickEvent) SDL_WaitEvent(nullptr);
+    if(_flags & Flag::NoTickEvent)
+        SDL_WaitEvent(nullptr);
     #endif
     return !(_flags & Flag::Exit);
 }
@@ -1416,7 +1429,8 @@ Sdl2Application::Cursor Sdl2Application::cursor() {
     SDL_Cursor* cursor = SDL_GetCursor();
 
     if(cursor) for(UnsignedInt i = 0; i < sizeof(_cursors); i++)
-        if(_cursors[i] == cursor) return Cursor(i);
+        if(_cursors[i] == cursor)
+            return Cursor(i);
 
     return Cursor::Arrow;
     #else
@@ -1713,7 +1727,8 @@ Sdl2Application::Modifiers Sdl2Application::PointerEvent::modifiers() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
 Sdl2Application::Modifiers Sdl2Application::MouseEvent::modifiers() {
-    if(_modifiers) return *_modifiers;
+    if(_modifiers)
+        return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
 CORRADE_IGNORE_DEPRECATED_POP
@@ -1728,7 +1743,8 @@ Sdl2Application::Modifiers Sdl2Application::PointerMoveEvent::modifiers() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
 Sdl2Application::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
-    if(_modifiers) return *_modifiers;
+    if(_modifiers)
+        return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
 CORRADE_IGNORE_DEPRECATED_POP
@@ -1755,14 +1771,16 @@ Sdl2Application::Modifiers Sdl2Application::ScrollEvent::modifiers() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
 Vector2i Sdl2Application::MouseScrollEvent::position() {
-    if(_position) return *_position;
+    if(_position)
+        return *_position;
     _position = Vector2i{};
     SDL_GetMouseState(&_position->x(), &_position->y());
     return *_position;
 }
 
 Sdl2Application::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
-    if(_modifiers) return *_modifiers;
+    if(_modifiers)
+        return *_modifiers;
     return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
 CORRADE_IGNORE_DEPRECATED_POP

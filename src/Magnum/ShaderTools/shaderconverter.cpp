@@ -222,14 +222,16 @@ void printSpirvInfo(Containers::ArrayView<const UnsignedInt> data) {
         ShaderTools::Implementation::spirvEntrypointInterface(data, *entrypoint, interface);
         for(const ShaderTools::Implementation::SpirvEntrypointInterface& i: interface) {
             d << "   ";
-            if(!i.storageClass) d << "(unknown)";
+            if(!i.storageClass)
+                d << "(unknown)";
             else if(*i.storageClass == SpvStorageClassInput)
                 d << "in";
             else if(*i.storageClass == SpvStorageClassOutput)
                 d << "out";
             else d << "SpvStorageClass(" << Debug::nospace << *i.storageClass << Debug::nospace << ")";
 
-            if(i.location) d << "(location=" << Debug::nospace << *i.location << Debug::nospace << ")";
+            if(i.location)
+                d << "(location=" << Debug::nospace << *i.location << Debug::nospace << ")";
 
             d << Debug::newline;
         }
@@ -396,12 +398,18 @@ see documentation of a particular converter for more information.)")
         if(args.isSet("info"))
             outputFormat = ShaderTools::Format::Spirv;
         auto parseFormat = [](Containers::StringView format) -> Containers::Optional<ShaderTools::Format> {
-            if(format == ""_s) return ShaderTools::Format::Unspecified;
-            if(format == "glsl"_s) return ShaderTools::Format::Glsl;
-            if(format == "spv"_s) return ShaderTools::Format::Spirv;
-            if(format == "spvasm"_s) return ShaderTools::Format::SpirvAssembly;
-            if(format == "hlsl"_s) return ShaderTools::Format::Hlsl;
-            if(format == "metal"_s) return ShaderTools::Format::Msl;
+            if(format == ""_s)
+                return ShaderTools::Format::Unspecified;
+            if(format == "glsl"_s)
+                return ShaderTools::Format::Glsl;
+            if(format == "spv"_s)
+                return ShaderTools::Format::Spirv;
+            if(format == "spvasm"_s)
+                return ShaderTools::Format::SpirvAssembly;
+            if(format == "hlsl"_s)
+                return ShaderTools::Format::Hlsl;
+            if(format == "metal"_s)
+                return ShaderTools::Format::Msl;
             /** @todo wgsl and dxil once i figure out the extensions */
 
             Error{} << "Unrecognized format" << format << Debug::nospace << ", expected glsl, spv, spvasm, hlsl or metal";
@@ -433,9 +441,12 @@ see documentation of a particular converter for more information.)")
         ShaderTools::ConverterFlags flags;
 
         /* Global flags, applied for all converters */
-        if(args.isSet("quiet")) flags |= ShaderTools::ConverterFlag::Quiet;
-        if(args.isSet("verbose")) flags |= ShaderTools::ConverterFlag::Verbose;
-        if(args.isSet("warning-as-error")) flags |= ShaderTools::ConverterFlag::WarningAsError;
+        if(args.isSet("quiet"))
+            flags |= ShaderTools::ConverterFlag::Quiet;
+        if(args.isSet("verbose"))
+            flags |= ShaderTools::ConverterFlag::Verbose;
+        if(args.isSet("warning-as-error"))
+            flags |= ShaderTools::ConverterFlag::WarningAsError;
 
         /* Options and flags applied just for the first converter; setting up
            file list for linking  */
@@ -538,11 +549,13 @@ see documentation of a particular converter for more information.)")
             if(!out.first()) {
                 if(args.isSet("verbose"))
                     Error{} << "Validation failed:";
-                if(!out.second().isEmpty()) Error{} << out.second();
+                if(!out.second().isEmpty())
+                    Error{} << out.second();
             } else if(!out.second().isEmpty()) {
                 if(args.isSet("verbose"))
                     Warning{} << "Validation succeeded with warnings:";
-                if(!out.second().isEmpty()) Warning{} << out.second();
+                if(!out.second().isEmpty())
+                    Warning{} << out.second();
             } else if(args.isSet("verbose"))
                 Debug{} << "Validation passed";
             return out.first() ? 0 : 14;

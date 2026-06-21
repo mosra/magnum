@@ -139,7 +139,8 @@ SubmitInfo& SubmitInfo::operator=(SubmitInfo&& other) noexcept {
 }
 
 SubmitInfo& SubmitInfo::setCommandBuffers(const Containers::ArrayView<const VkCommandBuffer> buffers) {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     _state->commandBuffers = Containers::Array<VkCommandBuffer>{NoInit, buffers.size()};
     Utility::copy(buffers, _state->commandBuffers);

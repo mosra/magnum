@@ -97,7 +97,8 @@ template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const Compress
        size check below could then die on division by zero. Exit early in that
        case. */
     /** @todo any better idea to handle this? ugh */
-    if(!passed) return;
+    if(!passed)
+        return;
     #else
     static_cast<void>(passed);
     #endif

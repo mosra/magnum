@@ -396,7 +396,8 @@ Matrix3 PhongMaterialData::commonTextureMatrix() const {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Matrix3 PhongMaterialData::textureMatrix() const {
-    if(hasCommonTextureTransformation()) return commonTextureMatrix();
+    if(hasCommonTextureTransformation())
+        return commonTextureMatrix();
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
 #endif

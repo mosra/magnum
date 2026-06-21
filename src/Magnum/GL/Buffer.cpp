@@ -209,7 +209,8 @@ Buffer::~Buffer() {
 
     /* Remove all current bindings from the state */
     for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
-        if(bindings[i] == _id) bindings[i] = 0;
+        if(bindings[i] == _id)
+            bindings[i] = 0;
 
     glDeleteBuffers(1, &_id);
 }
@@ -287,7 +288,8 @@ void Buffer::bindInternal(const TargetHint target, Buffer* const buffer) {
 
     /* Bind the buffer otherwise, which will also finally create it */
     bound = id;
-    if(buffer) buffer->_flags |= ObjectFlag::Created;
+    if(buffer)
+        buffer->_flags |= ObjectFlag::Created;
     glBindBuffer(GLenum(target), id);
 }
 
@@ -438,7 +440,8 @@ bool Buffer::unmap() { return Context::current().state().buffer.unmapImplementat
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
 Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
     Containers::Array<char> data{NoInit, std::size_t(size)};
-    if(size) Context::current().state().buffer.getSubDataImplementation(*this, offset, size, data);
+    if(size)
+        Context::current().state().buffer.getSubDataImplementation(*this, offset, size, data);
     return data;
 }
 #endif
@@ -446,7 +449,8 @@ Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr 
 #ifndef MAGNUM_TARGET_GLES2
 void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
-        if(buffers && buffers[i]) buffers[i]->bind(target, firstIndex + i);
+        if(buffers && buffers[i])
+            buffers[i]->bind(target, firstIndex + i);
         else unbind(target, firstIndex + i);
     }
 }

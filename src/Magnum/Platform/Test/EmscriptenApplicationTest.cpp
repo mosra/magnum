@@ -386,7 +386,8 @@ struct EmscriptenApplicationTest: Platform::Application {
         } else if(event.key() == Key::F2) {
             _redraw = !_redraw;
             Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
-            if(_redraw) redraw();
+            if(_redraw)
+                redraw();
         } else if(event.key() == Key::Esc) {
             Debug{} << "stopping text input";
             stopTextInput();

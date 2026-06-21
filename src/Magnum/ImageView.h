@@ -532,7 +532,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * as well. See also @ref Image-pixel-access for more information.
          */
         template<class U> Containers::StridedArrayView<dimensions, typename std::conditional<std::is_const<Type>::value, typename std::add_const<U>::type, U>::type> pixels() const {
-            if(!_data && !_data.size()) return {};
+            if(!_data && !_data.size())
+                return {};
             /* Deliberately not adding a StridedArrayView include, it should
                work without since this is a templated function and we declare
                arrayCast() above to satisfy two-phase lookup. */

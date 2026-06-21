@@ -93,7 +93,8 @@ void AnyImporter::doOpenFile(const std::string& filename) {
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    if(!importer->openFile(filename)) return;
+    if(!importer->openFile(filename))
+        return;
 
     /* Success, save the instance */
     _in = Utility::move(importer);

@@ -99,7 +99,8 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
         attributes[attributeIndex++] =
             Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals};
         attributeOffset += sizeof(Vector3);
-        for(auto&& i: normals) i = Vector3::zAxis(1.0f);
+        for(auto&& i: normals)
+            i = Vector3::zAxis(1.0f);
     }
     if(flags & GridFlag::Tangents) {
         Containers::StridedArrayView1D<Vector4> tangents{vertexData,
@@ -108,7 +109,8 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
         attributes[attributeIndex++] =
             Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, tangents};
         attributeOffset += sizeof(Vector4);
-        for(auto&& i: tangents) i = {1.0f, 0.0f, 0.0f, 1.0f};
+        for(auto&& i: tangents)
+            i = {1.0f, 0.0f, 0.0f, 1.0f};
     }
 
     if(flags & GridFlag::TextureCoordinates) {

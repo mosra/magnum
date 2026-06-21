@@ -207,7 +207,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          *      possible.
          */
         static void setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects) {
-            if(objects.empty()) return;
+            if(objects.empty())
+                return;
             objects.front().get().doSetClean(objects);
         }
 

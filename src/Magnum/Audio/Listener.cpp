@@ -59,7 +59,8 @@ template<UnsignedInt dimensions> Listener<dimensions>::~Listener() = default;
 
 template<UnsignedInt dimensions> void Listener<dimensions>::clean(const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) {
     /* Only clean if this Listener is active */
-    if(!isActive()) return;
+    if(!isActive())
+        return;
 
     Renderer::setListenerPosition(_soundTransformation.transformVector(Vector3::pad(absoluteTransformationMatrix.translation())));
 
@@ -102,7 +103,8 @@ template<UnsignedInt dimensions> void Listener<dimensions>::update(std::initiali
 
 template<UnsignedInt dimensions> Listener<dimensions>& Listener<dimensions>::setGain(const Float gain) {
     _gain = gain;
-    if(isActive()) Renderer::setListenerGain(_gain);
+    if(isActive())
+        Renderer::setListenerGain(_gain);
     return *this;
 }
 

@@ -60,14 +60,16 @@ Trade::MeshData cylinderSolid(const UnsignedInt rings, const UnsignedInt segment
     }
 
     /* Faces. Account for the extra vertices for caps and texture coords. */
-    if(flags & CylinderFlag::CapEnds) cylinder.bottomFaceRing();
+    if(flags & CylinderFlag::CapEnds)
+        cylinder.bottomFaceRing();
     if(flags & CylinderFlag::CapEnds && flags & (CylinderFlag::TextureCoordinates|CylinderFlag::Tangents))
         cylinder.faceRings(rings, 2 + segments);
     else if(flags & CylinderFlag::CapEnds)
         cylinder.faceRings(rings, 1 + segments);
     else
         cylinder.faceRings(rings, 0);
-    if(flags & CylinderFlag::CapEnds) cylinder.topFaceRing();
+    if(flags & CylinderFlag::CapEnds)
+        cylinder.topFaceRing();
 
     return cylinder.finalize();
 }

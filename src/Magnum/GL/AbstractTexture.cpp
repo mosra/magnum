@@ -184,7 +184,8 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, cons
         const GLuint id = textures && textures[i] ? textures[i]->_id : 0;
 
         if(textures) {
-            if(textures[i]) textures[i]->createIfNotAlready();
+            if(textures[i])
+                textures[i]->createIfNotAlready();
             ids[i] = id;
         }
 
@@ -195,7 +196,8 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, cons
     }
 
     /* Avoid doing the binding if there is nothing different */
-    if(different) glBindTextures(firstTextureUnit, textures.size(), ids);
+    if(different)
+        glBindTextures(firstTextureUnit, textures.size(), ids);
 }
 #endif
 
@@ -240,14 +242,16 @@ AbstractTexture::~AbstractTexture() {
     /* Remove all bindings */
     for(auto& binding: Context::current().state().texture.bindings) {
         /* MSVC 2015 needs the parentheses around */
-        if(binding.second() == _id) binding = {};
+        if(binding.second() == _id)
+            binding = {};
     }
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Remove all image bindings */
     for(auto& binding: Context::current().state().texture.imageBindings) {
         /* MSVC 2015 needs the parentheses around */
-        if(binding.id == _id) binding = {};
+        if(binding.id == _id)
+            binding = {};
     }
     #endif
 
@@ -334,7 +338,8 @@ void AbstractTexture::bindImages(const Int firstImageUnit, const Containers::Arr
     }
 
     /* Avoid doing the binding if there is nothing different */
-    if(different) glBindImageTextures(firstImageUnit, textures.size(), ids);
+    if(different)
+        glBindImageTextures(firstImageUnit, textures.size(), ids);
 }
 
 void AbstractTexture::bindImages(const Int firstImageUnit, const std::initializer_list<AbstractTexture*> textures) {
@@ -401,7 +406,8 @@ void AbstractTexture::bindImplementationDSA(AbstractTexture& self, const GLint t
 #ifdef CORRADE_TARGET_WINDOWS
 void AbstractTexture::bindImplementationDSAIntelWindows(AbstractTexture& self, const GLint textureUnit) {
     /* See the "intel-windows-half-baked-dsa-texture-bind" workaround */
-    if(self._target == GL_TEXTURE_CUBE_MAP) bindImplementationDefault(self, textureUnit);
+    if(self._target == GL_TEXTURE_CUBE_MAP)
+        bindImplementationDefault(self, textureUnit);
     else bindImplementationDSA(self, textureUnit);
 }
 #endif

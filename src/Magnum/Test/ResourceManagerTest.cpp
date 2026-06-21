@@ -445,7 +445,8 @@ void ResourceManagerTest::loader() {
             void doLoad(ResourceKey) override {}
 
             std::string doName(ResourceKey key) const override {
-                if(key == ResourceKey("hello")) return "hello";
+                if(key == ResourceKey("hello"))
+                    return "hello";
                 return "";
             }
 

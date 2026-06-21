@@ -161,7 +161,8 @@ bool MeshLayout::operator==(const MeshLayout& other) const {
     /* Then continue only if both have the state struct -- if only one has it,
        it can be still equal if the counts are zero for both (which is verified
        by the assert above) */
-    if(!other._state || !_state) return true;
+    if(!other._state || !_state)
+        return true;
 
     return _c(_state->vertexDivisorInfo.vertexBindingDivisorCount) &&
         /* These assume the bindings and locations are sorted (as the asserts
@@ -175,7 +176,8 @@ bool MeshLayout::operator==(const MeshLayout& other) const {
 }
 
 MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt stride) & {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* Ensure order for efficient comparisons */
     CORRADE_ASSERT(_state->bindings.isEmpty() || _state->bindings.back().binding < binding,
@@ -197,7 +199,8 @@ MeshLayout&& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt
 }
 
 MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const UnsignedInt stride, const UnsignedInt divisor) & {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* Ensure order for efficient comparisons */
     CORRADE_ASSERT(_state->bindings.isEmpty() || _state->bindings.back().binding < binding,
@@ -232,7 +235,8 @@ MeshLayout&& MeshLayout::addInstancedBinding(const UnsignedInt binding, const Un
 }
 
 MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const VertexFormat format, const UnsignedInt offset) & {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* Ensure order for efficient comparisons */
     CORRADE_ASSERT(_state->attributes.isEmpty() || _state->attributes.back().location < location,

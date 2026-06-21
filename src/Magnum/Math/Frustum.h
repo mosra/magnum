@@ -135,7 +135,8 @@ template<class T> class Frustum {
          */
         bool operator==(const Frustum<T>& other) const {
             for(std::size_t i = 0; i != 6; ++i)
-                if(_data[i] != other._data[i]) return false;
+                if(_data[i] != other._data[i])
+                    return false;
 
             return true;
         }
@@ -292,9 +293,11 @@ template<class T> class Frustum {
 template<class T> Debug& operator<<(Debug& debug, const Frustum<T>& value) {
     debug << "Frustum({" << Debug::nospace;
     for(std::size_t i = 0; i != 6; ++i) {
-        if(i != 0) debug << Debug::nospace << "},\n        {" << Debug::nospace;
+        if(i != 0)
+            debug << Debug::nospace << "},\n        {" << Debug::nospace;
         for(std::size_t j = 0; j != 4; ++j) {
-            if(j != 0) debug << Debug::nospace << ",";
+            if(j != 0)
+                debug << Debug::nospace << ",";
             debug << value[i][j];
         }
     }

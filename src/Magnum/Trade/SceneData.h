@@ -4246,7 +4246,8 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
 template<class T> Containers::StridedArrayView1D<const T> SceneData::mapping(const UnsignedInt fieldId) const {
     Containers::StridedArrayView2D<const char> data = mapping(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     CORRADE_ASSERT(Implementation::sceneMappingTypeFor<T>() == _mappingType,
         "Trade::SceneData::mapping(): mapping is" << _mappingType << "but requested" << Implementation::sceneMappingTypeFor<T>(), {});
@@ -4256,7 +4257,8 @@ template<class T> Containers::StridedArrayView1D<const T> SceneData::mapping(con
 template<class T> Containers::StridedArrayView1D<T> SceneData::mutableMapping(const UnsignedInt fieldId) {
     Containers::StridedArrayView2D<char> data = mutableMapping(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     CORRADE_ASSERT(Implementation::sceneMappingTypeFor<T>() == _mappingType,
         "Trade::SceneData::mutableMapping(): mapping is" << _mappingType << "but requested" << Implementation::sceneMappingTypeFor<T>(), {});
@@ -4266,7 +4268,8 @@ template<class T> Containers::StridedArrayView1D<T> SceneData::mutableMapping(co
 template<class T> Containers::StridedArrayView1D<const T> SceneData::mapping(const SceneField fieldName) const {
     Containers::StridedArrayView2D<const char> data = mapping(fieldName);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     CORRADE_ASSERT(Implementation::sceneMappingTypeFor<T>() == _mappingType,
         "Trade::SceneData::mapping(): mapping is" << _mappingType << "but requested" << Implementation::sceneMappingTypeFor<T>(), {});
@@ -4276,7 +4279,8 @@ template<class T> Containers::StridedArrayView1D<const T> SceneData::mapping(con
 template<class T> Containers::StridedArrayView1D<T> SceneData::mutableMapping(const SceneField fieldName) {
     Containers::StridedArrayView2D<char> data = mutableMapping(fieldName);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     CORRADE_ASSERT(Implementation::sceneMappingTypeFor<T>() == _mappingType,
         "Trade::SceneData::mutableMapping(): mapping is" << _mappingType << "but requested" << Implementation::sceneMappingTypeFor<T>(), {});
@@ -4301,10 +4305,12 @@ template<class T> bool SceneData::checkFieldTypeCompatibility(const SceneFieldDa
 template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<const T> SceneData::field(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = field(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[id], "Trade::SceneData::field():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[id], "Trade::SceneData::field():"))
+        return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
@@ -4312,10 +4318,12 @@ template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> 
 template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> SceneData::field(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = field(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[id], "Trade::SceneData::field():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[id], "Trade::SceneData::field():"))
+        return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -4323,10 +4331,12 @@ template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> C
 template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> Containers::StridedArrayView1D<T> SceneData::mutableField(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableField(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[id], "Trade::SceneData::mutableField():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[id], "Trade::SceneData::mutableField():"))
+        return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
@@ -4334,10 +4344,12 @@ template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> 
 template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> SceneData::mutableField(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableField(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[id], "Trade::SceneData::mutableField():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[id], "Trade::SceneData::mutableField():"))
+        return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
@@ -4348,10 +4360,12 @@ template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> 
         "Trade::SceneData::field(): field" << name << "not found", {});
     Containers::StridedArrayView2D<const char> data = field(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::field():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::field():"))
+        return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
@@ -4362,10 +4376,12 @@ template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> C
         "Trade::SceneData::field(): field" << name << "not found", {});
     Containers::StridedArrayView2D<const char> data = field(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::field():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::field():"))
+        return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
@@ -4376,10 +4392,12 @@ template<class T, typename std::enable_if<!std::is_array<T>::value, int>::type> 
         "Trade::SceneData::mutableField(): field" << name << "not found", {});
     Containers::StridedArrayView2D<char> data = mutableField(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::mutableField():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::mutableField():"))
+        return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
@@ -4390,10 +4408,12 @@ template<class T, typename std::enable_if<std::is_array<T>::value, int>::type> C
         "Trade::SceneData::mutableField(): field" << name << "not found", {});
     Containers::StridedArrayView2D<char> data = mutableField(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
+    if(!data.stride()[1])
+        return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::mutableField():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::mutableField():"))
+        return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }

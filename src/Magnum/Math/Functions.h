@@ -266,8 +266,8 @@ template<class T
 */
 template<std::size_t size, class T> inline BitVector<size> isInf(const Vector<size, T>& value) {
     BitVector<size> out;
-    for(std::size_t i = 0; i != size; ++i)
-        if(Math::isInf(value[i])) out.set(i);
+    for(std::size_t i = 0; i != size; ++i) if(Math::isInf(value[i]))
+        out.set(i);
     return out;
 }
 
@@ -292,8 +292,8 @@ template<class T
 */
 template<std::size_t size, class T> inline BitVector<size> isNan(const Vector<size, T>& value) {
     BitVector<size> out;
-    for(std::size_t i = 0; i != size; ++i)
-        if(Math::isNan(value[i])) out.set(i);
+    for(std::size_t i = 0; i != size; ++i) if(Math::isNan(value[i]))
+        out.set(i);
     return out;
 }
 
@@ -379,8 +379,8 @@ template<class T
 template<std::size_t size, class T> inline Containers::Pair<Vector<size, T>, Vector<size, T>> minmax(const Vector<size, T>& a, const Vector<size, T>& b) {
     using Utility::swap;
     Containers::Pair<Vector<size, T>, Vector<size, T>> out{a, b};
-    for(std::size_t i = 0; i != size; ++i)
-        if(out.first()[i] > out.second()[i]) swap(out.first()[i], out.second()[i]);
+    for(std::size_t i = 0; i != size; ++i) if(out.first()[i] > out.second()[i])
+        swap(out.first()[i], out.second()[i]);
     return out;
 }
 
@@ -428,8 +428,10 @@ template<class T
     , typename std::enable_if<IsScalar<T>::value, int>::type = 0
     #endif
 > inline UnderlyingTypeOf<T> sign(T scalar) {
-    if(scalar > T(0)) return UnderlyingTypeOf<T>(1);
-    if(scalar < T(0)) return UnderlyingTypeOf<T>(-1);
+    if(scalar > T(0))
+        return UnderlyingTypeOf<T>(1);
+    if(scalar < T(0))
+        return UnderlyingTypeOf<T>(-1);
     return UnderlyingTypeOf<T>(0);
 }
 
@@ -914,7 +916,8 @@ template<std::size_t size, class T> inline Vector<size, T> refract(const Vector<
         "Math::refract(): vectors" << vector << "and" << normal << "are not normalized", {});
     const T dot = Math::dot(vector, normal);
     const T k  = T(1.0) - eta*eta*(T(1.0) - dot*dot);
-    if(k < T(0.0)) return {};
+    if(k < T(0.0))
+        return {};
     return eta*vector - (eta*dot + std::sqrt(k))*normal;
 }
 

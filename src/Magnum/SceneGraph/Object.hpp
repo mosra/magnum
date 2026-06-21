@@ -52,13 +52,15 @@ template<class Transformation> Object<Transformation>::~Object() = default;
 
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {
     Object<Transformation>* p(this);
-    while(p && !p->isScene()) p = p->parent();
+    while(p && !p->isScene())
+        p = p->parent();
     return static_cast<Scene<Transformation>*>(p);
 }
 
 template<class Transformation> const Scene<Transformation>* Object<Transformation>::scene() const {
     const Object<Transformation>* p(this);
-    while(p && !p->isScene()) p = p->parent();
+    while(p && !p->isScene())
+        p = p->parent();
     return static_cast<const Scene<Transformation>*>(p);
 }
 
@@ -81,21 +83,25 @@ template<class Transformation> const Object<Transformation>* Object<Transformati
 template<class Transformation> Object<Transformation>& Object<Transformation>::setParent(Object<Transformation>* parent) {
     /* Skip if parent is already parent or this is scene (which cannot have parent) */
     /** @todo Assert for setting parent to scene */
-    if(this->parent() == parent || isScene()) return *this;
+    if(this->parent() == parent || isScene())
+        return *this;
 
     /* Object cannot be parented to its child */
     Object<Transformation>* p = parent;
     while(p) {
         /** @todo Assert for this */
-        if(p == this) return *this;
+        if(p == this)
+            return *this;
         p = p->parent();
     }
 
     /* Remove the object from old parent children list */
-    if(this->parent()) this->parent()->Containers::template LinkedList<Object<Transformation>>::cut(this);
+    if(this->parent())
+        this->parent()->Containers::template LinkedList<Object<Transformation>>::cut(this);
 
     /* Add the object to list of new parent */
-    if(parent) parent->Containers::LinkedList<Object<Transformation>>::insert(this);
+    if(parent)
+        parent->Containers::LinkedList<Object<Transformation>>::insert(this);
 
     setDirty();
     return *this;
@@ -113,14 +119,16 @@ template<class Transformation> Object<Transformation>& Object<Transformation>::s
 }
 
 template<class Transformation> typename Transformation::DataType Object<Transformation>::absoluteTransformation() const {
-    if(!parent()) return Transformation::transformation();
+    if(!parent())
+        return Transformation::transformation();
     return Implementation::Transformation<Transformation>::compose(parent()->absoluteTransformation(), Transformation::transformation());
 }
 
 template<class Transformation> void Object<Transformation>::setDirty() {
     /* The transformation of this object (and all children) is already dirty,
        nothing to do */
-    if(flags & Flag::Dirty) return;
+    if(flags & Flag::Dirty)
+        return;
 
     /* Make all features dirty */
     for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>& feature: this->features())
@@ -136,7 +144,8 @@ template<class Transformation> void Object<Transformation>::setDirty() {
 
 template<class Transformation> void Object<Transformation>::setClean() {
     /* The object (and all its parents) are already clean, nothing to do */
-    if(!(flags & Flag::Dirty)) return;
+    if(!(flags & Flag::Dirty))
+        return;
 
     /* Collect all parents, compute base transformation */
     std::stack<Object<Transformation>*> objects;
@@ -148,7 +157,8 @@ template<class Transformation> void Object<Transformation>::setClean() {
         p = p->parent();
 
         /* On root object, base transformation is identity */
-        if(!p) break;
+        if(!p)
+            break;
 
         /* Parent object is clean, base transformation is its absolute
            transformation */
@@ -175,7 +185,8 @@ template<class Transformation> auto Object<Transformation>::doTransformationMatr
     std::vector<std::reference_wrapper<Object<Transformation>>> castObjects;
     castObjects.reserve(objects.size());
     /** @todo Ensure this doesn't crash, somehow */
-    for(auto o: objects) castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
+    for(auto o: objects)
+        castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
 
     return transformationMatrices(std::move(castObjects), finalTransformationMatrix);
 }
@@ -214,7 +225,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     for(std::size_t i = 0; i != objects.size(); ++i) {
         /* Multiple occurrences of one object in the array, don't overwrite it
            with different counter */
-        if(objects[i].get().counter != ~UnsignedInt{}) continue;
+        if(objects[i].get().counter != ~UnsignedInt{})
+            continue;
 
         objects[i].get().counter = UnsignedInt(i);
         objects[i].get().flags |= Flag::Joint;
@@ -267,7 +279,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
         } else *it = *parent;
 
         /* Cycle if reached end */
-        if(it == objects.end()) it = objects.begin();
+        if(it == objects.end())
+            it = objects.begin();
     }
 
     /* Array of absolute transformations in joints */
@@ -303,7 +316,8 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
 
     /* Transformation already computed ("unvisited" by this function before
        either due to recursion or duplicate object occurrences), done */
-    if(!(o.get().flags & Flag::Visited)) return jointTransformations[joint];
+    if(!(o.get().flags & Flag::Visited))
+        return jointTransformations[joint];
 
     /* Initialize transformation */
     jointTransformations[joint] = o.get().transformation();
@@ -339,7 +353,8 @@ template<class Transformation> void Object<Transformation>::doSetClean(const std
     std::vector<std::reference_wrapper<Object<Transformation>>> castObjects;
     castObjects.reserve(objects.size());
     /** @todo Ensure this doesn't crash, somehow */
-    for(auto o: objects) castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
+    for(auto o: objects)
+        castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
 
     setClean(std::move(castObjects));
 }
@@ -350,7 +365,8 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
     objects.erase(firstClean, objects.end());
 
     /* No dirty objects left, done */
-    if(objects.empty()) return;
+    if(objects.empty())
+        return;
 
     /* Add non-clean parents to the list. Mark each added object as visited, so
        they aren't added more than once */
@@ -366,7 +382,8 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
     }
 
     /* Cleanup all marks */
-    for(auto o: objects) o.get().flags &= ~Flag::Visited;
+    for(auto o: objects)
+        o.get().flags &= ~Flag::Visited;
 
     /* Compute absolute transformations */
     Scene<Transformation>* scene = objects[0].get().scene();
@@ -376,7 +393,8 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
     /* Go through all objects and clean them */
     for(std::size_t i = 0; i != objects.size(); ++i) {
         /* The object might be duplicated in the list, don't clean it more than once */
-        if(!objects[i].get().isDirty()) continue;
+        if(!objects[i].get().isDirty())
+            continue;
 
         objects[i].get().setCleanInternal(transformations[i]);
         CORRADE_ASSERT(!objects[i].get().isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );

@@ -47,7 +47,8 @@ void PrimitiveQuery::begin(const UnsignedInt index) {
 
 void PrimitiveQuery::end() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!_index) glEndQuery(_target);
+    if(!_index)
+        glEndQuery(_target);
     else glEndQueryIndexed(_target, _index);
     #else
     AbstractQuery::end();

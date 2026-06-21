@@ -509,7 +509,8 @@ void VertexFormatTest::assembleRoundtrip() {
     {
         Debug d{&out, Debug::Flag::NoNewlineAtTheEnd};
         d << data.componentType;
-        if(data.normalized) d << Debug::nospace << ", normalized";
+        if(data.normalized)
+            d << Debug::nospace << ", normalized";
     }
     setTestCaseDescription(out);
 
@@ -581,7 +582,8 @@ void VertexFormatTest::assembleMatrixRoundtrip() {
     {
         Debug d{&out, Debug::Flag::NoNewlineAtTheEnd};
         d << data.componentType << Debug::nospace << "," << data.componentCount;
-        if(data.aligned) d << Debug::nospace << ", aligned";
+        if(data.aligned)
+            d << Debug::nospace << ", aligned";
     }
     setTestCaseDescription(out);
 

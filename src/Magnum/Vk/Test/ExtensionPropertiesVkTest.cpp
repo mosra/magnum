@@ -72,7 +72,8 @@ using namespace Containers::Literals;
 void ExtensionPropertiesVkTest::constructMove() {
     InstanceExtensionProperties a = enumerateInstanceExtensionProperties();
     const UnsignedInt count = a.count();
-    if(!count) CORRADE_SKIP("No extensions reported, can't test");
+    if(!count)
+        CORRADE_SKIP("No extensions reported, can't test");
 
     InstanceExtensionProperties b = Utility::move(a);
     CORRADE_COMPARE(b.count(), count);

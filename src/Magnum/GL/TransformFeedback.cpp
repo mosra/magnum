@@ -137,7 +137,8 @@ TransformFeedback::~TransformFeedback() {
 
     /* If bound, remove itself from state */
     GLuint& binding = Context::current().state().transformFeedback.binding;
-    if(binding == _id) binding = 0;
+    if(binding == _id)
+        binding = 0;
 
     glDeleteTransformFeedbacks(1, &_id);
 }

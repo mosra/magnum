@@ -529,7 +529,8 @@ template<class T> struct TypeTraitsFloatingPoint: TypeTraitsName<T> {
 
 template<class T> bool TypeTraitsFloatingPoint<T>::equals(const T a, const T b) {
     /* Shortcut for binary equality (also infinites) */
-    if(a == b) return true;
+    if(a == b)
+        return true;
 
     const T absA = std::abs(a);
     const T absB = std::abs(b);
@@ -546,7 +547,8 @@ template<class T> bool TypeTraitsFloatingPoint<T>::equals(const T a, const T b) 
 
 template<class T> bool TypeTraitsFloatingPoint<T>::equalsZero(const T a, const T magnitude) {
     /* Shortcut for binary equality */
-    if(a == T(0.0)) return true;
+    if(a == T(0.0))
+        return true;
 
     const T absA = std::abs(a);
 

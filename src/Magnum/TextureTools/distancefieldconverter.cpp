@@ -166,7 +166,8 @@ int DistanceFieldConverter::exec() {
         #endif
     };
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
-    if(!importer) return 1;
+    if(!importer)
+        return 1;
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
@@ -176,7 +177,8 @@ int DistanceFieldConverter::exec() {
         #endif
     };
     Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
-    if(!converter) return 2;
+    if(!converter)
+        return 2;
 
     /* Open input file */
     Containers::Optional<Trade::ImageData2D> image;

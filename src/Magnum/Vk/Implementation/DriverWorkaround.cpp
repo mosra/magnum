@@ -86,7 +86,8 @@ constexpr Containers::StringView KnownWorkarounds[]{
    some binary search, which needs extra testing effort. */
 Containers::StringView findWorkaround(const Containers::StringView workaround) {
     for(const Containers::StringView i: KnownWorkarounds)
-        if(workaround == i) return i;
+        if(workaround == i)
+            return i;
     return {};
 }
 
@@ -128,7 +129,8 @@ bool isDriverWorkaroundDisabled(Containers::Array<Containers::Pair<Containers::S
        compare just data pointers instead of the whole string as we store only
        the views in the KnownWorkarounds list. */
     for(const auto& i: encounteredWorkarounds)
-        if(i.first().data() == found.data()) return i.second();
+        if(i.first().data() == found.data())
+            return i.second();
     arrayAppend(encounteredWorkarounds, InPlaceInit, found, false);
     return false;
 }

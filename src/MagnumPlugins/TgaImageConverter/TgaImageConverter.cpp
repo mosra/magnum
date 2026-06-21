@@ -103,7 +103,8 @@ template<class T> void rleEncode(Containers::Array<char>& data, const ImageView2
        builds */
     Containers::StridedArrayView1D<const T> currentRow;
     while(y < pixels.size()[0]) {
-        if(!currentRow) currentRow = pixels[y];
+        if(!currentRow)
+            currentRow = pixels[y];
         /* Current pixel, again pre-swizzled so we don't need to swizzle in
            each arrayAppend() call */
         const T current = swizzle(currentRow[x]);
@@ -305,7 +306,8 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
 
     /* If we started with a RLE-encoded file, turn the array back into a
        non-growable to avoid a dangling deleter on plugin unload */
-    if(rle) arrayShrink(data);
+    if(rle)
+        arrayShrink(data);
 
     /* GCC 4.8 needs extra help here */
     return Containers::optional(Utility::move(data));

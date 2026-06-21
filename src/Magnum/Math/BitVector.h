@@ -387,7 +387,8 @@ template<std::size_t size> Debug& operator<<(Debug& debug, const BitVector<size>
 
 template<std::size_t size> inline bool BitVector<size>::operator==(const BitVector<size>& other) const {
     for(std::size_t i = 0; i != size/8; ++i)
-        if(_data[i] != other._data[i]) return false;
+        if(_data[i] != other._data[i])
+            return false;
 
     /* Check last segment */
     if(size%8 && (_data[DataSize-1] & LastSegmentMask) != (other._data[DataSize-1] & LastSegmentMask))
@@ -399,7 +400,8 @@ template<std::size_t size> inline bool BitVector<size>::operator==(const BitVect
 template<std::size_t size> inline bool BitVector<size>::all() const {
     /* Check all full segments */
     for(std::size_t i = 0; i != size/8; ++i)
-        if(_data[i] != FullSegmentMask) return false;
+        if(_data[i] != FullSegmentMask)
+            return false;
 
     /* Check last segment */
     if(size%8 && (_data[DataSize-1] & LastSegmentMask) != LastSegmentMask)
@@ -411,7 +413,8 @@ template<std::size_t size> inline bool BitVector<size>::all() const {
 template<std::size_t size> inline bool BitVector<size>::none() const {
     /* Check all full segments */
     for(std::size_t i = 0; i != size/8; ++i)
-        if(_data[i]) return false;
+        if(_data[i])
+            return false;
 
     /* Check last segment */
     if(size%8 && (_data[DataSize-1] & LastSegmentMask))

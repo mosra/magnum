@@ -174,7 +174,8 @@ int FontConverter::exec() {
         #endif
     };
     Containers::Pointer<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
-    if(!font) return 1;
+    if(!font)
+        return 1;
 
     /* Register the image converter manager for potential dependencies
        (MagnumFontConverter needs TgaImageConverter, for example) */
@@ -188,7 +189,8 @@ int FontConverter::exec() {
 
     /* Load font converter */
     Containers::Pointer<Text::AbstractFontConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
-    if(!converter) return 2;
+    if(!converter)
+        return 2;
 
     /* Open font */
     if(!font->openFile(args.value("input"), args.value<Float>("font-size"))) {

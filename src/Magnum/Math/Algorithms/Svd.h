@@ -143,7 +143,8 @@ template<std::size_t cols, std::size_t rows, class T> Containers::Optional<Conta
         } else g = T(0);
 
         const T y = std::abs(q[i]) + std::abs(e[i]);
-        if(y > epsilonX) epsilonX = y;
+        if(y > epsilonX)
+            epsilonX = y;
     }
 
     /* Accumulation of right hand transformations */
@@ -229,7 +230,8 @@ template<std::size_t cols, std::size_t rows, class T> Containers::Optional<Conta
 
                     const T f = s*e[i];
                     e[i] = c*e[i];
-                    if(std::abs(f) <= epsilon) break;
+                    if(std::abs(f) <= epsilon)
+                        break;
 
                     const T j = q[i];
                     const T h = Implementation::pythagoras(f, j);

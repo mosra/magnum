@@ -803,8 +803,10 @@ size.
 @see @ref join(const Range<dimensions, T>&, const Vector<dimensions, T>&)
 */
 template<UnsignedInt dimensions, class T> inline Range<dimensions, T> join(const Range<dimensions, T>& a, const Range<dimensions, T>& b) {
-    if(a.min() == a.max()) return b;
-    if(b.min() == b.max()) return a;
+    if(a.min() == a.max())
+        return b;
+    if(b.min() == b.max())
+        return a;
     return {min(a.min(), b.min()), max(a.max(), b.max())};
 }
 
@@ -841,7 +843,8 @@ undefined if any range has a negative size.
 @see @ref intersects()
 */
 template<UnsignedInt dimensions, class T> inline Range<dimensions, T> intersect(const Range<dimensions, T>& a, const Range<dimensions, T>& b) {
-    if(!intersects(a, b)) return {};
+    if(!intersects(a, b))
+        return {};
     return {max(a.min(), b.min()), min(a.max(), b.max())};
 }
 

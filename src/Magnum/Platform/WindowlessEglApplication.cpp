@@ -615,7 +615,8 @@ WindowlessEglContext::~WindowlessEglContext() {
         eglDestroyContext(_display, _context);
     }
     #if defined(CORRADE_TARGET_WINDOWS) || (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL))
-    if(_surface) eglDestroySurface(_display, _surface);
+    if(_surface)
+        eglDestroySurface(_display, _surface);
     #endif
 
     /* Don't terminate EGL if we're a shared context as it would kill all
@@ -629,7 +630,8 @@ WindowlessEglContext::~WindowlessEglContext() {
         _display) eglTerminate(_display);
 
     #ifdef CORRADE_TARGET_WINDOWS
-    if(_window) DestroyWindow(_window);
+    if(_window)
+        DestroyWindow(_window);
     #endif
 }
 
@@ -713,7 +715,8 @@ WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, N
 void WindowlessEglApplication::createContext() { createContext({}); }
 
 void WindowlessEglApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
+    if(!tryCreateContext(configuration))
+        std::exit(1);
 }
 
 bool WindowlessEglApplication::tryCreateContext(const Configuration& configuration) {

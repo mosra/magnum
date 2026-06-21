@@ -252,7 +252,8 @@ void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, cons
     const Vector2i blockCount = (size + pixelsPerBlock - Vector2i{1})/pixelsPerBlock;
 
     for(std::int_fast32_t y = 0; y != blockCount.y(); ++y) {
-        if(y) out << Debug::newline;
+        if(y)
+            out << Debug::newline;
         out << "          |";
 
         for(std::int_fast32_t x = 0; x != blockCount.x(); ++x) {
@@ -388,11 +389,13 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, Pixe
        sorted map. Need to reverse the condition in order to catch NaNs. */
     std::multimap<Float, std::size_t> large;
     for(std::size_t i = 0; i != delta.size(); ++i)
-        if(!(delta[i] <= meanThreshold)) large.emplace(delta[i], i);
+        if(!(delta[i] <= meanThreshold))
+            large.emplace(delta[i], i);
 
     /* If there's no outliers, don't print anything. This can happen only when
        --verbose is used. */
-    if(large.empty()) return;
+    if(large.empty())
+        return;
 
     /* If there are outliers, adding a newline to separate itself from the
        delta image -- calling code wouldn't know if we produce output or not,
@@ -408,7 +411,8 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, Pixe
        inner loop but that doesn't matter as we always print just ~10 values. */
     std::size_t count = 0;
     for(auto it = large.crbegin(); it != large.crend(); ++it) {
-        if(++count > maxCount) break;
+        if(++count > maxCount)
+            break;
 
         const Containers::Pair<Int, Int> div = Math::div(Int(it->second), Int(expectedPixels.size()[1]));
         const Vector2i pos{div.second(), div.first()};
@@ -457,11 +461,13 @@ class ImageComparatorBase::State {
            the --save-failed option. Treat both the same lazy way to keep the
            code straightforward. */
         PluginManager::Manager<Trade::AbstractImporter>& importerManager() {
-            if(!_importerManager) _importerManager = &_privateImporterManager.emplace();
+            if(!_importerManager)
+                _importerManager = &_privateImporterManager.emplace();
             return *_importerManager;
         }
         PluginManager::Manager<Trade::AbstractImageConverter>& converterManager() {
-            if(!_converterManager) _converterManager = &_privateConverterManager.emplace();
+            if(!_converterManager)
+                _converterManager = &_privateConverterManager.emplace();
             return *_converterManager;
         }
 

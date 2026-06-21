@@ -92,9 +92,12 @@ void MeshVisualizerGLBase::assertExtensions(const FlagsBase flags) {
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef CORRADE_NO_ASSERT
     Int countMutuallyExclusive = 0;
-    if(flags & FlagBase::ObjectId) ++countMutuallyExclusive;
-    if(flags & FlagBase::VertexId) ++countMutuallyExclusive;
-    if(flags & FlagBase::PrimitiveIdFromVertexId) ++countMutuallyExclusive;
+    if(flags & FlagBase::ObjectId)
+        ++countMutuallyExclusive;
+    if(flags & FlagBase::VertexId)
+        ++countMutuallyExclusive;
+    if(flags & FlagBase::PrimitiveIdFromVertexId)
+        ++countMutuallyExclusive;
     #endif
     CORRADE_ASSERT(countMutuallyExclusive <= 1,
         "Shaders::MeshVisualizerGL: Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive", );
@@ -706,7 +709,8 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
     #endif
 
     out.attachShaders({vert, frag});
-    if(geom) out.attachShader(*geom);
+    if(geom)
+        out.attachShader(*geom);
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -784,7 +788,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */
-    if(!id()) return;
+    if(!id())
+        return;
     #endif
 
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
@@ -990,7 +995,8 @@ MeshVisualizerGL2D& MeshVisualizerGL2D::setJointMatrices(const Containers::Array
         "Shaders::MeshVisualizerGL2D::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
     CORRADE_ASSERT(matrices.size() <= _jointCount,
         "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected at most" << _jointCount << "items but got" << matrices.size(), *this);
-    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    if(_jointCount)
+        setUniform(_jointMatricesUniform, matrices);
     return *this;
 }
 
@@ -1197,11 +1203,14 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(configuration.flags() & (Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) && !(configuration.flags() & Flag::NoGeometryShader)) {
         Int maxVertices = 0;
-        if(configuration.flags() & Flag::Wireframe) maxVertices += 3;
-        if(configuration.flags() & Flag::TangentDirection) maxVertices += 3*6;
+        if(configuration.flags() & Flag::Wireframe)
+            maxVertices += 3;
+        if(configuration.flags() & Flag::TangentDirection)
+            maxVertices += 3*6;
         if(configuration.flags() & (Flag::BitangentDirection|Flag::BitangentFromTangentDirection))
             maxVertices += 3*6;
-        if(configuration.flags() & Flag::NormalDirection) maxVertices += 3*6;
+        if(configuration.flags() & Flag::NormalDirection)
+            maxVertices += 3*6;
 
         geom = GL::Shader{version, GL::Shader::Type::Geometry};
         (*geom)
@@ -1249,10 +1258,12 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
 
     vert.submitCompile();
     frag.submitCompile();
-    if(geom) geom->submitCompile();
+    if(geom)
+        geom->submitCompile();
 
     out.attachShaders({vert, frag});
-    if(geom) out.attachShader(*geom);
+    if(geom)
+        out.attachShader(*geom);
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -1345,7 +1356,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */
-    if(!id()) return;
+    if(!id())
+        return;
     #endif
 
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
@@ -1642,7 +1654,8 @@ MeshVisualizerGL3D& MeshVisualizerGL3D::setJointMatrices(const Containers::Array
         "Shaders::MeshVisualizerGL3D::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
     CORRADE_ASSERT(matrices.size() <= _jointCount,
         "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected at most" << _jointCount << "items but got" << matrices.size(), *this);
-    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    if(_jointCount)
+        setUniform(_jointMatricesUniform, matrices);
     return *this;
 }
 

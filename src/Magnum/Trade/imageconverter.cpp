@@ -302,7 +302,8 @@ template<UnsignedInt dimensions> bool checkCommonFormatFlags(const Utility::Argu
     const bool compressed = images.front().isCompressed();
     PixelFormat format{};
     CompressedPixelFormat compressedFormat{};
-    if(!compressed) format = images.front().format();
+    if(!compressed)
+        format = images.front().format();
     else compressedFormat = images.front().compressedFormat();
     ImageFlags<dimensions> flags = images.front().flags();
     for(std::size_t i = 1; i != images.size(); ++i) {
@@ -333,7 +334,8 @@ template<UnsignedInt dimensions> bool checkCommonFormatFlags(const Utility::Argu
 }
 
 template<UnsignedInt dimensions> bool checkCommonFormatAndSize(const Utility::Arguments& args, const Containers::Array<Trade::ImageData<dimensions>>& images) {
-    if(!checkCommonFormatFlags(args, images)) return false;
+    if(!checkCommonFormatFlags(args, images))
+        return false;
 
     CORRADE_INTERNAL_ASSERT(!images.isEmpty());
     Math::Vector<dimensions, Int> size = images.front().size();
@@ -373,7 +375,8 @@ template<UnsignedInt dimensions> bool convertImages(Trade::AbstractImageConverte
     CORRADE_INTERNAL_ASSERT(!images.isEmpty());
     for(Trade::ImageData<dimensions>& image: images) {
         Containers::Optional<Trade::ImageData<dimensions>> output = converter.convert(image);
-        if(!output) return false;
+        if(!output)
+            return false;
         image = *Utility::move(output);
     }
 
@@ -541,7 +544,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         }
 
         /* Set options, if passed */
-        if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
+        if(args.isSet("verbose"))
+            importer->addFlags(Trade::ImporterFlag::Verbose);
         Implementation::setOptions(*importer, "AnyImageImporter", args.value("importer-options"));
         Trade::Implementation::printImporterInfo(useColor, *importer);
         return 0;
@@ -554,7 +558,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         }
 
         /* Set options, if passed */
-        if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
+        if(args.isSet("verbose"))
+            converter->addFlags(Trade::ImageConverterFlag::Verbose);
         if(args.arrayValueCount("converter-options"))
             Implementation::setOptions(*converter, "AnyImageConverter", args.arrayValue("converter-options", 0));
         Trade::Implementation::printImageConverterInfo(useColor, *converter);
@@ -565,7 +570,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
     /** @todo make them array options as well? */
     const UnsignedInt image = args.value<UnsignedInt>("image");
     Containers::Optional<UnsignedInt> level;
-    if(!args.value("level").empty()) level = args.value<UnsignedInt>("level");
+    if(!args.value("level").empty())
+        level = args.value<UnsignedInt>("level");
     #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
     Containers::Array<Containers::Array<const char, Utility::Path::MapDeleter>> mapped;
     #endif
@@ -656,7 +662,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
             }
 
             /* Set options, if passed */
-            if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
+            if(args.isSet("verbose"))
+                importer->addFlags(Trade::ImporterFlag::Verbose);
             Implementation::setOptions(*importer, "AnyImageImporter", args.value("importer-options"));
 
             /* Open the file or map it if requested */
@@ -867,7 +874,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         Trade::Implementation::Duration d{conversionTime};
 
         if(dimensions == 1) {
-            if(!checkCommonFormatAndSize(args, images1D)) return 1;
+            if(!checkCommonFormatAndSize(args, images1D))
+                return 1;
 
             outputDimensions = 2;
             if(!images1D.front().isCompressed()) {
@@ -895,7 +903,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
             }
 
         } else if(dimensions == 2) {
-            if(!checkCommonFormatAndSize(args, images2D)) return 1;
+            if(!checkCommonFormatAndSize(args, images2D))
+                return 1;
 
             outputDimensions = 3;
             if(!images2D.front().isCompressed()) {
@@ -941,7 +950,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
             /* There can be multiple input levels, and a layer should get
                extracted from each level, forming a multi-level image again */
-            if(!checkCommonFormatFlags(args, images2D)) return 1;
+            if(!checkCommonFormatFlags(args, images2D))
+                return 1;
             if(!images2D.front().isCompressed()) {
                 for(std::size_t i = 0; i != images2D.size(); ++i) {
                     /* Diagnostic printed in the import loop above, as here we
@@ -971,7 +981,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
             /* There can be multiple input levels, and a layer should get
                extracted from each level, forming a multi-level image again */
-            if(!checkCommonFormatFlags(args, images3D)) return 1;
+            if(!checkCommonFormatFlags(args, images3D))
+                return 1;
             if(!images3D.front().isCompressed()) {
                 for(std::size_t i = 0; i != images3D.size(); ++i) {
                     /* Diagnostic printed in the import loop above, as here we
@@ -1003,15 +1014,18 @@ no -C / --converter is specified, AnyImageConverter is used.)")
        --levels is set or if the (single) input image is multi-level. */
     } else {
         if(dimensions == 1) {
-            if(!checkCommonFormatFlags(args, images1D)) return 1;
+            if(!checkCommonFormatFlags(args, images1D))
+                return 1;
             outputDimensions = 1;
             outputImages1D = Utility::move(images1D);
         } else if(dimensions == 2) {
-            if(!checkCommonFormatFlags(args, images2D)) return 1;
+            if(!checkCommonFormatFlags(args, images2D))
+                return 1;
             outputDimensions = 2;
             outputImages2D = Utility::move(images2D);
         } else if(dimensions == 3) {
-            if(!checkCommonFormatFlags(args, images3D)) return 1;
+            if(!checkCommonFormatFlags(args, images3D))
+                return 1;
             outputDimensions = 3;
             outputImages3D = Utility::move(images3D);
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
@@ -1045,7 +1059,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
             }
 
             /* Set options, if passed */
-            if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
+            if(args.isSet("verbose"))
+                converter->addFlags(Trade::ImageConverterFlag::Verbose);
             if(i < args.arrayValueCount("converter-options"))
                 Implementation::setOptions(*converter, "AnyImageConverter", args.arrayValue("converter-options", i));
         }
@@ -1152,7 +1167,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
                 {
                     Trade::Implementation::Duration d{conversionTime};
-                    if(!Utility::Path::write(output, data)) return 1;
+                    if(!Utility::Path::write(output, data))
+                        return 1;
                 }
 
             /* Convert to a file */

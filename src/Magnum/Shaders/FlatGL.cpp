@@ -406,7 +406,8 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */
-    if(!id()) return;
+    if(!id())
+        return;
     #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
@@ -438,9 +439,11 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
                 _textureLayerUniform = uniformLocation("textureLayer"_s);
             #endif
             _colorUniform = uniformLocation("color"_s);
-            if(_flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask"_s);
+            if(_flags & Flag::AlphaMask)
+                _alphaMaskUniform = uniformLocation("alphaMask"_s);
             #ifndef MAGNUM_TARGET_GLES2
-            if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId"_s);
+            if(_flags & Flag::ObjectId)
+                _objectIdUniform = uniformLocation("objectId"_s);
             #endif
             #ifndef MAGNUM_TARGET_GLES2
             if(_jointCount) {
@@ -457,9 +460,11 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
     if(state._version < GL::Version::GLES310)
     #endif
     {
-        if(_flags & Flag::Textured) setUniform(uniformLocation("textureData"_s), TextureUnit);
+        if(_flags & Flag::Textured)
+            setUniform(uniformLocation("textureData"_s), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
-        if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
+        if(_flags >= Flag::ObjectIdTexture)
+            setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
         /* SSBOs have bindings defined in the source always */
         if(_flags >= Flag::UniformBuffers
             #ifndef MAGNUM_TARGET_WEBGL
@@ -494,7 +499,8 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
             setTextureMatrix(Matrix3{Math::IdentityInit});
         /* Texture layer is zero by default */
         setColor(Magnum::Color4{1.0f});
-        if(_flags & Flag::AlphaMask) setAlphaMask(0.5f);
+        if(_flags & Flag::AlphaMask)
+            setAlphaMask(0.5f);
         /* Object ID is zero by default */
         #ifndef MAGNUM_TARGET_GLES2
         if(_jointCount) {
@@ -601,7 +607,8 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setJoin
         "Shaders::FlatGL::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
     CORRADE_ASSERT(matrices.size() <= _jointCount,
         "Shaders::FlatGL::setJointMatrices(): expected at most" << _jointCount << "items but got" << matrices.size(), *this);
-    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    if(_jointCount)
+        setUniform(_jointMatricesUniform, matrices);
     return *this;
 }
 

@@ -112,7 +112,8 @@ Trade::MeshData duplicate(const Trade::MeshData& mesh, const Containers::ArrayVi
     UnsignedInt attributeIndex = mesh.attributeCount();
     for(UnsignedInt i = 0; i != extra.size(); ++i) {
         /* Padding, ignore */
-        if(extra[i].format() == VertexFormat{}) continue;
+        if(extra[i].format() == VertexFormat{})
+            continue;
 
         /* Asserting here even though data() has another assert since that one
            would be too confusing in this context */

@@ -80,7 +80,8 @@ Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialDa
     std::size_t layerCount;
     if(inputLayersToKeep.data()) {
         layerCount = inputLayersToKeep.count();
-        if(!inputLayersToKeep[0]) ++layerCount;
+        if(!inputLayersToKeep[0])
+            ++layerCount;
     } else layerCount = material.layerCount();
 
     /* Fill in the layer offsets based on count of attributes in each, skipping
@@ -91,7 +92,8 @@ Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialDa
     for(UnsignedInt i = 0; i != material.layerCount(); ++i) {
         if(inputLayersToKeep.data() && !inputLayersToKeep[i]) {
             /* The base layer stays, just gets empty */
-            if(i == 0) layers[layerOffset++] = 0;
+            if(i == 0)
+                layers[layerOffset++] = 0;
             continue;
         }
         layers[layerOffset++] = patchedInputAttributesToKeep.prefix(material.attributeDataOffset(i + 1)).count();

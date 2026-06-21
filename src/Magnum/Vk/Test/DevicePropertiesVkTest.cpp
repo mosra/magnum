@@ -371,7 +371,8 @@ void DevicePropertiesVkTest::extensionConstructMove() {
 
     ExtensionProperties a = devices[0].enumerateExtensionProperties();
     const UnsignedInt count = a.count();
-    if(!count) CORRADE_SKIP("No extensions reported, can't test");
+    if(!count)
+        CORRADE_SKIP("No extensions reported, can't test");
 
     ExtensionProperties b = Utility::move(a);
     CORRADE_COMPARE(b.count(), count);
@@ -670,7 +671,8 @@ void DevicePropertiesVkTest::pickDeviceType() {
     Instance instance2{InstanceCreateInfo{Int(Containers::arraySize(argv)), argv}};
 
     Containers::Optional<DeviceProperties> device = tryPickDevice(instance2);
-    if(!device) CORRADE_SKIP("No CPU device found.");
+    if(!device)
+        CORRADE_SKIP("No CPU device found.");
 
     CORRADE_VERIFY(device->type() == DeviceType::Cpu);
 }

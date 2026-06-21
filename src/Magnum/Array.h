@@ -110,7 +110,8 @@ template<UnsignedInt dimensions, class T> class CORRADE_DEPRECATED("use Math::Ve
         /** @brief Equality */
         bool operator==(const Array<dimensions, T>& other) const {
             for(UnsignedInt i = 0; i != dimensions; ++i)
-                if(_data[i] != other._data[i]) return false;
+                if(_data[i] != other._data[i])
+                    return false;
             return true;
         }
 
@@ -257,7 +258,8 @@ template<class T> class CORRADE_DEPRECATED("use Math::Vector3 or Containers::Arr
 template<UnsignedInt dimensions, class T> Debug& operator<<(Debug& debug, const Array<dimensions, T>& value) {
     debug << "Array(" << Debug::nospace;
     for(UnsignedInt i = 0; i != dimensions; ++i) {
-        if(i != 0) debug << Debug::nospace << ",";
+        if(i != 0)
+            debug << Debug::nospace << ",";
         debug << value[i];
     }
     return debug << Debug::nospace << ")";

@@ -1323,7 +1323,8 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
     /* Dropping the alpha channel, as it's always 1.0 */
     Containers::StridedArrayView2D<Color3ub> pixels =
         rendered.pixels<Color4ub>().slice(&Color4ub::rgb);
-    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
+    if(data.flip)
+        pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences when smoothing, Apple A8 a bit
@@ -1514,7 +1515,8 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
     /* Dropping the alpha channel, as it's always 1.0 */
     Containers::StridedArrayView2D<Color3ub> pixels =
         rendered.pixels<Color4ub>().slice(&Color4ub::rgb);
-    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
+    if(data.flip)
+        pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences when smoothing plus a bunch of

@@ -648,7 +648,8 @@ template<class T> inline Complex<T> slerp(const Complex<T>& normalizedA, const C
     const T cosAngle = dot(normalizedA, normalizedB);
 
     /* Avoid division by zero */
-    if(std::abs(cosAngle) >= T(1)) return Complex<T>{normalizedA};
+    if(std::abs(cosAngle) >= T(1))
+        return Complex<T>{normalizedA};
 
     /** @todo couldn't this be done somewhat simpler? */
     const T a = std::acos(cosAngle);

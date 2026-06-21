@@ -71,7 +71,8 @@ template<class Iterator, class T = typename std::decay<decltype(*std::declval<It
         sum = t;
     }
 
-    if(compensation) *compensation = c;
+    if(compensation)
+        *compensation = c;
     return sum;
 }
 

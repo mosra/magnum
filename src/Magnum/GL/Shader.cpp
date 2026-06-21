@@ -858,7 +858,8 @@ void Shader::addSourceImplementationEmscriptenPthread(Shader& self, Containers::
        description for details. */
     if(!source.isSmall() && !source.deleter())
         source = Containers::String{source};
-    for(char& c: source) if(c < 0) c = ' ';
+    for(char& c: source) if(c < 0)
+        c = ' ';
     arrayAppend(self._sources, Utility::move(source));
 }
 #endif
@@ -942,9 +943,11 @@ bool Shader::checkCompile() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
     /* Invoke (possibly parallel) compilation on all shaders */
-    for(Shader& shader: shaders) shader.submitCompile();
+    for(Shader& shader: shaders)
+        shader.submitCompile();
     bool allSuccess = true;
-    for(Shader& shader: shaders) allSuccess = allSuccess && shader.checkCompile();
+    for(Shader& shader: shaders)
+        allSuccess = allSuccess && shader.checkCompile();
     return allSuccess;
 }
 #endif
@@ -959,7 +962,8 @@ void Shader::cleanLogImplementationNoOp(Containers::String&) {}
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
 void Shader::cleanLogImplementationIntelWindows(Containers::String& message) {
-    if(message == "No errors.\n") message = {};
+    if(message == "No errors.\n")
+        message = {};
 }
 #endif
 

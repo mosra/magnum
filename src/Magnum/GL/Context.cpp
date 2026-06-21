@@ -843,16 +843,19 @@ Context::Context(Context&& other) noexcept:
     _configurationFlags{other._configurationFlags}
 {
     Utility::copy(other._extensionRequiredVersion, _extensionRequiredVersion);
-    if(currentContext == &other) currentContext = this;
+    if(currentContext == &other)
+        currentContext = this;
 }
 
 Context::~Context() {
-    if(currentContext == this) currentContext = nullptr;
+    if(currentContext == this)
+        currentContext = nullptr;
 }
 
 void Context::create(const Configuration& configuration) {
     /* Hard exit if the context cannot be created */
-    if(!tryCreate(configuration)) std::exit(1);
+    if(!tryCreate(configuration))
+        std::exit(1);
 }
 
 bool Context::tryCreate(const Configuration& configuration) {
@@ -892,7 +895,8 @@ bool Context::tryCreate(const Configuration& configuration) {
 
     /* Load GL function pointers. Pass this instance to it so it can use it for
        potential driver-specific workarounds. */
-    if(_functionLoader) _functionLoader(*this);
+    if(_functionLoader)
+        _functionLoader(*this);
 
     /* Initialize to something predictable to avoid crashes on improperly
        created contexts */
@@ -1024,7 +1028,8 @@ bool Context::tryCreate(const Configuration& configuration) {
     }
 
     /* Reset minimal required version to Version::None for whole array */
-    for(auto& i: _extensionRequiredVersion) i = Version::None;
+    for(auto& i: _extensionRequiredVersion)
+        i = Version::None;
 
     /* Initialize required versions from extension info */
     for(const auto& version: KnownExtensionsForVersion)
@@ -1072,7 +1077,8 @@ bool Context::tryCreate(const Configuration& configuration) {
     if(!_driverWorkarounds.isEmpty()) {
         Debug{output} << "Using driver workarounds:";
         for(const auto& workaround: _driverWorkarounds)
-            if(!workaround.second()) Debug(output) << "   " << workaround.first();
+            if(!workaround.second())
+                Debug(output) << "   " << workaround.first();
     }
 
     /* Fetch default framebuffer size and set up default clear color. If we are

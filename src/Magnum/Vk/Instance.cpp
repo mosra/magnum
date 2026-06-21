@@ -68,7 +68,8 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char* const* const 
     if(args.value("log") == "quiet")
         _state.emplace().quietLog = true;
     if(argc && argv) {
-        if(!_state) _state.emplace();
+        if(!_state)
+            _state.emplace();
         _state->argc = argc;
         _state->argv = argv;
     }
@@ -84,7 +85,8 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char* const* const 
        instance version */
     Containers::StringView version = args.value<Containers::StringView>("vulkan-version");
     if(!version.isEmpty()) {
-        if(!_state) _state.emplace();
+        if(!_state)
+            _state.emplace();
 
         if((_state->version = args.value<Version>("vulkan-version")) == Version::None)
             Warning{} << "Invalid --magnum-vulkan-version" << args.value<Containers::StringView>("vulkan-version") << Debug::nospace << ", ignoring";
@@ -103,14 +105,16 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char* const* const 
     Containers::String disabledLayers = args.value<Containers::String>("disable-layers");
     Containers::String disabledExtensions = args.value<Containers::String>("disable-extensions");
     if(!disabledLayers.isEmpty()) {
-        if(!_state) _state.emplace();
+        if(!_state)
+            _state.emplace();
 
         _state->disabledLayersStorage = Utility::move(disabledLayers);
         _state->disabledLayers = Containers::StringView{_state->disabledLayersStorage}.splitOnWhitespaceWithoutEmptyParts();
         std::sort(_state->disabledLayers.begin(), _state->disabledLayers.end());
     }
     if(!disabledExtensions.isEmpty()) {
-        if(!_state) _state.emplace();
+        if(!_state)
+            _state.emplace();
 
         _state->disabledExtensionsStorage = Utility::move(disabledExtensions);
         _state->disabledExtensions = Containers::StringView{_state->disabledExtensionsStorage}.splitOnWhitespaceWithoutEmptyParts();
@@ -134,7 +138,8 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char* const* const 
     /* Enable implicit extensions unless that's forbidden */
     /** @todo move this somewhere else as this will grow significantly? */
     if(!(flags & Flag::NoImplicitExtensions)) {
-        if(!_state) _state.emplace();
+        if(!_state)
+            _state.emplace();
 
         /* Fetch searchable extension properties if not already */
         Containers::Optional<InstanceExtensionProperties> extensionPropertiesStorage;
@@ -162,12 +167,14 @@ InstanceCreateInfo& InstanceCreateInfo::setApplicationInfo(const Containers::Str
     /* Keep an owned copy of the name if it's not global / null-terminated;
        Use nullptr if the view is empty */
     if(!name.isEmpty()) {
-        if(!_state) _state.emplace();
+        if(!_state)
+            _state.emplace();
 
         _state->applicationName = Containers::String::nullTerminatedGlobalView(name);
         _applicationInfo.pApplicationName = _state->applicationName.data();
     } else {
-        if(_state) _state->applicationName = nullptr;
+        if(_state)
+            _state->applicationName = nullptr;
         _applicationInfo.pApplicationName = nullptr;
     }
 
@@ -176,8 +183,10 @@ InstanceCreateInfo& InstanceCreateInfo::setApplicationInfo(const Containers::Str
 }
 
 InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const Containers::StringIterable& layers) {
-    if(layers.isEmpty()) return *this;
-    if(!_state) _state.emplace();
+    if(layers.isEmpty())
+        return *this;
+    if(!_state)
+        _state.emplace();
 
     /* Add null-terminated strings to the layer array */
     arrayReserve(_state->layers, _state->layers.size() + layers.size());
@@ -207,8 +216,10 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const Containers::Strin
 }
 
 InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::StringIterable& extensions) {
-    if(extensions.isEmpty()) return *this;
-    if(!_state) _state.emplace();
+    if(extensions.isEmpty())
+        return *this;
+    if(!_state)
+        _state.emplace();
 
     /* Add null-terminated strings to the extension array */
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());
@@ -238,8 +249,10 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::S
 }
 
 InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const InstanceExtension> extensions) {
-    if(extensions.isEmpty()) return *this;
-    if(!_state) _state.emplace();
+    if(extensions.isEmpty())
+        return *this;
+    if(!_state)
+        _state.emplace();
 
     arrayReserve(_state->extensions, _state->extensions.size() + extensions.size());
     for(const InstanceExtension& extension: extensions) {
@@ -288,11 +301,13 @@ Instance::~Instance() {
 }
 
 void Instance::create(const InstanceCreateInfo& info) {
-    if(tryCreate(info) != Result::Success) std::exit(1);
+    if(tryCreate(info) != Result::Success)
+        std::exit(1);
 }
 
 void Instance::create() {
-    if(tryCreate() != Result::Success) std::exit(1);
+    if(tryCreate() != Result::Success)
+        std::exit(1);
 }
 
 Result Instance::tryCreate(const InstanceCreateInfo& info) {

@@ -88,7 +88,8 @@ int main() {
 
             data[i].size = Vector2i{1 << currentSize};
 
-            if(i) size.x() += padding;
+            if(i)
+                size.x() += padding;
             size.x() += data[i].size.x();
             size.y() = Math::max(size.y(), data[i].size.y());
         }

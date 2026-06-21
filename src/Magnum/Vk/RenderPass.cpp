@@ -238,7 +238,8 @@ SubpassDescription& SubpassDescription::operator=(SubpassDescription&& other) no
 }
 
 template<class T> void SubpassDescription::setInputAttachmentsInternal(Containers::ArrayView<const T> attachments) {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* While not strictly needed right now, storing the original
        AttachmentReference instances as well to prepare for a future case where
@@ -280,7 +281,8 @@ SubpassDescription&& SubpassDescription::setInputAttachments(std::initializer_li
 }
 
 template<class T> void SubpassDescription::setColorAttachmentsInternal(Containers::ArrayView<const T> attachments, Containers::ArrayView<const T> resolveAttachments) {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     CORRADE_ASSERT(!resolveAttachments.size() || resolveAttachments.size() == attachments.size(),
         "Vk::SubpassDescription::setColorAttachments(): resolve attachments expected to be either empty or have a size of" << attachments.size() << "but got" << resolveAttachments.size(), );
@@ -346,7 +348,8 @@ SubpassDescription&& SubpassDescription::setColorAttachments(std::initializer_li
 }
 
 SubpassDescription& SubpassDescription::setDepthStencilAttachment(AttachmentReference attachment) & {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     _state->depthStencilAttachment = attachment;
 
@@ -359,7 +362,8 @@ SubpassDescription&& SubpassDescription::setDepthStencilAttachment(AttachmentRef
 }
 
 SubpassDescription& SubpassDescription::setPreserveAttachments(Containers::Array<UnsignedInt>&& attachments) & {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     _state->preserveAttachments = Utility::move(attachments);
     _description.preserveAttachmentCount = _state->preserveAttachments.size();
@@ -595,7 +599,8 @@ RenderPassCreateInfo& RenderPassCreateInfo::operator=(RenderPassCreateInfo&& oth
 }
 
 template<class T> void RenderPassCreateInfo::setAttachmentsInternal(Containers::ArrayView<const T> attachments) {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* While not strictly needed right now, storing the original
        SubpassDependency instances as well to prepare for a future case where
@@ -629,7 +634,8 @@ RenderPassCreateInfo& RenderPassCreateInfo::setAttachments(std::initializer_list
 }
 
 RenderPassCreateInfo& RenderPassCreateInfo::addSubpass(SubpassDescription&& subpass) {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* Unfortunately here we can't use an ArrayTuple as it can't grow, and
        accepting an array view / initializer list would mean a deep copy, which
@@ -647,7 +653,8 @@ RenderPassCreateInfo& RenderPassCreateInfo::addSubpass(SubpassDescription&& subp
 }
 
 template<class T> void RenderPassCreateInfo::setDependenciesInternal(Containers::ArrayView<const T> dependencies) {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
 
     /* Vulkan 1.2.166 doesn't allow anything in VkSubpassDependency2::pNext yet
        so there's no point in storing the original SubpassDependency wrapper */
@@ -888,7 +895,8 @@ RenderPassBeginInfo& RenderPassBeginInfo::clearDepthStencil(const UnsignedInt at
 }
 
 RenderPassBeginInfo& RenderPassBeginInfo::clearInternal(const UnsignedInt attachment, const VkClearValue& value) {
-    if(!_state) _state.emplace();
+    if(!_state)
+        _state.emplace();
     if(_state->clearValues.size() <= attachment)
         arrayResize(_state->clearValues, NoInit, attachment + 1);
     _state->clearValues[attachment] = value;

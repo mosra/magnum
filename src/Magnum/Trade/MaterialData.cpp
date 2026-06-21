@@ -297,7 +297,8 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
            another instance) it could cause crashes. (I expected not, but
            apparently ASan blows up on that.) */
         if(end - begin > 1) for(std::size_t j = begin + 1; j != end; ++j) {
-            if(_data[j - 1].name() < _data[j].name()) continue;
+            if(_data[j - 1].name() < _data[j].name())
+                continue;
 
             std::sort(_data + begin, _data + end, [
                 #ifndef CORRADE_NO_ASSERT
@@ -606,8 +607,10 @@ UnsignedInt MaterialData::layerFactorTextureLayer(const MaterialLayer layer) con
 UnsignedInt MaterialData::attributeCount(const UnsignedInt layer) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attributeCount(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    if(!_layerOffsets) return _data.size();
-    if(!layer) return _layerOffsets[0];
+    if(!_layerOffsets)
+        return _data.size();
+    if(!layer)
+        return _layerOffsets[0];
     return _layerOffsets[layer] - _layerOffsets[layer - 1];
 }
 
@@ -632,7 +635,8 @@ UnsignedInt MaterialData::findAttributeIdInternal(const UnsignedInt layer, const
     const MaterialAttributeData* const found = std::lower_bound(begin, end, name, [](const MaterialAttributeData& a, const Containers::StringView& b) {
         return a.name() < b;
     });
-    if(found == end || found->name() != name) return ~UnsignedInt{};
+    if(found == end || found->name() != name)
+        return ~UnsignedInt{};
     return found - begin;
 }
 
@@ -1074,7 +1078,8 @@ const void* MaterialData::findAttribute(const UnsignedInt layer, const Container
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::findAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
     const UnsignedInt id = findAttributeIdInternal(layer, name);
-    if(id == ~UnsignedInt{}) return nullptr;
+    if(id == ~UnsignedInt{})
+        return nullptr;
     return _data[layerOffset(layer) + id].value();
 }
 
@@ -1089,7 +1094,8 @@ const void* MaterialData::findAttribute(const Containers::StringView layer, cons
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::findAttribute(): layer" << layer << "not found", {});
     const UnsignedInt id = findAttributeIdInternal(layerId, name);
-    if(id == ~UnsignedInt{}) return nullptr;
+    if(id == ~UnsignedInt{})
+        return nullptr;
     return _data[layerOffset(layerId) + id].value();
 }
 
@@ -1163,7 +1169,8 @@ Debug& operator<<(Debug& debug, const MaterialAttribute value) {
 
     /* LayerName is prefixed with a single space, drop that */
     Containers::StringView string = AttributeMap[UnsignedInt(value) - 1].name;
-    if(string[0] == ' ') string = string.exceptPrefix(1);
+    if(string[0] == ' ')
+        string = string.exceptPrefix(1);
 
     return debug << "::" << Debug::nospace << string;
 }

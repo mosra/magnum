@@ -87,7 +87,8 @@ template<class T> inline void** structureFind(void*& next, const T& structure) {
     Containers::Reference<void*> nextRebindable = next;
     while(nextRebindable) {
         auto& found = *reinterpret_cast<VkBaseOutStructure*>(*nextRebindable);
-        if(&found == static_cast<const void*>(&structure)) return &*nextRebindable;
+        if(&found == static_cast<const void*>(&structure))
+            return &*nextRebindable;
         nextRebindable = reinterpret_cast<void*&>(found.pNext);
     }
 

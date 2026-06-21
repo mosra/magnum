@@ -189,7 +189,8 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          */
         bool operator==(const Bezier<order, dimensions, T>& other) const {
             for(std::size_t i = 0; i != order + 1; ++i)
-                if(_data[i] != other._data[i]) return false;
+                if(_data[i] != other._data[i])
+                    return false;
             return true;
         }
 

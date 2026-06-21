@@ -1226,7 +1226,8 @@ Magnum::PixelFormat ConfigurationValue<Magnum::PixelFormat>::fromString(Containe
     /** @todo This is extremely slow with >100 values. Do a binary search on a
         sorted index list instead (extracted into a common utility) */
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::PixelFormatNames); ++i)
-        if(stringValue == Magnum::PixelFormatNames[i]) return Magnum::PixelFormat(i + 1);
+        if(stringValue == Magnum::PixelFormatNames[i])
+            return Magnum::PixelFormat(i + 1);
 
     return {};
 }
@@ -1242,7 +1243,8 @@ Magnum::CompressedPixelFormat ConfigurationValue<Magnum::CompressedPixelFormat>:
     /** @todo This is extremely slow with >100 values. Do a binary search on a
         sorted index list instead (extracted into a common utility) */
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::CompressedPixelFormatNames); ++i)
-        if(stringValue == Magnum::CompressedPixelFormatNames[i]) return Magnum::CompressedPixelFormat(i + 1);
+        if(stringValue == Magnum::CompressedPixelFormatNames[i])
+            return Magnum::CompressedPixelFormat(i + 1);
 
     return {};
 }

@@ -66,7 +66,8 @@ Trade::MeshData planeSolid() {
 
 Trade::MeshData planeSolid(const PlaneFlags flags) {
     /* Return the compile-time data if nothing extra is requested */
-    if(!flags) return planeSolid();
+    if(!flags)
+        return planeSolid();
 
     /* Calculate attribute count and vertex size */
     std::size_t stride = sizeof(Vector3) + sizeof(Vector3);
