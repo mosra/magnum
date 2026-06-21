@@ -681,8 +681,13 @@ class MAGNUM_GL_EXPORT Context {
          * OpenGL calls. Note that this function returns list of all extensions
          * reported by the driver (even those not supported by Magnum), see
          * @ref Extension::extensions() or @ref isExtensionSupported() for
-         * alternatives. The returned views are always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
-         * and @relativeref{Corrade::Containers::StringViewFlag,Global}.
+         * alternatives. The returned views are always
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}. On OpenGL
+         * 3.0+ and GLES 3.0+ / WebGL 2.0 the views are
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} as
+         * well, on older versions the extensions are split from a
+         * space-separated list and thus only the last one is guaranteed to be
+         * null-terminated.
          * @see @fn_gl{Get} with @def_gl_keyword{NUM_EXTENSIONS},
          *      @fn_gl{GetString} with @def_gl_keyword{EXTENSIONS}
          */
