@@ -591,8 +591,6 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
         if(renderer.contains("SVGA3D"_s))
             *_detectedDrivers |= DetectedDriver::Svga3D;
-
-        *_detectedDrivers;
     }
 
     if(vendor.contains("NVIDIA Corporation"_s))
