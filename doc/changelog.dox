@@ -1449,6 +1449,11 @@ See also:
     particular, if `BUILD_DEPRECATED` is set but `MAGNUM_BUILD_DEPRECATED` not,
     the unprefixed options are also recognized. See also
     [mosra/corrade#139](https://github.com/mosra/corrade/issues/139).
+-   @cpp GL::Context::supportedExtensions() @ce is deprecated as it doesn't
+    provide anything that @ref GL::Context::extensionStrings(),
+    @ref GL::Extension::extensions() and @ref GL::Context::isExtensionSupported()
+    wouldn't provide already and only causes extra overhead during context
+    creation
 -   @ref GL::DebugOutput::setCallback() taking a @ref std::string in the
     callback function pointer is deprecated in favor of a version taking a
     @relativeref{Corrade,Containers::StringView}. See also
