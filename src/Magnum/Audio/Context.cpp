@@ -28,7 +28,6 @@
 
 #include "Context.h"
 
-#include <cstring>
 #include <algorithm> /* std::lower_bound() */
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
@@ -111,9 +110,11 @@ const char* alcErrorString(const ALenum error) {
 
 std::vector<std::string> Context::deviceSpecifierStrings() {
     std::vector<std::string> list;
-    const char* const devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
-    for(const char* device = devices; *device; device += std::strlen(device) + 1)
+    const char* device = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
+    while(*device) {
         list.emplace_back(device);
+        device += list.back().size() + 1;
+    }
 
     return list;
 }
