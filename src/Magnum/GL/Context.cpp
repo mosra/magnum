@@ -1199,7 +1199,7 @@ Containers::Array<Containers::StringView> Context::extensionStrings() const {
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     {
         /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
-        return Containers::StringView{reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), Containers::StringViewFlag::Global}.splitOnWhitespaceWithoutEmptyParts();
+        return Containers::StringView{reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), Containers::StringViewFlag::Global}.splitWithoutEmptyParts(' ');
     }
     #endif
 }
