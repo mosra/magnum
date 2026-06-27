@@ -533,13 +533,12 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
         page and next to the CMake component name in the corresponding
         `doc/cmake.dox` page (and similar files in other repos), possibly also
         to all pages that list it (if any)
-3.  If the library was enabled by default, make it disabled by default. Update
-    relevant sections in `doc/building.dox` and `doc/cmake.dox`.
+3.  If the library was enabled by default, make it enabled by default only on
+    deprecated builds.
 4.  Include the library component in the corresponding `Find` module component
-    list only if @ref MAGNUM_BUILD_DEPRECATED is enabled.
-5.  Remove the deprecated library from all packages except developer `PKGBUILD`s
-    and CIs, remove also its no-longer-needed dependencies from these packages
-6.  Verify no other libraries, projects or examples depend on given library
+    list only if @ref MAGNUM_BUILD_DEPRECATED is enabled, adapt docs at the
+    top of the file accordingly
+5.  Verify no other libraries, projects or examples depend on given library
     anymore. If they do:
     -   rework examples to not use the deprecated functionality anymore
     -   if there are dependencies in other libraries or projects, make the
@@ -547,13 +546,15 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
         if @ref MAGNUM_BUILD_DEPRECATED is enabled
     -   update corresponding `Find` modules to require dependency on this
         library only if @ref MAGNUM_BUILD_DEPRECATED is enabled
-7.  Verify no CIs in dependent projects have this library enabled. If they do,
+6.  Verify no CIs in dependent projects have this library enabled. If they do,
     it should be only if @ref MAGNUM_BUILD_DEPRECATED is enabled and only if
     there is a (deprecated) feature depending on this library.
-8.  Mention the deprecated library in the deprecation section of `doc/changelog.dox`
+7.  Mention the deprecated library in the deprecation section of `doc/changelog.dox`
     (and similar files in other repos), note the alternatives and note that
     it's no longer built by default or included in any packages (in case it was
     before)
+8.  Update `doc/custom-buildsystems-order.dot` (and similar files in other
+    repos) to show given library with a @m_class{m-label m-dim} **dim** color
 
 @section developers-removing Checklist for removing a feature
 
@@ -562,16 +563,18 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     anymore. If not, wait a bit more.
 2.  Remove relevant blocks wrapped in @cpp #ifndef MAGNUM_BUILD_DEPRECATED @ce,
     remove relevant deprecated files and update `CMakeLists.txt`
-3.  Mention the removed API in the compatibility section of `doc/changelog.dox`
+3.  Remove the deprecated library from all packages and CIs, remove also its
+    no-longer-needed dependencies from these packages
+4.  Mention the removed API in the compatibility section of `doc/changelog.dox`
     (or similar files in other repos)
-4.  @ref building-doc "Build documentation":
+5.  @ref building-doc "Build documentation":
     -   run [doxygen.py](https://mcss.mosra.cz/documentation/doxygen/) on
         `doc/conf.py` and verify there are no new warnings --- sometimes it
         happens that a deprecated API is still being referenced
-5.  Push to a temporary branch (e.g., `next`)
-6.  Iterate until the CIs are green
-7.  Merge to `master`
-8.  If possible, trigger builds of dependent projects and verify they are still
+6.  Push to a temporary branch (e.g., `next`)
+7.  Iterate until the CIs are green
+8.  Merge to `master`
+9.  If possible, trigger builds of dependent projects and verify they are still
     green (or wait for the scheduled builds)
 
 @section developers-adding-attribute Checklist for adding a new mesh attribute
