@@ -176,6 +176,8 @@ if(NOT DEFINED _MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS)
     endforeach()
 endif()
 
+option(MAGNUM_BUILD_DEPRECATED "Include deprecated API in the build" ON)
+
 # Magnum GL Info (currently only using GLX/CGL/EGL on *nix, WGL/EGL on Windows
 # and EGL on Emscripten)
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS OR CORRADE_TARGET_EMSCRIPTEN)
@@ -226,8 +228,10 @@ option(MAGNUM_WITH_ANYSCENECONVERTER "Build AnySceneConverter plugin" OFF)
 option(MAGNUM_WITH_ANYSCENEIMPORTER "Build AnySceneImporter plugin" OFF)
 option(MAGNUM_WITH_ANYSHADERCONVERTER "Build AnyShaderConverter plugin" OFF)
 option(MAGNUM_WITH_WAVAUDIOIMPORTER "Build WavAudioImporter plugin" OFF)
-option(MAGNUM_WITH_MAGNUMFONT "Build MagnumFont plugin" OFF)
-option(MAGNUM_WITH_MAGNUMFONTCONVERTER "Build MagnumFontConverter plugin" OFF)
+if(MAGNUM_BUILD_DEPRECATED)
+    option(MAGNUM_WITH_MAGNUMFONT "Build MagnumFont plugin" OFF)
+    option(MAGNUM_WITH_MAGNUMFONTCONVERTER "Build MagnumFontConverter plugin" OFF)
+endif()
 option(MAGNUM_WITH_OBJIMPORTER "Build ObjImporter plugin" OFF)
 cmake_dependent_option(MAGNUM_WITH_TGAIMAGECONVERTER "Build TgaImageConverter plugin" OFF "NOT MAGNUM_WITH_MAGNUMFONTCONVERTER" ON)
 cmake_dependent_option(MAGNUM_WITH_TGAIMPORTER "Build TgaImporter plugin" OFF "NOT MAGNUM_WITH_MAGNUMFONT" ON)
@@ -349,8 +353,6 @@ endif()
 if(NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_EMSCRIPTEN)
     option(MAGNUM_WITH_GLFWAPPLICATION "Build GlfwApplication library" OFF)
 endif()
-
-option(MAGNUM_BUILD_DEPRECATED "Include deprecated API in the build" ON)
 
 set(MAGNUM_DEPLOY_PREFIX "."
     CACHE STRING "Prefix where to put final application executables")

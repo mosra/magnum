@@ -988,9 +988,17 @@ See @ref building, @ref cmake and @ref vulkan for more information.
  */
 /** @dir MagnumPlugins/MagnumFont
  * @brief Plugin @ref Magnum::Text::MagnumFont
+ * @m_deprecated_since_latest Use @ref MagnumPlugins/StbTrueTypeFont/StbTrueTypeFont.h
+ *      and the @relativeref{Magnum::Text,StbTrueTypeFont} plugin instead,
+ *      which is more efficient and has a larger feature set without needing a
+ *      custom font preprocessing step.
  */
 /** @dir MagnumPlugins/MagnumFontConverter
  * @brief Plugin @ref Magnum::Text::MagnumFontConverter
+ * @m_deprecated_since_latest Use @ref MagnumPlugins/StbTrueTypeFont/StbTrueTypeFont.h
+ *      and the @relativeref{Magnum::Text,StbTrueTypeFont} plugin instead,
+ *      which is more efficient and has a larger feature set without needing a
+ *      custom font preprocessing step.
  */
 /** @dir MagnumPlugins/ObjImporter
  * @brief Plugin @ref Magnum::Trade::ObjImporter

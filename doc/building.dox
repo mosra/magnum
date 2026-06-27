@@ -675,14 +675,14 @@ default.
 -   `MAGNUM_WITH_ANYSHADERCONVERTER` --- Build the
     @ref ShaderTools::AnyConverter "AnyShaderConverter" plugin. Enables also
     building of the @ref ShaderTools library.
--   `MAGNUM_WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont"
-    plugin. Enables also building of the @ref Text library and the
-    @ref Trade::TgaImporter "TgaImporter" plugin. Requires `MAGNUM_TARGET_GL`
-    to be enabled.
--   `MAGNUM_WITH_MAGNUMFONTCONVERTER` --- Build the
-    @ref Text::MagnumFontConverter "MagnumFontConverter" plugin. Enables also
+-   `MAGNUM_WITH_MAGNUMFONT` @m_class{m-label m-danger} **deprecated** ---
+    Build the @relativeref{Text,MagnumFont} plugin. Enables also building
+    of the @ref Text library and the @relativeref{Trade,TgaImporter} plugin.
+    Requires `MAGNUM_TARGET_GL` to be enabled.
+-   `MAGNUM_WITH_MAGNUMFONTCONVERTER` @m_class{m-label m-danger} **deprecated**
+    --- Build the @relativeref{Text,MagnumFontConverter} plugin. Enables also
     building of the @ref Text library and the
-    @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
+    @relativeref{Trade,TgaImageConverter} plugin.
 -   `MAGNUM_WITH_OBJIMPORTER` --- Build the
     @ref Trade::ObjImporter "ObjImporter" plugin. Enables also building of the
     @ref Trade library.

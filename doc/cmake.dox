@@ -250,9 +250,10 @@ dependencies, you need to find the dependency and then link to it.
     plugin
 -   `AnyShaderConverter` --- @ref ShaderTools::AnyConverter "AnyShaderConverter"
     plugin
--   `MagnumFont` --- @ref Text::MagnumFont "MagnumFont" plugin
--   `MagnumFontConverter` --- @ref Text::MagnumFontConverter "MagnumFontConverter"
-    plugin
+-   `MagnumFont` @m_class{m-label m-danger} **deprecated** ---
+    @relativeref{Text,MagnumFont} plugin
+-   `MagnumFontConverter` @m_class{m-label m-danger} **deprecated** ---
+    @relativeref{Text,MagnumFontConverter} plugin
 -   `ObjImporter` --- @ref Trade::ObjImporter "ObjImporter" plugin
 -   `TgaImageConverter` --- @ref Trade::TgaImageConverter "TgaImageConverter"
     plugin
