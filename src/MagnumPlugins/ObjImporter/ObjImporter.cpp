@@ -26,7 +26,7 @@
 
 #include "ObjImporter.h"
 
-#include <climits>
+#include <climits> /* INT_MIN, INT_MAX */
 #include <unordered_map>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
@@ -124,10 +124,8 @@ inline bool parseInt(const char* const errorPrefix, const Containers::StringView
     std::memcpy(buffer, string.data(), size);
     buffer[size] = '\0';
     char* end;
-    /* Not using strtol() here as on Windows it's 32-bit and we wouldn't be
-       able to detect overflows */
-    /** @todo replace with something that can report errors in a non-insane
-        way */
+    /* Not using strtol() here as on Windows it's 32-bit and we would have to
+       additionally check errno to detect overflows */
     const std::int64_t outLong = std::strtoll(buffer, &end, 10);
     if(!string || std::size_t(end - buffer) != size) {
         Error{} << errorPrefix << "invalid integer literal" << string;
