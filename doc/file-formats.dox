@@ -532,7 +532,7 @@ Together with @ref file-formats-image-importers "image importers" derived from
 <tr>
 <th rowspan="2">Open Game Engine Exchange<br/>(`*.ogex`)</th>
 <td rowspan="2">`OpenGexImporter`</td>
-<td>@ref Trade::OpenGexImporter "OpenGexImporter"</td>
+<td>@ref Trade::OpenGexImporter "OpenGexImporter" @m_class{m-label m-danger} **deprecated**</td>
 <td class="m-text-center m-warning">@ref Trade-OpenGexImporter-behavior "some"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center"></td>

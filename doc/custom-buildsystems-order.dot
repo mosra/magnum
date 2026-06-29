@@ -32,7 +32,7 @@ digraph "Magnum library dependency order" {
     CorradeUtility [style=solid label="Corrade\nUtility" class="m-primary"]
     CorradeContainers [style=solid label="Corrade\nContainers" class="m-primary" style=dotted]
     CorradePluginManager [style=solid label="Corrade\nPluginManager" class="m-info"]
-    CorradeInterconnect [style=solid label="Corrade\nInterconnect" class="m-info"]
+    CorradeInterconnect [style=solid label="Corrade\nInterconnect" class="m-dim"]
     CorradeTestSuite [style=solid label="Corrade\nTestSuite" class="m-info"]
 
     Magnum [class="m-primary"]
@@ -60,7 +60,7 @@ digraph "Magnum library dependency order" {
     CorradeUtility -> CorradeContainers [dir=both style=dashed class="m-primary"]
     {rank=same CorradeUtility CorradeContainers}
     CorradePluginManager -> CorradeUtility [class="m-info"]
-    CorradeInterconnect -> CorradeUtility [class="m-info"]
+    CorradeInterconnect -> CorradeUtility [class="m-dim"]
     CorradeTestSuite -> CorradeUtility [class="m-info"]
 
     {rank=same Magnum -> MagnumAnimation -> MagnumMath [dir=both style=dashed]}
