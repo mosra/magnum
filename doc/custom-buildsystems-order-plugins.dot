@@ -29,12 +29,14 @@ digraph "Magnum plugin dependency order" {
     ranksep=0.5
     node [style=filled shape=rect margin="0.03,0.03"]
 
+    Magnum [style=solid class="m-primary"]
     MagnumAudio [style=solid label="Magnum\nAudio" class="m-info"]
     MagnumMeshTools [style=solid label="Magnum\nMeshTools" class="m-info"]
     MagnumText [style=solid label="Magnum\nText" class="m-info"]
+    MagnumTextureTools [style=solid label="Magnum\nTextureTools" class="m-info"]
     MagnumTrade [style=solid label="Magnum\nTrade" class="m-info"]
 
-    {rank=same MagnumAudio MagnumMeshTools MagnumText MagnumTrade}
+    {rank=same MagnumAudio MagnumText MagnumTrade}
 
     AudioImporter [label="*AudioImporter" class="m-success"]
     ImageConverter [label="*ImageConverter" class="m-success"]
@@ -44,6 +46,12 @@ digraph "Magnum plugin dependency order" {
     ObjImporter [class="m-success"]
     TgaImageConverter [class="m-success"]
     TgaImporter [class="m-success"]
+
+    MagnumAudio -> Magnum [class="m-info"]
+    MagnumTrade -> Magnum [class="m-info"]
+    MagnumText -> MagnumTextureTools [class="m-info"]
+    MagnumTextureTools -> Magnum [class="m-info"]
+    MagnumMeshTools -> MagnumTrade [class="m-info"]
 
     AudioImporter -> MagnumAudio
     ImageConverter -> MagnumTrade

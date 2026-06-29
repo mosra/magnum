@@ -67,6 +67,7 @@ digraph "Magnum library dependency order" {
     Magnum -> CorradeUtility
 
     MagnumAudio -> Magnum
+    MagnumAudio -> CorradePluginManager
 
     MagnumDebugTools -> CorradeTestSuite [style=dotted]
     MagnumDebugTools -> Magnum
@@ -84,9 +85,9 @@ digraph "Magnum library dependency order" {
     MagnumMeshTools -> MagnumGL [style=dotted]
 
     MagnumOpenGLTester -> MagnumWindowlessApplication
+    MagnumOpenGLTester -> CorradeTestSuite
 
     MagnumPrimitives -> MagnumMeshTools
-    MagnumPrimitives -> MagnumTrade
 
     MagnumSceneTools -> MagnumTrade
 
