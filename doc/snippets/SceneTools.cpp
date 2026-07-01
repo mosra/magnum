@@ -146,7 +146,8 @@ Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 /* Put all transformations into an array indexed by object ID. Objects
    implicitly have an identity transformation, first element is reserved for
    the global transformation. */
-Containers::Array<Matrix4> transformations{std::size_t(scene.mappingBound() + 1)};
+Containers::Array<Matrix4> transformations{ValueInit,
+    std::size_t(scene.mappingBound() + 1)};
 for(const Containers::Pair<UnsignedInt, Matrix4>& transformation:
     scene.transformations3DAsArray())
 {

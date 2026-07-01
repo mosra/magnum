@@ -73,7 +73,7 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
         ++attributeCount;
     }
     Containers::Array<char> vertexData{NoInit, stride*vertexCount.product()};
-    Containers::Array<Trade::MeshAttributeData> attributes{attributeCount};
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, attributeCount};
     std::size_t attributeIndex = 0;
     std::size_t attributeOffset = 0;
 

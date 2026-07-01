@@ -1683,7 +1683,7 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<DistanceFieldVectorMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<DistanceFieldVectorMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = DistanceFieldVectorMaterialUniform{}
         .setColor(0x00ff00_rgbf);
     materialData[1*data.uniformIncrement] = DistanceFieldVectorMaterialUniform{}
@@ -1692,7 +1692,7 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         .setOutlineRange(0.6f, 0.4f);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
         .setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f})*
@@ -1713,7 +1713,7 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             /* Additional Y shift + scale in the array slice */
@@ -1742,7 +1742,7 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         .setLayer(1); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<DistanceFieldVectorDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<DistanceFieldVectorDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
@@ -1983,7 +1983,7 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<DistanceFieldVectorMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<DistanceFieldVectorMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = DistanceFieldVectorMaterialUniform{}
         .setColor(0x00ff00_rgbf);
     materialData[1*data.uniformIncrement] = DistanceFieldVectorMaterialUniform{}
@@ -1992,7 +1992,7 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         .setOutlineRange(0.6f, 0.4f);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
@@ -2018,7 +2018,7 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             /* Additional Y shift + scale in the array slice */
@@ -2047,7 +2047,7 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         .setLayer(1); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<DistanceFieldVectorDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<DistanceFieldVectorDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}

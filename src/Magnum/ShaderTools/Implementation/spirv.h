@@ -121,8 +121,8 @@ Containers::Optional<SpirvEntrypoint> spirvNextEntrypoint(Containers::ArrayView<
         }
 
         return SpirvEntrypoint{
-            *reinterpret_cast<const SpvExecutionModel*>(entryPoint + 1),
-            reinterpret_cast<const char*>(entryPoint + 3),
+            *reinterpret_cast<const SpvExecutionModel*>(entryPoint.data() + 1),
+            reinterpret_cast<const char*>(entryPoint.data() + 3),
             interfaces
         };
     }
@@ -157,7 +157,7 @@ void spirvEntrypointInterface(Containers::ArrayView<const UnsignedInt> data, con
 
         for(std::size_t i = 0; i != entrypoint.interfaces.size(); ++i) {
             if(decoration[1] == entrypoint.interfaces[i]) {
-                out[i].location = decoration + 3;
+                out[i].location = decoration.data() + 3;
                 break;
             }
         }
@@ -175,7 +175,7 @@ void spirvEntrypointInterface(Containers::ArrayView<const UnsignedInt> data, con
 
         for(std::size_t i = 0; i != entrypoint.interfaces.size(); ++i) {
             if(variable[2] == entrypoint.interfaces[i]) {
-                out[i].storageClass = reinterpret_cast<const SpvStorageClass*>(variable + 3);
+                out[i].storageClass = reinterpret_cast<const SpvStorageClass*>(variable.data() + 3);
                 break;
             }
         }

@@ -118,7 +118,7 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
 
     /* Copy the fields over, enlarging them as necessary */
     const UnsignedInt parentFieldId = scene.fieldId(Trade::SceneField::Parent);
-    Containers::Array<Trade::SceneFieldData> fields{scene.fieldCount()};
+    Containers::Array<Trade::SceneFieldData> fields{ValueInit, scene.fieldCount()};
     for(std::size_t i = 0; i != scene.fieldCount(); ++i) {
         const Trade::SceneFieldData& field = scene.fieldData(i);
 

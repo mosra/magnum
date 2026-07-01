@@ -554,7 +554,7 @@ void MapTest::indexFieldRvalue() {
             Containers::arrayView(view[0].mapping),
             Containers::arrayView(view[0].mesh)},
     }};
-    const Trade::SceneFieldData* originalFields = scene.fieldData();
+    const Trade::SceneFieldData* originalFields = scene.fieldData().data();
 
     const UnsignedInt mapping[]{
         15, 16, 0xffffffffu, 7, 9
@@ -611,7 +611,7 @@ void MapTest::indexFieldRvalueSigned() {
             Containers::arrayView(view[0].mapping),
             Containers::arrayView(view[0].meshMaterial)},
     }};
-    const Trade::SceneFieldData* originalFields = scene.fieldData();
+    const Trade::SceneFieldData* originalFields = scene.fieldData().data();
 
     const UnsignedInt mapping[]{
         15, 0xffffffffu, 16, 7
@@ -667,7 +667,7 @@ void MapTest::indexFieldRvalueNotOwned() {
             Containers::arrayView(sceneData->mapping),
             Containers::arrayView(sceneData->mesh)},
     }};
-    const Trade::SceneFieldData* originalFields = scene.fieldData();
+    const Trade::SceneFieldData* originalFields = scene.fieldData().data();
 
     const UnsignedInt mapping[]{
         15, 16, 0xffffffffu, 7, 9
@@ -721,7 +721,7 @@ void MapTest::indexFieldRvalueNotFullType() {
             Containers::arrayView(view[0].mapping),
             Containers::arrayView(view[0].mesh)},
     }};
-    const Trade::SceneFieldData* originalFields = scene.fieldData();
+    const Trade::SceneFieldData* originalFields = scene.fieldData().data();
 
     const UnsignedInt mapping[]{
         15, 16, 0xffffffffu, 7, 9
@@ -749,7 +749,7 @@ void MapTest::indexFieldRvalueNotFullType() {
     }), TestSuite::Compare::Container);
 
     /* Data should be copied */
-    CORRADE_VERIFY(mapped.data().data() != static_cast<void*>(sceneData));
+    CORRADE_VERIFY(mapped.data().data() != static_cast<void*>(sceneData.data()));
     CORRADE_VERIFY(mapped.fieldData().data() != originalFields);
 }
 

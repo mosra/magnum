@@ -102,7 +102,7 @@ Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialDa
 
     /* Copy attributes that aren't filtered away. Not using NoInit in order to
        use the default deleter and have this usable from plugins. */
-    Containers::Array<Trade::MaterialAttributeData> attributes{patchedInputAttributesToKeep.count()};
+    Containers::Array<Trade::MaterialAttributeData> attributes{ValueInit, patchedInputAttributesToKeep.count()};
     Utility::copyMasked(material.attributeData(), patchedInputAttributesToKeep, attributes);
 
     return Trade::MaterialData{material.types() & typesToKeep, Utility::move(attributes), Utility::move(layers)};

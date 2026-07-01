@@ -311,7 +311,7 @@ template<class T> void CompressIndicesTest::compressMeshData() {
 }
 
 void CompressIndicesTest::compressMeshDataMove() {
-    Containers::Array<char> vertexData{103*24};
+    Containers::Array<char> vertexData{NoInit, 103*24};
     Containers::StridedArrayView1D<Vector2> positionView{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data()), 103, 8};
     Containers::StridedArrayView1D<Vector3> normalView{vertexData,

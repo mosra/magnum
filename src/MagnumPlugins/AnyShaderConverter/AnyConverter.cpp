@@ -73,8 +73,8 @@ void AnyConverter::doSetOutputFormat(Format format, Containers::StringView versi
 void AnyConverter::doSetDefinitions(const Containers::ArrayView<const Containers::Pair<Containers::StringView, Containers::StringView>> definitions) {
     /* We have to make a local copy, unfortunately, and then a view on that
        local copy */
-    _state->definitions = Containers::Array<Containers::Pair<Containers::String, Containers::String>>{definitions.size()};
-    _state->definitionViews = Containers::Array<Containers::Pair<Containers::StringView, Containers::StringView>>{definitions.size()};
+    _state->definitions = Containers::Array<Containers::Pair<Containers::String, Containers::String>>{ValueInit, definitions.size()};
+    _state->definitionViews = Containers::Array<Containers::Pair<Containers::StringView, Containers::StringView>>{ValueInit, definitions.size()};
     for(std::size_t i = 0; i != definitions.size(); ++i) {
         /* Avoid a copy if the input is a global string literal */
         _state->definitions[i] = {

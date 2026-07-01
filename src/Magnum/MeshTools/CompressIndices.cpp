@@ -166,7 +166,7 @@ Trade::MeshData compressIndices(Trade::MeshData&& mesh, MeshIndexType atLeast) {
     /* Recreate the attribute array with each attribute being shifted by the
        offset calculated above */
     const UnsignedInt newVertexCount = vertexCount - offset;
-    Containers::Array<Trade::MeshAttributeData> attributeData{mesh.attributeCount()};
+    Containers::Array<Trade::MeshAttributeData> attributeData{ValueInit, mesh.attributeCount()};
     for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
         attributeData[i] = Implementation::remapAttributeData(mesh.attributeData(i), newVertexCount, originalVertexData, vertexData.exceptPrefix(offset*mesh.attributeStride(i)));
     }
@@ -195,7 +195,7 @@ template<class T> Containers::Array<T> compressIndicesAs(const std::vector<Unsig
     CORRADE_ASSERT(Math::log(256, max) < sizeof(T), "MeshTools::compressIndicesAs(): type too small to represent value" << max, {});
     #endif
 
-    Containers::Array<T> buffer(indices.size());
+    Containers::Array<T> buffer{NoInit, indices.size()};
     for(std::size_t i = 0; i != indices.size(); ++i)
         buffer[i] = T(indices[i]);
 

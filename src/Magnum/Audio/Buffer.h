@@ -96,7 +96,7 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          * @see @fn_al_keyword{BufferData}
          */
         Buffer& setData(BufferFormat format, Containers::ArrayView<const void> data, ALsizei frequency) {
-            alBufferData(_id, ALenum(format), data, data.size(), frequency);
+            alBufferData(_id, ALenum(format), data.data(), data.size(), frequency);
             return *this;
         }
 

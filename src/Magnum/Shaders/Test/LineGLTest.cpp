@@ -2751,7 +2751,7 @@ void LineGLTest::renderMulti2D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<LineMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<LineMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = LineMaterialUniform{}
         .setColor(0x0000ff_rgbf)
         .setWidth(3.0f)
@@ -2762,7 +2762,7 @@ void LineGLTest::renderMulti2D() {
         .setSmoothness(1.0f);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
         .setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f})*
@@ -2783,7 +2783,7 @@ void LineGLTest::renderMulti2D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<LineDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<LineDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = LineDrawUniform{}
@@ -2982,7 +2982,7 @@ void LineGLTest::renderMulti3D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<LineMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<LineMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = LineMaterialUniform{}
         .setColor(0x0000ff_rgbf)
         .setWidth(3.0f)
@@ -2993,7 +2993,7 @@ void LineGLTest::renderMulti3D() {
         .setSmoothness(1.0f);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
         .setTransformationProjectionMatrix(
             Matrix4::orthographicProjection({2.1f, 2.1f}, -1.0f, 1.0f)*
@@ -3014,7 +3014,7 @@ void LineGLTest::renderMulti3D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<LineDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<LineDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = LineDrawUniform{}

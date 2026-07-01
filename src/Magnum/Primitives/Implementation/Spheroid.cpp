@@ -245,7 +245,7 @@ Trade::MeshData Spheroid::finalize() {
     Trade::MeshIndexData indices{_indexData};
 
     std::size_t attributeOffset = 0;
-    Containers::Array<Trade::MeshAttributeData> attributes{_attributeCount};
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, _attributeCount};
     attributes[attributeOffset++] = Trade::MeshAttributeData{
         Trade::MeshAttribute::Position, VertexFormat::Vector3,
         Containers::StridedArrayView1D<const void>{_vertexData,

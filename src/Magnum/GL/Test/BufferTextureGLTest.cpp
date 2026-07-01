@@ -522,10 +522,10 @@ void BufferTextureGLTest::appleSetBufferMapRange() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* This also crashes unless worked around. Ugh. */
-    char* ptr = buffer.map(0, 16, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
-    CORRADE_VERIFY(ptr);
+    Containers::ArrayView<char> array = buffer.map(0, 16, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
+    CORRADE_VERIFY(array.data());
 
-    ptr[12] = 0x35;
+    array[12] = 0x35;
 
     /* This doesn't, it seems (yay!) */
     buffer.flushMappedRange(8, 8);

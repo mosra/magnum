@@ -148,9 +148,9 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
         }
 
         _specializations[_stageCount].mapEntryCount = newSpecializations.size();
-        _specializations[_stageCount].pMapEntries = newSpecializations;
+        _specializations[_stageCount].pMapEntries = newSpecializations.data();
         _specializations[_stageCount].dataSize = newSpecializationData.size();
-        _specializations[_stageCount].pData = newSpecializationData;
+        _specializations[_stageCount].pData = newSpecializationData.data();
         _stages[_stageCount].pSpecializationInfo = _specializations + _stageCount;
     }
 

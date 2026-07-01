@@ -274,7 +274,7 @@ void ContextGLTest::constructConfiguration() {
         Containers::ScopeGuard resetCurrent{current, Context::makeCurrent};
 
         Debug redirectOut{&out};
-        Platform::GLContext ctx{Int(data.args.size()), data.args, Context::Configuration{}
+        Platform::GLContext ctx{Int(data.args.size()), data.args.data(), Context::Configuration{}
             .setFlags(data.flags)
             .addDisabledWorkarounds(data.disabledWorkarounds)
             .addDisabledExtensions(data.disabledExtensions)
@@ -311,7 +311,7 @@ void ContextGLTest::constructMove() {
 
     /* First gather just the command-line parameters. Nothing to verify here as
        it's not initialized yet. */
-    Platform::GLContext a{NoCreate, Int(data.args.size()), data.args};
+    Platform::GLContext a{NoCreate, Int(data.args.size()), data.args.data()};
 
     /* The context is not created yet, so it doesn't set it as current yet */
     CORRADE_VERIFY(!Context::hasCurrent());

@@ -3657,7 +3657,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
 
     /* Generate per-face IDs going from 0 to 240 to cover the whole range */
-    Containers::Array<UnsignedInt> ids{16};
+    Containers::Array<UnsignedInt> ids{NoInit, 16};
     for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i*16;
     GL::Mesh circle = MeshTools::compile(MeshTools::combineFaceAttributes(
         MeshTools::generateIndices(Primitives::circle2DSolid(16)), {
@@ -3756,7 +3756,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
 
     /* Generate per-face IDs going from 0 to 228 to cover the whole range */
-    Containers::Array<UnsignedInt> ids{20};
+    Containers::Array<UnsignedInt> ids{NoInit, 20};
     for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i*12;
     GL::Mesh icosphere = MeshTools::compile(MeshTools::combineFaceAttributes(
         Primitives::icosphereSolid(0), {
@@ -4321,7 +4321,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{circleDataIndexed.indexCount()};
+            Containers::Array<Float> vertexIndex{NoInit, circleDataIndexed.indexCount()};
             std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
             GL::Buffer vertexId;
@@ -4473,7 +4473,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{sphereData.indexCount()};
+            Containers::Array<Float> vertexIndex{NoInit, sphereData.indexCount()};
             std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
             GL::Buffer vertexId;
@@ -4658,7 +4658,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     /* Add the instanced Object ID data even if visualizing just uniform object
        ID, to test the attribute isn't accidentally accessed always */
     if(data.flags2D & MeshVisualizerGL2D::Flag::ObjectId) {
-        Containers::Array<UnsignedInt> ids{16};
+        Containers::Array<UnsignedInt> ids{NoInit, 16};
         /* Each two faces share the same ID */
         for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
         circleData = MeshTools::combineFaceAttributes(
@@ -4874,7 +4874,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     /* Add the instanced Object ID data even if visualizing just uniform object
        ID, to test the attribute isn't accidentally accessed always */
     if(data.flags3D & MeshVisualizerGL3D::Flag::ObjectId) {
-        Containers::Array<UnsignedInt> ids{sphereData.indexCount()/3};
+        Containers::Array<UnsignedInt> ids{NoInit, sphereData.indexCount()/3};
         /* Each two faces share the same ID */
         for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
         sphereData = MeshTools::combineFaceAttributes(
@@ -5713,7 +5713,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{circleDataIndexed.indexCount()};
+            Containers::Array<Float> vertexIndex{NoInit, circleDataIndexed.indexCount()};
             std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
             GL::Buffer vertexId;
@@ -6007,7 +6007,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{sphereData.indexCount()};
+            Containers::Array<Float> vertexIndex{NoInit, sphereData.indexCount()};
             std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
             GL::Buffer vertexId;
@@ -6691,7 +6691,7 @@ void MeshVisualizerGLTest::renderMulti2D() {
        attribute. Use the same numbers for all meshes, it'll get differentiated
        by the per-draw object ID. */
     if(data.flags & MeshVisualizerGL2D::Flag::ObjectId) {
-        Containers::Array<UnsignedInt> ids{8};
+        Containers::Array<UnsignedInt> ids{NoInit, 8};
         /* Each two faces share the same ID */
         for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
         for(Trade::MeshData* i: {&circleData, &squareData, &triangleData}) {
@@ -6729,7 +6729,7 @@ void MeshVisualizerGLTest::renderMulti2D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<MeshVisualizerMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
         .setColor(0xffffcc_rgbf)
         .setWireframeColor(0xcc0000_rgbf);
@@ -6755,7 +6755,7 @@ void MeshVisualizerGLTest::renderMulti2D() {
         materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/12, 1.0f/12);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
         .setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f})*
@@ -6776,7 +6776,7 @@ void MeshVisualizerGLTest::renderMulti2D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             data.flags & MeshVisualizerGL2D::Flag::TextureArrays ?
@@ -6803,7 +6803,7 @@ void MeshVisualizerGLTest::renderMulti2D() {
         .setLayer(2); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<MeshVisualizerDrawUniform2D> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<MeshVisualizerDrawUniform2D> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
@@ -7033,7 +7033,7 @@ void MeshVisualizerGLTest::renderMulti3D() {
        attribute. Use the same numbers for all meshes, it'll get differentiated
        by the per-draw object ID. */
     if(data.flags & MeshVisualizerGL3D::Flag::ObjectId) {
-        Containers::Array<UnsignedInt> ids{20};
+        Containers::Array<UnsignedInt> ids{NoInit, 20};
         /* Each two faces share the same ID */
         for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
         for(Trade::MeshData* i: {&sphereData, &planeData, &coneData}) {
@@ -7078,7 +7078,7 @@ void MeshVisualizerGLTest::renderMulti3D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<MeshVisualizerMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
         .setColor(0xffffcc_rgbf)
         .setWireframeColor(0xcc0000_rgbf)
@@ -7106,7 +7106,7 @@ void MeshVisualizerGLTest::renderMulti3D() {
         materialData[1*data.uniformIncrement].setColorMapTransformation(0.5f/30, 1.0f/30);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationUniform3D> transformationData{ValueInit, 2*data.uniformIncrement + 1};
     transformationData[0*data.uniformIncrement] = TransformationUniform3D{}
         .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-2.15f))*
@@ -7127,7 +7127,7 @@ void MeshVisualizerGLTest::renderMulti3D() {
         );
     GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             data.flags & MeshVisualizerGL3D::Flag::TextureArrays ?
@@ -7154,7 +7154,7 @@ void MeshVisualizerGLTest::renderMulti3D() {
         .setLayer(2); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<MeshVisualizerDrawUniform3D> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<MeshVisualizerDrawUniform3D> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. Also no need to supply a normal matrix. */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
@@ -7370,7 +7370,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<MeshVisualizerMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
         .setColor(0xffffcc_rgbf)
         .setWireframeColor(0xcc0000_rgbf);
@@ -7379,7 +7379,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
         .setWireframeColor(0x0000cc_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
         .setTransformationProjectionMatrix(
             Matrix3::scaling(Vector2{0.3f})*
@@ -7394,7 +7394,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
             Matrix3::translation({-1.5f,  1.5f}));
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TransformationUniform2D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    Containers::Array<TransformationUniform2D> jointData{ValueInit, Math::max(2*data.uniformIncrement + 4, 10u)};
     /* First draw moves both bottom corners */
     jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform2D{}
         .setTransformationMatrix(Matrix3::translation({ 0.5f, -0.5f}));
@@ -7420,7 +7420,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
     GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
         jointData};
 
-    Containers::Array<MeshVisualizerDrawUniform2D> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<MeshVisualizerDrawUniform2D> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
@@ -7621,7 +7621,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<MeshVisualizerMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
         .setColor(0xffffcc_rgbf)
         .setWireframeColor(0xcc0000_rgbf);
@@ -7630,7 +7630,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
         .setWireframeColor(0x0000cc_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationUniform3D> transformationData{ValueInit, 2*data.uniformIncrement + 1};
     transformationData[0*data.uniformIncrement] = TransformationUniform3D{}
         .setTransformationMatrix(
             Matrix4::scaling(Vector3{0.3f})*
@@ -7645,7 +7645,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
             Matrix4::translation({-1.5f,  1.5f, 0.0f}));
     GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
 
-    Containers::Array<TransformationUniform3D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    Containers::Array<TransformationUniform3D> jointData{ValueInit, Math::max(2*data.uniformIncrement + 4, 10u)};
     /* First draw moves both bottom corners */
     jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform3D{}
         .setTransformationMatrix(Matrix4::translation({ 0.5f, -0.5f, 0.0f}));
@@ -7671,7 +7671,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
     GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
         jointData};
 
-    Containers::Array<MeshVisualizerDrawUniform3D> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<MeshVisualizerDrawUniform3D> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}

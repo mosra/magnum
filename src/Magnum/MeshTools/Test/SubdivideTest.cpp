@@ -115,7 +115,7 @@ void SubdivideTest::subdivideWrongIndexCount() {
     Error redirectError{&out};
 
     Containers::Array<Vector1> positions;
-    Containers::Array<UnsignedInt> indices{2};
+    Containers::Array<UnsignedInt> indices{NoInit, 2};
     MeshTools::subdivide(indices, positions, interpolator1);
     CORRADE_COMPARE(out, "MeshTools::subdivide(): index count is not divisible by 3\n");
 }

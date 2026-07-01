@@ -644,7 +644,7 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault(Abstr
         names[i] = nameData[i].data();
     }
 
-    glTransformFeedbackVaryings(self._id, outputs.size(), names, GLenum(bufferMode));
+    glTransformFeedbackVaryings(self._id, outputs.size(), names.data(), GLenum(bufferMode));
 }
 
 #ifdef CORRADE_TARGET_WINDOWS
@@ -669,7 +669,7 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorka
         names[i] = nameData[i].data();
     }
 
-    glTransformFeedbackVaryings(self._id, outputs.size(), names, GLenum(bufferMode));
+    glTransformFeedbackVaryings(self._id, outputs.size(), names.data(), GLenum(bufferMode));
 }
 #endif
 #endif

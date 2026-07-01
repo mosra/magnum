@@ -482,7 +482,7 @@ void RectangleTextureGLTest::imageQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*4};
     MutableImageView2D image{data.storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.image(image);
 
@@ -602,7 +602,7 @@ void RectangleTextureGLTest::subImageQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*4};
     MutableImageView2D image{data.storage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), image);
 

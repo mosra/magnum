@@ -1170,7 +1170,7 @@ Containers::Array<Containers::StringView> Context::shadingLanguageVersionStrings
         /* If on GL 4.3+, there should be always at least one */
         CORRADE_INTERNAL_ASSERT(versionCount);
 
-        Containers::Array<Containers::StringView> versions{std::size_t(versionCount)};
+        Containers::Array<Containers::StringView> versions{ValueInit, std::size_t(versionCount)};
         for(GLint i = 0; i != versionCount; ++i)
             versions[i] = {reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)), Containers::StringViewFlag::Global};
         return versions;
@@ -1193,7 +1193,7 @@ Containers::Array<Containers::StringView> Context::extensionStrings() const {
     {
         GLint extensionCount = 0;
         glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
-        Containers::Array<Containers::StringView> extensions{std::size_t(extensionCount)};
+        Containers::Array<Containers::StringView> extensions{ValueInit, std::size_t(extensionCount)};
         for(GLint i = 0; i != extensionCount; ++i)
             extensions[i] = {reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)), Containers::StringViewFlag::Global};
         return extensions;

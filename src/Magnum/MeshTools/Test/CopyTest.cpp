@@ -314,7 +314,7 @@ void CopyTest::copyRvalueIndicesVerticesAttributesOwned() {
     Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, 1};
     attributes[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
         Containers::arrayView(positions)};
-    const Trade::MeshAttributeData* originalAttributes = attributes;
+    const Trade::MeshAttributeData* originalAttributes = attributes.data();
 
     Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles,
         Utility::move(indexData), Trade::MeshIndexData{indices},
@@ -336,8 +336,8 @@ void CopyTest::copyRvalueIndicesVerticesAttributesOwned() {
         TestSuite::Compare::Container);
 
     /* All data should be transferred without any copy */
-    CORRADE_COMPARE(copy.indexData().data(), static_cast<const void*>(indices));
-    CORRADE_COMPARE(copy.vertexData().data(), static_cast<void*>(positions));
+    CORRADE_COMPARE(copy.indexData().data(), static_cast<const void*>(indices.data()));
+    CORRADE_COMPARE(copy.vertexData().data(), static_cast<void*>(positions.data()));
     CORRADE_COMPARE(copy.attributeData().data(), originalAttributes);
 }
 
@@ -352,7 +352,7 @@ void CopyTest::copyRvalueAttributesOwned() {
     Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, 1};
     attributes[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
         Containers::arrayView(positions)};
-    const Trade::MeshAttributeData* originalAttributes = attributes;
+    const Trade::MeshAttributeData* originalAttributes = attributes.data();
 
     Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles, {}, positions, Utility::move(attributes)});
     CORRADE_COMPARE(copy.primitive(), MeshPrimitive::Triangles);

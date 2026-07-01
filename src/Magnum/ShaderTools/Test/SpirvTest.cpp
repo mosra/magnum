@@ -94,13 +94,14 @@ SpirvTest::SpirvTest() {
 }
 
 void SpirvTest::data() {
-    CORRADE_COMPARE(Implementation::spirvData(Data, sizeof(Data)), Containers::arrayView(Data + 5, 1));
+    CORRADE_COMPARE(Implementation::spirvData(Data, sizeof(Data)).data(), Data + 5);
+    CORRADE_COMPARE(Implementation::spirvData(Data, sizeof(Data)).size(), 1);
 }
 
 void SpirvTest::dataInvalid() {
     auto&& data = InvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
-    CORRADE_VERIFY(!Implementation::spirvData(data.data, data.data.size()));
+    CORRADE_VERIFY(!Implementation::spirvData(data.data.data(), data.data.size()));
 }
 
 UnsignedInt op(UnsignedInt length, SpvOp op) {
@@ -155,7 +156,7 @@ void SpirvTest::nextEntrypoint() {
     CORRADE_VERIFY(data);
 
     /* The file is a full SPIR-V, strip the header first */
-    Containers::ArrayView<const UnsignedInt> view = Implementation::spirvData(*data, data->size());
+    Containers::ArrayView<const UnsignedInt> view = Implementation::spirvData(data->data(), data->size());
     CORRADE_VERIFY(view);
 
     Containers::Optional<Implementation::SpirvEntrypoint> vert = Implementation::spirvNextEntrypoint(view);
@@ -194,7 +195,7 @@ void SpirvTest::entrypointInterface() {
     CORRADE_VERIFY(data);
 
     /* The file is a full SPIR-V, strip the header first */
-    Containers::ArrayView<const UnsignedInt> view = Implementation::spirvData(*data, data->size());
+    Containers::ArrayView<const UnsignedInt> view = Implementation::spirvData(data->data(), data->size());
     CORRADE_VERIFY(view);
 
     Containers::Optional<Implementation::SpirvEntrypoint> vert = Implementation::spirvNextEntrypoint(view);

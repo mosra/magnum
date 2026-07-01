@@ -105,11 +105,11 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
     if(data.size() < dataSize)
-        data = Containers::Array<char>{dataSize};
+        data = Containers::Array<char>{NoInit, dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    Context::current().state().texture.getCubeImage3DImplementation(*this, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data, image.storage());
+    Context::current().state().texture.getCubeImage3DImplementation(*this, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data.data(), image.storage());
     image = Image3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, Utility::move(data), ImageFlag3D::CubeMap};
 }
 
@@ -127,7 +127,7 @@ void CubeMapTexture::image(const Int level, const MutableImageView3D& image) {
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    Context::current().state().texture.getCubeImage3DImplementation(*this, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data(), image.storage());
+    Context::current().state().texture.getCubeImage3DImplementation(*this, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data().data(), image.storage());
 }
 
 void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUsage usage) {
@@ -181,11 +181,11 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
     if(data.size() < dataOffsetSize.first + dataOffsetSize.second)
-        data = Containers::Array<char>{dataOffsetSize.first + dataOffsetSize.second};
+        data = Containers::Array<char>{NoInit, dataOffsetSize.first + dataOffsetSize.second};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyCompressedPixelStoragePack(image.storage(), blockSize, blockDataSize);
-    Context::current().state().texture.getCompressedCubeImage3DImplementation(*this, level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, data);
+    Context::current().state().texture.getCompressedCubeImage3DImplementation(*this, level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, data.data());
     image = CompressedImage3D{image.storage(), CompressedPixelFormat(format), size, Utility::move(data), ImageFlag3D::CubeMap};
 }
 
@@ -230,7 +230,7 @@ void CubeMapTexture::compressedImage(const Int level, const MutableCompressedIma
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyCompressedPixelStoragePack(image);
-    Context::current().state().texture.getCompressedCubeImage3DImplementation(*this, level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, image.data());
+    Context::current().state().texture.getCompressedCubeImage3DImplementation(*this, level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, image.data().data());
 }
 
 void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& image, const BufferUsage usage) {
@@ -288,11 +288,11 @@ void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
     if(data.size() < dataSize)
-        data = Containers::Array<char>{dataSize};
+        data = Containers::Array<char>{NoInit, dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    Context::current().state().texture.getCubeImageImplementation(*this, coordinate, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data);
+    Context::current().state().texture.getCubeImageImplementation(*this, coordinate, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data.data());
     image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, Utility::move(data), ImageFlags2D{}};
 }
 
@@ -310,7 +310,7 @@ void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, 
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    Context::current().state().texture.getCubeImageImplementation(*this, coordinate, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data());
+    Context::current().state().texture.getCubeImageImplementation(*this, coordinate, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data().data());
 }
 
 void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, BufferImage2D& image, const BufferUsage usage) {
@@ -361,11 +361,11 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
     if(data.size() < dataSize)
-        data = Containers::Array<char>{dataSize};
+        data = Containers::Array<char>{NoInit, dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyCompressedPixelStoragePack(image.storage(), blockSize, blockDataSize);
-    Context::current().state().texture.getCompressedCubeImageImplementation(*this, coordinate, level, size, data.size(), data);
+    Context::current().state().texture.getCompressedCubeImageImplementation(*this, coordinate, level, size, data.size(), data.data());
     image = CompressedImage2D{image.storage(), CompressedPixelFormat(format), size, Utility::move(data), ImageFlags2D{}};
 }
 
@@ -401,7 +401,7 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyCompressedPixelStoragePack(image);
-    Context::current().state().texture.getCompressedCubeImageImplementation(*this, coordinate, level, size, image.data().size(), image.data());
+    Context::current().state().texture.getCompressedCubeImageImplementation(*this, coordinate, level, size, image.data().size(), image.data().data());
 }
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedBufferImage2D& image, const BufferUsage usage) {
@@ -487,11 +487,11 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
     if(data.size() < dataSize)
-        data = Containers::Array<char>{dataSize};
+        data = Containers::Array<char>{NoInit, dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyCompressedPixelStoragePack(image.storage(), blockSize, blockDataSize);
-    glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), data.size(), data);
+    glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), data.size(), data.data());
     /* Would be CubeMap if the whole image was queried, but then we'd have to
        query the size and compare, which is extra work. So it's Array
        instead. */
@@ -532,7 +532,7 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyCompressedPixelStoragePack(image);
-    glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), image.data().size(), image.data());
+    glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), image.data().size(), image.data().data());
 }
 
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D& image, const BufferUsage usage) {
@@ -587,7 +587,7 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& off
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
     Context::current().state().renderer.applyPixelStorageUnpack(image.storage());
-    Context::current().state().texture.cubeSubImage3DImplementation(*this, level, offset, image.size(), pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data()
+    Context::current().state().texture.cubeSubImage3DImplementation(*this, level, offset, image.size(), pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffset(image)
         #endif
@@ -612,7 +612,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vec
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     Context::current().state().renderer.applyCompressedPixelStorageUnpack(image);
-    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(compressedPixelFormat(image.format())), Implementation::occupiedCompressedImageDataSize(image), image.data());
+    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(compressedPixelFormat(image.format())), Implementation::occupiedCompressedImageDataSize(image), image.data().data());
     return *this;
 }
 
@@ -633,7 +633,7 @@ CubeMapTexture& CubeMapTexture::setSubImage(const CubeMapCoordinate coordinate, 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
     Context::current().state().renderer.applyPixelStorageUnpack(image.storage());
-    Context::current().state().texture.cubeSubImageImplementation(*this, coordinate, level, offset, image.size(), pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data()
+    Context::current().state().texture.cubeSubImageImplementation(*this, coordinate, level, offset, image.size(), pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffset(image)
         #endif
@@ -655,7 +655,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const CubeMapCoordinate co
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
     Context::current().state().renderer.applyCompressedPixelStorageUnpack(image);
-    Context::current().state().texture.cubeCompressedSubImageImplementation(*this, coordinate, level, offset, image.size(), compressedPixelFormat(image.format()), image.data(), Implementation::occupiedCompressedImageDataSize(image));
+    Context::current().state().texture.cubeCompressedSubImageImplementation(*this, coordinate, level, offset, image.size(), compressedPixelFormat(image.format()), image.data().data(), Implementation::occupiedCompressedImageDataSize(image));
     return *this;
 }
 

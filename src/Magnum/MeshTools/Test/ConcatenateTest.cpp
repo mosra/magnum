@@ -467,16 +467,16 @@ void ConcatenateTest::concatenateNone() {
 }
 
 void ConcatenateTest::concatenateInto() {
-    Containers::Array<Trade::MeshAttributeData> attributeData{2};
+    Containers::Array<Trade::MeshAttributeData> attributeData{ValueInit, 2};
     Containers::Array<char> vertexData;
     Containers::Array<char> indexData;
     arrayResize(vertexData, DirectInit, (sizeof(Vector2) + sizeof(Vector3))*7, '\xff');
     arrayClear(vertexData);
     arrayResize(indexData, DirectInit, sizeof(UnsignedInt)*9, '\xff');
     arrayClear(indexData);
-    const void* attributeDataPointer = attributeData;
-    const void* vertexDataPointer = vertexData;
-    const void* indexDataPointer = indexData;
+    const void* attributeDataPointer = attributeData.data();
+    const void* vertexDataPointer = vertexData.data();
+    const void* indexDataPointer = indexData.data();
 
     attributeData[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
         VertexFormat::Vector2, nullptr};
@@ -549,13 +549,13 @@ void ConcatenateTest::concatenateInto() {
 }
 
 void ConcatenateTest::concatenateIntoNoIndexArray() {
-    Containers::Array<Trade::MeshAttributeData> attributeData{1};
+    Containers::Array<Trade::MeshAttributeData> attributeData{ValueInit, 1};
     Containers::Array<char> vertexData;
     Containers::Array<char> indexData;
     arrayReserve(vertexData, sizeof(Vector2)*3);
     arrayReserve(indexData, sizeof(UnsignedInt));
-    const void* attributeDataPointer = attributeData;
-    const void* vertexDataPointer = vertexData;
+    const void* attributeDataPointer = attributeData.data();
+    const void* vertexDataPointer = vertexData.data();
 
     attributeData[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
         VertexFormat::Vector2, nullptr};
@@ -597,7 +597,7 @@ void ConcatenateTest::concatenateIntoNoIndexArray() {
 void ConcatenateTest::concatenateIntoNonOwnedAttributeArray() {
     Containers::Array<char> vertexData;
     arrayReserve(vertexData, sizeof(Vector2)*3);
-    const void* vertexDataPointer = vertexData;
+    const void* vertexDataPointer = vertexData.data();
 
     const Trade::MeshAttributeData attributeData[]{
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,

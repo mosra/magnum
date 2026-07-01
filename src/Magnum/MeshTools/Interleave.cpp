@@ -198,7 +198,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
     if(!extraAttributeCount && !originalAttributeData.deleter())
         attributeData = Utility::move(originalAttributeData);
     else {
-        attributeData = Containers::Array<Trade::MeshAttributeData>{originalAttributeCount + extraAttributeCount};
+        attributeData = Containers::Array<Trade::MeshAttributeData>{ValueInit, originalAttributeCount + extraAttributeCount};
         Utility::copy(originalAttributeData, attributeData.prefix(originalAttributeCount));
     }
 

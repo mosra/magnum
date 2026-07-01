@@ -52,7 +52,7 @@ TgaImporter::~TgaImporter() = default;
 
 ImporterFeatures TgaImporter::doFeatures() const { return ImporterFeature::OpenData; }
 
-bool TgaImporter::doIsOpened() const { return _in; }
+bool TgaImporter::doIsOpened() const { return !!_in; }
 
 void TgaImporter::doClose() { _in = nullptr; }
 
@@ -183,7 +183,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     }
 
     /* Copy data directly if not RLE */
-    Containers::Array<char> data{outputSize};
+    Containers::Array<char> data{NoInit, outputSize};
     if(!rle) {
         if(srcPixels.size() < outputSize) {
             Error{} << "Trade::TgaImporter::image2D(): file too short, expected" << outputSize + sizeof(Implementation::TgaHeader) << "bytes but got" << _in.size();

@@ -1255,7 +1255,7 @@ void AbstractConverterTest::convertDataToFileThroughDataNotWritable() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
-            return Containers::Array<char>{1};
+            return Containers::Array<char>{NoInit, 1};
         }
     } converter;
 
@@ -1438,7 +1438,7 @@ void AbstractConverterTest::convertFileToFileThroughDataNotWritable() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
-            return Containers::Array<char>{1};
+            return Containers::Array<char>{NoInit, 1};
         }
     } converter;
 
@@ -1869,7 +1869,7 @@ void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
-            return Containers::Array<char>{1};
+            return Containers::Array<char>{NoInit, 1};
         }
     } converter;
 
@@ -2108,7 +2108,7 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
-            return Containers::Array<char>{1};
+            return Containers::Array<char>{NoInit, 1};
         }
     } converter;
 
@@ -2946,7 +2946,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataNotWritab
         }
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
-            return Containers::Array<char>{1};
+            return Containers::Array<char>{NoInit, 1};
         }
     } converter;
 
@@ -3459,7 +3459,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable
         }
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
-            return Containers::Array<char>{1};
+            return Containers::Array<char>{NoInit, 1};
         }
     } converter;
 

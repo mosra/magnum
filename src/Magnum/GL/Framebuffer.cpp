@@ -199,7 +199,7 @@ Framebuffer& Framebuffer::mapForDraw(const Containers::ArrayView<const Container
     for(const auto& attachment: attachments)
         _attachments[attachment.first()] = GLenum(attachment.second());
 
-    Context::current().state().framebuffer.drawBuffersImplementation(*this, max+1, _attachments);
+    Context::current().state().framebuffer.drawBuffersImplementation(*this, max+1, _attachments.data());
     return *this;
 }
 

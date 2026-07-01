@@ -300,7 +300,7 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
             if(_data[j - 1].name() < _data[j].name())
                 continue;
 
-            std::sort(_data + begin, _data + end, [
+            std::sort(_data.data() + begin, _data.data() + end, [
                 #ifndef CORRADE_NO_ASSERT
                 i
                 #endif

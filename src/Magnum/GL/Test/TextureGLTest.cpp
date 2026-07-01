@@ -1853,7 +1853,7 @@ void TextureGLTest::image1DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*4};
     MutableImageView1D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, 2, imageData};
     texture.image(0, image);
@@ -1961,7 +1961,7 @@ void TextureGLTest::subImage1DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*4};
     MutableImageView1D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, 2, imageData};
     texture.subImage(0, Range1Di::fromSize(1, 2), image);
@@ -2121,7 +2121,7 @@ void TextureGLTest::image2DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*4};
     MutableImageView2D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.image(0, image);
@@ -2258,7 +2258,7 @@ void TextureGLTest::subImage2DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*4};
     MutableImageView2D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), image);
@@ -2405,7 +2405,7 @@ void TextureGLTest::compressedImage2DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 1*16};
+    Containers::Array<char> imageData{NoInit, data.offset + 1*16};
     MutableCompressedImageView2D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, imageData, ImageFlag2D::Array};
     texture.compressedImage(0, image);
 
@@ -2571,7 +2571,7 @@ void TextureGLTest::compressedSubImage2DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 1*16};
+    Containers::Array<char> imageData{NoInit, data.offset + 1*16};
     MutableCompressedImageView2D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, imageData, ImageFlag2D::Array};
     texture.compressedSubImage(0, Range2Di::fromSize({4, 0}, Vector2i{4}), image);
 
@@ -2694,7 +2694,7 @@ void TextureGLTest::image3DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*2*4};
     MutableImageView3D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, imageData, ImageFlag3D::Array};
     texture.image(0, image);
@@ -2839,7 +2839,7 @@ void TextureGLTest::subImage3DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*2*4};
     MutableImageView3D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, imageData, ImageFlag3D::Array};
     texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), image);
@@ -2986,7 +2986,7 @@ void TextureGLTest::compressedImage3DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 64};
+    Containers::Array<char> imageData{NoInit, data.offset + 64};
     MutableCompressedImageView3D image{data.storage, CompressedPixelFormat::RGBABptcUnorm, Vector3i{4}, imageData, ImageFlag3D::Array};
     texture.compressedImage(0, image);
 
@@ -3200,7 +3200,7 @@ void TextureGLTest::compressedSubImage3DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 64};
+    Containers::Array<char> imageData{NoInit, data.offset + 64};
     MutableCompressedImageView3D image{data.storage, CompressedPixelFormat::RGBABptcUnorm, Vector3i{4}, imageData, ImageFlag3D::Array};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 0}, Vector3i{4}), image);
 

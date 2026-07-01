@@ -56,7 +56,7 @@ Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transfor
        position attribute format, if needed. Not using Utility::copy() here as
        the view returned by attributeData() might have offset-only attributes
        which interleave() doesn't want. */
-    Containers::Array<Trade::MeshAttributeData> attributes{mesh.attributeCount()};
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, mesh.attributeCount()};
     for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
         attributes[i] = mesh.attributeData(i);
 
@@ -156,7 +156,7 @@ Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transfor
        position attribute format, if needed. Not using Utility::copy() here as
        the view returned by attributeData() might have offset-only attributes
        which interleave() doesn't want. */
-    Containers::Array<Trade::MeshAttributeData> attributes{mesh.attributeCount()};
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, mesh.attributeCount()};
     for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
         attributes[i] = mesh.attributeData(i);
 
@@ -331,7 +331,7 @@ Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const
        position attribute format, if needed. Not using Utility::copy() here as
        the view returned by attributeData() might have offset-only attributes
        which interleave() doesn't want. */
-    Containers::Array<Trade::MeshAttributeData> attributes{mesh.attributeCount()};
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, mesh.attributeCount()};
     for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
         attributes[i] = mesh.attributeData(i);
 

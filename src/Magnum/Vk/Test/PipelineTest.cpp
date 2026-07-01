@@ -193,7 +193,7 @@ void PipelineTest::rasterizationCreateInfoConstruct() {
     RasterizationPipelineCreateInfo info{shaderSet, meshLayout, reinterpret_cast<VkPipelineLayout>(reinterpret_cast<void*>(std::size_t{0xdead})), reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(std::size_t{0xbeef})), 15, 3, RasterizationPipelineCreateInfo::Flag::DisableOptimization|RasterizationPipelineCreateInfo::Flag::AllowDerivatives};
     CORRADE_COMPARE(info->flags, VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT|VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT);
     CORRADE_COMPARE(info->stageCount, 2);
-    CORRADE_COMPARE(info->pStages, shaderSet.stages());
+    CORRADE_COMPARE(info->pStages, shaderSet.stages().data());
     CORRADE_COMPARE(info->pVertexInputState, &meshLayout.vkPipelineVertexInputStateCreateInfo());
     CORRADE_COMPARE(info->pInputAssemblyState, &meshLayout.vkPipelineInputAssemblyStateCreateInfo());
     CORRADE_VERIFY(!info->pViewportState);
@@ -327,7 +327,7 @@ void PipelineTest::rasterizationCreateInfoConstructMove() {
        members */
     a.reset();
     CORRADE_COMPARE((**b).stageCount, 2);
-    CORRADE_COMPARE((**b).pStages, shaderSet.stages());
+    CORRADE_COMPARE((**b).pStages, shaderSet.stages().data());
     CORRADE_COMPARE((**b).pVertexInputState, &meshLayout.vkPipelineVertexInputStateCreateInfo());
     CORRADE_COMPARE((**b).pInputAssemblyState, &meshLayout.vkPipelineInputAssemblyStateCreateInfo());
     CORRADE_VERIFY((**b).pViewportState);
@@ -362,7 +362,7 @@ void PipelineTest::rasterizationCreateInfoConstructMove() {
        members */
     b.reset();
     CORRADE_COMPARE((**c).stageCount, 2);
-    CORRADE_COMPARE((**c).pStages, shaderSet.stages());
+    CORRADE_COMPARE((**c).pStages, shaderSet.stages().data());
     CORRADE_COMPARE((**c).pVertexInputState, &meshLayout.vkPipelineVertexInputStateCreateInfo());
     CORRADE_COMPARE((**c).pInputAssemblyState, &meshLayout.vkPipelineInputAssemblyStateCreateInfo());
     CORRADE_VERIFY((**c).pViewportState);

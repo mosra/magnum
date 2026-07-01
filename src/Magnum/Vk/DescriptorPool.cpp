@@ -63,7 +63,7 @@ DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, co
     _info.flags = VkDescriptorPoolCreateFlags(flags);
     _info.maxSets = maxSets;
     _info.poolSizeCount = poolSizesCopy.size();
-    _info.pPoolSizes = poolSizesCopy;
+    _info.pPoolSizes = poolSizesCopy.data();
 }
 
 DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, const std::initializer_list<Containers::Pair<DescriptorType, UnsignedInt>> poolSizes, const Flags flags): DescriptorPoolCreateInfo{maxSets, Containers::arrayView(poolSizes), flags} {}

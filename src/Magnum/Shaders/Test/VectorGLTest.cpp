@@ -1645,7 +1645,7 @@ void VectorGLTest::renderMulti2D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<VectorMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<VectorMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = VectorMaterialUniform{}
         .setColor(0xff0000_rgbf)
         .setBackgroundColor(0xffcccc_rgbf);
@@ -1654,7 +1654,7 @@ void VectorGLTest::renderMulti2D() {
         .setBackgroundColor(0xccffcc_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
         .setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f})*
@@ -1675,7 +1675,7 @@ void VectorGLTest::renderMulti2D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             /* Additional Y shift + scale in the array slice */
@@ -1704,7 +1704,7 @@ void VectorGLTest::renderMulti2D() {
         .setLayer(1); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<VectorDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<VectorDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = VectorDrawUniform{}
@@ -1945,7 +1945,7 @@ void VectorGLTest::renderMulti3D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<VectorMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<VectorMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = VectorMaterialUniform{}
         .setColor(0xff0000_rgbf)
         .setBackgroundColor(0xffcccc_rgbf);
@@ -1954,7 +1954,7 @@ void VectorGLTest::renderMulti3D() {
         .setBackgroundColor(0xccffcc_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
@@ -1980,7 +1980,7 @@ void VectorGLTest::renderMulti3D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             /* Additional Y shift + scale in the array slice */
@@ -2009,7 +2009,7 @@ void VectorGLTest::renderMulti3D() {
         .setLayer(1); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<VectorDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<VectorDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = VectorDrawUniform{}

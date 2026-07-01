@@ -241,7 +241,7 @@ void CopyTest::copyRvalueDataFieldsOwned() {
     fields[0] = Trade::SceneFieldData{Trade::SceneField::Parent,
         Containers::arrayView(view[0].parentMapping),
         Containers::arrayView(view[0].parent)};
-    const Trade::SceneFieldData* originalFields = fields;
+    const Trade::SceneFieldData* originalFields = fields.data();
 
     Trade::SceneData copy = SceneTools::copy(Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 12,
         Utility::move(data), Utility::move(fields)});
@@ -316,7 +316,7 @@ void CopyTest::copyRvalueFieldsOwned() {
     fields[0] = Trade::SceneFieldData{Trade::SceneField::Parent,
         Containers::arrayView(data->parentMapping),
         Containers::arrayView(data->parent)};
-    const Trade::SceneFieldData* originalFields = fields;
+    const Trade::SceneFieldData* originalFields = fields.data();
 
     Trade::SceneData copy = SceneTools::copy(Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 12,
         Trade::DataFlag::ExternallyOwned, data, Utility::move(fields)});

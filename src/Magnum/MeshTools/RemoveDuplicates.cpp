@@ -88,7 +88,7 @@ std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char
         /* Try to insert new entry into the table. The inserted index points
            into the original unchanged data array. */
         const Containers::ArrayView<const char> entry = data[i].asContiguous();
-        const auto result = table.emplace(entry, i);
+        const auto result = table.emplace(entry.data(), i);
 
         /* Put the (either new or already existing) index into the output
            index array */
@@ -146,7 +146,7 @@ std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<cha
 
         /* Insert the new entry into the table. If it succeeds, dst is
            guaranteed to not change anymore. */
-        const auto result = table.emplace(dst, table.size());
+        const auto result = table.emplace(dst.data(), table.size());
 
         /* Put the (either new or already existing) index into the output index
            array */
@@ -280,7 +280,7 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
                This is a similar workflow to removeDuplicatesInPlaceInto() with
                the only difference that we're remapping an existing index array
                several times over instead of creating a new one */
-            const auto result = table.emplace(discretizedEntry, table.size());
+            const auto result = table.emplace(discretizedEntry.data(), table.size());
 
             /* Add the (either new or already existing) index into the array */
             remapping[i] = result.first->second;
@@ -459,7 +459,7 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& mesh) {
         Containers::StridedArrayView2D<char>{uniqueVertexData, {uniqueVertexCount, vertexData.size()[1]}});
 
     /* Route all attributes to the new vertex data */
-    Containers::Array<Trade::MeshAttributeData> attributeData{ownedInterleaved.attributeCount()};
+    Containers::Array<Trade::MeshAttributeData> attributeData{ValueInit, ownedInterleaved.attributeCount()};
     for(UnsignedInt i = 0; i != ownedInterleaved.attributeCount(); ++i)
         attributeData[i] = Implementation::remapAttributeData(ownedInterleaved.attributeData(i), uniqueVertexCount, ownedInterleaved.vertexData(), uniqueVertexData);
 

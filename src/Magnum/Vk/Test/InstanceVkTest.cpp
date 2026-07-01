@@ -380,7 +380,7 @@ void InstanceVkTest::constructCommandLineDisable() {
     Containers::String out;
     Warning redirectWarning{&out};
     Debug redirectOutput{&out};
-    Instance instance{InstanceCreateInfo{Int(data.argsDisable.size()), data.argsDisable,
+    Instance instance{InstanceCreateInfo{Int(data.argsDisable.size()), data.argsDisable.data(),
             InstanceCreateInfo::Flag::NoImplicitExtensions}
         .setApplicationInfo("InstanceVkTest", version(0, 0, 1))
         .addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s})
@@ -420,7 +420,7 @@ void InstanceVkTest::constructCommandLineEnable() {
     Containers::String out;
     Warning redirectWarning{&out};
     Debug redirectOutput{&out};
-    Instance instance{InstanceCreateInfo{Int(data.argsEnable.size()), data.argsEnable,
+    Instance instance{InstanceCreateInfo{Int(data.argsEnable.size()), data.argsEnable.data(),
             InstanceCreateInfo::Flag::NoImplicitExtensions}
         /* Nothing enabled by the application */
     };

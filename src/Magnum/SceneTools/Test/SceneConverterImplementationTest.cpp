@@ -325,7 +325,7 @@ void SceneConverterImplementationTest::infoScenesObjects() {
         bool _omitParent;
     } importer{data.defaultScene, data.omitParent};
 
-    CORRADE_VERIFY(_infoArgs.tryParse(data.args.size(), data.args));
+    CORRADE_VERIFY(_infoArgs.tryParse(data.args.size(), data.args.data()));
 
     std::chrono::high_resolution_clock::duration time;
 

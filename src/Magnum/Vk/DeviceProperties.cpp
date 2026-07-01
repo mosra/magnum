@@ -392,7 +392,7 @@ Containers::ArrayView<const VkQueueFamilyProperties2> DeviceProperties::queueFam
         _state->queueFamilyProperties = Containers::Array<VkQueueFamilyProperties2>{ValueInit, count};
         for(VkQueueFamilyProperties2& i: _state->queueFamilyProperties)
             i.sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
-        _state->getQueueFamilyPropertiesImplementation(*this, count, _state->queueFamilyProperties);
+        _state->getQueueFamilyPropertiesImplementation(*this, count, _state->queueFamilyProperties.data());
         CORRADE_INTERNAL_ASSERT(count == _state->queueFamilyProperties.size());
     }
 

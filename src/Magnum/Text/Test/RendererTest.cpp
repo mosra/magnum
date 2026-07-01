@@ -4960,12 +4960,12 @@ void RendererTest::allocateIndexAllocator() {
         CORRADE_COMPARE(renderer.renderingRunCount(), 1);
         /* No need to verify the actual contents, just that the view didn't
            change since last time */
-        CORRADE_COMPARE(renderer.indices().data(), indices);
+        CORRADE_COMPARE(renderer.indices().data(), indices.data());
     }
 
     /* Reserve / render / set index type second time. Pass with a size that's
        not a multiple of 6 times type size, it should round that down. */
-    allocation.expectedData = indices;
+    allocation.expectedData = indices.data();
     /* Using a heap allocation to not go over limited stack sizes on
        Emscripten etc */
     Containers::Array<char> indices2{NoInit, 20000*6*4};
@@ -5016,10 +5016,10 @@ void RendererTest::allocateIndexAllocator() {
        to perform the data copy, the one in this test deliberately doesn't. */
     if(data.expectNoReallocation) {
         CORRADE_COMPARE(allocation.called, 1);
-        CORRADE_COMPARE(renderer.indices().data(), indices);
+        CORRADE_COMPARE(renderer.indices().data(), indices.data());
     } else {
         CORRADE_COMPARE(allocation.called, 2);
-        CORRADE_COMPARE(renderer.indices().data(), indices2);
+        CORRADE_COMPARE(renderer.indices().data(), indices2.data());
     }
 }
 

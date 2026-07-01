@@ -789,7 +789,7 @@ shader.setColor(0x2f83cc_rgbf)
 /* [MeshVisualizerGL3D-usage-geom2] */
 
 /* [MeshVisualizerGL3D-usage-no-geom-old] */
-Containers::Array<Float> vertexIndex{Containers::arraySize(vertices)};
+Containers::Array<Float> vertexIndex{NoInit, Containers::arraySize(vertices)};
 std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
 GL::Buffer vertexIndices;

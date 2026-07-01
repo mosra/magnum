@@ -130,8 +130,8 @@ void SkinDataTest::release() {
         Matrix3::translation(Vector2::yAxis(4.0f))
     }};
 
-    const void* jointsPointer = joints;
-    const void* inverseBindMatricesPointer = inverseBindMatrices;
+    const void* jointsPointer = joints.data();
+    const void* inverseBindMatricesPointer = inverseBindMatrices.data();
 
     SkinData2D data{Utility::move(joints), Utility::move(inverseBindMatrices)};
 
@@ -139,13 +139,13 @@ void SkinDataTest::release() {
     CORRADE_COMPARE(data.joints().size(), 0);
     CORRADE_COMPARE(data.inverseBindMatrices().size(), 3);
     CORRADE_COMPARE(releasedJoints.size(), 3);
-    CORRADE_COMPARE(releasedJoints, jointsPointer);
+    CORRADE_COMPARE(releasedJoints.data(), jointsPointer);
 
     Containers::Array<Matrix3> releasedInverseBindMatrices = data.releaseInverseBindMatrixData();
     CORRADE_COMPARE(data.joints().size(), 0);
     CORRADE_COMPARE(data.inverseBindMatrices().size(), 0);
     CORRADE_COMPARE(releasedInverseBindMatrices.size(), 3);
-    CORRADE_COMPARE(releasedInverseBindMatrices, inverseBindMatricesPointer);
+    CORRADE_COMPARE(releasedInverseBindMatrices.data(), inverseBindMatricesPointer);
 }
 
 }}}}

@@ -57,7 +57,7 @@ FramebufferCreateInfo::FramebufferCreateInfo(const VkRenderPass renderPass, cons
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _state->attachments[i] = *attachments[i];
     _info.attachmentCount = _state->attachments.size();
-    _info.pAttachments = _state->attachments;
+    _info.pAttachments = _state->attachments.data();
 }
 
 FramebufferCreateInfo::FramebufferCreateInfo(const VkRenderPass renderPass, const std::initializer_list<Containers::Reference<ImageView>> attachments, const Vector3i& size, const Flags flags): FramebufferCreateInfo{renderPass, Containers::arrayView(attachments), size, flags} {}

@@ -4049,8 +4049,8 @@ void AbstractImporterTest::sceneNonOwningDeleters() {
 
     auto data = importer.scene(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
-    CORRADE_COMPARE(static_cast<const void*>(data->fieldData()), importer.fields);
+    CORRADE_COMPARE(static_cast<const void*>(data->data().data()), importer.data);
+    CORRADE_COMPARE(static_cast<const void*>(data->fieldData().data()), importer.fields);
 }
 
 void AbstractImporterTest::sceneCustomDataDeleter() {
@@ -4373,7 +4373,7 @@ void AbstractImporterTest::animationNonOwningDeleters() {
 
     auto data = importer.animation(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data().data()), importer.data);
 }
 
 void AbstractImporterTest::animationGrowableDeleters() {
@@ -5578,8 +5578,8 @@ void AbstractImporterTest::skin2DNonOwningDeleters() {
     Error redirectError{&out};
 
     auto data = importer.skin2D(0);
-    CORRADE_COMPARE(data->joints(), importer.jointData);
-    CORRADE_COMPARE(data->inverseBindMatrices(), importer.inverseBindMatrixData);
+    CORRADE_COMPARE(data->joints().data(), importer.jointData);
+    CORRADE_COMPARE(data->inverseBindMatrices().data(), importer.inverseBindMatrixData);
 }
 
 void AbstractImporterTest::skin2DCustomJointDataDeleter() {
@@ -5593,7 +5593,7 @@ void AbstractImporterTest::skin2DCustomJointDataDeleter() {
         UnsignedInt doSkin2DCount() const override { return 1; }
         Int doSkin2DForName(Containers::StringView) override { return 0; }
         Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
-            return SkinData2D{Containers::Array<UnsignedInt>{jointData, 1, [](UnsignedInt*, std::size_t){}}, Containers::Array<Matrix3>{1}};
+            return SkinData2D{Containers::Array<UnsignedInt>{jointData, 1, [](UnsignedInt*, std::size_t){}}, Containers::Array<Matrix3>{NoInit, 1}};
         }
 
         UnsignedInt jointData[1]{};
@@ -5620,7 +5620,7 @@ void AbstractImporterTest::skin2DCustomInverseBindMatrixDataDeleter() {
         UnsignedInt doSkin2DCount() const override { return 1; }
         Int doSkin2DForName(Containers::StringView) override { return 0; }
         Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
-            return SkinData2D{Containers::Array<UnsignedInt>{1}, Containers::Array<Matrix3>{inverseBindMatrixData, 1, [](Matrix3*, std::size_t){}}};
+            return SkinData2D{Containers::Array<UnsignedInt>{NoInit, 1}, Containers::Array<Matrix3>{inverseBindMatrixData, 1, [](Matrix3*, std::size_t){}}};
         }
 
         Matrix3 inverseBindMatrixData[1]{};
@@ -5825,8 +5825,8 @@ void AbstractImporterTest::skin3DNonOwningDeleters() {
     Error redirectError{&out};
 
     auto data = importer.skin3D(0);
-    CORRADE_COMPARE(data->joints(), importer.jointData);
-    CORRADE_COMPARE(data->inverseBindMatrices(), importer.inverseBindMatrixData);
+    CORRADE_COMPARE(data->joints().data(), importer.jointData);
+    CORRADE_COMPARE(data->inverseBindMatrices().data(), importer.inverseBindMatrixData);
 }
 
 void AbstractImporterTest::skin3DCustomJointDataDeleter() {
@@ -5840,7 +5840,7 @@ void AbstractImporterTest::skin3DCustomJointDataDeleter() {
         UnsignedInt doSkin3DCount() const override { return 1; }
         Int doSkin3DForName(Containers::StringView) override { return 0; }
         Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
-            return SkinData3D{Containers::Array<UnsignedInt>{jointData, 1, [](UnsignedInt*, std::size_t){}}, Containers::Array<Matrix4>{1}};
+            return SkinData3D{Containers::Array<UnsignedInt>{jointData, 1, [](UnsignedInt*, std::size_t){}}, Containers::Array<Matrix4>{NoInit, 1}};
         }
 
         UnsignedInt jointData[1]{};
@@ -5867,7 +5867,7 @@ void AbstractImporterTest::skin3DCustomInverseBindMatrixDataDeleter() {
         UnsignedInt doSkin3DCount() const override { return 1; }
         Int doSkin3DForName(Containers::StringView) override { return 0; }
         Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
-            return SkinData3D{Containers::Array<UnsignedInt>{1}, Containers::Array<Matrix4>{inverseBindMatrixData, 1, [](Matrix4*, std::size_t){}}};
+            return SkinData3D{Containers::Array<UnsignedInt>{NoInit, 1}, Containers::Array<Matrix4>{inverseBindMatrixData, 1, [](Matrix4*, std::size_t){}}};
         }
 
         Matrix4 inverseBindMatrixData[1]{};
@@ -6197,7 +6197,7 @@ void AbstractImporterTest::meshNonOwningDeleters() {
 
     auto data = importer.mesh(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(static_cast<const void*>(data->indexData()), importer.indexData);
+    CORRADE_COMPARE(static_cast<const void*>(data->indexData().data()), importer.indexData);
 }
 
 void AbstractImporterTest::meshGrowableDeleters() {
@@ -7027,8 +7027,8 @@ void AbstractImporterTest::materialNonOwningDeleters() {
 
     auto data = importer.material(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(static_cast<const void*>(data->attributeData()), importer.attributeData);
-    CORRADE_COMPARE(static_cast<const void*>(data->layerData()), importer.layerData);
+    CORRADE_COMPARE(static_cast<const void*>(data->attributeData().data()), importer.attributeData);
+    CORRADE_COMPARE(static_cast<const void*>(data->layerData().data()), importer.layerData);
 }
 
 void AbstractImporterTest::materialCustomAttributeDataDeleter() {
@@ -7518,7 +7518,7 @@ void AbstractImporterTest::image1DNonOwningDeleter() {
 
     auto data = importer.image1D(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data().data()), importer.data);
 }
 
 void AbstractImporterTest::image1DGrowableDeleter() {
@@ -7830,7 +7830,7 @@ void AbstractImporterTest::image2DNonOwningDeleter() {
 
     auto data = importer.image2D(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data().data()), importer.data);
 }
 
 void AbstractImporterTest::image2DGrowableDeleter() {
@@ -8142,7 +8142,7 @@ void AbstractImporterTest::image3DNonOwningDeleter() {
 
     auto data = importer.image3D(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data().data()), importer.data);
 }
 
 void AbstractImporterTest::image3DGrowableDeleter() {

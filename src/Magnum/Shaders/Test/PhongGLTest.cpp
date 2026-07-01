@@ -5518,7 +5518,7 @@ void PhongGLTest::renderMulti() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<PhongMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<PhongMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = PhongMaterialUniform{}
         .setDiffuseColor(data.flags & PhongGL::Flag::DiffuseTexture ?
             0xffffff_rgbf : 0x00ffff_rgbf);
@@ -5530,7 +5530,7 @@ void PhongGLTest::renderMulti() {
     /* The shader has two lights hardcoded, so make sure the buffer can fit
        2 items enough even though the last draw needs just one light. Not a
        problem on desktop, but WebGL complains. */
-    Containers::Array<PhongLightUniform> lightData{2*data.uniformIncrement + 2};
+    Containers::Array<PhongLightUniform> lightData{ValueInit, 2*data.uniformIncrement + 2};
     lightData[0*data.uniformIncrement] = PhongLightUniform{}
         .setPosition(Vector4{0.0f, 0.0f, 1.0f, 0.0f})
         .setColor(data.flags & PhongGL::Flag::DiffuseTexture ?
@@ -5551,7 +5551,7 @@ void PhongGLTest::renderMulti() {
             0xffffff_rgbf : 0xff00ff_rgbf);
     GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, lightData};
 
-    Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationUniform3D> transformationData{ValueInit, 2*data.uniformIncrement + 1};
     transformationData[0*data.uniformIncrement] = TransformationUniform3D{}
         .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-2.15f))*
@@ -5574,7 +5574,7 @@ void PhongGLTest::renderMulti() {
         );
     GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             data.flags & PhongGL::Flag::TextureArrays ?
@@ -5601,7 +5601,7 @@ void PhongGLTest::renderMulti() {
         .setLayer(2); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<PhongDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<PhongDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material / light offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = PhongDrawUniform{}
@@ -5865,14 +5865,14 @@ void PhongGLTest::renderMultiSkinning() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<PhongMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<PhongMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = PhongMaterialUniform{}
         .setAmbientColor(0x33ffff_rgbf);
     materialData[1*data.uniformIncrement] = PhongMaterialUniform{}
         .setAmbientColor(0xffff33_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationUniform3D> transformationData{ValueInit, 2*data.uniformIncrement + 1};
     transformationData[0*data.uniformIncrement] = TransformationUniform3D{}
         .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f})*
                                  Matrix4::translation({ 0.0f, -1.5f, 0.0f}));
@@ -5884,7 +5884,7 @@ void PhongGLTest::renderMultiSkinning() {
                                  Matrix4::translation({-1.5f,  1.5f, 0.0f}));
     GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
 
-    Containers::Array<TransformationUniform3D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    Containers::Array<TransformationUniform3D> jointData{ValueInit, Math::max(2*data.uniformIncrement + 4, 10u)};
     /* First draw moves both bottom corners */
     jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform3D{}
         .setTransformationMatrix(Matrix4::translation({ 0.5f, -0.5f, 0.0f}));
@@ -5910,7 +5910,7 @@ void PhongGLTest::renderMultiSkinning() {
     GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
         jointData};
 
-    Containers::Array<PhongDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<PhongDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = PhongDrawUniform{}

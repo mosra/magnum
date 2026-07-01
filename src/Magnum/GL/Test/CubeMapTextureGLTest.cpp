@@ -1092,7 +1092,7 @@ void CubeMapTextureGLTest::imageQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*4};
     MutableImageView2D image{data.storage,
             PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.image(CubeMapCoordinate::PositiveY, 0, image);
@@ -1367,7 +1367,7 @@ void CubeMapTextureGLTest::compressedImageQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 16};
+    Containers::Array<char> imageData{NoInit, data.offset + 16};
     MutableCompressedImageView2D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, imageData, ImageFlag2D::Array};
     texture.compressedImage(CubeMapCoordinate::PositiveZ, 0, image);
 
@@ -1702,7 +1702,7 @@ void CubeMapTextureGLTest::image3DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*6*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*6*4};
     MutableImageView3D image{data.storage, PixelFormat::RGBA, PixelType::UnsignedByte, {2, 2, 6}, imageData, ImageFlag3D::Array};
     texture.image(0, image);
 
@@ -1794,7 +1794,7 @@ void CubeMapTextureGLTest::subImage3DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*4};
     MutableImageView3D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, {2, 2, 1}, imageData, ImageFlag3D::Array};
     texture.subImage(0, Range3Di::fromSize({1, 1, 0}, {2, 2, 1}), image);
@@ -1971,7 +1971,7 @@ void CubeMapTextureGLTest::compressedImage3DQueryView() {
             CORRADE_SKIP("Skipping the rest of the test");
     }
 
-    Containers::Array<char> imageData{data.offset + 16*6};
+    Containers::Array<char> imageData{NoInit, data.offset + 16*6};
     MutableCompressedImageView3D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 6}, imageData, ImageFlag3D::Array};
     texture.compressedImage(0, image);
 
@@ -2104,7 +2104,7 @@ void CubeMapTextureGLTest::compressedSubImage3DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 16};
+    Containers::Array<char> imageData{NoInit, data.offset + 16};
     MutableCompressedImageView3D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 1}, imageData, ImageFlag3D::Array};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), image);
 

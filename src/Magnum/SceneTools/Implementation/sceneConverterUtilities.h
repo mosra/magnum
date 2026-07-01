@@ -179,7 +179,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     /* Object properties */
     Containers::Array<ObjectInfo> objectInfos;
     if(args.isSet("info") || args.isSet("info-objects")) {
-        objectInfos = Containers::Array<ObjectInfo>{std::size_t(importer.objectCount())};
+        objectInfos = Containers::Array<ObjectInfo>{ValueInit, std::size_t(importer.objectCount())};
 
         for(UnsignedLong i = 0; i != importer.objectCount(); ++i) {
             objectInfos[i].object = i;
@@ -205,12 +205,12 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     Containers::Array<UnsignedInt> skin3DReferenceCount;
     if((args.isSet("info") || args.isSet("info-scenes") || args.isSet("object-hierarchy")) && importer.sceneCount()) {
         if(args.isSet("info") || args.isSet("info-scenes")) {
-            materialReferenceCount = Containers::Array<UnsignedInt>{importer.materialCount()};
-            lightReferenceCount = Containers::Array<UnsignedInt>{importer.lightCount()};
-            cameraReferenceCount = Containers::Array<UnsignedInt>{importer.cameraCount()};
-            meshReferenceCount = Containers::Array<UnsignedInt>{importer.meshCount()};
-            skin2DReferenceCount = Containers::Array<UnsignedInt>{importer.skin2DCount()};
-            skin3DReferenceCount = Containers::Array<UnsignedInt>{importer.skin3DCount()};
+            materialReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.materialCount()};
+            lightReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.lightCount()};
+            cameraReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.cameraCount()};
+            meshReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.meshCount()};
+            skin2DReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.skin2DCount()};
+            skin3DReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.skin3DCount()};
         }
 
         for(UnsignedInt i = 0; i != importer.sceneCount(); ++i) {
@@ -424,7 +424,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     Containers::Array<MaterialInfo> materialInfos;
     Containers::Array<UnsignedInt> textureReferenceCount;
     if((args.isSet("info") || args.isSet("info-materials")) && importer.materialCount()) {
-        textureReferenceCount = Containers::Array<UnsignedInt>{importer.textureCount()};
+        textureReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.textureCount()};
 
         for(UnsignedInt i = 0; i != importer.materialCount(); ++i) {
             Containers::Optional<Trade::MaterialData> material;
@@ -563,9 +563,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     Containers::Array<UnsignedInt> image2DReferenceCount;
     Containers::Array<UnsignedInt> image3DReferenceCount;
     if((args.isSet("info") || args.isSet("info-textures")) && importer.textureCount()) {
-        image1DReferenceCount = Containers::Array<UnsignedInt>{importer.image1DCount()};
-        image2DReferenceCount = Containers::Array<UnsignedInt>{importer.image2DCount()};
-        image3DReferenceCount = Containers::Array<UnsignedInt>{importer.image3DCount()};
+        image1DReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.image1DCount()};
+        image2DReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.image2DCount()};
+        image3DReferenceCount = Containers::Array<UnsignedInt>{ValueInit, importer.image3DCount()};
         for(UnsignedInt i = 0; i != importer.textureCount(); ++i) {
             Containers::Optional<Trade::TextureData> texture;
             {

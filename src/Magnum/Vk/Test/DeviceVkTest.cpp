@@ -757,7 +757,7 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
 
     /* Creating a dedicated instance so we can pass custom args and enable
        layers independently */
-    Instance instance2{InstanceCreateInfo{Int(data.argsDisable.size()), data.argsDisable}
+    Instance instance2{InstanceCreateInfo{Int(data.argsDisable.size()), data.argsDisable.data()}
         .addEnabledLayers({"VK_LAYER_KHRONOS_validation"})
         /* Needed by VK_EXT_debug_marker */
         .addEnabledExtensions<Extensions::EXT::debug_report>()
@@ -819,7 +819,7 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
 
     /* Creating a dedicated instance so we can pass custom args and enable
        layers independently */
-    Instance instance2{InstanceCreateInfo{Int(data.argsEnable.size()), data.argsEnable}
+    Instance instance2{InstanceCreateInfo{Int(data.argsEnable.size()), data.argsEnable.data()}
         .addEnabledLayers({"VK_LAYER_KHRONOS_validation"})
         /* Needed by VK_EXT_debug_marker */
         .addEnabledExtensions<Extensions::EXT::debug_report>()
@@ -871,7 +871,7 @@ void DeviceVkTest::constructWorkaroundsCommandLineDisable() {
         CORRADE_SKIP("Can't test with the MAGNUM_VULKAN_VERSION environment variable set");
 
     /* Creating a dedicated instance so we can pass custom args */
-    Instance instance2{InstanceCreateInfo{Int(data.args.size()), data.args}};
+    Instance instance2{InstanceCreateInfo{Int(data.args.size()), data.args.data()}};
 
     DeviceProperties deviceProperties = pickDevice(instance2);
 

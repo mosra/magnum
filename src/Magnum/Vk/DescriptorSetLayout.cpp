@@ -55,7 +55,7 @@ DescriptorSetLayoutBinding::DescriptorSetLayoutBinding(const UnsignedInt binding
     _binding.binding = binding;
     _binding.descriptorType = VkDescriptorType(descriptorType);
     _binding.descriptorCount = immutableSamplers.size();
-    _binding.pImmutableSamplers = immutableSamplersCopy;
+    _binding.pImmutableSamplers = immutableSamplersCopy.data();
     _binding.stageFlags = VkShaderStageFlags(stages);
 }
 
@@ -131,7 +131,7 @@ DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::I
                    for some reason */
                 Containers::arrayView(b->pImmutableSamplers, b->descriptorCount),
                 immutableSamplersCopy.slice(immutableSamplerOffset, immutableSamplerOffset + b->descriptorCount));
-            bindingsCopy[i].pImmutableSamplers = immutableSamplersCopy + immutableSamplerOffset;
+            bindingsCopy[i].pImmutableSamplers = immutableSamplersCopy.data() + immutableSamplerOffset;
             immutableSamplerOffset += b->descriptorCount;
         }
         if(hasBindingFlags)
@@ -142,12 +142,12 @@ DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::I
     _info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     _info.flags = VkDescriptorSetLayoutCreateFlags(flags);
     _info.bindingCount = bindings.size();
-    _info.pBindings = bindingsCopy;
+    _info.pBindings = bindingsCopy.data();
     if(hasBindingFlags) {
         bindingsCreateInfoView[0].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
         bindingsCreateInfoView[0].bindingCount = bindings.size();
-        bindingsCreateInfoView[0].pBindingFlags = bindingFlagsCopy;
-        _info.pNext = bindingsCreateInfoView;
+        bindingsCreateInfoView[0].pBindingFlags = bindingFlagsCopy.data();
+        _info.pNext = bindingsCreateInfoView.data();
     }
 }
 

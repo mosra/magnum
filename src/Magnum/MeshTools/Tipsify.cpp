@@ -42,9 +42,9 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
 
     /* Global time, per-vertex caching timestamps, per-triangle emitted flag */
     UnsignedInt time = cacheSize+1;
-    Containers::Array<UnsignedInt> timestamp{vertexCount};
+    Containers::Array<UnsignedInt> timestamp{ValueInit, vertexCount};
     /** @todo Have some bitset/staticbitset class for this */
-    Containers::Array<bool> emitted{indices.size()/3};
+    Containers::Array<bool> emitted{ValueInit, indices.size()/3};
 
     /* Dead-end vertex stack */
     Containers::Array<UnsignedInt> deadEndStack;

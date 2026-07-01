@@ -253,14 +253,14 @@ template<class T> void SubpassDescription::setInputAttachmentsInternal(Container
     };
 
     for(std::size_t i = 0; i != attachments.size(); ++i) {
-        new(wrappers + i) AttachmentReference{attachments[i]};
+        new(wrappers.data() + i) AttachmentReference{attachments[i]};
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkAttachments2 + i) VkAttachmentReference2(wrappers[i]);
+        new(vkAttachments2.data() + i) VkAttachmentReference2(wrappers[i]);
     }
 
     _description.inputAttachmentCount = attachments.size();
-    _description.pInputAttachments = vkAttachments2;
+    _description.pInputAttachments = vkAttachments2.data();
 }
 
 SubpassDescription& SubpassDescription::setInputAttachments(Containers::ArrayView<const AttachmentReference> attachments) & {
@@ -303,23 +303,23 @@ template<class T> void SubpassDescription::setColorAttachmentsInternal(Container
     };
 
     for(std::size_t i = 0; i != attachments.size(); ++i) {
-        new(wrappers + i) AttachmentReference{attachments[i]};
+        new(wrappers.data() + i) AttachmentReference{attachments[i]};
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkAttachments2 + i) VkAttachmentReference2(*wrappers[i]);
+        new(vkAttachments2.data() + i) VkAttachmentReference2(*wrappers[i]);
     }
 
     if(!resolveAttachments.isEmpty()) for(std::size_t i = 0; i != attachments.size(); ++i) {
-        new(resolveWrappers + i) AttachmentReference{resolveAttachments[i]};
+        new(resolveWrappers.data() + i) AttachmentReference{resolveAttachments[i]};
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkResolveAttachments2 + i) VkAttachmentReference2(*resolveWrappers[i]);
+        new(vkResolveAttachments2.data() + i) VkAttachmentReference2(*resolveWrappers[i]);
     }
 
     _description.colorAttachmentCount = attachments.size();
-    _description.pColorAttachments = vkAttachments2;
+    _description.pColorAttachments = vkAttachments2.data();
     _description.pResolveAttachments = resolveAttachments.isEmpty() ?
-        nullptr : vkResolveAttachments2;
+        nullptr : vkResolveAttachments2.data();
 }
 
 SubpassDescription& SubpassDescription::setColorAttachments(Containers::ArrayView<const AttachmentReference> attachments, Containers::ArrayView<const AttachmentReference> resolveAttachments) & {
@@ -367,7 +367,7 @@ SubpassDescription& SubpassDescription::setPreserveAttachments(Containers::Array
 
     _state->preserveAttachments = Utility::move(attachments);
     _description.preserveAttachmentCount = _state->preserveAttachments.size();
-    _description.pPreserveAttachments = _state->preserveAttachments;
+    _description.pPreserveAttachments = _state->preserveAttachments.data();
     return *this;
 }
 
@@ -460,7 +460,7 @@ Containers::Array<VkSubpassDescription> SubpassDescription::vkSubpassDescription
 
     /* Fill it with data and return, faking a size of 1 and with a custom
        deleter that correctly deletes as a char array again */
-    Containers::Pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_description, storage.exceptPrefix(sizeof(VkSubpassDescription)));
+    Containers::Pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_description, storage.exceptPrefix(sizeof(VkSubpassDescription)).data());
     CORRADE_INTERNAL_ASSERT(out.second() == extrasSize);
     *reinterpret_cast<VkSubpassDescription*>(storage.data()) = out.first();
     return Containers::Array<VkSubpassDescription>{
@@ -614,14 +614,14 @@ template<class T> void RenderPassCreateInfo::setAttachmentsInternal(Containers::
     };
 
     for(std::size_t i = 0; i != attachments.size(); ++i) {
-        new(wrappers + i) AttachmentDescription{attachments[i]};
+        new(wrappers.data() + i) AttachmentDescription{attachments[i]};
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkAttachments2 + i) VkAttachmentDescription2(wrappers[i]);
+        new(vkAttachments2.data() + i) VkAttachmentDescription2(wrappers[i]);
     }
 
     _info.attachmentCount = attachments.size();
-    _info.pAttachments = vkAttachments2;
+    _info.pAttachments = vkAttachments2.data();
 }
 
 RenderPassCreateInfo& RenderPassCreateInfo::setAttachments(Containers::ArrayView<const AttachmentDescription> attachments) {
@@ -648,7 +648,7 @@ RenderPassCreateInfo& RenderPassCreateInfo::addSubpass(SubpassDescription&& subp
     /* The arrays might have been reallocated, reconnect the info structure
        pointers */
     _info.subpassCount = _state->vkSubpasses2.size();
-    _info.pSubpasses = _state->vkSubpasses2;
+    _info.pSubpasses = _state->vkSubpasses2.data();
     return *this;
 }
 
@@ -668,11 +668,11 @@ template<class T> void RenderPassCreateInfo::setDependenciesInternal(Containers:
     for(std::size_t i = 0; i != dependencies.size(); ++i) {
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkDependencies2 + i) VkSubpassDependency2(SubpassDependency{dependencies[i]});
+        new(vkDependencies2.data() + i) VkSubpassDependency2(SubpassDependency{dependencies[i]});
     }
 
     _info.dependencyCount = dependencies.size();
-    _info.pDependencies = vkDependencies2;
+    _info.pDependencies = vkDependencies2.data();
 }
 
 RenderPassCreateInfo& RenderPassCreateInfo::setDependencies(Containers::ArrayView<const SubpassDependency> dependencies) {
@@ -732,26 +732,26 @@ Containers::Array<VkRenderPassCreateInfo> RenderPassCreateInfo::vkRenderPassCrea
        higher alignment requirements first, put the "extras" at the end */
     std::size_t offset = sizeof(VkRenderPassCreateInfo);
     std::size_t extrasOffset = sizeof(VkRenderPassCreateInfo) + structuresSize;
-    info1.pSubpasses = reinterpret_cast<VkSubpassDescription*>(storage + offset);
+    info1.pSubpasses = reinterpret_cast<VkSubpassDescription*>(storage.data() + offset);
     for(std::size_t i = 0; i != _info.subpassCount; ++i) {
-        Containers::Pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_info.pSubpasses[i], storage + extrasOffset);
-        *reinterpret_cast<VkSubpassDescription*>(storage + offset) = out.first();
+        Containers::Pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_info.pSubpasses[i], storage.data() + extrasOffset);
+        *reinterpret_cast<VkSubpassDescription*>(storage.data() + offset) = out.first();
         offset += sizeof(VkSubpassDescription);
         extrasOffset += out.second();
     }
     CORRADE_INTERNAL_ASSERT(extrasOffset == storage.size());
 
     /* Attachment descriptions */
-    info1.pAttachments = reinterpret_cast<VkAttachmentDescription*>(storage + offset);
+    info1.pAttachments = reinterpret_cast<VkAttachmentDescription*>(storage.data() + offset);
     for(std::size_t i = 0; i != _info.attachmentCount; ++i) {
-        *reinterpret_cast<VkAttachmentDescription*>(storage + offset) = vkAttachmentDescription(_info.pAttachments[i]);
+        *reinterpret_cast<VkAttachmentDescription*>(storage.data() + offset) = vkAttachmentDescription(_info.pAttachments[i]);
         offset += sizeof(VkAttachmentDescription);
     }
 
     /* Subpass dependencies */
-    info1.pDependencies = reinterpret_cast<VkSubpassDependency*>(storage + offset);
+    info1.pDependencies = reinterpret_cast<VkSubpassDependency*>(storage.data() + offset);
     for(std::size_t i = 0; i != _info.dependencyCount; ++i) {
-        *reinterpret_cast<VkSubpassDependency*>(storage + offset) = vkSubpassDependency(_info.pDependencies[i]);
+        *reinterpret_cast<VkSubpassDependency*>(storage.data() + offset) = vkSubpassDependency(_info.pDependencies[i]);
         offset += sizeof(VkSubpassDependency);
     }
 
@@ -813,7 +813,7 @@ VkRenderPass RenderPass::release() {
 }
 
 VkResult RenderPass::createImplementationDefault(Device& device, const RenderPassCreateInfo& info, const VkAllocationCallbacks* const callbacks, VkRenderPass* const handle) {
-    return device->CreateRenderPass(device, info.vkRenderPassCreateInfo(), callbacks, handle);
+    return device->CreateRenderPass(device, info.vkRenderPassCreateInfo().data(), callbacks, handle);
 }
 
 VkResult RenderPass::createImplementationKHR(Device& device, const RenderPassCreateInfo& info, const VkAllocationCallbacks* const callbacks, VkRenderPass* const handle) {
@@ -901,7 +901,7 @@ RenderPassBeginInfo& RenderPassBeginInfo::clearInternal(const UnsignedInt attach
         arrayResize(_state->clearValues, NoInit, attachment + 1);
     _state->clearValues[attachment] = value;
     _info.clearValueCount = _state->clearValues.size();
-    _info.pClearValues = _state->clearValues;
+    _info.pClearValues = _state->clearValues.data();
     return *this;
 }
 

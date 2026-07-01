@@ -38,7 +38,7 @@ namespace Magnum { namespace Trade { namespace Implementation {
 /** @todo isn't there some C++56 feature that would allow me to allocate
     without calling constructors? */
 template<class T> Containers::Array<T> initializerListToArrayWithDefaultDeleter(const std::initializer_list<T> list) {
-    Containers::Array<T> out{list.size()};
+    Containers::Array<T> out{ValueInit, list.size()};
     /* FFS why initializer list doesn't have an operator[] */
     std::size_t i = 0;
     for(auto&& item: list)

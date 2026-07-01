@@ -140,7 +140,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     std::ostringstream confOut;
     configuration.save(confOut);
     std::string confStr = confOut.str();
-    Containers::Array<char> confData{confStr.size()};
+    Containers::Array<char> confData{NoInit, confStr.size()};
     std::copy(confStr.begin(), confStr.end(), confData.begin());
 
     /* Save cache image. Either the source image or the processed one if the
