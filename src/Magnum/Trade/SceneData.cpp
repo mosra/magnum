@@ -736,7 +736,7 @@ Containers::StridedBitArrayView2D SceneFieldData::fieldBitData(const Containers:
     CORRADE_ASSERT(fieldType() == SceneFieldType::Bit,
         "Trade::SceneFieldData::fieldBitData(): the field is" << fieldType() << Debug::nospace << ", not a bit", {});
     return Containers::StridedBitArrayView2D{
-        {data, 0, data.size()*8},
+        {data.data(), 0, data.size()*8},
         _flags & SceneFieldFlag::OffsetOnly ? static_cast<const char*>(data.data()) + _fieldData.offset : _fieldData.pointer, _field.data.bitOffset,
         {std::size_t(_size), _field.data.arraySize ? _field.data.arraySize : 1},
         {_field.data.stride, 1}};
@@ -1060,7 +1060,7 @@ SceneData::SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedIn
     /* Can't use InPlaceInit as that creates an Array with a non-default
        deleter, which then trips up on an assertion when such an instance gets
        returned from AbstractImporter */
-    _fields = Containers::Array<SceneFieldData>{1};
+    _fields = Containers::Array<SceneFieldData>{ValueInit, 1};
     _fields[0] = SceneFieldData{SceneField::Parent, mapping, parents};
     Utility::copy(children, mapping);
     constexpr Int parent[]{-1};

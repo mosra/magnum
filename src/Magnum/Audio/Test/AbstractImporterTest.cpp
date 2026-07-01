@@ -332,9 +332,7 @@ void AbstractImporterTest::data() {
         BufferFormat doFormat() const override { return {}; }
         UnsignedInt doFrequency() const override { return {}; }
         Containers::Array<char> doData() override {
-            Containers::Array<char> out{1};
-            out[0] = 'H';
-            return out;
+            return Containers::Array<char>{InPlaceInit, {'H'}};
         }
     } importer;
 

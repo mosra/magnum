@@ -1036,7 +1036,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy() {
             f = f*data.scale + Math::Vector<6, Float>{data.offset};
         /** @todo i need some feature like "gimme just the top-level dimension" */
         Containers::StridedArrayView1D<const char> floats{unique.vertexData(),
-            unique.vertexData() + unique.attributeOffset(1),
+            unique.vertexData().data() + unique.attributeOffset(1),
             unique.vertexCount(), unique.attributeStride(1)};
         CORRADE_COMPARE_AS((Containers::arrayCast<const Math::Vector<6, Float>>(floats)),
             Containers::arrayView(expectedFloats),
@@ -1163,7 +1163,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyDouble() {
     };
     /** @todo i need some feature like "gimme just the top-level dimension" */
     Containers::StridedArrayView1D<const char> floats{unique.vertexData(),
-        unique.vertexData() + unique.attributeOffset(0),
+        unique.vertexData().data() + unique.attributeOffset(0),
         unique.vertexCount(), unique.attributeStride(0)};
     CORRADE_COMPARE_AS((Containers::arrayCast<const Math::Vector<3, Double>>(floats)),
         Containers::arrayView(expectedFloats),

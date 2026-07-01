@@ -202,7 +202,7 @@ void FilterTest::fieldsRvalue() {
         UnsignedInt light[3];
         bool visible[3];
     };
-    Containers::Array<char> sceneData{sizeof(Data)};
+    Containers::Array<char> sceneData{ValueInit, sizeof(Data)};
     Data& d = *reinterpret_cast<Data*>(sceneData.data());
     Containers::Array<Trade::SceneFieldData> fields{InPlaceInit, {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
@@ -338,7 +338,7 @@ void FilterTest::onlyFieldsRvalue() {
         UnsignedByte lightMapping[3];
         UnsignedInt light[3];
     };
-    Containers::Array<char> data{sizeof(Data)};
+    Containers::Array<char> data{ValueInit, sizeof(Data)};
     Data& d = *reinterpret_cast<Data*>(data.data());
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedByte, 133, Utility::move(data), {
@@ -447,7 +447,7 @@ void FilterTest::exceptFieldsRvalue() {
         UnsignedInt light[3];
         bool visible[3];
     };
-    Containers::Array<char> data{sizeof(Data)};
+    Containers::Array<char> data{ValueInit, sizeof(Data)};
     Data& d = *reinterpret_cast<Data*>(data.data());
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedLong, 12, Utility::move(data), {

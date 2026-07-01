@@ -222,11 +222,11 @@ CopyBufferInfo::CopyBufferInfo(const VkBuffer source, const VkBuffer destination
     for(std::size_t i = 0; i != regions.size(); ++i) {
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkBufferCopies2 + i) VkBufferCopy2KHR(BufferCopy{regions[i]});
+        new(vkBufferCopies2.data() + i) VkBufferCopy2KHR(BufferCopy{regions[i]});
     }
 
     _info.regionCount = regions.size();
-    _info.pRegions = vkBufferCopies2;
+    _info.pRegions = vkBufferCopies2.data();
 }
 
 CopyBufferInfo::CopyBufferInfo(const VkBuffer source, const VkBuffer destination, const std::initializer_list<BufferCopy> regions): CopyBufferInfo{source, destination, Containers::arrayView(regions)} {}
@@ -241,7 +241,7 @@ CopyBufferInfo::CopyBufferInfo(const VkCopyBufferInfo2KHR& info):
 Containers::Array<VkBufferCopy> CopyBufferInfo::vkBufferCopies() const {
     Containers::Array<VkBufferCopy> out{NoInit, _info.regionCount};
     for(std::size_t i = 0; i != _info.regionCount; ++i)
-        new(out + i) VkBufferCopy(vkBufferCopy(_info.pRegions[i]));
+        new(out.data() + i) VkBufferCopy(vkBufferCopy(_info.pRegions[i]));
     return out;
 }
 
@@ -258,7 +258,7 @@ CommandBuffer& CommandBuffer::copyBuffer(const CopyBufferInfo& info) {
 void CommandBuffer::copyBufferImplementationDefault(CommandBuffer& self, const CopyBufferInfo& info) {
     CORRADE_ASSERT(!info->pNext,
         "Vk::CommandBuffer::copyBuffer(): disallowing extraction of CopyBufferInfo with non-empty pNext to prevent information loss", );
-    return (**self._device).CmdCopyBuffer(self, info->srcBuffer, info->dstBuffer, info->regionCount, info.vkBufferCopies());
+    return (**self._device).CmdCopyBuffer(self, info->srcBuffer, info->dstBuffer, info->regionCount, info.vkBufferCopies().data());
 }
 
 void CommandBuffer::copyBufferImplementationKHR(CommandBuffer& self, const CopyBufferInfo& info) {

@@ -136,12 +136,12 @@ bool MeshLayout::hasNoExternalPointers() const {
 
         /* Vertex binding descriptions should point to our data, if any,
            otherwise it should be null and the count zero */
-        ((!_vertexInfo.vertexBindingDescriptionCount && !_vertexInfo.pVertexBindingDescriptions) || (_state && _vertexInfo.pVertexBindingDescriptions == _state->bindings)) &&
+        ((!_vertexInfo.vertexBindingDescriptionCount && !_vertexInfo.pVertexBindingDescriptions) || (_state && _vertexInfo.pVertexBindingDescriptions == _state->bindings.data())) &&
         /* Attribute descriptions should point to our data, if any,
            otherwise it should be null and the count zero */
-        ((!_vertexInfo.vertexAttributeDescriptionCount && !_vertexInfo.pVertexAttributeDescriptions) || (_state && _vertexInfo.pVertexAttributeDescriptions == _state->attributes)) &&
+        ((!_vertexInfo.vertexAttributeDescriptionCount && !_vertexInfo.pVertexAttributeDescriptions) || (_state && _vertexInfo.pVertexAttributeDescriptions == _state->attributes.data())) &&
         /* Vertex divisor descriptions should point to our data, if any */
-        (!_state || _state->vertexDivisorInfo.pVertexBindingDivisors == _state->bindingDivisors);
+        (!_state || _state->vertexDivisorInfo.pVertexBindingDivisors == _state->bindingDivisors.data());
 }
 #endif
 
@@ -169,9 +169,9 @@ bool MeshLayout::operator==(const MeshLayout& other) const {
            enforce), otherwise this wouldn't be enough */
         /** @todo use Utility::equal() once it exists, this is way too
             error-prone */
-        std::memcmp(other._state->bindings, _state->bindings, _vertexInfo.vertexBindingDescriptionCount*sizeof(decltype(_state->bindings)::Type)) == 0 &&
-        std::memcmp(other._state->bindingDivisors, _state->bindingDivisors, _state->vertexDivisorInfo.vertexBindingDivisorCount*sizeof(decltype(_state->bindingDivisors)::Type)) == 0 &&
-        std::memcmp(other._state->attributes, _state->attributes, _vertexInfo.vertexAttributeDescriptionCount*sizeof(decltype(_state->attributes)::Type)) == 0;
+        std::memcmp(other._state->bindings.data(), _state->bindings.data(), _vertexInfo.vertexBindingDescriptionCount*sizeof(decltype(_state->bindings)::Type)) == 0 &&
+        std::memcmp(other._state->bindingDivisors.data(), _state->bindingDivisors.data(), _state->vertexDivisorInfo.vertexBindingDivisorCount*sizeof(decltype(_state->bindingDivisors)::Type)) == 0 &&
+        std::memcmp(other._state->attributes.data(), _state->attributes.data(), _vertexInfo.vertexAttributeDescriptionCount*sizeof(decltype(_state->attributes)::Type)) == 0;
     #undef _c
 }
 
@@ -189,7 +189,7 @@ MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt 
     description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
     arrayAppend(_state->bindings, description);
     _vertexInfo.vertexBindingDescriptionCount = _state->bindings.size();
-    _vertexInfo.pVertexBindingDescriptions = _state->bindings;
+    _vertexInfo.pVertexBindingDescriptions = _state->bindings.data();
 
     return *this;
 }
@@ -212,7 +212,7 @@ MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const Uns
     description.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
     arrayAppend(_state->bindings, description);
     _vertexInfo.vertexBindingDescriptionCount = _state->bindings.size();
-    _vertexInfo.pVertexBindingDescriptions = _state->bindings;
+    _vertexInfo.pVertexBindingDescriptions = _state->bindings.data();
 
     if(divisor != 1) {
         VkVertexInputBindingDivisorDescriptionEXT divisorDescription{};
@@ -220,7 +220,7 @@ MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const Uns
         divisorDescription.divisor = divisor;
         arrayAppend(_state->bindingDivisors, divisorDescription);
         _state->vertexDivisorInfo.vertexBindingDivisorCount = _state->bindingDivisors.size();
-        _state->vertexDivisorInfo.pVertexBindingDivisors = _state->bindingDivisors;
+        _state->vertexDivisorInfo.pVertexBindingDivisors = _state->bindingDivisors.data();
 
         /* Attach the structure if not already */
         if(!_state->vertexDivisorInfo.sType)
@@ -249,7 +249,7 @@ MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedI
     description.offset = offset;
     arrayAppend(_state->attributes, description);
     _vertexInfo.vertexAttributeDescriptionCount = _state->attributes.size();
-    _vertexInfo.pVertexAttributeDescriptions = _state->attributes;
+    _vertexInfo.pVertexAttributeDescriptions = _state->attributes.data();
 
     return *this;
 }

@@ -78,7 +78,7 @@ void Queue::submit(const Containers::ArrayView<const Containers::Reference<const
     for(std::size_t i = 0; i != infos.size(); ++i)
         vkInfos[i] = *infos[i];
 
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).QueueSubmit(_handle, vkInfos.size(), vkInfos, fence));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).QueueSubmit(_handle, vkInfos.size(), vkInfos.data(), fence));
 }
 
 void Queue::submit(std::initializer_list<Containers::Reference<const SubmitInfo>> infos, VkFence fence) {
@@ -145,7 +145,7 @@ SubmitInfo& SubmitInfo::setCommandBuffers(const Containers::ArrayView<const VkCo
     _state->commandBuffers = Containers::Array<VkCommandBuffer>{NoInit, buffers.size()};
     Utility::copy(buffers, _state->commandBuffers);
     _info.commandBufferCount = _state->commandBuffers.size();
-    _info.pCommandBuffers = _state->commandBuffers;
+    _info.pCommandBuffers = _state->commandBuffers.data();
     return *this;
 }
 

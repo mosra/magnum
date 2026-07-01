@@ -322,7 +322,7 @@ void GlfwApplication::setWindowIcon(const Containers::ArrayView<const ImageView2
     std::size_t size = 0;
     for(const ImageView2D& image: images)
         size += sizeof(GLFWimage) + 4*image.size().product();
-    Containers::Array<char> data{size};
+    Containers::Array<char> data{NoInit, size};
 
     /* Pack array of GLFWimages and pixel data together into the memory
        allocated above */
@@ -355,7 +355,7 @@ void GlfwApplication::setWindowIcon(const Containers::ArrayView<const ImageView2
         offset += target.size();
     }
 
-    glfwSetWindowIcon(_window, glfwImages.size(), glfwImages);
+    glfwSetWindowIcon(_window, glfwImages.size(), glfwImages.data());
 }
 
 void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {

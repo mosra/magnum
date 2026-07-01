@@ -99,7 +99,7 @@ namespace {
 
 bool extensionSupported(const char* const extensions, Containers::ArrayView<const char> extension) {
     CORRADE_INTERNAL_ASSERT(extensions);
-    const char* pos = std::strstr(extensions, extension);
+    const char* pos = std::strstr(extensions, extension.data());
     /* Extension is supported if its string is delimited by a space or end of
        the extension list. The extension.size() is the whole C array including
        a 0-terminator, so subtract 1 to look at one character after. */
@@ -196,10 +196,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                     return;
                 }
 
-                devices = Containers::Array<EGLDeviceEXT>{std::size_t(count)};
+                devices = Containers::Array<EGLDeviceEXT>{NoInit, std::size_t(count)};
                 /* Assuming the same thing won't suddenly start failing when
                    called the second time */
-                CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(devices.size(), devices, &count));
+                CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(devices.size(), devices.data(), &count));
 
                 auto eglQueryDeviceAttribEXT = reinterpret_cast<EGLBoolean (*)(EGLDeviceEXT, EGLint, EGLAttrib*)>(eglGetProcAddress("eglQueryDeviceAttribEXT"));
                 auto eglQueryDeviceStringEXT = reinterpret_cast<const char* (*)(EGLDeviceEXT, EGLint)>(eglGetProcAddress("eglQueryDeviceStringEXT"));
@@ -247,10 +247,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                 }
 
                 selectedDevice = configuration.device();
-                devices = Containers::Array<EGLDeviceEXT>{configuration.device() + 1};
+                devices = Containers::Array<EGLDeviceEXT>{NoInit, configuration.device() + 1};
                 /* Assuming the same thing won't suddenly start failing when
                    called the second time */
-                CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices, &count));
+                CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices.data(), &count));
             }
 
             if(!(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[selectedDevice], nullptr))) {

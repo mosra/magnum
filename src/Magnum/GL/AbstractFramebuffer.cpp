@@ -379,7 +379,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, const MutableImageView
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     #endif
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
-    (Context::current().state().framebuffer.readImplementation)(rectangle, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data()
+    (Context::current().state().framebuffer.readImplementation)(rectangle, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data().data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
         #endif
@@ -391,7 +391,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, rectangle.size());
     Containers::Array<char> data{image.release()};
     if(data.size() < dataSize)
-        data = Containers::Array<char>{dataSize};
+        data = Containers::Array<char>{NoInit, dataSize};
 
     /* Replace the storage, proxy to the function taking a view */
     image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), rectangle.size(), Utility::move(data), ImageFlags2D{}};

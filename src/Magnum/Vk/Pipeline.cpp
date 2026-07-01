@@ -60,7 +60,7 @@ RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(const ShaderSet
     _info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     _info.flags = VkPipelineCreateFlags(flags);
     _info.stageCount = shaderSet.stages().size();
-    _info.pStages = shaderSet.stages();
+    _info.pStages = shaderSet.stages().data();
     _info.pVertexInputState = meshLayout;
     _info.pInputAssemblyState = meshLayout;
 
@@ -94,7 +94,7 @@ RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(const ShaderSet
 
     _colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     _colorBlendInfo.attachmentCount = subpassColorAttachmentCount;
-    _colorBlendInfo.pAttachments = _state->colorBlendAttachments;
+    _colorBlendInfo.pAttachments = _state->colorBlendAttachments.data();
     _info.pColorBlendState = &_colorBlendInfo;
 
     /* pDynamicState left null, gets set by setDynamicStates() if needed */
@@ -266,7 +266,7 @@ RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setDynamicStat
 
     _dynamicInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     _dynamicInfo.dynamicStateCount = count;
-    _dynamicInfo.pDynamicStates = _state->dynamicStateList;
+    _dynamicInfo.pDynamicStates = _state->dynamicStateList.data();
     _info.pDynamicState = &_dynamicInfo;
     return *this;
 }

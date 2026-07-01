@@ -1261,7 +1261,7 @@ void TextureArrayGLTest::image1DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*4};
     MutableImageView2D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.image(0, image);
@@ -1382,7 +1382,7 @@ void TextureArrayGLTest::subImage1DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*4};
     MutableImageView2D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, imageData, ImageFlag2D::Array};
     texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), image);
@@ -1541,7 +1541,7 @@ void TextureArrayGLTest::image2DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*2*4};
     MutableImageView3D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, imageData};
     texture.image(0, image);
@@ -1691,7 +1691,7 @@ void TextureArrayGLTest::subImage2DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*2*2*4};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*2*2*4};
     MutableImageView3D image{data.storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{2}, imageData, ImageFlag3D::Array};
     texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), image);
@@ -1847,7 +1847,7 @@ void TextureArrayGLTest::compressedImage2DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*16};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*16};
     MutableCompressedImageView3D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2}, imageData};
     texture.compressedImage(0, image);
 
@@ -2042,7 +2042,7 @@ void TextureArrayGLTest::compressedSubImage2DQueryView() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Containers::Array<char> imageData{data.offset + 2*16};
+    Containers::Array<char> imageData{NoInit, data.offset + 2*16};
     MutableCompressedImageView3D image{data.storage, CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2}, imageData, ImageFlag3D::Array};
     texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), image);
 

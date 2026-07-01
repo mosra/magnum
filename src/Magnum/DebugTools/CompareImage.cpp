@@ -775,7 +775,7 @@ void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utili
     /* Tightly pack the actual pixels into a new array and create an image from
        it -- the array view might have totally arbitrary strides that can't
        be represented in an Image */
-    Containers::Array<char> data{_state->actualPixels.size()[0]*_state->actualPixels.size()[1]*_state->actualPixels.size()[2]};
+    Containers::Array<char> data{NoInit, _state->actualPixels.size()[0]*_state->actualPixels.size()[1]*_state->actualPixels.size()[2]};
     Containers::StridedArrayView3D<char> pixels{data, _state->actualPixels.size()};
     for(std::size_t i = 0, iMax = _state->actualPixels.size()[0]; i != iMax; ++i) {
         Containers::StridedArrayView2D<const char> inRow = _state->actualPixels[i];

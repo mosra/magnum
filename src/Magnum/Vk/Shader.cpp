@@ -144,7 +144,7 @@ VkResult Shader::createImplementationSwiftShaderMultiEntryPointPatching(Device& 
 
     /* If the code looks like SPIR-V, patch it. If not, supply the original and
        let SwiftShader deal with it. */
-    if(Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(mutableCode, mutableCode.size())) {
+    if(Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(mutableCode.data(), mutableCode.size())) {
         Implementation::spirvPatchSwiftShaderConflictingMultiEntrypointLocations(spirv);
         patchedInfo.pCode = reinterpret_cast<UnsignedInt*>(mutableCode.data());
     }

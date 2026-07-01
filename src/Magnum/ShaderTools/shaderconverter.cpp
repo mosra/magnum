@@ -361,7 +361,7 @@ see documentation of a particular converter for more information.)")
             return 24;
         }
 
-        if(Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(*data, data->size())) {
+        if(Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data->data(), data->size())) {
             printSpirvInfo(spirv);
             return 0;
         }
@@ -523,7 +523,7 @@ see documentation of a particular converter for more information.)")
                 return 20; /* same code as the same message below */
             }
 
-            Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data, data.size());
+            Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data.data(), data.size());
             if(!spirv) {
                 Error{} << "The output is not a SPIR-V binary, can't print info";
                 return 23;

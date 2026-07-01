@@ -76,7 +76,7 @@ ExtensionProperties::ExtensionProperties(const Containers::StringIterable& layer
         MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(enumerator(state,
             i == 0 ? nullptr :
                 Containers::String::nullTerminatedView(layers[i - 1]).data(),
-            &count, _extensions + offset));
+            &count, _extensions.data() + offset));
         for(std::size_t j = 0; j != count; ++j) _extensionLayers[offset + j] = i;
         offset += count;
     }
@@ -99,8 +99,8 @@ ExtensionProperties::ExtensionProperties(const Containers::StringIterable& layer
        costly enumeration. */
     if(offset < totalCount) {
         Warning{} << "Vk::ExtensionProperties: inconsistent extension count reported by the driver, expected" << totalCount << "but got only" << offset;
-        _names = {_names, offset};
-        _extensionLayers = {_extensionLayers, offset};
+        _names = {_names.data(), offset};
+        _extensionLayers = {_extensionLayers.data(), offset};
     } else CORRADE_INTERNAL_ASSERT(offset == totalCount);
 
     /* Populate the views, sort them and remove duplicates so we can search in

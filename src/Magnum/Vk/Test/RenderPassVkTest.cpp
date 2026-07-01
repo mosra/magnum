@@ -155,7 +155,7 @@ void RenderPassVkTest::wrap() {
             .addSubpass(SubpassDescription{}.setColorAttachments({
                 AttachmentReference{0, ImageLayout::ColorAttachment}
             }))
-        .vkRenderPassCreateInfo(),
+        .vkRenderPassCreateInfo().data(),
         nullptr, &renderPass)), Result::Success);
 
     auto wrapped = RenderPass::wrap(device(), renderPass, HandleFlag::DestroyOnDestruction);

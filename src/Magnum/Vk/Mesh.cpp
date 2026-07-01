@@ -221,10 +221,10 @@ CommandBuffer& CommandBuffer::draw(Mesh& mesh) {
         /** @todo don't call this for each binding, detect ranges */
         _device->state().cmdBindVertexBuffersImplementation(*this,
             bindings[i].binding, 1,
-            mesh.vertexBuffers() + i,
-            mesh.vertexBufferOffsets() + i,
+            mesh.vertexBuffers().data() + i,
+            mesh.vertexBufferOffsets().data() + i,
             _dynamicRasterizationStates & DynamicRasterizationState::VertexInputBindingStride ?
-                mesh.vertexBufferStrides() + i : nullptr
+                mesh.vertexBufferStrides().data() + i : nullptr
         );
     }
 

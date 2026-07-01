@@ -456,7 +456,7 @@ void CompareImageTest::calculateDeltaSpecials3() {
 }
 
 void CompareImageTest::deltaImage() {
-    Containers::Array<Float> delta{32*32};
+    Containers::Array<Float> delta{NoInit, 32*32};
 
     for(std::int_fast32_t x = 0; x != 32; ++x)
         for(std::int_fast32_t y = 0; y != 32; ++y)
@@ -489,7 +489,7 @@ void CompareImageTest::deltaImage() {
 }
 
 void CompareImageTest::deltaImageScaling() {
-    Containers::Array<Float> delta{65*40};
+    Containers::Array<Float> delta{NoInit, 65*40};
     for(std::int_fast32_t x = 0; x != 65; ++x)
         for(std::int_fast32_t y = 0; y != 40; ++y)
             delta[y*65 + x] = Vector2{Float(x), Float(y)}.length()/Vector2{65.0f, 40.0f}.length();

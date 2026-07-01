@@ -1402,7 +1402,7 @@ void GenerateIndicesTest::generateIndicesMeshDataMove() {
         Vector2 textureCoordinates;
     };
 
-    Containers::Array<char> vertexData{5*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 5*sizeof(Vertex)};
     auto vertices = Containers::arrayCast<Vertex>(vertexData);
     vertices[0].position = {1.5f, 0.3f};
     vertices[1].position = {2.5f, 1.3f};
@@ -1537,7 +1537,7 @@ void GenerateIndicesTest::generateIndicesMeshDataTrivialIndexedMove() {
         {5.5f, 4.3f},
     };
 
-    Containers::Array<char> indexData{4*sizeof(UnsignedInt)};
+    Containers::Array<char> indexData{NoInit, 4*sizeof(UnsignedInt)};
     Containers::ArrayView<UnsignedInt> indices = Containers::arrayCast<UnsignedInt>(indexData);
     Utility::copy({60, 21, 72, 93}, indices);
 
@@ -1573,7 +1573,7 @@ void GenerateIndicesTest::generateIndicesMeshDataTrivialIndexedMoveDifferentInde
         {5.5f, 4.3f},
     };
 
-    Containers::Array<char> indexData{4*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{NoInit, 4*sizeof(UnsignedShort)};
     Containers::ArrayView<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
     Utility::copy({60, 21, 72, 93}, indices);
 

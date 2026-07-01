@@ -1437,7 +1437,7 @@ void AbstractSceneConverterTest::convertMeshNonOwningDeleters() {
 
     Containers::Optional<MeshData> out = converter.convert(MeshData{MeshPrimitive::Triangles, 6});
     CORRADE_VERIFY(out);
-    CORRADE_COMPARE(static_cast<const void*>(out->indexData()), converter.indexData);
+    CORRADE_COMPARE(static_cast<const void*>(out->indexData().data()), converter.indexData);
 }
 
 void AbstractSceneConverterTest::convertMeshGrowableDeleters() {

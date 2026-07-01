@@ -428,7 +428,7 @@ void BufferImageGLTest::constructInvalidSize() {
 
     Containers::String out;
     Error redirectError{&out};
-    BufferImage2D{Magnum::PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{11}, BufferUsage::StaticDraw};
+    BufferImage2D{Magnum::PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{NoInit, 11}, BufferUsage::StaticDraw};
     CORRADE_COMPARE(out, "GL::BufferImage: data too small, got 11 but expected at least 12 bytes\n");
 }
 
@@ -477,7 +477,7 @@ void BufferImageGLTest::constructCompressedInvalidSize() {
     {
         Containers::String out;
         Error redirectError{&out};
-        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{15}, BufferUsage::StaticDraw};
+        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{NoInit, 15}, BufferUsage::StaticDraw};
         /* Here it's assuming the buffer is already filled, of given size */
         CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, GL::Buffer{}, 15};
         CORRADE_COMPARE_AS(out,
@@ -489,7 +489,7 @@ void BufferImageGLTest::constructCompressedInvalidSize() {
     } {
         Containers::String out;
         Error redirectError{&out};
-        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{15}, BufferUsage::StaticDraw};
+        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{NoInit, 15}, BufferUsage::StaticDraw};
         /* Here it's assuming the buffer is already filled, of given size */
         CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, GL::Buffer{}, 15};
         CORRADE_COMPARE_AS(out,
@@ -831,7 +831,7 @@ void BufferImageGLTest::setDataInvalidSize() {
 
     Containers::String out;
     Error redirectError{&out};
-    image.setData(PixelFormat::RGB, PixelType::UnsignedByte, {1, 3},  Containers::Array<char>{11}, BufferUsage::StaticDraw);
+    image.setData(PixelFormat::RGB, PixelType::UnsignedByte, {1, 3},  Containers::Array<char>{NoInit, 11}, BufferUsage::StaticDraw);
     /* Keeping current storage */
     image.setData(PixelFormat::RGBA, PixelType::UnsignedByte, {2, 1},  nullptr, BufferUsage::StaticDraw);
     CORRADE_COMPARE_AS(out,

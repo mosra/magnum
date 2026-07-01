@@ -38,7 +38,7 @@ namespace Magnum { namespace MeshTools { namespace Implementation { namespace {
 template<class T> void buildAdjacency(const Containers::StridedArrayView1D<const T>& indices, const UnsignedInt vertexCount, Containers::Array<UnsignedInt>& liveTriangleCount, Containers::Array<UnsignedInt>& neighborOffset, Containers::Array<UnsignedInt>& neighbors) {
     /* How many times is each vertex referenced == count of neighboring
        triangles for each vertex */
-    liveTriangleCount = Containers::Array<UnsignedInt>{vertexCount};
+    liveTriangleCount = Containers::Array<UnsignedInt>{ValueInit, vertexCount};
     for(std::size_t i = 0; i != indices.size(); ++i)
         ++liveTriangleCount[indices[i]];
 

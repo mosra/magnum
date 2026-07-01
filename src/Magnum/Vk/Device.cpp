@@ -589,7 +589,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Co
     info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     info.queueFamilyIndex = family;
     info.queueCount = priorities.size();
-    info.pQueuePriorities = _state->queuePriorities + _state->nextQueuePriority;
+    info.pQueuePriorities = _state->queuePriorities.data() + _state->nextQueuePriority;
 
     /* Copy the passed queue priorities and output queue references to an
        internal storage that never reallocates. If this blows up, see the
@@ -643,7 +643,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& inf
        This handles a potential reallocation and also the case of replacing the
        default queue on the first call to addQueues(). */
     arrayAppend(_state->queues, info);
-    _info.pQueueCreateInfos = _state->queues;
+    _info.pQueueCreateInfos = _state->queues.data();
     _info.queueCreateInfoCount = _state->queues.size();
 
     return *this;

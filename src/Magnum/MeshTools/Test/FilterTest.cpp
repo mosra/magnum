@@ -157,9 +157,9 @@ void FilterTest::attributes() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -206,7 +206,7 @@ void FilterTest::attributesNoIndexData() {
     /* A trivial subset of filterAttributes() testing it doesn't blow up if the
        mesh is not indexed */
 
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -238,9 +238,9 @@ void FilterTest::attributesRvalue() {
 
     /* Subset of attributes() verifying data ownership transfer behavior */
 
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
@@ -314,9 +314,9 @@ void FilterTest::onlyAttributes() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -368,7 +368,7 @@ void FilterTest::onlyAttributesNoIndexData() {
     /* A trivial subset of filterOnlyAttributeNames() testing it doesn't blow
        up if the mesh is not indexed */
 
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -397,7 +397,7 @@ void FilterTest::onlyAttributesNoIndexData() {
 }
 
 void FilterTest::onlyAttributesNoAttributeData() {
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
@@ -428,7 +428,7 @@ void FilterTest::onlyAttributesRvalue() {
        only checks that the r-value gets correctly passed through all overloads
        to keep the index data owned and vertex data not. */
 
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
     Vertex vertexData[3];
     Containers::StridedArrayView1D<Vertex> vertices = vertexData;
@@ -466,9 +466,9 @@ void FilterTest::onlyAttributeIds() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -537,7 +537,7 @@ void FilterTest::onlyAttributeIdsNoIndexData() {
     /* A trivial subset of filterOnlyAttributeIds() testing it doesn't blow up
        if the mesh is not indexed */
 
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -568,7 +568,7 @@ void FilterTest::onlyAttributeIdsNoIndexData() {
 }
 
 void FilterTest::onlyAttributeIdsNoAttributeData() {
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
@@ -598,9 +598,9 @@ void FilterTest::exceptAttributes() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -650,7 +650,7 @@ void FilterTest::exceptAttributesNoIndexData() {
     /* A trivial subset of filterExceptAttributeNames() testing it doesn't blow
        up if the mesh is not indexed */
 
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -680,7 +680,7 @@ void FilterTest::exceptAttributesNoIndexData() {
 }
 
 void FilterTest::exceptAttributesNoAttributeData() {
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
@@ -712,7 +712,7 @@ void FilterTest::exceptAttributesRvalue() {
        to keep the vertex data owned and index data not. */
 
     UnsignedShort indices[5];
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -750,9 +750,9 @@ void FilterTest::exceptAttributeIds() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -821,7 +821,7 @@ void FilterTest::exceptAttributeIdsNoIndexData() {
     /* A trivial subset of filterExceptAttributeIds() testing it doesn't blow up
        if the mesh is not indexed */
 
-    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -853,7 +853,7 @@ void FilterTest::exceptAttributeIdsNoIndexData() {
 }
 
 void FilterTest::exceptAttributeIdsNoAttributeData() {
-    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,

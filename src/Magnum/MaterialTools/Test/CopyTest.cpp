@@ -103,7 +103,7 @@ void CopyTest::singleLayerNoLayerData() {
     CORRADE_COMPARE(copy.layerDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.layerCount(), 1);
     CORRADE_COMPARE(copy.layerData().size(), 0);
-    CORRADE_COMPARE(copy.layerData(), nullptr);
+    CORRADE_COMPARE(copy.layerData().data(), nullptr);
 
     CORRADE_COMPARE(copy.attributeDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.attributeCount(), 3);
@@ -209,7 +209,7 @@ void CopyTest::rvalueOwnedAttributesNoLayerData() {
     CORRADE_COMPARE(copy.layerDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.layerCount(), 1);
     CORRADE_COMPARE(copy.layerData().size(), 0);
-    CORRADE_COMPARE(copy.layerData(), nullptr);
+    CORRADE_COMPARE(copy.layerData().data(), nullptr);
 
     CORRADE_COMPARE(copy.attributeDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(copy.attributeData().data(), originalAttributes);

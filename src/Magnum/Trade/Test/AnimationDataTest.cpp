@@ -679,7 +679,7 @@ void AnimationDataTest::construct() {
         Vector3 position;
         Quaternion rotation;
     };
-    Containers::Array<char> buffer{sizeof(Data)*3};
+    Containers::Array<char> buffer{NoInit, sizeof(Data)*3};
     auto view = Containers::arrayCast<Data>(buffer);
     view[0] = {0.0f, {3.0f, 1.0f, 0.1f}, Quaternion::rotation(45.0_degf, Vector3::yAxis())};
     view[1] = {5.0f, {0.3f, 0.6f, 1.0f}, Quaternion::rotation(20.0_degf, Vector3::yAxis())};
@@ -758,7 +758,7 @@ void AnimationDataTest::constructImplicitDuration() {
         Float time;
         bool value;
     };
-    Containers::Array<char> buffer{sizeof(Data)*4};
+    Containers::Array<char> buffer{NoInit, sizeof(Data)*4};
     auto view = Containers::arrayCast<Data>(buffer);
     view[0] = {1.0f, true};
     view[1] = {5.0f, false};
@@ -951,7 +951,7 @@ void AnimationDataTest::constructMove() {
         Vector3 position;
         Quaternion rotation;
     };
-    Containers::Array<char> buffer{sizeof(Data)*3};
+    Containers::Array<char> buffer{NoInit, sizeof(Data)*3};
     auto view = Containers::arrayCast<Data>(buffer);
     view[0] = {0.0f, {3.0f, 1.0f, 0.1f}, Quaternion::rotation(45.0_degf, Vector3::yAxis())};
     view[1] = {5.0f, {0.3f, 0.6f, 1.0f}, Quaternion::rotation(20.0_degf, Vector3::yAxis())};
@@ -1073,7 +1073,7 @@ void AnimationDataTest::trackCustomResultType() {
         Float time;
         Vector3i position;
     };
-    Containers::Array<char> buffer{sizeof(Data)*3};
+    Containers::Array<char> buffer{NoInit, sizeof(Data)*3};
     auto view = Containers::arrayCast<Data>(buffer);
     view[0] = {0.0f, {300, 100, 10}};
     view[1] = {5.0f, {30, 60, 100}};
@@ -1159,7 +1159,7 @@ void AnimationDataTest::release() {
     CORRADE_COMPARE(data.trackCount(), 1);
 
     Containers::Array<char> released = data.release();
-    CORRADE_COMPARE(data.data(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(data.data().data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.trackCount(), 0);
     CORRADE_COMPARE(static_cast<const void*>(released.data()), keyframes);
 }

@@ -609,16 +609,16 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
     GL::Buffer textureTransformationUniform{NoCreate};
     GL::Buffer materialUniform{NoCreate};
     if(data.flags & FlatGL2D::Flag::UniformBuffers) {
-        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
-        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<FlatDrawUniform>{data.drawCount}};
-        Containers::Array<FlatMaterialUniform> materialData{data.materialCount};
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{ValueInit, data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<FlatDrawUniform>{ValueInit, data.drawCount}};
+        Containers::Array<FlatMaterialUniform> materialData{ValueInit, data.materialCount};
         materialData[0].setAlphaMask(0.0f);
         materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform);
         if(data.flags & FlatGL2D::Flag::TextureTransformation) {
-            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{data.drawCount}};
+            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{ValueInit, data.drawCount}};
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         }
     } else
@@ -732,16 +732,16 @@ void ShadersGLBenchmark::phong() {
         lightUniform = GL::Buffer{};
         textureTransformationUniform = GL::Buffer{};
 
-        Containers::Array<TransformationUniform3D> transformationData{data.drawCount};
-        Containers::Array<PhongDrawUniform> drawData{data.drawCount};
+        Containers::Array<TransformationUniform3D> transformationData{ValueInit, data.drawCount};
+        Containers::Array<PhongDrawUniform> drawData{ValueInit, data.drawCount};
         drawData[0].lightCount = 5; /* Cap at 5 lights, even if more is set */
-        Containers::Array<PhongMaterialUniform> materialData{data.materialCount};
+        Containers::Array<PhongMaterialUniform> materialData{ValueInit, data.materialCount};
         materialData[0]
             /* White ambient so we always have a white output */
             .setAmbientColor(0xffffffff_rgbaf)
             .setAlphaMask(0.0f);
-        Containers::Array<PhongLightUniform> lightData{data.lightCount};
-        Containers::Array<TextureTransformationUniform> textureTransformationData{data.drawCount};
+        Containers::Array<PhongLightUniform> lightData{ValueInit, data.lightCount};
+        Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, data.drawCount};
 
         #ifndef MAGNUM_TARGET_GLES
         if(data.bufferStorage) {
@@ -890,7 +890,7 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vertexColor() {
     GL::Buffer transformationProjectionUniform{NoCreate};
     GL::Buffer textureTransformationUniform{NoCreate};
     if(data.flags & VertexColorGL<dimensions>::Flag::UniformBuffers) {
-        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{ValueInit, data.drawCount}};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform);
     }
     #endif
@@ -954,9 +954,9 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
     GL::Buffer textureTransformationUniform{NoCreate};
     GL::Buffer materialUniform{NoCreate};
     if(data.flags & VectorGL2D::Flag::UniformBuffers) {
-        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
-        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<VectorDrawUniform>{data.drawCount}};
-        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<VectorMaterialUniform>{data.materialCount}};
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{ValueInit, data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<VectorDrawUniform>{ValueInit, data.drawCount}};
+        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<VectorMaterialUniform>{ValueInit, data.materialCount}};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform);
@@ -1028,14 +1028,14 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::distanceFieldVector() 
     GL::Buffer materialUniform{NoCreate};
     GL::Buffer textureTransformationUniform{NoCreate};
     if(data.flags & DistanceFieldVectorGL2D::Flag::UniformBuffers) {
-        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{data.drawCount}};
-        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<DistanceFieldVectorDrawUniform>{data.drawCount}};
-        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<DistanceFieldVectorMaterialUniform>{data.materialCount}};
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<typename UniformTraits<dimensions>::TransformationProjection>{ValueInit, data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<DistanceFieldVectorDrawUniform>{ValueInit, data.drawCount}};
+        materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<DistanceFieldVectorMaterialUniform>{ValueInit, data.materialCount}};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
             .bindDrawBuffer(drawUniform)
             .bindMaterialBuffer(materialUniform);
         if(data.flags & DistanceFieldVectorGL2D::Flag::TextureTransformation) {
-            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{data.drawCount}};
+            textureTransformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TextureTransformationUniform>{ValueInit, data.drawCount}};
             shader.bindTextureTransformationBuffer(textureTransformationUniform);
         }
     }
@@ -1144,9 +1144,9 @@ void ShadersGLBenchmark::meshVisualizer2D() {
     GL::Buffer drawUniform{NoCreate};
     GL::Buffer materialUniform{NoCreate};
     if(data.flags & MeshVisualizerGL2D::Flag::UniformBuffers) {
-        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationProjectionUniform2D>{data.drawCount}};
-        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<MeshVisualizerDrawUniform2D>{data.drawCount}};
-        Containers::Array<MeshVisualizerMaterialUniform> materialData{data.materialCount};
+        transformationProjectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationProjectionUniform2D>{ValueInit, data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<MeshVisualizerDrawUniform2D>{ValueInit, data.drawCount}};
+        Containers::Array<MeshVisualizerMaterialUniform> materialData{ValueInit, data.materialCount};
         materialData[0].setWireframeColor(0xffffffff_rgbaf);
         materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform)
@@ -1284,9 +1284,9 @@ void ShadersGLBenchmark::meshVisualizer3D() {
         projectionUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
-        transformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationUniform3D>{data.drawCount}};
-        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<MeshVisualizerDrawUniform3D>{data.drawCount}};
-        Containers::Array<MeshVisualizerMaterialUniform> materialData{data.materialCount};
+        transformationUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<TransformationUniform3D>{ValueInit, data.drawCount}};
+        drawUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, Containers::Array<MeshVisualizerDrawUniform3D>{ValueInit, data.drawCount}};
+        Containers::Array<MeshVisualizerMaterialUniform> materialData{ValueInit, data.materialCount};
         materialData[0].setWireframeColor(0xffffffff_rgbaf);
         materialData[0].setLineLength(0.0f);
         materialUniform = GL::Buffer{GL::Buffer::TargetHint::Uniform, materialData};

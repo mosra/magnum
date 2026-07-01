@@ -895,7 +895,7 @@ void Shader::submitCompile() {
         sizes[i] = _sources[i].size();
     }
 
-    glShaderSource(_id, _sources.size(), pointers, sizes);
+    glShaderSource(_id, _sources.size(), pointers.data(), sizes.data());
     glCompileShader(_id);
 }
 

@@ -1014,7 +1014,7 @@ Containers::Array<UnsignedInt> MeshData::jointIdsAsArray(const UnsignedInt id) c
     CORRADE_ASSERT(attributeId != ~UnsignedInt{},
         "Trade::MeshData::jointIdsAsArray(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "joint ID attributes", {});
     const MeshAttributeData& attribute = _attributes[attributeId];
-    Containers::Array<UnsignedInt> out{_vertexCount*attribute._arraySize};
+    Containers::Array<UnsignedInt> out{NoInit, _vertexCount*attribute._arraySize};
     jointIdsInto(Containers::StridedArrayView2D<UnsignedInt>{out, {_vertexCount, attribute._arraySize}}, id);
     return out;
 }
@@ -1052,7 +1052,7 @@ Containers::Array<Float> MeshData::weightsAsArray(const UnsignedInt id) const {
     const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Weights, id, -1);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::weightsAsArray(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "weight attributes", {});
     const MeshAttributeData& attribute = _attributes[attributeId];
-    Containers::Array<Float> out{_vertexCount*attribute._arraySize};
+    Containers::Array<Float> out{NoInit, _vertexCount*attribute._arraySize};
     weightsInto(Containers::StridedArrayView2D<Float>{out, {_vertexCount, attribute._arraySize}}, id);
     return out;
 }

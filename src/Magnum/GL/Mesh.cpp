@@ -1501,7 +1501,7 @@ void Mesh::multiDrawElementsBaseVertexImplementationANGLE(const GLenum mode, con
     for(GLsizei& i: instanceCount)
         i = 1;
 
-    glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, instanceCount, baseVertex, baseInstance, drawCount);
+    glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, instanceCount.data(), baseVertex, baseInstance.data(), drawCount);
 }
 #endif
 

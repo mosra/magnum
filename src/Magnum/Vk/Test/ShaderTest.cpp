@@ -78,7 +78,7 @@ void ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocations() {
     CORRADE_VERIFY(data);
 
     /* The file is a full SPIR-V, strip the header first */
-    const Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(*data, data->size());
+    const Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data->data(), data->size());
     CORRADE_VERIFY(spirv);
 
     Containers::ArrayView<const UnsignedInt> view = spirv;

@@ -522,7 +522,7 @@ Trade::MeshData cubeSolid(const CubeFlags flags) {
 
     /* Set up the layout */
     Containers::Array<char> vertexData{NoInit, 24*stride};
-    Containers::Array<Trade::MeshAttributeData> attributeData{attributeCount};
+    Containers::Array<Trade::MeshAttributeData> attributeData{ValueInit, attributeCount};
     std::size_t attributeIndex = 0;
     std::size_t attributeOffset = 0;
 

@@ -708,7 +708,7 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const Cont
 
     /* Otherwise open the files directly */
     } else {
-        Containers::Array<Containers::Array<char>> fileData{from.size()};
+        Containers::Array<Containers::Array<char>> fileData{ValueInit, from.size()};
         for(std::size_t i = 0; i != from.size(); ++i) {
             Containers::Optional<Containers::Array<char>> data = Utility::Path::read(from[i].second());
             if(!data) {
@@ -806,7 +806,7 @@ Containers::Optional<Containers::Array<char>> AbstractConverter::doLinkFilesToDa
 
     /* Otherwise open the files directly */
     } else {
-        Containers::Array<Containers::Array<char>> fileData{filenames.size()};
+        Containers::Array<Containers::Array<char>> fileData{ValueInit, filenames.size()};
         for(std::size_t i = 0; i != filenames.size(); ++i) {
             Containers::Optional<Containers::Array<char>> data = Utility::Path::read(filenames[i].second());
             if(!data) {

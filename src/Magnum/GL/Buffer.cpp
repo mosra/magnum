@@ -401,12 +401,12 @@ Containers::Array<char> Buffer::data() {
 #endif
 
 Buffer& Buffer::setData(const Containers::ArrayView<const void> data, const BufferUsage usage) {
-    Context::current().state().buffer.dataImplementation(*this, data.size(), data, usage);
+    Context::current().state().buffer.dataImplementation(*this, data.size(), data.data(), usage);
     return *this;
 }
 
 Buffer& Buffer::setSubData(const GLintptr offset, const Containers::ArrayView<const void> data) {
-    Context::current().state().buffer.subDataImplementation(*this, offset, data.size(), data);
+    Context::current().state().buffer.subDataImplementation(*this, offset, data.size(), data.data());
     return *this;
 }
 
@@ -441,7 +441,7 @@ bool Buffer::unmap() { return Context::current().state().buffer.unmapImplementat
 Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
     Containers::Array<char> data{NoInit, std::size_t(size)};
     if(size)
-        Context::current().state().buffer.getSubDataImplementation(*this, offset, size, data);
+        Context::current().state().buffer.getSubDataImplementation(*this, offset, size, data.data());
     return data;
 }
 #endif
@@ -458,7 +458,7 @@ void Buffer::bindImplementationFallback(const Target target, const GLuint firstI
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     /** @todo C++1z: VLAs? */
-    Containers::Array<GLuint> ids{buffers ? buffers.size() : 0};
+    Containers::Array<GLuint> ids{NoInit, buffers ? buffers.size() : 0};
     if(buffers) for(std::size_t i = 0; i != buffers.size(); ++i) {
         if(buffers[i]) {
             buffers[i]->createIfNotAlready();
@@ -472,7 +472,7 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
        binding points:
         https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffersBase.xhtml
        See the comment in that function for details. */
-    glBindBuffersBase(GLenum(target), firstIndex, buffers.size(), ids);
+    glBindBuffersBase(GLenum(target), firstIndex, buffers.size(), ids.data());
 }
 #endif
 
@@ -487,8 +487,8 @@ void Buffer::bindImplementationFallback(const Target target, const GLuint firstI
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     /** @todo use ArrayTuple */
-    Containers::Array<GLuint> ids{buffers ? buffers.size() : 0};
-    Containers::Array<GLintptr> offsetsSizes{buffers ? buffers.size()*2 : 0};
+    Containers::Array<GLuint> ids{NoInit, buffers ? buffers.size() : 0};
+    Containers::Array<GLintptr> offsetsSizes{NoInit, buffers ? buffers.size()*2 : 0};
     if(buffers) for(std::size_t i = 0; i != buffers.size(); ++i) {
         if(buffers[i].first()) {
             buffers[i].first()->createIfNotAlready();
@@ -503,7 +503,7 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
         }
     }
 
-    glBindBuffersRange(GLenum(target), firstIndex, buffers.size(), ids, offsetsSizes, offsetsSizes + buffers.size());
+    glBindBuffersRange(GLenum(target), firstIndex, buffers.size(), ids.data(), offsetsSizes.data(), offsetsSizes.data() + buffers.size());
 }
 #endif
 

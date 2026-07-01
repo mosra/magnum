@@ -586,7 +586,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
         ++attributeCount;
         stride += sizeof(Vector3);
     }
-    Containers::Array<MeshAttributeData> attributeData{attributeCount};
+    Containers::Array<MeshAttributeData> attributeData{ValueInit, attributeCount};
     Containers::Array<char> vertexData{NoInit, vertexCount*stride};
 
     /* Duplicate the vertices into the output */

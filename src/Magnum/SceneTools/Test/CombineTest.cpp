@@ -607,10 +607,10 @@ void CombineTest::fieldsAlignment() {
         Containers::arrayView(meshFieldData),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(reinterpret_cast<std::ptrdiff_t>(scene.mapping(0).data()), 2, TestSuite::Compare::Divisible);
-    CORRADE_COMPARE(scene.mapping(0).data(), scene.data());
+    CORRADE_COMPARE(scene.mapping(0).data(), scene.data().data());
     CORRADE_COMPARE(scene.mapping(0).stride()[0], 2);
     CORRADE_COMPARE_AS(reinterpret_cast<std::ptrdiff_t>(scene.field(0).data()), 1, TestSuite::Compare::Divisible);
-    CORRADE_COMPARE(scene.field(0).data(), scene.data() + 3*2);
+    CORRADE_COMPARE(scene.field(0).data(), scene.data().data() + 3*2);
     CORRADE_COMPARE(scene.field(0).stride()[0], 1);
 
     CORRADE_COMPARE(scene.fieldName(1), Trade::SceneField::Translation);
@@ -623,10 +623,10 @@ void CombineTest::fieldsAlignment() {
         Containers::arrayView(translationFieldData),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(reinterpret_cast<std::ptrdiff_t>(scene.mapping(1).data()), 2, TestSuite::Compare::Divisible);
-    CORRADE_COMPARE(scene.mapping(1).data(), scene.data() + 3*2 + 3 + 1);
+    CORRADE_COMPARE(scene.mapping(1).data(), scene.data().data() + 3*2 + 3 + 1);
     CORRADE_COMPARE(scene.mapping(1).stride()[0], 2);
     CORRADE_COMPARE_AS(reinterpret_cast<std::ptrdiff_t>(scene.field(1).data()), 8, TestSuite::Compare::Divisible);
-    CORRADE_COMPARE(scene.field(1).data(), scene.data() + 3*2 + 3 + 1 + 2 + 4);
+    CORRADE_COMPARE(scene.field(1).data(), scene.data().data() + 3*2 + 3 + 1 + 2 + 4);
     CORRADE_COMPARE(scene.field(1).stride()[0], 16);
 }
 
@@ -750,9 +750,9 @@ void CombineTest::fieldsMappingPlaceholderFieldPlaceholder() {
     CORRADE_COMPARE(scene.fieldType(Trade::SceneField::Camera), Trade::SceneFieldType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldSize(Trade::SceneField::Camera), 1);
     CORRADE_COMPARE(scene.fieldArraySize(Trade::SceneField::Camera), 0);
-    CORRADE_COMPARE(scene.mapping(Trade::SceneField::Camera).data(), scene.data());
+    CORRADE_COMPARE(scene.mapping(Trade::SceneField::Camera).data(), scene.data().data());
     CORRADE_COMPARE(scene.mapping(Trade::SceneField::Camera).stride()[0], 2);
-    CORRADE_COMPARE(scene.field(Trade::SceneField::Camera).data(), scene.data() + 2);
+    CORRADE_COMPARE(scene.field(Trade::SceneField::Camera).data(), scene.data().data() + 2);
     CORRADE_COMPARE(scene.field(Trade::SceneField::Camera).stride()[0], 2);
 
     CORRADE_COMPARE(scene.fieldType(Trade::SceneField::Mesh), Trade::SceneFieldType::UnsignedByte);
@@ -768,30 +768,30 @@ void CombineTest::fieldsMappingPlaceholderFieldPlaceholder() {
     CORRADE_COMPARE(scene.fieldSize(Trade::SceneField::Light), 2);
     CORRADE_COMPARE(scene.fieldArraySize(Trade::SceneField::Light), 0);
     CORRADE_COMPARE(scene.mapping(Trade::SceneField::Light).data(),
-        scene.data() + 2 + 2 + 3*2 + 3 + 1);
+        scene.data().data() + 2 + 2 + 3*2 + 3 + 1);
     CORRADE_COMPARE(scene.mapping(Trade::SceneField::Light).stride()[0], 2);
     CORRADE_COMPARE(scene.field(Trade::SceneField::Light).data(),
-        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2);
+        scene.data().data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2);
     CORRADE_COMPARE(scene.field(Trade::SceneField::Light).stride()[0], 4);
 
     CORRADE_COMPARE(scene.fieldType(Trade::sceneFieldCustom(15)), Trade::SceneFieldType::Short);
     CORRADE_COMPARE(scene.fieldSize(Trade::sceneFieldCustom(15)), 2);
     CORRADE_COMPARE(scene.fieldArraySize(Trade::sceneFieldCustom(15)), 4);
     CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(15)).data(),
-        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4);
+        scene.data().data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4);
     CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(15)).stride()[0], 2);
     CORRADE_COMPARE(scene.field(Trade::sceneFieldCustom(15)).data(),
-        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2);
+        scene.data().data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2);
     CORRADE_COMPARE(scene.field(Trade::sceneFieldCustom(15)).stride()[0], 4*2);
 
     CORRADE_COMPARE(scene.fieldType(Trade::sceneFieldCustom(16)), Trade::SceneFieldType::Bit);
     CORRADE_COMPARE(scene.fieldSize(Trade::sceneFieldCustom(16)), 3);
     CORRADE_COMPARE(scene.fieldArraySize(Trade::sceneFieldCustom(16)), 2);
     CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(16)).data(),
-        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2 + 2*8);
+        scene.data().data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2 + 2*8);
     CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(16)).stride()[0], 2);
     CORRADE_COMPARE(scene.fieldBitArrays(Trade::sceneFieldCustom(16)).data(),
-        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2 + 2*8 + 3*2);
+        scene.data().data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2 + 2*8 + 3*2);
     CORRADE_COMPARE(scene.fieldBitArrays(Trade::sceneFieldCustom(16)).offset(), 0);
     CORRADE_COMPARE(scene.fieldBitArrays(Trade::sceneFieldCustom(16)).stride()[0], 2);
 }
@@ -830,7 +830,7 @@ void CombineTest::fieldsMappingSharedFieldPlaceholder() {
     CORRADE_COMPARE_AS(scene.mapping<UnsignedInt>(Trade::SceneField::MeshMaterial),
         Containers::arrayView(meshMappingData),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).data(), scene.data() + 3*4 + 3 + 1);
+    CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).data(), scene.data().data() + 3*4 + 3 + 1);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).stride()[0], 4);
 }
 

@@ -920,8 +920,8 @@ struct Vertex {
     Vector4 color;
 };
 
-Containers::Array<char> indexData{indexCount*sizeof(UnsignedShort)};
-Containers::Array<char> vertexData{vertexCount*sizeof(Vertex)};
+Containers::Array<char> indexData{ValueInit, indexCount*sizeof(UnsignedShort)};
+Containers::Array<char> vertexData{ValueInit, vertexCount*sizeof(Vertex)};
 DOXYGEN_ELLIPSIS()
 Containers::StridedArrayView1D<const Vertex> vertices =
     Containers::arrayCast<const Vertex>(vertexData);
@@ -980,7 +980,7 @@ constexpr Trade::MeshAttributeData attributes[]{
 };
 
 /* Actual data populated later */
-Containers::Array<char> vertexData{vertexCount*sizeof(Vertex)};
+Containers::Array<char> vertexData{ValueInit, vertexCount*sizeof(Vertex)};
 DOXYGEN_ELLIPSIS()
 
 /* Using the statically defined attribute layout together with explicitly
@@ -1148,7 +1148,7 @@ if(!data.is3D() ||
     Fatal{} << "Oh noes!";
 
 Scene3D scene;
-Containers::Array<Object3D*> objects{std::size_t(data.mappingBound())};
+Containers::Array<Object3D*> objects{ValueInit, std::size_t(data.mappingBound())};
 /* [SceneData-usage1] */
 
 /* [SceneData-usage2] */
@@ -1318,7 +1318,7 @@ constexpr Trade::SceneFieldData fields[]{
 };
 
 /* Actual data populated later */
-Containers::Array<char> data{objectCount*sizeof(Data)};
+Containers::Array<char> data{ValueInit, objectCount*sizeof(Data)};
 DOXYGEN_ELLIPSIS()
 
 /* Using the statically defined field layout */

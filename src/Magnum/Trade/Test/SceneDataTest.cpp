@@ -2523,8 +2523,8 @@ void SceneDataTest::construct() {
     /* Basics */
     CORRADE_COMPARE(scene.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(!scene.fieldData().isEmpty());
-    CORRADE_COMPARE(static_cast<const void*>(scene.data()), transformsParentFieldMappingData.data());
-    CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), transformsParentFieldMappingData.data());
+    CORRADE_COMPARE(static_cast<const void*>(scene.data().data()), transformsParentFieldMappingData.data());
+    CORRADE_COMPARE(static_cast<void*>(scene.mutableData().data()), transformsParentFieldMappingData.data());
     CORRADE_COMPARE(scene.mappingBound(), 8);
     CORRADE_COMPARE(scene.mappingType(), SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldCount(), 4);
@@ -2778,8 +2778,8 @@ void SceneDataTest::constructZeroFields() {
     SceneData scene{SceneMappingType::UnsignedShort, 37563, nullptr, {}, &importerState};
     CORRADE_COMPARE(scene.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(scene.fieldData().isEmpty());
-    CORRADE_COMPARE(static_cast<const void*>(scene.data()), nullptr);
-    CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), nullptr);
+    CORRADE_COMPARE(static_cast<const void*>(scene.data().data()), nullptr);
+    CORRADE_COMPARE(static_cast<void*>(scene.mutableData().data()), nullptr);
     CORRADE_COMPARE(scene.importerState(), &importerState);
     CORRADE_COMPARE(scene.mappingBound(), 37563);
     CORRADE_COMPARE(scene.mappingType(), SceneMappingType::UnsignedShort);
@@ -2797,8 +2797,8 @@ void SceneDataTest::constructZeroObjects() {
     SceneData scene{SceneMappingType::UnsignedInt, 0, nullptr, {meshes, materials}, &importerState};
     CORRADE_COMPARE(scene.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_VERIFY(!scene.fieldData().isEmpty());
-    CORRADE_COMPARE(static_cast<const void*>(scene.data()), nullptr);
-    CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), nullptr);
+    CORRADE_COMPARE(static_cast<const void*>(scene.data().data()), nullptr);
+    CORRADE_COMPARE(static_cast<void*>(scene.mutableData().data()), nullptr);
     CORRADE_COMPARE(scene.importerState(), &importerState);
     CORRADE_COMPARE(scene.mappingBound(), 0);
     CORRADE_COMPARE(scene.mappingType(), SceneMappingType::UnsignedInt);
@@ -2834,9 +2834,9 @@ void SceneDataTest::constructNotOwned() {
     SceneData scene{SceneMappingType::UnsignedShort, 7, instanceData.dataFlags, Containers::arrayView(data), {mesh}, &importerState};
 
     CORRADE_COMPARE(scene.dataFlags(), instanceData.dataFlags);
-    CORRADE_COMPARE(static_cast<const void*>(scene.data()), +data);
+    CORRADE_COMPARE(static_cast<const void*>(scene.data().data()), +data);
     if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(static_cast<void*>(scene.mutableData()), static_cast<void*>(data));
+        CORRADE_COMPARE(static_cast<void*>(scene.mutableData().data()), static_cast<void*>(data));
     CORRADE_COMPARE(scene.mappingBound(), 7);
     CORRADE_COMPARE(scene.mappingType(), SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldCount(), 1);
@@ -3677,7 +3677,7 @@ void SceneDataTest::constructMappingDataNotContained() {
         SceneFieldData{SceneField::Mesh, dataOut, dataIn}
     }};
     /* Offset-only fields with a different message */
-    SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{24}, {
+    SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{NoInit, 24}, {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 4, 4, SceneFieldType::UnsignedByte, 0, 4}
     }};
     /* And the final boss, negative strides. Both only caught if the element
@@ -3685,7 +3685,7 @@ void SceneDataTest::constructMappingDataNotContained() {
     SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
         SceneFieldData{SceneField::Mesh, stridedArrayView(dataSlightlyOut).flipped<0>(), dataIn}
     }};
-    SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{24}, {
+    SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{NoInit, 24}, {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 24, -4, SceneFieldType::UnsignedByte, 0, 4}
     }};
     CORRADE_COMPARE(out,
@@ -3734,12 +3734,12 @@ void SceneDataTest::constructFieldDataNotContained() {
     /* Not checking for nullptr data, since that got checked for mapping view
        already and there's no way to trigger it for fields */
     /* Offset-only fields with a different message */
-    SceneData{SceneMappingType::UnsignedShort, 6, Containers::Array<char>{24}, {
+    SceneData{SceneMappingType::UnsignedShort, 6, Containers::Array<char>{NoInit, 24}, {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedShort, 0, 4, SceneFieldType::UnsignedByte, 4, 4}
     }};
     /* This again spans 21 bytes if array size isn't taken into account, and 25
        if it is */
-    SceneData{SceneMappingType::UnsignedShort, 5, Containers::Array<char>{24}, {
+    SceneData{SceneMappingType::UnsignedShort, 5, Containers::Array<char>{NoInit, 24}, {
         SceneFieldData{sceneFieldCustom(37), 5, SceneMappingType::UnsignedShort, 0, 5, SceneFieldType::UnsignedByte, 0, 5, 5}
     }};
     /* And the final boss, negative strides. Both only caught if the element
@@ -3747,7 +3747,7 @@ void SceneDataTest::constructFieldDataNotContained() {
     SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
         SceneFieldData{SceneField::Mesh, dataIn, stridedArrayView(dataSlightlyOut).flipped<0>()}
     }};
-    SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{24}, {
+    SceneData{SceneMappingType::UnsignedByte, 6, Containers::Array<char>{NoInit, 24}, {
         SceneFieldData{SceneField::Mesh, 6, SceneMappingType::UnsignedByte, 0, 4, SceneFieldType::UnsignedByte, 24, -4}
     }};
     CORRADE_COMPARE(out,
@@ -3812,17 +3812,17 @@ void SceneDataTest::constructBitFieldDataNotContained() {
        already and there's no way to trigger it for fields */
     /* Offset-only fields with a different message, again both one byte and one
        bit off, one bit with offset */
-    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{NoInit, 10}, {
         SceneFieldData{sceneFieldCustom(773), 10, SceneMappingType::UnsignedByte, 0, 1, 1, 0, 8}
     }};
-    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{NoInit, 10}, {
         SceneFieldData{sceneFieldCustom(773), 10, SceneMappingType::UnsignedByte, 0, 1, 0, 0, 9}
     }};
-    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{NoInit, 10}, {
         SceneFieldData{sceneFieldCustom(773), 5, SceneMappingType::UnsignedByte, 0, 1, 0, 4, 19}
     }};
     /* One with array */
-    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{NoInit, 10}, {
         SceneFieldData{sceneFieldCustom(773), 9, SceneMappingType::UnsignedByte, 0, 1, 0, 0, 9, 9}
     }};
     /* And the final boss, negative strides -- one byte off and two bits off.
@@ -3834,10 +3834,10 @@ void SceneDataTest::constructBitFieldDataNotContained() {
     SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
         SceneFieldData{sceneFieldCustom(773), mappingData, dataTwoBitsOut.flipped<0>()}
     }};
-    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{NoInit, 10}, {
         SceneFieldData{sceneFieldCustom(773), 10, SceneMappingType::UnsignedByte, 0, 1, 10, 0, -8}
     }};
-    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{NoInit, 10}, {
         SceneFieldData{sceneFieldCustom(773), 9, SceneMappingType::UnsignedByte, 0, 1, 10, 0, -9}
     }};
     CORRADE_COMPARE(out,
@@ -4221,7 +4221,7 @@ void SceneDataTest::constructMove() {
     CORRADE_COMPARE(b.mappingType(), SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(b.fieldCount(), 1);
     CORRADE_COMPARE(b.importerState(), &importerState);
-    CORRADE_COMPARE(static_cast<const void*>(b.data()), meshData.data());
+    CORRADE_COMPARE(static_cast<const void*>(b.data().data()), meshData.data());
     CORRADE_COMPARE(b.fieldName(0), SceneField::Mesh);
     CORRADE_COMPARE(b.fieldType(0), SceneFieldType::UnsignedInt);
     CORRADE_COMPARE(b.fieldSize(0), 3);
@@ -4236,7 +4236,7 @@ void SceneDataTest::constructMove() {
     CORRADE_COMPARE(c.mappingType(), SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(c.fieldCount(), 1);
     CORRADE_COMPARE(c.importerState(), &importerState);
-    CORRADE_COMPARE(static_cast<const void*>(c.data()), meshData.data());
+    CORRADE_COMPARE(static_cast<const void*>(c.data().data()), meshData.data());
     CORRADE_COMPARE(c.fieldName(0), SceneField::Mesh);
     CORRADE_COMPARE(c.fieldType(0), SceneFieldType::UnsignedInt);
     CORRADE_COMPARE(c.fieldSize(0), 3);
@@ -4462,7 +4462,7 @@ void SceneDataTest::mappingIntoArrayByIndex() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> out{data.size};
+        Containers::Array<UnsignedInt> out{NoInit, data.size};
         CORRADE_COMPARE(scene.mappingInto(1, data.offset, out), data.expectedSize);
         CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
             view.slice(&Field::object)
@@ -4508,7 +4508,7 @@ void SceneDataTest::mappingIntoArrayByName() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> out{data.size};
+        Containers::Array<UnsignedInt> out{NoInit, data.size};
         CORRADE_COMPARE(scene.mappingInto(SceneField::Mesh, data.offset, out), data.expectedSize);
         CORRADE_COMPARE_AS(out.prefix(data.expectedSize),
             view.slice(&Field::object)
@@ -4616,8 +4616,8 @@ void SceneDataTest::parentsIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<Int> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<Int> field{NoInit, data.size};
         CORRADE_COMPARE(scene.parentsInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -5006,8 +5006,8 @@ void SceneDataTest::transformations2DIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<Matrix3> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<Matrix3> field{NoInit, data.size};
         CORRADE_COMPARE(scene.transformations2DInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -5080,8 +5080,8 @@ void SceneDataTest::transformations2DTRSIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<Matrix3> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<Matrix3> field{NoInit, data.size};
         CORRADE_COMPARE(scene.transformations2DInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -5158,10 +5158,10 @@ void SceneDataTest::transformations2DIntoArrayTRS() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<Vector2> translations{data.size};
-        Containers::Array<Complex> rotations{data.size};
-        Containers::Array<Vector2> scalings{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<Vector2> translations{NoInit, data.size};
+        Containers::Array<Complex> rotations{NoInit, data.size};
+        Containers::Array<Vector2> scalings{NoInit, data.size};
         CORRADE_COMPARE(scene.translationsRotationsScalings2DInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field1 ? arrayView(translations) : nullptr,
@@ -5602,8 +5602,8 @@ void SceneDataTest::transformations3DIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<Matrix4> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<Matrix4> field{NoInit, data.size};
         CORRADE_COMPARE(scene.transformations3DInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -5676,8 +5676,8 @@ void SceneDataTest::transformations3DTRSIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<Matrix4> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<Matrix4> field{NoInit, data.size};
         CORRADE_COMPARE(scene.transformations3DInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -5754,10 +5754,10 @@ void SceneDataTest::transformations3DIntoArrayTRS() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<Vector3> translations{data.size};
-        Containers::Array<Quaternion> rotations{data.size};
-        Containers::Array<Vector3> scalings{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<Vector3> translations{NoInit, data.size};
+        Containers::Array<Quaternion> rotations{NoInit, data.size};
+        Containers::Array<Vector3> scalings{NoInit, data.size};
         CORRADE_COMPARE(scene.translationsRotationsScalings3DInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field1 ? arrayView(translations) : nullptr,
@@ -5967,9 +5967,9 @@ void SceneDataTest::meshesMaterialsIntoArray() {
 
     /* The offset variant should give back only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<UnsignedInt> meshes{data.size};
-        Containers::Array<Int> meshMaterials{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<UnsignedInt> meshes{NoInit, data.size};
+        Containers::Array<Int> meshMaterials{NoInit, data.size};
         CORRADE_COMPARE(scene.meshesMaterialsInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field1 ? arrayView(meshes) : nullptr,
@@ -6100,8 +6100,8 @@ void SceneDataTest::lightsIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<UnsignedInt> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<UnsignedInt> field{NoInit, data.size};
         CORRADE_COMPARE(scene.lightsInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -6219,8 +6219,8 @@ void SceneDataTest::camerasIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<UnsignedInt> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<UnsignedInt> field{NoInit, data.size};
         CORRADE_COMPARE(scene.camerasInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -6342,8 +6342,8 @@ void SceneDataTest::skinsIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<UnsignedInt> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<UnsignedInt> field{NoInit, data.size};
         CORRADE_COMPARE(scene.skinsInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -6468,8 +6468,8 @@ void SceneDataTest::importerStateIntoArray() {
 
     /* The offset variant only a subset */
     } {
-        Containers::Array<UnsignedInt> mapping{data.size};
-        Containers::Array<const void*> field{data.size};
+        Containers::Array<UnsignedInt> mapping{NoInit, data.size};
+        Containers::Array<const void*> field{NoInit, data.size};
         CORRADE_COMPARE(scene.importerStateInto(data.offset,
             data.mapping ? arrayView(mapping) : nullptr,
             data.field ? arrayView(field) : nullptr
@@ -7641,7 +7641,7 @@ void SceneDataTest::releaseFieldData() {
         SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedByte, nullptr, SceneFieldType::Int, nullptr},
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     });
-    SceneFieldData* originalFields = fields;
+    SceneFieldData* originalFields = fields.data();
 
     SceneData scene{SceneMappingType::UnsignedByte, 50, Utility::move(data), Utility::move(fields)};
 
@@ -7650,7 +7650,7 @@ void SceneDataTest::releaseFieldData() {
     CORRADE_COMPARE(released.size(), 2);
 
     /* Fields are all gone */
-    CORRADE_COMPARE(static_cast<const void*>(scene.fieldData()), nullptr);
+    CORRADE_COMPARE(static_cast<const void*>(scene.fieldData().data()), nullptr);
     CORRADE_COMPARE(scene.fieldCount(), 0);
 
     /* Data stays untouched, object count and type as well, as it con't result
@@ -7679,7 +7679,7 @@ void SceneDataTest::releaseData() {
     CORRADE_COMPARE(released.size(), 3*sizeof(Field));
 
     /* Data are gone */
-    CORRADE_COMPARE(static_cast<const void*>(scene.data()), nullptr);
+    CORRADE_COMPARE(static_cast<const void*>(scene.data().data()), nullptr);
 
     /* Fields stay untouched so it's possible to release them separately
        without being forced to order these two releases in any way */

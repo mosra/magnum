@@ -628,7 +628,7 @@ void AbstractImporter::populateCachedScenes() {
         return;
 
     _cachedScenes.emplace();
-    _cachedScenes->scenes = Containers::Array<Containers::Optional<SceneData>>{sceneCount()};
+    _cachedScenes->scenes = Containers::Array<Containers::Optional<SceneData>>{ValueInit, sceneCount()};
 
     UnsignedLong newObjectOffset = objectCount();
     for(UnsignedInt i = 0; i != _cachedScenes->scenes.size(); ++i) {
@@ -813,7 +813,7 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
             new MeshObjectData2D{Utility::move(children),
                 *transformation,
                 mesh.front().first(), mesh.front().second(),
-                skin ? Int(*skin) : -1,
+                skin.isEmpty() ? -1  : Int(skin.front()),
                 importerState ? *importerState : nullptr});
     }
 
@@ -821,7 +821,7 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
     UnsignedInt instance;
     if(camera) {
         instanceType = ObjectInstanceType2D::Camera;
-        instance = *camera;
+        instance = camera.front();
     } else {
         instanceType = ObjectInstanceType2D::Empty;
         instance = UnsignedInt(-1); /* Old APIs, you suck! */
@@ -993,7 +993,7 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
             new MeshObjectData3D{Utility::move(children),
                 *transformation,
                 mesh.front().first(), mesh.front().second(),
-                skin ? Int(*skin) : -1,
+                skin.isEmpty() ? -1  : Int(skin.front()),
                 importerState ? *importerState : nullptr});
     }
 
@@ -1001,10 +1001,10 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
     UnsignedInt instance;
     if(camera) {
         instanceType = ObjectInstanceType3D::Camera;
-        instance = *camera;
+        instance = camera.front();
     } else if(light) {
         instanceType = ObjectInstanceType3D::Light;
-        instance = *light;
+        instance = light.front();
     } else {
         instanceType = ObjectInstanceType3D::Empty;
         instance = UnsignedInt(-1); /* Old APIs, you suck! */

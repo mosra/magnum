@@ -632,7 +632,7 @@ Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
     /* Recreate the attribute array with views on the new vertexData */
     /** @todo if the vertex data were moved and this array is owned, it
         wouldn't need to be recreated, but the logic is a bit complex */
-    Containers::Array<Trade::MeshAttributeData> attributeData{mesh.attributeCount()};
+    Containers::Array<Trade::MeshAttributeData> attributeData{ValueInit, mesh.attributeCount()};
     for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i)
         attributeData[i] = Implementation::remapAttributeData(mesh.attributeData(i), vertexCount, originalVertexData, vertexData);
 

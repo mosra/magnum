@@ -310,11 +310,11 @@ CopyImageInfo::CopyImageInfo(const VkImage source, const ImageLayout sourceLayou
     for(std::size_t i = 0; i != regions.size(); ++i) {
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkImageCopies2 + i) VkImageCopy2KHR(ImageCopy{regions[i]});
+        new(vkImageCopies2.data() + i) VkImageCopy2KHR(ImageCopy{regions[i]});
     }
 
     _info.regionCount = regions.size();
-    _info.pRegions = vkImageCopies2;
+    _info.pRegions = vkImageCopies2.data();
 }
 
 CopyImageInfo::CopyImageInfo(const VkImage source, const ImageLayout sourceLayout, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<ImageCopy> regions): CopyImageInfo{source, sourceLayout, destination, destinationLayout, Containers::arrayView(regions)} {}
@@ -329,7 +329,7 @@ CopyImageInfo::CopyImageInfo(const VkCopyImageInfo2KHR& info):
 Containers::Array<VkImageCopy> CopyImageInfo::vkImageCopies() const {
     Containers::Array<VkImageCopy> out{NoInit, _info.regionCount};
     for(std::size_t i = 0; i != _info.regionCount; ++i)
-        new(out + i) VkImageCopy(vkImageCopy(_info.pRegions[i]));
+        new(out.data() + i) VkImageCopy(vkImageCopy(_info.pRegions[i]));
     return out;
 }
 
@@ -419,14 +419,14 @@ CopyBufferToImageInfo::CopyBufferToImageInfo(const VkBuffer source, const VkImag
     };
 
     for(std::size_t i = 0; i != regions.size(); ++i) {
-        new(wrappers + i) BufferImageCopy{regions[i]};
+        new(wrappers.data() + i) BufferImageCopy{regions[i]};
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkBufferImageCopies2 + i) VkBufferImageCopy2KHR(wrappers[i]);
+        new(vkBufferImageCopies2.data() + i) VkBufferImageCopy2KHR(wrappers[i]);
     }
 
     _info.regionCount = regions.size();
-    _info.pRegions = vkBufferImageCopies2;
+    _info.pRegions = vkBufferImageCopies2.data();
 }
 
 CopyBufferToImageInfo::CopyBufferToImageInfo(NoInitT) noexcept {}
@@ -441,7 +441,7 @@ CopyBufferToImageInfo::CopyBufferToImageInfo(const VkBuffer source, const VkImag
 Containers::Array<VkBufferImageCopy> CopyBufferToImageInfo::vkBufferImageCopies() const {
     Containers::Array<VkBufferImageCopy> out{NoInit, _info.regionCount};
     for(std::size_t i = 0; i != _info.regionCount; ++i)
-        new(out + i) VkBufferImageCopy(vkBufferImageCopy(_info.pRegions[i]));
+        new(out.data() + i) VkBufferImageCopy(vkBufferImageCopy(_info.pRegions[i]));
     return out;
 }
 
@@ -491,14 +491,14 @@ CopyImageToBufferInfo::CopyImageToBufferInfo(const VkImage source, const ImageLa
     };
 
     for(std::size_t i = 0; i != regions.size(); ++i) {
-        new(wrappers + i) BufferImageCopy{regions[i]};
+        new(wrappers.data() + i) BufferImageCopy{regions[i]};
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkBufferImageCopies2 + i) VkBufferImageCopy2KHR(wrappers[i]);
+        new(vkBufferImageCopies2.data() + i) VkBufferImageCopy2KHR(wrappers[i]);
     }
 
     _info.regionCount = regions.size();
-    _info.pRegions = vkBufferImageCopies2;
+    _info.pRegions = vkBufferImageCopies2.data();
 }
 
 CopyImageToBufferInfo::CopyImageToBufferInfo(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopy> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayView(regions)} {}
@@ -513,7 +513,7 @@ CopyImageToBufferInfo::CopyImageToBufferInfo(const VkCopyImageToBufferInfo2KHR& 
 Containers::Array<VkBufferImageCopy> CopyImageToBufferInfo::vkBufferImageCopies() const {
     Containers::Array<VkBufferImageCopy> out{NoInit, _info.regionCount};
     for(std::size_t i = 0; i != _info.regionCount; ++i)
-        new(out + i) VkBufferImageCopy(vkBufferImageCopy(_info.pRegions[i]));
+        new(out.data() + i) VkBufferImageCopy(vkBufferImageCopy(_info.pRegions[i]));
     return out;
 }
 
@@ -668,7 +668,7 @@ void fixupImageCopySwiftShader(VkImageSubresourceLayers& subresource, VkOffset3D
 void CommandBuffer::copyImageImplementationDefault(CommandBuffer& self, const CopyImageInfo& info) {
     CORRADE_ASSERT(!info->pNext,
         "Vk::CommandBuffer::copyImage(): disallowing extraction of CopyImageInfo with non-empty pNext to prevent information loss", );
-    return (**self._device).CmdCopyImage(self, info->srcImage, info->srcImageLayout, info->dstImage, info->dstImageLayout, info->regionCount, info.vkImageCopies());
+    return (**self._device).CmdCopyImage(self, info->srcImage, info->srcImageLayout, info->dstImage, info->dstImageLayout, info->regionCount, info.vkImageCopies().data());
 }
 
 void CommandBuffer::copyImageImplementationSwiftShader(CommandBuffer& self, const CopyImageInfo& info) {
@@ -681,7 +681,7 @@ void CommandBuffer::copyImageImplementationSwiftShader(CommandBuffer& self, cons
         fixupImageCopySwiftShader(copy.dstSubresource, copy.dstOffset, copy.extent);
     }
 
-    return (**self._device).CmdCopyImage(self, info->srcImage, info->srcImageLayout, info->dstImage, info->dstImageLayout, info->regionCount, copies);
+    return (**self._device).CmdCopyImage(self, info->srcImage, info->srcImageLayout, info->dstImage, info->dstImageLayout, info->regionCount, copies.data());
 }
 
 void CommandBuffer::copyImageImplementationKHR(CommandBuffer& self, const CopyImageInfo& info) {
@@ -696,7 +696,7 @@ CommandBuffer& CommandBuffer::copyBufferToImage(const CopyBufferToImageInfo& inf
 void CommandBuffer::copyBufferToImageImplementationDefault(CommandBuffer& self, const CopyBufferToImageInfo& info) {
     CORRADE_ASSERT(!info->pNext,
         "Vk::CommandBuffer::copyBufferToImage(): disallowing extraction of CopyBufferToImageInfo with non-empty pNext to prevent information loss", );
-    return (**self._device).CmdCopyBufferToImage(self, info->srcBuffer, info->dstImage, info->dstImageLayout, info->regionCount, info.vkBufferImageCopies());
+    return (**self._device).CmdCopyBufferToImage(self, info->srcBuffer, info->dstImage, info->dstImageLayout, info->regionCount, info.vkBufferImageCopies().data());
 }
 
 void CommandBuffer::copyBufferToImageImplementationSwiftShader(CommandBuffer& self, const CopyBufferToImageInfo& info) {
@@ -708,7 +708,7 @@ void CommandBuffer::copyBufferToImageImplementationSwiftShader(CommandBuffer& se
         fixupImageCopySwiftShader(copy.imageSubresource, copy.imageOffset, copy.imageExtent);
     }
 
-    return (**self._device).CmdCopyBufferToImage(self, info->srcBuffer, info->dstImage, info->dstImageLayout, info->regionCount, copies);
+    return (**self._device).CmdCopyBufferToImage(self, info->srcBuffer, info->dstImage, info->dstImageLayout, info->regionCount, copies.data());
 }
 
 void CommandBuffer::copyBufferToImageImplementationKHR(CommandBuffer& self, const CopyBufferToImageInfo& info) {
@@ -723,7 +723,7 @@ CommandBuffer& CommandBuffer::copyImageToBuffer(const CopyImageToBufferInfo& inf
 void CommandBuffer::copyImageToBufferImplementationDefault(CommandBuffer& self, const CopyImageToBufferInfo& info) {
     CORRADE_ASSERT(!info->pNext,
         "Vk::CommandBuffer::copyImageToBuffer(): disallowing extraction of CopyImageToBufferInfo with non-empty pNext to prevent information loss", );
-    return (**self._device).CmdCopyImageToBuffer(self, info->srcImage, info->srcImageLayout, info->dstBuffer, info->regionCount, info.vkBufferImageCopies());
+    return (**self._device).CmdCopyImageToBuffer(self, info->srcImage, info->srcImageLayout, info->dstBuffer, info->regionCount, info.vkBufferImageCopies().data());
 }
 
 void CommandBuffer::copyImageToBufferImplementationSwiftShader(CommandBuffer& self, const CopyImageToBufferInfo& info) {
@@ -735,7 +735,7 @@ void CommandBuffer::copyImageToBufferImplementationSwiftShader(CommandBuffer& se
         fixupImageCopySwiftShader(copy.imageSubresource, copy.imageOffset, copy.imageExtent);
     }
 
-    return (**self._device).CmdCopyImageToBuffer(self, info->srcImage, info->srcImageLayout, info->dstBuffer, info->regionCount, copies);
+    return (**self._device).CmdCopyImageToBuffer(self, info->srcImage, info->srcImageLayout, info->dstBuffer, info->regionCount, copies.data());
 }
 
 void CommandBuffer::copyImageToBufferImplementationKHR(CommandBuffer& self, const CopyImageToBufferInfo& info) {

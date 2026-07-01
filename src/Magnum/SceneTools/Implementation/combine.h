@@ -148,7 +148,7 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
        reallocation so the array is made with an upper bound on size. */
     /** @todo once never-reallocating allocators are present, use them instead
         of the manual offset */
-    Containers::Array<CombineItemView> itemViews{fields.size()*3};
+    Containers::Array<CombineItemView> itemViews{ValueInit, fields.size()*3};
     std::size_t itemViewOffset = 0;
 
     const std::size_t mappingTypeSize = sceneMappingTypeSize(mappingType);
@@ -362,7 +362,7 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
     }
 
     /* Map the fields to the new data */
-    Containers::Array<Trade::SceneFieldData> outFields{fields.size()};
+    Containers::Array<Trade::SceneFieldData> outFields{ValueInit, fields.size()};
     for(std::size_t i = 0; i != fields.size(); ++i) {
         const Trade::SceneFieldData& field = fields[i];
         const Trade::SceneFieldType fieldType = field.fieldType();

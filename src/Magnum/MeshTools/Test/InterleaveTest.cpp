@@ -377,7 +377,7 @@ void InterleaveTest::interleaveIntoInvalid() {
 }
 
 void InterleaveTest::interleavedData() {
-    Containers::Array<char> vertexData{100 + 3*20};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*20};
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 20};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
@@ -409,7 +409,7 @@ void InterleaveTest::interleavedData() {
 void InterleaveTest::interleavedDataUnordered() {
     /* Compared to interleavedData() the attribute order in MeshData is
        flipped, but the result should be the same */
-    Containers::Array<char> vertexData{100 + 3*20};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*20};
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 20};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
@@ -432,7 +432,7 @@ void InterleaveTest::interleavedDataUnordered() {
 void InterleaveTest::interleavedDataGaps() {
     /* Compared to interleavedData() there's a few padding bytes in between and
        at the end, the size should tightly wrap the data though */
-    Containers::Array<char> vertexData{100 + 3*40};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*40};
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data() + 100 + 5), 3, 40};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
@@ -457,7 +457,7 @@ void InterleaveTest::interleavedDataGapsTrailingOmitted() {
        MeshData allows that, but StridedArrayView constructors don't (which is
        why this is using offset-only attributes), so verify we don't trip up on
        that. */
-    Containers::Array<char> vertexData{2*48 + 36};
+    Containers::Array<char> vertexData{NoInit, 2*48 + 36};
     const char* vertexDataPointer = vertexData.data();
 
     Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
@@ -479,7 +479,7 @@ void InterleaveTest::interleavedDataGapsTrailingOmitted() {
 void InterleaveTest::interleavedDataAliased() {
     /* Compared to interleavedData() the normals share first two components
        with positions */
-    Containers::Array<char> vertexData{100 + 3*12};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*12};
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 12};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
@@ -502,7 +502,7 @@ void InterleaveTest::interleavedDataAliased() {
 void InterleaveTest::interleavedDataSingleAttribute() {
     /* Just to ensure it passes also when there's just one tightly-packed
        attribute, which is the same as if it would be interleaved */
-    Containers::Array<char> vertexData{3*8};
+    Containers::Array<char> vertexData{NoInit, 3*8};
     auto positions = Containers::arrayCast<Vector2>(vertexData);
 
     Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
@@ -522,7 +522,7 @@ void InterleaveTest::interleavedDataArrayAttributes() {
     /* Same as above, except that the MeshData get those as custom Float array
        attribs of size 3 and 2 instead of Vector3 and Vector2. Output should be
        the same for both. */
-    Containers::Array<char> vertexData{100 + 3*40};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*40};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
         reinterpret_cast<Vector3*>(vertexData.data() + 100 + 24), 3, 40};
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
@@ -594,7 +594,7 @@ void InterleaveTest::interleavedDataNoVertices() {
 void InterleaveTest::interleavedDataNotInterleaved() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{100 + 3*20};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*20};
     auto positions = Containers::arrayCast<Vector2>(vertexData.exceptPrefix(100).prefix(3*8));
     auto normals = Containers::arrayCast<Vector3>(vertexData.exceptPrefix(100+3*8));
 
@@ -650,7 +650,7 @@ void InterleaveTest::interleavedDataAttributeAcrossStride() {
 }
 
 void InterleaveTest::interleavedDataZeroStride() {
-    Containers::Array<char> vertexData{100 + 20};
+    Containers::Array<char> vertexData{NoInit, 100 + 20};
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 0};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
@@ -667,7 +667,7 @@ void InterleaveTest::interleavedDataZeroStride() {
 }
 
 void InterleaveTest::interleavedDataNegativeStride() {
-    Containers::Array<char> vertexData{100 + 3*20};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*20};
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 20};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
@@ -731,7 +731,7 @@ void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
     /* The implementation-specific format is conservatively assumed to occupy
        the whole stride (even if it may be excessive) */
     {
-        Containers::Array<char> vertexData{100 + 3*50};
+        Containers::Array<char> vertexData{NoInit, 100 + 3*50};
         Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
             Containers::StridedArrayView1D<Vector2>{vertexData,
                 reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 50}};
@@ -771,7 +771,7 @@ void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
 
     /* Fits just into one byte at the end of stride */
     {
-        Containers::Array<char> vertexData{100 + 3*9};
+        Containers::Array<char> vertexData{NoInit, 100 + 3*9};
         Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
             Containers::StridedArrayView1D<Vector2>{vertexData,
                 reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 9}};
@@ -791,7 +791,7 @@ void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
 
     /* Doesn't have even one byte of space in the stride, invalid */
     {
-        Containers::Array<char> vertexData{100 + 3*8};
+        Containers::Array<char> vertexData{NoInit, 100 + 3*8};
         Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
             Containers::StridedArrayView1D<Vector2>{vertexData,
                 reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 8}};
@@ -807,7 +807,7 @@ void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
     /* A non-interleaved (or not?) attribute with a implementation-specific
        format after interleaved ones is also invalid */
     {
-        Containers::Array<char> vertexData{100 + 3*20 + 3};
+        Containers::Array<char> vertexData{NoInit, 100 + 3*20 + 3};
         Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
             Containers::StridedArrayView1D<Vector2>{vertexData,
                 reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 20}};
@@ -826,8 +826,8 @@ void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
 }
 
 void InterleaveTest::interleavedLayout() {
-    Containers::Array<char> indexData{6};
-    Containers::Array<char> vertexData{3*32};
+    Containers::Array<char> indexData{ValueInit, 6};
+    Containers::Array<char> vertexData{NoInit, 3*32};
 
     const Trade::MeshAttributeData attributeData[]{
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
@@ -901,7 +901,7 @@ void InterleaveTest::interleavedLayoutImplementationSpecificVertexFormat() {
 }
 
 void InterleaveTest::interleavedLayoutExtra() {
-    Containers::Array<char> vertexData{3*20};
+    Containers::Array<char> vertexData{NoInit, 3*20};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::arrayCast<Vector2>(vertexData.prefix(3*8))};
     Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
@@ -961,7 +961,7 @@ void InterleaveTest::interleavedLayoutExtra() {
 }
 
 void InterleaveTest::interleavedLayoutExtraAliased() {
-    Containers::Array<char> vertexData{3*12};
+    Containers::Array<char> vertexData{NoInit, 3*12};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
     Trade::MeshData data{MeshPrimitive::Triangles,
@@ -990,7 +990,7 @@ void InterleaveTest::interleavedLayoutExtraAliased() {
 void InterleaveTest::interleavedLayoutExtraTooNegativePadding() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*12};
+    Containers::Array<char> vertexData{NoInit, 3*12};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
     Trade::MeshData data{MeshPrimitive::Triangles,
@@ -1050,9 +1050,9 @@ void InterleaveTest::interleavedLayoutAlreadyInterleaved() {
     auto&& data = AlreadyInterleavedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> indexData{6};
+    Containers::Array<char> indexData{ValueInit, 6};
     /* Test also removing the initial offset */
-    Containers::Array<char> vertexData{100 + 3*24};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*24};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 24}};
     Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
@@ -1101,8 +1101,8 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedAliased() {
     auto&& data = AlreadyInterleavedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> indexData{6};
-    Containers::Array<char> vertexData{3*12};
+    Containers::Array<char> indexData{ValueInit, 6};
+    Containers::Array<char> vertexData{NoInit, 3*12};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
     Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
@@ -1149,7 +1149,7 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedExtra() {
     auto&& data = AlreadyInterleavedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> vertexData{100 + 3*24};
+    Containers::Array<char> vertexData{NoInit, 100 + 3*24};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 24}};
     Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
@@ -1226,9 +1226,9 @@ void InterleaveTest::interleavedLayoutNothing() {
 }
 
 void InterleaveTest::interleavedLayoutRvalue() {
-    Containers::Array<char> indexData{6};
-    Containers::Array<char> vertexData{3*20};
-    Containers::Array<Trade::MeshAttributeData> attributeData{2};
+    Containers::Array<char> indexData{ValueInit, 6};
+    Containers::Array<char> vertexData{NoInit, 3*20};
+    Containers::Array<Trade::MeshAttributeData> attributeData{ValueInit, 2};
     attributeData[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
         Containers::arrayCast<Vector2>(vertexData.prefix(3*8))};
     attributeData[1] = Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
@@ -1501,9 +1501,9 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {
     auto&& data = AlreadyInterleavedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Containers::Array<char> indexData{4};
+    Containers::Array<char> indexData{ValueInit, 4};
     auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
-    Containers::Array<char> vertexData{3*24};
+    Containers::Array<char> vertexData{NoInit, 3*24};
     Containers::StridedArrayView1D<Vector2> positionView{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data()), 3, 24};
     Containers::StridedArrayView1D<Vector3> normalView{vertexData,
@@ -1512,7 +1512,7 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positionView},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, data.vertexFormat, normalView}
     });
-    const Trade::MeshAttributeData* attributePointer = attributeData;
+    const Trade::MeshAttributeData* attributePointer = attributeData.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         Utility::move(indexData), Trade::MeshIndexData{indexView},
@@ -1550,19 +1550,19 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
     setTestCaseDescription(data.name);
 
     /* Testing also offset */
-    Containers::Array<char> indexData{(50 + 3)*sizeof(UnsignedShort)};
+    Containers::Array<char> indexData{ValueInit, (50 + 3)*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData).exceptPrefix(50);
     if(data.flip)
         indices = indices.flipped<0>();
     Utility::copy({0, 2, 1}, indices);
 
-    Containers::Array<char> vertexData{3*8};
+    Containers::Array<char> vertexData{NoInit, 3*8};
     Containers::StridedArrayView1D<Vector2> positionView = Containers::arrayCast<Vector2>(vertexData);
     auto attributeData = Containers::array({
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positionView},
     });
-    const void* indexPointer = indexData;
-    const Trade::MeshAttributeData* attributePointer = attributeData;
+    const void* indexPointer = indexData.data();
+    const Trade::MeshAttributeData* attributePointer = attributeData.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         Utility::move(indexData), Trade::MeshIndexData{data.indexType,indices},
@@ -1590,7 +1590,7 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
     } else {
         /* Only the actually used part of the index buffer gets transferred and
            is tightly packed */
-        CORRADE_VERIFY(interleaved.indexData().data() != indexData);
+        CORRADE_VERIFY(interleaved.indexData().data() != indexData.data());
         CORRADE_COMPARE(interleaved.indexData().size(), 3*sizeof(UnsignedShort));
         CORRADE_COMPARE(interleaved.indexOffset(), 0);
         CORRADE_COMPARE(interleaved.indexStride(), sizeof(UnsignedShort));
@@ -1605,9 +1605,9 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
 }
 
 void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned() {
-    Containers::Array<char> indexData{4};
+    Containers::Array<char> indexData{ValueInit, 4};
     auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
-    Containers::Array<char> vertexData{3*24};
+    Containers::Array<char> vertexData{NoInit, 3*24};
     Containers::StridedArrayView1D<Vector2> positionView{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data()), 3, 24};
     Containers::StridedArrayView1D<Vector3> normalView{vertexData,
@@ -1616,7 +1616,7 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positionView},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normalView}
     });
-    const Trade::MeshAttributeData* attributePointer = attributeData;
+    const Trade::MeshAttributeData* attributePointer = attributeData.data();
 
     Trade::MeshData data{MeshPrimitive::TriangleFan,
         {}, indexData, Trade::MeshIndexData{indexView},

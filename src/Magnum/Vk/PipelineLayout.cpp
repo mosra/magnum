@@ -46,7 +46,7 @@ PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(const Containers::ArrayView<c
 
     _info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     _info.setLayoutCount = descriptorSetLayoutsCopy.size();
-    _info.pSetLayouts = descriptorSetLayoutsCopy;
+    _info.pSetLayouts = descriptorSetLayoutsCopy.data();
 }
 
 PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(): PipelineLayoutCreateInfo{Containers::ArrayView<const VkDescriptorSetLayout>{}} {}

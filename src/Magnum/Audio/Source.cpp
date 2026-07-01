@@ -43,7 +43,7 @@ Source& Source::setBuffer(Buffer* buffer) {
 }
 
 Source& Source::queueBuffers(Containers::ArrayView<Containers::Reference<Buffer>> buffers) {
-    Containers::Array<ALuint> ids(buffers.size());
+    Containers::Array<ALuint> ids(NoInit, buffers.size());
     for(std::size_t i = 0; i < ids.size(); i++)
         ids[i] = buffers[i]->id();
     alSourceQueueBuffers(_id, ids.size(), ids.data());
@@ -57,7 +57,7 @@ std::size_t Source::unqueueBuffers(Containers::ArrayView<Containers::Reference<B
     if(!processedBuffers)
         return 0;
 
-    Containers::Array<ALuint> unqueuedIds(processedBuffers);
+    Containers::Array<ALuint> unqueuedIds(NoInit, processedBuffers);
     alSourceUnqueueBuffers(_id, unqueuedIds.size(), unqueuedIds.data());
     auto isNotUnqueued = [&unqueuedIds](Buffer& buffer) {
         for(ALuint id : unqueuedIds) {
@@ -72,14 +72,14 @@ std::size_t Source::unqueueBuffers(Containers::ArrayView<Containers::Reference<B
 namespace {
 
 Containers::Array<ALuint> sourceIds(const std::initializer_list<std::reference_wrapper<Source>>& sources) {
-    Containers::Array<ALuint> ids(sources.size());
+    Containers::Array<ALuint> ids(NoInit, sources.size());
     for(auto it = sources.begin(); it != sources.end(); ++it)
         ids[it-sources.begin()] = it->get().id();
     return ids;
 }
 
 Containers::Array<ALuint> sourceIds(const std::vector<std::reference_wrapper<Source>>& sources) {
-    Containers::Array<ALuint> ids(sources.size());
+    Containers::Array<ALuint> ids(NoInit, sources.size());
     for(auto it = sources.begin(); it != sources.end(); ++it)
         ids[it-sources.begin()] = it->get().id();
     return ids;
@@ -89,42 +89,42 @@ Containers::Array<ALuint> sourceIds(const std::vector<std::reference_wrapper<Sou
 
 void Source::play(std::initializer_list<std::reference_wrapper<Source>> sources) {
     const auto ids = sourceIds(sources);
-    alSourcePlayv(ids.size(), ids);
+    alSourcePlayv(ids.size(), ids.data());
 }
 
 void Source::play(const std::vector<std::reference_wrapper<Source>>& sources) {
     const auto ids = sourceIds(sources);
-    alSourcePlayv(ids.size(), ids);
+    alSourcePlayv(ids.size(), ids.data());
 }
 
 void Source::pause(std::initializer_list<std::reference_wrapper<Source>> sources) {
     const auto ids = sourceIds(sources);
-    alSourcePausev(ids.size(), ids);
+    alSourcePausev(ids.size(), ids.data());
 }
 
 void Source::pause(const std::vector<std::reference_wrapper<Source>>& sources) {
     const auto ids = sourceIds(sources);
-    alSourcePausev(ids.size(), ids);
+    alSourcePausev(ids.size(), ids.data());
 }
 
 void Source::stop(std::initializer_list<std::reference_wrapper<Source>> sources) {
     const auto ids = sourceIds(sources);
-    alSourceStopv(ids.size(), ids);
+    alSourceStopv(ids.size(), ids.data());
 }
 
 void Source::stop(const std::vector<std::reference_wrapper<Source>>& sources) {
     const auto ids = sourceIds(sources);
-    alSourceStopv(ids.size(), ids);
+    alSourceStopv(ids.size(), ids.data());
 }
 
 void Source::rewind(std::initializer_list<std::reference_wrapper<Source>> sources) {
     const auto ids = sourceIds(sources);
-    alSourceRewindv(ids.size(), ids);
+    alSourceRewindv(ids.size(), ids.data());
 }
 
 void Source::rewind(const std::vector<std::reference_wrapper<Source>>& sources) {
     const auto ids = sourceIds(sources);
-    alSourceRewindv(ids.size(), ids);
+    alSourceRewindv(ids.size(), ids.data());
 }
 
 Debug& operator<<(Debug& debug, const Source::State value) {

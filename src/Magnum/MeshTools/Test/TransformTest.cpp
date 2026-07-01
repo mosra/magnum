@@ -643,7 +643,7 @@ void TransformTest::meshData2DRvaluePassthrough() {
     arrayAppend(attributes, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position), data.morphTargetId}
     });
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         data.indexed ? Utility::move(indexData) : nullptr,
@@ -692,7 +692,7 @@ void TransformTest::meshData2DRvaluePassthroughIndexDataNotOwned() {
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
     }};
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         {}, indices, Trade::MeshIndexData{indices},
@@ -736,7 +736,7 @@ void TransformTest::meshData2DRvaluePassthroughVertexDataNotOwned() {
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}
     }};
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(indexData), Trade::MeshIndexData{indices},
@@ -796,7 +796,7 @@ void TransformTest::meshData2DRvaluePassthroughWrongFormat() {
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
     }};
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(vertexData), Utility::move(attributes)};
@@ -1122,7 +1122,7 @@ void TransformTest::meshData3DRvaluePassthrough() {
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, vertices.slice(&Vertex::bitangent), data.morphTargetId});
     if(data.normals)
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertices.slice(&Vertex::normal), data.morphTargetId});
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         data.indexed ? Utility::move(indexData) : nullptr,
@@ -1205,7 +1205,7 @@ void TransformTest::meshData3DRvaluePassthroughIndexDataNotOwned() {
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
     }};
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         {}, indices, Trade::MeshIndexData{indices},
@@ -1249,7 +1249,7 @@ void TransformTest::meshData3DRvaluePassthroughVertexDataNotOwned() {
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}
     }};
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(indexData), Trade::MeshIndexData{indices},
@@ -1333,7 +1333,7 @@ void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, vertices.slice(&Vertex::bitangent)});
     if(data.normalFormat != VertexFormat{})
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3sNormalized, vertices.slice(&Vertex::normal)});
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(vertexData), Utility::move(attributes)};
@@ -1596,7 +1596,7 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthrough() {
     arrayAppend(attributes, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates), data.morphTargetId}
     });
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
         data.indexed ? Utility::move(indexData) : nullptr,
@@ -1645,7 +1645,7 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwn
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices}
     }};
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         {}, indices, Trade::MeshIndexData{indices},
@@ -1689,7 +1689,7 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOw
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::arrayView(vertices)}
     }};
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(indexData), Trade::MeshIndexData{indices},
@@ -1749,7 +1749,7 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughWrongFormat() {
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices}
     }};
-    const void* originalAttributeData = attributes;
+    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(vertexData), Utility::move(attributes)};

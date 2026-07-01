@@ -5076,7 +5076,7 @@ void FlatGLTest::renderMulti2D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<FlatMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<FlatMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = FlatMaterialUniform{}
         .setColor(data.flags & FlatGL2D::Flag::Textured ?
             0xffffff_rgbf : 0x0000ff_rgbf);
@@ -5085,7 +5085,7 @@ void FlatGLTest::renderMulti2D() {
             0xffffff_rgbf : 0xff0000_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
         .setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f})*
@@ -5106,7 +5106,7 @@ void FlatGLTest::renderMulti2D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             data.flags & FlatGL2D::Flag::TextureArrays ?
@@ -5133,7 +5133,7 @@ void FlatGLTest::renderMulti2D() {
         .setLayer(2); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<FlatDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = FlatDrawUniform{}
@@ -5441,7 +5441,7 @@ void FlatGLTest::renderMulti3D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<FlatMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<FlatMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = FlatMaterialUniform{}
         .setColor(data.flags & FlatGL2D::Flag::Textured ?
             0xffffff_rgbf : 0x0000ff_rgbf);
@@ -5450,7 +5450,7 @@ void FlatGLTest::renderMulti3D() {
             0xffffff_rgbf : 0xff0000_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
@@ -5477,7 +5477,7 @@ void FlatGLTest::renderMulti3D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TextureTransformationUniform> textureTransformationData{2*data.uniformIncrement + 1};
+    Containers::Array<TextureTransformationUniform> textureTransformationData{ValueInit, 2*data.uniformIncrement + 1};
     textureTransformationData[0*data.uniformIncrement] = TextureTransformationUniform{}
         .setTextureMatrix(
             data.flags & FlatGL2D::Flag::TextureArrays ?
@@ -5504,7 +5504,7 @@ void FlatGLTest::renderMulti3D() {
         .setLayer(2); /* ignored if not array */
     GL::Buffer textureTransformationUniform{GL::Buffer::TargetHint::Uniform, textureTransformationData};
 
-    Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<FlatDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = FlatDrawUniform{}
@@ -5749,14 +5749,14 @@ void FlatGLTest::renderMultiSkinning2D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<FlatMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<FlatMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = FlatMaterialUniform{}
         .setColor(0x33ffff_rgbf);
     materialData[1*data.uniformIncrement] = FlatMaterialUniform{}
         .setColor(0xffff33_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
         .setTransformationProjectionMatrix(
             Matrix3::scaling(Vector2{0.3f})*
@@ -5771,7 +5771,7 @@ void FlatGLTest::renderMultiSkinning2D() {
             Matrix3::translation({-1.5f,  1.5f}));
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TransformationUniform2D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    Containers::Array<TransformationUniform2D> jointData{ValueInit, Math::max(2*data.uniformIncrement + 4, 10u)};
     /* First draw moves both bottom corners */
     jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform2D{}
         .setTransformationMatrix(Matrix3::translation({ 0.5f, -0.5f}));
@@ -5797,7 +5797,7 @@ void FlatGLTest::renderMultiSkinning2D() {
     GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
         jointData};
 
-    Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<FlatDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = FlatDrawUniform{}
@@ -6001,14 +6001,14 @@ void FlatGLTest::renderMultiSkinning3D() {
        The data.uniformIncrement is set high enough to ensure that, in the
        non-offset-bind case this value is 1. */
 
-    Containers::Array<FlatMaterialUniform> materialData{data.uniformIncrement + 1};
+    Containers::Array<FlatMaterialUniform> materialData{ValueInit, data.uniformIncrement + 1};
     materialData[0*data.uniformIncrement] = FlatMaterialUniform{}
         .setColor(0x33ffff_rgbf);
     materialData[1*data.uniformIncrement] = FlatMaterialUniform{}
         .setColor(0xffff33_rgbf);
     GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
 
-    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
+    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{ValueInit, 2*data.uniformIncrement + 1};
     transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
         .setTransformationProjectionMatrix(
             Matrix4::scaling(Vector3{0.3f})*
@@ -6023,7 +6023,7 @@ void FlatGLTest::renderMultiSkinning3D() {
             Matrix4::translation({-1.5f,  1.5f, 0.0f}));
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    Containers::Array<TransformationUniform3D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    Containers::Array<TransformationUniform3D> jointData{ValueInit, Math::max(2*data.uniformIncrement + 4, 10u)};
     /* First draw moves both bottom corners */
     jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform3D{}
         .setTransformationMatrix(Matrix4::translation({ 0.5f, -0.5f, 0.0f}));
@@ -6049,7 +6049,7 @@ void FlatGLTest::renderMultiSkinning3D() {
     GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
         jointData};
 
-    Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
+    Containers::Array<FlatDrawUniform> drawData{ValueInit, 2*data.uniformIncrement + 1};
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = FlatDrawUniform{}

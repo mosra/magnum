@@ -83,7 +83,7 @@ Benchmark::Benchmark() {
                    &Benchmark::playerAdvanceRawCallback,
                    &Benchmark::playerAdvanceRawCallbackDirectInterpolator}, 10);
 
-    _keys = Containers::Array<Float>{DataSize};
+    _keys = Containers::Array<Float>{NoInit, DataSize};
     _values = Containers::Array<Int>{DirectInit, DataSize, 1};
     _interleaved = Containers::Array<std::pair<Float, Int>>{DirectInit, DataSize, 0.0f, 1};
     for(std::size_t i = 0; i != DataSize; ++i)
