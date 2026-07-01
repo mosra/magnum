@@ -223,12 +223,7 @@ Framebuffer& Framebuffer::mapForRead(const ColorAttachment attachment) {
 }
 
 void Framebuffer::invalidate(const Containers::ArrayView<const InvalidationAttachment> attachments) {
-    /** @todo C++14: use VLA to avoid heap allocation */
-    Containers::Array<GLenum> _attachments(attachments.size());
-    for(std::size_t i = 0; i != attachments.size(); ++i)
-        _attachments[i] = GLenum(*(attachments.begin()+i));
-
-    Context::current().state().framebuffer.invalidateImplementation(*this, attachments.size(), _attachments);
+    Context::current().state().framebuffer.invalidateImplementation(*this, attachments.size(), reinterpret_cast<const GLenum*>(attachments.data()));
 }
 
 void Framebuffer::invalidate(const std::initializer_list<InvalidationAttachment> attachments) {
@@ -237,12 +232,7 @@ void Framebuffer::invalidate(const std::initializer_list<InvalidationAttachment>
 
 #ifndef MAGNUM_TARGET_GLES2
 void Framebuffer::invalidate(const Containers::ArrayView<const InvalidationAttachment> attachments, const Range2Di& rectangle) {
-    /** @todo C++14: use VLA to avoid heap allocation */
-    Containers::Array<GLenum> _attachments(attachments.size());
-    for(std::size_t i = 0; i != attachments.size(); ++i)
-        _attachments[i] = GLenum(*(attachments.begin()+i));
-
-    Context::current().state().framebuffer.invalidateSubImplementation(*this, attachments.size(), _attachments, rectangle);
+    Context::current().state().framebuffer.invalidateSubImplementation(*this, attachments.size(), reinterpret_cast<const GLenum*>(attachments.data()), rectangle);
 }
 
 void Framebuffer::invalidate(const std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
