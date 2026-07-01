@@ -3658,7 +3658,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     /* Generate per-face IDs going from 0 to 240 to cover the whole range */
     Containers::Array<UnsignedInt> ids{NoInit, 16};
-    for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i*16;
+    for(std::size_t i = 0; i != ids.size(); ++i)
+        ids[i] = i*16;
     GL::Mesh circle = MeshTools::compile(MeshTools::combineFaceAttributes(
         MeshTools::generateIndices(Primitives::circle2DSolid(16)), {
             Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
@@ -3757,7 +3758,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     /* Generate per-face IDs going from 0 to 228 to cover the whole range */
     Containers::Array<UnsignedInt> ids{NoInit, 20};
-    for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i*12;
+    for(std::size_t i = 0; i != ids.size(); ++i)
+        ids[i] = i*12;
     GL::Mesh icosphere = MeshTools::compile(MeshTools::combineFaceAttributes(
         Primitives::icosphereSolid(0), {
             Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
@@ -4660,7 +4662,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     if(data.flags2D & MeshVisualizerGL2D::Flag::ObjectId) {
         Containers::Array<UnsignedInt> ids{NoInit, 16};
         /* Each two faces share the same ID */
-        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
+        for(std::size_t i = 0; i != ids.size(); ++i)
+            ids[i] = i/2;
         circleData = MeshTools::combineFaceAttributes(
             MeshTools::generateIndices(circleData), {
                 Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
@@ -4876,7 +4879,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     if(data.flags3D & MeshVisualizerGL3D::Flag::ObjectId) {
         Containers::Array<UnsignedInt> ids{NoInit, sphereData.indexCount()/3};
         /* Each two faces share the same ID */
-        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
+        for(std::size_t i = 0; i != ids.size(); ++i)
+            ids[i] = i/2;
         sphereData = MeshTools::combineFaceAttributes(
             sphereData, {
                 Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
@@ -6693,7 +6697,8 @@ void MeshVisualizerGLTest::renderMulti2D() {
     if(data.flags & MeshVisualizerGL2D::Flag::ObjectId) {
         Containers::Array<UnsignedInt> ids{NoInit, 8};
         /* Each two faces share the same ID */
-        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
+        for(std::size_t i = 0; i != ids.size(); ++i)
+            ids[i] = i/2;
         for(Trade::MeshData* i: {&circleData, &squareData, &triangleData}) {
             *i = MeshTools::combineFaceAttributes(*i, {
                 Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
@@ -7035,7 +7040,8 @@ void MeshVisualizerGLTest::renderMulti3D() {
     if(data.flags & MeshVisualizerGL3D::Flag::ObjectId) {
         Containers::Array<UnsignedInt> ids{NoInit, 20};
         /* Each two faces share the same ID */
-        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
+        for(std::size_t i = 0; i != ids.size(); ++i)
+            ids[i] = i/2;
         for(Trade::MeshData* i: {&sphereData, &planeData, &coneData}) {
             *i = MeshTools::combineFaceAttributes(*i, {
                 Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
