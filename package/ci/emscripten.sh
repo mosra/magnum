@@ -4,7 +4,7 @@ set -ev
 git submodule update --init
 
 # Crosscompile Corrade
-git clone --depth 1 https://github.com/mosra/corrade.git
+git clone --depth 1 --branch next https://github.com/mosra/corrade.git
 cd corrade
 mkdir build-emscripten && cd build-emscripten
 cmake .. \
@@ -15,6 +15,7 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_BUILD_DEPRECATED=OFF \
     $EXTRA_OPTS \
     -G Ninja
 ninja install

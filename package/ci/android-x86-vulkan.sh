@@ -5,7 +5,7 @@ set -ev
 git submodule update --init
 
 # Corrade
-git clone --depth 1 https://github.com/mosra/corrade.git
+git clone --depth 1 --branch next https://github.com/mosra/corrade.git
 cd corrade
 
 # Build native corrade-rc
@@ -33,6 +33,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_BUILD_DEPRECATED=OFF \
     -G Ninja
 ninja install
 cd ..

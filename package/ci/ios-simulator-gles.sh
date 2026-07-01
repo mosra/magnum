@@ -4,7 +4,7 @@ set -ev
 git submodule update --init
 
 # Corrade
-git clone --depth 1 https://github.com/mosra/corrade.git
+git clone --depth 1 --branch next https://github.com/mosra/corrade.git
 cd corrade
 
 # Build native corrade-rc
@@ -31,6 +31,7 @@ cmake .. \
     -DCORRADE_BUILD_STATIC=ON \
     -DCORRADE_TESTSUITE_TARGET_XCTEST=ON \
     -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_BUILD_DEPRECATED=OFF \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install -j$XCODE_JOBS | xcbeautify
 cd ../..

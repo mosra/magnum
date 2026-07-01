@@ -2,7 +2,7 @@
 set -ev
 
 # Corrade
-git clone --depth 1 https://github.com/mosra/corrade.git
+git clone --depth 1 --branch next https://github.com/mosra/corrade.git
 cd corrade
 mkdir build && cd build
 cmake .. \
@@ -13,6 +13,7 @@ cmake .. \
     -DCORRADE_BUILD_DEPRECATED=$BUILD_DEPRECATED \
     -DCORRADE_BUILD_STATIC=$BUILD_STATIC \
     -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_BUILD_DEPRECATED=OFF \
     -G Ninja
 ninja install
 cd ../..
