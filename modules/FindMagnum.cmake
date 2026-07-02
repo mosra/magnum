@@ -232,17 +232,14 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Corrade library dependencies
-set(_MAGNUM_CORRADE_DEPENDENCIES )
+# Corrade library dependencies. At this point they're just looked up, with
+# transitive dependencies including plugins taken into account, the association
+# with a concrete Magnum component is done below.
 foreach(_magnum_component ${Magnum_FIND_COMPONENTS})
-    set(_MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES )
-
-    # Unrolling the transitive dependencies here so this doesn't need to be
-    # after resolving inter-component dependencies. Listing also all plugins.
     # TODO: DebugTools depends on Trade (and thus PluginManager) only
     #   optionally, take that into account somehow?
     if(_magnum_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|SceneTools|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+SceneConverter|.+Font|.+FontConverter|.+ShaderConverter)$")
-        list(APPEND _MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES PluginManager)
+        list(APPEND _MAGNUM_CORRADE_DEPENDENCIES PluginManager)
     endif()
     if(_magnum_component STREQUAL DebugTools)
         # DebugTools depends on TestSuite optionally, so if it's not there
@@ -251,15 +248,16 @@ foreach(_magnum_component ${Magnum_FIND_COMPONENTS})
         # _component, _COMPONENT and such), so we need to prefix extensively.
         find_package(Corrade QUIET COMPONENTS TestSuite)
         if(Corrade_TestSuite_FOUND)
-            list(APPEND _MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES TestSuite)
+            list(APPEND _MAGNUM_CORRADE_DEPENDENCIES TestSuite)
         endif()
     endif()
     if(_magnum_component STREQUAL OpenGLTester)
-        list(APPEND _MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES TestSuite)
+        list(APPEND _MAGNUM_CORRADE_DEPENDENCIES TestSuite)
     endif()
-
-    list(APPEND _MAGNUM_CORRADE_DEPENDENCIES ${_MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES})
 endforeach()
+if(_MAGNUM_CORRADE_DEPENDENCIES)
+    list(REMOVE_DUPLICATES _MAGNUM_CORRADE_DEPENDENCIES)
+endif()
 find_package(Corrade REQUIRED Utility ${_MAGNUM_CORRADE_DEPENDENCIES})
 
 # Root include dir
@@ -458,6 +456,7 @@ if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
 endif()
 
 # Inter-component dependencies
+set(_MAGNUM_Audio_CORRADE_DEPENDENCIES PluginManager)
 set(_MAGNUM_Audio_DEPENDENCIES )
 
 # Trade is used by CompareImage. If Trade is not enabled, CompareImage is not
@@ -486,6 +485,7 @@ if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_MeshTools_DEPENDENCIES GL)
 endif()
 
+set(_MAGNUM_OpenGLTester_CORRADE_DEPENDENCIES TestSuite)
 set(_MAGNUM_OpenGLTester_DEPENDENCIES GL)
 if(MAGNUM_TARGET_EGL)
     list(APPEND _MAGNUM_OpenGLTester_DEPENDENCIES WindowlessEglApplication)
@@ -512,8 +512,10 @@ if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_Shaders_DEPENDENCIES GL)
 endif()
 
+set(_MAGNUM_ShaderTools_CORRADE_DEPENDENCIES PluginManager)
 set(_MAGNUM_ShaderTools_DEPENDENCIES )
 
+set(_MAGNUM_Text_CORRADE_DEPENDENCIES PluginManager)
 set(_MAGNUM_Text_DEPENDENCIES TextureTools)
 if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_Text_DEPENDENCIES GL)
@@ -524,7 +526,9 @@ if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_TextureTools_DEPENDENCIES GL)
 endif()
 
+set(_MAGNUM_Trade_CORRADE_DEPENDENCIES PluginManager)
 set(_MAGNUM_Trade_DEPENDENCIES )
+
 set(_MAGNUM_VulkanTester_DEPENDENCIES Vk)
 set(_MAGNUM_AndroidApplication_DEPENDENCIES GL)
 
