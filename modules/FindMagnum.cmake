@@ -239,7 +239,9 @@ foreach(_magnum_component ${Magnum_FIND_COMPONENTS})
 
     # Unrolling the transitive dependencies here so this doesn't need to be
     # after resolving inter-component dependencies. Listing also all plugins.
-    if(_magnum_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|SceneTools|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font|.+ShaderConverter)$")
+    # TODO: DebugTools depends on Trade (and thus PluginManager) only
+    #   optionally, take that into account somehow?
+    if(_magnum_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|SceneTools|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+SceneConverter|.+Font|.+FontConverter|.+ShaderConverter)$")
         list(APPEND _MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES PluginManager)
     endif()
     if(_magnum_component STREQUAL DebugTools)
@@ -251,6 +253,9 @@ foreach(_magnum_component ${Magnum_FIND_COMPONENTS})
         if(Corrade_TestSuite_FOUND)
             list(APPEND _MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES TestSuite)
         endif()
+    endif()
+    if(_magnum_component STREQUAL OpenGLTester)
+        list(APPEND _MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES TestSuite)
     endif()
 
     list(APPEND _MAGNUM_CORRADE_DEPENDENCIES ${_MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES})
