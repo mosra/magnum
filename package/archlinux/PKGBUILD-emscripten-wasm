@@ -2,7 +2,7 @@
 pkgname=emscripten-magnum
 pkgver=dev.wasm
 pkgrel=1
-pkgdesc="C++11/C++14 graphics middleware for games and data visualization (Emscripten, wasm)"
+pkgdesc="C++11 graphics middleware for games and data visualization (Emscripten, wasm)"
 arch=('any')
 url="https://magnum.graphics"
 license=('MIT')

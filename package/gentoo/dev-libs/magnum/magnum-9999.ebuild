@@ -4,7 +4,7 @@ EGIT_REPO_URI="https://github.com/mosra/magnum.git"
 
 inherit cmake git-r3
 
-DESCRIPTION="C++11/C++14 graphics middleware for games and data visualization"
+DESCRIPTION="C++11 graphics middleware for games and data visualization"
 HOMEPAGE="https://magnum.graphics"
 
 LICENSE="MIT"

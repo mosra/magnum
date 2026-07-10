@@ -2,7 +2,7 @@
 pkgname=android-arm64-magnum
 pkgver=dev
 pkgrel=1
-pkgdesc="C++11/C++14 graphics middleware for games and data visualization (Android ARM64)"
+pkgdesc="C++11 graphics middleware for games and data visualization (Android ARM64)"
 arch=('any')
 url="https://magnum.graphics"
 license=('MIT')

@@ -12,10 +12,10 @@ Package: magnum-dev
 Section: libdevel
 Architecture: any
 Depends: magnum (= ${binary:Version}), corrade-dev, libgl-dev, libopenal-dev, libglfw3-dev, libsdl2-dev
-Description: C++11/C++14 graphics middleware for games and data visualization
+Description: C++11 graphics middleware for games and data visualization
 
 Package: magnum
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, corrade, libgl1, libopenal1, libglfw3, libsdl2-2.0-0
-Description: C++11/C++14 graphics middleware for games and data visualization
+Description: C++11 graphics middleware for games and data visualization
