@@ -63,8 +63,6 @@ struct TypeTraitsTest: TestSuite::Tester {
 
     template<class T> void equalsZeroIntegral();
     template<class T> void equalsZeroFloatingPoint();
-    template<class T> void equalsZeroFloatingPointSmall();
-    template<class T> void equalsZeroFloatingPointLarge();
 
     void equal();
 };
