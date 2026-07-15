@@ -34,11 +34,6 @@
 #include "Magnum/Math/Range.h"
 
 #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
-/* Including any Emscripten header should also make __EMSCRIPTEN_major__ etc
-   macros available, independently of whether they're passed implicitly (before
-   version 3.1.23) or taken from a version header (after version 3.1.4).
-   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
-   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #endif
@@ -797,7 +792,7 @@ void Context::setupDriverWorkarounds() {
        2.0.0: https://github.com/emscripten-core/emscripten/pull/11650
        However, the extension is advertised even on older versions and we have
        no way to link to those entrypoints there. */
-    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20000
+    #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ < 20000
     _setRequiredVersion(WEBGL::multi_draw, None);
     #endif
     /* EXT_clip_control, EXT_polygon_offset_clamp and WEBGL_polygon_mode
@@ -805,7 +800,7 @@ void Context::setupDriverWorkarounds() {
        https://github.com/emscripten-core/emscripten/pull/20841
        However, the extension is advertised even on older versions and we have
        no way to link to those entrypoints there. */
-    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 30166
+    #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ < 30166
     _setRequiredVersion(EXT::clip_control, None);
     _setRequiredVersion(EXT::polygon_offset_clamp, None);
     _setRequiredVersion(WEBGL::polygon_mode, None);
@@ -813,12 +808,12 @@ void Context::setupDriverWorkarounds() {
     #ifndef MAGNUM_TARGET_GLES2
     /* WEBGL_multi_draw_instanced_base_vertex_base_instance only since
        Emscripten 2.0.5: https://github.com/emscripten-core/emscripten/pull/12282 */
-    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20005
+    #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ < 20005
     _setRequiredVersion(WEBGL::multi_draw_instanced_base_vertex_base_instance, None);
     #endif
     /* WEBGL_draw_instanced_base_vertex_base_instance only since Emscripten
        1.39.15: https://github.com/emscripten-core/emscripten/pull/11054 */
-    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 13915
+    #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ < 13915
     _setRequiredVersion(WEBGL::draw_instanced_base_vertex_base_instance, None);
     #endif
     #endif

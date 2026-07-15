@@ -34,16 +34,6 @@
 
 #include "State.h"
 
-/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
-   3.1.4 moved them to a version header and version 3.1.23 dropped the
-   backwards compatibility. To work consistently on all versions, including the
-   header only if the version macros aren't present.
-   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
-   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
-#if defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(__EMSCRIPTEN_major__)
-#include <emscripten/version.h>
-#endif
-
 namespace Magnum { namespace GL { namespace Implementation {
 
 using namespace Containers::Literals;
@@ -192,7 +182,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         /* The WEBGL extension uses the same entrypoints as the ANGLE extension
            it was based on, so it's the same as above. Only available since
            1.39.15: https://github.com/emscripten-core/emscripten/pull/11054 */
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 13915
         drawElementsBaseVertexImplementation = Mesh::drawElementsBaseVertexImplementationANGLE;
         drawRangeElementsBaseVertexImplementation = Mesh::drawRangeElementsBaseVertexImplementationANGLE;
         drawElementsInstancedBaseVertexImplementation = Mesh::drawElementsInstancedBaseVertexImplementationANGLE;
@@ -242,7 +232,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
         /* The WEBGL extension uses the same entrypoints as the ANGLE extension
            it was based on. Only available since 1.39.15:
            https://github.com/emscripten-core/emscripten/pull/11054 */
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 13915
         drawArraysInstancedBaseInstanceImplementation = glDrawArraysInstancedBaseInstanceANGLE;
         /* This variant isn't in the ext, emulated using
            glDrawElementsInstancedBaseVertexBaseInstanceANGLE */
@@ -297,7 +287,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
             /* The WEBGL extension uses the same entrypoints as the ANGLE
                extension it was based on. Only available since 2.0.0:
                https://github.com/emscripten-core/emscripten/pull/11650 */
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20000
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20000
             multiDrawArraysImplementation = glMultiDrawArraysANGLE;
             multiDrawElementsImplementation = glMultiDrawElementsANGLE;
             #else
@@ -351,7 +341,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
             /* The WEBGL extension uses the same entrypoints as the ANGLE
                extension it was based on, so it's the same as above. Only
                available since 2.0.5: https://github.com/emscripten-core/emscripten/pull/12282 */
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20005
             multiDrawElementsBaseVertexImplementation = Mesh::multiDrawElementsBaseVertexImplementationANGLE;
             #else
             /* In Context::setupDriverWorkarounds() we make sure the extension
@@ -386,7 +376,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
             /* The WEBGL extension uses the same entrypoints as the ANGLE
                extension it was based on. Only available since 2.0.0:
                https://github.com/emscripten-core/emscripten/pull/11650 */
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20000
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20000
             multiDrawArraysInstancedImplementation = glMultiDrawArraysInstancedANGLE;
             multiDrawElementsInstancedImplementation = glMultiDrawElementsInstancedANGLE;
             #else
@@ -417,7 +407,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
             /* The WEBGL extension uses the same entrypoints as the ANGLE
                extension it was based on. Only available since 2.0.0:
                https://github.com/emscripten-core/emscripten/pull/11650 */
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20000
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20000
             multiDrawArraysInstancedBaseInstanceImplementation = glMultiDrawArraysInstancedBaseInstanceANGLE;
             multiDrawElementsInstancedBaseVertexBaseInstanceImplementation = glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE;
             #else

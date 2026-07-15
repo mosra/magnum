@@ -132,7 +132,7 @@ Containers::StringView Sdl2Application::scanCodeName(const UnsignedInt scanCode)
 #endif
 
 /* https://github.com/emscripten-core/emscripten/pull/18060 */
-#if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30125
+#if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 30125
 Containers::Optional<UnsignedInt> Sdl2Application::keyToScanCode(const Key key) {
     static_assert(SDL_SCANCODE_UNKNOWN == 0, "assumed SDL_SCANCODE_UNKNOWN to be 0");
     if(const SDL_Scancode scanCode = SDL_GetScancodeFromKey(SDL_Keycode(key)))

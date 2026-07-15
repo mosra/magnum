@@ -29,16 +29,6 @@
 
 #include "Magnum/GL/Buffer.h"
 
-/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
-   3.1.4 moved them to a version header and version 3.1.23 dropped the
-   backwards compatibility. To work consistently on all versions, including the
-   header only if the version macros aren't present.
-   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
-   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
-#if defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(__EMSCRIPTEN_major__)
-#include <emscripten/version.h>
-#endif
-
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct BufferState {
@@ -73,7 +63,7 @@ struct BufferState {
     void(*storageImplementation)(Buffer&, Containers::ArrayView<const void>, Buffer::StorageFlags);
     #endif
     void(*getParameterImplementation)(Buffer&, GLenum, GLint*);
-    #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
+    #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20017)
     void(*getSubDataImplementation)(Buffer&, GLintptr, GLsizeiptr, GLvoid*);
     #endif
     void(*dataImplementation)(Buffer&, GLsizeiptr, const GLvoid*, BufferUsage);

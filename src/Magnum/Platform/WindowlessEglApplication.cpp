@@ -38,16 +38,6 @@
 
 #include "Implementation/Egl.h"
 
-/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
-   3.1.4 moved them to a version header and version 3.1.23 dropped the
-   backwards compatibility. To work consistently on all versions, including the
-   header only if the version macros aren't present.
-   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
-   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
-#if defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(__EMSCRIPTEN_major__)
-#include <emscripten/version.h>
-#endif
-
 /* ANGLE's EGL on Windows needs an actual window */
 /** @todo investigate if this is still needed */
 #ifdef CORRADE_TARGET_WINDOWS
@@ -369,7 +359,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     EGLint attributes[7] = {
         EGL_CONTEXT_CLIENT_VERSION,
             #ifdef MAGNUM_TARGET_GLES
-            #if defined(MAGNUM_TARGET_GLES2) || (defined(CORRADE_TARGET_EMSCRIPTEN) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 13824)
+            #if defined(MAGNUM_TARGET_GLES2) || (defined(CORRADE_TARGET_EMSCRIPTEN) && __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ < 13824)
             /* Emscripten before 1.38.24 doesn't know about version 3 for WebGL
                2 and the whole thing is controlled by -s USE_WEBGL2=1 flag
                anyway, so it doesn't matter that we ask for ES2 on WebGL 2 as

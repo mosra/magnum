@@ -39,16 +39,6 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/GL.h"
 
-/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
-   3.1.4 moved them to a version header and version 3.1.23 dropped the
-   backwards compatibility. To work consistently on all versions, including the
-   header only if the version macros aren't present.
-   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
-   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
-#if defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(__EMSCRIPTEN_major__)
-#include <emscripten/version.h>
-#endif
-
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* For label() / setLabel(), which used to be a std::string. Not ideal for the
    return type, but at least something. */
@@ -1391,28 +1381,28 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         #ifdef MAGNUM_TARGET_GLES
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        #if !defined(MAGNUM_TARGET_GLES2) && (!defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915)
+        #if !defined(MAGNUM_TARGET_GLES2) && (!defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 13915)
         static void MAGNUM_GL_LOCAL drawElementsBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLint baseVertex);
         #endif
         static void MAGNUM_GL_LOCAL drawElementsBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLint);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 13915
         static void MAGNUM_GL_LOCAL drawRangeElementsBaseVertexImplementationANGLE(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void* indices, GLint baseVertex);
         #endif
         static void MAGNUM_GL_LOCAL drawRangeElementsBaseVertexImplementationAssert(GLenum, GLuint, GLuint, GLsizei, GLenum, const void*, GLint);
 
         static void MAGNUM_GL_LOCAL drawArraysInstancedBaseInstanceImplementationAssert(GLenum, GLint, GLsizei, GLsizei, GLuint);
 
-        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 13915
         static void MAGNUM_GL_LOCAL drawElementsInstancedBaseInstanceImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instanceCount, GLuint baseInstance);
         #endif
         static void MAGNUM_GL_LOCAL drawElementsInstancedBaseInstanceImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLuint);
 
         static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexBaseInstanceImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint, GLuint);
 
-        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 13915
         static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instanceCount, GLint baseVertex);
         #endif
         static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint);
@@ -1420,7 +1410,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         #endif
 
         #ifdef MAGNUM_TARGET_GLES
-        #if !defined(MAGNUM_TARGET_GLES2) && (!defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005)
+        #if !defined(MAGNUM_TARGET_GLES2) && (!defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20005)
         static MAGNUM_GL_LOCAL void multiDrawElementsBaseVertexImplementationANGLE(GLenum mode, const GLsizei* count, GLenum type, const void* const* indices, GLsizei drawCount, const GLint* baseVertex);
         #endif
         static MAGNUM_GL_LOCAL void     multiDrawElementsBaseVertexImplementationAssert(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei, const GLint*);

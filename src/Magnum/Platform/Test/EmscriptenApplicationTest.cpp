@@ -36,16 +36,6 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/ConfigurationValue.h"
 
-/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
-   3.1.4 moved them to a version header and version 3.1.23 dropped the
-   backwards compatibility. To work consistently on all versions, including the
-   header only if the version macros aren't present.
-   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
-   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
-#if defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(__EMSCRIPTEN_major__)
-#include <emscripten/version.h>
-#endif
-
 namespace Magnum { namespace Platform {
 
 /* These cannot be in an anonymous namespace as enumSetDebugOutput() below
@@ -76,7 +66,7 @@ static Debug& operator<<(Debug& debug, Application::Pointer value) {
         _c(MouseRight)
         _c(MouseButton4)
         _c(MouseButton5)
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
         _c(Finger)
         #endif
         #undef _c
@@ -111,7 +101,7 @@ static Debug& operator<<(Debug& debug, Application::PointerEventSource value) {
     switch(value) {
         #define _c(value) case Application::PointerEventSource::value: return debug << "::" #value;
         _c(Mouse)
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
         _c(Touch)
         #endif
         #undef _c
@@ -136,7 +126,7 @@ Debug& operator<<(Debug& debug, Application::Pointers value) {
         Application::Pointer::MouseRight,
         Application::Pointer::MouseButton4,
         Application::Pointer::MouseButton5,
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
         Application::Pointer::Finger,
         #endif
     });
@@ -328,7 +318,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     #if 1
     void pointerPressEvent(PointerEvent& event) override {
         Debug{} << "pointer press:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position()
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
             /* Just to verify the access works for both cases */
             << (event.source() == PointerEventSource::Mouse ?
                 event.event<EmscriptenMouseEvent>().timestamp :
@@ -338,7 +328,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
     void pointerReleaseEvent(PointerEvent& event) override {
         Debug{} << "pointer release:" << event.source() << event.pointer() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position()
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
             /* Just to verify the access works for both cases */
             << (event.source() == PointerEventSource::Mouse ?
                 event.event<EmscriptenMouseEvent>().timestamp :
@@ -348,7 +338,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
     void pointerMoveEvent(PointerMoveEvent& event) override {
         Debug{} << "pointer move:" << event.source() << event.pointer() << event.pointers() << (event.isPrimary() ? "primary" : "secondary") << event.id() << event.modifiers() << Debug::packed << event.position() << Debug::packed << event.relativePosition()
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
             /* Just to verify the access works for both cases */
             << (event.source() == PointerEventSource::Mouse ?
                 event.event<EmscriptenMouseEvent>().timestamp :
@@ -434,9 +424,9 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
     /* Useful for bisecting Emscripten regressions, because they happen WAY TOO
        OFTEN!!! */
     Debug{} << "Emscripten version:"
-        << __EMSCRIPTEN_major__ << Debug::nospace << "." << Debug::nospace
-        << __EMSCRIPTEN_minor__ << Debug::nospace << "." << Debug::nospace
-        << __EMSCRIPTEN_tiny__ << Debug::nospace;
+        << __EMSCRIPTEN_MAJOR__ << Debug::nospace << "." << Debug::nospace
+        << __EMSCRIPTEN_MINOR__ << Debug::nospace << "." << Debug::nospace
+        << __EMSCRIPTEN_TINY__ << Debug::nospace;
 
     if(args.isSet("exit-immediately")) {
         exit();

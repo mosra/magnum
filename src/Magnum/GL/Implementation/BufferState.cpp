@@ -157,7 +157,7 @@ BufferState::BufferState(Context& context, Containers::StaticArrayView<Implement
         storageImplementation = &Buffer::storageImplementationDefault;
         #endif
         getParameterImplementation = &Buffer::getParameterImplementationDefault;
-        #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
+        #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20017)
         getSubDataImplementation = &Buffer::getSubDataImplementationDefault;
         #endif
         dataImplementation = &Buffer::dataImplementationDefault;

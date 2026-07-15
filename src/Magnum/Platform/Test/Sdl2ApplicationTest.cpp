@@ -390,7 +390,7 @@ struct Sdl2ApplicationTest: Platform::Application {
             << event.scanCodeName()
             #endif
             << event.modifiers()
-            #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30125
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 30125
             << "converted:"
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             << scanCodeToKey(event.scanCode())
@@ -469,7 +469,7 @@ struct Sdl2ApplicationTest: Platform::Application {
             << event.scanCodeName()
             #endif
             << event.modifiers()
-            #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30125
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 30125
             << "converted:"
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             << scanCodeToKey(event.scanCode())

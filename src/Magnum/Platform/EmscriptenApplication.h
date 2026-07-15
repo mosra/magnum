@@ -58,16 +58,6 @@
 #endif
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
-/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
-   3.1.4 moved them to a version header and version 3.1.23 dropped the
-   backwards compatibility. To work consistently on all versions, including the
-   header only if the version macros aren't present.
-   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
-   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
-#ifndef __EMSCRIPTEN_major__
-#include <emscripten/version.h>
-#endif
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct EmscriptenFocusEvent;
 struct EmscriptenKeyboardEvent;
@@ -78,9 +68,9 @@ struct EmscriptenUiEvent;
 
 /* The typedef changed in 3.1.49, https://github.com/emscripten-core/emscripten/commit/40cbc2164400a7c27218b9655f1830bfc882bb01,
    and then again in 3.1.54, https://github.com/emscripten-core/emscripten/commit/38f9ad86a18ccc3aad911a13ffd5b89d3df304ae */
-#if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30154
+#if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 30154
 typedef std::uintptr_t EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
-#elif __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 30149
+#elif __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 30149
 typedef std::intptr_t EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
 #else
 typedef int EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
@@ -1147,7 +1137,7 @@ class EmscriptenApplication {
         Vector2 _previousMouseMovePosition{Constants::nan()};
         Vector2 _lastKnownDevicePixelRatio;
 
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
         /* We have no way to query previous touch positions, so we have to
            maintain them like this. The id is ~Int{} if given slot is unused,
            32 is what EmscriptenTouchEvent uses for the touch list. */
@@ -1437,7 +1427,7 @@ enum class EmscriptenApplication::PointerEventSource: UnsignedByte {
      */
     Mouse,
 
-    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027 || defined(DOXYGEN_GENERATING_OUTPUT)
+    #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027 || defined(DOXYGEN_GENERATING_OUTPUT)
     /**
      * The event is coming from a touch contact
      * @note Available since Emscripten 2.0.27.
@@ -1487,7 +1477,7 @@ enum class EmscriptenApplication::Pointer: UnsignedByte {
      */
     MouseButton5 = 1 << 4,
 
-    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027 || defined(DOXYGEN_GENERATING_OUTPUT)
+    #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027 || defined(DOXYGEN_GENERATING_OUTPUT)
     /**
      * Finger
      * @note Available since Emscripten 2.0.27.
@@ -2199,7 +2189,7 @@ class EmscriptenApplication::PointerEvent: public InputEvent {
         friend EmscriptenApplication;
 
         explicit PointerEvent(const EmscriptenMouseEvent& event, Pointer pointer, EmscriptenApplication::Modifiers modifiers, const Vector2& position): _event{&event}, _source{PointerEventSource::Mouse}, _primary{true}, _pointer{pointer}, _modifiers{modifiers}, _id{~Int{}}, _position{position} {}
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
         explicit PointerEvent(const EmscriptenTouchEvent& event, bool primary, Int id, EmscriptenApplication::Modifiers modifiers, const Vector2& position): _event{&event}, _source{PointerEventSource::Touch}, _primary{primary}, _pointer{Pointer::Finger}, _modifiers{modifiers}, _id{id}, _position{position} {}
         #endif
 
@@ -2220,7 +2210,7 @@ template<> inline const EmscriptenMouseEvent& EmscriptenApplication::PointerEven
     return *static_cast<const EmscriptenMouseEvent*>(_event);
 }
 
-#if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+#if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
 template<> inline const EmscriptenTouchEvent& EmscriptenApplication::PointerEvent::event<EmscriptenTouchEvent>() const {
     CORRADE_ASSERT(_source == PointerEventSource::Touch,
         "Platform::EmscriptenApplication::PointerEvent::event(): not a touch event",
@@ -2385,7 +2375,7 @@ class EmscriptenApplication::PointerMoveEvent: public InputEvent {
         friend EmscriptenApplication;
 
         explicit PointerMoveEvent(const EmscriptenMouseEvent& event, Containers::Optional<Pointer> pointer, Pointers pointers, EmscriptenApplication::Modifiers modifiers, const Vector2& position, const Vector2& relativePosition): _event{&event}, _source{PointerEventSource::Mouse}, _primary{true}, _pointer{pointer}, _pointers{pointers}, _modifiers{modifiers}, _id{~Int{}}, _position{position}, _relativePosition{relativePosition} {}
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
         explicit PointerMoveEvent(const EmscriptenTouchEvent& event, bool primary, Int id, EmscriptenApplication::Modifiers modifiers, const Vector2& position, const Vector2& relativePosition): _event{&event}, _source{PointerEventSource::Touch}, _primary{primary}, _pointer{}, _pointers{Pointer::Finger}, _modifiers{modifiers}, _id{id}, _position{position}, _relativePosition{relativePosition} {}
         #endif
 
@@ -2408,7 +2398,7 @@ template<> inline const EmscriptenMouseEvent& EmscriptenApplication::PointerMove
     return *static_cast<const EmscriptenMouseEvent*>(_event);
 }
 
-#if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+#if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
 template<> inline const EmscriptenTouchEvent& EmscriptenApplication::PointerMoveEvent::event<EmscriptenTouchEvent>() const {
     CORRADE_ASSERT(_source == PointerEventSource::Touch,
         "Platform::EmscriptenApplication::PointerEvent::event(): not a touch event",

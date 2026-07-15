@@ -667,7 +667,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         [](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
 
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
             /* If the event timestamp is the same (bit-exact, in fact) as the
                timestamp of the last touch event, it's a compatibility mouse
                event. Ignore. On Chrome at least, the mouseup will have the
@@ -707,7 +707,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         [](int, const EmscriptenMouseEvent* event, void* userData) -> EM_BOOL {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
 
-            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+            #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
             /* If the event timestamp is the same (bit-exact, in fact) as the
                timestamp of the last touch event, it's a compatibility mouse
                event. Ignore. On Chrome at least, the mouseup will have the
@@ -763,7 +763,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             return e.isAccepted();
         }));
 
-    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+    #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
     /* Touch events are available on older Emscripten as well, but the events
        don't expose the timestamp field, which is *essential* for ignoring
        compatibility mouse events synthesized from touch. Favoring correctness
@@ -1110,7 +1110,7 @@ void EmscriptenApplication::pointerReleaseEvent(PointerEvent& event) {
         MouseEvent mouseEvent{event.event<EmscriptenMouseEvent>()};
         mouseReleaseEvent(mouseEvent);
     } else {
-        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20027
+        #if __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 20027
         /* Clear the recorded timestap of the last touch end event, which then
            makes the compatibility mouse events go through */
         _lastTouchEventTimestamp = Constantsd::nan();
