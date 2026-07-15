@@ -75,7 +75,16 @@ enum class CORRADE_DEPRECATED_ENUM("use SceneData instead") ObjectInstanceType3D
 
 @see @ref ObjectFlags3D, @ref ObjectData3D::flags()
 */
-enum class CORRADE_DEPRECATED_ENUM("use SceneData instead") ObjectFlag3D: UnsignedByte {
+enum class
+#if !defined(CORRADE_TARGET_EMSCRIPTEN) || __clang_major__ < 23
+/* Clang 23 in Emscripten 5.0.2+ issues a deprecation warning inside
+   <type_traits> due to std::underlying_type used by EnumSet on this enum. Not
+   sure if it's because the STL headers are in ~/.cache or if it's a general
+   annoyance that'll happen with real Clang 23 as well, for now just skipping
+   the deprecation annotation to silence it. */
+CORRADE_DEPRECATED_ENUM("use SceneData instead")
+#endif
+ObjectFlag3D: UnsignedByte {
     /**
      * The object provides separate translation / rotation / scaling
      * properties. The @ref ObjectData3D::transformation() matrix returns them

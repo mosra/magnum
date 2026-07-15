@@ -58,7 +58,16 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          * A superset of @ref MaterialData::Flag.
          * @see @ref Flags, @ref flags()
          */
-        enum class CORRADE_DEPRECATED_ENUM("use hasAttribute() etc. instead") Flag: UnsignedInt {
+        enum class
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __clang_major__ < 23
+        /* Clang 23 in Emscripten 5.0.2+ issues a deprecation warning inside
+           <type_traits> due to std::underlying_type used by EnumSet on this
+           enum. Not sure if it's because the STL headers are in ~/.cache or if
+           it's a general annoyance that'll happen with real Clang 23 as well,
+           for now just skipping the deprecation annotation to silence it. */
+        CORRADE_DEPRECATED_ENUM("use hasAttribute() etc. instead")
+        #endif
+        Flag: UnsignedInt {
             /** @copydoc MaterialData::Flag::DoubleSided */
             DoubleSided = 1 << 0,
 
