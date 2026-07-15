@@ -146,6 +146,12 @@ class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
 
 namespace {
 
+/* Clang 23 adds -Wunused-template to -Wall and then warns about the unused
+   constructor. Well, this is a doc snippet, so what am I supposed to do? */
+#ifdef CORRADE_TARGET_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-template"
+#endif
 /* [transformation] */
 class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
@@ -161,6 +167,9 @@ class TransformingFeature: public SceneGraph::AbstractFeature3D {
         SceneGraph::AbstractTranslationRotation3D& _transformation;
 };
 /* [transformation] */
+#ifdef CORRADE_TARGET_CLANG
+#pragma clang diagnostic pop
+#endif
 
 }
 

@@ -49,9 +49,21 @@ namespace Implementation {
 
 /** @todo Utility/Algorithms.h has a similar (but different) variant of this,
     maybe turn that into some public utility once we have one more use case? */
+/* Clang since version 23 includes -Wunused-template in -Wall, and warns for
+   those declarations. The templates are used inside a decltype() expression
+   below (and commenting them out obviously makes the test fail to compile) so
+   this is yet another completely pointless warning that just wastes my
+   time. */
+#ifdef CORRADE_TARGET_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-template"
+#endif
 template<class T, class View = decltype(Containers::Implementation::ErasedArrayViewConverter<typename std::remove_reference<T&&>::type>::from(std::declval<T&&>()))> static auto stridedArrayViewTypeFor(T&&) -> typename std::remove_const<typename View::Type>::type;
 template<class T> static typename std::remove_const<T>::type stridedArrayViewTypeFor(const Containers::ArrayView<T>&);
 template<class T> static typename std::remove_const<T>::type stridedArrayViewTypeFor(const Containers::StridedArrayView1D<T>&);
+#ifdef CORRADE_TARGET_CLANG
+#pragma clang diagnostic pop
+#endif
 
 }
 
