@@ -492,11 +492,6 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
 using namespace Containers::Literals;
 #endif
 
-template<std::size_t size, class T> Containers::ArrayView<const T> unsafeSuffix(const T(&data)[size], std::size_t offset) {
-    static_assert(sizeof(T) == 1, "");
-    return {data - offset, size + offset};
-}
-
 #ifndef MAGNUM_TARGET_GLES
 void CubeMapTextureGLTest::compressedBlockSize() {
     /* For uncompressed formats returns zero */
