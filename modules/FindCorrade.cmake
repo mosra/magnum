@@ -10,7 +10,6 @@
 # following:
 #
 #  Corrade_FOUND                  - Whether the base library was found
-#  CORRADE_LIB_SUFFIX_MODULE      - Path to CorradeLibSuffix.cmake module
 #
 # This command will try to find only the base library, not the optional
 # components, which are:
@@ -23,8 +22,9 @@
 #  rc                           - corrade-rc executable
 #
 # If Corrade is built with CORRADE_BUILD_DEPRECATED enabled, these additional
-# libraries are available for backwards compatibility purposes:
+# variables and libraries are available for backwards compatibility purposes:
 #
+#  CORRADE_LIB_SUFFIX_MODULE    - Path to the CorradeLibSuffix.cmake module
 #  Interconnect                 - Interconnect library
 #
 # Example usage with specifying additional components is::
@@ -375,7 +375,9 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 endif()
 
 set(CORRADE_USE_MODULE ${_CORRADE_MODULE_DIR}/UseCorrade.cmake)
-set(CORRADE_LIB_SUFFIX_MODULE ${_CORRADE_MODULE_DIR}/CorradeLibSuffix.cmake)
+if(CORRADE_BUILD_DEPRECATED)
+    set(CORRADE_LIB_SUFFIX_MODULE ${_CORRADE_MODULE_DIR}/CorradeLibSuffix.cmake)
+endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # unknown components)
