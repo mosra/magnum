@@ -682,14 +682,23 @@ if(CORRADE_TARGET_EMSCRIPTEN AND NOT PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DI
 endif()
 
 # Installation paths
-include(${CORRADE_LIB_SUFFIX_MODULE})
-set(MAGNUM_BINARY_INSTALL_DIR bin)
-set(MAGNUM_LIBRARY_INSTALL_DIR lib${LIB_SUFFIX})
-set(MAGNUM_DATA_INSTALL_DIR share/magnum)
-set(MAGNUM_CMAKE_MODULE_INSTALL_DIR share/cmake/Magnum)
-set(MAGNUM_INCLUDE_INSTALL_DIR include/Magnum)
-set(MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR include/MagnumExternal)
-set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR include/MagnumPlugins)
+include(GNUInstallDirs)
+# On Android, if we're using CMake's builtin support and not the NDK  toolchain
+# (i.e., with CMAKE_ANDROID_ARCH_TRIPLE defined), point CMAKE_INSTALL_LIBDIR to
+# a subdirectory based on the target. If the subdirectory doesn't exist, don't
+# adjust anything -- in that case the  assumption is that it's being installed
+# in some other place that doesn't match the NDK layout.
+# TODO could GNUInstallDirs do this on their own? Ugh...
+if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_ARCH_TRIPLE AND EXISTS "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_ANDROID_ARCH_TRIPLE}/${CMAKE_SYSTEM_VERSION}")
+    set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}/${CMAKE_ANDROID_ARCH_TRIPLE}/${CMAKE_SYSTEM_VERSION}")
+endif()
+set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_BINDIR})
+set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+set(MAGNUM_DATA_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/magnum)
+set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/cmake/Magnum)
+set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/Magnum)
+set(MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/MagnumExternal)
+set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/MagnumPlugins)
 if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_INCLUDE_INSTALL_PREFIX AND NOT MAGNUM_INCLUDE_INSTALL_PREFIX STREQUAL ".")
     message(DEPRECATION "MAGNUM_INCLUDE_INSTALL_PREFIX is obsolete as its primary use was for old Android NDK versions. Please switch to the NDK r19+ layout instead of using this variable and recreate your build directory to get rid of this warning.")
     set(MAGNUM_DATA_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/${MAGNUM_DATA_INSTALL_DIR})

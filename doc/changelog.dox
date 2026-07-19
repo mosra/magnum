@@ -1167,11 +1167,12 @@ See also:
     subproject. See the @ref Platform-Sdl2Application-usage "Platform::Sdl2Application docs"
     for more information. See also [mosra/magnum#496](https://github.com/mosra/magnum/issues/496).
 -   With CMake 3.20 and newer it's possible to compile for Android NDK r19+
-    without explicitly supplying various system paths. Additionally, when `CMAKE_INSTALL_PREFIX` points to Android NDK sysroot, the `LIB_SUFFIX`
-    gets autodetected to a correct triplet + API level version subdirectory,
-    making the installed project discoverable by both vanilla CMake and Gradle.
-    On CMake 3.16 to 3.19 it's required to set two extra variables for the
-    same effect. See @ref building-cross-android, @ref platforms-android and
+    without explicitly supplying various system paths. Additionally, when
+    `CMAKE_INSTALL_PREFIX` points to Android NDK sysroot, `CMAKE_INSTALL_LIBDIR`
+    gets adjusted to a correct triplet + API level version subdirectory, making
+    the installed project discoverable by both vanilla CMake and Gradle. On
+    CMake 3.16 to 3.19 it's required to set two extra variables for the same
+    effect. See @ref building-cross-android, @ref platforms-android and
     [mosra/magnum#310](https://github.com/mosra/magnum/issues/310) for more
     information.
 -   Suppressing a CMake policy-related warning if the global `CMAKE_AUTOMOC` is
@@ -1270,6 +1271,9 @@ See also:
 -   Undefining the `near` and `far` macros on Windows in a more robust way
     (see [mosra/magnum#689](https://github.com/mosra/magnum/issues/689) and
     [mosra/magnum#690](https://github.com/mosra/magnum/pull/690))
+-   The buildsystem now uses CMake's `GNUInstallDirs` module for a standardized
+    way to specify installation location of binaries, libraries, include files
+    and other data (see [mosra/magnum#696](https://github.com/mosra/magnum/issues/696))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
