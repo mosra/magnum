@@ -641,6 +641,8 @@ void Matrix4Test::shearingYZ() {
 }
 
 void Matrix4Test::orthographicProjection() {
+    /* C++14 constexpr verified in Matrix4Cpp14Test, keep in sync */
+
     Matrix4 actual = Matrix4::orthographicProjection({5.0f, 4.0f}, 1.0f, 9.0f);
     CORRADE_COMPARE(actual, (Matrix4{
         {0.4f, 0.0f,   0.0f, 0.0f},
@@ -654,6 +656,8 @@ void Matrix4Test::orthographicProjection() {
 }
 
 void Matrix4Test::orthographicProjectionOffCenter() {
+    /* C++14 constexpr verified in Matrix4Cpp14Test, keep in sync */
+
     /* Shifted by (-1, -0.5) compared to the orthographicProjection() test */
     Matrix4 actual = Matrix4::orthographicProjection({-3.5f, -2.5f}, {1.5f, 1.5f}, 1.0f, 9.0f);
     CORRADE_COMPARE(actual, (Matrix4{
@@ -670,6 +674,8 @@ void Matrix4Test::orthographicProjectionOffCenter() {
 }
 
 void Matrix4Test::perspectiveProjection() {
+    /* C++14 constexpr verified in Matrix4Cpp14Test, keep in sync */
+
     Matrix4 expected{{4.0f,      0.0f,         0.0f,  0.0f},
                      {0.0f, 7.111111f,         0.0f,  0.0f},
                      {0.0f,      0.0f,  -1.9411764f, -1.0f},
@@ -687,6 +693,8 @@ void Matrix4Test::perspectiveProjection() {
 }
 
 void Matrix4Test::perspectiveProjectionInfiniteFar() {
+    /* C++14 constexpr verified in Matrix4Cpp14Test, keep in sync */
+
     Matrix4 expected{{4.0f,      0.0f,   0.0f,  0.0f},
                      {0.0f, 7.111111f,   0.0f,  0.0f},
                      {0.0f,      0.0f,  -1.0f, -1.0f},
@@ -721,6 +729,8 @@ void Matrix4Test::perspectiveProjectionFovInfiniteFar() {
 }
 
 void Matrix4Test::perspectiveProjectionOffCenter() {
+    /* C++14 constexpr verified in Matrix4Cpp14Test, keep in sync */
+
     /* Shifted by (-1, -0.5) compared to the perspectiveProjection() test */
     Matrix4 projection = Matrix4::perspectiveProjection({-9.0f, -5.0f}, {7.0f, 4.0f}, 32.0f, 100.0f);
     CORRADE_COMPARE(projection, (Matrix4{
@@ -737,6 +747,8 @@ void Matrix4Test::perspectiveProjectionOffCenter() {
 }
 
 void Matrix4Test::perspectiveProjectionOffCenterInfiniteFar() {
+    /* C++14 constexpr verified in Matrix4Cpp14Test, keep in sync */
+
     /* Shifted by (-1, -0.5) compared to perspectiveProjectionInfiniteFar() */
     Matrix4 projection = Matrix4::perspectiveProjection({-9.0f, -5.0f}, {7.0f, 4.0f}, 32.0f, Constants::inf());
     CORRADE_COMPARE(projection, (Matrix4{

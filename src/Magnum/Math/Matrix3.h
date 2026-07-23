@@ -229,7 +229,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @see @ref Matrix4::orthographicProjection(),
          *      @ref Matrix4::perspectiveProjection()
          */
-        static Matrix3<T> projection(const Vector2<T>& size) {
+        CORRADE_CONSTEXPR14 static Matrix3<T> projection(const Vector2<T>& size) {
             return scaling(T(2.0)/size);
         }
 
@@ -256,7 +256,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      @ref Matrix4::perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T)
          * @m_keywords{gluOrtho2D()}
          */
-        static Matrix3<T> projection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight);
+        CORRADE_CONSTEXPR14 static Matrix3<T> projection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight);
 
         /**
          * @brief Create a matrix from a rotation/scaling part and a translation part
@@ -764,7 +764,7 @@ template<class T> Matrix3<T> Matrix3<T>::rotation(const Rad<T> angle) {
             {   T(0),   T(0), T(1)}};
 }
 
-template<class T> Matrix3<T> Matrix3<T>::projection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight) {
+template<class T> CORRADE_CONSTEXPR14 Matrix3<T> Matrix3<T>::projection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight) {
     const Vector2<T> difference = topRight - bottomLeft;
     const Vector2<T> scale = T(2.0)/difference;
     const Vector2<T> offset = (topRight + bottomLeft)/difference;

@@ -356,7 +356,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref orthographicProjectionFar() const,
          *      @ref Matrix3::projection()
          */
-        static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
+        CORRADE_CONSTEXPR14 static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
 
         /**
          * @brief 3D off-center orthographic projection matrix
@@ -388,7 +388,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref Matrix3::projection(const Vector2<T>&, const Vector2<T>&)
          * @m_keywords{glOrtho()}
          */
-        static Matrix4<T> orthographicProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, T near, T far);
+        CORRADE_CONSTEXPR14 static Matrix4<T> orthographicProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, T near, T far);
 
         /**
          * @brief 3D perspective projection matrix
@@ -423,7 +423,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref perspectiveProjectionFar() const,
          *      @ref Matrix3::projection(), @ref Constants::inf()
          */
-        static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
+        CORRADE_CONSTEXPR14 static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
 
         /**
          * @brief 3D perspective projection matrix
@@ -515,7 +515,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref Matrix3::projection(), @ref Constants::inf()
          * @m_keywords{glFrustum()}
          */
-        static Matrix4<T> perspectiveProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, T near, T far);
+        CORRADE_CONSTEXPR14 static Matrix4<T> perspectiveProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, T near, T far);
 
         /**
          * @brief Matrix oriented towards a specific point
@@ -1278,7 +1278,7 @@ template<class T> Matrix4<T> Matrix4<T>::reflection(const Vector3<T>& normal) {
     return from(Matrix3x3<T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
 }
 
-template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& size, const T near, const T far) {
+template<class T> CORRADE_CONSTEXPR14 Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& size, const T near, const T far) {
     const Vector2<T> xyScale = T(2.0)/size;
     const T zScale = T(2.0)/(near-far);
 
@@ -1288,7 +1288,7 @@ template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>
             {       T(0),        T(0), near*zScale-T(1), T(1)}};
 }
 
-template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, const T near, const T far) {
+template<class T> CORRADE_CONSTEXPR14 Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, const T near, const T far) {
     const Vector3<T> difference{topRight - bottomLeft, near - far};
     const Vector3<T> scale = T(2.0)/difference;
     const Vector3<T> offset = Vector3<T>{topRight + bottomLeft, near + far}/difference;
@@ -1299,10 +1299,13 @@ template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>
             {-offset.x(), -offset.y(), offset.z(), T(1)}};
 }
 
-template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& size, const T near, const T far) {
+template<class T> CORRADE_CONSTEXPR14 Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& size, const T near, const T far) {
     const Vector2<T> xyScale = 2*near/size;
 
-    T m22, m32;
+    /* These two have to be initialized on C++14 because otherwise GCC says
+       "error: uninitialized variable ‘m22’ in ‘constexpr’ context". Lol come
+       on... */
+    T m22{}, m32{};
     if(far == Constants<T>::inf()) {
         m22 = T(-1);
         m32 = T(-2)*near;
@@ -1318,12 +1321,15 @@ template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>&
             {       T(0),        T(0), m32,  T(0)}};
 }
 
-template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, const T near, const T far) {
+template<class T> CORRADE_CONSTEXPR14 Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, const T near, const T far) {
     const Vector2<T> xyDifference = topRight - bottomLeft;
     const Vector2<T> xyScale = 2*near/xyDifference;
     const Vector2<T> xyOffset = (topRight + bottomLeft)/xyDifference;
 
-    T m22, m32;
+    /* These two have to be initialized on C++14 because otherwise GCC says
+       "error: uninitialized variable ‘m22’ in ‘constexpr’ context". Lol come
+       on... */
+    T m22{}, m32{};
     if(far == Constants<T>::inf()) {
         m22 = T(-1);
         m32 = T(-2)*near;

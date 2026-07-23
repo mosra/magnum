@@ -124,6 +124,8 @@ if(NOT CMAKE_CXX_FLAGS MATCHES "-std=")
         corrade_add_test(MathCubicHermiteCpp14Test CubicHermiteCpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathDualCpp14Test DualCpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathFrustumCpp14Test FrustumCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathMatrix3Cpp14Test Matrix3Cpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        corrade_add_test(MathMatrix4Cpp14Test Matrix4Cpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathQuaternionCpp14Test QuaternionCpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathRangeCpp14Test RangeCpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathRectangularMatrixCpp14Test RectangularMatrixCpp14Test.cpp LIBRARIES MagnumMathTestLib)
@@ -139,6 +141,8 @@ if(NOT CMAKE_CXX_FLAGS MATCHES "-std=")
             MathCubicHermiteCpp14Test
             MathDualCpp14Test
             MathFrustumCpp14Test
+            MathMatrix3Cpp14Test
+            MathMatrix4Cpp14Test
             MathQuaternionCpp14Test
             MathRangeCpp14Test
             MathRectangularMatrixCpp14Test

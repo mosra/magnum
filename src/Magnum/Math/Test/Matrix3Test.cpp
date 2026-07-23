@@ -511,6 +511,8 @@ void Matrix3Test::shearingY() {
 }
 
 void Matrix3Test::projection() {
+    /* C++14 constexpr verified in Matrix3Cpp14Test, keep in sync */
+
     CORRADE_COMPARE(Matrix3::projection({5.0f, 4.0f}), (Matrix3{
         {2.0f/5.0f,      0.0f, 0.0f},
         {     0.0f, 2.0f/4.0f, 0.0f},
@@ -518,6 +520,8 @@ void Matrix3Test::projection() {
 }
 
 void Matrix3Test::projectionOffCenter() {
+    /* C++14 constexpr verified in Matrix3Cpp14Test, keep in sync */
+
     /* Shifted by (-1, -0.5) compared to the projection() test */
     Matrix3 projection = Matrix3::projection({-3.5f, -2.5f}, {1.5f, 1.5f});
     CORRADE_COMPARE(projection, (Matrix3{
