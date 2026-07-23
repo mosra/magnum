@@ -641,26 +641,26 @@ void Matrix4Test::shearingYZ() {
 }
 
 void Matrix4Test::orthographicProjection() {
-    Matrix4 expected({0.4f, 0.0f,   0.0f, 0.0f},
-                     {0.0f, 0.5f,   0.0f, 0.0f},
-                     {0.0f, 0.0f, -0.25f, 0.0f},
-                     {0.0f, 0.0f, -1.25f, 1.0f});
     Matrix4 actual = Matrix4::orthographicProjection({5.0f, 4.0f}, 1.0f, 9.0f);
-    CORRADE_COMPARE(actual, expected);
+    CORRADE_COMPARE(actual, (Matrix4{
+        {0.4f, 0.0f,   0.0f, 0.0f},
+        {0.0f, 0.5f,   0.0f, 0.0f},
+        {0.0f, 0.0f, -0.25f, 0.0f},
+        {0.0f, 0.0f, -1.25f, 1.0f}}));
 
     /* NDC is left-handed, so point on near plane should be -1, far +1 */
-    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -1.0f}), Vector3(0.0f, 0.0f, -1.0f));
-    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -9.0f}), Vector3(0.0f, 0.0f, +1.0f));
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -1.0f}), (Vector3{0.0f, 0.0f, -1.0f}));
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -9.0f}), (Vector3{0.0f, 0.0f, +1.0f}));
 }
 
 void Matrix4Test::orthographicProjectionOffCenter() {
-    Matrix4 expected({0.4f,  0.0f,   0.0f, 0.0f},
-                     {0.0f,  0.5f,   0.0f, 0.0f},
-                     {0.0f,  0.0f, -0.25f, 0.0f},
-                     {0.4f, 0.25f, -1.25f, 1.0f});
     /* Shifted by (-1, -0.5) compared to the orthographicProjection() test */
     Matrix4 actual = Matrix4::orthographicProjection({-3.5f, -2.5f}, {1.5f, 1.5f}, 1.0f, 9.0f);
-    CORRADE_COMPARE(actual, expected);
+    CORRADE_COMPARE(actual, (Matrix4{
+        {0.4f,  0.0f,   0.0f, 0.0f},
+        {0.0f,  0.5f,   0.0f, 0.0f},
+        {0.0f,  0.0f, -0.25f, 0.0f},
+        {0.4f, 0.25f, -1.25f, 1.0f}}));
 
     /* NDC is left-handed, so point on the near plane top right corner should
        be (1, 1, -1), and a point on the far plane bottom left corner should be
@@ -670,10 +670,10 @@ void Matrix4Test::orthographicProjectionOffCenter() {
 }
 
 void Matrix4Test::perspectiveProjection() {
-    Matrix4 expected({4.0f,      0.0f,         0.0f,  0.0f},
+    Matrix4 expected{{4.0f,      0.0f,         0.0f,  0.0f},
                      {0.0f, 7.111111f,         0.0f,  0.0f},
                      {0.0f,      0.0f,  -1.9411764f, -1.0f},
-                     {0.0f,      0.0f, -94.1176452f,  0.0f});
+                     {0.0f,      0.0f, -94.1176452f,  0.0f}};
     Matrix4 actual = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100.0f);
     CORRADE_COMPARE(actual, expected);
 
@@ -687,10 +687,10 @@ void Matrix4Test::perspectiveProjection() {
 }
 
 void Matrix4Test::perspectiveProjectionInfiniteFar() {
-    Matrix4 expected({4.0f,      0.0f,   0.0f,  0.0f},
+    Matrix4 expected{{4.0f,      0.0f,   0.0f,  0.0f},
                      {0.0f, 7.111111f,   0.0f,  0.0f},
                      {0.0f,      0.0f,  -1.0f, -1.0f},
-                     {0.0f,      0.0f, -64.0f,  0.0f});
+                     {0.0f,      0.0f, -64.0f,  0.0f}};
     Matrix4 actual = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, Constants::inf());
     CORRADE_COMPARE(actual, expected);
 
@@ -705,51 +705,51 @@ void Matrix4Test::perspectiveProjectionInfiniteFar() {
 }
 
 void Matrix4Test::perspectiveProjectionFov() {
-    Matrix4 expected({4.1652994f,      0.0f,         0.0f,  0.0f},
+    Matrix4 expected{{4.1652994f,      0.0f,         0.0f,  0.0f},
                      {      0.0f, 9.788454f,         0.0f,  0.0f},
                      {      0.0f,      0.0f,  -1.9411764f, -1.0f},
-                     {      0.0f,      0.0f, -94.1176452f,  0.0f});
+                     {      0.0f,      0.0f, -94.1176452f,  0.0f}};
     CORRADE_COMPARE(Matrix4::perspectiveProjection(27.0_degf, 2.35f, 32.0f, 100.0f), expected);
 }
 
 void Matrix4Test::perspectiveProjectionFovInfiniteFar() {
-    Matrix4 expected({4.1652994f,      0.0f,   0.0f,  0.0f},
+    Matrix4 expected{{4.1652994f,      0.0f,   0.0f,  0.0f},
                      {      0.0f, 9.788454f,   0.0f,  0.0f},
                      {      0.0f,      0.0f,  -1.0f, -1.0f},
-                     {      0.0f,      0.0f, -64.0f,  0.0f});
+                     {      0.0f,      0.0f, -64.0f,  0.0f}};
     CORRADE_COMPARE(Matrix4::perspectiveProjection(27.0_degf, 2.35f, 32.0f, Constants::inf()), expected);
 }
 
 void Matrix4Test::perspectiveProjectionOffCenter() {
-    Matrix4 expected({   4.0f,        0.0f,         0.0f,  0.0f},
-                     {   0.0f,   7.111111f,         0.0f,  0.0f},
-                     {-0.125f, -0.1111111f,  -1.9411764f, -1.0f},
-                     {   0.0f,        0.0f, -94.1176452f,  0.0f});
     /* Shifted by (-1, -0.5) compared to the perspectiveProjection() test */
-    Matrix4 actual = Matrix4::perspectiveProjection({-9.0f, -5.0f}, {7.0f, 4.0f}, 32.0f, 100.0f);
-    CORRADE_COMPARE(actual, expected);
+    Matrix4 projection = Matrix4::perspectiveProjection({-9.0f, -5.0f}, {7.0f, 4.0f}, 32.0f, 100.0f);
+    CORRADE_COMPARE(projection, (Matrix4{
+        {   4.0f,        0.0f,         0.0f,  0.0f},
+        {   0.0f,   7.111111f,         0.0f,  0.0f},
+        {-0.125f, -0.1111111f,  -1.9411764f, -1.0f},
+        {   0.0f,        0.0f, -94.1176452f,  0.0f}}));
 
     /* NDC is left-handed, so point on the near plane top right corner should
        be (1, 1, -1), and a point in the center on the far plane roughly (0, 0,
        +1) due to the "off-centerness" */
-    CORRADE_COMPARE(actual.transformPoint({7.0f, 4.0f, -32.0f}), Vector3(1.0f, 1.0f, -1.0f));
-    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -100.0f}), Vector3(0.125f, 0.1111111f, +1.0f));
+    CORRADE_COMPARE(projection.transformPoint({7.0f, 4.0f, -32.0f}), Vector3(1.0f, 1.0f, -1.0f));
+    CORRADE_COMPARE(projection.transformPoint({0.0f, 0.0f, -100.0f}), Vector3(0.125f, 0.1111111f, +1.0f));
 }
 
 void Matrix4Test::perspectiveProjectionOffCenterInfiniteFar() {
-    Matrix4 expected({   4.0f,        0.0f,   0.0f,  0.0f},
-                     {   0.0f,   7.111111f,   0.0f,  0.0f},
-                     {-0.125f, -0.1111111f,  -1.0f, -1.0f},
-                     {   0.0f,        0.0f, -64.0f,  0.0f});
     /* Shifted by (-1, -0.5) compared to perspectiveProjectionInfiniteFar() */
-    Matrix4 actual = Matrix4::perspectiveProjection({-9.0f, -5.0f}, {7.0f, 4.0f}, 32.0f, Constants::inf());
-    CORRADE_COMPARE(actual, expected);
+    Matrix4 projection = Matrix4::perspectiveProjection({-9.0f, -5.0f}, {7.0f, 4.0f}, 32.0f, Constants::inf());
+    CORRADE_COMPARE(projection, (Matrix4{
+        {   4.0f,        0.0f,   0.0f,  0.0f},
+        {   0.0f,   7.111111f,   0.0f,  0.0f},
+        {-0.125f, -0.1111111f,  -1.0f, -1.0f},
+        {   0.0f,        0.0f, -64.0f,  0.0f}}));
 
     /* NDC is left-handed, so point on the near plane bottom left corner should
        be (1, 1, -1) and a *vector* in the direction of the far plane roughly
        (0, 0, +1) due to the "off-centerness" */
-    CORRADE_COMPARE(actual.transformPoint({-9.0f, -5.0f, -32.0f}), Vector3(-1.0f, -1.0f, -1.0f));
-    CORRADE_COMPARE(actual.transformVector({0.0f, 0.0f, -1.0f}), Vector3(0.125f, 0.1111111f, +1.0f));
+    CORRADE_COMPARE(projection.transformPoint({-9.0f, -5.0f, -32.0f}), Vector3(-1.0f, -1.0f, -1.0f));
+    CORRADE_COMPARE(projection.transformVector({0.0f, 0.0f, -1.0f}), Vector3(0.125f, 0.1111111f, +1.0f));
 }
 
 void Matrix4Test::lookAt() {
