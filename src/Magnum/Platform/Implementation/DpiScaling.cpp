@@ -66,6 +66,12 @@ Utility::Arguments windowScalingArguments() {
         .setFromEnvironment("dpi-scaling")
         #ifdef CORRADE_TARGET_APPLE
         .setHelp("dpi-scaling", "\n      window DPI scaling", "default|framebuffer|<d>|\"<h> <v>\"")
+        #elif defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_ANDROID)
+        /* List framebuffer as an option on Unix even though it might not be
+           available if we're running under X11 or under sdl2-compat. IOW, it's
+           just too complicated to check for it before the application is even
+           initialized, so just list it always */
+        .setHelp("dpi-scaling", "\n      window DPI scaling", "default|framebuffer|virtual|physical|<d>|\"<h> <v>\"")
         #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
         .setHelp("dpi-scaling", "\n      window DPI scaling", "default|virtual|physical|<d>|\"<h> <v>\"")
         #else

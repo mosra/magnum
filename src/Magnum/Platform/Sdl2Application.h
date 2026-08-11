@@ -433,19 +433,25 @@ variable).
 
 -   Framebuffer DPI scaling. The window is created with exactly the requested
     size and all event coordinates are reported also relative to that size.
-    However, the window backing framebuffer has a different size. This is only
-    supported on macOS and iOS. See @ref platforms-macos-hidpi for details how
-    to enable it. Equivalent to passing
+    However, the window backing framebuffer has a different size scaled
+    according to environment settings with no ability to control the scale
+    ratio from the application. This is supported on Unix when running under
+    Wayland with original SDL2 (as opposed to sdl2-compat layered over SDL3),
+    and on macOS and iOS, on each it's also the only supported value. In case
+    of Apple platforms see @ref platforms-macos-hidpi for details how to make
+    the application DPI-aware. Equivalent to passing
     @ref Configuration::DpiScalingPolicy::Framebuffer to
     @ref Configuration::setSize() or `framebuffer` via command line /
     environment.
 -   Virtual DPI scaling. Scales the window based on DPI scaling setting in the
     system. For example if a 800x600 window is requested and DPI scaling is set
     to 200%, the resulting window will have 1600x1200 pixels. The backing
-    framebuffer will have the same size. This is supported on Linux and
-    Windows; on Windows the application is first checked for DPI awareness
-    as described in @ref platforms-windows-hidpi and if the application is not
-    DPI-aware, 1:1 scaling is used. Equivalent to passing
+    framebuffer will have the same size. This is supported on Unix when running
+    under X11, on Unix when running under Wayland with sdl2-compat layered over
+    SDL3 (as opposed to original SDL2) and on Windows. On Windows the
+    application is first checked for DPI awareness as described in
+    @ref platforms-windows-hidpi and if the application is not DPI-aware, 1:1
+    scaling is used. Equivalent to passing
     @ref Configuration::DpiScalingPolicy::Virtual to
     @ref Configuration::setSize() or `virtual` on command line.
 -   Physical DPI scaling. Takes the requested window size as a physical size
@@ -456,9 +462,10 @@ variable).
     DPI display. On platforms that don't have a concept of a window (such
     as mobile platforms or @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"), it
     causes the framebuffer to match display pixels 1:1 without any scaling.
-    This is supported on Unix, Windows, all mobile platforms (except iOS) and
-    Emscripten. Equivalent to passing
-    @ref Configuration::DpiScalingPolicy::Physical to
+    This is supported on Unix when running under X11, on Unix when running
+    under Wayland with sdl2-compat layered over SDL3 (as opposed to original
+    SDL2), on Windows and on mobile platforms (except iOS) and web. Equivalent
+    to passing @ref Configuration::DpiScalingPolicy::Physical to
     @ref Configuration::setSize() or `physical` via command line / environment.
 
 Besides the above, it's possible to supply a custom DPI scaling value to
@@ -2522,7 +2529,9 @@ namespace Implementation {
     enum class Sdl2DpiScalingPolicy: UnsignedByte {
         /* Using 0 for an "unset" value */
 
-        #ifdef CORRADE_TARGET_APPLE
+        /* Framebuffer is used only with Wayland and only on sdl2 (not
+           sdl2-compat layered over SDL3) on Unix */
+        #if defined(CORRADE_TARGET_APPLE) || (defined(CORRADE_TARGET_UNIX) && SDL_PATCHLEVEL < 50)
         Framebuffer = 1,
         #endif
 
@@ -2535,12 +2544,17 @@ namespace Implementation {
         #endif
 
         Default
+            /* On non-Apple Unix with sdl2 (not sdl2-compat) it's not aliased
+               to anything as it can be either Virtual or Framebuffer depending
+               on whether we're running on Wayland */
             #ifdef CORRADE_TARGET_APPLE
             = Framebuffer
-            #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+            #elif !defined(CORRADE_TARGET_UNIX) || SDL_PATCHLEVEL >= 50 || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(CORRADE_TARGET_ANDROID)
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
             = Virtual
             #else
             = Physical
+            #endif
             #endif
     };
 }
@@ -2774,8 +2788,9 @@ class Sdl2Application::Configuration {
             /**
              * Framebuffer DPI scaling. The window will have the same size as
              * requested, but the framebuffer size will be different. Supported
-             * only on macOS and iOS and is also the only supported value
-             * there.
+             * on Unix when running under Wayland with original SDL2 (as
+             * opposed to sdl2-compat layered over SDL3), and on macOS and iOS,
+             * on each it's also the only supported value.
              *
              * Equivalent to `--magnum-dpi-scaling framebuffer` passed on
              * command-line.
@@ -2786,8 +2801,10 @@ class Sdl2Application::Configuration {
              * Virtual DPI scaling. Scales the window based on UI scaling
              * setting in the system. Falls back to
              * @ref DpiScalingPolicy::Physical on platforms that don't support
-             * it. Supported only on desktop platforms (except macOS) and it's
-             * the default there.
+             * it. Supported on Unix when running under X11, on Unix when
+             * running under Wayland with sdl2-compat layered over SDL3 (as
+             * opposed to original SDL2) and on Windows, on each it's the
+             * default there.
              *
              * Equivalent to `--magnum-dpi-scaling virtual` passed on
              * command-line.
@@ -2800,8 +2817,10 @@ class Sdl2Application::Configuration {
              * and scales it to have the same size on given display physical
              * DPI. On platforms that don't have a concept of a window it
              * causes the framebuffer to match screen pixels 1:1 without any
-             * scaling. Supported on desktop platforms except macOS and on
-             * mobile and web. Default on mobile and web.
+             * scaling. Supported on Unix when running under X11, on Unix when
+             * running under Wayland with sdl2-compat layered over SDL3 (as
+             * opposed to original SDL2), on Windows and on mobile platforms
+             * (except iOS) and web. Default on mobile and web.
              *
              * Equivalent to `--magnum-dpi-scaling physical` passed on
              * command-line.
@@ -2809,10 +2828,11 @@ class Sdl2Application::Configuration {
             Physical,
 
             /**
-             * Default policy for current platform. Alias to one of
+             * Default policy for current platform. Resolves to one of
              * @ref DpiScalingPolicy::Framebuffer, @ref DpiScalingPolicy::Virtual
-             * or @ref DpiScalingPolicy::Physical depending on platform. See
-             * @ref Platform-Sdl2Application-dpi for details.
+             * or @ref DpiScalingPolicy::Physical depending on platform and
+             * window system used. See @ref Platform-Sdl2Application-dpi for
+             * details.
              *
              * Equivalent to `--magnum-dpi-scaling default` passed on
              * command-line.

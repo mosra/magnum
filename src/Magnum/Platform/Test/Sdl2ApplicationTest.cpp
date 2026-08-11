@@ -492,10 +492,11 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     if(const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling")) {
         if(dpiScaling == "default")
             conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Default);
-        #ifdef CORRADE_TARGET_APPLE
+        #if defined(CORRADE_TARGET_APPLE) || (defined(CORRADE_TARGET_UNIX) && SDL_PATCHLEVEL < 50)
         else if(dpiScaling == "framebuffer")
             conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Framebuffer);
-        #else
+        #endif
+        #ifndef CORRADE_TARGET_APPLE
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
         else if(dpiScaling == "virtual")
             conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Virtual);

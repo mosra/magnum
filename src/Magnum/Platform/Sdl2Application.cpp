@@ -248,18 +248,42 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     if(args.value("log") == "verbose")
         _verboseLog = true;
     const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
+    #if SDL_PATCHLEVEL < 50 && defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_ANDROID)
+    const bool isWayland = SDL_GetCurrentVideoDriver() == "wayland"_s;
+    #endif
     if(dpiScaling == "default"_s)
+        /* Here we don't need to resolve to Virtual or Framebuffer on Wayland
+           as the value will get overriden by the configuration-supplied
+           value */
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Default;
-    #ifdef CORRADE_TARGET_APPLE
-    else if(dpiScaling == "framebuffer"_s)
+    #if defined(CORRADE_TARGET_APPLE) || (SDL_PATCHLEVEL < 50 && defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_ANDROID))
+    else if(dpiScaling == "framebuffer"_s
+        #ifndef CORRADE_TARGET_APPLE
+        /* On Wayland with sdl2 (not sdl2-compat layered over SDL3, somehow)
+           framebuffer scaling is the only option. If not running on Wayland,
+           don't recognize --magnum-dpi-scaling framebuffer at all. */
+        && isWayland
+        #endif
+    )
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Framebuffer;
     #endif
     #ifndef CORRADE_TARGET_APPLE
+    /* If running with sdl2 (not sdl2-compat layered over SDL3) on a Wayland
+       backend where framebuffer scaling is the only option, these two aren't
+       allowed there */
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
-    else if(dpiScaling == "virtual"_s)
+    else if(dpiScaling == "virtual"_s
+        #if SDL_PATCHLEVEL < 50 && defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_ANDROID)
+        && !isWayland
+        #endif
+    )
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Virtual;
     #endif
-    else if(dpiScaling == "physical"_s)
+    else if(dpiScaling == "physical"_s
+        #if SDL_PATCHLEVEL < 50 && defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_ANDROID)
+        && !isWayland
+        #endif
+    )
         _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Physical;
     #endif
     else {
@@ -317,12 +341,20 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     #ifndef CORRADE_TARGET_APPLE
     Implementation::Sdl2DpiScalingPolicy dpiScalingPolicy{};
     #endif
+    #if SDL_PATCHLEVEL < 50 && defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_ANDROID)
+    const bool isWayland = SDL_GetCurrentVideoDriver() == "wayland"_s;
+    #endif
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _commandLineDpiScaling;
         return _commandLineDpiScaling;
     } else if(_commandLineDpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Default) {
         #ifndef CORRADE_TARGET_APPLE
+        /* On non-Apple Unix the constructor guaranteed this to be Framebuffer
+           if on Wayland */
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
+        #if SDL_PATCHLEVEL < 50 && defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_ANDROID)
+        CORRADE_INTERNAL_ASSERT(!isWayland || dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Framebuffer);
+        #endif
         #endif
     } else if(!configurationDpiScaling.isZero()) {
         Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << configurationDpiScaling;
@@ -330,6 +362,31 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     } else {
         #ifndef CORRADE_TARGET_APPLE
         dpiScalingPolicy = configurationDpiScalingPolicy;
+        #if SDL_PATCHLEVEL < 50 && defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_ANDROID)
+        if(isWayland) {
+            /* By default, the policy is set to Default (heh), not Framebuffer,
+               don't warn in that case. Compared to --magnum-dpi-scaling this
+               is not a hard error as it's generally too annoing for the app
+               code to check whether X11 or Wayland is used before actually
+               creating the window */
+            if(dpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Framebuffer &&
+               dpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Default)
+            {
+                CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Physical);
+                Warning{output} << "Platform::Sdl2Application:" << (dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Virtual ? "virtual" : "physical") << "DPI scaling not supported on this platform, falling back to framebuffer scaling";
+            }
+            dpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Framebuffer;
+        } else {
+            /* Conversely, if we're not on Wayland, warn if attempting to use
+               framebuffer scaling and fall back to virtual */
+            if(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Framebuffer) {
+                Warning{output} << "Platform::Sdl2Application: framebuffer DPI scaling not supported on this platform, falling back to virtual scaling";
+                dpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Virtual;
+            }
+            if(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Default)
+                dpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Virtual;
+        }
+        #endif
         #else
         static_cast<void>(configurationDpiScalingPolicy);
         #endif
@@ -357,23 +414,71 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     #ifdef CORRADE_TARGET_APPLE
     return Vector2{1.0f};
 
-    /* Otherwise there's a choice between virtual and physical DPI scaling */
+    /* Otherwise there's a choice between virtual and physical DPI scaling, or
+       possibly only framebuffer scaling if we're on Wayland on sdl2 (however
+       not on sdl2-compat layered over SDL3) because everyone is apparently
+       crazy and things for some reason cannot be consistent even in a single
+       version of a single toolkit, ugh */
     #else
-    /* Try to get virtual DPI scaling first, if supported and requested */
+    #if SDL_PATCHLEVEL < 50 && defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_ANDROID)
+    if(isWayland) {
+        CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Framebuffer);
+        Debug{verbose} << "Platform::Sdl2Application: using framebuffer DPI scaling on Wayland";
+        return Vector2{1.0f};
+    }
+    #endif
+
+    /* On non-Wayland Unix and Windows try to get virtual DPI scaling first, if
+       supported and requested */
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
     if(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Virtual) {
-        /* Use Xft.dpi on X11, because SDL_GetDisplayDPI() returns the useless
-           physical value on Linux, while the virtual value on Windows. */
-        #ifdef _MAGNUM_PLATFORM_USE_X11
-        const Vector2 dpiScaling{Implementation::x11DpiScaling(output)};
-        if(!dpiScaling.isZero()) {
-            Debug{verbose} << "Platform::Sdl2Application: virtual DPI scaling" << dpiScaling.x();
-            return dpiScaling;
-        }
+        /* On sdl2 (not sdl2-compat layered over SDL3), SDL_GetDisplayDPI()
+           returns the useless physical value both for X11 (or it used to until
+           SDL 2.0.18, after that it started returning some weird imprecise
+           value that is *also* useless) and for Wayland, so if X11 was found
+           at compile time and the session is actually running on X11 we do a
+           manual query of Xft.dpi.
 
-        /* On (non-RT) Windows SDL_GetDisplayDPI() returns the correct value as
-           long as the app is DPI-aware, which was checked above */
-        #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+           On sdl2 if not running on X11 (i.e., most likely running Wayland
+           instead) we don't even attempt to query Xft.dpi as it wouldn't
+           succeed anyway. Users will get the "sorry, not implemented" message
+           below instead. Querying the Wayland property by hand is extremely
+           complicated as it involves generating C headers from XML files,
+           crafting binary data to send over to some socket and implementing an
+           event loop, or having a hard dependency on libwayland or some such,
+           not to mention there is integer scaling, and then a separate
+           fractional scaling protocol that might or might not be supported.
+
+           Meanwhile, on sdl2-compat SDL_GetDisplayDPI() *does* return the
+           correct value for both X11 and Wayland so (1) there's no point in
+           doing a manual Xft.dpi query there, and (2) for my own sanity I
+           ultimately don't have to attempt to query the Wayland property
+           directly, and users should either not use Wayland with sdl2 or
+           switch to sdl2-compat there instead.
+
+           Checking for X11 being used is done with SDL_GetCurrentVideoDriver()
+           and not using XDG_SESSION_TYPE because one can be on Wayland (with
+           XDG_SESSION_TYPE=wayland) but use SDL_VIDEODRIVER=x11 to force use
+           of XWayland. Distinction between sdl2 and sdl2-compat can be done
+           using the patch version, which is at least 50 for sdl2-compat. */
+        #if SDL_PATCHLEVEL < 50 && defined(_MAGNUM_PLATFORM_USE_X11)
+        if(SDL_GetCurrentVideoDriver() == "x11"_s) {
+            const Vector2 dpiScaling{Implementation::x11DpiScaling(output)};
+            if(!dpiScaling.isZero()) {
+                Debug{verbose} << "Platform::Sdl2Application: virtual DPI scaling" << dpiScaling.x();
+                return dpiScaling;
+            }
+        }
+        #endif
+
+        /* On Unix with sdl2-compat SDL_GetDisplayDPI() returns correct value
+           for both X11 and Wayland, same for non-RT Windows as long as the app
+           is DPI-aware, which was checked above.
+
+           On Unix with sdl2, if running X11, the Xft.dpi branch above was
+           taken, and if running Wayland, framebuffer scaling was picked
+           above */
+        #if (defined(CORRADE_TARGET_UNIX) && SDL_PATCHLEVEL >= 50) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         Vector2 dpi;
         if(SDL_GetDisplayDPI(0, nullptr, &dpi.x(), &dpi.y()) == 0) {
             const Vector2 dpiScaling{dpi/96.0f};
@@ -388,8 +493,8 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     }
     #endif
 
-    /* At this point, either the virtual DPI query failed or a physical DPI
-       scaling is requested */
+    /* At this point, either the virtual DPI query failed, isn't implemented or
+       a physical DPI scaling is requested */
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
     CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Physical);
     #else
@@ -408,9 +513,13 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     Debug{verbose} << "Platform::Sdl2Application: physical DPI scaling" << dpiScaling.x();
     return dpiScaling;
 
-    /* Take a physical display DPI. On Linux it gets the (usually very off)
-       physical value from X11. */
-    #elif defined(CORRADE_TARGET_UNIX)
+    /* On sdl2 (not sdl2-compat layered over SDL3), SDL_GetDisplayDPI() can be
+       used to get the physical DPI for X11. On sdl2-compat it returns the
+       virtual value, which means attempting to use physical DPI scaling there
+       will result in the "sorry, not implemented" message at the end instead.
+       For Wayland framebuffer scaling was picked above, for Windows the
+       physical DPI scaling is implemented directly below. */
+    #elif defined(CORRADE_TARGET_UNIX) && SDL_PATCHLEVEL < 50
     Vector2 dpi;
     if(SDL_GetDisplayDPI(0, nullptr, &dpi.x(), &dpi.y()) == 0) {
         const Vector2 dpiScaling{dpi/96.0f};
@@ -438,7 +547,8 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
     Debug{verbose} << "Platform::Sdl2Application: physical DPI scaling" << dpiScaling;
     return dpiScaling;
 
-    /* Not implemented otherwise */
+    /* Not implemented otherwise. In particular, this fires for sdl2-compat and
+       Unix (Wayland or X11) when explicitly requesting physical scaling. */
     #else
     Warning{output} << "Platform::Sdl2Application: sorry, physical DPI scaling not implemented on this platform, falling back to no scaling";
     return Vector2{1.0f};
