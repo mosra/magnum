@@ -105,7 +105,7 @@ explicitly set.
 This plugin depends on the @ref ShaderTools library and is built if
 `MAGNUM_WITH_ANYSHADERCONVERTER` is enabled when building Magnum. To use as a
 dynamic plugin, load @cpp "AnyShaderConverter" @ce via
-@ref Corrade::PluginManager::Manager.
+@relativeref{Corrade,PluginManager::Manager}.
 
 Additionally, if you're using Magnum as a CMake subproject, do the following:
 

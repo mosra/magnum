@@ -68,7 +68,7 @@ Loads meshes from Wavefront OBJ (`*.obj`) files.
 
 This plugin depends on the @ref Trade library and is built if
 `MAGNUM_WITH_OBJIMPORTER` is enabled when building Magnum. To use as a dynamic
-plugin, load @cpp "ObjImporter" @ce via @ref Corrade::PluginManager::Manager.
+plugin, load @cpp "ObjImporter" @ce via @relativeref{Corrade,PluginManager::Manager}.
 
 Additionally, if you're using Magnum as a CMake subproject, do the following:
 

@@ -74,7 +74,7 @@ Imports mono and stereo files.
 
 This plugin is built if `MAGNUM_WITH_WAVAUDIOIMPORTER` is enabled when building
 Magnum. To use dynamic plugin, load @cpp "WavAudioImporter" @ce
-via @ref Corrade::PluginManager::Manager.
+via @relativeref{Corrade,PluginManager::Manager}.
 
 Additionally, if you're using Magnum as a CMake subproject, do the following:
 

@@ -80,7 +80,7 @@ Only converting to files is supported.
 This plugin depends on the @ref Trade library and is built if
 `MAGNUM_WITH_ANYSCENECONVERTER` is enabled when building Magnum. To use as a
 dynamic plugin, load @cpp "AnySceneConverter" @ce via
-@ref Corrade::PluginManager::Manager.
+@relativeref{Corrade,PluginManager::Manager}.
 
 Additionally, if you're using Magnum as a CMake subproject, do the following:
 

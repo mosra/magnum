@@ -142,7 +142,7 @@ rectangle=45 0 44 25
 This plugin depends on the @ref Text library and the
 @ref Trade::TgaImporter "TgaImporter" plugin. It is built if
 `MAGNUM_WITH_MAGNUMFONT` is enabled when building Magnum. To use as a dynamic
-plugin, load @cpp "MagnumFont" @ce via @ref Corrade::PluginManager::Manager.
+plugin, load @cpp "MagnumFont" @ce via @relativeref{Corrade,PluginManager::Manager}.
 
 Additionally, if you're using Magnum as a CMake subproject, do the following:
 
@@ -167,7 +167,7 @@ target_link_libraries(your-app PRIVATE Magnum::MagnumFont)
 
 Because the plugin needs access to @ref Trade::AbstractImporter plugins, you
 need to instantiate a manager for them and register it with
-@ref Corrade::PluginManager::Manager::registerExternalManager():
+@relativeref{Corrade,PluginManager::Manager::registerExternalManager()}:
 
 @snippet plugins.cpp MagnumFont-importer-register
 
