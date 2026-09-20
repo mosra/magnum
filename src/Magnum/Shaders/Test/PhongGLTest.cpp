@@ -4519,7 +4519,7 @@ void PhongGLTest::renderDoubleSided() {
         .setTransformationMatrix(Matrix4::translation({-1.05f, 1.05f, 0.0f}))
         .draw(MeshTools::compile(sphere));
 
-    /* Bottom left is a sphere from the inside, with CCW triangles, with the
+    /* Bottom left is a sphere from the inside, with CW triangles, with the
        front cut off by the near plane. Normals pointing outside so only top
        left should be slightly lighted. */
     shader
@@ -4537,10 +4537,10 @@ void PhongGLTest::renderDoubleSided() {
     GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
 
     /* Bottom right is a sphere from the inside, with CW triangles and face
-       culling disabled. Should render like bottom right.
+       culling disabled. Should render like top right.
         - If DoubleSided isn't enabled on the shader, the code above flipped
           normals to point inside. If DoubleSided is accidentally active
-          always, it will flip them back outside, resulting in the same result
+          always, it will flip them back outside, resulting in the same image
           as on the bottom left.
         - If DoubleSided is enabled on the shader, the normals weren't flipped
           by the code above and the shader should do that instead. If it
