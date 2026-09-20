@@ -857,14 +857,24 @@ const struct {
 
 const struct {
     const char* name;
+    const char* expected;
+    Color3 specularColor;
     PhongGL::Flags flags;
     bool flipNormals;
     bool flipDefaultWinding;
 } RenderDoubleSidedData[]{
-    {"normals flipped", {}, true, false},
-    {"double-sided rendering", PhongGL::Flag::DoubleSided, false, false},
-    {"clockwise default winding, normals flipped", {}, true, true},
-    {"clockwise default winding, double-sided rendering", PhongGL::Flag::DoubleSided, false, true},
+    {"normals flipped", "double-sided.tga",
+        {}, {}, true, false},
+    {"normals flipped, specular", "double-sided-specular.tga",
+        0xffffff_rgbf, {}, true, false},
+    {"double-sided rendering", "double-sided.tga",
+        {}, PhongGL::Flag::DoubleSided, false, false},
+    {"double-sided rendering, specular", "double-sided-specular.tga",
+        0xffffff_rgbf, PhongGL::Flag::DoubleSided, false, false},
+    {"clockwise default winding, normals flipped", "double-sided.tga",
+        {}, {}, true, true},
+    {"clockwise default winding, double-sided rendering", "double-sided.tga",
+        {}, PhongGL::Flag::DoubleSided, false, true},
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -4523,7 +4533,7 @@ void PhongGLTest::renderDoubleSided() {
         .setLightPositions({{-3.0f, 3.0f, 3.0f, 0.0f}})
         .setAmbientColor(0x111111_rgbf)
         .setDiffuseColor(0xff3333_rgbf)
-        .setSpecularColor(0x00000000_rgbaf);
+        .setSpecularColor(data.specularColor);
 
     if(data.flipDefaultWinding)
         GL::Renderer::setFrontFace(GL::Renderer::FrontFace::ClockWise);
@@ -4560,7 +4570,12 @@ void PhongGLTest::renderDoubleSided() {
           as on the bottom left.
         - If DoubleSided is enabled on the shader, the normals weren't flipped
           by the code above and the shader should do that instead. If it
-          doesn't, it will again wrongly render as on the bottom left. */
+          doesn't, it will again wrongly render as on the bottom left.
+       The specular highlight location, if enabled, differs between the top
+       and bottm right cases because they're in different position relative to
+       the camera. It should however be the same with and without DoubleSided
+       in order to verify the correct normal is zsed for specular highlight as
+       well. */
     shader
         .setProjectionMatrix(Matrix4::orthographicProjection(Vector2{4.5f}, 0.0f, 1.0f))
         .setTransformationMatrix(Matrix4::translation({+1.05f, -1.05f, 0.0f}))
@@ -4579,8 +4594,9 @@ void PhongGLTest::renderDoubleSided() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
-        Utility::Path::join(_testDir, "PhongTestFiles/double-sided.tga"),
-        (DebugTools::CompareImageToFile{_manager, 1.34f, 0.04f}));
+        Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
+        /* SwiftShader has one pixel really off for the specular case */
+        (DebugTools::CompareImageToFile{_manager, 130.0f, 0.06f}));
 }
 
 #ifndef MAGNUM_TARGET_GLES2

@@ -311,6 +311,7 @@ if(MAGNUM_TARGET_GL)
                 PhongTestFiles/colored.tga
                 PhongTestFiles/defaults.tga
                 PhongTestFiles/double-sided.tga
+                PhongTestFiles/double-sided-specular.tga
                 PhongTestFiles/instanced.tga
                 PhongTestFiles/instanced-textured.tga
                 PhongTestFiles/instanced-normal.tga
