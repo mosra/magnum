@@ -859,9 +859,12 @@ const struct {
     const char* name;
     PhongGL::Flags flags;
     bool flipNormals;
+    bool flipDefaultWinding;
 } RenderDoubleSidedData[]{
-    {"normals flipped", {}, true},
-    {"double-sided rendering", PhongGL::Flag::DoubleSided, false}
+    {"normals flipped", {}, true, false},
+    {"double-sided rendering", PhongGL::Flag::DoubleSided, false, false},
+    {"clockwise default winding, normals flipped", {}, true, true},
+    {"clockwise default winding, double-sided rendering", PhongGL::Flag::DoubleSided, false, true},
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -2293,6 +2296,11 @@ void PhongGLTest::renderTeardown() {
     #ifndef MAGNUM_TARGET_GLES2
     _objectId = GL::Renderbuffer{NoCreate};
     #endif
+
+    /* Reset back to test defaults in case some test changes those, such as
+       renderDoubleSided() */
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    GL::Renderer::setFrontFace(GL::Renderer::FrontFace::CounterClockWise);
 }
 
 template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
@@ -4487,19 +4495,24 @@ void PhongGLTest::renderDoubleSided() {
     setTestCaseDescription(data.name);
 
     Trade::MeshData sphere = Primitives::uvSphereSolid(16, 32);
+    if(data.flipDefaultWinding)
+        MeshTools::flipFaceWindingInPlace(sphere.mutableIndices());
 
     Trade::MeshData sphereFlippedWinding = Primitives::uvSphereSolid(16, 32);
-    MeshTools::flipFaceWindingInPlace(sphereFlippedWinding.mutableIndices());
+    if(!data.flipDefaultWinding)
+        MeshTools::flipFaceWindingInPlace(sphereFlippedWinding.mutableIndices());
 
     Trade::MeshData sphereFlippedNormalsWinding = Primitives::uvSphereSolid(16, 32);
-    MeshTools::flipNormalsInPlace(
-        sphereFlippedNormalsWinding.mutableIndices(),
-        sphereFlippedNormalsWinding.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
+    if(!data.flipDefaultWinding)
+        MeshTools::flipFaceWindingInPlace(sphereFlippedNormalsWinding.mutableIndices());
+    MeshTools::flipNormalsInPlace(sphereFlippedNormalsWinding.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
 
     /* Double-sided sphere, renders from both sides if DoubleSided is
        enabled and face culling disabled, otherwise only one depending on the
        normal direction */
     Trade::MeshData sphereDoubleSided = Primitives::uvSphereSolid(16, 32);
+    if(data.flipDefaultWinding)
+        MeshTools::flipFaceWindingInPlace(sphereDoubleSided.mutableIndices());
     if(data.flipNormals)
         MeshTools::flipNormalsInPlace(sphereDoubleSided.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
 
@@ -4511,6 +4524,9 @@ void PhongGLTest::renderDoubleSided() {
         .setAmbientColor(0x111111_rgbf)
         .setDiffuseColor(0xff3333_rgbf)
         .setSpecularColor(0x00000000_rgbaf);
+
+    if(data.flipDefaultWinding)
+        GL::Renderer::setFrontFace(GL::Renderer::FrontFace::ClockWise);
 
     /* Top left is a sphere from the outside, with CCW triangles, with the back
        cut off by the far plane */
@@ -4551,9 +4567,15 @@ void PhongGLTest::renderDoubleSided() {
         .draw(MeshTools::compile(sphereDoubleSided));
 
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    if(data.flipDefaultWinding)
+        GL::Renderer::setFrontFace(GL::Renderer::FrontFace::CounterClockWise);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /* SwiftShader 4.1.0 is fine, and without the DoubleSided flag gl_FrontFace
+       isn't used so there it's fine too */
+    CORRADE_EXPECT_FAIL_IF(data.flipDefaultWinding && data.flags >= PhongGL::Flag::DoubleSided && GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s),
+        "SwiftShader 4.0.0 has a bug where gl_FrontFace doesn't take a ClockWise glFontFace() setting into account");
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
