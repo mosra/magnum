@@ -27,7 +27,6 @@
 */
 
 #include <cctype> /* std::isupper() */
-#include <sstream>
 #include <unordered_map> /* sceneFieldNames */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
@@ -62,10 +61,9 @@ void printSceneConverterInfo(const Debug::Flags useColor, const Trade::AbstractS
 
 /** @todo const Array& doesn't work, minmax() would fail to match */
 template<class T> Containers::String calculateBounds(Containers::Array<T>&& attribute) {
-    /** @todo clean up when Debug::toString() exists */
-    std::ostringstream out;
+    Containers::String out;
     Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << Debug::packed << Math::minmax(attribute);
-    return out.str();
+    return out;
 }
 
 bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility::Arguments& args, Trade::AbstractImporter& importer, std::chrono::high_resolution_clock::duration& importTime) {
