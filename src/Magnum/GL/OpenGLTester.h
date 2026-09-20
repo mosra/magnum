@@ -139,35 +139,11 @@ If @gl_extension{ARB,timer_query} desktop extension (part of OpenGL 3.3),
 available, GPU time benchmarks will get automatically skipped, producing a
 @cb{.ansi} [1;39mSKIP @ce message on the output.
 
-@subsection GL-OpenGLTester-benchmarks-frequency-scaling Preventing GPU frequency scaling
+@m_class{m-note m-success}
 
-Note that GPUs are subject to the same frequency scaling as CPUs, and depending
-on the vendor and driver the variance may be so high that the measurements are
-useless. This is particlarly the case with Intel integrated GPUs, which heavily
-downclock for power saving, and do so independently on the CPU power mode. On
-Linux it's possible to tune the behavior using [Intel GPU tools](https://gitlab.freedesktop.org/drm/igt-gpu-tools),
-available as a `intel-gpu-tools` package on ArchLinux and Ubuntu, and
-`igt-gpu-tools` on Fedora. Run the following as root:
-
-@code{.sh}
-intel_gpu_frequency --max
-@endcode
-
-You can reset back to the default behavior with
-@cb{.sh} intel_gpu_frequency --defaults @ce. Without these tools available,
-it's possible to achieve similar results using low-level tunables in `/sys`, by
-setting the min and max frequency to the same value, for example:
-
-@m_class{m-console-wrap}
-
-@code{.sh}
-cat /sys/class/drm/card1/gt/gt0/rps_max_freq_mhz > /sys/class/drm/card1/gt/gt0/rps_min_freq_mhz
-@endcode
-
-On systems that have multiple GPUs, pick `cardN` based on whether it has a
-`gt/` subdirectory, NVidia GPUs for example don't have it. Discrete GPUs have
-additional tunables, see the [official Intel docs](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/configuring-gpu-device.html)
-for more information.
+@par
+    See the @ref GL-TimeQuery-frequency-scaling section in @ref GL::TimeQuery
+    docs for a guide to achieving more stable time measurements.
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
@@ -220,7 +196,13 @@ class OpenGLTester: public TestSuite::Tester {
              * extension or @gl_extension{EXT,disjoint_timer_query_webgl2}
              * WebGL 2 extension is not available, GPU time benchmarks will get
              * automatically skipped.
-             * @see @ref GL-OpenGLTester-benchmarks-frequency-scaling
+             *
+             * @m_class{m-note m-success}
+             *
+             * @par
+             *      See the @ref GL-TimeQuery-frequency-scaling section in
+             *      @ref GL::TimeQuery docs for a guide to achieving more
+             *      stable time measurements.
              */
             GpuTime = 32
         };

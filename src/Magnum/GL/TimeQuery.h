@@ -48,6 +48,36 @@ usage of both methods:
 Using the latter results in fewer OpenGL calls when doing more measures. All
 times are reported in nanoseconds.
 
+@section GL-TimeQuery-frequency-scaling Preventing GPU frequency scaling
+
+Note that GPUs are subject to the same frequency scaling as CPUs, and depending
+on the vendor and driver the variance may be so high that time measurements are
+useless. This is particlarly the case with Intel integrated GPUs, which heavily
+downclock for power saving, and do so independently on the CPU power mode. On
+Linux it's possible to tune the behavior using [Intel GPU tools](https://gitlab.freedesktop.org/drm/igt-gpu-tools),
+available as a `intel-gpu-tools` package on ArchLinux and Ubuntu, and
+`igt-gpu-tools` on Fedora. Run the following as root:
+
+@code{.sh}
+intel_gpu_frequency --max
+@endcode
+
+You can reset back to the default behavior with
+@cb{.sh} intel_gpu_frequency --defaults @ce. Without these tools available,
+it's possible to achieve similar results using low-level tunables in `/sys`, by
+setting the min and max frequency to the same value, for example:
+
+@m_class{m-console-wrap}
+
+@code{.sh}
+cat /sys/class/drm/card1/gt/gt0/rps_max_freq_mhz > /sys/class/drm/card1/gt/gt0/rps_min_freq_mhz
+@endcode
+
+On systems that have multiple GPUs, pick `cardN` based on whether it has a
+`gt/` subdirectory, NVidia GPUs for example don't have it. Discrete GPUs have
+additional tunables, see the [official Intel docs](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/configuring-gpu-device.html)
+for more information.
+
 @requires_gl33 Extension @gl_extension{ARB,timer_query}
 @requires_es_extension Extension @gl_extension{EXT,disjoint_timer_query}
 @requires_webgl_extension Extension @webgl_extension{EXT,disjoint_timer_query}

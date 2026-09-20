@@ -546,6 +546,12 @@ If none of @ref Value::GpuDuration, @ref Value::VertexFetchRatio and
 @ref Value::PrimitiveClipRatio is not enabled, the class can operate without an
 active OpenGL context.
 
+@m_class{m-note m-success}
+
+@par
+    See the @ref GL-TimeQuery-frequency-scaling section in @ref GL::TimeQuery
+    docs for a guide to achieving more stable time measurements.
+
 @experimental
 */
 class MAGNUM_DEBUGTOOLS_EXPORT FrameProfilerGL: public FrameProfiler {
