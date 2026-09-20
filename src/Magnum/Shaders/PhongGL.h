@@ -136,6 +136,15 @@ shining from the top and two stronger but range-limited point lights:
 
 @snippet Shaders-gl.cpp PhongGL-usage-lights
 
+<b></b>
+
+@m_class{m-note m-info}
+
+@par
+    See @ref Flag::DoubleSided for drawing meshes that should receive lighting
+    from both sides, and for more information about relation between normal
+    direction and face winding in lighting evaluation.
+
 @subsection Shaders-PhongGL-lights-ambient Ambient lights
 
 In order to avoid redundant uniform inputs, there's no dedicated way to specify
@@ -687,13 +696,42 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
 
             /**
              * Double-sided rendering. By default, lighting is applied only to
-             * front-facing triangles, with back-facing triangles receiving
-             * just the ambient color or being culled away. If enabled, the
-             * shader will evaluate the lighting also on back-facing triangles
-             * with the normal flipped. Has no effect if no lights are used.
+             * the side of the triangle where the normal direction is, with the
+             * other side receiving just the ambient color or being culled away
+             * due to @ref GL::Renderer::Feature::FaceCulling enabled.
              *
-             * Rendering back-facing triangles requires
-             * @ref GL::Renderer::Feature::FaceCulling to be disabled.
+             * With this flag enabled and
+             * @ref GL::Renderer::Feature::FaceCulling disabled, if a triangle
+             * is back-facing (i.e., its winding direction being clockwise by
+             * default, or counterclockwise when
+             * @ref GL::Renderer::FrontFace::ClockWise is set), the normal is
+             * flipped before evaluating the lighting.
+             *
+             * @attention
+             *      Note that for lighting to work correctly, the direction of
+             *      vertex normals has to match the triangle winding direction
+             *      --- if the winding is flipped compared to the normals, such
+             *      as with negative scaling, both sides of the triangle will
+             *      render with just ambient color with this flag enabled, as
+             *      it will case the normal to get flipped to the wrong
+             *      direction on both sides.
+             * @attention
+             *      To fix this, call @ref GL::Renderer::setFrontFace() with
+             *      the opposite direction before drawing objects with negative
+             *      scaling, and then revert back after. An object has negative
+             *      scaling if @ref Matrix4::determinant() of the
+             *      transformation is less than zero.
+             * @attention
+             *      Unfortunately, winding direction is the only reliable way
+             *      to determine the correct normal direction without causing
+             *      rendering artifacts along the edges. To reduce state
+             *      changes you can bake negative scaling into the meshes
+             *      themselves (along with flipping their winding with e.g.
+             *      @ref MeshTools::flipFaceWindingInPlace()), or partition
+             *      draws with different winding directions into separate
+             *      batches.
+             *
+             * This flag has no effect if no lights are used.
              * @see @ref Trade::MaterialAttribute::DoubleSided
              * @m_since_latest
              */
