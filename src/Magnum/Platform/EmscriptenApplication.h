@@ -1627,7 +1627,7 @@ class EmscriptenApplication::GLConfiguration: public GL::Context::Configuration 
          */
         typedef Containers::EnumSet<Flag> Flags;
 
-        /*implicit*/ GLConfiguration();
+        explicit GLConfiguration();
 
         /** @brief Context flags */
         Flags flags() const {
