@@ -1526,7 +1526,6 @@ class GlfwApplication::GLConfiguration: public GL::Context::Configuration {
         typedef Containers::EnumSet<Flag> Flags;
 
         explicit GLConfiguration();
-        ~GLConfiguration();
 
         /** @brief Context flags */
         Flags flags() const {

@@ -2144,7 +2144,6 @@ class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
         typedef Containers::EnumSet<Flag> Flags;
 
         explicit GLConfiguration();
-        ~GLConfiguration();
 
         /** @brief Context flags */
         Flags flags() const {

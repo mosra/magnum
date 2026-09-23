@@ -1700,8 +1700,6 @@ Sdl2Application::GLConfiguration::GLConfiguration():
     addFlags(Flag::ForwardCompatible);
     #endif
 }
-
-Sdl2Application::GLConfiguration::~GLConfiguration() = default;
 #endif
 
 Sdl2Application::Configuration::Configuration():

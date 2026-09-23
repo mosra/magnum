@@ -1175,8 +1175,6 @@ GlfwApplication::GLConfiguration::GLConfiguration():
     addFlags(Flag::ForwardCompatible);
     #endif
 }
-
-GlfwApplication::GLConfiguration::~GLConfiguration() = default;
 #endif
 
 GlfwApplication::Configuration::Configuration():
