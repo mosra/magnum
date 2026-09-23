@@ -1458,7 +1458,8 @@ class GlfwApplication::GLConfiguration: public GL::Context::Configuration {
          * Includes also everything from @ref GL::Context::Configuration::Flag
          * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
          * which is not meant to be enabled for windowed apps.
-         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
+         * @see @ref Flags, @ref setFlags(), @ref addFlags(),
+         *      @ref clearFlags(), @ref GL::Context::Flag
          */
         enum class Flag: UnsignedLong {
             #ifndef MAGNUM_TARGET_GLES
@@ -1519,7 +1520,8 @@ class GlfwApplication::GLConfiguration: public GL::Context::Configuration {
         /**
          * @brief Context flags
          *
-         * @see @ref setFlags(), @ref GL::Context::Flags
+         * @see @ref setFlags(), @ref addFlags(), @ref clearFlags(),
+         *      @ref GL::Context::Flags
          */
         typedef Containers::EnumSet<Flag> Flags;
 
@@ -1709,7 +1711,8 @@ class GlfwApplication::Configuration {
         /**
          * @brief Window flag
          *
-         * @see @ref WindowFlags, @ref setWindowFlags()
+         * @see @ref WindowFlags, @ref setWindowFlags(), @ref addWindowFlags(),
+         *      @ref clearWindowFlags()
          */
         enum class WindowFlag: UnsignedShort {
             Fullscreen = 1 << 0,   /**< Fullscreen window */
@@ -1769,7 +1772,8 @@ class GlfwApplication::Configuration {
         /**
          * @brief Window flags
          *
-         * @see @ref setWindowFlags()
+         * @see @ref setWindowFlags(), @ref addWindowFlags(),
+         *      @ref clearWindowFlags()
          */
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
 

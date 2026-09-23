@@ -2059,7 +2059,8 @@ class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
          * Includes also everything from @ref GL::Context::Configuration::Flag
          * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
          * which is not meant to be enabled for windowed apps.
-         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
+         * @see @ref Flags, @ref setFlags(), @ref addFlags(),
+         *      @ref clearFlags(), @ref GL::Context::Flag
          */
         enum class Flag: UnsignedLong {
             #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -2137,7 +2138,8 @@ class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
         /**
          * @brief Context flags
          *
-         * @see @ref setFlags(), @ref GL::Context::Flags
+         * @see @ref setFlags(), @ref addFlags(), @ref clearFlags(),
+         *      @ref GL::Context::Flags
          */
         typedef Containers::EnumSet<Flag> Flags;
 
@@ -2356,7 +2358,8 @@ class Sdl2Application::Configuration {
         /**
          * @brief Window flag
          *
-         * @see @ref WindowFlags, @ref setWindowFlags()
+         * @see @ref WindowFlags, @ref setWindowFlags(), @ref addWindowFlags(),
+         *      @ref clearWindowFlags()
          */
         enum class WindowFlag: Uint32 {
             /**
@@ -2512,7 +2515,8 @@ class Sdl2Application::Configuration {
         /**
          * @brief Window flags
          *
-         * @see @ref setWindowFlags()
+         * @see @ref setWindowFlags(), @ref addWindowFlags(),
+         *      @ref clearWindowFlags()
          */
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
 
