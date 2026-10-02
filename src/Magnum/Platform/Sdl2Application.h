@@ -2490,12 +2490,16 @@ class Sdl2Application::Configuration {
             Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
 
             /**
-             * Request a window for use with OpenGL. Useful in combination with
-             * @ref WindowFlag::Contextless, otherwise enabled implicitly when
+             * Request a window for use with OpenGL. Enabled implicitly when
              * creating an OpenGL context using
              * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
              * @ref create(const Configuration&, const GLConfiguration&) or
              * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             * Use in combination with @ref WindowFlag::Contextless and
+             * @ref Sdl2Application(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to create a window for use
+             * with OpenGL without actually creating the OpenGL context.
              * @m_since{2019,10}
              */
             OpenGL = SDL_WINDOW_OPENGL,
@@ -2684,9 +2688,13 @@ class Sdl2Application::Configuration {
          * @brief Set window flags
          * @return Reference to self (for method chaining)
          *
-         * Default are none. To avoid clearing default flags by accident,
-         * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
-         * instead.
+         * Default are none, although @ref WindowFlag::OpenGL is implicitly
+         * enabled when creating an OpenGL context using
+         * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+         * @ref create(const Configuration&, const GLConfiguration&) or
+         * @ref tryCreate(const Configuration&, const GLConfiguration&). To
+         * avoid clearing default flags by accident, prefer to use
+         * @ref addWindowFlags() and @ref clearWindowFlags() instead.
          */
         Configuration& setWindowFlags(WindowFlags flags) {
             _windowFlags = flags;

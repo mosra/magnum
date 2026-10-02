@@ -504,7 +504,12 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         scaledWindowSize.x(), scaledWindowSize.y(),
-        SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags() & ~Configuration::WindowFlag::Contextless))))
+        /* Unlike in tryCreate(const Configuration&, const GLConfiguration&)
+           below, here WindowFlag::OpenGL *isn't* implicitly set and specifying
+           it (or not) is up to the user. Furthermore, WindowFlag::Contextless
+           is not a real SDL_WINDOW_* flag but a fake value, clear it from the
+           set. */
+        SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags() & ~Configuration::WindowFlag::Contextless))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;
@@ -660,7 +665,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         scaledWindowSize.x(), scaledWindowSize.y(),
-        SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()))))
+        /* As we're creating a GL context, set WindowFlag::OpenGL implicitly --
+           users are meant to set this flag only when a GL context explicitly
+           *isn't* created, such as together with WindowFlag::Contextless */
+        SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()|Configuration::WindowFlag::OpenGL))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;
@@ -723,7 +731,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             scaledWindowSize.x(), scaledWindowSize.y(),
-            SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()))))
+            /* WindowFlag::OpenGL set implicitly, same as above */
+            SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()|Configuration::WindowFlag::OpenGL))))
         {
             Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
             return false;

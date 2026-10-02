@@ -1438,6 +1438,10 @@ See also:
     @ref Platform::EmscriptenApplication::MouseMoveEvent, caused by the
     JavaScript events themselves having an unexplainable inconsistency in
     button numbering
+-   Creating a @ref Platform::Sdl2Application window without an OpenGL context
+    was errorneously still marking it for use with OpenGL even without
+    @ref Platform::Sdl2Application::Configuration::WindowFlag::OpenGL being
+    set
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
