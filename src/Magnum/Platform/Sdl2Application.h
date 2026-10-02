@@ -2740,6 +2740,8 @@ class Sdl2Application::Configuration {
         Vector2 _dpiScaling;
 };
 
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
+
 /**
 @brief Exit event
 
@@ -3827,8 +3829,6 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #undef MAGNUM_APPLICATION_MAIN
 #endif
 #endif
-
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 
 }}
 
