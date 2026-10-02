@@ -1780,7 +1780,7 @@ class EmscriptenApplication::Configuration {
          * @see @ref WindowFlags, @ref setWindowFlags(), @ref addWindowFlags(),
          *      @ref clearWindowFlags()
          */
-        enum class WindowFlag: UnsignedShort {
+        enum class WindowFlag: UnsignedByte {
             /**
              * Do not create any GPU context. Use together with
              * @ref EmscriptenApplication(const Arguments&, const Configuration&),
