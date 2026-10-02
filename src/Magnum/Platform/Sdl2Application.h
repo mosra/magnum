@@ -2453,9 +2453,7 @@ class Sdl2Application::Configuration {
              * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
              */
             Borderless = SDL_WINDOW_BORDERLESS,
-            #endif
 
-            #ifndef CORRADE_TARGET_EMSCRIPTEN
             /**
              * Hidden window
              *
