@@ -1876,8 +1876,8 @@ class EmscriptenApplication::Configuration {
          * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
          * instead.
          */
-        Configuration& setWindowFlags(WindowFlags windowFlags) {
-            _windowFlags = windowFlags;
+        Configuration& setWindowFlags(WindowFlags flags) {
+            _windowFlags = flags;
             return *this;
         }
 
