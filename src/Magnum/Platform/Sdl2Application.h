@@ -672,9 +672,9 @@ class Sdl2Application {
          * was not built with @ref MAGNUM_TARGET_GL, this creates a window
          * without any GPU context attached, leaving that part on the user.
          *
-         * If none of the flags is present and Magnum was built with
-         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
-         * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::WindowFlag::Contextless is not present and
+         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
+         * calling @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
@@ -816,10 +816,10 @@ class Sdl2Application {
          * was not built with @ref MAGNUM_TARGET_GL, this creates a window
          * without any GPU context attached, leaving that part on the user.
          *
-         * If none of the flags is present and Magnum was built with
-         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
-         * @ref create(const Configuration&, const GLConfiguration&) with
-         * default-constructed @ref GLConfiguration.
+         * If @ref Configuration::WindowFlag::Contextless is not present and
+         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
+         * calling @ref create(const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
          */
@@ -2506,8 +2506,15 @@ class Sdl2Application::Configuration {
 
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             /**
-             * Request a window for use with Vulkan. Useful in combination with
-             * @ref WindowFlag::Contextless.
+             * Request a window for use with Vulkan. Use in combination with
+             * @ref WindowFlag::Contextless and
+             * @ref Sdl2Application(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to create a window for use
+             * exclusively with Vulkan. Use *without*
+             * @ref WindowFlag::Contextless on builds with
+             * @ref MAGNUM_TARGET_GL enabled to create a window for use by both
+             * OpenGL and Vulkan.
              * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
              * @m_since{2019,10}
              */

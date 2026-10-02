@@ -393,9 +393,9 @@ class EmscriptenApplication {
          * was not built with @ref MAGNUM_TARGET_GL, this creates a window
          * without any GPU context attached, leaving that part on the user.
          *
-         * If none of the flags is present and Magnum was built with
-         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
-         * @ref EmscriptenApplication(const Arguments&, const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::WindowFlag::Contextless is not present and
+         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
+         * calling @ref EmscriptenApplication(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
@@ -499,8 +499,16 @@ class EmscriptenApplication {
         /**
          * @brief Set up a canvas with given configuration and WebGL context
          *
-         * Equivalent to calling @ref create(const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
+         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
+         * without any GPU context attached, leaving that part on the user.
+         *
+         * If @ref Configuration::WindowFlag::Contextless is not present and
+         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
+         * calling @ref create(const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
+         *
+         * See also @ref building-features for more information.
          */
         void create(const Configuration& configuration);
 

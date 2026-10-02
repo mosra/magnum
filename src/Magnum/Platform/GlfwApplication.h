@@ -243,9 +243,9 @@ class GlfwApplication {
          * was not built with @ref MAGNUM_TARGET_GL, this creates a window
          * without any GPU context attached, leaving that part on the user.
          *
-         * If none of the flags is present and Magnum was built with
-         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
-         * @ref GlfwApplication(const Arguments&, const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::WindowFlag::Contextless is not present and
+         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
+         * calling @ref GlfwApplication(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
@@ -405,10 +405,10 @@ class GlfwApplication {
          * was not built with @ref MAGNUM_TARGET_GL, this creates a window
          * without any GPU context attached, leaving that part on the user.
          *
-         * If none of the flags is present and Magnum was built with
-         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
-         * @ref create(const Configuration&, const GLConfiguration&) with
-         * default-constructed @ref GLConfiguration.
+         * If @ref Configuration::WindowFlag::Contextless is not present and
+         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
+         * calling @ref create(const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
          */
