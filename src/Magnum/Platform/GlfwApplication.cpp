@@ -387,12 +387,11 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
         monitor = glfwGetPrimaryMonitor();
         glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
     } else {
-        const Configuration::WindowFlags& flags = configuration.windowFlags();
-        glfwWindowHint(GLFW_DECORATED, !(flags >= Configuration::WindowFlag::Borderless));
-        glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
-        glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
-        glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
-        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::AlwaysOnTop);
+        glfwWindowHint(GLFW_DECORATED, !(configuration.windowFlags() >= Configuration::WindowFlag::Borderless));
+        glfwWindowHint(GLFW_RESIZABLE, configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
+        glfwWindowHint(GLFW_VISIBLE, !(configuration.windowFlags() >= Configuration::WindowFlag::Hidden));
+        glfwWindowHint(GLFW_MAXIMIZED, configuration.windowFlags() >= Configuration::WindowFlag::Maximized);
+        glfwWindowHint(GLFW_FLOATING, configuration.windowFlags() >= Configuration::WindowFlag::AlwaysOnTop);
     }
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
@@ -466,12 +465,11 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         monitor = glfwGetPrimaryMonitor();
         glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
     } else {
-        const Configuration::WindowFlags& flags = configuration.windowFlags();
-        glfwWindowHint(GLFW_DECORATED, !(flags >= Configuration::WindowFlag::Borderless));
-        glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
-        glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
-        glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
-        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::AlwaysOnTop);
+        glfwWindowHint(GLFW_DECORATED, !(configuration.windowFlags() >= Configuration::WindowFlag::Borderless));
+        glfwWindowHint(GLFW_RESIZABLE, configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
+        glfwWindowHint(GLFW_VISIBLE, !(configuration.windowFlags() >= Configuration::WindowFlag::Hidden));
+        glfwWindowHint(GLFW_MAXIMIZED, configuration.windowFlags() >= Configuration::WindowFlag::Maximized);
+        glfwWindowHint(GLFW_FLOATING, configuration.windowFlags() >= Configuration::WindowFlag::AlwaysOnTop);
     }
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
