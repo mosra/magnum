@@ -1401,7 +1401,7 @@ See also:
     @ref Platform::EmscriptenApplication to correctly print app-specified DPI
     scaling in its verbose output
 -   Fixed canvas size setup in @ref Platform::EmscriptenApplication to be the
-    same in the @ref Platform::EmscriptenApplication::Configuration::WindowFlag::Contextless "Contextless"
+    same in the @relativeref{Platform::EmscriptenApplication::Configuration::Flag,Contextless}
     case as for a WebGL-enabled context
 -   Fixed a crash in @ref Platform::GlfwApplication::setCursor() on the
     upcoming GLFW 3.4
@@ -1440,8 +1440,7 @@ See also:
     button numbering
 -   Creating a @ref Platform::Sdl2Application window without an OpenGL context
     was errorneously still marking it for use with OpenGL even without
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::OpenGL being
-    set
+    @ref Platform::Sdl2Application::Configuration::Flag::OpenGL being set
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
@@ -1627,6 +1626,17 @@ See also:
     `WheelDown` members are deprecated in favor of a dedicated
     @ref Platform::AbstractXApplication::scrollEvent(). Similar change was done
     for all other application classes in 2016 already.
+-   @cpp Platform::*Application::Configuration::WindowFlag::Contextless @ce,
+    related @cpp Platform::Sdl2Application::Configuration::WindowFlag::OpenGL @ce
+    and @cpp WindowFlag::Vulkan @ce flags and
+    @cpp Platform::EmscriptenApplication::Configuration::WindowFlag::AlwaysRequestAnimationFrame @ce
+    are deprecated in favor of a new
+    @ref Platform::Sdl2Application::Configuration::Flag "Platform::*Application::Configuration::Flag" enum and associated
+    @relativeref{Platform::Sdl2Application::Configuration,setFlags()},
+    @relativeref{Platform::Sdl2Application::Configuration,addFlags()} and
+    @relativeref{Platform::Sdl2Application::Configuration,clearFlags()} APIs
+    as compared to other window flags these cannot be subsequently modified on
+    an existing window
 -   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
     @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
     @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,
@@ -2760,7 +2770,7 @@ Released 2020-06-27, tagged as
 -   The @ref Primitives::cylinderSolid() and @ref Primitives::coneSolid()
     primitives were missing a face when both caps and texture coordinates were
     enabled (see [mosra/magnum#386](https://github.com/mosra/magnum/issues/386))
--   @ref Platform::Sdl2Application::Configuration::WindowFlag::Vulkan was
+-   @cpp Platform::Sdl2Application::Configuration::WindowFlag::Vulkan @ce was
     enabled conditionally only for SDL >= 2.0.6, but the version defines were
     never included so it was always disabled
 -   Fixed missing handling of
@@ -3293,10 +3303,10 @@ Released 2019-10-24, tagged as
     in @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication)
     for changing window title at runtime as opposed to setting them on
     application startup
--   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::OpenGL and
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::Vulkan "WindowFlag::Vulkan",
-    meant to be used together with @ref Platform::Sdl2Application::Configuration::WindowFlag::Contextless for
-    manual creation of OpenGL contexts and Vulkan instances
+-   Added @cpp Platform::Sdl2Application::Configuration::WindowFlag::OpenGL @ce
+    and @cpp WindowFlag::Vulkan @ce, meant to be used together with
+    @cpp WindowFlag::Contextless @ce for manual creation of OpenGL contexts and
+    Vulkan instances
 -   @ref Platform::WindowlessEglApplication now uses the
     @m_class{m-doc-external} [EGL_EXT_device_enumeration](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_device_enumeration.txt),
     @m_class{m-doc-external} [EGL_EXT_platform_base](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_base.txt) and

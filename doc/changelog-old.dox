@@ -109,7 +109,7 @@ Released 2018-05-01, tagged as
 
 -   Ability to create @ref Platform::Sdl2Application and
     @ref Platform::GlfwApplication classes without implicitly created OpenGL
-    context by passing @ref Platform::Sdl2Application::Configuration::WindowFlag::Contextless "Configuration::WindowFlag::Contextless"
+    context by passing @cpp Configuration::WindowFlag::Contextless @ce
     to them. These two can be now also built completely without the GL library.
 -   Added @ref Platform::AndroidApplication::windowSize()
 -   Added @ref Platform::AndroidApplication::nativeActivity() to access

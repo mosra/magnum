@@ -439,9 +439,9 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
     if(!args.value("dpi-scaling").empty())
         conf.setSize({640, 480}, args.value<Vector2>("dpi-scaling"));
     if(args.isSet("always-request-animation-frame"))
-        conf.addWindowFlags(Configuration::WindowFlag::AlwaysRequestAnimationFrame);
+        conf.addFlags(Configuration::Flag::AlwaysRequestAnimationFrame);
     if(args.isSet("contextless")) {
-        conf.addWindowFlags(Configuration::WindowFlag::Contextless);
+        conf.addFlags(Configuration::Flag::Contextless);
         create(conf);
     } else {
         GLConfiguration glConf;

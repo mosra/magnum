@@ -367,7 +367,7 @@ void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
 
 bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless)) {
+    if(!(configuration.flags() & Configuration::Flag::Contextless)) {
         return tryCreate(configuration, GLConfiguration{});
     }
     #endif
@@ -448,8 +448,8 @@ GlfwApplication::Modifiers currentGlfwModifiers(GLFWwindow* window) {
 
 #ifdef MAGNUM_TARGET_GL
 bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    CORRADE_ASSERT(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless),
-        "Platform::GlfwApplication::tryCreate(): cannot pass Configuration::WindowFlag::Contextless when creating an OpenGL context", false);
+    CORRADE_ASSERT(!(configuration.flags() & Configuration::Flag::Contextless),
+        "Platform::GlfwApplication::tryCreate(): cannot pass Configuration::Flag::Contextless when creating an OpenGL context", false);
     CORRADE_ASSERT(!_window && _context->version() == GL::Version::None,
         "Platform::GlfwApplication::tryCreate(): window with OpenGL context already created", false);
 

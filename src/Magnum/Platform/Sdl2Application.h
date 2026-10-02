@@ -668,13 +668,13 @@ class Sdl2Application {
         /**
          * @brief Construct without explicit GPU context configuration
          *
-         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
-         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
-         * without any GPU context attached, leaving that part on the user.
+         * If @ref Configuration::Flag::Contextless is present or Magnum was
+         * not built with @ref MAGNUM_TARGET_GL, this creates a window without
+         * any GPU context attached, leaving that part on the user.
          *
-         * If @ref Configuration::WindowFlag::Contextless is not present and
-         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
-         * calling @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::Flag::Contextless is not present and Magnum
+         * was built with @ref MAGNUM_TARGET_GL, this is equivalent to calling
+         * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
@@ -812,13 +812,13 @@ class Sdl2Application {
         /**
          * @brief Create a window with given configuration
          *
-         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
-         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
-         * without any GPU context attached, leaving that part on the user.
+         * If @ref Configuration::Flag::Contextless is present or Magnum was
+         * not built with @ref MAGNUM_TARGET_GL, this creates a window without
+         * any GPU context attached, leaving that part on the user.
          *
-         * If @ref Configuration::WindowFlag::Contextless is not present and
-         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
-         * calling @ref create(const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::Flag::Contextless is not present and Magnum
+         * was built with @ref MAGNUM_TARGET_GL, this is equivalent to calling
+         * @ref create(const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
@@ -2355,10 +2355,69 @@ namespace Implementation {
 class Sdl2Application::Configuration {
     public:
         /**
+         * @brief Flag
+         * @m_since_latest
+         *
+         * @see @ref Flags, @ref setFlags(), @ref addFlags(),
+         *      @ref clearFlags(), @ref WindowFlag
+         */
+        enum class Flag: Uint32 {
+            /**
+             * Do not create any GPU context. Use together with
+             * @ref Sdl2Application(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to prevent implicit
+             * creation of an OpenGL context. Can't be used with
+             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&) or
+             * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             */
+            Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
+
+            /**
+             * Request a window for use with OpenGL. Enabled implicitly when
+             * creating an OpenGL context using
+             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&) or
+             * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             * Use in combination with @ref Flag::Contextless and
+             * @ref Sdl2Application(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to create a window for use
+             * with OpenGL without actually creating the OpenGL context.
+             */
+            OpenGL = SDL_WINDOW_OPENGL,
+
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            /**
+             * Request a window for use with Vulkan. Use in combination with
+             * @ref Flag::Contextless and
+             * @ref Sdl2Application(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to create a window for use
+             * exclusively with Vulkan. Use *without* @ref Flag::Contextless on
+             * builds with @ref MAGNUM_TARGET_GL enabled to create a window for
+             * use by both OpenGL and Vulkan.
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            Vulkan = SDL_WINDOW_VULKAN
+            #endif
+        };
+
+        /**
+         * @brief Flags
+         * @m_since_latest
+         *
+         * @see @ref setFlags(), @ref addFlags(), @ref clearFlags(),
+         *      @ref WindowFlags
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        /**
          * @brief Window flag
          *
          * @see @ref WindowFlags, @ref setWindowFlags(), @ref addWindowFlags(),
-         *      @ref clearWindowFlags()
+         *      @ref clearWindowFlags(), @ref Flags
          */
         enum class WindowFlag: Uint32 {
             /**
@@ -2477,48 +2536,32 @@ class Sdl2Application::Configuration {
             PopupMenu = SDL_WINDOW_POPUP_MENU,
             #endif
 
+            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
-             * Do not create any GPU context. Use together with
-             * @ref Sdl2Application(const Arguments&, const Configuration&),
-             * @ref create(const Configuration&) or
-             * @ref tryCreate(const Configuration&) to prevent implicit
-             * creation of an OpenGL context. Can't be used with
-             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
-             * @ref create(const Configuration&, const GLConfiguration&) or
-             * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             * @copydoc Flag::Contextless
+             * @m_deprecated_since_latest Use @ref Flag::Contextless with
+             *      @ref setFlags(), @ref addFlags() or @ref clearFlags()
+             *      instead.
              */
-            Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
+            Contextless CORRADE_DEPRECATED_ENUM("use Flag::Contextless with setFlags(), addFlags() or clearFlags() instead") = Uint32(Flag::Contextless),
 
             /**
-             * Request a window for use with OpenGL. Enabled implicitly when
-             * creating an OpenGL context using
-             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
-             * @ref create(const Configuration&, const GLConfiguration&) or
-             * @ref tryCreate(const Configuration&, const GLConfiguration&).
-             * Use in combination with @ref WindowFlag::Contextless and
-             * @ref Sdl2Application(const Arguments&, const Configuration&),
-             * @ref create(const Configuration&) or
-             * @ref tryCreate(const Configuration&) to create a window for use
-             * with OpenGL without actually creating the OpenGL context.
-             * @m_since{2019,10}
+             * @copydoc Flag::OpenGL
+             * @m_deprecated_since_latest Use @ref Flag::OpenGL with
+             *      @ref setFlags(), @ref addFlags() or @ref clearFlags()
+             *      instead.
              */
-            OpenGL = SDL_WINDOW_OPENGL,
+            OpenGL CORRADE_DEPRECATED_ENUM("use Flag::OpenGL with setFlags(), addFlags() or clearFlags() instead") = Uint32(Flag::OpenGL),
 
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             /**
-             * Request a window for use with Vulkan. Use in combination with
-             * @ref WindowFlag::Contextless and
-             * @ref Sdl2Application(const Arguments&, const Configuration&),
-             * @ref create(const Configuration&) or
-             * @ref tryCreate(const Configuration&) to create a window for use
-             * exclusively with Vulkan. Use *without*
-             * @ref WindowFlag::Contextless on builds with
-             * @ref MAGNUM_TARGET_GL enabled to create a window for use by both
-             * OpenGL and Vulkan.
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             * @m_since{2019,10}
+             * @copydoc Flag::Vulkan
+             * @m_deprecated_since_latest Use @ref Flag::Vulkan with
+             *      @ref setFlags(), @ref addFlags() or @ref clearFlags()
+             *      instead.
              */
-            Vulkan = SDL_WINDOW_VULKAN
+            Vulkan CORRADE_DEPRECATED_ENUM("use Flag::Contextless with setFlags(), addFlags() or clearFlags() instead") = Uint32(Flag::Vulkan),
+            #endif
             #endif
         };
 
@@ -2526,7 +2569,7 @@ class Sdl2Application::Configuration {
          * @brief Window flags
          *
          * @see @ref setWindowFlags(), @ref addWindowFlags(),
-         *      @ref clearWindowFlags()
+         *      @ref clearWindowFlags(), @ref Flags
          */
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
 
@@ -2688,22 +2731,96 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
-        /** @brief Window flags */
+        /**
+         * @brief Flags
+         * @m_since_latest
+         *
+         * @see @ref windowFlags()
+         */
+        Flags flags() const {
+            return _flags;
+        }
+
+        /**
+         * @brief Set flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Default are none, although @ref Flag::OpenGL is implicitly enabled
+         * when creating an OpenGL context using
+         * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+         * @ref create(const Configuration&, const GLConfiguration&) or
+         * @ref tryCreate(const Configuration&, const GLConfiguration&). To
+         * avoid clearing default flags by accident, prefer to use
+         * @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref setWindowFlags()
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Add flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags(), @ref addWindowFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags(), @ref clearWindowFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            _flags &= ~flags;
+            return *this;
+        }
+
+        /**
+         * @brief Window flags
+         *
+         * @see @ref flags()
+         */
         WindowFlags windowFlags() const { return _windowFlags; }
 
         /**
          * @brief Set window flags
          * @return Reference to self (for method chaining)
          *
-         * Default are none, although @ref WindowFlag::OpenGL is implicitly
-         * enabled when creating an OpenGL context using
-         * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
-         * @ref create(const Configuration&, const GLConfiguration&) or
-         * @ref tryCreate(const Configuration&, const GLConfiguration&). To
-         * avoid clearing default flags by accident, prefer to use
-         * @ref addWindowFlags() and @ref clearWindowFlags() instead.
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
+         * instead.
+         * @see @ref setFlags()
          */
         Configuration& setWindowFlags(WindowFlags flags) {
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /* If a deprecated flag is used overwrite the _flags as well but
+               keep the deprecated WindowlessFlag set so code querying
+               windowFlags() doesn't break. If a deprecated flag isn't used,
+               don't touch _flags at all to not have inconsistent behavior on
+               non-deprecated builds. The Flags(Flag::Contextless) is here
+               because otherwise the CORRADE_ENUMSET_OPERATORS() definition
+               would need to be before this function, meaning it'd have to be
+               deinlined. Not worth it for deprecated code. */
+            if(const Flags deprecatedFlags = Flags(Uint32(flags)) & (Flags(Flag::Contextless)|Flag::OpenGL
+                #ifndef CORRADE_TARGET_EMSCRIPTEN
+                |Flag::Vulkan
+                #endif
+            ))
+                _flags = deprecatedFlags;
+            #endif
             _windowFlags = flags;
             return *this;
         }
@@ -2715,9 +2832,24 @@ class Sdl2Application::Configuration {
          *
          * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
-         * @see @ref clearWindowFlags()
+         * @see @ref clearWindowFlags(), @ref addFlags()
          */
         Configuration& addWindowFlags(WindowFlags flags) {
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /* Add to the _flags as well but keep the deprecated
+               WindowlessFlags set so code querying windowFlags() doesn't
+               break. Compared to setWindowFlags() this won't have different
+               behavior on non-deprecated builds so an if() isn't needed. The
+               Flags(Flag::Contextless) is here because otherwise the
+               CORRADE_ENUMSET_OPERATORS() definition would need to be before
+               this function, meaning it'd have to be deinlined. Not worth it
+               for deprecated code. */
+            _flags |= Flags(Uint32(flags)) & (Flags(Flag::Contextless)|Flag::OpenGL
+                #ifndef CORRADE_TARGET_EMSCRIPTEN
+                |Flag::Vulkan
+                #endif
+            );
+            #endif
             _windowFlags |= flags;
             return *this;
         }
@@ -2730,9 +2862,24 @@ class Sdl2Application::Configuration {
          * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
          * existing instead of replacing them. Useful for removing default
          * flags.
-         * @see @ref addWindowFlags()
+         * @see @ref addWindowFlags(), @ref clearFlags()
          */
         Configuration& clearWindowFlags(WindowFlags flags) {
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /* Clear from the _flags as well but do it also with the deprecated
+               WindowlessFlags so code querying windowFlags() doesn't break.
+               Compared to setWindowFlags() this won't have different behavior
+               on non-deprecated builds so an if() isn't needed. The
+               Flags(Flag::Contextless) is here because otherwise the
+               CORRADE_ENUMSET_OPERATORS() definition would need to be before
+               this function, meaning it'd have to be deinlined. Not worth it
+               for deprecated code. */
+            _flags &= ~(Flags(Uint32(flags)) & (Flags(Flag::Contextless)|Flag::OpenGL
+                #ifndef CORRADE_TARGET_EMSCRIPTEN
+                |Flag::Vulkan
+                #endif
+            ));
+            #endif
             _windowFlags &= ~flags;
             return *this;
         }
@@ -2743,10 +2890,12 @@ class Sdl2Application::Configuration {
         #endif
         Vector2i _size;
         DpiScalingPolicy _dpiScalingPolicy;
+        Flags _flags;
         WindowFlags _windowFlags;
         Vector2 _dpiScaling;
 };
 
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 
 /**

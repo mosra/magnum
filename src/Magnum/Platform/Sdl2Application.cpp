@@ -483,7 +483,7 @@ void Sdl2Application::setWindowIcon(const ImageView2D& image) {
 
 bool Sdl2Application::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless))
+    if(!(configuration.flags() & Configuration::Flag::Contextless))
         return tryCreate(configuration, GLConfiguration{});
     #endif
 
@@ -496,6 +496,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
     const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
     /* Create window */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /** @todo remove once WindowFlag::Contextless is gone, cannot wrap just the
+        subexpression by this as GCC (but not Clang) rejects pragmas there */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
     if(!(_window = SDL_CreateWindow(
         #ifndef CORRADE_TARGET_IOS
         configuration.title().data(),
@@ -505,15 +510,23 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         scaledWindowSize.x(), scaledWindowSize.y(),
         /* Unlike in tryCreate(const Configuration&, const GLConfiguration&)
-           below, here WindowFlag::OpenGL *isn't* implicitly set and specifying
-           it (or not) is up to the user. Furthermore, WindowFlag::Contextless
-           is not a real SDL_WINDOW_* flag but a fake value, clear it from the
-           set. */
-        SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags() & ~Configuration::WindowFlag::Contextless))))
+           below, here Flag::OpenGL *isn't* implicitly set and specifying it
+           (or not) is up to the user. Furthermore, Flag::Contextless is not a
+           real SDL_WINDOW_* flag but a fake value, clear it from the set. */
+        SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.flags() & ~Configuration::Flag::Contextless)|Uint32(configuration.windowFlags()
+            /* It's also kept in windowFlags() for compatibility, clear it from
+               there as well */
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            & ~Configuration::WindowFlag::Contextless
+            #endif
+        ))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;
     }
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP /** @todo remove once WindowFlag::Contextless is gone */
+    #endif
 
     /* Emscripten-specific initialization */
     #else
@@ -567,8 +580,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
 
 #ifdef MAGNUM_TARGET_GL
 bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    CORRADE_ASSERT(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless),
-        "Platform::Sdl2Application::tryCreate(): cannot pass Configuration::WindowFlag::Contextless when creating an OpenGL context", false);
+    CORRADE_ASSERT(!(configuration.flags() & Configuration::Flag::Contextless),
+        "Platform::Sdl2Application::tryCreate(): cannot pass Configuration::Flag::Contextless when creating an OpenGL context", false);
     CORRADE_ASSERT(_context->version() == GL::Version::None,
         "Platform::Sdl2Application::tryCreate(): context already created", false);
 
@@ -665,10 +678,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         scaledWindowSize.x(), scaledWindowSize.y(),
-        /* As we're creating a GL context, set WindowFlag::OpenGL implicitly --
-           users are meant to set this flag only when a GL context explicitly
-           *isn't* created, such as together with WindowFlag::Contextless */
-        SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()|Configuration::WindowFlag::OpenGL))))
+        /* As we're creating a GL context, set Flag::OpenGL implicitly -- users
+           are meant to set this flag only when a GL context explicitly *isn't*
+           created, such as together with Flag::Contextless */
+        SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.flags()|Configuration::Flag::OpenGL)|Uint32(configuration.windowFlags()))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;
@@ -731,8 +744,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             scaledWindowSize.x(), scaledWindowSize.y(),
-            /* WindowFlag::OpenGL set implicitly, same as above */
-            SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()|Configuration::WindowFlag::OpenGL))))
+            /* Flag::OpenGL set implicitly, same as above */
+            SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.flags()|Configuration::Flag::OpenGL)|Uint32(configuration.windowFlags()))))
         {
             Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
             return false;

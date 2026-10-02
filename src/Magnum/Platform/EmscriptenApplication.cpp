@@ -259,7 +259,7 @@ EmscriptenApplication::~EmscriptenApplication() {
     #ifdef MAGNUM_TARGET_GL
     /* Destroy Magnum context first to avoid it potentially accessing the
        now-destroyed GL context after. If the application was created with
-       WindowFlag::Contextless set, the optional is still populated but with
+       Flag::Contextless set, the optional is still populated but with
        _context->tryCreate() not set yet. The only way to check whether it's
        actually created is to check for version, consistently with the assert
        in the GL tryCreate() implementation below. */
@@ -314,7 +314,7 @@ Vector2 EmscriptenApplication::dpiScaling(const Configuration& configuration) co
 
 bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless)) {
+    if(!(configuration.flags() & Configuration::Flag::Contextless)) {
         return tryCreate(configuration, GLConfiguration{});
     }
     #endif
@@ -358,15 +358,15 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
     setupCallbacks(configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
-    setupAnimationFrame(configuration.windowFlags() >= Configuration::WindowFlag::AlwaysRequestAnimationFrame);
+    setupAnimationFrame(configuration.flags() >= Configuration::Flag::AlwaysRequestAnimationFrame);
 
     return true;
 }
 
 #ifdef MAGNUM_TARGET_GL
 bool EmscriptenApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    CORRADE_ASSERT(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless),
-        "Platform::EmscriptenApplication::tryCreate(): cannot pass Configuration::WindowFlag::Contextless when creating an OpenGL context", false);
+    CORRADE_ASSERT(!(configuration.flags() & Configuration::Flag::Contextless),
+        "Platform::EmscriptenApplication::tryCreate(): cannot pass Configuration::Flag::Contextless when creating an OpenGL context", false);
     CORRADE_ASSERT(_context->version() == GL::Version::None,
         "Platform::EmscriptenApplication::tryCreate(): window with OpenGL context already created", false);
 
@@ -450,7 +450,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_make_context_current(_glContext = context) == EMSCRIPTEN_RESULT_SUCCESS);
 
     setupCallbacks(configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
-    setupAnimationFrame(configuration.windowFlags() >= Configuration::WindowFlag::AlwaysRequestAnimationFrame);
+    setupAnimationFrame(configuration.flags() >= Configuration::Flag::AlwaysRequestAnimationFrame);
 
     /* Return true if the initialization succeeds */
     return _context->tryCreate(glConfiguration);

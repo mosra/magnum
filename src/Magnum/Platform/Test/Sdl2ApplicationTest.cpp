@@ -569,7 +569,7 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     #endif
     {
         #ifdef MAGNUM_TARGET_GL
-        conf.addWindowFlags(Configuration::WindowFlag::Contextless);
+        conf.addFlags(Configuration::Flag::Contextless);
         #endif
         create(conf);
     }

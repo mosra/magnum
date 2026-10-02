@@ -256,8 +256,8 @@ for you.
 
 For testing purposes or for more predictable behavior for example when the
 application has to redraw all the time anyway this can be disabled using
-@ref Configuration::WindowFlag::AlwaysRequestAnimationFrame. Setting the flag
-will make the main loop behave equivalently to @ref Sdl2Application.
+@ref Configuration::Flag::AlwaysRequestAnimationFrame. Setting the flag will
+make the main loop behave equivalently to @ref Sdl2Application.
 
 @section Platform-EmscriptenApplication-webgl WebGL-specific behavior
 
@@ -389,13 +389,13 @@ class EmscriptenApplication {
         /**
          * @brief Construct without explicit GPU context configuration
          *
-         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
-         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
-         * without any GPU context attached, leaving that part on the user.
+         * If @ref Configuration::Flag::Contextless is present or Magnum was
+         * not built with @ref MAGNUM_TARGET_GL, this creates a window without
+         * any GPU context attached, leaving that part on the user.
          *
-         * If @ref Configuration::WindowFlag::Contextless is not present and
-         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
-         * calling @ref EmscriptenApplication(const Arguments&, const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::Flag::Contextless is not present and Magnum
+         * was built with @ref MAGNUM_TARGET_GL, this is equivalent to calling
+         * @ref EmscriptenApplication(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
@@ -499,14 +499,14 @@ class EmscriptenApplication {
         /**
          * @brief Set up a canvas with given configuration and WebGL context
          *
-         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
-         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
-         * without any GPU context attached, leaving that part on the user.
+         * If @ref Configuration::Flag::Contextless is present or Magnum was
+         * not built with @ref MAGNUM_TARGET_GL, this creates a window without
+         * any GPU context attached, leaving that part on the user.
          *
-         * If @ref Configuration::WindowFlag::Contextless is not present and
-         * Magnum was built with @ref MAGNUM_TARGET_GL, this is equivalent to
-         * calling @ref create(const Configuration&, const GLConfiguration&)
-         * with default-constructed @ref GLConfiguration.
+         * If @ref Configuration::Flag::Contextless is not present and Magnum
+         * was built with @ref MAGNUM_TARGET_GL, this is equivalent to calling
+         * @ref create(const Configuration&, const GLConfiguration&) with
+         * default-constructed @ref GLConfiguration.
          *
          * See also @ref building-features for more information.
          */
@@ -1775,12 +1775,13 @@ CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::GLConfiguration::Flags)
 class EmscriptenApplication::Configuration {
     public:
         /**
-         * @brief Window flag
+         * @brief Flag
+         * @m_since_latest
          *
-         * @see @ref WindowFlags, @ref setWindowFlags(), @ref addWindowFlags(),
-         *      @ref clearWindowFlags()
+         * @see @ref Flags, @ref setFlags(), @ref addFlags(),
+         *      @ref clearFlags(), @ref WindowFlag
          */
-        enum class WindowFlag: UnsignedByte {
+        enum class Flag: UnsignedByte {
             /**
              * Do not create any GPU context. Use together with
              * @ref EmscriptenApplication(const Arguments&, const Configuration&),
@@ -1792,15 +1793,6 @@ class EmscriptenApplication::Configuration {
              * @ref tryCreate(const Configuration&, const GLConfiguration&).
              */
             Contextless = 1 << 0,
-
-            /**
-             * Resizable canvas. This causes the framebuffer to be resized
-             * when the @cb{.html} <canvas> @ce size changes, either directly
-             * or as a consequence of browser window size change.
-             *
-             * Implement @ref viewportEvent() to react to the resizing events.
-             */
-            Resizable = 1 << 1,
 
             /**
              * Always request the next animation frame. Disables the
@@ -1815,14 +1807,62 @@ class EmscriptenApplication::Configuration {
              * --- it depends on @ref redraw() being called independently of
              * this flag being set.
              */
+            /** @todo renumber once the deprecated WindowFlag is gone, now kept
+                the same just so they can be easily aliased */
             AlwaysRequestAnimationFrame = 1 << 2
+        };
+
+        /**
+         * @brief Flags
+         * @m_since_latest
+         *
+         * @see @ref setFlags(), @ref addFlags(), @ref clearFlags(),
+         *      @ref WindowFlags
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        /**
+         * @brief Window flag
+         *
+         * @see @ref WindowFlags, @ref setWindowFlags(), @ref addWindowFlags(),
+         *      @ref clearWindowFlags(), @ref Flags
+         */
+        enum class WindowFlag: UnsignedByte {
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * @copydoc Flag::Contextless
+             * @m_deprecated_since_latest Use @ref Flag::Contextless with
+             *      @ref setFlags(), @ref addFlags() or @ref clearFlags()
+             *      instead.
+             */
+            Contextless CORRADE_DEPRECATED_ENUM("use Flag::Contextless with setFlags(), addFlags() or clearFlags() instead") = UnsignedByte(Flag::Contextless),
+            #endif
+
+            /**
+             * Resizable canvas. This causes the framebuffer to be resized
+             * when the @cb{.html} <canvas> @ce size changes, either directly
+             * or as a consequence of browser window size change.
+             *
+             * Implement @ref viewportEvent() to react to the resizing events.
+             */
+            Resizable = 1 << 1,
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * @copydoc Flag::AlwaysRequestAnimationFrame
+             * @m_deprecated_since_latest Use @ref Flag::AlwaysRequestAnimationFrame
+             *      with @ref setFlags(), @ref addFlags() or @ref clearFlags()
+             *      instead.
+             */
+            AlwaysRequestAnimationFrame CORRADE_DEPRECATED_ENUM("use Flag::AlwaysRequestAnimationFrame with setFlags(), addFlags() or clearFlags() instead") = UnsignedByte(Flag::AlwaysRequestAnimationFrame),
+            #endif
         };
 
         /**
          * @brief Window flags
          *
          * @see @ref setWindowFlags(), @ref addWindowFlags(),
-         *      @ref clearWindowFlags()
+         *      @ref clearWindowFlags(), @ref Flags
          */
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
 
@@ -1871,7 +1911,63 @@ class EmscriptenApplication::Configuration {
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
 
-        /** @brief Window flags */
+        /**
+         * @brief Flags
+         * @m_since_latest
+         *
+         * @see @ref windowFlags()
+         */
+        Flags flags() const {
+            return _flags;
+        }
+
+        /**
+         * @brief Set flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref setWindowFlags()
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Add flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags(), @ref addWindowFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags(), @ref clearWindowFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            _flags &= ~flags;
+            return *this;
+        }
+
+        /**
+         * @brief Window flags
+         *
+         * @see @ref flags()
+         */
         WindowFlags windowFlags() const {
             return _windowFlags;
         }
@@ -1883,8 +1979,21 @@ class EmscriptenApplication::Configuration {
          * Default are none. To avoid clearing default flags by accident,
          * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
          * instead.
+         * @see @ref setFlags()
          */
         Configuration& setWindowFlags(WindowFlags flags) {
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /* If a deprecated flag is used overwrite the _flags as well but
+               keep the deprecated WindowlessFlag set so code querying
+               windowFlags() doesn't break. If a deprecated flag isn't used,
+               don't touch _flags at all to not have inconsistent behavior on
+               non-deprecated builds. The Flags(Flag::Contextless) is here
+               because otherwise the CORRADE_ENUMSET_OPERATORS() definition
+               would need to be before this function, meaning it'd have to be
+               deinlined. Not worth it for deprecated code. */
+            if(const Flags deprecatedFlags = Flags(UnsignedByte(flags)) & (Flags(Flag::Contextless)|Flag::AlwaysRequestAnimationFrame))
+                _flags = deprecatedFlags;
+            #endif
             _windowFlags = flags;
             return *this;
         }
@@ -1896,9 +2005,20 @@ class EmscriptenApplication::Configuration {
          *
          * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
-         * @see @ref clearWindowFlags()
+         * @see @ref clearWindowFlags(), @ref addFlags()
          */
         Configuration& addWindowFlags(WindowFlags flags) {
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /* Add to the _flags as well but keep the deprecated
+               WindowlessFlags set so code querying windowFlags() doesn't
+               break. Compared to setWindowFlags() this won't have different
+               behavior on non-deprecated builds so an if() isn't needed. The
+               Flags(Flag::Contextless) is here because otherwise the
+               CORRADE_ENUMSET_OPERATORS() definition would need to be before
+               this function, meaning it'd have to be deinlined. Not worth it
+               for deprecated code. */
+            _flags |= Flags(UnsignedByte(flags)) & (Flags(Flag::Contextless)|Flag::AlwaysRequestAnimationFrame);
+            #endif
             _windowFlags |= flags;
             return *this;
         }
@@ -1911,9 +2031,20 @@ class EmscriptenApplication::Configuration {
          * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
          * existing instead of replacing them. Useful for removing default
          * flags.
-         * @see @ref addWindowFlags()
+         * @see @ref addWindowFlags(), @ref clearFlags()
          */
         Configuration& clearWindowFlags(WindowFlags flags) {
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /* Clear from the _flags as well but do it also with the deprecated
+               WindowlessFlags so code querying windowFlags() doesn't break.
+               Compared to setWindowFlags() this won't have different behavior
+               on non-deprecated builds so an if() isn't needed. The
+               Flags(Flag::Contextless) is here because otherwise the
+               CORRADE_ENUMSET_OPERATORS() definition would need to be before
+               this function, meaning it'd have to be deinlined. Not worth it
+               for deprecated code. */
+            _flags &= ~(Flags(UnsignedByte(flags)) & (Flags(Flag::Contextless)|Flag::AlwaysRequestAnimationFrame));
+            #endif
             _windowFlags &= ~flags;
             return *this;
         }
@@ -1921,9 +2052,11 @@ class EmscriptenApplication::Configuration {
     private:
         Vector2i _size;
         Vector2 _dpiScaling;
+        Flags _flags;
         WindowFlags _windowFlags;
 };
 
+CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Configuration::Flags)
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Configuration::WindowFlags)
 
 /**
