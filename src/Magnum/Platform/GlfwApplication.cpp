@@ -383,17 +383,17 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
 
     /* Window flags */
     GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
-    if (configuration.windowFlags() >= Configuration::WindowFlag::Fullscreen) {
+    if (configuration.windowFlags() >= WindowFlag::Fullscreen) {
         monitor = glfwGetPrimaryMonitor();
-        glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
+        glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= WindowFlag::AutoIconify);
     } else {
-        glfwWindowHint(GLFW_DECORATED, !(configuration.windowFlags() >= Configuration::WindowFlag::Borderless));
-        glfwWindowHint(GLFW_RESIZABLE, configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
-        glfwWindowHint(GLFW_VISIBLE, !(configuration.windowFlags() >= Configuration::WindowFlag::Hidden));
-        glfwWindowHint(GLFW_MAXIMIZED, configuration.windowFlags() >= Configuration::WindowFlag::Maximized);
-        glfwWindowHint(GLFW_FLOATING, configuration.windowFlags() >= Configuration::WindowFlag::AlwaysOnTop);
+        glfwWindowHint(GLFW_DECORATED, !(configuration.windowFlags() >= WindowFlag::Borderless));
+        glfwWindowHint(GLFW_RESIZABLE, configuration.windowFlags() >= WindowFlag::Resizable);
+        glfwWindowHint(GLFW_VISIBLE, !(configuration.windowFlags() >= WindowFlag::Hidden));
+        glfwWindowHint(GLFW_MAXIMIZED, configuration.windowFlags() >= WindowFlag::Maximized);
+        glfwWindowHint(GLFW_FLOATING, configuration.windowFlags() >= WindowFlag::AlwaysOnTop);
     }
-    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
+    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= WindowFlag::Focused);
 
     /* Disable implicit GL context creation */
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -409,7 +409,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
 
     /* Proceed with configuring other stuff that couldn't be done with window
        hints */
-    if(configuration.windowFlags() >= Configuration::WindowFlag::Minimized)
+    if(configuration.windowFlags() >= WindowFlag::Minimized)
         glfwIconifyWindow(_window);
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
@@ -461,17 +461,17 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
     /* Window flags */
     GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
-    if (configuration.windowFlags() >= Configuration::WindowFlag::Fullscreen) {
+    if (configuration.windowFlags() >= WindowFlag::Fullscreen) {
         monitor = glfwGetPrimaryMonitor();
-        glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
+        glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= WindowFlag::AutoIconify);
     } else {
-        glfwWindowHint(GLFW_DECORATED, !(configuration.windowFlags() >= Configuration::WindowFlag::Borderless));
-        glfwWindowHint(GLFW_RESIZABLE, configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
-        glfwWindowHint(GLFW_VISIBLE, !(configuration.windowFlags() >= Configuration::WindowFlag::Hidden));
-        glfwWindowHint(GLFW_MAXIMIZED, configuration.windowFlags() >= Configuration::WindowFlag::Maximized);
-        glfwWindowHint(GLFW_FLOATING, configuration.windowFlags() >= Configuration::WindowFlag::AlwaysOnTop);
+        glfwWindowHint(GLFW_DECORATED, !(configuration.windowFlags() >= WindowFlag::Borderless));
+        glfwWindowHint(GLFW_RESIZABLE, configuration.windowFlags() >= WindowFlag::Resizable);
+        glfwWindowHint(GLFW_VISIBLE, !(configuration.windowFlags() >= WindowFlag::Hidden));
+        glfwWindowHint(GLFW_MAXIMIZED, configuration.windowFlags() >= WindowFlag::Maximized);
+        glfwWindowHint(GLFW_FLOATING, configuration.windowFlags() >= WindowFlag::AlwaysOnTop);
     }
-    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
+    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= WindowFlag::Focused);
 
     /* Framebuffer setup */
     glfwWindowHint(GLFW_RED_BITS, glConfiguration.colorBufferSize().r());
@@ -595,7 +595,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
     /* Proceed with configuring other stuff that couldn't be done with window
        hints */
-    if(configuration.windowFlags() >= Configuration::WindowFlag::Minimized)
+    if(configuration.windowFlags() >= WindowFlag::Minimized)
         glfwIconifyWindow(_window);
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
@@ -617,7 +617,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     }
 
     /* Show the window once we are sure that everything is okay */
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+    if(!(configuration.windowFlags() & WindowFlag::Hidden))
         glfwShowWindow(_window);
 
     /* Return true if the initialization succeeds */
@@ -1178,7 +1178,9 @@ GlfwApplication::GLConfiguration::GLConfiguration():
 GlfwApplication::Configuration::Configuration():
     _title{Containers::String::nullTerminatedGlobalView("Magnum GLFW Application"_s)},
     _size{800, 600},
-    _windowFlags{WindowFlag::Focused},
+    /** @todo drop the GlfwApplication:: prefix once the deprecated enum is
+        gone */
+    _windowFlags{GlfwApplication::WindowFlag::Focused},
     _dpiScalingPolicy{DpiScalingPolicy::Default} {}
 
 GlfwApplication::Configuration::~Configuration() = default;

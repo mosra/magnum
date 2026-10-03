@@ -186,7 +186,7 @@ class MyApplication: public Platform::Application {
     public:
         explicit MyApplication(const Arguments& arguments):
             Platform::Application{arguments, Configuration{}
-                .addWindowFlags(Configuration::WindowFlag::Resizable)}
+                .addWindowFlags(WindowFlag::Resizable)}
         {
             DOXYGEN_ELLIPSIS()
         }

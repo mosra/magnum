@@ -357,7 +357,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_lastKnownDevicePixelRatio;
     emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
-    setupCallbacks(configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
+    setupCallbacks(configuration.windowFlags() >= WindowFlag::Resizable);
     setupAnimationFrame(configuration.flags() >= Configuration::Flag::AlwaysRequestAnimationFrame);
 
     return true;
@@ -449,7 +449,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     /* Make the context current */
     CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_make_context_current(_glContext = context) == EMSCRIPTEN_RESULT_SUCCESS);
 
-    setupCallbacks(configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
+    setupCallbacks(configuration.windowFlags() >= WindowFlag::Resizable);
     setupAnimationFrame(configuration.flags() >= Configuration::Flag::AlwaysRequestAnimationFrame);
 
     /* Return true if the initialization succeeds */

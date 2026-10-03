@@ -496,11 +496,6 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
     const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
     /* Create window */
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    /** @todo remove once WindowFlag::Contextless is gone, cannot wrap just the
-        subexpression by this as GCC (but not Clang) rejects pragmas there */
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    #endif
     if(!(_window = SDL_CreateWindow(
         #ifndef CORRADE_TARGET_IOS
         configuration.title().data(),
@@ -513,20 +508,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
            below, here Flag::OpenGL *isn't* implicitly set and specifying it
            (or not) is up to the user. Furthermore, Flag::Contextless is not a
            real SDL_WINDOW_* flag but a fake value, clear it from the set. */
-        SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.flags() & ~Configuration::Flag::Contextless)|Uint32(configuration.windowFlags()
-            /* It's also kept in windowFlags() for compatibility, clear it from
-               there as well */
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            & ~Configuration::WindowFlag::Contextless
-            #endif
-        ))))
+        SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.flags() & ~Configuration::Flag::Contextless)|Uint32(configuration.windowFlags()))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;
     }
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_IGNORE_DEPRECATED_POP /** @todo remove once WindowFlag::Contextless is gone */
-    #endif
 
     /* Emscripten-specific initialization */
     #else
@@ -562,7 +548,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
     const Vector2i scaledWindowSize = windowSize*_dpiScaling;
 
     Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
-    if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
+    if(configuration.windowFlags() & WindowFlag::Resizable) {
         _flags |= Flag::Resizable;
         /* Actually not sure if this makes any difference:
            https://github.com/kripken/emscripten/issues/1731 */
@@ -809,7 +795,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     const Vector2i scaledWindowSize = windowSize*_dpiScaling;
 
     Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
-    if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
+    if(configuration.windowFlags() & WindowFlag::Resizable) {
         _flags |= Flag::Resizable;
         /* Actually not sure if this makes any difference:
            https://github.com/kripken/emscripten/issues/1731 */
@@ -836,7 +822,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Show the window once we are sure that everything is okay */
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+    if(!(configuration.windowFlags() & WindowFlag::Hidden))
         SDL_ShowWindow(_window);
     #endif
 

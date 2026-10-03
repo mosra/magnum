@@ -774,7 +774,7 @@ a high-level overview.
     version is not what the application wants (as opposed to just aborting the
     application) (see [mosra/magnum#105](https://github.com/mosra/magnum/issues/105))
 -   Added @cpp Platform::Sdl2Application::Configuration::setSRGBCapable() @ce
--   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::Borderless
+-   Added @cpp Platform::Sdl2Application::Configuration::WindowFlag::Borderless @ce
     and `Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi`
     for iOS and macOS
 -   Added @ref Platform::WindowlessGlxApplication::Configuration::setFlags() "Platform::Windowless*Application::Configuration::setFlags()" with
