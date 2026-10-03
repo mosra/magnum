@@ -148,11 +148,11 @@ to simplify porting.
 @section Platform-AndroidApplication-resizing Responding to viewport events
 
 Unlike in desktop application implementations, where this is controlled via
-@ref Sdl2Application::Configuration::WindowFlag::Resizable, for example, on
-Android you have to describe this in the `AndroidManifest.xml` file, as by
-default the application gets killed and relaunched on screen orientation
-change. See the @ref platforms-android-apps-manifest-screen-resize "manifest file docs"
-for more information.
+@ref Sdl2Application::WindowFlag::Resizable, for example, on Android you have
+to describe this in the `AndroidManifest.xml` file, as by default the
+application gets killed and relaunched on screen orientation change. See the
+@ref platforms-android-apps-manifest-screen-resize "manifest file docs" for
+more information.
 
 @section Platform-AndroidApplication-output-redirection Redirecting output to Android log buffer
 

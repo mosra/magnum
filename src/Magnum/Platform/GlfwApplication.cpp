@@ -373,14 +373,14 @@ namespace {
 /* Returns a monitor pointer that gets subsequently used for enabling
    fullscreen, or nullptr if fullscreen isn't meant to be enabled. Strange
    API. */
-GLFWmonitor* setupWindowFlags(const GlfwApplication::Configuration::WindowFlags flags) {
-    glfwWindowHint(GLFW_DECORATED, !(flags >= GlfwApplication::Configuration::WindowFlag::Borderless));
-    glfwWindowHint(GLFW_RESIZABLE, flags >= GlfwApplication::Configuration::WindowFlag::Resizable);
-    glfwWindowHint(GLFW_VISIBLE, !(flags >= GlfwApplication::Configuration::WindowFlag::Hidden));
-    glfwWindowHint(GLFW_MAXIMIZED, flags >= GlfwApplication::Configuration::WindowFlag::Maximized);
-    glfwWindowHint(GLFW_FLOATING, flags >= GlfwApplication::Configuration::WindowFlag::AlwaysOnTop);
+GLFWmonitor* setupWindowFlags(const GlfwApplication::WindowFlags flags) {
+    glfwWindowHint(GLFW_DECORATED, !(flags >= GlfwApplication::WindowFlag::Borderless));
+    glfwWindowHint(GLFW_RESIZABLE, flags >= GlfwApplication::WindowFlag::Resizable);
+    glfwWindowHint(GLFW_VISIBLE, !(flags >= GlfwApplication::WindowFlag::Hidden));
+    glfwWindowHint(GLFW_MAXIMIZED, flags >= GlfwApplication::WindowFlag::Maximized);
+    glfwWindowHint(GLFW_FLOATING, flags >= GlfwApplication::WindowFlag::AlwaysOnTop);
 
-    return flags >= GlfwApplication::Configuration::WindowFlag::Fullscreen ?
+    return flags >= GlfwApplication::WindowFlag::Fullscreen ?
         glfwGetPrimaryMonitor() : nullptr;
 }
 
@@ -421,7 +421,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
 
     /* Proceed with configuring other stuff that couldn't be done with window
        hints */
-    if(configuration.windowFlags() >= Configuration::WindowFlag::Minimized)
+    if(configuration.windowFlags() >= WindowFlag::Minimized)
         glfwIconifyWindow(_window);
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
@@ -576,7 +576,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
     /* Proceed with configuring other stuff that couldn't be done with window
        hints */
-    if(configuration.windowFlags() >= Configuration::WindowFlag::Minimized)
+    if(configuration.windowFlags() >= WindowFlag::Minimized)
         glfwIconifyWindow(_window);
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
@@ -598,7 +598,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     }
 
     /* Show the window once we are sure that everything is okay */
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+    if(!(configuration.windowFlags() & WindowFlag::Hidden))
         glfwShowWindow(_window);
 
     /* Return true if the initialization succeeds */

@@ -439,13 +439,13 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
 
     Configuration conf;
     conf.setTitle("Window title that should have no exclamation mark!!"_s.exceptSuffix(2))
-        .addWindowFlags(Configuration::WindowFlag::Resizable);
+        .addWindowFlags(WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
     if(args.isSet("borderless"))
-        conf.addWindowFlags(Configuration::WindowFlag::Borderless);
+        conf.addWindowFlags(WindowFlag::Borderless);
     if(args.isSet("always-on-top"))
-        conf.addWindowFlags(Configuration::WindowFlag::AlwaysOnTop);
+        conf.addWindowFlags(WindowFlag::AlwaysOnTop);
     #ifdef MAGNUM_TARGET_GL
     if((_contextless = args.isSet("contextless")))
     #endif

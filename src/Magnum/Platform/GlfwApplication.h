@@ -191,11 +191,23 @@ class GlfwApplication {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class WindowFlag: UnsignedShort;
         enum class Modifier: Int;
         enum class Key: Int;
         enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
+
+        /**
+         * @brief Window flags
+         * @m_since_latest
+         *
+         * @see @ref Configuration::setWindowFlags(),
+         *      @ref Configuration::addWindowFlags(),
+         *      @ref Configuration::clearWindowFlags(),
+         *      @ref Configuration::Flags
+         */
+        typedef Containers::EnumSet<WindowFlag> WindowFlags;
 
         /**
          * @brief Set of keyboard modifiers
@@ -1077,6 +1089,26 @@ class GlfwApplication {
 };
 
 /**
+@brief Window flag
+@m_since_latest
+
+@see @ref WindowFlags, @ref Configuration::setWindowFlags(),
+    @ref Configuration::addWindowFlags(),
+    @ref Configuration::clearWindowFlags(), @ref Configuration::Flags
+*/
+enum class GlfwApplication::WindowFlag: UnsignedShort {
+    Fullscreen = 1 << 0,    /**< Fullscreen window */
+    Borderless = 1 << 1,    /**< No window decoration */
+    Resizable = 1 << 2,     /**< Resizable window */
+    Hidden = 1 << 3,        /**< Hidden window */
+    Maximized = 1 << 4,     /**< Maximized window */
+    Minimized = 1 << 5,     /**< Minimized window */
+    AlwaysOnTop = 1 << 6,   /**< Always on top */
+};
+
+CORRADE_ENUMSET_OPERATORS(GlfwApplication::WindowFlags)
+
+/**
 @brief Keyboard modifier
 @m_since_latest
 
@@ -1725,8 +1757,9 @@ class GlfwApplication::Configuration {
              * @ref create(const Configuration&, const GLConfiguration&) or
              * @ref tryCreate(const Configuration&, const GLConfiguration&).
              */
-            /** @todo renumber once the deprecated WindowFlag is gone, now kept
-                the same just so they can be easily aliased */
+            /** @todo renumber and make the enum type smaller once the
+                deprecated WindowFlag is gone, now kept the same just so they
+                can be easily aliased */
             Contextless = 1 << 9,
         };
 
@@ -1739,39 +1772,69 @@ class GlfwApplication::Configuration {
          */
         typedef Containers::EnumSet<Flag> Flags;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Window flag
-         *
-         * @see @ref WindowFlags, @ref setWindowFlags(), @ref addWindowFlags(),
-         *      @ref clearWindowFlags(), @ref Flags
+         * @brief @copybrief GlfwApplication::WindowFlag
+         * @m_deprecated_since_latest Use @ref GlfwApplication::WindowFlag, or
+         *      @ref Flag with @ref setFlags(), @ref addFlags() and
+         *      @ref clearFlags() instead.
          */
-        enum class WindowFlag: UnsignedShort {
-            Fullscreen = 1 << 0,   /**< Fullscreen window */
+        enum class CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag, or Flag with setFlags(), addFlags() and clearFlags() instead") WindowFlag: UnsignedShort {
+            /**
+             * @copydoc GlfwApplication::WindowFlag::Fullscreen
+             * @m_deprecated_since_latest Use
+             *      @ref GlfwApplication::WindowFlag::Fullscreen instead.
+             */
+            Fullscreen CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag::Fullscreen instead") = UnsignedShort(GlfwApplication::WindowFlag::Fullscreen),
 
             /**
-             * No window decoration
-             * @m_since{2020,06}
+             * @copydoc GlfwApplication::WindowFlag::Borderless
+             * @m_deprecated_since_latest Use
+             *      @ref GlfwApplication::WindowFlag::Borderless instead.
              */
-            Borderless = 1 << 1,
-
-            Resizable = 1 << 2,    /**< Resizable window */
-            Hidden = 1 << 3,       /**< Hidden window */
-            Maximized = 1 << 4,    /**< Maximized window */
-
-            Minimized = 1 << 5,    /**< Minimized window */
+            Borderless CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag::Borderless instead") = UnsignedShort(GlfwApplication::WindowFlag::Borderless),
 
             /**
-             * Always on top
-             * @m_since{2020,06}
+             * @copydoc GlfwApplication::WindowFlag::Resizable
+             * @m_deprecated_since_latest Use
+             *      @ref GlfwApplication::WindowFlag::Resizable instead.
              */
-            AlwaysOnTop = 1 << 6,
+            Resizable CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag::Resizable instead") = UnsignedShort(GlfwApplication::WindowFlag::Resizable),
 
-            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
-             * Always on top
-             * @m_deprecated_since{2020,06} Use @ref WindowFlag::AlwaysOnTop instead.
+             * @copydoc GlfwApplication::WindowFlag::Hidden
+             * @m_deprecated_since_latest Use
+             *      @ref GlfwApplication::WindowFlag::Hidden instead.
              */
-            Floating CORRADE_DEPRECATED_ENUM("use AlwaysOnTop instead") = AlwaysOnTop,
+            Hidden CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag::Hidden instead") = UnsignedShort(GlfwApplication::WindowFlag::Hidden),
+
+            /**
+             * @copydoc GlfwApplication::WindowFlag::Maximized
+             * @m_deprecated_since_latest Use
+             *      @ref GlfwApplication::WindowFlag::Maximized instead.
+             */
+            Maximized CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag::Maximized instead") = UnsignedShort(GlfwApplication::WindowFlag::Maximized),
+
+            /**
+             * @copydoc GlfwApplication::WindowFlag::Minimized
+             * @m_deprecated_since_latest Use
+             *      @ref GlfwApplication::WindowFlag::Minimized instead.
+             */
+            Minimized CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag::Minimized instead") = UnsignedShort(GlfwApplication::WindowFlag::Minimized),
+
+            /**
+             * @copydoc GlfwApplication::WindowFlag::AlwaysOnTop
+             * @m_deprecated_since_latest Use
+             *      @ref GlfwApplication::WindowFlag::AlwaysOnTop instead.
+             */
+            AlwaysOnTop CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag::AlwaysOnTop instead") = UnsignedShort(GlfwApplication::WindowFlag::AlwaysOnTop),
+
+            /**
+             * @copydoc GlfwApplication::WindowFlag::AlwaysOnTop
+             * @m_deprecated_since{2020,06} Use
+             *      @ref GlfwApplication::WindowFlag::AlwaysOnTop instead.
+             */
+            Floating CORRADE_DEPRECATED_ENUM("use GlfwApplication::WindowFlag::AlwaysOnTop instead") = UnsignedShort(GlfwApplication::WindowFlag::AlwaysOnTop),
 
             /**
              * Automatically iconify (minimize) if fullscreen window loses
@@ -1796,16 +1859,18 @@ class GlfwApplication::Configuration {
              *      instead.
              */
             Contextless CORRADE_DEPRECATED_ENUM("use Flag::Contextless with setFlags(), addFlags() or clearFlags() instead") = UnsignedShort(Flag::Contextless),
-            #endif
         };
 
         /**
-         * @brief Window flags
-         *
-         * @see @ref setWindowFlags(), @ref addWindowFlags(),
-         *      @ref clearWindowFlags(), @ref Flags
+         * @brief @copybrief GlfwApplication::WindowFlags
+         * @m_deprecated_since_latest Use @ref GlfwApplication::WindowFlags, or
+         *      @ref Flags with @ref setFlags(), @ref addFlags() and
+         *      @ref clearFlags() instead.
          */
-        typedef Containers::EnumSet<WindowFlag> WindowFlags;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        typedef CORRADE_DEPRECATED("use GlfwApplication::WindowFlags, or Flags with setFlags(), addFlags() and clearFlags() instead") Containers::EnumSet<WindowFlag> WindowFlags;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
          * @brief DPI scaling policy
@@ -2034,34 +2099,29 @@ class GlfwApplication::Configuration {
             return *this;
         }
 
+        /** @todo drop all GlfwApplication:: prefixes for WindowFlags below
+            once the deprecated enum is gone */
+
         /**
          * @brief Window flags
          *
          * @see @ref flags()
          */
-        WindowFlags windowFlags() const {
+        GlfwApplication::WindowFlags windowFlags() const {
             return _windowFlags;
         }
 
         /**
          * @brief Set window flags
          * @return  Reference to self (for method chaining)
+         * @m_since_latest
          *
          * Default are none. To avoid clearing default flags by accident,
          * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
          * instead.
          * @see @ref setFlags()
          */
-        Configuration& setWindowFlags(WindowFlags flags) {
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /* If a deprecated flag is used overwrite the _flags as well but
-               keep the deprecated WindowlessFlag set so code querying
-               windowFlags() doesn't break. If a deprecated flag isn't used,
-               don't touch _flags at all to not have inconsistent behavior on
-               non-deprecated builds. */
-            if(const Flags deprecatedFlags = Flags(UnsignedShort(flags)) & Flag::Contextless)
-                _flags = deprecatedFlags;
-            #endif
+        Configuration& setWindowFlags(GlfwApplication::WindowFlags flags) {
             _windowFlags = flags;
             return *this;
         }
@@ -2069,20 +2129,13 @@ class GlfwApplication::Configuration {
         /**
          * @brief Add window flags
          * @return Reference to self (for method chaining)
-         * @m_since{2020,06}
+         * @m_since_latest
          *
          * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
          * @see @ref clearWindowFlags(), @ref addFlags()
          */
-        Configuration& addWindowFlags(WindowFlags flags) {
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /* Add to the _flags as well but keep the deprecated
-               WindowlessFlags set so code querying windowFlags() doesn't
-               break. Compared to setWindowFlags() this won't have different
-               behavior on non-deprecated builds so an if() isn't needed. */
-            _flags |= Flags(UnsignedShort(flags)) & Flag::Contextless;
-            #endif
+        Configuration& addWindowFlags(GlfwApplication::WindowFlags flags) {
             _windowFlags |= flags;
             return *this;
         }
@@ -2090,26 +2143,79 @@ class GlfwApplication::Configuration {
         /**
          * @brief Clear window flags
          * @return Reference to self (for method chaining)
-         * @m_since{2020,06}
+         * @m_since_latest
          *
          * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
          * existing instead of replacing them. Useful for removing default
          * flags.
          * @see @ref addWindowFlags(), @ref clearFlags()
          */
-        Configuration& clearWindowFlags(WindowFlags flags) {
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /* Clear from the _flags as well but do it also with the deprecated
-               WindowlessFlags so code querying windowFlags() doesn't break.
-               Compared to setWindowFlags() this won't have different behavior
-               on non-deprecated builds so an if() isn't needed. */
-            _flags &= ~(Flags(UnsignedShort(flags)) & Flag::Contextless);
-            #endif
+        Configuration& clearWindowFlags(GlfwApplication::WindowFlags flags) {
             _windowFlags &= ~flags;
             return *this;
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setWindowFlags(GlfwApplication::WindowFlags)
+         * @m_deprecated_since_latest Use
+         *      @ref setWindowFlags(GlfwApplication::WindowFlags) instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns for WindowFlags use */
+        CORRADE_DEPRECATED("use setWindowFlags(GlfwApplication::WindowFlags) or setFlags() instead") Configuration& setWindowFlags(WindowFlags flags) {
+            /* If a deprecated flag is used overwrite the _flags as well. If a
+               deprecated flag isn't used, don't touch _flags at all to not
+               have inconsistent behavior on non-deprecated builds. */
+            if(const Flags deprecatedFlags = Flags(UnsignedShort(flags)) & Flag::Contextless) {
+                _flags = deprecatedFlags;
+                /* Clear from the flags as the windowFlags() return type
+                   doesn't have the deprecated values anymore and thus it makes
+                   no sense to keep them there as well */
+                flags &= ~WindowFlags(UnsignedShort(deprecatedFlags));
+            }
+            _windowFlags = GlfwApplication::WindowFlags(UnsignedShort(flags));
+            return *this;
+        }
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /**
+         * @brief @copybrief addWindowFlags(GlfwApplication::WindowFlags)
+         * @m_deprecated_since_latest Use
+         *      @ref addWindowFlags(GlfwApplication::WindowFlags) instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns for WindowFlags use */
+        CORRADE_DEPRECATED("use addWindowFlags(GlfwApplication::WindowFlags) or addFlags() instead") Configuration& addWindowFlags(WindowFlags flags) {
+            /* Add to the _flags as wellk. Compared to setWindowFlags() this
+               won't have different behavior on non-deprecated builds so an
+               if() isn't needed. */
+            _flags |= Flags(UnsignedShort(flags)) & Flag::Contextless;
+            /* Skip the deprecated flags as the windowFlags() return type
+               doesn't have the deprecated values anymore and thus it makes no
+               sense to keep them there as well */
+            _windowFlags |= GlfwApplication::WindowFlags(UnsignedShort(flags) & ~UnsignedShort(Flag::Contextless));
+            return *this;
+        }
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /**
+         * @brief @copybrief clearWindowFlags(GlfwApplication::WindowFlags)
+         * @m_deprecated_since_latest Use
+         *      @ref clearWindowFlags(GlfwApplication::WindowFlags) instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns for WindowFlags use */
+        CORRADE_DEPRECATED("use clearWindowFlags(GlfwApplication::WindowFlags) or clearFlags() instead") Configuration& clearWindowFlags(WindowFlags flags) {
+            /* Clear from the _flags as well. Compared to setWindowFlags() this
+               won't have different behavior on non-deprecated builds so an
+               if() isn't needed. */
+            _flags &= ~(Flags(UnsignedShort(flags)) & Flag::Contextless);
+            /* Compared to setWindowFlags() / addWindowFlags() above no special
+               handling is needed as the deprecated flags shouldn't be in
+               _windowFlags in the first place */
+            _windowFlags &= ~GlfwApplication::WindowFlags(UnsignedShort(flags));
+            return *this;
+        }
+        CORRADE_IGNORE_DEPRECATED_POP
+
         /**
          * @brief Cursor mode
          *
@@ -2143,7 +2249,7 @@ class GlfwApplication::Configuration {
         Containers::String _title;
         Vector2i _size;
         Flags _flags;
-        WindowFlags _windowFlags;
+        GlfwApplication::WindowFlags _windowFlags;
         DpiScalingPolicy _dpiScalingPolicy;
         Vector2 _dpiScaling;
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -2154,7 +2260,11 @@ class GlfwApplication::Configuration {
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Configuration::Flags)
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Configuration::WindowFlags)
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /**
 @brief Exit event

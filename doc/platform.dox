@@ -138,10 +138,9 @@ conveniently like this:
 By default the application doesn't respond to window size changes in any way,
 and the window has a fixed size. To make the window resizable and properly
 respond to size changes, construct the application with
-@relativeref{Platform::Sdl2Application,Configuration::WindowFlag::Resizable}
-and override the @relativeref{Platform::Sdl2Application,viewportEvent()}
-function, where you pass the new size to the default framebuffer and where else
-is appropriate:
+@relativeref{Platform::Sdl2Application,WindowFlag::Resizable} and override the
+@relativeref{Platform::Sdl2Application,viewportEvent()} function, where you
+pass the new size to the default framebuffer and where else is appropriate:
 
 @snippet Platform.cpp windowed-viewport-events
 

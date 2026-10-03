@@ -1636,7 +1636,12 @@ See also:
     @relativeref{Platform::Sdl2Application::Configuration,addFlags()} and
     @relativeref{Platform::Sdl2Application::Configuration,clearFlags()} APIs
     as compared to other window flags these cannot be subsequently modified on
-    an existing window
+    an existing window. Furthermore, remaining @cpp Platform::*Application::Configuration::WindowFlag @ce
+    enum values are deprecated in favor of a new
+    @ref Platform::Sdl2Application::WindowFlag "Platform::*Application::WindowFlag"
+    enum in order to make it possible to toggle them once the window is created
+    without being tied to the @ref Platform::Sdl2Application::Configuration "Platform::*Application::Configuration"
+    inner class.
 -   @cpp Platform::GlfwApplication::Configuration::WindowFlag::Focused @ce and
     @cpp WindowFlag::AutoIconify @ce are deprecated as GLFW enables them by
     default and thus setting them has no effect compared to implicit behavior
@@ -2116,6 +2121,9 @@ See also:
     any packages, it's completely removed without providing any backwards
     compatibility --- switch to @ref Platform::WindowlessEglApplication
     instead.
+-   @ref Platform::Sdl2Application::Configuration::windowFlags() "Platform::*Application::Configuration::windowFlags()" now returns the
+    @ref Platform::Sdl2Application::WindowFlags "Platform::*Application::WindowFlags" type instead of the now-deprecated
+    "Platform::*Application::Configuration::WindowFlags" enum set
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()
@@ -2467,13 +2475,9 @@ Released 2020-06-27, tagged as
     and [mosra/magnum#437](https://github.com/mosra/magnum/pull/437))
 -   CUDA device selection in @ref Platform::WindowlessEglApplication (see
     [mosra/magnum#449](https://github.com/mosra/magnum/pull/449))
--   Added @ref Platform::GlfwApplication::Configuration::WindowFlag::Borderless
--   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::FullscreenDesktop,
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::AlwaysOnTop "AlwaysOnTop",
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::SkipTaskbar "SkipTaskbar",
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::Utility "Utility",
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::Tooltip "Tooltip"
-    and @ref Platform::Sdl2Application::Configuration::WindowFlag::PopupMenu "PopupMenu"
+-   Added @cpp Platform::GlfwApplication::Configuration::WindowFlag::Borderless @ce
+-   Added @cpp Platform::Sdl2Application::Configuration::WindowFlag::FullscreenDesktop @ce,
+    `AlwaysOnTop`, `SkipTaskbar`, `Utility`, `Tooltip` and `PopupMenu`
 -   Added @ref Platform::Sdl2Application::Configuration::addWindowFlags() and
     @ref Platform::Sdl2Application::Configuration::clearWindowFlags() "clearWindowFlags()"
     for consistency with similar functions in
@@ -2874,7 +2878,7 @@ Released 2020-06-27, tagged as
     together with @ref Platform::Sdl2Application::Cursor::HiddenLocked
 -   @cpp Platform::GlfwApplication::Configuration::WindowFlag::Floating @ce is
     deprecated in favor of a more descriptive
-    @ref Platform::GlfwApplication::Configuration::WindowFlag::AlwaysOnTop,
+    @cpp Platform::GlfwApplication::Configuration::WindowFlag::AlwaysOnTop @ce,
     which is also consistent with @ref Platform::Sdl2Application
 -   @cpp Audio::AbstractImporter::Features @ce,
     @cpp Text::AbstractFont::Features @ce,
@@ -4096,7 +4100,7 @@ Released 2019-02-04, tagged as
     @ref Platform::Sdl2Application::mouseScrollEvent() "mouseScrollEvent()"
     API instead.
 -   Removed @cpp Platform::GlfwApplication::Configuration::WindowFlag::Resizeable @ce,
-    deprecated since February 2017. Use @ref Platform::GlfwApplication::Configuration::WindowFlag::Resizable
+    deprecated since February 2017. Use @cpp Platform::GlfwApplication::Configuration::WindowFlag::Resizable @ce
     instead.
 -   Removed `MAGNUM_*_LIBRARIES` and `MAGNUM_*_INCLUDE_DIRS` CMake variables,
     which were deprecated in favor of `Magnum::*` imported targets in
@@ -4394,8 +4398,8 @@ Released 2018-10-23, tagged as
 -   @ref Platform::Sdl2Application now defaults to the actual canvas size
     on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", instead of hardcoded
     @cpp {640, 480} @ce
--   @ref Platform::Sdl2Application::Configuration::WindowFlags values that make
-    no sense on Emscripten are not available there anymore
+-   @cpp Platform::Sdl2Application::Configuration::WindowFlags @ce values that
+    make no sense on Emscripten are not available there anymore
 -   When using SDL 2.0.8 and newer, @ref Platform::Sdl2Application no longer
     attempts to disable compositing on Linux. See @ref Platform-Sdl2Application-platform-specific-linux
     for more information. See also [mosra/magnum#184](https://github.com/mosra/magnum/issues/184).

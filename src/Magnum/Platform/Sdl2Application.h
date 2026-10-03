@@ -386,9 +386,9 @@ options needs to be set via a `*.plist` file. Some options can be configured
 from runtime when creating the SDL2 application window, see documentation of
 a particular value for details:
 
--   @ref Configuration::WindowFlag::Borderless hides the menu bar
--   @ref Configuration::WindowFlag::Resizable makes the application respond to
-    device orientation changes
+-   @ref WindowFlag::Borderless hides the menu bar
+-   @ref WindowFlag::Resizable makes the application respond to device
+    orientation changes
 
 @subsection Platform-Sdl2Application-platform-specific-emscripten Emscripten specifics
 
@@ -405,9 +405,9 @@ to use a window size that corresponds to *CSS pixel size* of the
 @cb{.html} <canvas> @ce element. The size is then multiplied by DPI scaling
 value, see @ref Platform-Sdl2Application-dpi "DPI awareness" below for details.
 
-If you enable @ref Configuration::WindowFlag::Resizable, the canvas will be
-resized when size of the canvas changes and you get @ref viewportEvent(). If
-the flag is not enabled, no canvas resizing is performed.
+If you enable @ref WindowFlag::Resizable, the canvas will be resized when size
+of the canvas changes and you get @ref viewportEvent(). If the flag is not
+enabled, no canvas resizing is performed.
 
 @subsection Platform-Sdl2Application-platform-specific-gles OpenGL ES specifics
 
@@ -555,11 +555,23 @@ class Sdl2Application {
 
         /* The damn thing cannot handle forward enum declarations */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        enum class WindowFlag: Uint32;
         enum class Modifier: Uint16;
         enum class Key: SDL_Keycode;
         enum class PointerEventSource: UnsignedByte;
         enum class Pointer: UnsignedByte;
         #endif
+
+        /**
+         * @brief Window flags
+         * @m_since_latest
+         *
+         * @see @ref Configuration::setWindowFlags(),
+         *      @ref Configuration::addWindowFlags(),
+         *      @ref Configuration::clearWindowFlags(),
+         *      @ref Configuration::Flags
+         */
+        typedef Containers::EnumSet<WindowFlag> WindowFlags;
 
         /**
          * @brief Set of keyboard modifiers
@@ -1631,6 +1643,125 @@ class Sdl2Application {
 };
 
 /**
+@brief Window flag
+@m_since_latest
+
+@see @ref WindowFlags, @ref Configuration::setWindowFlags(),
+    @ref Configuration::addWindowFlags(),
+    @ref Configuration::clearWindowFlags(), @ref Configuration::Flags
+*/
+enum class Sdl2Application::WindowFlag: Uint32 {
+    /**
+     * Resizable window. On iOS this allows the application to respond to
+     * display orientation changes, on
+     * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this causes the framebuffer
+     * to be resized when the @cb{.html} <canvas> @ce size changes.
+     *
+     * Implement @ref viewportEvent() to react to the resizing events.
+     */
+    Resizable = SDL_WINDOW_RESIZABLE,
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /**
+     * Fullscreen window
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     */
+    Fullscreen = SDL_WINDOW_FULLSCREEN,
+
+    /**
+     * Fullscreen window at the current desktop resolution
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     */
+    FullscreenDesktop = SDL_WINDOW_FULLSCREEN_DESKTOP,
+
+    /**
+     * No window decoration. On iOS this hides the menu bar.
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     */
+    Borderless = SDL_WINDOW_BORDERLESS,
+
+    /**
+     * Hidden window
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     */
+    Hidden = SDL_WINDOW_HIDDEN,
+
+    /**
+     * Maximized window
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     */
+    Maximized = SDL_WINDOW_MAXIMIZED,
+
+    /**
+     * Minimized window
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     */
+    Minimized = SDL_WINDOW_MINIMIZED,
+
+    /**
+     * Window with mouse locked
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     * @todo SDL_WINDOW_MOUSE_CAPTURE, also what all those do? isn't it
+     *      redundant / better handled with cursor APIs?
+     */
+    MouseLocked = SDL_WINDOW_INPUT_GRABBED,
+
+    /** @todo SDL_WINDOW_INPUT_FOCUS, SDL_WINDOW_MOUSE_FOCUS, GLFW has
+        GLFW_FOCUS_ON_SHOW (not exposed) -- what's the relation? How to make
+        these compatible? */
+
+    /**
+     * Always on top
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     *      According to SDL docs works only on X11.
+     */
+    AlwaysOnTop = SDL_WINDOW_ALWAYS_ON_TOP,
+
+    /**
+     * Don't add the window to taskbar
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     *      According to SDL docs works only on X11.
+     */
+    SkipTaskbar = SDL_WINDOW_SKIP_TASKBAR,
+
+    /**
+     * Window should be treated as a utility window
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     *      According to SDL docs works only on X11.
+     */
+    Utility = SDL_WINDOW_UTILITY,
+
+    /**
+     * Window should be treated as a tooltip
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     *      According to SDL docs works only on X11.
+     */
+    Tooltip = SDL_WINDOW_TOOLTIP,
+
+    /**
+     * Window should be treated as a popup menu
+     *
+     * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+     *      According to SDL docs works only on X11.
+     */
+    PopupMenu = SDL_WINDOW_POPUP_MENU,
+    #endif
+};
+
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::WindowFlags)
+
+/**
 @brief Keyboard modifier
 @m_since_latest
 
@@ -2413,128 +2544,108 @@ class Sdl2Application::Configuration {
          */
         typedef Containers::EnumSet<Flag> Flags;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Window flag
-         *
-         * @see @ref WindowFlags, @ref setWindowFlags(), @ref addWindowFlags(),
-         *      @ref clearWindowFlags(), @ref Flags
+         * @brief @copybrief Sdl2Application::WindowFlag
+         * @m_deprecated_since_latest Use @ref Sdl2Application::WindowFlag, or
+         *      @ref Flag with @ref setFlags(), @ref addFlags() and
+         *      @ref clearFlags() instead.
          */
-        enum class WindowFlag: Uint32 {
+        enum class CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag, or Flag with setFlags(), addFlags() and clearFlags() instead") WindowFlag: Uint32 {
             /**
-             * Resizable window. On iOS this allows the application to respond
-             * to display orientation changes, on
-             * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this causes the
-             * framebuffer to be resized when the @cb{.html} <canvas> @ce size
-             * changes.
-             *
-             * Implement @ref viewportEvent() to react to the resizing events.
+             * @copydoc Sdl2Application::WindowFlag::Resizable
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::Resizable instead.
              */
-            Resizable = SDL_WINDOW_RESIZABLE,
+            Resizable CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::Resizable instead") = Uint32(Sdl2Application::WindowFlag::Resizable),
 
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             /**
-             * Fullscreen window
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @copydoc Sdl2Application::WindowFlag::Fullscreen
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::Fullscreen instead.
              */
-            Fullscreen = SDL_WINDOW_FULLSCREEN,
+            Fullscreen CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::Fullscreen instead") = Uint32(Sdl2Application::WindowFlag::Fullscreen),
 
             /**
-             * Fullscreen window at the current desktop resolution
-             * @m_since{2020,06}
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @copydoc Sdl2Application::WindowFlag::FullscreenDesktop
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::FullscreenDesktop
+             *      instead.
              */
-            FullscreenDesktop = SDL_WINDOW_FULLSCREEN_DESKTOP,
+            FullscreenDesktop CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::FullscreenDesktop instead") = Uint32(Sdl2Application::WindowFlag::FullscreenDesktop),
 
             /**
-             * No window decoration. On iOS this hides the menu bar.
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @copydoc Sdl2Application::WindowFlag::Borderless
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::Borderless instead.
              */
-            Borderless = SDL_WINDOW_BORDERLESS,
+            Borderless CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::Borderless instead") = Uint32(Sdl2Application::WindowFlag::Borderless),
 
             /**
-             * Hidden window
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @copydoc Sdl2Application::WindowFlag::Hidden
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::Hidden instead.
              */
-            Hidden = SDL_WINDOW_HIDDEN,
+            Hidden CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::Hidden instead") = Uint32(Sdl2Application::WindowFlag::Hidden),
 
             /**
-             * Maximized window
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @copydoc Sdl2Application::WindowFlag::Maximized
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::Maximized instead.
              */
-            Maximized = SDL_WINDOW_MAXIMIZED,
+            Maximized CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::Maximized instead") = Uint32(Sdl2Application::WindowFlag::Maximized),
 
             /**
-             * Minimized window
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @copydoc Sdl2Application::WindowFlag::Minimized
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::Minimized instead.
              */
-            Minimized = SDL_WINDOW_MINIMIZED,
+            Minimized CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::Minimized instead") = Uint32(Sdl2Application::WindowFlag::Minimized),
 
             /**
-             * Window with mouse locked
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             * @todo SDL_WINDOW_MOUSE_CAPTURE, also what all those do? isn't it
-             *      redundant / better handled with cursor APIs?
+             * @copydoc Sdl2Application::WindowFlag::MouseLocked
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::MouseLocked instead.
              */
-            MouseLocked = SDL_WINDOW_INPUT_GRABBED,
-
-            /** @todo SDL_WINDOW_INPUT_FOCUS, SDL_WINDOW_MOUSE_FOCUS, GLFW has
-                GLFW_FOCUS_ON_SHOW (not exposed) -- what's the relation? How to
-                make these compatible? */
+            MouseLocked CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::MouseLocked instead") = Uint32(Sdl2Application::WindowFlag::MouseLocked),
 
             /**
-             * Always on top
-             * @m_since{2020,06}
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             *      According to SDL docs works only on X11.
+             * @copydoc Sdl2Application::WindowFlag::AlwaysOnTop
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::AlwaysOnTop instead.
              */
-            AlwaysOnTop = SDL_WINDOW_ALWAYS_ON_TOP,
+            AlwaysOnTop CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::AlwaysOnTop instead") = Uint32(Sdl2Application::WindowFlag::AlwaysOnTop),
 
             /**
-             * Don't add the window to taskbar
-             * @m_since{2020,06}
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             *      According to SDL docs works only on X11.
+             * @copydoc Sdl2Application::WindowFlag::SkipTaskbar
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::SkipTaskbar instead.
              */
-            SkipTaskbar = SDL_WINDOW_SKIP_TASKBAR,
+            SkipTaskbar CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::SkipTaskbar instead") = Uint32(Sdl2Application::WindowFlag::SkipTaskbar),
 
             /**
-             * Window should be treated as a utility window
-             * @m_since{2020,06}
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             *      According to SDL docs works only on X11.
+             * @copydoc Sdl2Application::WindowFlag::Utility
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::Utility instead.
              */
-            Utility = SDL_WINDOW_UTILITY,
+            Utility CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::Utility instead") = Uint32(Sdl2Application::WindowFlag::Utility),
 
             /**
-             * Window should be treated as a tooltip
-             * @m_since{2020,06}
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             *      According to SDL docs works only on X11.
+             * @copydoc Sdl2Application::WindowFlag::Tooltip
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::Tooltip instead.
              */
-            Tooltip = SDL_WINDOW_TOOLTIP,
+            Tooltip CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::Tooltip instead") = Uint32(Sdl2Application::WindowFlag::Tooltip),
 
             /**
-             * Window should be treated as a popup menu
-             * @m_since{2020,06}
-             *
-             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             *      According to SDL docs works only on X11.
+             * @copydoc Sdl2Application::WindowFlag::PopupMenu
+             * @m_deprecated_since_latest Use
+             *      @ref Sdl2Application::WindowFlag::PopupMenu instead.
              */
-            PopupMenu = SDL_WINDOW_POPUP_MENU,
+            PopupMenu CORRADE_DEPRECATED_ENUM("use Sdl2Application::WindowFlag::PopupMenu instead") = Uint32(Sdl2Application::WindowFlag::PopupMenu),
             #endif
 
-            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * @copydoc Flag::Contextless
              * @m_deprecated_since_latest Use @ref Flag::Contextless with
@@ -2560,16 +2671,18 @@ class Sdl2Application::Configuration {
              */
             Vulkan CORRADE_DEPRECATED_ENUM("use Flag::Contextless with setFlags(), addFlags() or clearFlags() instead") = Uint32(Flag::Vulkan),
             #endif
-            #endif
         };
 
         /**
-         * @brief Window flags
-         *
-         * @see @ref setWindowFlags(), @ref addWindowFlags(),
-         *      @ref clearWindowFlags(), @ref Flags
+         * @brief @copybrief Sdl2Application::WindowFlags
+         * @m_deprecated_since_latest Use @ref Sdl2Application::WindowFlags, or
+         *      @ref Flags with @ref setFlags(), @ref addFlags() and
+         *      @ref clearFlags() instead.
          */
-        typedef Containers::EnumSet<WindowFlag> WindowFlags;
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        typedef CORRADE_DEPRECATED("use Sdl2Application::WindowFlags, or Flags with setFlags(), addFlags() and clearFlags() instead") Containers::EnumSet<WindowFlag> WindowFlags;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
          * @brief DPI scaling policy
@@ -2786,39 +2899,29 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
+        /** @todo drop all Sdl2Application:: prefixes for WindowFlags below
+            once the deprecated enum is gone */
+
         /**
          * @brief Window flags
          *
          * @see @ref flags()
          */
-        WindowFlags windowFlags() const { return _windowFlags; }
+        Sdl2Application::WindowFlags windowFlags() const {
+            return _windowFlags;
+        }
 
         /**
          * @brief Set window flags
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
          * Default are none. To avoid clearing default flags by accident,
          * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
          * instead.
          * @see @ref setFlags()
          */
-        Configuration& setWindowFlags(WindowFlags flags) {
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /* If a deprecated flag is used overwrite the _flags as well but
-               keep the deprecated WindowlessFlag set so code querying
-               windowFlags() doesn't break. If a deprecated flag isn't used,
-               don't touch _flags at all to not have inconsistent behavior on
-               non-deprecated builds. The Flags(Flag::Contextless) is here
-               because otherwise the CORRADE_ENUMSET_OPERATORS() definition
-               would need to be before this function, meaning it'd have to be
-               deinlined. Not worth it for deprecated code. */
-            if(const Flags deprecatedFlags = Flags(Uint32(flags)) & (Flags(Flag::Contextless)|Flag::OpenGL
-                #ifndef CORRADE_TARGET_EMSCRIPTEN
-                |Flag::Vulkan
-                #endif
-            ))
-                _flags = deprecatedFlags;
-            #endif
+        Configuration& setWindowFlags(Sdl2Application::WindowFlags flags) {
             _windowFlags = flags;
             return *this;
         }
@@ -2826,28 +2929,13 @@ class Sdl2Application::Configuration {
         /**
          * @brief Add window flags
          * @return Reference to self (for method chaining)
-         * @m_since{2020,06}
+         * @m_since_latest
          *
          * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
          * @see @ref clearWindowFlags(), @ref addFlags()
          */
-        Configuration& addWindowFlags(WindowFlags flags) {
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /* Add to the _flags as well but keep the deprecated
-               WindowlessFlags set so code querying windowFlags() doesn't
-               break. Compared to setWindowFlags() this won't have different
-               behavior on non-deprecated builds so an if() isn't needed. The
-               Flags(Flag::Contextless) is here because otherwise the
-               CORRADE_ENUMSET_OPERATORS() definition would need to be before
-               this function, meaning it'd have to be deinlined. Not worth it
-               for deprecated code. */
-            _flags |= Flags(Uint32(flags)) & (Flags(Flag::Contextless)|Flag::OpenGL
-                #ifndef CORRADE_TARGET_EMSCRIPTEN
-                |Flag::Vulkan
-                #endif
-            );
-            #endif
+        Configuration& addWindowFlags(Sdl2Application::WindowFlags flags) {
             _windowFlags |= flags;
             return *this;
         }
@@ -2855,32 +2943,102 @@ class Sdl2Application::Configuration {
         /**
          * @brief Clear window flags
          * @return Reference to self (for method chaining)
-         * @m_since{2020,06}
+         * @m_since_latest
          *
          * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
          * existing instead of replacing them. Useful for removing default
          * flags.
          * @see @ref addWindowFlags(), @ref clearFlags()
          */
-        Configuration& clearWindowFlags(WindowFlags flags) {
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /* Clear from the _flags as well but do it also with the deprecated
-               WindowlessFlags so code querying windowFlags() doesn't break.
-               Compared to setWindowFlags() this won't have different behavior
-               on non-deprecated builds so an if() isn't needed. The
+        Configuration& clearWindowFlags(Sdl2Application::WindowFlags flags) {
+            _windowFlags &= ~flags;
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setWindowFlags(Sdl2Application::WindowFlags)
+         * @m_deprecated_since_latest Use
+         *      @ref setWindowFlags(Sdl2Application::WindowFlags) instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns for WindowFlags use */
+        CORRADE_DEPRECATED("use setWindowFlags(Sdl2Application::WindowFlags) or setFlags() instead") Configuration& setWindowFlags(WindowFlags flags) {
+            /* If a deprecated flag is used overwrite the _flags as well. If a
+               deprecated flag isn't used, don't touch _flags at all to not
+               have inconsistent behavior on non-deprecated builds. The
                Flags(Flag::Contextless) is here because otherwise the
                CORRADE_ENUMSET_OPERATORS() definition would need to be before
                this function, meaning it'd have to be deinlined. Not worth it
                for deprecated code. */
+            if(const Flags deprecatedFlags = Flags(Uint32(flags)) & (Flags(Flag::Contextless)|Flag::OpenGL
+                #ifndef CORRADE_TARGET_EMSCRIPTEN
+                |Flag::Vulkan
+                #endif
+            )) {
+                _flags = deprecatedFlags;
+                /* Clear from the flags as the windowFlags() return type
+                   doesn't have the deprecated values anymore and thus it makes
+                   no sense to keep them there as well */
+                flags &= ~WindowFlags(Uint32(deprecatedFlags));
+            }
+            _windowFlags = Sdl2Application::WindowFlags(Uint32(flags));
+            return *this;
+        }
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /**
+         * @brief @copybrief addWindowFlags(Sdl2Application::WindowFlags)
+         * @m_deprecated_since_latest Use
+         *      @ref addWindowFlags(Sdl2Application::WindowFlags) instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns for WindowFlags use */
+        CORRADE_DEPRECATED("use addWindowFlags(Sdl2Application::WindowFlags) or addFlags() instead") Configuration& addWindowFlags(WindowFlags flags) {
+            /* Add to the _flags as well. Compared to setWindowFlags() this
+               won't have different behavior on non-deprecated builds so an
+               if() isn't needed. The Flags(Flag::Contextless) is here because
+               otherwise the CORRADE_ENUMSET_OPERATORS() definition would need
+               to be before this function, meaning it'd have to be deinlined.
+               Not worth it for deprecated code. */
+            constexpr Flags deprecatedFlags = Flags(Flag::Contextless)|Flag::OpenGL
+                #ifndef CORRADE_TARGET_EMSCRIPTEN
+                |Flag::Vulkan
+                #endif
+                ;
+            _flags |= Flags(Uint32(flags)) & deprecatedFlags;
+            /* Skip the deprecated flags as the windowFlags() return type
+               doesn't have the deprecated values anymore and thus it makes no
+               sense to keep them there as well */
+            _windowFlags |= Sdl2Application::WindowFlags(Uint32(flags) & ~Uint32(deprecatedFlags));
+            return *this;
+        }
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /**
+         * @brief @copybrief clearWindowFlags(Sdl2Application::WindowFlags)
+         * @m_deprecated_since_latest Use
+         *      @ref clearWindowFlags(Sdl2Application::WindowFlags) instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns for WindowFlags use */
+        CORRADE_DEPRECATED("use clearWindowFlags(Sdl2Application::WindowFlags) or clearFlags() instead") Configuration& clearWindowFlags(WindowFlags flags) {
+            /* Clear from the _flags as well. Compared to setWindowFlags() this
+               won't have different behavior on non-deprecated builds so an
+               if() isn't needed. The Flags(Flag::Contextless) is here because
+               otherwise the CORRADE_ENUMSET_OPERATORS() definition would need
+               to be before this function, meaning it'd have to be deinlined.
+               Not worth it for deprecated code. */
             _flags &= ~(Flags(Uint32(flags)) & (Flags(Flag::Contextless)|Flag::OpenGL
                 #ifndef CORRADE_TARGET_EMSCRIPTEN
                 |Flag::Vulkan
                 #endif
             ));
-            #endif
-            _windowFlags &= ~flags;
+            /* Compared to setWindowFlags() / addWindowFlags() above no special
+               handling is needed as the deprecated flags shouldn't be in
+               _windowFlags in the first place */
+            _windowFlags &= ~Sdl2Application::WindowFlags(Uint32(flags));
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
     private:
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
@@ -2889,12 +3047,16 @@ class Sdl2Application::Configuration {
         Vector2i _size;
         DpiScalingPolicy _dpiScalingPolicy;
         Flags _flags;
-        WindowFlags _windowFlags;
+        Sdl2Application::WindowFlags _windowFlags;
         Vector2 _dpiScaling;
 };
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /**
 @brief Exit event
