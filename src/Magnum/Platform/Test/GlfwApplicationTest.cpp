@@ -439,7 +439,7 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
 
     Configuration conf;
     conf.setTitle("Window title that should have no exclamation mark!!"_s.exceptSuffix(2))
-        .setWindowFlags(Configuration::WindowFlag::Resizable);
+        .addWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
     if(args.isSet("borderless"))
