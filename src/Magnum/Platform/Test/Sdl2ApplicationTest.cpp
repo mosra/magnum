@@ -553,7 +553,7 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
 
     Configuration conf;
     conf.setTitle("Window title that should have no exclamation mark!!"_s.exceptSuffix(2))
-        .setWindowFlags(Configuration::WindowFlag::Resizable);
+        .addWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
     #ifndef CORRADE_TARGET_EMSCRIPTEN

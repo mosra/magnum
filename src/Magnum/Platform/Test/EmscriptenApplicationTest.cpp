@@ -435,7 +435,7 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
     }
 
     Configuration conf;
-    conf.setWindowFlags(Configuration::WindowFlag::Resizable);
+    conf.addWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({640, 480}, args.value<Vector2>("dpi-scaling"));
     if(args.isSet("always-request-animation-frame"))
