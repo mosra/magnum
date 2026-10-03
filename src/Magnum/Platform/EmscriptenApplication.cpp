@@ -357,8 +357,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_lastKnownDevicePixelRatio;
     emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
-    setupCallbacks(configuration.windowFlags() >= WindowFlag::Resizable);
-    setupAnimationFrame(configuration.flags() >= Configuration::Flag::AlwaysRequestAnimationFrame);
+    setupCallbacks(configuration.windowFlags(), configuration.flags() >= Configuration::Flag::AlwaysRequestAnimationFrame);
 
     return true;
 }
@@ -449,8 +448,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     /* Make the context current */
     CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_make_context_current(_glContext = context) == EMSCRIPTEN_RESULT_SUCCESS);
 
-    setupCallbacks(configuration.windowFlags() >= WindowFlag::Resizable);
-    setupAnimationFrame(configuration.flags() >= Configuration::Flag::AlwaysRequestAnimationFrame);
+    setupCallbacks(configuration.windowFlags(), configuration.flags() >= Configuration::Flag::AlwaysRequestAnimationFrame);
 
     /* Return true if the initialization succeeds */
     return _context->tryCreate(glConfiguration);
@@ -624,7 +622,7 @@ template<class T> Vector2 updatePreviousTouch(T(&previousTouches)[32], const Int
 
 }
 
-void EmscriptenApplication::setupCallbacks(bool resizable) {
+void EmscriptenApplication::setupCallbacks(const WindowFlags flags, const bool alwaysRequestAnimationFrame) {
     /* Since 1.38.17 all emscripten_set_*_callback() are macros. Play it safe
        and wrap all lambdas in () to avoid the preprocessor getting upset when
        seeing commas. Furthermore, in 13.1.62 the EM_BOOL type was changed from
@@ -636,7 +634,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        to cache the last known canvas size and fire the event only if that
        changes. Better than polling for this change in every frame like
        Sdl2Application does, but still not ideal. */
-    if(resizable) {
+    if(flags >= WindowFlag::Resizable) {
         const char* target = EMSCRIPTEN_EVENT_TARGET_WINDOW;
         auto cb = [](int, const EmscriptenUiEvent* event, void* userData) -> EM_BOOL {
             static_cast<EmscriptenApplication*>(userData)->handleCanvasResize(event);
@@ -955,9 +953,8 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             static_cast<EmscriptenApplication*>(userData)->keyReleaseEvent(e);
             return e.isAccepted();
         }));
-}
 
-void EmscriptenApplication::setupAnimationFrame(const bool alwaysRequestAnimationFrame) {
+    /* Main loop callback */
     if(alwaysRequestAnimationFrame) {
         _callback = [](void* userData) -> int {
             auto& app = *static_cast<EmscriptenApplication*>(userData);

@@ -1147,9 +1147,8 @@ class EmscriptenApplication {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         void handleCanvasResize(const EmscriptenUiEvent* event);
-        /* Sorry, but can't use Configuration::WindowFlags here :( */
-        void setupCallbacks(bool resizable);
-        void setupAnimationFrame(bool alwaysRequestAnimationFrame);
+        /* Sorry, can't use Configuration::Flags here :( */
+        void setupCallbacks(WindowFlags flags, bool alwaysRequestAnimationFrame);
 
         Vector2i _lastKnownCanvasSize;
         Vector2 _previousMouseMovePosition{Constants::nan()};
