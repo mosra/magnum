@@ -419,6 +419,7 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
         .addBooleanOption("contextless").setHelp("contextless", "initialize without a WebGL context")
+        .addBooleanOption("always-request-animation-frame").setHelp("always-request-animation-frame", "always use window.requestAnimationFrame()")
         .parse(arguments.argc, arguments.argv);
 
     /* Useful for bisecting Emscripten regressions, because they happen WAY TOO
@@ -437,6 +438,8 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
     conf.setWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({640, 480}, args.value<Vector2>("dpi-scaling"));
+    if(args.isSet("always-request-animation-frame"))
+        conf.addWindowFlags(Configuration::WindowFlag::AlwaysRequestAnimationFrame);
     if(args.isSet("contextless")) {
         conf.addWindowFlags(Configuration::WindowFlag::Contextless);
         create(conf);
