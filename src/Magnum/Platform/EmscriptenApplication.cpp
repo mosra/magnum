@@ -357,8 +357,8 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_lastKnownDevicePixelRatio;
     emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
-    setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
-    setupAnimationFrame(!!(configuration.windowFlags() & Configuration::WindowFlag::AlwaysRequestAnimationFrame));
+    setupCallbacks(configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
+    setupAnimationFrame(configuration.windowFlags() >= Configuration::WindowFlag::AlwaysRequestAnimationFrame);
 
     return true;
 }
@@ -378,22 +378,17 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     attrs.stencil = glConfiguration.stencilBufferSize() > 0;
     attrs.antialias = glConfiguration.sampleCount() > 0;
 
-    attrs.premultipliedAlpha =
-        !!(glConfiguration.flags() & GLConfiguration::Flag::PremultipliedAlpha);
-    attrs.preserveDrawingBuffer =
-        !!(glConfiguration.flags() & GLConfiguration::Flag::PreserveDrawingBuffer);
-    if(glConfiguration.flags() & GLConfiguration::Flag::PowerPreferenceLowPower)
+    attrs.premultipliedAlpha = glConfiguration.flags() >= GLConfiguration::Flag::PremultipliedAlpha;
+    attrs.preserveDrawingBuffer = glConfiguration.flags() >= GLConfiguration::Flag::PreserveDrawingBuffer;
+    if(glConfiguration.flags() >= GLConfiguration::Flag::PowerPreferenceLowPower)
         attrs.powerPreference = EM_WEBGL_POWER_PREFERENCE_LOW_POWER;
-    else if(glConfiguration.flags() & GLConfiguration::Flag::PowerPreferenceHighPerformance)
+    else if(glConfiguration.flags() >= GLConfiguration::Flag::PowerPreferenceHighPerformance)
         attrs.powerPreference = EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
     else
         attrs.powerPreference = EM_WEBGL_POWER_PREFERENCE_DEFAULT;
-    attrs.explicitSwapControl =
-        !!(glConfiguration.flags() & GLConfiguration::Flag::ExplicitSwapControl);
-    attrs.failIfMajorPerformanceCaveat =
-        !!(glConfiguration.flags() & GLConfiguration::Flag::FailIfMajorPerformanceCaveat);
-    attrs.enableExtensionsByDefault =
-        !!(glConfiguration.flags() & GLConfiguration::Flag::EnableExtensionsByDefault);
+    attrs.explicitSwapControl = glConfiguration.flags() >= GLConfiguration::Flag::ExplicitSwapControl;
+    attrs.failIfMajorPerformanceCaveat = glConfiguration.flags() >= GLConfiguration::Flag::FailIfMajorPerformanceCaveat;
+    attrs.enableExtensionsByDefault = glConfiguration.flags() >= GLConfiguration::Flag::EnableExtensionsByDefault;
 
     #ifdef MAGNUM_TARGET_GLES2 /* WebGL 1 */
     attrs.majorVersion = 1;
@@ -454,8 +449,8 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     /* Make the context current */
     CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_make_context_current(_glContext = context) == EMSCRIPTEN_RESULT_SUCCESS);
 
-    setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
-    setupAnimationFrame(!!(configuration.windowFlags() & Configuration::WindowFlag::AlwaysRequestAnimationFrame));
+    setupCallbacks(configuration.windowFlags() >= Configuration::WindowFlag::Resizable);
+    setupAnimationFrame(configuration.windowFlags() >= Configuration::WindowFlag::AlwaysRequestAnimationFrame);
 
     /* Return true if the initialization succeeds */
     return _context->tryCreate(glConfiguration);
@@ -1058,7 +1053,7 @@ EmscriptenApplication::Cursor EmscriptenApplication::cursor() {
 }
 
 bool EmscriptenApplication::isTextInputActive() const {
-    return !!(_flags & Flag::TextInputActive);
+    return _flags >= Flag::TextInputActive;
 }
 
 void EmscriptenApplication::startTextInput() {
