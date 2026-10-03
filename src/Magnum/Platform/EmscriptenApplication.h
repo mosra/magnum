@@ -1149,7 +1149,7 @@ class EmscriptenApplication {
         void handleCanvasResize(const EmscriptenUiEvent* event);
         /* Sorry, but can't use Configuration::WindowFlags here :( */
         void setupCallbacks(bool resizable);
-        void setupAnimationFrame(bool ForceAnimationFrame);
+        void setupAnimationFrame(bool alwaysRequestAnimationFrame);
 
         Vector2i _lastKnownCanvasSize;
         Vector2 _previousMouseMovePosition{Constants::nan()};

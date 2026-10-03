@@ -957,8 +957,8 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         }));
 }
 
-void EmscriptenApplication::setupAnimationFrame(bool forceAnimationFrame) {
-    if(forceAnimationFrame) {
+void EmscriptenApplication::setupAnimationFrame(const bool alwaysRequestAnimationFrame) {
+    if(alwaysRequestAnimationFrame) {
         _callback = [](void* userData) -> int {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
 
