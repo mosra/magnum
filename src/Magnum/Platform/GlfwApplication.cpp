@@ -402,7 +402,8 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     /* Disable implicit GL context creation */
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    /* Create the window */
+    /* Create the window. The title is internally stored as a
+       Containers::String so it should be null-terminated always. */
     CORRADE_INTERNAL_ASSERT(configuration.title().flags() & Containers::StringViewFlag::NullTerminated);
     _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().data(), monitor, nullptr);
     if(!_window) {
@@ -549,6 +550,9 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        blinking in case we have to destroy it again right away. If the creation
        succeeds, make the context current so we can query GL_VENDOR below. */
     glfwWindowHint(GLFW_VISIBLE, false);
+    /* The title is internally stored as a Containers::String so it should be
+       null-terminated always */
+    CORRADE_INTERNAL_ASSERT(configuration.title().flags() & Containers::StringViewFlag::NullTerminated);
     if((_window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().data(), monitor, nullptr)))
         glfwMakeContextCurrent(_window);
 
@@ -588,7 +592,8 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
            just 2.1) and I assume on others as well. */
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, false);
 
-        CORRADE_INTERNAL_ASSERT(configuration.title().flags() & Containers::StringViewFlag::NullTerminated);
+        /* StringViewFlag::NullTerminated asserted above already, internally
+           it's stored as a Containers::String so it should be always */
         _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().data(), monitor, nullptr);
     }
     #endif
