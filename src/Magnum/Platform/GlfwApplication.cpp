@@ -368,6 +368,29 @@ void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
     setWindowIcon(Containers::arrayView(images));
 }
 
+namespace {
+
+/* Returns a monitor pointer that gets subsequently used for enabling
+   fullscreen, or nullptr if fullscreen isn't meant to be enabled. Strange
+   API. */
+GLFWmonitor* setupWindowFlags(const GlfwApplication::Configuration::WindowFlags flags) {
+    GLFWmonitor* monitor = nullptr;
+    if (flags >= GlfwApplication::Configuration::WindowFlag::Fullscreen) {
+        monitor = glfwGetPrimaryMonitor();
+        glfwWindowHint(GLFW_AUTO_ICONIFY, flags >= GlfwApplication::Configuration::WindowFlag::AutoIconify);
+    } else {
+        glfwWindowHint(GLFW_DECORATED, !(flags >= GlfwApplication::Configuration::WindowFlag::Borderless));
+        glfwWindowHint(GLFW_RESIZABLE, flags >= GlfwApplication::Configuration::WindowFlag::Resizable);
+        glfwWindowHint(GLFW_VISIBLE, !(flags >= GlfwApplication::Configuration::WindowFlag::Hidden));
+        glfwWindowHint(GLFW_MAXIMIZED, flags >= GlfwApplication::Configuration::WindowFlag::Maximized);
+        glfwWindowHint(GLFW_FLOATING, flags >= GlfwApplication::Configuration::WindowFlag::AlwaysOnTop);
+    }
+    glfwWindowHint(GLFW_FOCUSED, flags >= GlfwApplication::Configuration::WindowFlag::Focused);
+    return monitor;
+}
+
+}
+
 bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
     if(!(configuration.flags() & Configuration::Flag::Contextless)) {
@@ -384,20 +407,9 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     _dpiScaling = dpiScalingInternal(_configurationDpiScalingPolicy, _configurationDpiScaling);
     const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
-    /* Window flags */
-    GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
-    if (configuration.windowFlags() >= Configuration::WindowFlag::Fullscreen) {
-        monitor = glfwGetPrimaryMonitor();
-        glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
-    } else {
-        const Configuration::WindowFlags& flags = configuration.windowFlags();
-        glfwWindowHint(GLFW_DECORATED, !(flags >= Configuration::WindowFlag::Borderless));
-        glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
-        glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
-        glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
-        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::AlwaysOnTop);
-    }
-    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
+    /* Setup window flags, the monitor pointer is used below to enable
+       fullscreen */
+    GLFWmonitor* const monitor = setupWindowFlags(configuration.windowFlags());
 
     /* Disable implicit GL context creation */
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -439,20 +451,9 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     _dpiScaling = dpiScalingInternal(_configurationDpiScalingPolicy, _configurationDpiScaling);
     const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
-    /* Window flags */
-    GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
-    if (configuration.windowFlags() >= Configuration::WindowFlag::Fullscreen) {
-        monitor = glfwGetPrimaryMonitor();
-        glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
-    } else {
-        const Configuration::WindowFlags& flags = configuration.windowFlags();
-        glfwWindowHint(GLFW_DECORATED, !(flags >= Configuration::WindowFlag::Borderless));
-        glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
-        glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
-        glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
-        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::AlwaysOnTop);
-    }
-    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
+    /* Setup window flags, the monitor pointer is used below to enable
+       fullscreen */
+    GLFWmonitor* const monitor = setupWindowFlags(configuration.windowFlags());
 
     /* Framebuffer setup */
     glfwWindowHint(GLFW_RED_BITS, glConfiguration.colorBufferSize().r());
