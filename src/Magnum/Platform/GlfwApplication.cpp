@@ -425,31 +425,6 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     return true;
 }
 
-namespace {
-
-GlfwApplication::Modifiers currentGlfwModifiers(GLFWwindow* window) {
-    static_assert(GLFW_PRESS == true && GLFW_RELEASE == false,
-        "GLFW press and release constants do not correspond to bool values");
-
-    GlfwApplication::Modifiers mods;
-    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) ||
-       glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT))
-        mods |= GlfwApplication::Modifier::Shift;
-    if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) ||
-       glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL))
-        mods |= GlfwApplication::Modifier::Ctrl;
-    if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) ||
-       glfwGetKey(window, GLFW_KEY_RIGHT_ALT))
-        mods |= GlfwApplication::Modifier::Alt;
-    if(glfwGetKey(window, GLFW_KEY_LEFT_SUPER) ||
-       glfwGetKey(window, GLFW_KEY_RIGHT_SUPER))
-        mods |= GlfwApplication::Modifier::Super;
-
-    return mods;
-}
-
-}
-
 #ifdef MAGNUM_TARGET_GL
 bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
     CORRADE_ASSERT(!(configuration.flags() & Configuration::Flag::Contextless),
@@ -1208,6 +1183,31 @@ GlfwApplication::Pointers GlfwApplication::PointerMoveEvent::pointers() {
         _pointers = currentGlfwPointers(_window);
 
     return *_pointers;
+}
+
+namespace {
+
+GlfwApplication::Modifiers currentGlfwModifiers(GLFWwindow* window) {
+    static_assert(GLFW_PRESS == true && GLFW_RELEASE == false,
+        "GLFW press and release constants do not correspond to bool values");
+
+    GlfwApplication::Modifiers mods;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) ||
+       glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT))
+        mods |= GlfwApplication::Modifier::Shift;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) ||
+       glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL))
+        mods |= GlfwApplication::Modifier::Ctrl;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) ||
+       glfwGetKey(window, GLFW_KEY_RIGHT_ALT))
+        mods |= GlfwApplication::Modifier::Alt;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SUPER) ||
+       glfwGetKey(window, GLFW_KEY_RIGHT_SUPER))
+        mods |= GlfwApplication::Modifier::Super;
+
+    return mods;
+}
+
 }
 
 GlfwApplication::Modifiers GlfwApplication::PointerMoveEvent::modifiers() {
