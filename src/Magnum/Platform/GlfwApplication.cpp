@@ -311,6 +311,9 @@ void GlfwApplication::setWindowIcon(const ImageView2D& image) {
 
 namespace {
 
+/** @todo use some optimized RGB -> RGBA utility from Math/ColorBatch.h for
+    this once it exists, in particular one that makes use of contiguous rows
+    for optimization */
 template<class T> inline void packPixels(const Containers::StridedArrayView2D<const T>& in, const Containers::StridedArrayView2D<Color4ub>& out) {
     for(std::size_t row = 0; row != in.size()[0]; ++row)
         for(std::size_t col = 0; col != in.size()[1]; ++col)
