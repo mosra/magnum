@@ -1772,22 +1772,23 @@ class GlfwApplication::Configuration {
              * @m_deprecated_since{2020,06} Use @ref WindowFlag::AlwaysOnTop instead.
              */
             Floating CORRADE_DEPRECATED_ENUM("use AlwaysOnTop instead") = AlwaysOnTop,
-            #endif
 
             /**
              * Automatically iconify (minimize) if fullscreen window loses
-             * input focus
+             * input focus.
+             * @m_deprecated_since_latest Fullscreen windows are minimized on
+             *      focus loss implicitly so setting this flag has no effect,
+             *      and the flag does nothing for regular windows.
              */
-            AutoIconify = 1 << 7,
+            AutoIconify CORRADE_DEPRECATED_ENUM("setting this flag has no effect") = 1 << 7,
 
             /**
              * Window has input focus
-             *
-             * @todo there's also GLFW_FOCUS_ON_SHOW, what's the difference?
+             * @m_deprecated_since_latest Windows are focused upon creation
+             *      implicitly so setting this flag has no effect.
              */
-            Focused = 1 << 8,
+            Focused CORRADE_DEPRECATED_ENUM("setting this flag has no effect") = 1 << 8,
 
-            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * @copydoc Flag::Contextless
              * @m_deprecated_since_latest Use @ref Flag::Contextless with
@@ -2046,9 +2047,9 @@ class GlfwApplication::Configuration {
          * @brief Set window flags
          * @return  Reference to self (for method chaining)
          *
-         * Default is @ref WindowFlag::Focused. To avoid clearing default flags
-         * by accident, prefer to use @ref addWindowFlags() and
-         * @ref clearWindowFlags() instead.
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
+         * instead.
          * @see @ref setFlags()
          */
         Configuration& setWindowFlags(WindowFlags flags) {

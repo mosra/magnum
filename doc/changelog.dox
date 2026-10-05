@@ -1637,6 +1637,11 @@ See also:
     @relativeref{Platform::Sdl2Application::Configuration,clearFlags()} APIs
     as compared to other window flags these cannot be subsequently modified on
     an existing window
+-   @cpp Platform::GlfwApplication::Configuration::WindowFlag::Focused @ce and
+    @cpp WindowFlag::AutoIconify @ce are deprecated as GLFW enables them by
+    default and thus setting them has no effect compared to implicit behavior
+    while it's too easy to disable them by accident, leading to unexpected
+    behavior
 -   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
     @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
     @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,

@@ -2485,8 +2485,8 @@ class Sdl2Application::Configuration {
             MouseLocked = SDL_WINDOW_INPUT_GRABBED,
 
             /** @todo SDL_WINDOW_INPUT_FOCUS, SDL_WINDOW_MOUSE_FOCUS, GLFW has
-                GLFW_FOCUSED (exposed as Focused) and GLFW_FOCUS_ON_SHOW (not
-                exposed) -- what's the relation? How to make these compatible? */
+                GLFW_FOCUS_ON_SHOW (not exposed) -- what's the relation? How to
+                make these compatible? */
 
             /**
              * Always on top

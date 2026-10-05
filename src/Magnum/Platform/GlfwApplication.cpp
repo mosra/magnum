@@ -377,7 +377,6 @@ GLFWmonitor* setupWindowFlags(const GlfwApplication::Configuration::WindowFlags 
     GLFWmonitor* monitor = nullptr;
     if (flags >= GlfwApplication::Configuration::WindowFlag::Fullscreen) {
         monitor = glfwGetPrimaryMonitor();
-        glfwWindowHint(GLFW_AUTO_ICONIFY, flags >= GlfwApplication::Configuration::WindowFlag::AutoIconify);
     } else {
         glfwWindowHint(GLFW_DECORATED, !(flags >= GlfwApplication::Configuration::WindowFlag::Borderless));
         glfwWindowHint(GLFW_RESIZABLE, flags >= GlfwApplication::Configuration::WindowFlag::Resizable);
@@ -385,7 +384,6 @@ GLFWmonitor* setupWindowFlags(const GlfwApplication::Configuration::WindowFlags 
         glfwWindowHint(GLFW_MAXIMIZED, flags >= GlfwApplication::Configuration::WindowFlag::Maximized);
         glfwWindowHint(GLFW_FLOATING, flags >= GlfwApplication::Configuration::WindowFlag::AlwaysOnTop);
     }
-    glfwWindowHint(GLFW_FOCUSED, flags >= GlfwApplication::Configuration::WindowFlag::Focused);
     return monitor;
 }
 
@@ -1164,7 +1162,6 @@ GlfwApplication::GLConfiguration::GLConfiguration():
 GlfwApplication::Configuration::Configuration():
     _title{Containers::String::nullTerminatedGlobalView("Magnum GLFW Application"_s)},
     _size{800, 600},
-    _windowFlags{WindowFlag::Focused},
     _dpiScalingPolicy{DpiScalingPolicy::Default} {}
 
 GlfwApplication::Configuration::~Configuration() = default;
