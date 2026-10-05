@@ -374,17 +374,14 @@ namespace {
    fullscreen, or nullptr if fullscreen isn't meant to be enabled. Strange
    API. */
 GLFWmonitor* setupWindowFlags(const GlfwApplication::Configuration::WindowFlags flags) {
-    GLFWmonitor* monitor = nullptr;
-    if (flags >= GlfwApplication::Configuration::WindowFlag::Fullscreen) {
-        monitor = glfwGetPrimaryMonitor();
-    } else {
-        glfwWindowHint(GLFW_DECORATED, !(flags >= GlfwApplication::Configuration::WindowFlag::Borderless));
-        glfwWindowHint(GLFW_RESIZABLE, flags >= GlfwApplication::Configuration::WindowFlag::Resizable);
-        glfwWindowHint(GLFW_VISIBLE, !(flags >= GlfwApplication::Configuration::WindowFlag::Hidden));
-        glfwWindowHint(GLFW_MAXIMIZED, flags >= GlfwApplication::Configuration::WindowFlag::Maximized);
-        glfwWindowHint(GLFW_FLOATING, flags >= GlfwApplication::Configuration::WindowFlag::AlwaysOnTop);
-    }
-    return monitor;
+    glfwWindowHint(GLFW_DECORATED, !(flags >= GlfwApplication::Configuration::WindowFlag::Borderless));
+    glfwWindowHint(GLFW_RESIZABLE, flags >= GlfwApplication::Configuration::WindowFlag::Resizable);
+    glfwWindowHint(GLFW_VISIBLE, !(flags >= GlfwApplication::Configuration::WindowFlag::Hidden));
+    glfwWindowHint(GLFW_MAXIMIZED, flags >= GlfwApplication::Configuration::WindowFlag::Maximized);
+    glfwWindowHint(GLFW_FLOATING, flags >= GlfwApplication::Configuration::WindowFlag::AlwaysOnTop);
+
+    return flags >= GlfwApplication::Configuration::WindowFlag::Fullscreen ?
+        glfwGetPrimaryMonitor() : nullptr;
 }
 
 }
