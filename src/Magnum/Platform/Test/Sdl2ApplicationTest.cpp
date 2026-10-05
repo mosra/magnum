@@ -535,9 +535,7 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         .addBooleanOption("borderless").setHelp("borderless", "no window decoration")
-        #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
         .addBooleanOption("always-on-top").setHelp("always-on-top", "always on top")
-        #endif
         #endif
         #ifdef MAGNUM_TARGET_GL
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
@@ -559,10 +557,8 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     if(args.isSet("borderless"))
         conf.addWindowFlags(WindowFlag::Borderless);
-    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
     if(args.isSet("always-on-top"))
         conf.addWindowFlags(WindowFlag::AlwaysOnTop);
-    #endif
     #endif
     #ifdef MAGNUM_TARGET_GL
     if((_contextless = args.isSet("contextless")))
@@ -599,7 +595,6 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
         << dpiScaling();
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
     Utility::Resource rs{"icons"};
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer;
@@ -608,9 +603,6 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
        importer->openData(rs.getRaw("icon-64.tga")) &&
        (image = importer->image2D(0))) setWindowIcon(*image);
     else Warning{} << "Can't load the plugin / file, not setting window icon";
-    #else
-    Debug{} << "SDL too old, can't set window icon";
-    #endif
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
