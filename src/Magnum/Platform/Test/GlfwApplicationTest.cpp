@@ -37,6 +37,10 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
+#ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/DefaultFramebuffer.h"
+#endif
+
 namespace Magnum { namespace Platform {
 
 /* These cannot be in an anonymous namespace as enumSetDebugOutput() / Key
@@ -298,7 +302,11 @@ struct GlfwApplicationTest: Platform::Application {
     }
 
     void drawEvent() override {
-        Debug{} << "draw";
+        Debug{} << "draw event";
+        #ifdef MAGNUM_TARGET_GL
+        if(!_contextless)
+            GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+        #endif
 
         if(!_contextless)
             swapBuffers();
