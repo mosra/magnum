@@ -1224,7 +1224,8 @@ class Sdl2Application {
             /**
              * Hidden and locked. When the mouse is locked, only
              * @ref MouseMoveEvent::relativePosition() is changing, absolute
-             * position stays the same.
+             * position stays the same. See also @ref WindowFlag::MouseLocked
+             * for just locking the cursor to the window area.
              * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
              */
             HiddenLocked
@@ -1707,6 +1708,8 @@ enum class Sdl2Application::WindowFlag: Uint32 {
     /**
      * Window with mouse locked
      *
+     * See also @ref Cursor::HiddenLocked for locking a mouse to the window
+     * area together with hiding it.
      * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
      * @todo SDL_WINDOW_MOUSE_CAPTURE, also what all those do? isn't it
      *      redundant / better handled with cursor APIs?
