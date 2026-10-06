@@ -311,53 +311,7 @@ struct GlfwApplicationTest: Platform::Application {
             redraw();
     }
 
-    void keyPressEvent(KeyEvent& event) override {
-        Debug{} << "key press:" << event.key() << int(event.key()) << event.keyName() << "scancode:" << event.scanCode() << event.modifiers()
-            #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
-            << "converted:" << keyToScanCode(event.key())
-            #endif
-            ;
-
-        if(event.key() == Key::F1) {
-            Debug{} << "starting text input";
-            startTextInput();
-        } else if(event.key() == Key::F2) {
-            _redraw = !_redraw;
-            Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
-            if(_redraw)
-                redraw();
-        } else if(event.key() == Key::V && !event.modifiers()) {
-            _vsync = !_vsync;
-            Debug{} << "vsync" << (_vsync? "on" : "off");
-            setSwapInterval(_vsync ? 1 : 0);
-        } else if(event.key() == Key::C && event.modifiers() == Modifier::Ctrl) {
-            Debug{} << "Setting clipboard contents";
-            setClipboardText("this text shouldn't have an exclamation at the end!!"_s.exceptSuffix(2));
-        } else if(event.key() == Key::V && event.modifiers() == Modifier::Ctrl) {
-            Debug{} << "Clipboard contents:" << clipboardText();
-        } else if(event.key() == Key::Esc) {
-            Debug{} << "stopping text input";
-            stopTextInput();
-        } else if(event.key() == Key::T) {
-            Debug{} << "setting window title";
-            setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
-        } else if(event.key() == Key::S) {
-            Debug{} << "setting window size, which should trigger a viewport event";
-            setWindowSize(Vector2i{300, 200});
-        } else if(event.key() == Key::W) {
-            Debug{} << "setting max window size, which should trigger a viewport event if the size changes";
-            setMaxWindowSize(Vector2i{700, 500});
-        } else if(event.key() == Key::H) {
-            Debug{} << "toggling hand cursor";
-            setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
-        } else if(event.key() == Key::L) {
-            Debug{} << "toggling locked mouse";
-            setCursor(cursor() == Cursor::Arrow ? Cursor::HiddenLocked : Cursor::Arrow);
-        } else if(event.key() == Key::X) {
-            Debug{} << "requesting an exit with code 5";
-            exit(5);
-        }
-    }
+    void keyPressEvent(KeyEvent& event) override;
 
     void keyReleaseEvent(KeyEvent& event) override {
         Debug{} << "key release:" << event.key() << int(event.key()) << event.keyName() << "scancode:" << event.scanCode() << event.modifiers()
@@ -511,6 +465,54 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
     {
         Error silenceError{nullptr};
         CORRADE_INTERNAL_ASSERT(!isKeyPressed(Key(0x7fffffff)));
+    }
+}
+
+void GlfwApplicationTest::keyPressEvent(KeyEvent& event) {
+    Debug{} << "key press:" << event.key() << int(event.key()) << event.keyName() << "scancode:" << event.scanCode() << event.modifiers()
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+        << "converted:" << keyToScanCode(event.key())
+        #endif
+        ;
+
+    if(event.key() == Key::F1) {
+        Debug{} << "starting text input";
+        startTextInput();
+    } else if(event.key() == Key::F2) {
+        _redraw = !_redraw;
+        Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
+        if(_redraw)
+            redraw();
+    } else if(event.key() == Key::V && !event.modifiers()) {
+        _vsync = !_vsync;
+        Debug{} << "vsync" << (_vsync? "on" : "off");
+        setSwapInterval(_vsync ? 1 : 0);
+    } else if(event.key() == Key::C && event.modifiers() == Modifier::Ctrl) {
+        Debug{} << "Setting clipboard contents";
+        setClipboardText("this text shouldn't have an exclamation at the end!!"_s.exceptSuffix(2));
+    } else if(event.key() == Key::V && event.modifiers() == Modifier::Ctrl) {
+        Debug{} << "Clipboard contents:" << clipboardText();
+    } else if(event.key() == Key::Esc) {
+        Debug{} << "stopping text input";
+        stopTextInput();
+    } else if(event.key() == Key::T) {
+        Debug{} << "setting window title";
+        setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
+    } else if(event.key() == Key::S) {
+        Debug{} << "setting window size, which should trigger a viewport event";
+        setWindowSize(Vector2i{300, 200});
+    } else if(event.key() == Key::W) {
+        Debug{} << "setting max window size, which should trigger a viewport event if the size changes";
+        setMaxWindowSize(Vector2i{700, 500});
+    } else if(event.key() == Key::H) {
+        Debug{} << "toggling hand cursor";
+        setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
+    } else if(event.key() == Key::L) {
+        Debug{} << "toggling locked mouse";
+        setCursor(cursor() == Cursor::Arrow ? Cursor::HiddenLocked : Cursor::Arrow);
+    } else if(event.key() == Key::X) {
+        Debug{} << "requesting an exit with code 5";
+        exit(5);
     }
 }
 

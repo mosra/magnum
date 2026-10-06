@@ -386,84 +386,7 @@ struct Sdl2ApplicationTest: Platform::Application {
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    void keyPressEvent(KeyEvent& event) override {
-        Debug{} << "key press:" << event.key() << event.keyName() << "scancode:" << event.scanCode()
-            #ifndef CORRADE_TARGET_EMSCRIPTEN
-            << event.scanCodeName()
-            #endif
-            << event.modifiers()
-            #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 30125
-            << "converted:"
-            #ifndef CORRADE_TARGET_EMSCRIPTEN
-            << scanCodeToKey(event.scanCode())
-            #endif
-            << keyToScanCode(event.key())
-            #endif
-            ;
-
-        if(event.key() == Key::F1) {
-            Debug{} << "starting text input";
-            startTextInput();
-        } else if(event.key() == Key::F2) {
-            _redraw = !_redraw;
-            Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
-            if(_redraw)
-                redraw();
-        }
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        else if(event.key() == Key::V && !(event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock))) {
-            _vsync = !_vsync;
-            Debug{} << "vsync" << (_vsync? "on" : "off");
-            setSwapInterval(_vsync ? 1 : 0);
-        } else if(event.key() == Key::C && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {
-            Debug{} << "Setting clipboard contents";
-            setClipboardText("this text shouldn't have an exclamation at the end!!"_s.exceptSuffix(2));
-        } else if(event.key() == Key::V && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {
-            Debug{} << "Clipboard contents:" << clipboardText();
-        }
-        #endif
-        else if(event.key() == Key::Esc) {
-            Debug{} << "stopping text input";
-            stopTextInput();
-        } else if(event.key() == Key::T) {
-            Debug{} << "setting window title";
-            setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
-        }
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        else if(event.key() == Key::S) {
-            Debug{} << "setting window size, which should trigger a viewport event";
-            setWindowSize(Vector2i{300, 200});
-        } else if(event.key() == Key::W) {
-            Debug{} << "setting max window size, which should trigger a viewport event";
-            setMaxWindowSize(Vector2i{700, 500});
-        }
-        #endif
-        else if(event.key() == Key::H) {
-            Debug{} << "toggling hand cursor";
-            setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
-        }
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        else if(event.key() == Key::L) {
-            Debug{} << "toggling locked mouse";
-            setCursor(cursor() == Cursor::Arrow ? Cursor::HiddenLocked : Cursor::Arrow);
-        }
-        #else
-        else if(event.key() == Key::F) {
-            Debug{} << "toggling fullscreen";
-            setContainerCssClass((_fullscreen ^= true) ? "mn-fullsize" : "");
-        }
-        #endif
-        else if(event.key() == Key::X) {
-            Debug{} << "requesting an exit with code 5";
-            exit(5);
-        }
-
-        /* With EmscriptenApplication, this makes the event stop from
-           propagating further to the page (such as when pressing F1).
-           Unfortunately on SDL this doesn't as there's no API to actually mark
-           events as accepted. */
-        event.setAccepted();
-    }
+    void keyPressEvent(KeyEvent& event) override;
 
     void keyReleaseEvent(KeyEvent& event) override {
         Debug{} << "key release:" << event.key() << event.keyName() << "scancode:" << event.scanCode()
@@ -639,6 +562,84 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     /* This shouldn't blow up */
     CORRADE_INTERNAL_ASSERT(!isKeyPressed(Key::Unknown) && !isKeyPressed(Key(0x7fffffff)));
     #endif
+}
+
+void Sdl2ApplicationTest::keyPressEvent(KeyEvent& event) {
+    Debug{} << "key press:" << event.key() << event.keyName() << "scancode:" << event.scanCode()
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        << event.scanCodeName()
+        #endif
+        << event.modifiers()
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) || __EMSCRIPTEN_MAJOR__*10000 + __EMSCRIPTEN_MINOR__*100 + __EMSCRIPTEN_TINY__ >= 30125
+        << "converted:"
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        << scanCodeToKey(event.scanCode())
+        #endif
+        << keyToScanCode(event.key())
+        #endif
+        ;
+
+    if(event.key() == Key::F1) {
+        Debug{} << "starting text input";
+        startTextInput();
+    } else if(event.key() == Key::F2) {
+        _redraw = !_redraw;
+        Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
+        if(_redraw)
+            redraw();
+    }
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    else if(event.key() == Key::V && !(event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock))) {
+        _vsync = !_vsync;
+        Debug{} << "vsync" << (_vsync? "on" : "off");
+        setSwapInterval(_vsync ? 1 : 0);
+    } else if(event.key() == Key::C && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {
+        Debug{} << "Setting clipboard contents";
+        setClipboardText("this text shouldn't have an exclamation at the end!!"_s.exceptSuffix(2));
+    } else if(event.key() == Key::V && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {
+        Debug{} << "Clipboard contents:" << clipboardText();
+    }
+    #endif
+    else if(event.key() == Key::Esc) {
+        Debug{} << "stopping text input";
+        stopTextInput();
+    } else if(event.key() == Key::T) {
+        Debug{} << "setting window title";
+        setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
+    }
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    else if(event.key() == Key::S) {
+        Debug{} << "setting window size, which should trigger a viewport event";
+        setWindowSize(Vector2i{300, 200});
+    } else if(event.key() == Key::W) {
+        Debug{} << "setting max window size, which should trigger a viewport event";
+        setMaxWindowSize(Vector2i{700, 500});
+    }
+    #endif
+    else if(event.key() == Key::H) {
+        Debug{} << "toggling hand cursor";
+        setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
+    }
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    else if(event.key() == Key::L) {
+        Debug{} << "toggling locked mouse";
+        setCursor(cursor() == Cursor::Arrow ? Cursor::HiddenLocked : Cursor::Arrow);
+    }
+    #else
+    else if(event.key() == Key::F) {
+        Debug{} << "toggling fullscreen";
+        setContainerCssClass((_fullscreen ^= true) ? "mn-fullsize" : "");
+    }
+    #endif
+    else if(event.key() == Key::X) {
+        Debug{} << "requesting an exit with code 5";
+        exit(5);
+    }
+
+    /* With EmscriptenApplication, this makes the event stop from propagating
+       further to the page (such as when pressing F1). Unfortunately on SDL
+       this doesn't as there's no API to actually mark events as accepted. */
+    event.setAccepted();
 }
 
 }}}}
