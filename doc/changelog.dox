@@ -1441,6 +1441,9 @@ See also:
 -   Creating a @ref Platform::Sdl2Application window without an OpenGL context
     was errorneously still marking it for use with OpenGL even without
     @ref Platform::Sdl2Application::Configuration::Flag::OpenGL being set
+-   Fixed @ref Platform::Sdl2Application and @ref Platform::GlfwApplication to
+    properly minimize the window on startup when
+    @relativeref{Platform::Sdl2Application,WindowFlag::Minimized} is set
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

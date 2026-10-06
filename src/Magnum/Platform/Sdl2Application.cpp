@@ -822,8 +822,17 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Show the window once we are sure that everything is okay */
-    if(!(configuration.windowFlags() & WindowFlag::Hidden))
+    if(!(configuration.windowFlags() & WindowFlag::Hidden)) {
         SDL_ShowWindow(_window);
+        /* On sdl2 (not sdl2-compat layered over SDL3) this causes a minimized
+           window to get restored, so perform the minimization again after this
+           step. Distinction can be done using the patch version, which is at
+           least 50 for sdl2-compat. */
+        #if SDL_PATCHLEVEL < 50
+        if(configuration.windowFlags() >= WindowFlag::Minimized)
+            SDL_MinimizeWindow(_window);
+        #endif
+    }
     #endif
 
     /* Return true if the initialization succeeds */

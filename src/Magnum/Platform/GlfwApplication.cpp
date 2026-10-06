@@ -576,8 +576,6 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
     /* Proceed with configuring other stuff that couldn't be done with window
        hints */
-    if(configuration.windowFlags() >= WindowFlag::Minimized)
-        glfwIconifyWindow(_window);
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
     glfwSetInputMode(_window, GLFW_CURSOR, Int(configuration.cursorMode()));
@@ -597,9 +595,13 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         _window = nullptr;
     }
 
-    /* Show the window once we are sure that everything is okay */
+    /* Show the window once we are sure that everything is okay. This
+       apparently causes a minimized window to get restored, so perform the
+       minimization only after this step, not before. */
     if(!(configuration.windowFlags() & WindowFlag::Hidden))
         glfwShowWindow(_window);
+    if(configuration.windowFlags() >= WindowFlag::Minimized)
+        glfwIconifyWindow(_window);
 
     /* Return true if the initialization succeeds */
     return true;
