@@ -423,7 +423,11 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
     args.addOption("dpi-scaling").setHelp("dpi-scaling", "DPI scaled passed via Configuration instead of --magnum-dpi-scaling, to test app overrides")
         .addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
+        .addBooleanOption("fullscreen").setHelp("fullscreen", "fullscreen window")
         .addBooleanOption("borderless").setHelp("borderless", "no window decoration")
+        .addBooleanOption("hidden").setHelp("hidden", "hidden window")
+        .addBooleanOption("maximized").setHelp("maximized", "maximized window")
+        .addBooleanOption("minimized").setHelp("minimized", "minimized window")
         .addBooleanOption("always-on-top").setHelp("always-on-top", "always on top")
         #ifdef MAGNUM_TARGET_GL
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
@@ -442,8 +446,16 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         .addWindowFlags(WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
+    if(args.isSet("fullscreen"))
+        conf.addWindowFlags(WindowFlag::Fullscreen);
     if(args.isSet("borderless"))
         conf.addWindowFlags(WindowFlag::Borderless);
+    if(args.isSet("hidden"))
+        conf.addWindowFlags(WindowFlag::Hidden);
+    if(args.isSet("maximized"))
+        conf.addWindowFlags(WindowFlag::Maximized);
+    if(args.isSet("minimized"))
+        conf.addWindowFlags(WindowFlag::Minimized);
     if(args.isSet("always-on-top"))
         conf.addWindowFlags(WindowFlag::AlwaysOnTop);
     #ifdef MAGNUM_TARGET_GL

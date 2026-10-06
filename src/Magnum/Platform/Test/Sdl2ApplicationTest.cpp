@@ -534,8 +534,18 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
         .addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         #ifndef CORRADE_TARGET_EMSCRIPTEN
+        .addBooleanOption("fullscreen").setHelp("fullscreen", "fullscreen window")
+        .addBooleanOption("fullscreen-desktop").setHelp("fullscreen-desktop", "fullscreen window at the current desktop resolution")
         .addBooleanOption("borderless").setHelp("borderless", "no window decoration")
+        .addBooleanOption("hidden").setHelp("hidden", "hidden window")
+        .addBooleanOption("maximized").setHelp("maximized", "maximized window")
+        .addBooleanOption("minimized").setHelp("minimized", "minimized window")
+        .addBooleanOption("mouse-locked").setHelp("mouse-locked", "window with mouse locked")
         .addBooleanOption("always-on-top").setHelp("always-on-top", "always on top")
+        .addBooleanOption("skip-taskbar").setHelp("skip-taskbar", "don't add the window to taskbar")
+        .addBooleanOption("utility").setHelp("utility", "window should be treated as a utility window")
+        .addBooleanOption("tooltip").setHelp("tooltip", "window should be treated as a tooltip")
+        .addBooleanOption("popup-menu").setHelp("popup-menu", "window should be treated as a popup menu")
         #endif
         #ifdef MAGNUM_TARGET_GL
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
@@ -555,10 +565,30 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    if(args.isSet("fullscreen"))
+        conf.addWindowFlags(WindowFlag::Fullscreen);
+    if(args.isSet("fullscreen-desktop"))
+        conf.addWindowFlags(WindowFlag::FullscreenDesktop);
     if(args.isSet("borderless"))
         conf.addWindowFlags(WindowFlag::Borderless);
+    if(args.isSet("hidden"))
+        conf.addWindowFlags(WindowFlag::Hidden);
+    if(args.isSet("maximized"))
+        conf.addWindowFlags(WindowFlag::Maximized);
+    if(args.isSet("minimized"))
+        conf.addWindowFlags(WindowFlag::Minimized);
+    if(args.isSet("mouse-locked"))
+        conf.addWindowFlags(WindowFlag::MouseLocked);
     if(args.isSet("always-on-top"))
         conf.addWindowFlags(WindowFlag::AlwaysOnTop);
+    if(args.isSet("skip-taskbar"))
+        conf.addWindowFlags(WindowFlag::SkipTaskbar);
+    if(args.isSet("utility"))
+        conf.addWindowFlags(WindowFlag::Utility);
+    if(args.isSet("tooltip"))
+        conf.addWindowFlags(WindowFlag::Tooltip);
+    if(args.isSet("popup-menu"))
+        conf.addWindowFlags(WindowFlag::PopupMenu);
     #endif
     #ifdef MAGNUM_TARGET_GL
     if((_contextless = args.isSet("contextless")))
