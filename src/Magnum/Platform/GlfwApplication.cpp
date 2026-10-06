@@ -192,7 +192,9 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
 }
 
 Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling, const bool silentLog) const {
+    #ifdef _MAGNUM_PLATFORM_USE_X11
     std::ostream* const output = silentLog ? nullptr : Debug::output();
+    #endif
     std::ostream* const verbose = _verboseLog && !silentLog ? Debug::output() : nullptr;
 
     /* Use values from the configuration only if not overridden on command line
