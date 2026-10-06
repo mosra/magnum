@@ -566,7 +566,8 @@ class Sdl2Application {
          * @brief Window flags
          * @m_since_latest
          *
-         * @see @ref Configuration::setWindowFlags(),
+         * @see @ref addWindowFlags(), @ref clearWindowFlags(),
+         *      @ref Configuration::setWindowFlags(),
          *      @ref Configuration::addWindowFlags(),
          *      @ref Configuration::clearWindowFlags(),
          *      @ref Configuration::Flags
@@ -1021,6 +1022,32 @@ class Sdl2Application {
          *      compatibility is scheduled to be removed in the future.
          */
         void setContainerCssClass(Containers::StringView cssClass);
+        #endif
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Add window flags
+         * @m_since_latest
+         *
+         * Note that certain flags can be used only for window creation, and on
+         * older SDL versions toggling some flags is not supported. See
+         * documentation of particular @ref WindowFlag values for details.
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref clearWindowFlags(), @ref Configuration::addWindowFlags()
+         */
+        void addWindowFlags(WindowFlags flags);
+
+        /**
+         * @brief Clear window flags
+         * @m_since_latest
+         *
+         * Note that certain flags can be used only for window creation, and on
+         * older SDL versions toggling some flags is not supported. See
+         * documentation of particular @ref WindowFlag values for details.
+         * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref addWindowFlags(), @ref Configuration::clearWindowFlags()
+         */
+        void clearWindowFlags(WindowFlags flags);
         #endif
 
         /**
@@ -1647,8 +1674,8 @@ class Sdl2Application {
 @brief Window flag
 @m_since_latest
 
-@see @ref WindowFlags, @ref Configuration::setWindowFlags(),
-    @ref Configuration::addWindowFlags(),
+@see @ref WindowFlags, @ref addWindowFlags(), @ref clearWindowFlags(),
+    @ref Configuration::setWindowFlags(), @ref Configuration::addWindowFlags(),
     @ref Configuration::clearWindowFlags(), @ref Configuration::Flags
 */
 enum class Sdl2Application::WindowFlag: Uint32 {
@@ -1730,7 +1757,10 @@ enum class Sdl2Application::WindowFlag: Uint32 {
      * Always on top
      *
      * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-     *      According to SDL docs works only on X11.
+     *      According to SDL docs works only on X11. Toggling this flag with
+     *      @ref addWindowFlags() and @ref clearWindowFlags() is not supported
+     *      in SDL versions before 2.0.16, the flag can only be used for window
+     *      creation.
      */
     AlwaysOnTop = SDL_WINDOW_ALWAYS_ON_TOP,
 
@@ -1738,7 +1768,9 @@ enum class Sdl2Application::WindowFlag: Uint32 {
      * Don't add the window to taskbar
      *
      * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-     *      According to SDL docs works only on X11.
+     *      According to SDL docs works only on X11. Toggling this flag with
+     *      @ref addWindowFlags() and @ref clearWindowFlags() is not supported,
+     *      the flag can only be used for window creation.
      */
     SkipTaskbar = SDL_WINDOW_SKIP_TASKBAR,
 
@@ -1746,7 +1778,9 @@ enum class Sdl2Application::WindowFlag: Uint32 {
      * Window should be treated as a utility window
      *
      * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-     *      According to SDL docs works only on X11.
+     *      According to SDL docs works only on X11. Toggling this flag with
+     *      @ref addWindowFlags() and @ref clearWindowFlags() is not supported,
+     *      the flag can only be used for window creation.
      */
     Utility = SDL_WINDOW_UTILITY,
 
@@ -1756,7 +1790,9 @@ enum class Sdl2Application::WindowFlag: Uint32 {
      * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
      *      According to SDL docs works only on X11. Furthermore, this flag
      *      only seems to work with the original SDL2 and not with the
-     *      compatibility layer implemented on top of SDL3.
+     *      compatibility layer implemented on top of SDL3. Toggling this flag
+     *      with @ref addWindowFlags() and @ref clearWindowFlags() is not
+     *      supported, the flag can only be used for window creation.
      */
     Tooltip = SDL_WINDOW_TOOLTIP,
 
@@ -1766,7 +1802,9 @@ enum class Sdl2Application::WindowFlag: Uint32 {
      * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
      *      According to SDL docs works only on X11. Furthermore, this flag
      *      only seems to work with the original SDL2 and not with the
-     *      compatibility layer implemented on top of SDL3.
+     *      compatibility layer implemented on top of SDL3. Toggling this flag
+     *      with @ref addWindowFlags() and @ref clearWindowFlags() is not
+     *      supported, the flag can only be used for window creation.
      */
     PopupMenu = SDL_WINDOW_POPUP_MENU,
     #endif
@@ -2941,7 +2979,8 @@ class Sdl2Application::Configuration {
          * Default are none. To avoid clearing default flags by accident,
          * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
          * instead.
-         * @see @ref setFlags()
+         * @see @ref setFlags(), @ref Sdl2Application::addWindowFlags(),
+         *      @ref Sdl2Application::clearWindowFlags()
          */
         Configuration& setWindowFlags(Sdl2Application::WindowFlags flags) {
             _windowFlags = flags;
@@ -2955,7 +2994,8 @@ class Sdl2Application::Configuration {
          *
          * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
-         * @see @ref clearWindowFlags(), @ref addFlags()
+         * @see @ref clearWindowFlags(), @ref addFlags(),
+         *      @ref Sdl2Application::addWindowFlags()
          */
         Configuration& addWindowFlags(Sdl2Application::WindowFlags flags) {
             _windowFlags |= flags;
@@ -2970,7 +3010,8 @@ class Sdl2Application::Configuration {
          * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
          * existing instead of replacing them. Useful for removing default
          * flags.
-         * @see @ref addWindowFlags(), @ref clearFlags()
+         * @see @ref addWindowFlags(), @ref clearFlags(),
+         *      @ref Sdl2Application::clearWindowFlags()
          */
         Configuration& clearWindowFlags(Sdl2Application::WindowFlags flags) {
             _windowFlags &= ~flags;

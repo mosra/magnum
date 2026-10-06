@@ -603,7 +603,50 @@ void Sdl2ApplicationTest::keyPressEvent(KeyEvent& event) {
     else if(event.key() == Key::Esc) {
         Debug{} << "stopping text input";
         stopTextInput();
-    } else if(event.key() == Key::T) {
+    }
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    else if(event.key() == Key::R) {
+        Debug{} << "toggling resizable" << (event.modifiers() >= Modifier::Shift ? "off" : "on");
+        event.modifiers() >= Modifier::Shift ?
+            clearWindowFlags(WindowFlag::Resizable) :
+            addWindowFlags(WindowFlag::Resizable);
+    } else if(event.key() == Key::F) {
+        Debug{} << (event.modifiers() >= Modifier::Ctrl ?
+            "toggling desktop fullscreen" : "toggling fullscreen")
+            << (event.modifiers() >= Modifier::Shift ? "off" : "on");
+        event.modifiers() >= Modifier::Shift ?
+            clearWindowFlags(event.modifiers() >= Modifier::Ctrl ?
+                WindowFlag::FullscreenDesktop : WindowFlag::Fullscreen) :
+            addWindowFlags(event.modifiers() >= Modifier::Ctrl ?
+                WindowFlag::FullscreenDesktop : WindowFlag::Fullscreen);
+    } else if(event.key() == Key::B) {
+        Debug{} << "toggling borderless" << (event.modifiers() >= Modifier::Shift ? "off" : "on");
+        event.modifiers() >= Modifier::Shift ?
+            clearWindowFlags(WindowFlag::Borderless) :
+            addWindowFlags(WindowFlag::Borderless);
+    } else if(event.key() == Key::A) {
+        Debug{} << "toggling maximized" << (event.modifiers() >= Modifier::Shift ? "off" : "on");
+        event.modifiers() >= Modifier::Shift ?
+            clearWindowFlags(WindowFlag::Maximized) :
+            addWindowFlags(WindowFlag::Maximized);
+    } else if(event.key() == Key::I) {
+        Debug{} << "toggling minimized" << (event.modifiers() >= Modifier::Shift ? "off" : "on");
+        event.modifiers() >= Modifier::Shift ?
+            clearWindowFlags(WindowFlag::Minimized) :
+            addWindowFlags(WindowFlag::Minimized);
+    } else if(event.key() == Key::M) {
+        Debug{} << "toggling locked mouse" << (event.modifiers() >= Modifier::Shift ? "off" : "on");
+        event.modifiers() >= Modifier::Shift ?
+            clearWindowFlags(WindowFlag::MouseLocked) :
+            addWindowFlags(WindowFlag::MouseLocked);
+    } else if(event.key() == Key::O) {
+        Debug{} << "toggling always on top" << (event.modifiers() >= Modifier::Shift ? "off" : "on");
+        event.modifiers() >= Modifier::Shift ?
+            clearWindowFlags(WindowFlag::AlwaysOnTop) :
+            addWindowFlags(WindowFlag::AlwaysOnTop);
+    }
+    #endif
+    else if(event.key() == Key::T) {
         Debug{} << "setting window title";
         setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
     }

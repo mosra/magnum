@@ -202,7 +202,8 @@ class GlfwApplication {
          * @brief Window flags
          * @m_since_latest
          *
-         * @see @ref Configuration::setWindowFlags(),
+         * @see @ref addWindowFlags(), @ref clearWindowFlags(),
+         *      @ref Configuration::setWindowFlags(),
          *      @ref Configuration::addWindowFlags(),
          *      @ref Configuration::clearWindowFlags(),
          *      @ref Configuration::Flags
@@ -586,6 +587,28 @@ class GlfwApplication {
          * @m_since{2020,06}
          */
         void setWindowIcon(const ImageView2D& image);
+
+        /**
+         * @brief Add window flags
+         * @m_since_latest
+         *
+         * Note that on older GLFW versions toggling certain flags has no
+         * effect. See documentation of particular @ref WindowFlag values for
+         * details.
+         * @see @ref clearWindowFlags(), @ref Configuration::addWindowFlags()
+         */
+        void addWindowFlags(WindowFlags flags);
+
+        /**
+         * @brief Clear window flags
+         * @m_since_latest
+         *
+         * Note that on older GLFW versions toggling certain flags has no
+         * effect. See documentation of particular @ref WindowFlag values for
+         * details.
+         * @see @ref addWindowFlags(), @ref Configuration::clearWindowFlags()
+         */
+        void clearWindowFlags(WindowFlags flags);
 
         /**
          * @brief Swap buffers
@@ -1048,6 +1071,12 @@ class GlfwApplication {
         Vector2 dpiScalingInternal(Implementation::GlfwDpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling, bool silentLog = false) const;
 
         void setupCallbacks();
+        GLFWmonitor* setupWindowFlags(WindowFlags flags, Vector2i& windowSizeToUse);
+        void toggleWindowFlags(
+            #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 303
+            const char* messagePrefix,
+            #endif
+            WindowFlags flags, bool enabled);
 
         /* Corresponds to size of the Cursor enum, the two Hidden cursors are
            handled differently */
@@ -1073,6 +1102,10 @@ class GlfwApplication {
         Vector2 _dpiScaling;
 
         GLFWwindow* _window{nullptr};
+        /* Size of the window to restore when returning back from fullscreen.
+           Is updated from addWindowFlags() and potentially in tryCreate() if
+           WindowFlag::Fullscreen is enabled for window creation already */
+        Vector2i _windowSizeToRestore, _windowPositionToRestore;
         /* Not using Nanoseconds as that would require including Time.h */
         UnsignedInt _minimalLoopPeriodNanoseconds{};
         Flags _flags;
@@ -1092,8 +1125,8 @@ class GlfwApplication {
 @brief Window flag
 @m_since_latest
 
-@see @ref WindowFlags, @ref Configuration::setWindowFlags(),
-    @ref Configuration::addWindowFlags(),
+@see @ref WindowFlags, @ref addWindowFlags(), @ref clearWindowFlags(),
+    @ref Configuration::setWindowFlags(), @ref Configuration::addWindowFlags(),
     @ref Configuration::clearWindowFlags(), @ref Configuration::Flags
 */
 enum class GlfwApplication::WindowFlag: UnsignedShort {
@@ -1107,13 +1140,36 @@ enum class GlfwApplication::WindowFlag: UnsignedShort {
      */
     FullscreenDesktop = Fullscreen|(1 << 9),
 
-    Borderless = 1 << 1,    /**< No window decoration */
-    Resizable = 1 << 2,     /**< Resizable window */
+    /**
+     * No window decoration
+     *
+     * @note Toggling this flag with @ref addWindowFlags() and
+     *      @ref clearWindowFlags() is not supported in GLFW versions before
+     *      3.3, there the flag can only be used for window creation.
+     */
+    Borderless = 1 << 1,
+
+    /**
+     * Resizable window
+     *
+     * @note Toggling this flag with @ref addWindowFlags() and
+     *      @ref clearWindowFlags() is not supported in GLFW versions before
+     *      3.3, there the flag can only be used for window creation.
+     */
+    Resizable = 1 << 2,
+
     Hidden = 1 << 3,        /**< Hidden window */
     Maximized = 1 << 4,     /**< Maximized window */
     Minimized = 1 << 5,     /**< Minimized window */
-    AlwaysOnTop = 1 << 6,   /**< Always on top */
 
+    /**
+     * Always on top
+     *
+     * @note Toggling this flag with @ref addWindowFlags() and
+     *      @ref clearWindowFlags() is not supported in GLFW versions before
+     *      3.3, there the flag can only be used for window creation.
+     */
+    AlwaysOnTop = 1 << 6,
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::WindowFlags)
@@ -2129,7 +2185,8 @@ class GlfwApplication::Configuration {
          * Default are none. To avoid clearing default flags by accident,
          * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
          * instead.
-         * @see @ref setFlags()
+         * @see @ref setFlags(), @ref GlfwApplication::addWindowFlags(),
+         *      @ref GlfwApplication::clearWindowFlags()
          */
         Configuration& setWindowFlags(GlfwApplication::WindowFlags flags) {
             _windowFlags = flags;
@@ -2143,7 +2200,8 @@ class GlfwApplication::Configuration {
          *
          * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
-         * @see @ref clearWindowFlags(), @ref addFlags()
+         * @see @ref clearWindowFlags(), @ref addFlags(),
+         *      @ref GlfwApplication::addWindowFlags()
          */
         Configuration& addWindowFlags(GlfwApplication::WindowFlags flags) {
             _windowFlags |= flags;
@@ -2158,7 +2216,8 @@ class GlfwApplication::Configuration {
          * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
          * existing instead of replacing them. Useful for removing default
          * flags.
-         * @see @ref addWindowFlags(), @ref clearFlags()
+         * @see @ref addWindowFlags(), @ref clearFlags(),
+         *      @ref GlfwApplication::clearWindowFlags()
          */
         Configuration& clearWindowFlags(GlfwApplication::WindowFlags flags) {
             _windowFlags &= ~flags;

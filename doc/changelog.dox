@@ -412,6 +412,10 @@ See also:
 -   Added @relativeref{Platform::Sdl2Application,clipboardText()} and
     @relativeref{Platform::Sdl2Application,setClipboardText()} to
     @ref Platform::Sdl2Application and @ref Platform::GlfwApplication
+-   Added @relativeref{Platform::Sdl2Application,addWindowFlags()} and
+    @relativeref{Platform::Sdl2Application,clearWindowFlags()} for toggling
+    fullscreen, minimization, maximization windows and other flags at runtime
+    in @ref Platform::Sdl2Application and @ref Platform::GlfwApplication
 
 @subsubsection changelog-latest-new-primitives Primitives library
 

@@ -368,26 +368,28 @@ void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
     setWindowIcon(Containers::arrayView(images));
 }
 
-namespace {
-
 /* Returns a monitor pointer that gets subsequently used for enabling
    fullscreen, or nullptr if fullscreen isn't meant to be enabled. Strange API.
    For a fullscreen window the windowSizeToUse gets overwritten with actual
    screen size. */
-GLFWmonitor* setupWindowFlags(const GlfwApplication::WindowFlags flags, Vector2i& windowSizeToUse) {
-    glfwWindowHint(GLFW_DECORATED, !(flags >= GlfwApplication::WindowFlag::Borderless));
-    glfwWindowHint(GLFW_RESIZABLE, flags >= GlfwApplication::WindowFlag::Resizable);
-    glfwWindowHint(GLFW_VISIBLE, !(flags >= GlfwApplication::WindowFlag::Hidden));
-    glfwWindowHint(GLFW_MAXIMIZED, flags >= GlfwApplication::WindowFlag::Maximized);
-    glfwWindowHint(GLFW_FLOATING, flags >= GlfwApplication::WindowFlag::AlwaysOnTop);
+GLFWmonitor* GlfwApplication::setupWindowFlags(const WindowFlags flags, Vector2i& windowSizeToUse) {
+    glfwWindowHint(GLFW_DECORATED, !(flags >= WindowFlag::Borderless));
+    glfwWindowHint(GLFW_RESIZABLE, flags >= WindowFlag::Resizable);
+    glfwWindowHint(GLFW_VISIBLE, !(flags >= WindowFlag::Hidden));
+    glfwWindowHint(GLFW_MAXIMIZED, flags >= WindowFlag::Maximized);
+    glfwWindowHint(GLFW_FLOATING, flags >= WindowFlag::AlwaysOnTop);
 
     /* Fullscreen setup. GLFW, would it kill you to have a builtin API for
        desktop fullscreen? I really don't feel like it's my responsibility to
        deal with all these.*/
-    GLFWmonitor* const monitor = flags >= GlfwApplication::WindowFlag::Fullscreen ?
+    GLFWmonitor* const monitor = flags >= WindowFlag::Fullscreen ?
         glfwGetPrimaryMonitor() : nullptr;
-    if(flags >= GlfwApplication::WindowFlag::FullscreenDesktop) {
+    if(flags >= WindowFlag::FullscreenDesktop) {
         const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
+        /* Save the window size supplied from configuration to reuse later when
+           going back from fullscreen in clearWindowFlags() */
+        _windowPositionToRestore = {};
+        _windowSizeToRestore = windowSizeToUse;
         windowSizeToUse = {mode->width, mode->height};
         glfwWindowHint(GLFW_RED_BITS, mode->redBits);
         glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
@@ -398,6 +400,89 @@ GLFWmonitor* setupWindowFlags(const GlfwApplication::WindowFlags flags, Vector2i
     return monitor;
 }
 
+void GlfwApplication::toggleWindowFlags(
+    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 303
+    const char* const messagePrefix,
+    #endif
+    const WindowFlags flags, const bool enabled
+) {
+    /* FullscreenDesktop is a superset of Fullscreen. Altogether, this whole
+       fullscreen thing is so needlessly complicated for no reason... GLFW,
+       could you just give me glfwSetWindowFullscreen() or something like SDL
+       has, and deal with all this nonsense internally? */
+    if(flags >= WindowFlag::Fullscreen) {
+        if(enabled) {
+            /* The way the glfwSetWindowMonitor() API is designed throws away
+               all information about previous window position or size, which
+               means we have to cache those. Do this only if the values are not
+               saved already so e.g. calling addWindowFlags(Fullscreen) twice
+               in a row doesn't cause the previous values to be overwritten
+               with the screen size. */
+            if(_windowSizeToRestore.isZero() && _windowPositionToRestore.isZero()) {
+                glfwGetWindowSize(_window, &_windowSizeToRestore.x(), &_windowSizeToRestore.y());
+                glfwGetWindowPos(_window, &_windowPositionToRestore.x(), &_windowPositionToRestore.y());
+            }
+            /* Unfortunately there isn't a way to get the screen on which an
+               existing window is (glfwGetWindowMonitor() returns null for
+               non-fullscreen windows, FFS), so toggling fullscreen may
+               actually cause the window to jump onto some other display
+               entirely. Sigh. */
+            GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
+            if(flags >= WindowFlag::FullscreenDesktop) {
+                const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
+                glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+            } else {
+                glfwSetWindowMonitor(_window, monitor, 0, 0, _windowSizeToRestore.x(), _windowSizeToRestore.y(), GLFW_DONT_CARE);
+            }
+        } else {
+            /* If disabling fullscreen, restore back to the previously cached
+               position and size. Clear the cached values so they get correctly
+               remembered above next time fullscreen is enabled. */
+            glfwSetWindowMonitor(_window, nullptr, _windowPositionToRestore.x(), _windowPositionToRestore.y(), _windowSizeToRestore.x(), _windowSizeToRestore.y(), GLFW_DONT_CARE);
+            _windowSizeToRestore = {};
+            _windowPositionToRestore = {};
+        }
+    }
+
+    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+    if(flags >= WindowFlag::Borderless)
+        glfwSetWindowAttrib(_window, GLFW_DECORATED, !enabled);
+    if(flags >= WindowFlag::Resizable)
+        glfwSetWindowAttrib(_window, GLFW_RESIZABLE, enabled);
+    #endif
+    if(flags >= WindowFlag::Hidden)
+        enabled ? glfwHideWindow(_window) : glfwShowWindow(_window);
+    if(flags >= WindowFlag::Maximized)
+        enabled ? glfwMaximizeWindow(_window) : glfwRestoreWindow(_window);
+    if(flags >= WindowFlag::Minimized)
+        enabled ? glfwIconifyWindow(_window) : glfwRestoreWindow(_window);
+    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+    if(flags >= WindowFlag::AlwaysOnTop)
+        glfwSetWindowAttrib(_window, GLFW_FLOATING, enabled);
+    #endif
+
+    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 303
+    if(flags & (WindowFlag::Borderless|
+                WindowFlag::Resizable|
+                WindowFlag::AlwaysOnTop))
+        Warning{} << messagePrefix << "toggling WindowFlag::Borderless, Resizable or AlwaysOnTop is not supported";
+    #endif
+}
+
+void GlfwApplication::addWindowFlags(const WindowFlags flags) {
+    toggleWindowFlags(
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 303
+        "Platform::GlfwApplication::addWindowFlags():",
+        #endif
+        flags, true);
+}
+
+void GlfwApplication::clearWindowFlags(const WindowFlags flags) {
+    toggleWindowFlags(
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 303
+        "Platform::GlfwApplication::clearWindowFlags():",
+        #endif
+        flags, false);
 }
 
 bool GlfwApplication::tryCreate(const Configuration& configuration) {

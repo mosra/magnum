@@ -895,6 +895,81 @@ void Sdl2Application::setContainerCssClass(const Containers::StringView cssClass
 }
 #endif
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+namespace {
+
+void toggleWindowFlags(const char* messagePrefix, SDL_Window* const window, const Sdl2Application::WindowFlags flags, const bool enabled) {
+    /* Somehow, bool *isn't* implicitly convertible to SDL_bool so have to
+       cast. Not passing SDL_bool as an argument because I'm not sure how ?:
+       and ! operators work on that damn thing. */
+
+    if(flags >= Sdl2Application::WindowFlag::Resizable)
+        SDL_SetWindowResizable(window, SDL_bool(enabled));
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* SDL_WINDOW_FULLSCREEN_DESKTOP is a superset of SDL_WINDOW_FULLSCREEN but
+       don't rely on that, check for both */
+    if(const Sdl2Application::WindowFlags fullscreen = flags & (Sdl2Application::WindowFlag::Fullscreen|Sdl2Application::WindowFlag::FullscreenDesktop)) {
+        SDL_SetWindowFullscreen(window, enabled ? Uint32(fullscreen) : 0);
+    }
+    /* Funny that here it's the inverse of the window flag */
+    if(flags >= Sdl2Application::WindowFlag::Borderless)
+        SDL_SetWindowBordered(window, SDL_bool(!enabled));
+    /* And here it's two separate API functions, even. Heh. */
+    if(flags >= Sdl2Application::WindowFlag::Hidden)
+        enabled ? SDL_HideWindow(window) : SDL_ShowWindow(window);
+    /* Here, for consistency, it's three separate APIs */
+    if(flags >= Sdl2Application::WindowFlag::Maximized)
+        enabled ? SDL_MaximizeWindow(window) : SDL_RestoreWindow(window);
+    if(flags >= Sdl2Application::WindowFlag::Minimized)
+        enabled ? SDL_MinimizeWindow(window) : SDL_RestoreWindow(window);
+    /* Here the documentation doesn't even say the flag and the setter are
+       related. The only actually usable info about what's up is in the diff of
+        https://github.com/libsdl-org/SDL/commit/6b057c67839e707a0e593fd61e7f4577c8fae333
+       where it looks like SDL_SetWindowGrab() is what originally was matching
+       SDL_WINDOW_INPUT_GRABBED, and the commit extended it to separate mouse
+       and keyboard handling without actually documenting the relation. */
+    if(flags >= Sdl2Application::WindowFlag::MouseLocked)
+        #if SDL_MAJOR_VERSION*10000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 20016
+        SDL_SetWindowMouseGrab
+        #else
+        SDL_SetWindowGrab
+        #endif
+        (window, SDL_bool(enabled));
+
+    #if SDL_MAJOR_VERSION*10000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 20016
+    if(flags >= Sdl2Application::WindowFlag::AlwaysOnTop)
+        SDL_SetWindowAlwaysOnTop(window, SDL_bool(enabled));
+    #endif
+
+    if(flags & (
+        #if SDL_MAJOR_VERSION*10000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL < 20016
+        Sdl2Application::WindowFlag::AlwaysOnTop|
+        #endif
+        Sdl2Application::WindowFlag::SkipTaskbar|
+        Sdl2Application::WindowFlag::Utility|
+        Sdl2Application::WindowFlag::Tooltip|
+        Sdl2Application::WindowFlag::PopupMenu)
+    )
+        Warning{} << messagePrefix << "toggling WindowFlag::"
+            #if SDL_MAJOR_VERSION*10000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL < 20016
+            "AlwaysOnTop, "
+            #endif
+            "SkipTaskbar, Utility, Tooltip or PopupMenu is not supported";
+    #endif
+}
+
+}
+
+void Sdl2Application::addWindowFlags(const WindowFlags flags) {
+    toggleWindowFlags("Platform::Sdl2Application::addWindowFlags():", _window, flags, true);
+}
+
+void Sdl2Application::clearWindowFlags(const WindowFlags flags) {
+    toggleWindowFlags("Platform::Sdl2Application::clearWindowFlags():", _window, flags, false);
+}
+#endif
+
 void Sdl2Application::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_SwapWindow(_window);

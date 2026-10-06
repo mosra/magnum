@@ -648,6 +648,10 @@ class EmscriptenApplication {
          */
         void setContainerCssClass(Containers::StringView cssClass);
 
+        /* Compared to Sdl2Application / GlfwApplication No addWindowFlags() /
+           clearWindowFlags() as there's only WindowFlag::Resizable and
+           toggling it makes little sense in a browser context */
+
         /**
          * @brief Swap buffers
          *
