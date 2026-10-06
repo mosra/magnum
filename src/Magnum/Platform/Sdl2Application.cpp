@@ -1420,16 +1420,34 @@ void Sdl2Application::setCursor(Cursor cursor) {
 
     if(cursor == Cursor::Hidden) {
         SDL_ShowCursor(SDL_DISABLE);
-        SDL_SetWindowGrab(_window, SDL_FALSE);
+        /* As of 2.0.16 there's a separate keyboard grab which is toggleable
+           with SDL_HINT_GRAB_KEYBOARD, ensure it's dealing with just the
+           mouse */
+        #if SDL_MAJOR_VERSION*10000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 20016
+        SDL_SetWindowMouseGrab
+        #else
+        SDL_SetWindowGrab
+        #endif
+            (_window, SDL_FALSE);
         SDL_SetRelativeMouseMode(SDL_FALSE);
         return;
     } else if(cursor == Cursor::HiddenLocked) {
-        SDL_SetWindowGrab(_window, SDL_TRUE);
+        #if SDL_MAJOR_VERSION*10000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 20016
+        SDL_SetWindowMouseGrab
+        #else
+        SDL_SetWindowGrab
+        #endif
+            (_window, SDL_TRUE);
         SDL_SetRelativeMouseMode(SDL_TRUE);
         return;
     } else {
         SDL_ShowCursor(SDL_ENABLE);
-        SDL_SetWindowGrab(_window, SDL_FALSE);
+        #if SDL_MAJOR_VERSION*10000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 20016
+        SDL_SetWindowMouseGrab
+        #else
+        SDL_SetWindowGrab
+        #endif
+            (_window, SDL_FALSE);
         SDL_SetRelativeMouseMode(SDL_FALSE);
     }
 

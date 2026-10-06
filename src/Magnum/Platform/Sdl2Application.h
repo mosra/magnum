@@ -1711,7 +1711,13 @@ enum class Sdl2Application::WindowFlag: Uint32 {
      * @todo SDL_WINDOW_MOUSE_CAPTURE, also what all those do? isn't it
      *      redundant / better handled with cursor APIs?
      */
+    /* As of 2.0.16 there's a separate keyboard grab, be clear that it's just
+       for the mouse */
+    #if SDL_MAJOR_VERSION*10000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 20016
+    MouseLocked = SDL_WINDOW_MOUSE_GRABBED,
+    #else
     MouseLocked = SDL_WINDOW_INPUT_GRABBED,
+    #endif
 
     /** @todo SDL_WINDOW_INPUT_FOCUS, SDL_WINDOW_MOUSE_FOCUS, GLFW has
         GLFW_FOCUS_ON_SHOW (not exposed) -- what's the relation? How to make
