@@ -1745,7 +1745,9 @@ enum class Sdl2Application::WindowFlag: Uint32 {
      * Window should be treated as a tooltip
      *
      * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-     *      According to SDL docs works only on X11.
+     *      According to SDL docs works only on X11. Furthermore, this flag
+     *      only seems to work with the original SDL2 and not with the
+     *      compatibility layer implemented on top of SDL3.
      */
     Tooltip = SDL_WINDOW_TOOLTIP,
 
@@ -1753,7 +1755,9 @@ enum class Sdl2Application::WindowFlag: Uint32 {
      * Window should be treated as a popup menu
      *
      * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-     *      According to SDL docs works only on X11.
+     *      According to SDL docs works only on X11. Furthermore, this flag
+     *      only seems to work with the original SDL2 and not with the
+     *      compatibility layer implemented on top of SDL3.
      */
     PopupMenu = SDL_WINDOW_POPUP_MENU,
     #endif
