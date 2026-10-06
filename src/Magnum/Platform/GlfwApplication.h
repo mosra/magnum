@@ -1097,13 +1097,23 @@ class GlfwApplication {
     @ref Configuration::clearWindowFlags(), @ref Configuration::Flags
 */
 enum class GlfwApplication::WindowFlag: UnsignedShort {
-    Fullscreen = 1 << 0,    /**< Fullscreen window */
+    Fullscreen = 1 << 0,        /**< Fullscreen window */
+
+    /**
+     * Fullscreen window at the current desktop resolution
+     *
+     * @todo 1 << 7 and 1 << 8 reserved for deprecated
+     *      Configuration::WindowFlag values, renumber once the enum is gone
+     */
+    FullscreenDesktop = Fullscreen|(1 << 9),
+
     Borderless = 1 << 1,    /**< No window decoration */
     Resizable = 1 << 2,     /**< Resizable window */
     Hidden = 1 << 3,        /**< Hidden window */
     Maximized = 1 << 4,     /**< Maximized window */
     Minimized = 1 << 5,     /**< Minimized window */
     AlwaysOnTop = 1 << 6,   /**< Always on top */
+
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::WindowFlags)

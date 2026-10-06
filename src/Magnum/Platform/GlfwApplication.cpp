@@ -371,17 +371,31 @@ void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
 namespace {
 
 /* Returns a monitor pointer that gets subsequently used for enabling
-   fullscreen, or nullptr if fullscreen isn't meant to be enabled. Strange
-   API. */
-GLFWmonitor* setupWindowFlags(const GlfwApplication::WindowFlags flags) {
+   fullscreen, or nullptr if fullscreen isn't meant to be enabled. Strange API.
+   For a fullscreen window the windowSizeToUse gets overwritten with actual
+   screen size. */
+GLFWmonitor* setupWindowFlags(const GlfwApplication::WindowFlags flags, Vector2i& windowSizeToUse) {
     glfwWindowHint(GLFW_DECORATED, !(flags >= GlfwApplication::WindowFlag::Borderless));
     glfwWindowHint(GLFW_RESIZABLE, flags >= GlfwApplication::WindowFlag::Resizable);
     glfwWindowHint(GLFW_VISIBLE, !(flags >= GlfwApplication::WindowFlag::Hidden));
     glfwWindowHint(GLFW_MAXIMIZED, flags >= GlfwApplication::WindowFlag::Maximized);
     glfwWindowHint(GLFW_FLOATING, flags >= GlfwApplication::WindowFlag::AlwaysOnTop);
 
-    return flags >= GlfwApplication::WindowFlag::Fullscreen ?
+    /* Fullscreen setup. GLFW, would it kill you to have a builtin API for
+       desktop fullscreen? I really don't feel like it's my responsibility to
+       deal with all these.*/
+    GLFWmonitor* const monitor = flags >= GlfwApplication::WindowFlag::Fullscreen ?
         glfwGetPrimaryMonitor() : nullptr;
+    if(flags >= GlfwApplication::WindowFlag::FullscreenDesktop) {
+        const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
+        windowSizeToUse = {mode->width, mode->height};
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+    }
+
+    return monitor;
 }
 
 }
@@ -400,11 +414,12 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
     _configurationDpiScaling = configuration.dpiScaling();
     _dpiScaling = dpiScalingInternal(_configurationDpiScalingPolicy, _configurationDpiScaling);
-    const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
+    /*mutable*/ Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
     /* Setup window flags, the monitor pointer is used below to enable
-       fullscreen */
-    GLFWmonitor* const monitor = setupWindowFlags(configuration.windowFlags());
+       fullscreen and the window size gets updated if desktop fullscreen is
+       requested */
+    GLFWmonitor* const monitor = setupWindowFlags(configuration.windowFlags(), scaledWindowSize);
 
     /* Disable implicit GL context creation */
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -444,11 +459,12 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
     _configurationDpiScaling = configuration.dpiScaling();
     _dpiScaling = dpiScalingInternal(_configurationDpiScalingPolicy, _configurationDpiScaling);
-    const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
+    /*mutable*/ Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
     /* Setup window flags, the monitor pointer is used below to enable
-       fullscreen */
-    GLFWmonitor* const monitor = setupWindowFlags(configuration.windowFlags());
+       fullscreen and the window size gets updated if desktop fullscreen is
+       requested */
+    GLFWmonitor* const monitor = setupWindowFlags(configuration.windowFlags(), scaledWindowSize);
 
     /* Framebuffer setup */
     glfwWindowHint(GLFW_RED_BITS, glConfiguration.colorBufferSize().r());

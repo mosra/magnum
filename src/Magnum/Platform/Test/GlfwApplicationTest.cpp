@@ -424,6 +424,7 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         .addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         .addBooleanOption("fullscreen").setHelp("fullscreen", "fullscreen window")
+        .addBooleanOption("fullscreen-desktop").setHelp("fullscreen-desktop", "fullscreen window at the current desktop resolution")
         .addBooleanOption("borderless").setHelp("borderless", "no window decoration")
         .addBooleanOption("hidden").setHelp("hidden", "hidden window")
         .addBooleanOption("maximized").setHelp("maximized", "maximized window")
@@ -448,6 +449,8 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
     if(args.isSet("fullscreen"))
         conf.addWindowFlags(WindowFlag::Fullscreen);
+    if(args.isSet("fullscreen-desktop"))
+        conf.addWindowFlags(WindowFlag::FullscreenDesktop);
     if(args.isSet("borderless"))
         conf.addWindowFlags(WindowFlag::Borderless);
     if(args.isSet("hidden"))

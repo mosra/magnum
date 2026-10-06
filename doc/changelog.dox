@@ -940,6 +940,8 @@ See also:
     in GLFW 3.3.1, 3.3.3 and 3.3.7, respectively. See [mosra/magnum#388](https://github.com/mosra/magnum/pull/388)
     and [mosra/magnum#392](https://github.com/mosra/magnum/pull/392) for more
     information.
+-   Added @ref Platform::GlfwApplication::WindowFlag::FullscreenDesktop for
+    consistency with @ref Platform::Sdl2Application
 
 @subsubsection changelog-latest-changes-scenegraph SceneGraph library
 
