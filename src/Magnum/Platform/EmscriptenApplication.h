@@ -35,9 +35,7 @@
  */
 #endif
 
-/* Needed by the MAGNUM_EMSCRIPTENAPPLICATION_MAIN() macro */
-/** @todo use an Optional */
-#include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h> /** @todo PIMPL Configuration instead? */
 
 #include "Magnum/Magnum.h"
@@ -46,8 +44,6 @@
 #include "Magnum/Platform/Platform.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include <Corrade/Containers/Optional.h>
-
 #include "Magnum/Platform/GLContext.h"
 #endif
 
@@ -2910,9 +2906,9 @@ as otherwise the local scope would end before any event callback has a chance
 to happen.
 */
 #define MAGNUM_EMSCRIPTENAPPLICATION_MAIN(className)                        \
-    namespace { Corrade::Containers::Pointer<className> emscriptenApplicationInstance ; } \
+    namespace { Corrade::Containers::Optional<className> emscriptenApplicationInstance ; } \
     int main(int argc, char** argv) {                                       \
-        emscriptenApplicationInstance.reset(new className{{argc, argv}});   \
+        emscriptenApplicationInstance.emplace(Magnum::Platform::EmscriptenApplication::Arguments{argc, argv}); \
         return emscriptenApplicationInstance->exec();                       \
     }
 
