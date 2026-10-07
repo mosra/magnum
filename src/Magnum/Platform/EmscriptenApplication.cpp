@@ -485,9 +485,11 @@ void EmscriptenApplication::setContainerCssClass(const Containers::StringView cs
     handleCanvasResize(nullptr);
 }
 
+#ifdef MAGNUM_TARGET_GL
 void EmscriptenApplication::swapBuffers() {
     emscripten_webgl_commit_frame();
 }
+#endif
 
 /* Called from window resize event but also explicitly from
    setContainerCssClass() */

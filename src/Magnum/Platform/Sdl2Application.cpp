@@ -970,6 +970,7 @@ void Sdl2Application::clearWindowFlags(const WindowFlags flags) {
 }
 #endif
 
+#ifdef MAGNUM_TARGET_GL
 void Sdl2Application::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_SwapWindow(_window);
@@ -1003,6 +1004,7 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
     else _flags &= ~Flag::VSyncEnabled;
     return true;
 }
+#endif
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 void Sdl2Application::setMinimalLoopPeriod(const Nanoseconds time) {

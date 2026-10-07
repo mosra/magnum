@@ -610,10 +610,15 @@ class GlfwApplication {
          */
         void clearWindowFlags(WindowFlags flags);
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Swap buffers
          *
          * Paints currently rendered framebuffer on screen.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         void swapBuffers() { glfwSwapBuffers(_window); }
 
@@ -627,8 +632,13 @@ class GlfwApplication {
          * @note Unlike SDL2, GLFW doesn't provide any getter for the swap
          *      interval, so this class doesn't provide any equivalent to
          *      @ref Sdl2Application::swapInterval().
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         void setSwapInterval(Int interval);
+        #endif
 
         /**
          * @brief Set minimal loop period

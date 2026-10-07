@@ -348,8 +348,10 @@ struct Sdl2ApplicationTest: Platform::Application {
             Debug{} << Key::M << "is pressed";
         #endif
 
+        #ifdef MAGNUM_TARGET_GL
         if(!_contextless)
             swapBuffers();
+        #endif
 
         if(_redraw)
             redraw();
@@ -441,12 +443,14 @@ struct Sdl2ApplicationTest: Platform::Application {
     #endif
 
     private:
-        bool _contextless = true;
+        #ifdef MAGNUM_TARGET_GL
+        bool _contextless;
+        #endif
         #ifdef CORRADE_TARGET_EMSCRIPTEN
         bool _fullscreen = false;
         #endif
         bool _redraw = false;
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && defined(MAGNUM_TARGET_GL)
         bool _vsync = false;
         #endif
 };
@@ -589,11 +593,14 @@ void Sdl2ApplicationTest::keyPressEvent(KeyEvent& event) {
             redraw();
     }
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    #ifdef MAGNUM_TARGET_GL
     else if(event.key() == Key::V && !(event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock))) {
         _vsync = !_vsync;
         Debug{} << "vsync" << (_vsync? "on" : "off");
         setSwapInterval(_vsync ? 1 : 0);
-    } else if(event.key() == Key::C && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {
+    }
+    #endif
+    else if(event.key() == Key::C && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {
         Debug{} << "Setting clipboard contents";
         setClipboardText("this text shouldn't have an exclamation at the end!!"_s.exceptSuffix(2));
     } else if(event.key() == Key::V && (event.modifiers() & ~(Modifier::CapsLock|Modifier::NumLock)) == Modifier::Ctrl) {

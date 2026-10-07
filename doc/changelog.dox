@@ -2133,6 +2133,12 @@ See also:
 -   @ref Platform::Sdl2Application::Configuration::windowFlags() "Platform::*Application::Configuration::windowFlags()" now returns the
     @ref Platform::Sdl2Application::WindowFlags "Platform::*Application::WindowFlags" type instead of the now-deprecated
     "Platform::*Application::Configuration::WindowFlags" enum set
+-   @ref Platform::Sdl2Application::swapBuffers() "Platform::*Application::swapBuffers()",
+    @relativeref{Platform::Sdl2Application,setSwapInterval()} and
+    @relativeref{Platform::Sdl2Application,swapInterval()} were errorneously
+    present even on builds with @ref MAGNUM_TARGET_GL disabled, now they're
+    correctly compiled away similarly to e.g.
+    @relativeref{Platform::Sdl2Application,framebufferSize()}
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()

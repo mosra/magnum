@@ -932,7 +932,6 @@ Vector2i GlfwApplication::framebufferSize() const {
     glfwGetFramebufferSize(_window, &size.x(), &size.y());
     return size;
 }
-#endif
 
 void GlfwApplication::setSwapInterval(const Int interval) {
     glfwSwapInterval(interval);
@@ -945,6 +944,7 @@ void GlfwApplication::setSwapInterval(const Int interval) {
         _flags |= Flag::VSyncEnabled;
     else _flags &= ~Flag::VSyncEnabled;
 }
+#endif
 
 void GlfwApplication::setMinimalLoopPeriod(const Nanoseconds time) {
     CORRADE_ASSERT(time >= 0_nsec,

@@ -1050,15 +1050,27 @@ class Sdl2Application {
         void clearWindowFlags(WindowFlags flags);
         #endif
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Swap buffers
          *
          * Paints currently rendered framebuffer on screen.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         *
          * @see @ref setSwapInterval()
          */
         void swapBuffers();
 
-        /** @brief Swap interval */
+        /**
+         * @brief Swap interval
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         */
         Int swapInterval() const;
 
         /**
@@ -1069,9 +1081,15 @@ class Sdl2Application {
          * message and returns @cpp false @ce if swap interval cannot be set,
          * @cpp true @ce otherwise. Default is driver-dependent, you can query
          * the value with @ref swapInterval().
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         *
          * @see @ref setMinimalLoopPeriod()
          */
         bool setSwapInterval(Int interval);
+        #endif
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**

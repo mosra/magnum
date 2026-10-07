@@ -651,12 +651,18 @@ class EmscriptenApplication {
            clearWindowFlags() as there's only WindowFlag::Resizable and
            toggling it makes little sense in a browser context */
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Swap buffers
          *
          * Paints currently rendered framebuffer on screen.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         void swapBuffers();
+        #endif
 
         /** @copydoc Sdl2Application::redraw() */
         void redraw();

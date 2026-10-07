@@ -308,8 +308,10 @@ struct GlfwApplicationTest: Platform::Application {
             GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
         #endif
 
+        #ifdef MAGNUM_TARGET_GL
         if(!_contextless)
             swapBuffers();
+        #endif
 
         /* Invalid keys are tested in the constructor */
         if(isKeyPressed(Key::M))
@@ -375,9 +377,13 @@ struct GlfwApplicationTest: Platform::Application {
     #endif
 
     private:
-        bool _contextless = true;
+        #ifdef MAGNUM_TARGET_GL
+        bool _contextless;
+        #endif
         bool _redraw = false;
+        #ifdef MAGNUM_TARGET_GL
         bool _vsync = false;
+        #endif
 };
 
 GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
@@ -491,11 +497,15 @@ void GlfwApplicationTest::keyPressEvent(KeyEvent& event) {
         Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
         if(_redraw)
             redraw();
-    } else if(event.key() == Key::V && !event.modifiers()) {
+    }
+    #ifdef MAGNUM_TARGET_GL
+    else if(event.key() == Key::V && !event.modifiers()) {
         _vsync = !_vsync;
         Debug{} << "vsync" << (_vsync? "on" : "off");
         setSwapInterval(_vsync ? 1 : 0);
-    } else if(event.key() == Key::C && event.modifiers() == Modifier::Ctrl) {
+    }
+    #endif
+    else if(event.key() == Key::C && event.modifiers() == Modifier::Ctrl) {
         Debug{} << "Setting clipboard contents";
         setClipboardText("this text shouldn't have an exclamation at the end!!"_s.exceptSuffix(2));
     } else if(event.key() == Key::V && event.modifiers() == Modifier::Ctrl) {
