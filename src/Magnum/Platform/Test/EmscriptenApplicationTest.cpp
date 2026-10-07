@@ -286,8 +286,7 @@ struct EmscriptenApplicationTest: Platform::Application {
 
     void drawEvent() override {
         Debug() << "draw event";
-        /* If the app was initialized contextless, there's no GL context */
-        if(GL::Context::hasCurrent()) {
+        if(!_contextless) {
             #ifdef CUSTOM_CLEAR_COLOR
             GL::Renderer::setClearColor(CUSTOM_CLEAR_COLOR);
             #endif
@@ -408,6 +407,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
 
     private:
+        bool _contextless = true;
         bool _fullscreen = false;
         bool _redraw = false;
 };
@@ -440,7 +440,7 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         conf.setSize({640, 480}, args.value<Vector2>("dpi-scaling"));
     if(args.isSet("always-request-animation-frame"))
         conf.addFlags(Configuration::Flag::AlwaysRequestAnimationFrame);
-    if(args.isSet("contextless")) {
+    if((_contextless = args.isSet("contextless"))) {
         conf.addFlags(Configuration::Flag::Contextless);
         create(conf);
     } else {
@@ -459,7 +459,7 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         #endif
         << dpiScaling() << devicePixelRatio();
 
-    if(!args.isSet("contextless")) {
+    if(!_contextless) {
         /* This uses a VAO on WebGL 1, so it will crash in case GL flags are
            missing EnableExtensionsByDefault */
         GL::Mesh mesh;
