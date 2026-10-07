@@ -440,6 +440,13 @@ void GlfwApplication::toggleWindowFlags(
             /* If disabling fullscreen, restore back to the previously cached
                position and size. Clear the cached values so they get correctly
                remembered above next time fullscreen is enabled. */
+            /** @todo when the window is already created as fullscreen, such as
+                with PlatformGlfwApplicationTest --fullscreen-desktop, toggling
+                it back to a regular window doesn't actually use the window
+                size saved in setupWindowFlags() but the window is maximized;
+                one has to call glfwRestoreWindow() to un-maximize it, which
+                still causes it to have a strange size, and then only a call to
+                glfwSetWindowSize() makes it the actual desired size ... WTF */
             glfwSetWindowMonitor(_window, nullptr, _windowPositionToRestore.x(), _windowPositionToRestore.y(), _windowSizeToRestore.x(), _windowSizeToRestore.y(), GLFW_DONT_CARE);
             _windowSizeToRestore = {};
             _windowPositionToRestore = {};
