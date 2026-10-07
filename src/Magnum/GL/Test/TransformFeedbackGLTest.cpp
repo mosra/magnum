@@ -39,6 +39,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/MeshView.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/PrimitiveQuery.h"
@@ -115,11 +116,16 @@ const struct {
     UnsignedInt countStream0;
     UnsignedInt countStreamN;
     UnsignedInt countDraw;
+    bool meshView;
 } DrawData[]{
-    {"basic", 0, 1, 6, 6, 6},
-    {"instanced", 0, 5, 6, 6, 30},
-    {"stream", 1, 1, 0, 6, 6},
-    {"streamInstanced", 1, 5, 0, 6, 30}
+    {"basic", 0, 1, 6, 6, 6, false},
+    {"basic, mesh view", 0, 1, 6, 6, 6, true},
+    {"instanced", 0, 5, 6, 6, 30, false},
+    {"instanced, mesh view", 0, 5, 6, 6, 30, true},
+    {"stream", 1, 1, 0, 6, 6, false},
+    {"stream, mesh view", 1, 1, 0, 6, 6, true},
+    {"streamInstanced", 1, 5, 0, 6, 30, false},
+    {"streamInstanced, mesh view", 1, 5, 0, 6, 30, true}
 };
 #endif
 
@@ -784,12 +790,19 @@ void TransformFeedbackGLTest::draw() {
 
     Mesh outputMesh;
     outputMesh.setPrimitive(MeshPrimitive::Points)
-        .setInstanceCount(data.instances)
         .addVertexBuffer(outputBuffer, 0, DrawShader::Input{});
+    MeshView outputMeshView{outputMesh};
+    if(data.meshView)
+        outputMeshView.setInstanceCount(data.instances);
+    else
+        outputMesh.setInstanceCount(data.instances);
 
     PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
     q.begin();
-    drawShader.drawTransformFeedback(outputMesh, feedback, data.stream);
+    if(data.meshView)
+        drawShader.drawTransformFeedback(outputMeshView, feedback, data.stream);
+    else
+        drawShader.drawTransformFeedback(outputMesh, feedback, data.stream);
     q.end();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
