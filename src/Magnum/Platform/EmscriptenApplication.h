@@ -569,7 +569,7 @@ class EmscriptenApplication {
          */
         Vector2i windowSize() const;
 
-        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Framebuffer size
          *
@@ -2174,7 +2174,7 @@ class EmscriptenApplication::ViewportEvent {
          */
         Vector2i windowSize() const { return _windowSize; }
 
-        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Framebuffer size
          *

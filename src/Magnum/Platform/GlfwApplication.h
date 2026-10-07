@@ -510,7 +510,7 @@ class GlfwApplication {
          */
         void setMaxWindowSize(const Vector2i& size = {-1, -1});
 
-        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Framebuffer size
          *
@@ -2403,7 +2403,7 @@ class GlfwApplication::ViewportEvent {
          */
         Vector2i windowSize() const { return _windowSize; }
 
-        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Framebuffer size
          *

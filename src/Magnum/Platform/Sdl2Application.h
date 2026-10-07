@@ -928,7 +928,7 @@ class Sdl2Application {
         void setMaxWindowSize(const Vector2i& size);
         #endif
 
-        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Framebuffer size
          *
@@ -3198,7 +3198,7 @@ class Sdl2Application::ViewportEvent {
          */
         Vector2i windowSize() const { return _windowSize; }
 
-        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Framebuffer size
          *
