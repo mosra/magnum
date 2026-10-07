@@ -37,6 +37,7 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h> /** @todo PIMPL Configuration instead? */
+#include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -319,7 +320,9 @@ class EmscriptenApplication {
         };
 
         class Configuration;
+        #ifdef MAGNUM_TARGET_GL
         class GLConfiguration;
+        #endif
         class ViewportEvent;
         class FocusEvent;
         class InputEvent;

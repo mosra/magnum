@@ -286,6 +286,7 @@ struct EmscriptenApplicationTest: Platform::Application {
 
     void drawEvent() override {
         Debug() << "draw event";
+        #ifdef MAGNUM_TARGET_GL
         if(!_contextless) {
             #ifdef CUSTOM_CLEAR_COLOR
             GL::Renderer::setClearColor(CUSTOM_CLEAR_COLOR);
@@ -294,6 +295,7 @@ struct EmscriptenApplicationTest: Platform::Application {
 
             swapBuffers();
         }
+        #endif
 
         if(_redraw)
             redraw();
@@ -407,7 +409,9 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
 
     private:
-        bool _contextless = true;
+        #ifdef MAGNUM_TARGET_GL
+        bool _contextless;
+        #endif
         bool _fullscreen = false;
         bool _redraw = false;
 };
@@ -440,10 +444,15 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         conf.setSize({640, 480}, args.value<Vector2>("dpi-scaling"));
     if(args.isSet("always-request-animation-frame"))
         conf.addFlags(Configuration::Flag::AlwaysRequestAnimationFrame);
-    if((_contextless = args.isSet("contextless"))) {
+    #ifdef MAGNUM_TARGET_GL
+    if((_contextless = args.isSet("contextless")))
+    #endif
+    {
         conf.addFlags(Configuration::Flag::Contextless);
         create(conf);
-    } else {
+    }
+    #ifdef MAGNUM_TARGET_GL
+    else {
         GLConfiguration glConf;
         if(args.isSet("quiet"))
             glConf.addFlags(GLConfiguration::Flag::QuietLog);
@@ -452,6 +461,7 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         /* No GPU validation on WebGL */
         create(conf, glConf);
     }
+    #endif
 
     Debug{} << "window size" << windowSize()
         #ifdef MAGNUM_TARGET_GL
@@ -459,11 +469,13 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         #endif
         << dpiScaling() << devicePixelRatio();
 
+    #ifdef MAGNUM_TARGET_GL
     if(!_contextless) {
         /* This uses a VAO on WebGL 1, so it will crash in case GL flags are
            missing EnableExtensionsByDefault */
         GL::Mesh mesh;
     }
+    #endif
 
     /* Uncomment this to verify destructor behavior, such as in case of
        Contextless enabled. Note that it might then blow up elsewhere due to
