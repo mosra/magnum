@@ -397,11 +397,12 @@ template<class T> void TypeTraitsTest::equalsZeroIntegral() {
 }
 
 template<class T> void TypeTraitsTest::equalsZeroFloatingPoint() {
+    auto&& data = EqualsZeroData[testCaseInstanceId()];
     setTestCaseTemplateName(TypeTraits<T>::name());
-    setTestCaseDescription(EqualsZeroData[testCaseInstanceId()].name);
+    setTestCaseDescription(data.name);
 
-    const T a = EqualsZeroData[testCaseInstanceId()].get(T{});
-    const T step = EqualsZeroData[testCaseInstanceId()].getStep(T{});
+    const T a = data.get(T{});
+    const T step = data.getStep(T{});
     const T magnitude = abs(a);
 
     CORRADE_VERIFY(TypeTraits<T>::equals(a + step/T(2.0), a));
