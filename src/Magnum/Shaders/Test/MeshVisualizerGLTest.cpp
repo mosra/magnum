@@ -25,7 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <numeric> /* std::iota() */
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
@@ -4323,12 +4322,18 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{NoInit, circleDataIndexed.indexCount()};
-            std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
-
-            GL::Buffer vertexId;
-            vertexId.setData(vertexIndex);
-            circle.addVertexBuffer(Utility::move(vertexId), 0, MeshVisualizerGL2D::VertexIndex{});
+            /* On ES2 UnsignedInt isn't available as an attribute type, so
+               interpret the buffer as shorts with 2-byte padding in between */
+            circle.addVertexBuffer(
+                GL::Buffer{MeshTools::generateTrivialIndices(circleDataIndexed.indexCount())}, 0,
+                #ifdef CORRADE_TARGET_BIG_ENDIAN
+                2,
+                #endif
+                MeshVisualizerGL2D::VertexIndex{MeshVisualizerGL2D::VertexIndex::DataType::UnsignedShort}
+                #ifndef CORRADE_TARGET_BIG_ENDIAN
+                , 2
+                #endif
+                );
         }
     } else circle = MeshTools::compile(circleData);
 
@@ -4475,12 +4480,18 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{NoInit, sphereData.indexCount()};
-            std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
-
-            GL::Buffer vertexId;
-            vertexId.setData(vertexIndex);
-            sphere.addVertexBuffer(Utility::move(vertexId), 0, MeshVisualizerGL3D::VertexIndex{});
+            /* On ES2 UnsignedInt isn't available as an attribute type, so
+               interpret the buffer as shorts with 2-byte padding in between */
+            sphere.addVertexBuffer(
+                GL::Buffer{MeshTools::generateTrivialIndices(sphereData.indexCount())}, 0,
+                #ifdef CORRADE_TARGET_BIG_ENDIAN
+                2,
+                #endif
+                MeshVisualizerGL3D::VertexIndex{MeshVisualizerGL3D::VertexIndex::DataType::UnsignedShort}
+                #ifndef CORRADE_TARGET_BIG_ENDIAN
+                , 2
+                #endif
+                );
         }
     } else sphere = MeshTools::compile(sphereData);
 
@@ -5717,12 +5728,18 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{NoInit, circleDataIndexed.indexCount()};
-            std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
-
-            GL::Buffer vertexId;
-            vertexId.setData(vertexIndex);
-            circle.addVertexBuffer(Utility::move(vertexId), 0, MeshVisualizerGL2D::VertexIndex{});
+            /* On ES2 UnsignedInt isn't available as an attribute type, so
+               interpret the buffer as shorts with 2-byte padding in between */
+            circle.addVertexBuffer(
+                GL::Buffer{MeshTools::generateTrivialIndices(circleDataIndexed.indexCount())}, 0,
+                #ifdef CORRADE_TARGET_BIG_ENDIAN
+                2,
+                #endif
+                MeshVisualizerGL2D::VertexIndex{MeshVisualizerGL2D::VertexIndex::DataType::UnsignedShort}
+                #ifndef CORRADE_TARGET_BIG_ENDIAN
+                , 2
+                #endif
+                );
         }
     } else circle = MeshTools::compile(circleData);
 
@@ -6011,12 +6028,18 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{NoInit, sphereData.indexCount()};
-            std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
-
-            GL::Buffer vertexId;
-            vertexId.setData(vertexIndex);
-            sphere.addVertexBuffer(Utility::move(vertexId), 0, MeshVisualizerGL3D::VertexIndex{});
+            /* On ES2 UnsignedInt isn't available as an attribute type, so
+               interpret the buffer as shorts with 2-byte padding in between */
+            sphere.addVertexBuffer(
+                GL::Buffer{MeshTools::generateTrivialIndices(sphereData.indexCount())}, 0,
+                #ifdef CORRADE_TARGET_BIG_ENDIAN
+                2,
+                #endif
+                MeshVisualizerGL3D::VertexIndex{MeshVisualizerGL3D::VertexIndex::DataType::UnsignedShort}
+                #ifndef CORRADE_TARGET_BIG_ENDIAN
+                , 2
+                #endif
+                );
         }
     } else sphere = MeshTools::compile(sphereData);
 
