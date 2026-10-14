@@ -37,20 +37,6 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-# Objects shared between plugin and test library
-add_library(WavAudioImporterObjects OBJECT
-    WavHeader.cpp
-    WavHeader.h)
-target_include_directories(WavAudioImporterObjects PUBLIC
-    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:MagnumAudio,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC)
-    target_compile_definitions(WavAudioImporterObjects PRIVATE "WavAudioImporterObjects_EXPORTS")
-endif()
-if(NOT MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
-    set_target_properties(WavAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif()
-
 # WavAudioImporter plugin
 add_plugin(WavAudioImporter
     audioimporters
@@ -58,8 +44,7 @@ add_plugin(WavAudioImporter
     "${MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_LIBRARY_INSTALL_DIR}"
     WavImporter.conf
     WavImporter.cpp
-    WavImporter.h
-    $<TARGET_OBJECTS:WavAudioImporterObjects>)
+    WavImporter.h)
 if(MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC AND MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

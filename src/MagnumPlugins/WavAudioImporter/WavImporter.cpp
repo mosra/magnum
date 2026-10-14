@@ -31,14 +31,58 @@
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/EndiannessBatch.h>
 
-#include "MagnumPlugins/WavAudioImporter/WavHeader.h"
-
 namespace Magnum { namespace Audio {
 
-using Implementation::RiffChunk;
-using Implementation::WavAudioFormat;
-using Implementation::WavFormatChunk;
-using Implementation::WavHeaderChunk;
+namespace {
+
+/* WAV audio format */
+enum class WavAudioFormat: UnsignedShort {
+    Pcm = 0x0001,           /* PCM */
+    AdPcm = 0x0002,         /* Adaptive Differential PCM */
+    IeeeFloat = 0x0003,     /* IEEE Float */
+    ALaw = 0x0006,          /* A-Law */
+    MuLaw = 0x0007,         /* μ-Law */
+    Extensible = 0xfffe     /* Extensible */
+};
+
+#pragma pack(1)
+/* RIFF chunk */
+struct RiffChunk {
+    char chunkId[4];        /* chunk name (4 characters) */
+    UnsignedInt chunkSize;  /* size of chunk (does not include chunk header) */
+};
+static_assert(sizeof(RiffChunk) == 8, "RiffChunk size is not 8 bytes");
+#pragma pack()
+
+#pragma pack(1)
+/* WAV file header */
+struct WavHeaderChunk {
+    RiffChunk chunk;        /* Starting RIFF chunk */
+    char format[4];         /* `WAVE` characters */
+};
+static_assert(sizeof(WavHeaderChunk) == 12, "WavHeaderChunk size is not 12 bytes");
+#pragma pack()
+
+#pragma pack(1)
+/* WAV 'fmt' header */
+struct WavFormatChunk {
+    /* GCC 4.8 needs this, otherwise it can't store this in an Optional. It
+       also can't be just =default, otherwise it'll still try to construct the
+       members when using {} */
+    WavFormatChunk() {}
+
+    RiffChunk chunk;                /* Starting RIFF chunk */
+    WavAudioFormat audioFormat;     /* Audio format */
+    UnsignedShort numChannels;      /* 1 = Mono, 2 = Stereo */
+    UnsignedInt sampleRate;         /* Sample rate in Hz */
+    UnsignedInt byteRate;           /* Bytes per second */
+    UnsignedShort blockAlign;       /* Bytes per sample (all channels) */
+    UnsignedShort bitsPerSample;    /* Bits per sample (one channel) */
+};
+static_assert(sizeof(WavFormatChunk) == 24, "WavFormatChunk size is not 24 bytes");
+#pragma pack()
+
+}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 WavImporter::WavImporter() = default; /* LCOV_EXCL_LINE */
@@ -204,7 +248,21 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
 
     /* Unknown/unimplemented format */
     } else {
-        Error{} << "Audio::WavImporter::openData(): unsupported format" << formatChunk->audioFormat;
+        Error error;
+        error << "Audio::WavImporter::openData(): unsupported format" << Debug::hex << UnsignedShort(formatChunk->audioFormat);
+        switch(formatChunk->audioFormat) {
+            case WavAudioFormat::AdPcm: error << "(ADPCM)"; break;
+            case WavAudioFormat::Extensible: error << "(EXTENSIBLE)"; break;
+            /* These were handled in other branches before. Anything else will
+               print just the hex value above. */
+            /* LCOV_EXCL_START */
+            case WavAudioFormat::Pcm:
+            case WavAudioFormat::IeeeFloat:
+            case WavAudioFormat::ALaw:
+            case WavAudioFormat::MuLaw:
+                CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            /* LCOV_EXCL_STOP */
+        }
         return;
     }
 

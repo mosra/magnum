@@ -101,10 +101,6 @@ else()
     # So the plugins get properly built when building the test
     add_dependencies(WavAudioImporterTest WavAudioImporter)
 endif()
-corrade_add_test(WavAudioImporterWavHeaderTest
-    WavHeaderTest.cpp
-    $<TARGET_OBJECTS:WavAudioImporterObjects>
-    LIBRARIES MagnumAudio)
 if(CORRADE_BUILD_STATIC AND NOT MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC)
     # CMake < 3.4 does this implicitly, but 3.4+ not anymore (see CMP0065).
     # That's generally okay, *except if* the build is static, the executable
