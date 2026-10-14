@@ -1263,30 +1263,23 @@ FloatShader::FloatShader(Containers::StringView type, Containers::StringView con
     , bool dummy
     #endif
 ) {
-    /* We need special version for ES3, because GLSL in ES2 doesn't support
-       rectangle matrices */
-    #ifndef MAGNUM_TARGET_GLES
-    Shader vert(
+    constexpr Version version =
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL210
         #else
         Version::GL310
         #endif
-        , Shader::Type::Vertex);
-    Shader frag(
-        #ifndef CORRADE_TARGET_APPLE
-        Version::GL210
+        /* We need special version for ES3, because GLSL in ES2 doesn't support
+           rectangle matrices */
+        #elif defined(MAGNUM_TARGET_GLES2)
+        Version::GLES200
         #else
-        Version::GL310
+        Version::GLES300
         #endif
-        , Shader::Type::Fragment);
-    #elif defined(MAGNUM_TARGET_GLES2)
-    Shader vert(Version::GLES200, Shader::Type::Vertex);
-    Shader frag(Version::GLES200, Shader::Type::Fragment);
-    #else
-    Shader vert(Version::GLES300, Shader::Type::Vertex);
-    Shader frag(Version::GLES300, Shader::Type::Fragment);
-    #endif
+        ;
+    Shader vert{version, Shader::Type::Vertex};
+    Shader frag{version, Shader::Type::Fragment};
 
     vert.addSource(Utility::format(
         #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
@@ -1347,25 +1340,19 @@ FloatShader::FloatShader(Containers::StringView type, Containers::StringView con
 
 #ifndef MAGNUM_TARGET_GLES2
 IntegerShader::IntegerShader(const Containers::StringView type) {
-    #ifndef MAGNUM_TARGET_GLES
-    Shader vert(
+    constexpr Version version =
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL300
         #else
         Version::GL310
         #endif
-        , Shader::Type::Vertex);
-    Shader frag(
-        #ifndef CORRADE_TARGET_APPLE
-        Version::GL300
         #else
-        Version::GL310
+        Version::GLES300
         #endif
-        , Shader::Type::Fragment);
-    #else
-    Shader vert(Version::GLES300, Shader::Type::Vertex);
-    Shader frag(Version::GLES300, Shader::Type::Fragment);
-    #endif
+        ;
+    Shader vert{version, Shader::Type::Vertex};
+    Shader frag{version, Shader::Type::Fragment};
 
     vert.addSource(Utility::format(
         "in mediump {0} value;\n"
@@ -1392,14 +1379,15 @@ IntegerShader::IntegerShader(const Containers::StringView type) {
 
 #ifndef MAGNUM_TARGET_GLES
 DoubleShader::DoubleShader(const Containers::StringView type, const Containers::StringView outputType, const Containers::StringView conversion) {
-    constexpr const Version version =
+    constexpr Version version =
         #ifndef CORRADE_TARGET_APPLE
-        Version::GL300;
+        Version::GL300
         #else
-        Version::GL400;
+        Version::GL400
         #endif
+        ;
     Shader vert{version, Shader::Type::Vertex};
-    Shader frag(version, Shader::Type::Fragment);
+    Shader frag{version, Shader::Type::Fragment};
 
     vert.addSource(Utility::format(
         "#extension GL_ARB_vertex_attrib_64bit: require\n"
@@ -2385,25 +2373,19 @@ struct MultipleShader: AbstractShaderProgram {
 };
 
 MultipleShader::MultipleShader() {
-    #ifndef MAGNUM_TARGET_GLES
-    Shader vert(
+    constexpr Version version =
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL210
         #else
         Version::GL310
         #endif
-        , Shader::Type::Vertex);
-    Shader frag(
-        #ifndef CORRADE_TARGET_APPLE
-        Version::GL210
         #else
-        Version::GL310
+        Version::GLES200
         #endif
-        , Shader::Type::Fragment);
-    #else
-    Shader vert(Version::GLES200, Shader::Type::Vertex);
-    Shader frag(Version::GLES200, Shader::Type::Fragment);
-    #endif
+        ;
+    Shader vert{version, Shader::Type::Vertex};
+    Shader frag{version, Shader::Type::Fragment};
 
     vert.addSource(
         "#if !defined(GL_ES) && __VERSION__ == 120\n"
