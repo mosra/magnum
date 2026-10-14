@@ -891,8 +891,15 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 
     state.bindImplementation(*this);
 
-    /* Non-instanced mesh */
+    /* Non-instanced mesh. Note that, however, non-instanced meshes with a base
+       instance specification should be rendered as instanced as well as
+       otherwise wrong instance data will get picked and the gl_BaseInstance
+       value will be wrong too. See the drawInstancedAttributeSingleInstance()
+       test for a repro case, */
     if(instanceCount == 1
+        #ifndef MAGNUM_TARGET_GLES2
+        && baseInstance == 0
+        #endif
         #ifdef MAGNUM_TARGET_GLES
         /* See the "angle-instanced-attributes-always-draw-instanced"
            workaround */
