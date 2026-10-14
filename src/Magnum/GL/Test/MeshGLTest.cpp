@@ -263,6 +263,20 @@ const struct {
 
 const struct {
     const char* name;
+    std::size_t offset;
+    UnsignedInt baseInstance;
+    bool meshView;
+} DrawInstancedAttributeSingleInstanceData[]{
+    {"", 16, 0, false},
+    {"mesh view", 16, 0, true},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"base instance", 0, 16, false},
+    {"base instance, mesh view", 0, 16, true},
+    #endif
+};
+
+const struct {
+    const char* name;
     bool vertexId;
     bool drawId;
     Vector4 values[4];
@@ -880,8 +894,10 @@ MeshGLTest::MeshGLTest() {
               #ifndef MAGNUM_TARGET_GLES
               &MeshGLTest::addVertexBufferInstancedDouble,
               #endif
-              &MeshGLTest::resetDivisorAfterInstancedDraw,
-              &MeshGLTest::drawInstancedAttributeSingleInstance});
+              &MeshGLTest::resetDivisorAfterInstancedDraw});
+
+    addInstancedTests({&MeshGLTest::drawInstancedAttributeSingleInstance},
+        Containers::arraySize(DrawInstancedAttributeSingleInstanceData));
 
     addInstancedTests({&MeshGLTest::multiDraw,
                        &MeshGLTest::multiDrawSparseArrays,
@@ -4160,6 +4176,9 @@ void MeshGLTest::resetDivisorAfterInstancedDraw() {
 }
 
 void MeshGLTest::drawInstancedAttributeSingleInstance() {
+    auto&& data = DrawInstancedAttributeSingleInstanceData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::ARB::draw_instanced::string() << "is not supported.");
@@ -4177,15 +4196,33 @@ void MeshGLTest::drawInstancedAttributeSingleInstance() {
     #endif
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.baseInstance) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!Context::current().isExtensionSupported<Extensions::ARB::base_instance>())
+            CORRADE_SKIP(Extensions::ARB::base_instance::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!Context::current().isExtensionSupported<Extensions::EXT::base_instance>() &&
+        !Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+            CORRADE_SKIP("Neither" << Extensions::EXT::base_instance::string() << "nor" << Extensions::ANGLE::base_vertex_base_instance::string() << "is supported.");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+            CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[]{
+    const Float instanceData[]{
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, /* Instance offset */
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f,
         Math::unpack<Float, UnsignedByte>(96)
     };
     Buffer buffer;
     /* The ANGLE validation error can be only reproduced with DynamicDraw used
        here, not StaticDraw. Interesting. */
-    buffer.setData(data, BufferUsage::DynamicDraw);
+    buffer.setData(Containers::arrayView(instanceData).exceptPrefix(data.offset), BufferUsage::DynamicDraw);
 
     Renderbuffer renderbuffer;
     renderbuffer.setStorage(
@@ -4214,12 +4251,29 @@ void MeshGLTest::drawInstancedAttributeSingleInstance() {
        instanced. Drawing it 16 times should always draw 96 with no error.
        On ANGLE w/o the "angle-instanced-attributes-always-draw-instanced"
        workaround this would trigger a validation error where it would complain
-       that the 4-byte buffer is not large enough to draw 16 vertices. */
-    Mesh mesh;
-    mesh.addVertexBufferInstanced(buffer, 1, 0, Attribute{})
-        .setPrimitive(MeshPrimitive::Points)
-        .setCount(16);
-    shader.draw(mesh);
+       that the 4-byte buffer is not large enough to draw 16 vertices.
+       Additionally, if base instance is specified, the draw should be
+       instanced as well, as otherwise the information about base instance will
+       not get correctly passed to the shader. */
+    Mesh mesh{MeshPrimitive::Points};
+    mesh.addVertexBufferInstanced(buffer, 1, 0, Attribute{});
+    MeshView meshView{mesh};
+    if(data.meshView)
+        meshView.setCount(16);
+    else
+        mesh.setCount(16);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.baseInstance) {
+        if(data.meshView)
+            meshView.setBaseInstance(data.baseInstance);
+        else
+            mesh.setBaseInstance(data.baseInstance);
+    }
+    #endif
+    if(data.meshView)
+        shader.draw(meshView);
+    else
+        shader.draw(mesh);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
