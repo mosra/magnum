@@ -52,11 +52,17 @@ namespace Magnum { namespace MeshTools {
 
 Optimizes the mesh for vertex-bound applications by rearranging its index
 array for beter usage of post-transform vertex cache. Algorithm used:
-* *Pedro V. Sander, Diego Nehab, and Joshua Barczak --- Fast Triangle Reordering
-for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
+* *Pedro V. Sander, Diego Nehab, and Joshua Barczak --- Fast Triangle
+Reordering for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
 https://gfx.cs.princeton.edu/pubs/Sander_2007_%3eTR/tipsy.pdf*.
-@todo Ability to compute vertex count automatically
-@see @relativeref{Trade,MeshOptimizerSceneConverter}
+
+@m_class{m-note m-success}
+
+@par
+    You might want to prefer using the
+    @relativeref{Trade,MeshOptimizerSceneConverter} plugin that does vertex
+    cache optimization along with many more non-destructive as well as
+    destructive optimizations.
 */
 MAGNUM_MESHTOOLS_EXPORT void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
 
