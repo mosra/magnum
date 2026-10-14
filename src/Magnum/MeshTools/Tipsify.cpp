@@ -26,6 +26,7 @@
 
 #include "Tipsify.h"
 
+#include <Corrade/Containers/BitArray.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Algorithms.h>
 
@@ -43,8 +44,7 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
     /* Global time, per-vertex caching timestamps, per-triangle emitted flag */
     UnsignedInt time = cacheSize+1;
     Containers::Array<UnsignedInt> timestamp{ValueInit, vertexCount};
-    /** @todo Have some bitset/staticbitset class for this */
-    Containers::Array<bool> emitted{ValueInit, indices.size()/3};
+    Containers::BitArray emitted{ValueInit, indices.size()/3};
 
     /* Dead-end vertex stack */
     Containers::Array<UnsignedInt> deadEndStack;
@@ -71,7 +71,7 @@ template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArr
             /* Continue if already emitted */
             if(emitted[t])
                 continue;
-            emitted[t] = true;
+            emitted.set(t);
 
             /* Write all vertices of the triangle to output buffer */
             for(UnsignedInt vi = 0; vi != 3; ++vi) {
