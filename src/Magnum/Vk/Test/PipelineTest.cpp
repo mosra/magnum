@@ -45,6 +45,10 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct PipelineTest: TestSuite::Tester {
     explicit PipelineTest();
 
+    void debugBindPoint();
+    void debugDynamicRasterizationState();
+    void debugDynamicRasterizationStates();
+
     void dynamicRasterizationStateMapping();
 
     void rasterizationCreateInfoConstruct();
@@ -81,14 +85,14 @@ struct PipelineTest: TestSuite::Tester {
     void imageMemoryBarrierConstructImplicitAspect();
     void imageMemoryBarrierConstructNoInit();
     void imageMemoryBarrierConstructFromVk();
-
-    void debugBindPoint();
-    void debugDynamicRasterizationState();
-    void debugDynamicRasterizationStates();
 };
 
 PipelineTest::PipelineTest() {
-    addTests({&PipelineTest::dynamicRasterizationStateMapping,
+    addTests({&PipelineTest::debugBindPoint,
+              &PipelineTest::debugDynamicRasterizationState,
+              &PipelineTest::debugDynamicRasterizationStates,
+
+              &PipelineTest::dynamicRasterizationStateMapping,
 
               &PipelineTest::rasterizationCreateInfoConstruct,
               &PipelineTest::rasterizationCreateInfoConstructNoInit,
@@ -123,14 +127,28 @@ PipelineTest::PipelineTest() {
               &PipelineTest::imageMemoryBarrierConstruct,
               &PipelineTest::imageMemoryBarrierConstructImplicitAspect,
               &PipelineTest::imageMemoryBarrierConstructNoInit,
-              &PipelineTest::imageMemoryBarrierConstructFromVk,
-
-              &PipelineTest::debugBindPoint,
-              &PipelineTest::debugDynamicRasterizationState,
-              &PipelineTest::debugDynamicRasterizationStates});
+              &PipelineTest::imageMemoryBarrierConstructFromVk});
 }
 
 using namespace Containers::Literals;
+
+void PipelineTest::debugBindPoint() {
+    Containers::String out;
+    Debug{&out} << PipelineBindPoint::Compute << PipelineBindPoint(-10007655);
+    CORRADE_COMPARE(out, "Vk::PipelineBindPoint::Compute Vk::PipelineBindPoint(-10007655)\n");
+}
+
+void PipelineTest::debugDynamicRasterizationState() {
+    Containers::String out;
+    Debug{&out} << DynamicRasterizationState::VertexInputBindingStride << DynamicRasterizationState(0xab);
+    CORRADE_COMPARE(out, "Vk::DynamicRasterizationState::VertexInputBindingStride Vk::DynamicRasterizationState(0xab)\n");
+}
+
+void PipelineTest::debugDynamicRasterizationStates() {
+    Containers::String out;
+    Debug{&out} << (DynamicRasterizationState::Viewport|DynamicRasterizationState::Scissor|DynamicRasterizationState(0x2a)|DynamicRasterizationState(0x3f)) << DynamicRasterizationStates{};
+    CORRADE_COMPARE(out, "Vk::DynamicRasterizationState::Viewport|Vk::DynamicRasterizationState::Scissor|Vk::DynamicRasterizationState(0x2a)|Vk::DynamicRasterizationState(0x3f) Vk::DynamicRasterizationStates{}\n");
+}
 
 void PipelineTest::dynamicRasterizationStateMapping() {
     /* Same table is in Pipeline.cpp, here just to have something to test the
@@ -764,24 +782,6 @@ void PipelineTest::imageMemoryBarrierConstructFromVk() {
 
     ImageMemoryBarrier barrier{vkBarrier};
     CORRADE_COMPARE(barrier->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
-}
-
-void PipelineTest::debugBindPoint() {
-    Containers::String out;
-    Debug{&out} << PipelineBindPoint::Compute << PipelineBindPoint(-10007655);
-    CORRADE_COMPARE(out, "Vk::PipelineBindPoint::Compute Vk::PipelineBindPoint(-10007655)\n");
-}
-
-void PipelineTest::debugDynamicRasterizationState() {
-    Containers::String out;
-    Debug{&out} << DynamicRasterizationState::VertexInputBindingStride << DynamicRasterizationState(0xab);
-    CORRADE_COMPARE(out, "Vk::DynamicRasterizationState::VertexInputBindingStride Vk::DynamicRasterizationState(0xab)\n");
-}
-
-void PipelineTest::debugDynamicRasterizationStates() {
-    Containers::String out;
-    Debug{&out} << (DynamicRasterizationState::Viewport|DynamicRasterizationState::Scissor|DynamicRasterizationState(0x2a)|DynamicRasterizationState(0x3f)) << DynamicRasterizationStates{};
-    CORRADE_COMPARE(out, "Vk::DynamicRasterizationState::Viewport|Vk::DynamicRasterizationState::Scissor|Vk::DynamicRasterizationState(0x2a)|Vk::DynamicRasterizationState(0x3f) Vk::DynamicRasterizationStates{}\n");
 }
 
 }}}}

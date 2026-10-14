@@ -43,6 +43,47 @@
 
 namespace Magnum { namespace Vk {
 
+Debug& operator<<(Debug& debug, const PipelineBindPoint value) {
+    debug << "Vk::PipelineBindPoint" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::PipelineBindPoint::value: return debug << "::" << Debug::nospace << #value;
+        _c(Rasterization)
+        _c(RayTracing)
+        _c(Compute)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Vulkan docs have the values in decimal, so not converting to hex */
+    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
+}
+
+namespace {
+
+constexpr const char* DynamicRasterizationStateNames[]{
+    #define _c(value, vkValue) #value,
+    #include "Magnum/Vk/Implementation/dynamicRasterizationStateMapping.hpp"
+    #undef _c
+};
+
+}
+
+Debug& operator<<(Debug& debug, const DynamicRasterizationState value) {
+    debug << "Vk::DynamicRasterizationState" << Debug::nospace;
+
+    if(UnsignedInt(value) < Containers::arraySize(DynamicRasterizationStateNames)) {
+        return debug << "::" << Debug::nospace << DynamicRasterizationStateNames[UnsignedInt(value)];
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const DynamicRasterizationStates& value) {
+    return Containers::bigEnumSetDebugOutput(debug, value, "Vk::DynamicRasterizationStates{}");
+}
+
 struct RasterizationPipelineCreateInfo::State {
     Containers::Array<VkPipelineColorBlendAttachmentState> colorBlendAttachments;
 
@@ -467,47 +508,6 @@ CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages,
 
 CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const std::initializer_list<ImageMemoryBarrier> imageMemoryBarriers, const DependencyFlags dependencyFlags) {
     return pipelineBarrier(sourceStages, destinationStages, Containers::arrayView(imageMemoryBarriers), dependencyFlags);
-}
-
-Debug& operator<<(Debug& debug, const PipelineBindPoint value) {
-    debug << "Vk::PipelineBindPoint" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Vk::PipelineBindPoint::value: return debug << "::" << Debug::nospace << #value;
-        _c(Rasterization)
-        _c(RayTracing)
-        _c(Compute)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    /* Vulkan docs have the values in decimal, so not converting to hex */
-    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
-}
-
-namespace {
-
-constexpr const char* DynamicRasterizationStateNames[]{
-    #define _c(value, vkValue) #value,
-    #include "Magnum/Vk/Implementation/dynamicRasterizationStateMapping.hpp"
-    #undef _c
-};
-
-}
-
-Debug& operator<<(Debug& debug, const DynamicRasterizationState value) {
-    debug << "Vk::DynamicRasterizationState" << Debug::nospace;
-
-    if(UnsignedInt(value) < Containers::arraySize(DynamicRasterizationStateNames)) {
-        return debug << "::" << Debug::nospace << DynamicRasterizationStateNames[UnsignedInt(value)];
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const DynamicRasterizationStates& value) {
-    return Containers::bigEnumSetDebugOutput(debug, value, "Vk::DynamicRasterizationStates{}");
 }
 
 }}

@@ -46,6 +46,24 @@ namespace Magnum { namespace DebugTools {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const FrameProfiler::Units value) {
+    debug << "DebugTools::FrameProfiler::Units" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case FrameProfiler::Units::v: return debug << "::" #v;
+        _c(Nanoseconds)
+        _c(Bytes)
+        _c(Count)
+        _c(RatioThousandths)
+        _c(PercentageThousandths)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
 FrameProfiler::Measurement::Measurement(const Containers::StringView name, const Units units, void(*const begin)(void*), UnsignedLong(*const end)(void*), void* const state): _name{Containers::String::nullTerminatedGlobalView(name)}, _end{nullptr}, _state{state}, _units{units}, _delay{0} {
     _begin.immediate = begin;
     _query.immediate = end;
@@ -434,25 +452,95 @@ void FrameProfiler::printStatistics(Debug& out, const UnsignedInt frequency) con
         out << Debug::newline;
 }
 
-Debug& operator<<(Debug& debug, const FrameProfiler::Units value) {
-    debug << "DebugTools::FrameProfiler::Units" << Debug::nospace;
+#ifdef MAGNUM_TARGET_GL
+namespace {
 
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case FrameProfiler::Units::v: return debug << "::" #v;
-        _c(Nanoseconds)
-        _c(Bytes)
-        _c(Count)
-        _c(RatioThousandths)
-        _c(PercentageThousandths)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
+constexpr const char* FrameProfilerGLValueNames[] {
+    "FrameTime",
+    "CpuDuration",
+    "GpuDuration",
+    "VertexFetchRatio",
+    "PrimitiveClipRatio"
+};
 
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
 }
 
+Debug& operator<<(Debug& debug, const FrameProfilerGL::Value value) {
+    debug << "DebugTools::FrameProfilerGL::Value" << Debug::nospace;
+
+    const UnsignedInt bit = Math::log2(UnsignedShort(value));
+    if(1 << bit == UnsignedShort(value))
+        return debug << "::" << Debug::nospace << FrameProfilerGLValueNames[bit];
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const FrameProfilerGL::Values value) {
+    return Containers::enumSetDebugOutput(debug, value, "DebugTools::FrameProfilerGL::Values{}", {
+        FrameProfilerGL::Value::FrameTime,
+        FrameProfilerGL::Value::CpuDuration,
+        FrameProfilerGL::Value::GpuDuration,
+        #ifndef MAGNUM_TARGET_GLES
+        FrameProfilerGL::Value::VertexFetchRatio,
+        FrameProfilerGL::Value::PrimitiveClipRatio
+        #endif
+        });
+}
+#endif
+
+}}
+
+namespace Corrade { namespace Utility {
+
+using namespace Containers::Literals;
+using namespace Magnum;
+
 #ifdef MAGNUM_TARGET_GL
+Containers::StringView ConfigurationValue<DebugTools::FrameProfilerGL::Value>::toString(const DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags) {
+    const UnsignedInt bit = Math::log2(UnsignedShort(value));
+    if(1 << bit == UnsignedShort(value))
+        return DebugTools::FrameProfilerGLValueNames[bit];
+    return "";
+}
+
+DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerGL::Value>::fromString(const Containers::StringView value, ConfigurationValueFlags) {
+    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
+        if(DebugTools::FrameProfilerGLValueNames[i] == value)
+            return DebugTools::FrameProfilerGL::Value(1 << i);
+
+    return DebugTools::FrameProfilerGL::Value{};
+}
+
+Containers::String ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(const DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags) {
+    Containers::String out;
+
+    /* Create an array of strings where each is non-empty only if given bit is
+       set and then join them together to have just one allocation */
+    const char* names[Containers::arraySize(DebugTools::FrameProfilerGLValueNames)]{};
+    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i) {
+        if(value & DebugTools::FrameProfilerGL::Value(1 << i))
+            names[i] = DebugTools::FrameProfilerGLValueNames[i];
+    }
+
+    return " "_s.joinWithoutEmptyParts(names);
+}
+
+DebugTools::FrameProfilerGL::Values ConfigurationValue<DebugTools::FrameProfilerGL::Values>::fromString(const Containers::StringView value, ConfigurationValueFlags) {
+    const Containers::Array<Containers::StringView> bits = value.splitOnWhitespaceWithoutEmptyParts();
+
+    DebugTools::FrameProfilerGL::Values values;
+    for(const Containers::StringView bit: bits)
+        for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
+            if(DebugTools::FrameProfilerGLValueNames[i] == bit)
+                values |= DebugTools::FrameProfilerGL::Value(1 << i);
+
+    return values;
+}
+
+}}
+
+namespace Magnum { namespace DebugTools {
+
 struct FrameProfilerGL::State {
     UnsignedShort cpuDurationIndex = 0xffff,
         gpuDurationIndex = 0xffff,
@@ -674,90 +762,6 @@ Double FrameProfilerGL::primitiveClipRatioMean() const {
     return measurementMean(_state->primitiveClipRatioIndex);
 }
 #endif
-
-namespace {
-
-constexpr const char* FrameProfilerGLValueNames[] {
-    "FrameTime",
-    "CpuDuration",
-    "GpuDuration",
-    "VertexFetchRatio",
-    "PrimitiveClipRatio"
-};
-
-}
-
-Debug& operator<<(Debug& debug, const FrameProfilerGL::Value value) {
-    debug << "DebugTools::FrameProfilerGL::Value" << Debug::nospace;
-
-    const UnsignedInt bit = Math::log2(UnsignedShort(value));
-    if(1 << bit == UnsignedShort(value))
-        return debug << "::" << Debug::nospace << FrameProfilerGLValueNames[bit];
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const FrameProfilerGL::Values value) {
-    return Containers::enumSetDebugOutput(debug, value, "DebugTools::FrameProfilerGL::Values{}", {
-        FrameProfilerGL::Value::FrameTime,
-        FrameProfilerGL::Value::CpuDuration,
-        FrameProfilerGL::Value::GpuDuration,
-        #ifndef MAGNUM_TARGET_GLES
-        FrameProfilerGL::Value::VertexFetchRatio,
-        FrameProfilerGL::Value::PrimitiveClipRatio
-        #endif
-        });
-}
-#endif
-
-}}
-
-namespace Corrade { namespace Utility {
-
-using namespace Containers::Literals;
-using namespace Magnum;
-
-#ifdef MAGNUM_TARGET_GL
-Containers::StringView ConfigurationValue<DebugTools::FrameProfilerGL::Value>::toString(const DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags) {
-    const UnsignedInt bit = Math::log2(UnsignedShort(value));
-    if(1 << bit == UnsignedShort(value))
-        return DebugTools::FrameProfilerGLValueNames[bit];
-    return "";
-}
-
-DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerGL::Value>::fromString(const Containers::StringView value, ConfigurationValueFlags) {
-    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
-        if(DebugTools::FrameProfilerGLValueNames[i] == value)
-            return DebugTools::FrameProfilerGL::Value(1 << i);
-
-    return DebugTools::FrameProfilerGL::Value{};
-}
-
-Containers::String ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(const DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags) {
-    Containers::String out;
-
-    /* Create an array of strings where each is non-empty only if given bit is
-       set and then join them together to have just one allocation */
-    const char* names[Containers::arraySize(DebugTools::FrameProfilerGLValueNames)]{};
-    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i) {
-        if(value & DebugTools::FrameProfilerGL::Value(1 << i))
-            names[i] = DebugTools::FrameProfilerGLValueNames[i];
-    }
-
-    return " "_s.joinWithoutEmptyParts(names);
-}
-
-DebugTools::FrameProfilerGL::Values ConfigurationValue<DebugTools::FrameProfilerGL::Values>::fromString(const Containers::StringView value, ConfigurationValueFlags) {
-    const Containers::Array<Containers::StringView> bits = value.splitOnWhitespaceWithoutEmptyParts();
-
-    DebugTools::FrameProfilerGL::Values values;
-    for(const Containers::StringView bit: bits)
-        for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
-            if(DebugTools::FrameProfilerGLValueNames[i] == bit)
-                values |= DebugTools::FrameProfilerGL::Value(1 << i);
-
-    return values;
-}
 #endif
 
 }}

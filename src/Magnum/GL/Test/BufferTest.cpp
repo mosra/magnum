@@ -35,39 +35,23 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct BufferTest: TestSuite::Tester {
     explicit BufferTest();
 
-    void constructNoCreate();
-    void constructCopy();
-
     void debugTargetHint();
     #ifndef MAGNUM_TARGET_GLES2
     void debugTarget();
     #endif
+
+    void constructNoCreate();
+    void constructCopy();
 };
 
 BufferTest::BufferTest() {
-    addTests({&BufferTest::constructNoCreate,
-              &BufferTest::constructCopy,
-
-              &BufferTest::debugTargetHint,
+    addTests({&BufferTest::debugTargetHint,
               #ifndef MAGNUM_TARGET_GLES2
-              &BufferTest::debugTarget
+              &BufferTest::debugTarget,
               #endif
-              });
-}
 
-void BufferTest::constructNoCreate() {
-    {
-        Buffer buffer{NoCreate};
-        CORRADE_COMPARE(buffer.id(), 0);
-    }
-
-    /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Buffer>::value);
-}
-
-void BufferTest::constructCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<Buffer>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<Buffer>{});
+              &BufferTest::constructNoCreate,
+              &BufferTest::constructCopy});
 }
 
 void BufferTest::debugTargetHint() {
@@ -83,6 +67,21 @@ void BufferTest::debugTarget() {
     CORRADE_COMPARE(out, "GL::Buffer::Target::Uniform GL::Buffer::Target(0xdead)\n");
 }
 #endif
+
+void BufferTest::constructNoCreate() {
+    {
+        Buffer buffer{NoCreate};
+        CORRADE_COMPARE(buffer.id(), 0);
+    }
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Buffer>::value);
+}
+
+void BufferTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<Buffer>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Buffer>{});
+}
 
 }}}}
 

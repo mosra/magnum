@@ -32,6 +32,26 @@ namespace Magnum { namespace Trade {
 
 using namespace Math::Literals;
 
+Debug& operator<<(Debug& debug, const LightType value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::LightType" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case LightType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        _c(Ambient)
+        _c(Directional)
+        _c(Point)
+        _c(Spot)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
+}
+
 LightData::LightData(const LightType type, const Color3& color, const Float intensity, const Vector3& attenuation, const Float range, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: _type{type}, _color{color}, _intensity{intensity}, _attenuation{attenuation}, _range{range}, _innerConeAngle{innerConeAngle}, _outerConeAngle{outerConeAngle}, _importerState{importerState} {
     CORRADE_ASSERT(_type != LightType::Spot || (Deg(_innerConeAngle) >= 0.0_degf && _innerConeAngle <= _outerConeAngle && Deg(_outerConeAngle) <= 360.0_degf),
         "Trade::LightData: spot light inner and outer cone angles have to be in range [0°, 360°] and inner not larger than outer but got" << Deg(_innerConeAngle) << "and" << Deg(_outerConeAngle), );
@@ -65,25 +85,5 @@ LightData::LightData(const LightType type, const Color3& color, const Float inte
 LightData::LightData(const LightType type, const Color3& color, const Float intensity, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: LightData{type, color, intensity, Constants::inf(), innerConeAngle, outerConeAngle, importerState} {}
 
 LightData::LightData(const LightType type, const Color3& color, const Float intensity, const void* const importerState) noexcept: LightData{type, color, intensity, Constants::inf(), importerState} {}
-
-Debug& operator<<(Debug& debug, const LightType value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::LightType" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case LightType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
-        _c(Ambient)
-        _c(Directional)
-        _c(Point)
-        _c(Spot)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
-}
 
 }}

@@ -110,7 +110,16 @@ struct {
 #endif
 
 FrameProfilerTest::FrameProfilerTest() {
-    addTests({&FrameProfilerTest::defaultConstructed,
+    addTests({&FrameProfilerTest::debugUnits,
+              #ifdef MAGNUM_TARGET_GL
+              &FrameProfilerTest::debugGLValue,
+              &FrameProfilerTest::debugGLValues,
+
+              &FrameProfilerTest::configurationGLValue,
+              &FrameProfilerTest::configurationGLValues,
+              #endif
+
+              &FrameProfilerTest::defaultConstructed,
               &FrameProfilerTest::noMeasurements});
 
     addInstancedTests({&FrameProfilerTest::singleFrame},
@@ -138,23 +147,62 @@ FrameProfilerTest::FrameProfilerTest() {
     #ifdef MAGNUM_TARGET_GL
     addInstancedTests({&FrameProfilerTest::gl},
         Containers::arraySize(GLData));
+
+    addTests({&FrameProfilerTest::glNotEnabled});
     #endif
-
-    addTests({
-              #ifdef MAGNUM_TARGET_GL
-              &FrameProfilerTest::glNotEnabled,
-              #endif
-
-              &FrameProfilerTest::debugUnits,
-              #ifdef MAGNUM_TARGET_GL
-              &FrameProfilerTest::debugGLValue,
-              &FrameProfilerTest::debugGLValues,
-
-              &FrameProfilerTest::configurationGLValue,
-              &FrameProfilerTest::configurationGLValues
-              #endif
-              });
 }
+
+void FrameProfilerTest::debugUnits() {
+    Containers::String out;
+    Debug{&out} << FrameProfiler::Units::Nanoseconds << FrameProfiler::Units(0xf0);
+    CORRADE_COMPARE(out, "DebugTools::FrameProfiler::Units::Nanoseconds DebugTools::FrameProfiler::Units(0xf0)\n");
+}
+
+#ifdef MAGNUM_TARGET_GL
+void FrameProfilerTest::debugGLValue() {
+    Containers::String out;
+    Debug{&out} << FrameProfilerGL::Value::GpuDuration << FrameProfilerGL::Value(0xfff0);
+    CORRADE_COMPARE(out, "DebugTools::FrameProfilerGL::Value::GpuDuration DebugTools::FrameProfilerGL::Value(0xfff0)\n");
+}
+
+void FrameProfilerTest::debugGLValues() {
+    Containers::String out;
+    Debug{&out} << (FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::FrameTime) << FrameProfilerGL::Values{};
+    CORRADE_COMPARE(out, "DebugTools::FrameProfilerGL::Value::FrameTime|DebugTools::FrameProfilerGL::Value::CpuDuration DebugTools::FrameProfilerGL::Values{}\n");
+}
+
+void FrameProfilerTest::configurationGLValue() {
+    Utility::ConfigurationGroup c;
+
+    c.setValue("value", FrameProfilerGL::Value::GpuDuration);
+    CORRADE_COMPARE(c.value("value"), "GpuDuration");
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("value"), FrameProfilerGL::Value::GpuDuration);
+
+    c.setValue("zero", FrameProfilerGL::Value{});
+    CORRADE_COMPARE(c.value("zero"), "");
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("zero"), FrameProfilerGL::Value{});
+
+    c.setValue("invalid", FrameProfilerGL::Value(0xdead));
+    CORRADE_COMPARE(c.value("invalid"), "");
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("invalid"), FrameProfilerGL::Value{});
+}
+
+void FrameProfilerTest::configurationGLValues() {
+    Utility::ConfigurationGroup c;
+
+    c.setValue("value", FrameProfilerGL::Value::FrameTime|FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
+    CORRADE_COMPARE(c.value("value"), "FrameTime CpuDuration GpuDuration");
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("value"), FrameProfilerGL::Value::FrameTime|FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
+
+    c.setValue("empty", FrameProfilerGL::Values{});
+    CORRADE_COMPARE(c.value("empty"), "");
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("empty"), FrameProfilerGL::Values{});
+
+    c.setValue("invalid", FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration|FrameProfilerGL::Value(0xff00));
+    CORRADE_COMPARE(c.value("invalid"), "CpuDuration GpuDuration");
+    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("invalid"), FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
+}
+#endif
 
 void FrameProfilerTest::defaultConstructed() {
     FrameProfiler profiler;
@@ -1214,61 +1262,6 @@ void FrameProfilerTest::glNotEnabled() {
         "DebugTools::FrameProfilerGL::frameTimeMean(): not enabled\n"
         "DebugTools::FrameProfilerGL::cpuDurationMean(): not enabled\n"
         "DebugTools::FrameProfilerGL::gpuDurationMean(): not enabled\n");
-}
-#endif
-
-void FrameProfilerTest::debugUnits() {
-    Containers::String out;
-
-    Debug{&out} << FrameProfiler::Units::Nanoseconds << FrameProfiler::Units(0xf0);
-    CORRADE_COMPARE(out, "DebugTools::FrameProfiler::Units::Nanoseconds DebugTools::FrameProfiler::Units(0xf0)\n");
-}
-
-#ifdef MAGNUM_TARGET_GL
-void FrameProfilerTest::debugGLValue() {
-    Containers::String out;
-
-    Debug{&out} << FrameProfilerGL::Value::GpuDuration << FrameProfilerGL::Value(0xfff0);
-    CORRADE_COMPARE(out, "DebugTools::FrameProfilerGL::Value::GpuDuration DebugTools::FrameProfilerGL::Value(0xfff0)\n");
-}
-
-void FrameProfilerTest::debugGLValues() {
-    Containers::String out;
-
-    Debug{&out} << (FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::FrameTime) << FrameProfilerGL::Values{};
-    CORRADE_COMPARE(out, "DebugTools::FrameProfilerGL::Value::FrameTime|DebugTools::FrameProfilerGL::Value::CpuDuration DebugTools::FrameProfilerGL::Values{}\n");
-}
-
-void FrameProfilerTest::configurationGLValue() {
-    Utility::ConfigurationGroup c;
-
-    c.setValue("value", FrameProfilerGL::Value::GpuDuration);
-    CORRADE_COMPARE(c.value("value"), "GpuDuration");
-    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("value"), FrameProfilerGL::Value::GpuDuration);
-
-    c.setValue("zero", FrameProfilerGL::Value{});
-    CORRADE_COMPARE(c.value("zero"), "");
-    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("zero"), FrameProfilerGL::Value{});
-
-    c.setValue("invalid", FrameProfilerGL::Value(0xdead));
-    CORRADE_COMPARE(c.value("invalid"), "");
-    CORRADE_COMPARE(c.value<FrameProfilerGL::Value>("invalid"), FrameProfilerGL::Value{});
-}
-
-void FrameProfilerTest::configurationGLValues() {
-    Utility::ConfigurationGroup c;
-
-    c.setValue("value", FrameProfilerGL::Value::FrameTime|FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
-    CORRADE_COMPARE(c.value("value"), "FrameTime CpuDuration GpuDuration");
-    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("value"), FrameProfilerGL::Value::FrameTime|FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
-
-    c.setValue("empty", FrameProfilerGL::Values{});
-    CORRADE_COMPARE(c.value("empty"), "");
-    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("empty"), FrameProfilerGL::Values{});
-
-    c.setValue("invalid", FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration|FrameProfilerGL::Value(0xff00));
-    CORRADE_COMPARE(c.value("invalid"), "CpuDuration GpuDuration");
-    CORRADE_COMPARE(c.value<FrameProfilerGL::Values>("invalid"), FrameProfilerGL::Value::CpuDuration|FrameProfilerGL::Value::GpuDuration);
 }
 #endif
 

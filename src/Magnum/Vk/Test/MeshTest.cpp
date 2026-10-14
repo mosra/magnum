@@ -39,6 +39,8 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
 
+    void debugIndexType();
+
     void mapIndexType();
     void mapIndexTypeImplementationSpecific();
     void mapIndexTypeInvalid();
@@ -56,12 +58,12 @@ struct MeshTest: TestSuite::Tester {
     template<class T> void setIndexBufferOwned();
 
     void indexPropertiesNotIndexed();
-
-    void debugIndexType();
 };
 
 MeshTest::MeshTest() {
-    addTests({&MeshTest::mapIndexType,
+    addTests({&MeshTest::debugIndexType,
+
+              &MeshTest::mapIndexType,
               &MeshTest::mapIndexTypeImplementationSpecific,
               &MeshTest::mapIndexTypeInvalid,
 
@@ -79,9 +81,13 @@ MeshTest::MeshTest() {
               &MeshTest::setIndexBufferOwned<MeshIndexType>,
               &MeshTest::setIndexBufferOwned<Magnum::MeshIndexType>,
 
-              &MeshTest::indexPropertiesNotIndexed,
+              &MeshTest::indexPropertiesNotIndexed});
+}
 
-              &MeshTest::debugIndexType});
+void MeshTest::debugIndexType() {
+    Containers::String out;
+    Debug{&out} << MeshIndexType::UnsignedShort << MeshIndexType(-10007655);
+    CORRADE_COMPARE(out, "Vk::MeshIndexType::UnsignedShort Vk::MeshIndexType(-10007655)\n");
 }
 
 template<class> struct IndexTypeTraits;
@@ -301,12 +307,6 @@ void MeshTest::indexPropertiesNotIndexed() {
         "Vk::Mesh::indexBuffer(): the mesh is not indexed\n"
         "Vk::Mesh::indexBufferOffset(): the mesh is not indexed\n"
         "Vk::Mesh::indexType(): the mesh is not indexed\n");
-}
-
-void MeshTest::debugIndexType() {
-    Containers::String out;
-    Debug{&out} << MeshIndexType::UnsignedShort << MeshIndexType(-10007655);
-    CORRADE_COMPARE(out, "Vk::MeshIndexType::UnsignedShort Vk::MeshIndexType(-10007655)\n");
 }
 
 }}}}

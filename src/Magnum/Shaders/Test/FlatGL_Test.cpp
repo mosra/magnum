@@ -38,16 +38,16 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct FlatGL_Test: TestSuite::Tester {
     explicit FlatGL_Test();
 
+    void debugFlag();
+    void debugFlags();
+    void debugFlagsSupersets();
+
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void configurationSetJointCountInvalid();
     #endif
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
-
-    void debugFlag();
-    void debugFlags();
-    void debugFlagsSupersets();
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -72,6 +72,10 @@ const struct {
 #endif
 
 FlatGL_Test::FlatGL_Test() {
+    addTests({&FlatGL_Test::debugFlag,
+              &FlatGL_Test::debugFlags,
+              &FlatGL_Test::debugFlagsSupersets});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<FlatGL_Test>({
         &FlatGL_Test::configurationSetJointCountInvalid<2>,
@@ -79,63 +83,22 @@ FlatGL_Test::FlatGL_Test() {
         Containers::arraySize(ConfigurationSetJointCountInvalidData));
     #endif
 
-    addTests({&FlatGL_Test::constructNoCreate<2>,
-              &FlatGL_Test::constructNoCreate<3>,
+    addTests<FlatGL_Test>({
+        &FlatGL_Test::constructNoCreate<2>,
+        &FlatGL_Test::constructNoCreate<3>,
 
-              &FlatGL_Test::constructCopy<2>,
-              &FlatGL_Test::constructCopy<3>,
-
-              &FlatGL_Test::debugFlag,
-              &FlatGL_Test::debugFlags,
-              &FlatGL_Test::debugFlagsSupersets});
-}
-
-#ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> void FlatGL_Test::configurationSetJointCountInvalid() {
-    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    typename FlatGL<dimensions>::Configuration configuration;
-
-    Containers::String out;
-    Error redirectError{&out};
-    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
-    CORRADE_COMPARE(out, Utility::format("Shaders::FlatGL::Configuration::setJointCount(): {}\n", data.message));
-}
-#endif
-
-template<UnsignedInt dimensions> void FlatGL_Test::constructNoCreate() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    {
-        FlatGL<dimensions> shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), typename FlatGL<dimensions>::Flags{});
-    }
-
-    CORRADE_VERIFY(true);
-}
-
-template<UnsignedInt dimensions> void FlatGL_Test::constructCopy() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    CORRADE_VERIFY(!std::is_copy_constructible<FlatGL<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<FlatGL<dimensions>>{});
+        &FlatGL_Test::constructCopy<2>,
+        &FlatGL_Test::constructCopy<3>});
 }
 
 void FlatGL_Test::debugFlag() {
     Containers::String out;
-
     Debug{&out} << FlatGL3D::Flag::Textured << FlatGL3D::Flag(0xf00d);
     CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::Textured Shaders::FlatGL::Flag(0xf00d)\n");
 }
 
 void FlatGL_Test::debugFlags() {
     Containers::String out;
-
     Debug{&out} << (FlatGL3D::Flag::Textured|FlatGL3D::Flag::AlphaMask) << FlatGL3D::Flags{};
     CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::Textured|Shaders::FlatGL::Flag::AlphaMask Shaders::FlatGL::Flags{}\n");
 }
@@ -187,6 +150,42 @@ void FlatGL_Test::debugFlagsSupersets() {
     }
     #endif
     #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGL_Test::configurationSetJointCountInvalid() {
+    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    typename FlatGL<dimensions>::Configuration configuration;
+
+    Containers::String out;
+    Error redirectError{&out};
+    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
+    CORRADE_COMPARE(out, Utility::format("Shaders::FlatGL::Configuration::setJointCount(): {}\n", data.message));
+}
+#endif
+
+template<UnsignedInt dimensions> void FlatGL_Test::constructNoCreate() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    {
+        FlatGL<dimensions> shader{NoCreate};
+        CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), typename FlatGL<dimensions>::Flags{});
+    }
+
+    CORRADE_VERIFY(true);
+}
+
+template<UnsignedInt dimensions> void FlatGL_Test::constructCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_VERIFY(!std::is_copy_constructible<FlatGL<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<FlatGL<dimensions>>{});
 }
 
 }}}}

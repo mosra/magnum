@@ -33,16 +33,6 @@
 
 namespace Magnum { namespace Shaders {
 
-LineMaterialUniform& LineMaterialUniform::setMiterLengthLimit(const Float limit) {
-    miterLimit = Implementation::lineMiterLengthLimit("Shaders::LineMaterialUniform::setMiterLengthLimit():", limit);
-    return *this;
-}
-
-LineMaterialUniform& LineMaterialUniform::setMiterAngleLimit(const Rad limit) {
-    miterLimit = Implementation::lineMiterAngleLimit("Shaders::LineMaterialUniform::setMiterAngleLimit():", limit);
-    return *this;
-}
-
 Debug& operator<<(Debug& debug, const LineCapStyle value) {
     debug << "Shaders::LineCapStyle" << Debug::nospace;
 
@@ -100,6 +90,16 @@ Debug& operator<<(Debug& debug, const LineVertexAnnotations value) {
         LineVertexAnnotation::Join,
         LineVertexAnnotation::Begin,
     });
+}
+
+LineMaterialUniform& LineMaterialUniform::setMiterLengthLimit(const Float limit) {
+    miterLimit = Implementation::lineMiterLengthLimit("Shaders::LineMaterialUniform::setMiterLengthLimit():", limit);
+    return *this;
+}
+
+LineMaterialUniform& LineMaterialUniform::setMiterAngleLimit(const Rad limit) {
+    miterLimit = Implementation::lineMiterAngleLimit("Shaders::LineMaterialUniform::setMiterAngleLimit():", limit);
+    return *this;
 }
 
 }}

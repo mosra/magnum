@@ -37,61 +37,38 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct DistanceFieldVectorGL_Test: TestSuite::Tester {
     explicit DistanceFieldVectorGL_Test();
 
-    template<UnsignedInt dimensions> void constructNoCreate();
-    template<UnsignedInt dimensions> void constructCopy();
-
     void debugFlag();
     void debugFlags();
     #ifndef MAGNUM_TARGET_GLES2
     void debugFlagsSupersets();
     #endif
+
+    template<UnsignedInt dimensions> void constructNoCreate();
+    template<UnsignedInt dimensions> void constructCopy();
 };
 
 DistanceFieldVectorGL_Test::DistanceFieldVectorGL_Test() {
-    addTests({
-        &DistanceFieldVectorGL_Test::constructNoCreate<2>,
-        &DistanceFieldVectorGL_Test::constructNoCreate<3>,
+    addTests({&DistanceFieldVectorGL_Test::debugFlag,
+              &DistanceFieldVectorGL_Test::debugFlags,
+              #ifndef MAGNUM_TARGET_GLES2
+              &DistanceFieldVectorGL_Test::debugFlagsSupersets,
+              #endif
 
-        &DistanceFieldVectorGL_Test::constructCopy<2>,
-        &DistanceFieldVectorGL_Test::constructCopy<3>,
+              &DistanceFieldVectorGL_Test::constructNoCreate<2>,
+              &DistanceFieldVectorGL_Test::constructNoCreate<3>,
 
-        &DistanceFieldVectorGL_Test::debugFlag,
-        &DistanceFieldVectorGL_Test::debugFlags,
-        #ifndef MAGNUM_TARGET_GLES2
-        &DistanceFieldVectorGL_Test::debugFlagsSupersets
-        #endif
-    });
-}
-
-template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructNoCreate() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    {
-        DistanceFieldVectorGL<dimensions> shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), typename DistanceFieldVectorGL<dimensions>::Flags{});
-    }
-
-    CORRADE_VERIFY(true);
-}
-
-template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructCopy() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldVectorGL<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldVectorGL<dimensions>>{});
+              &DistanceFieldVectorGL_Test::constructCopy<2>,
+              &DistanceFieldVectorGL_Test::constructCopy<3>});
 }
 
 void DistanceFieldVectorGL_Test::debugFlag() {
     Containers::String out;
-
     Debug{&out} << DistanceFieldVectorGL2D::Flag::TextureTransformation << DistanceFieldVectorGL2D::Flag(0xf0);
     CORRADE_COMPARE(out, "Shaders::DistanceFieldVectorGL::Flag::TextureTransformation Shaders::DistanceFieldVectorGL::Flag(0xf0)\n");
 }
 
 void DistanceFieldVectorGL_Test::debugFlags() {
     Containers::String out;
-
     Debug{&out} << DistanceFieldVectorGL3D::Flags{DistanceFieldVectorGL3D::Flag::TextureTransformation|DistanceFieldVectorGL3D::Flag(0x80)} << DistanceFieldVectorGL3D::Flags{};
     CORRADE_COMPARE(out, "Shaders::DistanceFieldVectorGL::Flag::TextureTransformation|Shaders::DistanceFieldVectorGL::Flag(0x80) Shaders::DistanceFieldVectorGL::Flags{}\n");
 }
@@ -118,6 +95,25 @@ void DistanceFieldVectorGL_Test::debugFlagsSupersets() {
     #endif
 }
 #endif
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructNoCreate() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    {
+        DistanceFieldVectorGL<dimensions> shader{NoCreate};
+        CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), typename DistanceFieldVectorGL<dimensions>::Flags{});
+    }
+
+    CORRADE_VERIFY(true);
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldVectorGL<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldVectorGL<dimensions>>{});
+}
 
 }}}}
 

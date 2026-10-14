@@ -39,6 +39,9 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
 
+    void debugPrimitive();
+    void debugIndexType();
+
     void constructNoCreate();
     void constructViewNoCreate();
 
@@ -60,13 +63,13 @@ struct MeshTest: TestSuite::Tester {
 
     void indexTypeSize();
     void indexTypeSizeInvalid();
-
-    void debugPrimitive();
-    void debugIndexType();
 };
 
 MeshTest::MeshTest() {
-    addTests({&MeshTest::constructNoCreate,
+    addTests({&MeshTest::debugPrimitive,
+              &MeshTest::debugIndexType,
+
+              &MeshTest::constructNoCreate,
               &MeshTest::constructViewNoCreate,
 
               &MeshTest::constructCopy,
@@ -85,10 +88,19 @@ MeshTest::MeshTest() {
               &MeshTest::mapIndexTypeInvalid,
 
               &MeshTest::indexTypeSize,
-              &MeshTest::indexTypeSizeInvalid,
+              &MeshTest::indexTypeSizeInvalid});
+}
 
-              &MeshTest::debugPrimitive,
-              &MeshTest::debugIndexType});
+void MeshTest::debugPrimitive() {
+    Containers::String out;
+    Debug{&out} << MeshPrimitive::TriangleFan << MeshPrimitive(0xdead);
+    CORRADE_COMPARE(out, "GL::MeshPrimitive::TriangleFan GL::MeshPrimitive(0xdead)\n");
+}
+
+void MeshTest::debugIndexType() {
+    Containers::String out;
+    Debug{&out} << MeshIndexType::UnsignedShort << MeshIndexType(0xdead);
+    CORRADE_COMPARE(out, "GL::MeshIndexType::UnsignedShort GL::MeshIndexType(0xdead)\n");
 }
 
 void MeshTest::constructNoCreate() {
@@ -286,18 +298,6 @@ void MeshTest::indexTypeSizeInvalid() {
     CORRADE_COMPARE(out,
         "GL::meshIndexTypeSize(): invalid type GL::MeshIndexType(0x0)\n"
         "GL::meshIndexTypeSize(): invalid type GL::MeshIndexType(0xbadcafe)\n");
-}
-
-void MeshTest::debugPrimitive() {
-    Containers::String out;
-    Debug{&out} << MeshPrimitive::TriangleFan << MeshPrimitive(0xdead);
-    CORRADE_COMPARE(out, "GL::MeshPrimitive::TriangleFan GL::MeshPrimitive(0xdead)\n");
-}
-
-void MeshTest::debugIndexType() {
-    Containers::String out;
-    Debug{&out} << MeshIndexType::UnsignedShort << MeshIndexType(0xdead);
-    CORRADE_COMPARE(out, "GL::MeshIndexType::UnsignedShort GL::MeshIndexType(0xdead)\n");
 }
 
 }}}}

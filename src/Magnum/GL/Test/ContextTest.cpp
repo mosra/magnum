@@ -41,6 +41,16 @@ using namespace Containers::Literals;
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
+    void debugFlag();
+    void debugFlagPacked();
+    void debugFlags();
+    void debugFlagsPacked();
+
+    void debugDetectedDriver();
+    void debugDetectedDriverPacked();
+    void debugDetectedDrivers();
+    void debugDetectedDriversPacked();
+
     void isExtension();
 
     void configurationConstruct();
@@ -54,20 +64,20 @@ struct ContextTest: TestSuite::Tester {
     void makeCurrentNoOp();
 
     void extensions();
-
-    void debugFlag();
-    void debugFlagPacked();
-    void debugFlags();
-    void debugFlagsPacked();
-
-    void debugDetectedDriver();
-    void debugDetectedDriverPacked();
-    void debugDetectedDrivers();
-    void debugDetectedDriversPacked();
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::isExtension,
+    addTests({&ContextTest::debugFlag,
+              &ContextTest::debugFlagPacked,
+              &ContextTest::debugFlags,
+              &ContextTest::debugFlagsPacked,
+
+              &ContextTest::debugDetectedDriver,
+              &ContextTest::debugDetectedDriverPacked,
+              &ContextTest::debugDetectedDrivers,
+              &ContextTest::debugDetectedDriversPacked,
+
+              &ContextTest::isExtension,
 
               &ContextTest::configurationConstruct,
               &ContextTest::configurationConstructUnknownWorkaround,
@@ -79,17 +89,95 @@ ContextTest::ContextTest() {
 
               &ContextTest::makeCurrentNoOp,
 
-              &ContextTest::extensions,
+              &ContextTest::extensions});
+}
 
-              &ContextTest::debugFlag,
-              &ContextTest::debugFlagPacked,
-              &ContextTest::debugFlags,
-              &ContextTest::debugFlagsPacked,
+void ContextTest::debugFlag() {
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("No context flags on Emscripten yet.");
+    #else
+    Containers::String out;
+    Debug(&out) << Context::Flag::Debug << Context::Flag(0xdead);
+    CORRADE_COMPARE(out, "GL::Context::Flag::Debug GL::Context::Flag(0xdead)\n");
+    #endif
+}
 
-              &ContextTest::debugDetectedDriver,
-              &ContextTest::debugDetectedDriverPacked,
-              &ContextTest::debugDetectedDrivers,
-              &ContextTest::debugDetectedDriversPacked});
+void ContextTest::debugFlagPacked() {
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("No context flags on Emscripten yet.");
+    #else
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << Context::Flag::Debug << Debug::packed << Context::Flag(0xdead) << Context::Flag::NoError;
+    CORRADE_COMPARE(out, "Debug 0xdead GL::Context::Flag::NoError\n");
+    #endif
+}
+
+void ContextTest::debugFlags() {
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("No context flags on Emscripten yet.");
+    #else
+    Containers::String out;
+    Debug{&out} << (Context::Flag::Debug|Context::Flag::NoError|Context::Flag(0xded0)) << Context::Flags{};
+    CORRADE_COMPARE(out, "GL::Context::Flag::Debug|GL::Context::Flag::NoError|GL::Context::Flag(0xded0) GL::Context::Flags{}\n");
+    #endif
+}
+
+void ContextTest::debugFlagsPacked() {
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("No context flags on Emscripten yet.");
+    #else
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (Context::Flag::Debug|Context::Flag::NoError|Context::Flag(0xded0)) << Debug::packed << Context::Flags{} << (Context::Flag::Debug|Context::Flag::NoError);
+    CORRADE_COMPARE(out, "Debug|NoError|0xded0 {} GL::Context::Flag::Debug|GL::Context::Flag::NoError\n");
+    #endif
+}
+
+void ContextTest::debugDetectedDriver() {
+    Containers::String out;
+    #ifndef MAGNUM_TARGET_WEBGL
+    Debug{&out} << Context::DetectedDriver::Amd << Context::DetectedDriver(0xdead);
+    CORRADE_COMPARE(out, "GL::Context::DetectedDriver::Amd GL::Context::DetectedDriver(0xdead)\n");
+    #else
+    Debug{&out} << Context::DetectedDriver::Angle << Context::DetectedDriver(0xdead);
+    CORRADE_COMPARE(out, "GL::Context::DetectedDriver::Angle GL::Context::DetectedDriver(0xdead)\n");
+    #endif
+}
+
+void ContextTest::debugDetectedDriverPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    #ifndef MAGNUM_TARGET_WEBGL
+    Debug{&out} << Debug::packed << Context::DetectedDriver::Amd << Debug::packed << Context::DetectedDriver(0xdead) << Context::DetectedDriver::NVidia;
+    CORRADE_COMPARE(out, "Amd 0xdead GL::Context::DetectedDriver::NVidia\n");
+    #else
+    Debug{&out} << Debug::packed << Context::DetectedDriver::Angle << Debug::packed << Context::DetectedDriver(0xdead) << Context::DetectedDriver::Angle;
+    CORRADE_COMPARE(out, "Angle 0xdead GL::Context::DetectedDriver::Angle\n");
+    #endif
+}
+
+void ContextTest::debugDetectedDrivers() {
+    Containers::String out;
+    #ifndef MAGNUM_TARGET_WEBGL
+    Debug{&out} << (Context::DetectedDriver::Amd|Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00)) << Context::DetectedDrivers{};
+    CORRADE_COMPARE(out, "GL::Context::DetectedDriver::Amd|GL::Context::DetectedDriver::Mesa|GL::Context::DetectedDriver(0xde00) GL::Context::DetectedDrivers{}\n");
+    #else
+    Debug{&out} << (Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00)) << Context::DetectedDrivers{};
+    CORRADE_COMPARE(out, "GL::Context::DetectedDriver::Angle|GL::Context::DetectedDriver(0xde00) GL::Context::DetectedDrivers{}\n");
+    #endif
+}
+
+void ContextTest::debugDetectedDriversPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    #ifndef MAGNUM_TARGET_WEBGL
+    Debug{&out} << Debug::packed << (Context::DetectedDriver::Amd|Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00)) << Debug::packed << Context::DetectedDrivers{} << (Context::DetectedDriver::Amd|Context::DetectedDriver::Mesa);
+    CORRADE_COMPARE(out, "Amd|Mesa|0xde00 {} GL::Context::DetectedDriver::Amd|GL::Context::DetectedDriver::Mesa\n");
+    #else
+    Debug{&out} << Debug::packed << (Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00)) << Debug::packed << Context::DetectedDrivers{} << (Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00));
+    CORRADE_COMPARE(out, "Angle|0xde00 {} GL::Context::DetectedDriver::Angle|GL::Context::DetectedDriver(0xde00)\n");
+    #endif
 }
 
 void ContextTest::isExtension() {
@@ -449,94 +537,6 @@ void ContextTest::extensions() {
             previous = e.string();
         }
     }
-}
-
-void ContextTest::debugFlag() {
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("No context flags on Emscripten yet.");
-    #else
-    Containers::String out;
-    Debug(&out) << Context::Flag::Debug << Context::Flag(0xdead);
-    CORRADE_COMPARE(out, "GL::Context::Flag::Debug GL::Context::Flag(0xdead)\n");
-    #endif
-}
-
-void ContextTest::debugFlagPacked() {
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("No context flags on Emscripten yet.");
-    #else
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << Context::Flag::Debug << Debug::packed << Context::Flag(0xdead) << Context::Flag::NoError;
-    CORRADE_COMPARE(out, "Debug 0xdead GL::Context::Flag::NoError\n");
-    #endif
-}
-
-void ContextTest::debugFlags() {
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("No context flags on Emscripten yet.");
-    #else
-    Containers::String out;
-    Debug{&out} << (Context::Flag::Debug|Context::Flag::NoError|Context::Flag(0xded0)) << Context::Flags{};
-    CORRADE_COMPARE(out, "GL::Context::Flag::Debug|GL::Context::Flag::NoError|GL::Context::Flag(0xded0) GL::Context::Flags{}\n");
-    #endif
-}
-
-void ContextTest::debugFlagsPacked() {
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("No context flags on Emscripten yet.");
-    #else
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (Context::Flag::Debug|Context::Flag::NoError|Context::Flag(0xded0)) << Debug::packed << Context::Flags{} << (Context::Flag::Debug|Context::Flag::NoError);
-    CORRADE_COMPARE(out, "Debug|NoError|0xded0 {} GL::Context::Flag::Debug|GL::Context::Flag::NoError\n");
-    #endif
-}
-
-void ContextTest::debugDetectedDriver() {
-    Containers::String out;
-    #ifndef MAGNUM_TARGET_WEBGL
-    Debug{&out} << Context::DetectedDriver::Amd << Context::DetectedDriver(0xdead);
-    CORRADE_COMPARE(out, "GL::Context::DetectedDriver::Amd GL::Context::DetectedDriver(0xdead)\n");
-    #else
-    Debug{&out} << Context::DetectedDriver::Angle << Context::DetectedDriver(0xdead);
-    CORRADE_COMPARE(out, "GL::Context::DetectedDriver::Angle GL::Context::DetectedDriver(0xdead)\n");
-    #endif
-}
-
-void ContextTest::debugDetectedDriverPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    #ifndef MAGNUM_TARGET_WEBGL
-    Debug{&out} << Debug::packed << Context::DetectedDriver::Amd << Debug::packed << Context::DetectedDriver(0xdead) << Context::DetectedDriver::NVidia;
-    CORRADE_COMPARE(out, "Amd 0xdead GL::Context::DetectedDriver::NVidia\n");
-    #else
-    Debug{&out} << Debug::packed << Context::DetectedDriver::Angle << Debug::packed << Context::DetectedDriver(0xdead) << Context::DetectedDriver::Angle;
-    CORRADE_COMPARE(out, "Angle 0xdead GL::Context::DetectedDriver::Angle\n");
-    #endif
-}
-
-void ContextTest::debugDetectedDrivers() {
-    Containers::String out;
-    #ifndef MAGNUM_TARGET_WEBGL
-    Debug{&out} << (Context::DetectedDriver::Amd|Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00)) << Context::DetectedDrivers{};
-    CORRADE_COMPARE(out, "GL::Context::DetectedDriver::Amd|GL::Context::DetectedDriver::Mesa|GL::Context::DetectedDriver(0xde00) GL::Context::DetectedDrivers{}\n");
-    #else
-    Debug{&out} << (Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00)) << Context::DetectedDrivers{};
-    CORRADE_COMPARE(out, "GL::Context::DetectedDriver::Angle|GL::Context::DetectedDriver(0xde00) GL::Context::DetectedDrivers{}\n");
-    #endif
-}
-
-void ContextTest::debugDetectedDriversPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    #ifndef MAGNUM_TARGET_WEBGL
-    Debug{&out} << Debug::packed << (Context::DetectedDriver::Amd|Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00)) << Debug::packed << Context::DetectedDrivers{} << (Context::DetectedDriver::Amd|Context::DetectedDriver::Mesa);
-    CORRADE_COMPARE(out, "Amd|Mesa|0xde00 {} GL::Context::DetectedDriver::Amd|GL::Context::DetectedDriver::Mesa\n");
-    #else
-    Debug{&out} << Debug::packed << (Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00)) << Debug::packed << Context::DetectedDrivers{} << (Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00));
-    CORRADE_COMPARE(out, "Angle|0xde00 {} GL::Context::DetectedDriver::Angle|GL::Context::DetectedDriver(0xde00)\n");
-    #endif
 }
 
 }}}}

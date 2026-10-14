@@ -39,6 +39,8 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct MeshLayoutTest: TestSuite::Tester {
     explicit MeshLayoutTest();
 
+    void debugMeshPrimitive();
+
     void mapMeshPrimitive();
     void mapMeshPrimitiveImplementationSpecific();
     void mapMeshPrimitiveUnsupported();
@@ -61,12 +63,12 @@ struct MeshLayoutTest: TestSuite::Tester {
 
     void compare();
     void compareExternalPointers();
-
-    void debugMeshPrimitive();
 };
 
 MeshLayoutTest::MeshLayoutTest() {
-    addTests({&MeshLayoutTest::mapMeshPrimitive,
+    addTests({&MeshLayoutTest::debugMeshPrimitive,
+
+              &MeshLayoutTest::mapMeshPrimitive,
               &MeshLayoutTest::mapMeshPrimitiveImplementationSpecific,
               &MeshLayoutTest::mapMeshPrimitiveUnsupported,
               &MeshLayoutTest::mapMeshPrimitiveInvalid,
@@ -89,9 +91,13 @@ MeshLayoutTest::MeshLayoutTest() {
               &MeshLayoutTest::rvalue,
 
               &MeshLayoutTest::compare,
-              &MeshLayoutTest::compareExternalPointers,
+              &MeshLayoutTest::compareExternalPointers});
+}
 
-              &MeshLayoutTest::debugMeshPrimitive});
+void MeshLayoutTest::debugMeshPrimitive() {
+    Containers::String out;
+    Debug{&out} << MeshPrimitive::TriangleFan << MeshPrimitive(-10007655);
+    CORRADE_COMPARE(out, "Vk::MeshPrimitive::TriangleFan Vk::MeshPrimitive(-10007655)\n");
 }
 
 template<class> struct VertexFormatTraits;
@@ -625,12 +631,6 @@ void MeshLayoutTest::compareExternalPointers() {
         layout.operator==(layout); /* to avoid unused warnings */
         CORRADE_COMPARE(out, "Vk::MeshLayout: can't compare structures with external pointers\n");
     }
-}
-
-void MeshLayoutTest::debugMeshPrimitive() {
-    Containers::String out;
-    Debug{&out} << MeshPrimitive::TriangleFan << MeshPrimitive(-10007655);
-    CORRADE_COMPARE(out, "Vk::MeshPrimitive::TriangleFan Vk::MeshPrimitive(-10007655)\n");
 }
 
 }}}}

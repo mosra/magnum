@@ -53,6 +53,60 @@ namespace Magnum { namespace Shaders {
 using namespace Containers::Literals;
 using namespace Math::Literals;
 
+namespace Implementation {
+
+Debug& operator<<(Debug& debug, const LineGLFlag value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of UniformBuffers, printing just one would result in
+       `Flag::MultiDraw|Flag(0x40)` in the output. */
+    if(value == LineGLFlag(UnsignedShort(LineGLFlag::MultiDraw|LineGLFlag::ShaderStorageBuffers)))
+        return debug << LineGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << LineGLFlag::ShaderStorageBuffers;
+    #endif
+
+    debug << "Shaders::LineGL::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case LineGLFlag::v: return debug << "::" #v;
+        _c(VertexColor)
+        _c(ObjectId)
+        _c(InstancedObjectId)
+        _c(InstancedTransformation)
+        _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
+        _c(MultiDraw)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const LineGLFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::LineGL::Flags{}", {
+        LineGLFlag::VertexColor,
+        LineGLFlag::InstancedObjectId, /* Superset of ObjectId */
+        LineGLFlag::ObjectId,
+        LineGLFlag::InstancedTransformation,
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers, meaning printing just one
+           would result in `Flag::MultiDraw|Flag(0x40)` in the output. So we
+           pass both and let the Flag printer deal with that. */
+        LineGLFlag(UnsignedShort(LineGLFlag::MultiDraw|LineGLFlag::ShaderStorageBuffers)),
+        #endif
+        LineGLFlag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        LineGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
+        LineGLFlag::UniformBuffers
+    });
+}
+
+}
+
 namespace {
     enum: Int {
         /* 0/1/2/3 taken by Phong (A/D/S/N), 4 by MeshVisualizer colormap, 5 by
@@ -484,59 +538,5 @@ template<UnsignedInt dimensions> LineGL<dimensions>::Configuration::Configuratio
 
 template class MAGNUM_SHADERS_EXPORT LineGL<2>;
 template class MAGNUM_SHADERS_EXPORT LineGL<3>;
-
-namespace Implementation {
-
-Debug& operator<<(Debug& debug, const LineGLFlag value) {
-    #ifndef MAGNUM_TARGET_WEBGL
-    /* Special case coming from the Flags printer. As both flags are a superset
-       of UniformBuffers, printing just one would result in
-       `Flag::MultiDraw|Flag(0x40)` in the output. */
-    if(value == LineGLFlag(UnsignedShort(LineGLFlag::MultiDraw|LineGLFlag::ShaderStorageBuffers)))
-        return debug << LineGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << LineGLFlag::ShaderStorageBuffers;
-    #endif
-
-    debug << "Shaders::LineGL::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case LineGLFlag::v: return debug << "::" #v;
-        _c(VertexColor)
-        _c(ObjectId)
-        _c(InstancedObjectId)
-        _c(InstancedTransformation)
-        _c(UniformBuffers)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorageBuffers)
-        #endif
-        _c(MultiDraw)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const LineGLFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::LineGL::Flags{}", {
-        LineGLFlag::VertexColor,
-        LineGLFlag::InstancedObjectId, /* Superset of ObjectId */
-        LineGLFlag::ObjectId,
-        LineGLFlag::InstancedTransformation,
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Both are a superset of UniformBuffers, meaning printing just one
-           would result in `Flag::MultiDraw|Flag(0x40)` in the output. So we
-           pass both and let the Flag printer deal with that. */
-        LineGLFlag(UnsignedShort(LineGLFlag::MultiDraw|LineGLFlag::ShaderStorageBuffers)),
-        #endif
-        LineGLFlag::MultiDraw, /* Superset of UniformBuffers */
-        #ifndef MAGNUM_TARGET_WEBGL
-        LineGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
-        #endif
-        LineGLFlag::UniformBuffers
-    });
-}
-
-}
 
 }}

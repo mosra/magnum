@@ -71,6 +71,100 @@ namespace Magnum { namespace GL {
 
 using namespace Containers::Literals;
 
+#ifndef MAGNUM_TARGET_WEBGL
+Debug& operator<<(Debug& debug, const Context::Flag value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "GL::Context::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Context::Flag::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        _c(Debug)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(ForwardCompatible)
+        #endif
+        _c(NoError)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(RobustAccess)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const Context::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "GL::Context::Flags{}", {
+        Context::Flag::Debug,
+        #ifndef MAGNUM_TARGET_GLES
+        Context::Flag::ForwardCompatible,
+        #endif
+        Context::Flag::NoError,
+        #ifndef MAGNUM_TARGET_GLES2
+        Context::Flag::RobustAccess
+        #endif
+    });
+}
+#endif
+
+Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "GL::Context::DetectedDriver" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Context::DetectedDriver::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        _c(Amd)
+        #ifdef MAGNUM_TARGET_GLES
+        _c(Angle)
+        #endif
+        _c(IntelWindows)
+        _c(Mesa)
+        _c(NVidia)
+        _c(Svga3D)
+        #ifdef MAGNUM_TARGET_GLES
+        _c(SwiftShader)
+        #endif
+        #ifdef CORRADE_TARGET_ANDROID
+        _c(ArmMali)
+        #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
+        _c(QualcommAdreno)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "GL::Context::DetectedDrivers{}", {
+        Context::DetectedDriver::Amd,
+        #ifdef MAGNUM_TARGET_GLES
+        Context::DetectedDriver::Angle,
+        #endif
+        Context::DetectedDriver::IntelWindows,
+        Context::DetectedDriver::Mesa,
+        Context::DetectedDriver::NVidia,
+        Context::DetectedDriver::Svga3D,
+        #ifdef MAGNUM_TARGET_GLES
+        Context::DetectedDriver::SwiftShader,
+        #endif
+        #ifdef CORRADE_TARGET_ANDROID
+        Context::DetectedDriver::ArmMali,
+        #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
+        Context::DetectedDriver::QualcommAdreno
+        #endif
+    });
+}
+
 /* When adding a new list, Extension::extensions() and Context::Context() needs
    to be adapted. Binary search is performed on the extensions, thus they have
    to be sorted alphabetically. */
@@ -1363,100 +1457,6 @@ Context::Configuration& Context::Configuration::addDisabledExtensions(Containers
 
 Context::Configuration& Context::Configuration::addDisabledExtensions(std::initializer_list<Extension> extensions) {
     return addDisabledExtensions(Containers::arrayView(extensions));
-}
-
-#ifndef MAGNUM_TARGET_WEBGL
-Debug& operator<<(Debug& debug, const Context::Flag value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "GL::Context::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Context::Flag::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
-        _c(Debug)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(ForwardCompatible)
-        #endif
-        _c(NoError)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(RobustAccess)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const Context::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "GL::Context::Flags{}", {
-        Context::Flag::Debug,
-        #ifndef MAGNUM_TARGET_GLES
-        Context::Flag::ForwardCompatible,
-        #endif
-        Context::Flag::NoError,
-        #ifndef MAGNUM_TARGET_GLES2
-        Context::Flag::RobustAccess
-        #endif
-    });
-}
-#endif
-
-Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "GL::Context::DetectedDriver" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Context::DetectedDriver::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
-        _c(Amd)
-        #ifdef MAGNUM_TARGET_GLES
-        _c(Angle)
-        #endif
-        _c(IntelWindows)
-        _c(Mesa)
-        _c(NVidia)
-        _c(Svga3D)
-        #ifdef MAGNUM_TARGET_GLES
-        _c(SwiftShader)
-        #endif
-        #ifdef CORRADE_TARGET_ANDROID
-        _c(ArmMali)
-        #endif
-        #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
-        _c(QualcommAdreno)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << GLint(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "GL::Context::DetectedDrivers{}", {
-        Context::DetectedDriver::Amd,
-        #ifdef MAGNUM_TARGET_GLES
-        Context::DetectedDriver::Angle,
-        #endif
-        Context::DetectedDriver::IntelWindows,
-        Context::DetectedDriver::Mesa,
-        Context::DetectedDriver::NVidia,
-        Context::DetectedDriver::Svga3D,
-        #ifdef MAGNUM_TARGET_GLES
-        Context::DetectedDriver::SwiftShader,
-        #endif
-        #ifdef CORRADE_TARGET_ANDROID
-        Context::DetectedDriver::ArmMali,
-        #endif
-        #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
-        Context::DetectedDriver::QualcommAdreno
-        #endif
-    });
 }
 
 }}

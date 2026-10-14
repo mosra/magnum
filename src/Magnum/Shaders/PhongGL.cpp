@@ -60,6 +60,104 @@ namespace Magnum { namespace Shaders {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of ObjectId, printing just one would result in
+       `Flag::InstancedObjectId|Flag(0x20000)` in the output. */
+    if(value == PhongGL::Flag(UnsignedInt(PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture)))
+        return debug << PhongGL::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << PhongGL::Flag::ObjectIdTexture;
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Similarly here, both are a superset of UniformBuffers */
+    if(value == PhongGL::Flag(UnsignedInt(PhongGL::Flag::MultiDraw|PhongGL::Flag::ShaderStorageBuffers)))
+        return debug << PhongGL::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << PhongGL::Flag::ShaderStorageBuffers;
+    #endif
+    #endif
+
+    debug << "Shaders::PhongGL::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case PhongGL::Flag::v: return debug << "::" #v;
+        _c(AmbientTexture)
+        _c(DiffuseTexture)
+        _c(SpecularTexture)
+        _c(NormalTexture)
+        _c(Bitangent)
+        _c(AlphaMask)
+        _c(VertexColor)
+        _c(DoubleSided)
+        _c(TextureTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(ObjectId)
+        _c(InstancedObjectId)
+        _c(ObjectIdTexture)
+        #endif
+        _c(InstancedTransformation)
+        _c(InstancedTextureOffset)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
+        _c(MultiDraw)
+        _c(TextureArrays)
+        _c(LightCulling)
+        #endif
+        _c(NoSpecular)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(DynamicPerVertexJointCount)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::PhongGL::Flags{}", {
+        PhongGL::Flag::AmbientTexture,
+        PhongGL::Flag::DiffuseTexture,
+        PhongGL::Flag::SpecularTexture,
+        PhongGL::Flag::NormalTexture,
+        PhongGL::Flag::Bitangent,
+        PhongGL::Flag::AlphaMask,
+        PhongGL::Flag::VertexColor,
+        PhongGL::Flag::DoubleSided,
+        PhongGL::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
+        PhongGL::Flag::TextureTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Both are a superset of ObjectId, meaning printing just one would
+           result in `Flag::InstancedObjectId|Flag(0x20000)` in the output. So
+           we pass both and let the Flag printer deal with that. */
+        PhongGL::Flag(UnsignedInt(PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture)),
+        PhongGL::Flag::InstancedObjectId, /* Superset of ObjectId */
+        PhongGL::Flag::ObjectIdTexture, /* Superset of ObjectId */
+        PhongGL::Flag::ObjectId,
+        #endif
+        PhongGL::Flag::InstancedTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers; similarly to ObjectId above
+           letting the Flag printer deal with that */
+        PhongGL::Flag(UnsignedInt(PhongGL::Flag::MultiDraw|PhongGL::Flag::ShaderStorageBuffers)),
+        #endif
+        PhongGL::Flag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        PhongGL::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
+        PhongGL::Flag::UniformBuffers,
+        PhongGL::Flag::TextureArrays,
+        PhongGL::Flag::LightCulling,
+        #endif
+        PhongGL::Flag::NoSpecular,
+        #ifndef MAGNUM_TARGET_GLES2
+        PhongGL::Flag::DynamicPerVertexJointCount,
+        #endif
+    });
+}
+
 namespace {
     enum: Int {
         AmbientTextureUnit = 0,
@@ -1347,103 +1445,5 @@ PhongGL::Configuration& PhongGL::Configuration::setJointCount(UnsignedInt count,
     return *this;
 }
 #endif
-
-Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
-    #ifndef MAGNUM_TARGET_GLES2
-    /* Special case coming from the Flags printer. As both flags are a superset
-       of ObjectId, printing just one would result in
-       `Flag::InstancedObjectId|Flag(0x20000)` in the output. */
-    if(value == PhongGL::Flag(UnsignedInt(PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture)))
-        return debug << PhongGL::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << PhongGL::Flag::ObjectIdTexture;
-    #ifndef MAGNUM_TARGET_WEBGL
-    /* Similarly here, both are a superset of UniformBuffers */
-    if(value == PhongGL::Flag(UnsignedInt(PhongGL::Flag::MultiDraw|PhongGL::Flag::ShaderStorageBuffers)))
-        return debug << PhongGL::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << PhongGL::Flag::ShaderStorageBuffers;
-    #endif
-    #endif
-
-    debug << "Shaders::PhongGL::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case PhongGL::Flag::v: return debug << "::" #v;
-        _c(AmbientTexture)
-        _c(DiffuseTexture)
-        _c(SpecularTexture)
-        _c(NormalTexture)
-        _c(Bitangent)
-        _c(AlphaMask)
-        _c(VertexColor)
-        _c(DoubleSided)
-        _c(TextureTransformation)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(ObjectId)
-        _c(InstancedObjectId)
-        _c(ObjectIdTexture)
-        #endif
-        _c(InstancedTransformation)
-        _c(InstancedTextureOffset)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(UniformBuffers)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorageBuffers)
-        #endif
-        _c(MultiDraw)
-        _c(TextureArrays)
-        _c(LightCulling)
-        #endif
-        _c(NoSpecular)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(DynamicPerVertexJointCount)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::PhongGL::Flags{}", {
-        PhongGL::Flag::AmbientTexture,
-        PhongGL::Flag::DiffuseTexture,
-        PhongGL::Flag::SpecularTexture,
-        PhongGL::Flag::NormalTexture,
-        PhongGL::Flag::Bitangent,
-        PhongGL::Flag::AlphaMask,
-        PhongGL::Flag::VertexColor,
-        PhongGL::Flag::DoubleSided,
-        PhongGL::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
-        PhongGL::Flag::TextureTransformation,
-        #ifndef MAGNUM_TARGET_GLES2
-        /* Both are a superset of ObjectId, meaning printing just one would
-           result in `Flag::InstancedObjectId|Flag(0x20000)` in the output. So
-           we pass both and let the Flag printer deal with that. */
-        PhongGL::Flag(UnsignedInt(PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture)),
-        PhongGL::Flag::InstancedObjectId, /* Superset of ObjectId */
-        PhongGL::Flag::ObjectIdTexture, /* Superset of ObjectId */
-        PhongGL::Flag::ObjectId,
-        #endif
-        PhongGL::Flag::InstancedTransformation,
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Both are a superset of UniformBuffers; similarly to ObjectId above
-           letting the Flag printer deal with that */
-        PhongGL::Flag(UnsignedInt(PhongGL::Flag::MultiDraw|PhongGL::Flag::ShaderStorageBuffers)),
-        #endif
-        PhongGL::Flag::MultiDraw, /* Superset of UniformBuffers */
-        #ifndef MAGNUM_TARGET_WEBGL
-        PhongGL::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
-        #endif
-        PhongGL::Flag::UniformBuffers,
-        PhongGL::Flag::TextureArrays,
-        PhongGL::Flag::LightCulling,
-        #endif
-        PhongGL::Flag::NoSpecular,
-        #ifndef MAGNUM_TARGET_GLES2
-        PhongGL::Flag::DynamicPerVertexJointCount,
-        #endif
-    });
-}
 
 }}

@@ -38,6 +38,13 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct LineTest: TestSuite::Tester {
     explicit LineTest();
 
+    void debugCapStyle();
+    void debugJoinStyle();
+    void debugVertexAnnotation();
+    void debugVertexAnnotationPacked();
+    void debugVertexAnnotations();
+    void debugVertexAnnotationsPacked();
+
     template<class T> void uniformSizeAlignment();
 
     void drawUniformConstructDefault();
@@ -56,13 +63,6 @@ struct LineTest: TestSuite::Tester {
     void materialUniformMiterLimit();
     void materialUniformMiterLengthLimitInvalid();
     void materialUniformMiterAngleLimitInvalid();
-
-    void debugCapStyle();
-    void debugJoinStyle();
-    void debugVertexAnnotation();
-    void debugVertexAnnotationPacked();
-    void debugVertexAnnotations();
-    void debugVertexAnnotationsPacked();
 };
 
 using namespace Math::Literals;
@@ -90,7 +90,14 @@ const struct {
 };
 
 LineTest::LineTest() {
-    addTests({&LineTest::uniformSizeAlignment<LineDrawUniform>,
+    addTests({&LineTest::debugCapStyle,
+              &LineTest::debugJoinStyle,
+              &LineTest::debugVertexAnnotation,
+              &LineTest::debugVertexAnnotationPacked,
+              &LineTest::debugVertexAnnotations,
+              &LineTest::debugVertexAnnotationsPacked,
+
+              &LineTest::uniformSizeAlignment<LineDrawUniform>,
               &LineTest::uniformSizeAlignment<LineMaterialUniform>,
 
               &LineTest::drawUniformConstructDefault,
@@ -111,13 +118,48 @@ LineTest::LineTest() {
 
     addInstancedTests({&LineTest::materialUniformMiterAngleLimitInvalid},
         Containers::arraySize(MaterialUniformMiterAngleLimitInvalidData));
+}
 
-    addTests({&LineTest::debugCapStyle,
-              &LineTest::debugJoinStyle,
-              &LineTest::debugVertexAnnotation,
-              &LineTest::debugVertexAnnotationPacked,
-              &LineTest::debugVertexAnnotations,
-              &LineTest::debugVertexAnnotationsPacked});
+void LineTest::debugCapStyle() {
+    Containers::String out;
+    Debug{&out} << LineCapStyle::Square << LineCapStyle(0xb0);
+    CORRADE_COMPARE(out, "Shaders::LineCapStyle::Square Shaders::LineCapStyle(0xb0)\n");
+}
+
+void LineTest::debugJoinStyle() {
+    Containers::String out;
+    Debug{&out} << LineJoinStyle::Bevel << LineJoinStyle(0xb0);
+    CORRADE_COMPARE(out, "Shaders::LineJoinStyle::Bevel Shaders::LineJoinStyle(0xb0)\n");
+}
+
+void LineTest::debugVertexAnnotation() {
+    /* The values are guaranteed to fit into 8 bytes but the type itself is
+       32bit to avoid surprises when passing it to the default-constructed
+       LineGL::Annotation attribute (which defaults to 32bit), so it should
+       also print the whole 32bit value. */
+    Containers::String out;
+    Debug{&out} << LineVertexAnnotation::Join << LineVertexAnnotation(0xcafecafe);
+    CORRADE_COMPARE(out, "Shaders::LineVertexAnnotation::Join Shaders::LineVertexAnnotation(0xcafecafe)\n");
+}
+
+void LineTest::debugVertexAnnotationPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << LineVertexAnnotation::Join << Debug::packed << LineVertexAnnotation(0xcafecafe) << LineVertexAnnotation::Begin;
+    CORRADE_COMPARE(out, "Join 0xcafecafe Shaders::LineVertexAnnotation::Begin\n");
+}
+
+void LineTest::debugVertexAnnotations() {
+    Containers::String out;
+    Debug{&out} << (LineVertexAnnotation::Up|LineVertexAnnotation::Join|LineVertexAnnotation(0xb00)) << LineVertexAnnotations{};
+    CORRADE_COMPARE(out, "Shaders::LineVertexAnnotation::Up|Shaders::LineVertexAnnotation::Join|Shaders::LineVertexAnnotation(0xb00) Shaders::LineVertexAnnotations{}\n");
+}
+
+void LineTest::debugVertexAnnotationsPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (LineVertexAnnotation::Up|LineVertexAnnotation::Join|LineVertexAnnotation(0xb00)) << Debug::packed << LineVertexAnnotations{} << LineVertexAnnotation::Begin;
+    CORRADE_COMPARE(out, "Up|Join|0xb00 {} Shaders::LineVertexAnnotation::Begin\n");
 }
 
 template<class> struct UniformTraits;
@@ -352,48 +394,6 @@ void LineTest::materialUniformMiterAngleLimitInvalid() {
     Error redirectError{&out};
     a.setMiterAngleLimit(data.limit);
     CORRADE_COMPARE(out, Utility::format("Shaders::LineMaterialUniform::setMiterAngleLimit(): {}\n", data.message));
-}
-
-void LineTest::debugCapStyle() {
-    Containers::String out;
-    Debug{&out} << LineCapStyle::Square << LineCapStyle(0xb0);
-    CORRADE_COMPARE(out, "Shaders::LineCapStyle::Square Shaders::LineCapStyle(0xb0)\n");
-}
-
-void LineTest::debugJoinStyle() {
-    Containers::String out;
-    Debug{&out} << LineJoinStyle::Bevel << LineJoinStyle(0xb0);
-    CORRADE_COMPARE(out, "Shaders::LineJoinStyle::Bevel Shaders::LineJoinStyle(0xb0)\n");
-}
-
-void LineTest::debugVertexAnnotation() {
-    /* The values are guaranteed to fit into 8 bytes but the type itself is
-       32bit to avoid surprises when passing it to the default-constructed
-       LineGL::Annotation attribute (which defaults to 32bit), so it should
-       also print the whole 32bit value. */
-    Containers::String out;
-    Debug{&out} << LineVertexAnnotation::Join << LineVertexAnnotation(0xcafecafe);
-    CORRADE_COMPARE(out, "Shaders::LineVertexAnnotation::Join Shaders::LineVertexAnnotation(0xcafecafe)\n");
-}
-
-void LineTest::debugVertexAnnotationPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << LineVertexAnnotation::Join << Debug::packed << LineVertexAnnotation(0xcafecafe) << LineVertexAnnotation::Begin;
-    CORRADE_COMPARE(out, "Join 0xcafecafe Shaders::LineVertexAnnotation::Begin\n");
-}
-
-void LineTest::debugVertexAnnotations() {
-    Containers::String out;
-    Debug{&out} << (LineVertexAnnotation::Up|LineVertexAnnotation::Join|LineVertexAnnotation(0xb00)) << LineVertexAnnotations{};
-    CORRADE_COMPARE(out, "Shaders::LineVertexAnnotation::Up|Shaders::LineVertexAnnotation::Join|Shaders::LineVertexAnnotation(0xb00) Shaders::LineVertexAnnotations{}\n");
-}
-
-void LineTest::debugVertexAnnotationsPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (LineVertexAnnotation::Up|LineVertexAnnotation::Join|LineVertexAnnotation(0xb00)) << Debug::packed << LineVertexAnnotations{} << LineVertexAnnotation::Begin;
-    CORRADE_COMPARE(out, "Up|Join|0xb00 {} Shaders::LineVertexAnnotation::Begin\n");
 }
 
 }}}}

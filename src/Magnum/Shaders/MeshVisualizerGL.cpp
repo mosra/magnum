@@ -59,6 +59,206 @@ namespace Magnum { namespace Shaders {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of ObjectId, printing just one would result in
+       `Flag::InstancedObjectId|Flag(0x4000)` in the output. */
+    if(value == MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture)))
+        return debug << MeshVisualizerGL2D::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL2D::Flag::ObjectIdTexture;
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Similarly here, both are a superset of UniformBuffers */
+    if(value == MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::ShaderStorageBuffers)))
+        return debug << MeshVisualizerGL2D::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL2D::Flag::ShaderStorageBuffers;
+    #endif
+    #endif
+
+    debug << "Shaders::MeshVisualizerGL2D::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case MeshVisualizerGL2D::Flag::v: return debug << "::" #v;
+        _c(NoGeometryShader)
+        _c(Wireframe)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(TextureTransformation)
+        _c(ObjectId)
+        _c(InstancedObjectId)
+        _c(ObjectIdTexture)
+        #endif
+        _c(InstancedTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(InstancedTextureOffset)
+        _c(VertexId)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(PrimitiveId)
+        #endif
+        _c(PrimitiveIdFromVertexId)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
+        _c(MultiDraw)
+        _c(TextureArrays)
+        _c(DynamicPerVertexJointCount)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of ObjectId, printing just one would result in
+       `Flag::InstancedObjectId|Flag(0x4000)` in the output. */
+    if(value == MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture)))
+        return debug << MeshVisualizerGL3D::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL3D::Flag::ObjectIdTexture;
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Similarly here, both are a superset of UniformBuffers */
+    if(value == MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::ShaderStorageBuffers)))
+        return debug << MeshVisualizerGL3D::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL3D::Flag::ShaderStorageBuffers;
+    #endif
+    #endif
+
+    debug << "Shaders::MeshVisualizerGL3D::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case MeshVisualizerGL3D::Flag::v: return debug << "::" #v;
+        _c(NoGeometryShader)
+        _c(Wireframe)
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        _c(TangentDirection)
+        _c(BitangentFromTangentDirection)
+        _c(BitangentDirection)
+        _c(NormalDirection)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(TextureTransformation)
+        _c(ObjectId)
+        _c(InstancedObjectId)
+        _c(ObjectIdTexture)
+        #endif
+        _c(InstancedTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(InstancedTextureOffset)
+        _c(VertexId)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(PrimitiveId)
+        #endif
+        _c(PrimitiveIdFromVertexId)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
+        _c(MultiDraw)
+        _c(TextureArrays)
+        _c(DynamicPerVertexJointCount)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizerGL2D::Flags{}", {
+        MeshVisualizerGL2D::Flag::Wireframe,
+        /* Wireframe contains this on ES2 and WebGL 1 so it's not reported
+           there */
+        MeshVisualizerGL2D::Flag::NoGeometryShader,
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Both are a superset of ObjectId, meaning printing just one would
+           result in `Flag::InstancedObjectId|Flag(0x4000)` in the output. So
+           we pass both and let the Flag printer deal with that. */
+        MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture)),
+        MeshVisualizerGL2D::Flag::InstancedObjectId, /* Superset of ObjectId */
+        MeshVisualizerGL2D::Flag::ObjectIdTexture, /* Superset of ObjectId */
+        MeshVisualizerGL2D::Flag::ObjectId,
+        #endif
+        MeshVisualizerGL2D::Flag::InstancedTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        MeshVisualizerGL2D::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
+        MeshVisualizerGL2D::Flag::TextureTransformation,
+        MeshVisualizerGL2D::Flag::VertexId,
+        MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
+        #ifndef MAGNUM_TARGET_WEBGL
+        MeshVisualizerGL2D::Flag::PrimitiveId,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers; similarly to ObjectId above
+           letting the Flag printer deal with that */
+        MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::ShaderStorageBuffers)),
+        #endif
+        MeshVisualizerGL2D::Flag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        MeshVisualizerGL2D::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
+        MeshVisualizerGL2D::Flag::UniformBuffers,
+        MeshVisualizerGL2D::Flag::TextureArrays,
+        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        #endif
+        #endif
+    });
+}
+
+Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizerGL3D::Flags{}", {
+        MeshVisualizerGL3D::Flag::Wireframe,
+        /* Wireframe contains this on ES2 and WebGL 1 so it's not reported
+           there */
+        MeshVisualizerGL3D::Flag::NoGeometryShader,
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        MeshVisualizerGL3D::Flag::TangentDirection,
+        MeshVisualizerGL3D::Flag::BitangentFromTangentDirection,
+        MeshVisualizerGL3D::Flag::BitangentDirection,
+        MeshVisualizerGL3D::Flag::NormalDirection,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Both are a superset of ObjectId, meaning printing just one would
+           result in `Flag::InstancedObjectId|Flag(0x4000)` in the output. So
+           we pass both and let the Flag printer deal with that. */
+        MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture)),
+        MeshVisualizerGL3D::Flag::InstancedObjectId, /* Superset of ObjectId */
+        MeshVisualizerGL3D::Flag::ObjectIdTexture, /* Superset of ObjectId */
+        MeshVisualizerGL3D::Flag::ObjectId,
+        #endif
+        MeshVisualizerGL3D::Flag::InstancedTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        MeshVisualizerGL3D::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
+        MeshVisualizerGL3D::Flag::TextureTransformation,
+        MeshVisualizerGL3D::Flag::VertexId,
+        MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
+        #ifndef MAGNUM_TARGET_WEBGL
+        MeshVisualizerGL3D::Flag::PrimitiveId,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers; similarly to ObjectId above
+           letting the Flag printer deal with that */
+        MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::ShaderStorageBuffers)),
+        #endif
+        MeshVisualizerGL3D::Flag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        MeshVisualizerGL3D::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
+        MeshVisualizerGL3D::Flag::UniformBuffers,
+        MeshVisualizerGL3D::Flag::TextureArrays,
+        MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
+        #endif
+        #endif
+    });
+}
+
 namespace {
     enum: Int {
         /* First four taken by Phong (A/D/S/N) */
@@ -1755,205 +1955,5 @@ MeshVisualizerGL3D::Configuration& MeshVisualizerGL3D::Configuration::setJointCo
     return *this;
 }
 #endif
-
-Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
-    #ifndef MAGNUM_TARGET_GLES2
-    /* Special case coming from the Flags printer. As both flags are a superset
-       of ObjectId, printing just one would result in
-       `Flag::InstancedObjectId|Flag(0x4000)` in the output. */
-    if(value == MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture)))
-        return debug << MeshVisualizerGL2D::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL2D::Flag::ObjectIdTexture;
-    #ifndef MAGNUM_TARGET_WEBGL
-    /* Similarly here, both are a superset of UniformBuffers */
-    if(value == MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::ShaderStorageBuffers)))
-        return debug << MeshVisualizerGL2D::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL2D::Flag::ShaderStorageBuffers;
-    #endif
-    #endif
-
-    debug << "Shaders::MeshVisualizerGL2D::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case MeshVisualizerGL2D::Flag::v: return debug << "::" #v;
-        _c(NoGeometryShader)
-        _c(Wireframe)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(TextureTransformation)
-        _c(ObjectId)
-        _c(InstancedObjectId)
-        _c(ObjectIdTexture)
-        #endif
-        _c(InstancedTransformation)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(InstancedTextureOffset)
-        _c(VertexId)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(PrimitiveId)
-        #endif
-        _c(PrimitiveIdFromVertexId)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(UniformBuffers)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorageBuffers)
-        #endif
-        _c(MultiDraw)
-        _c(TextureArrays)
-        _c(DynamicPerVertexJointCount)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
-    #ifndef MAGNUM_TARGET_GLES2
-    /* Special case coming from the Flags printer. As both flags are a superset
-       of ObjectId, printing just one would result in
-       `Flag::InstancedObjectId|Flag(0x4000)` in the output. */
-    if(value == MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture)))
-        return debug << MeshVisualizerGL3D::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL3D::Flag::ObjectIdTexture;
-    #ifndef MAGNUM_TARGET_WEBGL
-    /* Similarly here, both are a superset of UniformBuffers */
-    if(value == MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::ShaderStorageBuffers)))
-        return debug << MeshVisualizerGL3D::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL3D::Flag::ShaderStorageBuffers;
-    #endif
-    #endif
-
-    debug << "Shaders::MeshVisualizerGL3D::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case MeshVisualizerGL3D::Flag::v: return debug << "::" #v;
-        _c(NoGeometryShader)
-        _c(Wireframe)
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(TangentDirection)
-        _c(BitangentFromTangentDirection)
-        _c(BitangentDirection)
-        _c(NormalDirection)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(TextureTransformation)
-        _c(ObjectId)
-        _c(InstancedObjectId)
-        _c(ObjectIdTexture)
-        #endif
-        _c(InstancedTransformation)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(InstancedTextureOffset)
-        _c(VertexId)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(PrimitiveId)
-        #endif
-        _c(PrimitiveIdFromVertexId)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(UniformBuffers)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorageBuffers)
-        #endif
-        _c(MultiDraw)
-        _c(TextureArrays)
-        _c(DynamicPerVertexJointCount)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizerGL2D::Flags{}", {
-        MeshVisualizerGL2D::Flag::Wireframe,
-        /* Wireframe contains this on ES2 and WebGL 1 so it's not reported
-           there */
-        MeshVisualizerGL2D::Flag::NoGeometryShader,
-        #ifndef MAGNUM_TARGET_GLES2
-        /* Both are a superset of ObjectId, meaning printing just one would
-           result in `Flag::InstancedObjectId|Flag(0x4000)` in the output. So
-           we pass both and let the Flag printer deal with that. */
-        MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture)),
-        MeshVisualizerGL2D::Flag::InstancedObjectId, /* Superset of ObjectId */
-        MeshVisualizerGL2D::Flag::ObjectIdTexture, /* Superset of ObjectId */
-        MeshVisualizerGL2D::Flag::ObjectId,
-        #endif
-        MeshVisualizerGL2D::Flag::InstancedTransformation,
-        #ifndef MAGNUM_TARGET_GLES2
-        MeshVisualizerGL2D::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
-        MeshVisualizerGL2D::Flag::TextureTransformation,
-        MeshVisualizerGL2D::Flag::VertexId,
-        MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
-        #ifndef MAGNUM_TARGET_WEBGL
-        MeshVisualizerGL2D::Flag::PrimitiveId,
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Both are a superset of UniformBuffers; similarly to ObjectId above
-           letting the Flag printer deal with that */
-        MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::ShaderStorageBuffers)),
-        #endif
-        MeshVisualizerGL2D::Flag::MultiDraw, /* Superset of UniformBuffers */
-        #ifndef MAGNUM_TARGET_WEBGL
-        MeshVisualizerGL2D::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
-        #endif
-        MeshVisualizerGL2D::Flag::UniformBuffers,
-        MeshVisualizerGL2D::Flag::TextureArrays,
-        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
-        #endif
-        #endif
-    });
-}
-
-Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizerGL3D::Flags{}", {
-        MeshVisualizerGL3D::Flag::Wireframe,
-        /* Wireframe contains this on ES2 and WebGL 1 so it's not reported
-           there */
-        MeshVisualizerGL3D::Flag::NoGeometryShader,
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        MeshVisualizerGL3D::Flag::TangentDirection,
-        MeshVisualizerGL3D::Flag::BitangentFromTangentDirection,
-        MeshVisualizerGL3D::Flag::BitangentDirection,
-        MeshVisualizerGL3D::Flag::NormalDirection,
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        /* Both are a superset of ObjectId, meaning printing just one would
-           result in `Flag::InstancedObjectId|Flag(0x4000)` in the output. So
-           we pass both and let the Flag printer deal with that. */
-        MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture)),
-        MeshVisualizerGL3D::Flag::InstancedObjectId, /* Superset of ObjectId */
-        MeshVisualizerGL3D::Flag::ObjectIdTexture, /* Superset of ObjectId */
-        MeshVisualizerGL3D::Flag::ObjectId,
-        #endif
-        MeshVisualizerGL3D::Flag::InstancedTransformation,
-        #ifndef MAGNUM_TARGET_GLES2
-        MeshVisualizerGL3D::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
-        MeshVisualizerGL3D::Flag::TextureTransformation,
-        MeshVisualizerGL3D::Flag::VertexId,
-        MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
-        #ifndef MAGNUM_TARGET_WEBGL
-        MeshVisualizerGL3D::Flag::PrimitiveId,
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Both are a superset of UniformBuffers; similarly to ObjectId above
-           letting the Flag printer deal with that */
-        MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::ShaderStorageBuffers)),
-        #endif
-        MeshVisualizerGL3D::Flag::MultiDraw, /* Superset of UniformBuffers */
-        #ifndef MAGNUM_TARGET_WEBGL
-        MeshVisualizerGL3D::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
-        #endif
-        MeshVisualizerGL3D::Flag::UniformBuffers,
-        MeshVisualizerGL3D::Flag::TextureArrays,
-        MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
-        #endif
-        #endif
-    });
-}
 
 }}

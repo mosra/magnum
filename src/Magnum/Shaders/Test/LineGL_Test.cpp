@@ -39,6 +39,10 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct LineGL_Test: TestSuite::Tester {
     explicit LineGL_Test();
 
+    void debugFlag();
+    void debugFlags();
+    void debugFlagsSupersets();
+
     void glslAttributeMatch();
 
     template<UnsignedInt dimensions> void constructConfigurationDefault();
@@ -46,14 +50,14 @@ struct LineGL_Test: TestSuite::Tester {
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
-
-    void debugFlag();
-    void debugFlags();
-    void debugFlagsSupersets();
 };
 
 LineGL_Test::LineGL_Test() {
-    addTests({&LineGL_Test::glslAttributeMatch,
+    addTests({&LineGL_Test::debugFlag,
+              &LineGL_Test::debugFlags,
+              &LineGL_Test::debugFlagsSupersets,
+
+              &LineGL_Test::glslAttributeMatch,
 
               &LineGL_Test::constructConfigurationDefault<2>,
               &LineGL_Test::constructConfigurationDefault<3>,
@@ -63,11 +67,48 @@ LineGL_Test::LineGL_Test() {
               &LineGL_Test::constructNoCreate<2>,
               &LineGL_Test::constructNoCreate<3>,
               &LineGL_Test::constructCopy<2>,
-              &LineGL_Test::constructCopy<3>,
+              &LineGL_Test::constructCopy<3>});
+}
 
-              &LineGL_Test::debugFlag,
-              &LineGL_Test::debugFlags,
-              &LineGL_Test::debugFlagsSupersets});
+void LineGL_Test::debugFlag() {
+    Containers::String out;
+    Debug{&out} << LineGL3D::Flag::VertexColor << LineGL3D::Flag(0xf00d);
+    CORRADE_COMPARE(out, "Shaders::LineGL::Flag::VertexColor Shaders::LineGL::Flag(0xf00d)\n");
+}
+
+void LineGL_Test::debugFlags() {
+    Containers::String out;
+    Debug{&out} << (LineGL3D::Flag::VertexColor|LineGL3D::Flag::InstancedTransformation) << LineGL3D::Flags{};
+    CORRADE_COMPARE(out, "Shaders::LineGL::Flag::VertexColor|Shaders::LineGL::Flag::InstancedTransformation Shaders::LineGL::Flags{}\n");
+}
+
+void LineGL_Test::debugFlagsSupersets() {
+    /* InstancedObjectId is a superset of ObjectId so only one should be
+       printed */
+    {
+        Containers::String out;
+        Debug{&out} << (LineGL3D::Flag::ObjectId|LineGL3D::Flag::InstancedObjectId);
+        CORRADE_COMPARE(out, "Shaders::LineGL::Flag::InstancedObjectId\n");
+    }
+
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
+    {
+        Containers::String out;
+        Debug{&out} << (LineGL3D::Flag::MultiDraw|LineGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out, "Shaders::LineGL::Flag::MultiDraw\n");
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        Containers::String out;
+        Debug{&out} << (LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out, "Shaders::LineGL::Flag::ShaderStorageBuffers\n");
+    } {
+        Containers::String out;
+        Debug{&out} << (LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out, "Shaders::LineGL::Flag::MultiDraw|Shaders::LineGL::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
 }
 
 void LineGL_Test::glslAttributeMatch() {
@@ -121,47 +162,6 @@ template<UnsignedInt dimensions> void LineGL_Test::constructCopy() {
 
     CORRADE_VERIFY(!std::is_copy_constructible<LineGL<dimensions>>{});
     CORRADE_VERIFY(!std::is_copy_assignable<LineGL<dimensions>>{});
-}
-
-void LineGL_Test::debugFlag() {
-    Containers::String out;
-    Debug{&out} << LineGL3D::Flag::VertexColor << LineGL3D::Flag(0xf00d);
-    CORRADE_COMPARE(out, "Shaders::LineGL::Flag::VertexColor Shaders::LineGL::Flag(0xf00d)\n");
-}
-
-void LineGL_Test::debugFlags() {
-    Containers::String out;
-    Debug{&out} << (LineGL3D::Flag::VertexColor|LineGL3D::Flag::InstancedTransformation) << LineGL3D::Flags{};
-    CORRADE_COMPARE(out, "Shaders::LineGL::Flag::VertexColor|Shaders::LineGL::Flag::InstancedTransformation Shaders::LineGL::Flags{}\n");
-}
-
-void LineGL_Test::debugFlagsSupersets() {
-    /* InstancedObjectId is a superset of ObjectId so only one should be
-       printed */
-    {
-        Containers::String out;
-        Debug{&out} << (LineGL3D::Flag::ObjectId|LineGL3D::Flag::InstancedObjectId);
-        CORRADE_COMPARE(out, "Shaders::LineGL::Flag::InstancedObjectId\n");
-    }
-
-    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
-       only one should be printed, but if there are both then both should be */
-    {
-        Containers::String out;
-        Debug{&out} << (LineGL3D::Flag::MultiDraw|LineGL3D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out, "Shaders::LineGL::Flag::MultiDraw\n");
-    }
-    #ifndef MAGNUM_TARGET_WEBGL
-    {
-        Containers::String out;
-        Debug{&out} << (LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out, "Shaders::LineGL::Flag::ShaderStorageBuffers\n");
-    } {
-        Containers::String out;
-        Debug{&out} << (LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::UniformBuffers);
-        CORRADE_COMPARE(out, "Shaders::LineGL::Flag::MultiDraw|Shaders::LineGL::Flag::ShaderStorageBuffers\n");
-    }
-    #endif
 }
 
 }}}}

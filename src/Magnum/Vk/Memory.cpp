@@ -37,6 +37,34 @@
 
 namespace Magnum { namespace Vk {
 
+Debug& operator<<(Debug& debug, const MemoryFlag value) {
+    debug << "Vk::MemoryFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::MemoryFlag::value: return debug << "::" << Debug::nospace << #value;
+        _c(DeviceLocal)
+        _c(HostVisible)
+        _c(HostCoherent)
+        _c(HostCached)
+        _c(LazilyAllocated)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Flag bits should be in hex, unlike plain values */
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MemoryFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Vk::MemoryFlags{}", {
+        Vk::MemoryFlag::DeviceLocal,
+        Vk::MemoryFlag::HostVisible,
+        Vk::MemoryFlag::HostCoherent,
+        Vk::MemoryFlag::HostCached,
+        Vk::MemoryFlag::LazilyAllocated});
+}
+
 MemoryRequirements::MemoryRequirements(): _requirements{} {
     _requirements.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
 }
@@ -131,34 +159,6 @@ VkDeviceMemory Memory::release() {
     _handle = {};
     _size = {};
     return handle;
-}
-
-Debug& operator<<(Debug& debug, const MemoryFlag value) {
-    debug << "Vk::MemoryFlag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Vk::MemoryFlag::value: return debug << "::" << Debug::nospace << #value;
-        _c(DeviceLocal)
-        _c(HostVisible)
-        _c(HostCoherent)
-        _c(HostCached)
-        _c(LazilyAllocated)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    /* Flag bits should be in hex, unlike plain values */
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const MemoryFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Vk::MemoryFlags{}", {
-        Vk::MemoryFlag::DeviceLocal,
-        Vk::MemoryFlag::HostVisible,
-        Vk::MemoryFlag::HostCoherent,
-        Vk::MemoryFlag::HostCached,
-        Vk::MemoryFlag::LazilyAllocated});
 }
 
 }}

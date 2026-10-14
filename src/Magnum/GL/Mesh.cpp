@@ -54,6 +54,51 @@
 
 namespace Magnum { namespace GL {
 
+Debug& operator<<(Debug& debug, const MeshPrimitive value) {
+    debug << "GL::MeshPrimitive" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MeshPrimitive::value: return debug << "::" #value;
+        _c(Points)
+        _c(Lines)
+        _c(LineLoop)
+        _c(LineStrip)
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        _c(LineStripAdjacency)
+        _c(LinesAdjacency)
+        #endif
+        _c(Triangles)
+        _c(TriangleStrip)
+        _c(TriangleFan)
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        _c(TrianglesAdjacency)
+        _c(TriangleStripAdjacency)
+        _c(Patches)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MeshIndexType value) {
+    debug << "GL::MeshIndexType" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MeshIndexType::value: return debug << "::" #value;
+        _c(UnsignedByte)
+        _c(UnsignedShort)
+        _c(UnsignedInt)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
+}
+
 namespace {
 
 constexpr MeshPrimitive PrimitiveMapping[]{
@@ -116,51 +161,6 @@ UnsignedInt meshIndexTypeSize(const MeshIndexType type) {
     }
 
     CORRADE_ASSERT_UNREACHABLE("GL::meshIndexTypeSize(): invalid type" << type, {});
-}
-
-Debug& operator<<(Debug& debug, const MeshPrimitive value) {
-    debug << "GL::MeshPrimitive" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case MeshPrimitive::value: return debug << "::" #value;
-        _c(Points)
-        _c(Lines)
-        _c(LineLoop)
-        _c(LineStrip)
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(LineStripAdjacency)
-        _c(LinesAdjacency)
-        #endif
-        _c(Triangles)
-        _c(TriangleStrip)
-        _c(TriangleFan)
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(TrianglesAdjacency)
-        _c(TriangleStripAdjacency)
-        _c(Patches)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const MeshIndexType value) {
-    debug << "GL::MeshIndexType" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case MeshIndexType::value: return debug << "::" #value;
-        _c(UnsignedByte)
-        _c(UnsignedShort)
-        _c(UnsignedInt)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 struct Mesh::AttributeLayout {

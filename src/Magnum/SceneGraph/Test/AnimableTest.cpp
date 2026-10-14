@@ -39,6 +39,8 @@ namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 struct AnimableTest: TestSuite::Tester {
     explicit AnimableTest();
 
+    void debug();
+
     template<class T> void state();
     template<class T> void step();
     template<class T> void duration();
@@ -47,12 +49,12 @@ struct AnimableTest: TestSuite::Tester {
     template<class T> void pause();
 
     void deleteWhileRunning();
-
-    void debug();
 };
 
 AnimableTest::AnimableTest() {
-    addTests({&AnimableTest::state<Float>,
+    addTests({&AnimableTest::debug,
+
+              &AnimableTest::state<Float>,
               &AnimableTest::state<Double>,
               &AnimableTest::step<Float>,
               &AnimableTest::step<Double>,
@@ -65,9 +67,13 @@ AnimableTest::AnimableTest() {
               &AnimableTest::pause<Float>,
               &AnimableTest::pause<Double>,
 
-              &AnimableTest::deleteWhileRunning,
+              &AnimableTest::deleteWhileRunning});
+}
 
-              &AnimableTest::debug});
+void AnimableTest::debug() {
+    Containers::String out;
+    Debug{&out} << AnimationState::Running << AnimationState(0xbe);
+    CORRADE_COMPARE(out, "SceneGraph::AnimationState::Running SceneGraph::AnimationState(0xbe)\n");
 }
 
 template<class T> using Object3D = SceneGraph::Object<SceneGraph::BasicMatrixTransformation3D<T>>;
@@ -397,12 +403,6 @@ void AnimableTest::deleteWhileRunning() {
     /* Animable got deleted, stepping further should not crash and burn (tm) */
     group.step(1.5f, 0.5f);
     CORRADE_COMPARE(group.runningCount(), 0);
-}
-
-void AnimableTest::debug() {
-    Containers::String out;
-    Debug{&out} << AnimationState::Running << AnimationState(0xbe);
-    CORRADE_COMPARE(out, "SceneGraph::AnimationState::Running SceneGraph::AnimationState(0xbe)\n");
 }
 
 }}}}

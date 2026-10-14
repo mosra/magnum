@@ -47,11 +47,33 @@ struct MaterialDataTest: TestSuite::Tester {
 
     void layerName();
     void layerNameInvalid();
+    void debugLayer();
+    /* No packed version, as layer name is stored as a string */
+
     void attributeName();
     void attributeNameInvalid();
+    void debugAttribute();
+    /* No packed version, as attribute name is stored as a string */
+
     void textureSwizzleComponentCount();
+    void debugTextureSwizzle();
+    void debugTextureSwizzlePacked();
+
     void attributeTypeSize();
     void attributeTypeSizeInvalid();
+    void debugAttributeType();
+    void debugAttributeTypePacked();
+
+    void debugType();
+    void debugTypePacked();
+    void debugTypes();
+    void debugTypesPacked();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void debugFlag();
+    void debugFlags();
+    #endif
+    void debugAlphaMode();
+    void debugAlphaModePacked();
 
     void attributeMap();
     void layerMap();
@@ -177,38 +199,36 @@ struct MaterialDataTest: TestSuite::Tester {
     void templateLayerAccessDeprecated();
     #endif
     void templateLayerAccessMutable();
-
-    void debugLayer();
-    /* No packed version, as layer name is stored as a string */
-    void debugAttribute();
-    /* No packed version, as attribute name is stored as a string */
-    void debugTextureSwizzle();
-    void debugTextureSwizzlePacked();
-    void debugAttributeType();
-    void debugAttributeTypePacked();
-
-    void debugType();
-    void debugTypePacked();
-    void debugTypes();
-    void debugTypesPacked();
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    void debugFlag();
-    void debugFlags();
-    #endif
-    void debugAlphaMode();
-    void debugAlphaModePacked();
 };
 
 MaterialDataTest::MaterialDataTest() {
     addTests({&MaterialDataTest::layerName,
               &MaterialDataTest::layerNameInvalid,
+              &MaterialDataTest::debugLayer,
 
               &MaterialDataTest::attributeName,
               &MaterialDataTest::attributeNameInvalid,
+              &MaterialDataTest::debugAttribute,
 
               &MaterialDataTest::textureSwizzleComponentCount,
+              &MaterialDataTest::debugTextureSwizzle,
+              &MaterialDataTest::debugTextureSwizzlePacked,
+
               &MaterialDataTest::attributeTypeSize,
               &MaterialDataTest::attributeTypeSizeInvalid,
+              &MaterialDataTest::debugAttributeType,
+              &MaterialDataTest::debugAttributeTypePacked,
+
+              &MaterialDataTest::debugType,
+              &MaterialDataTest::debugTypePacked,
+              &MaterialDataTest::debugTypes,
+              &MaterialDataTest::debugTypesPacked,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &MaterialDataTest::debugFlag,
+              &MaterialDataTest::debugFlags,
+              #endif
+              &MaterialDataTest::debugAlphaMode,
+              &MaterialDataTest::debugAlphaModePacked,
 
               &MaterialDataTest::attributeMap,
               &MaterialDataTest::layerMap,
@@ -360,25 +380,7 @@ MaterialDataTest::MaterialDataTest() {
               #ifdef MAGNUM_BUILD_DEPRECATED
               &MaterialDataTest::templateLayerAccessDeprecated,
               #endif
-              &MaterialDataTest::templateLayerAccessMutable,
-
-              &MaterialDataTest::debugLayer,
-              &MaterialDataTest::debugAttribute,
-              &MaterialDataTest::debugTextureSwizzle,
-              &MaterialDataTest::debugTextureSwizzlePacked,
-              &MaterialDataTest::debugAttributeType,
-              &MaterialDataTest::debugAttributeTypePacked,
-
-              &MaterialDataTest::debugType,
-              &MaterialDataTest::debugTypePacked,
-              &MaterialDataTest::debugTypes,
-              &MaterialDataTest::debugTypesPacked,
-              #ifdef MAGNUM_BUILD_DEPRECATED
-              &MaterialDataTest::debugFlag,
-              &MaterialDataTest::debugFlags,
-              #endif
-              &MaterialDataTest::debugAlphaMode,
-              &MaterialDataTest::debugAlphaModePacked});
+              &MaterialDataTest::templateLayerAccessMutable});
 }
 
 using namespace Containers::Literals;
@@ -400,6 +402,13 @@ void MaterialDataTest::layerNameInvalid() {
         "Trade::materialLayerName(): invalid layer Trade::MaterialLayer(0xdeadbeef)\n");
 }
 
+void MaterialDataTest::debugLayer() {
+    Containers::String out;
+
+    Debug{&out} << MaterialLayer::ClearCoat << MaterialLayer(0xfefe) << MaterialLayer{};
+    CORRADE_COMPARE(out, "Trade::MaterialLayer::ClearCoat Trade::MaterialLayer(0xfefe) Trade::MaterialLayer(0x0)\n");
+}
+
 void MaterialDataTest::attributeName() {
     CORRADE_COMPARE(materialAttributeName(MaterialAttribute::BaseColorTextureMatrix), "BaseColorTextureMatrix");
 }
@@ -416,12 +425,36 @@ void MaterialDataTest::attributeNameInvalid() {
         "Trade::materialAttributeName(): invalid attribute Trade::MaterialAttribute(0xdeadbeef)\n");
 }
 
+void MaterialDataTest::debugAttribute() {
+    Containers::String out;
+
+    Debug{&out} << MaterialAttribute::DiffuseTextureCoordinates << MaterialAttribute::LayerName << MaterialAttribute(0xfefe) << MaterialAttribute{};
+    CORRADE_COMPARE(out, "Trade::MaterialAttribute::DiffuseTextureCoordinates Trade::MaterialAttribute::LayerName Trade::MaterialAttribute(0xfefe) Trade::MaterialAttribute(0x0)\n");
+}
+
 void MaterialDataTest::textureSwizzleComponentCount() {
     CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::B), 1);
     CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::RG), 2);
     CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::GA), 2);
     CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::GBA), 3);
     CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::RGBA), 4);
+}
+
+void MaterialDataTest::debugTextureSwizzle() {
+    Containers::String out;
+
+    /* The swizzle is encoded as a fourCC, so it just prints the numerical
+       value as a char. Worst case this will print nothing or four garbage
+       letters. Sorry in that case. */
+    Debug{&out} << MaterialTextureSwizzle::BA << MaterialTextureSwizzle{};
+    CORRADE_COMPARE(out, "Trade::MaterialTextureSwizzle::BA Trade::MaterialTextureSwizzle::\n");
+}
+
+void MaterialDataTest::debugTextureSwizzlePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MaterialTextureSwizzle::BA << Debug::packed << MaterialTextureSwizzle{} << MaterialTextureSwizzle::RG;
+    CORRADE_COMPARE(out, "BA  Trade::MaterialTextureSwizzle::RG\n");
 }
 
 void MaterialDataTest::attributeTypeSize() {
@@ -450,6 +483,80 @@ void MaterialDataTest::attributeTypeSizeInvalid() {
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0xfe)\n"
         "Trade::materialAttributeTypeSize(): string and buffer size is unknown\n"
         "Trade::materialAttributeTypeSize(): string and buffer size is unknown\n");
+}
+
+void MaterialDataTest::debugAttributeType() {
+    Containers::String out;
+
+    Debug{&out} << MaterialAttributeType::Matrix3x2 << MaterialAttributeType(0xfe);
+    CORRADE_COMPARE(out, "Trade::MaterialAttributeType::Matrix3x2 Trade::MaterialAttributeType(0xfe)\n");
+}
+
+void MaterialDataTest::debugAttributeTypePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MaterialAttributeType::Matrix3x2 << Debug::packed << MaterialAttributeType(0xfe) << MaterialAttributeType::Float;
+    CORRADE_COMPARE(out, "Matrix3x2 0xfe Trade::MaterialAttributeType::Float\n");
+}
+
+void MaterialDataTest::debugType() {
+    Containers::String out;
+
+    Debug(&out) << MaterialType::Phong << MaterialType(0xbe);
+    CORRADE_COMPARE(out, "Trade::MaterialType::Phong Trade::MaterialType(0xbe)\n");
+}
+
+void MaterialDataTest::debugTypePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MaterialType::Phong << Debug::packed << MaterialType(0xbe) << MaterialType::Flat;
+    CORRADE_COMPARE(out, "Phong 0xbe Trade::MaterialType::Flat\n");
+}
+
+void MaterialDataTest::debugTypes() {
+    Containers::String out;
+
+    Debug{&out} << (MaterialType::Phong|MaterialType(0xe0)) << MaterialTypes{};
+    CORRADE_COMPARE(out, "Trade::MaterialType::Phong|Trade::MaterialType(0xe0) Trade::MaterialTypes{}\n");
+}
+
+void MaterialDataTest::debugTypesPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (MaterialType::Phong|MaterialType(0xe0)) << Debug::packed << MaterialTypes{} << MaterialType::Flat;
+    CORRADE_COMPARE(out, "Phong|0xe0 {} Trade::MaterialType::Flat\n");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+void MaterialDataTest::debugFlag() {
+    Containers::String out;
+
+    Debug{&out} << MaterialData::Flag::DoubleSided << MaterialData::Flag(0xf0);
+    CORRADE_COMPARE(out, "Trade::MaterialData::Flag::DoubleSided Trade::MaterialData::Flag(0xf0)\n");
+}
+
+void MaterialDataTest::debugFlags() {
+    Containers::String out;
+
+    Debug{&out} << MaterialData::Flag::DoubleSided << MaterialData::Flags{};
+    CORRADE_COMPARE(out, "Trade::MaterialData::Flag::DoubleSided Trade::MaterialData::Flags{}\n");
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+void MaterialDataTest::debugAlphaMode() {
+    Containers::String out;
+
+    Debug{&out} << MaterialAlphaMode::Opaque << MaterialAlphaMode(0xee);
+    CORRADE_COMPARE(out, "Trade::MaterialAlphaMode::Opaque Trade::MaterialAlphaMode(0xee)\n");
+}
+
+void MaterialDataTest::debugAlphaModePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << MaterialAlphaMode::Opaque << Debug::packed << MaterialAlphaMode(0xee) << MaterialAlphaMode::Blend;
+    CORRADE_COMPARE(out, "Opaque 0xee Trade::MaterialAlphaMode::Blend\n");
 }
 
 void MaterialDataTest::attributeMap() {
@@ -3505,111 +3612,6 @@ void MaterialDataTest::templateLayerAccessMutable() {
         CORRADE_COMPARE(data.attribute<Containers::StringView>(1, 0), "IlearCoat");
         *static_cast<char*>(data.mutableAttribute(1, 0)) = 'C';
     }
-}
-
-void MaterialDataTest::debugLayer() {
-    Containers::String out;
-
-    Debug{&out} << MaterialLayer::ClearCoat << MaterialLayer(0xfefe) << MaterialLayer{};
-    CORRADE_COMPARE(out, "Trade::MaterialLayer::ClearCoat Trade::MaterialLayer(0xfefe) Trade::MaterialLayer(0x0)\n");
-}
-
-void MaterialDataTest::debugAttribute() {
-    Containers::String out;
-
-    Debug{&out} << MaterialAttribute::DiffuseTextureCoordinates << MaterialAttribute::LayerName << MaterialAttribute(0xfefe) << MaterialAttribute{};
-    CORRADE_COMPARE(out, "Trade::MaterialAttribute::DiffuseTextureCoordinates Trade::MaterialAttribute::LayerName Trade::MaterialAttribute(0xfefe) Trade::MaterialAttribute(0x0)\n");
-}
-
-void MaterialDataTest::debugTextureSwizzle() {
-    Containers::String out;
-
-    /* The swizzle is encoded as a fourCC, so it just prints the numerical
-       value as a char. Worst case this will print nothing or four garbage
-       letters. Sorry in that case. */
-    Debug{&out} << MaterialTextureSwizzle::BA << MaterialTextureSwizzle{};
-    CORRADE_COMPARE(out, "Trade::MaterialTextureSwizzle::BA Trade::MaterialTextureSwizzle::\n");
-}
-
-void MaterialDataTest::debugTextureSwizzlePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << MaterialTextureSwizzle::BA << Debug::packed << MaterialTextureSwizzle{} << MaterialTextureSwizzle::RG;
-    CORRADE_COMPARE(out, "BA  Trade::MaterialTextureSwizzle::RG\n");
-}
-
-void MaterialDataTest::debugAttributeType() {
-    Containers::String out;
-
-    Debug{&out} << MaterialAttributeType::Matrix3x2 << MaterialAttributeType(0xfe);
-    CORRADE_COMPARE(out, "Trade::MaterialAttributeType::Matrix3x2 Trade::MaterialAttributeType(0xfe)\n");
-}
-
-void MaterialDataTest::debugAttributeTypePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << MaterialAttributeType::Matrix3x2 << Debug::packed << MaterialAttributeType(0xfe) << MaterialAttributeType::Float;
-    CORRADE_COMPARE(out, "Matrix3x2 0xfe Trade::MaterialAttributeType::Float\n");
-}
-
-void MaterialDataTest::debugType() {
-    Containers::String out;
-
-    Debug(&out) << MaterialType::Phong << MaterialType(0xbe);
-    CORRADE_COMPARE(out, "Trade::MaterialType::Phong Trade::MaterialType(0xbe)\n");
-}
-
-void MaterialDataTest::debugTypePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << MaterialType::Phong << Debug::packed << MaterialType(0xbe) << MaterialType::Flat;
-    CORRADE_COMPARE(out, "Phong 0xbe Trade::MaterialType::Flat\n");
-}
-
-void MaterialDataTest::debugTypes() {
-    Containers::String out;
-
-    Debug{&out} << (MaterialType::Phong|MaterialType(0xe0)) << MaterialTypes{};
-    CORRADE_COMPARE(out, "Trade::MaterialType::Phong|Trade::MaterialType(0xe0) Trade::MaterialTypes{}\n");
-}
-
-void MaterialDataTest::debugTypesPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (MaterialType::Phong|MaterialType(0xe0)) << Debug::packed << MaterialTypes{} << MaterialType::Flat;
-    CORRADE_COMPARE(out, "Phong|0xe0 {} Trade::MaterialType::Flat\n");
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-void MaterialDataTest::debugFlag() {
-    Containers::String out;
-
-    Debug{&out} << MaterialData::Flag::DoubleSided << MaterialData::Flag(0xf0);
-    CORRADE_COMPARE(out, "Trade::MaterialData::Flag::DoubleSided Trade::MaterialData::Flag(0xf0)\n");
-}
-
-void MaterialDataTest::debugFlags() {
-    Containers::String out;
-
-    Debug{&out} << MaterialData::Flag::DoubleSided << MaterialData::Flags{};
-    CORRADE_COMPARE(out, "Trade::MaterialData::Flag::DoubleSided Trade::MaterialData::Flags{}\n");
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
-
-void MaterialDataTest::debugAlphaMode() {
-    Containers::String out;
-
-    Debug{&out} << MaterialAlphaMode::Opaque << MaterialAlphaMode(0xee);
-    CORRADE_COMPARE(out, "Trade::MaterialAlphaMode::Opaque Trade::MaterialAlphaMode(0xee)\n");
-}
-
-void MaterialDataTest::debugAlphaModePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << MaterialAlphaMode::Opaque << Debug::packed << MaterialAlphaMode(0xee) << MaterialAlphaMode::Blend;
-    CORRADE_COMPARE(out, "Opaque 0xee Trade::MaterialAlphaMode::Blend\n");
 }
 
 }}}}

@@ -34,6 +34,9 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct CameraDataTest: TestSuite::Tester {
     explicit CameraDataTest();
 
+    void debugType();
+    void debugTypePacked();
+
     void construct3DFoV();
     void construct3DSize();
 
@@ -45,13 +48,13 @@ struct CameraDataTest: TestSuite::Tester {
     void constructMove();
 
     void fovNonPerspective();
-
-    void debugType();
-    void debugTypePacked();
 };
 
 CameraDataTest::CameraDataTest() {
-    addTests({&CameraDataTest::construct3DFoV,
+    addTests({&CameraDataTest::debugType,
+              &CameraDataTest::debugTypePacked,
+
+              &CameraDataTest::construct3DFoV,
               &CameraDataTest::construct3DSize,
 
               &CameraDataTest::construct2D,
@@ -61,10 +64,20 @@ CameraDataTest::CameraDataTest() {
               &CameraDataTest::constructCopy,
               &CameraDataTest::constructMove,
 
-              &CameraDataTest::fovNonPerspective,
+              &CameraDataTest::fovNonPerspective});
+}
 
-              &CameraDataTest::debugType,
-              &CameraDataTest::debugTypePacked});
+void CameraDataTest::debugType() {
+    Containers::String out;
+    Debug{&out} << CameraType::Orthographic3D << CameraType(0xde);
+    CORRADE_COMPARE(out, "Trade::CameraType::Orthographic3D Trade::CameraType(0xde)\n");
+}
+
+void CameraDataTest::debugTypePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << CameraType::Orthographic3D << Debug::packed << CameraType(0xde) << CameraType::Perspective3D;
+    CORRADE_COMPARE(out, "Orthographic3D 0xde Trade::CameraType::Perspective3D\n");
 }
 
 using namespace Math::Literals;
@@ -171,20 +184,6 @@ void CameraDataTest::fovNonPerspective() {
     a.fov();
 
     CORRADE_COMPARE(out, "Trade::CameraData::fov(): the camera is not perspective\n");
-}
-
-void CameraDataTest::debugType() {
-    Containers::String out;
-
-    Debug{&out} << CameraType::Orthographic3D << CameraType(0xde);
-    CORRADE_COMPARE(out, "Trade::CameraType::Orthographic3D Trade::CameraType(0xde)\n");
-}
-
-void CameraDataTest::debugTypePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << CameraType::Orthographic3D << Debug::packed << CameraType(0xde) << CameraType::Perspective3D;
-    CORRADE_COMPARE(out, "Orthographic3D 0xde Trade::CameraType::Perspective3D\n");
 }
 
 }}}}

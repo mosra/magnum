@@ -39,6 +39,8 @@ namespace Magnum { namespace Animation { namespace Test { namespace {
 struct PlayerTest: TestSuite::Tester {
     explicit PlayerTest();
 
+    void debugState();
+
     void constructEmpty();
     void construct();
     void constructChrono();
@@ -91,8 +93,6 @@ struct PlayerTest: TestSuite::Tester {
     void runFor100YearsFloat();
     void runFor100YearsChrono();
 
-    void debugState();
-
     Animation::Track<Float, Float> mutableTrack{{
         {1.0f, 1.5f},
         {2.5f, 3.0f},
@@ -130,7 +130,9 @@ const struct {
 };
 
 PlayerTest::PlayerTest() {
-    addTests({&PlayerTest::constructEmpty,
+    addTests({&PlayerTest::debugState,
+
+              &PlayerTest::constructEmpty,
               &PlayerTest::construct,
               &PlayerTest::constructChrono,
               &PlayerTest::constructCopy,
@@ -188,8 +190,12 @@ PlayerTest::PlayerTest() {
         &PlayerTest::runFor100YearsFloat,
         &PlayerTest::runFor100YearsChrono},
         Containers::arraySize(RunFor100YearsData));
+}
 
-    addTests({&PlayerTest::debugState});
+void PlayerTest::debugState() {
+    Containers::String out;
+    Debug{&out} << State::Playing << State(0xde);
+    CORRADE_COMPARE(out, "Animation::State::Playing Animation::State(0xde)\n");
 }
 
 void PlayerTest::constructEmpty() {
@@ -1398,13 +1404,6 @@ void PlayerTest::runFor100YearsChrono() {
     player.advance(data.offsetChrono + std::chrono::nanoseconds{2666666667ull});
     CORRADE_COMPARE(player.state(), State::Playing);
     CORRADE_COMPARE(value, 3.0f);
-}
-
-void PlayerTest::debugState() {
-    Containers::String out;
-
-    Debug{&out} << State::Playing << State(0xde);
-    CORRADE_COMPARE(out, "Animation::State::Playing Animation::State(0xde)\n");
 }
 
 }}}}

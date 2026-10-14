@@ -38,6 +38,10 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct PhongGL_Test: TestSuite::Tester {
     explicit PhongGL_Test();
 
+    void debugFlag();
+    void debugFlags();
+    void debugFlagsSupersets();
+
     void configurationSetLightCountInvalid();
     #ifndef MAGNUM_TARGET_GLES2
     void configurationSetJointCountInvalid();
@@ -45,10 +49,6 @@ struct PhongGL_Test: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
-
-    void debugFlag();
-    void debugFlags();
-    void debugFlagsSupersets();
 };
 
 const struct {
@@ -86,6 +86,10 @@ const struct {
 #endif
 
 PhongGL_Test::PhongGL_Test() {
+    addTests({&PhongGL_Test::debugFlag,
+              &PhongGL_Test::debugFlags,
+              &PhongGL_Test::debugFlagsSupersets});
+
     addInstancedTests({&PhongGL_Test::configurationSetLightCountInvalid},
         Containers::arraySize(ConfigurationSetLightCountInvalidData));
 
@@ -95,69 +99,17 @@ PhongGL_Test::PhongGL_Test() {
     #endif
 
     addTests({&PhongGL_Test::constructNoCreate,
-              &PhongGL_Test::constructCopy,
-
-              &PhongGL_Test::debugFlag,
-              &PhongGL_Test::debugFlags,
-              &PhongGL_Test::debugFlagsSupersets});
-}
-
-void PhongGL_Test::configurationSetLightCountInvalid() {
-    auto&& data = ConfigurationSetLightCountInvalidData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    PhongGL::Configuration configuration;
-
-    Containers::String out;
-    Error redirectError{&out};
-    configuration.setLightCount(data.count, data.perDrawCount);
-    CORRADE_COMPARE(out, Utility::format("Shaders::PhongGL::Configuration::setLightCount(): {}\n", data.message));
-}
-
-#ifndef MAGNUM_TARGET_GLES2
-void PhongGL_Test::configurationSetJointCountInvalid() {
-    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    PhongGL::Configuration configuration;
-
-    Containers::String out;
-    Error redirectError{&out};
-    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
-    CORRADE_COMPARE(out, Utility::format("Shaders::PhongGL::Configuration::setJointCount(): {}\n", data.message));
-}
-#endif
-
-void PhongGL_Test::constructNoCreate() {
-    {
-        PhongGL shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), PhongGL::Flags{});
-        CORRADE_COMPARE(shader.lightCount(), 0);
-    }
-
-    CORRADE_VERIFY(true);
-}
-
-void PhongGL_Test::constructCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<PhongGL>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<PhongGL>{});
+              &PhongGL_Test::constructCopy});
 }
 
 void PhongGL_Test::debugFlag() {
     Containers::String out;
-
     Debug{&out} << PhongGL::Flag::AmbientTexture << PhongGL::Flag(0xcafedead);
     CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::AmbientTexture Shaders::PhongGL::Flag(0xcafedead)\n");
 }
 
 void PhongGL_Test::debugFlags() {
     Containers::String out;
-
     Debug{&out} << (PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture) << PhongGL::Flags{};
     CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::DiffuseTexture|Shaders::PhongGL::Flag::SpecularTexture Shaders::PhongGL::Flags{}\n");
 }
@@ -209,6 +161,52 @@ void PhongGL_Test::debugFlagsSupersets() {
     }
     #endif
     #endif
+}
+
+void PhongGL_Test::configurationSetLightCountInvalid() {
+    auto&& data = ConfigurationSetLightCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    PhongGL::Configuration configuration;
+
+    Containers::String out;
+    Error redirectError{&out};
+    configuration.setLightCount(data.count, data.perDrawCount);
+    CORRADE_COMPARE(out, Utility::format("Shaders::PhongGL::Configuration::setLightCount(): {}\n", data.message));
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGL_Test::configurationSetJointCountInvalid() {
+    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    PhongGL::Configuration configuration;
+
+    Containers::String out;
+    Error redirectError{&out};
+    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
+    CORRADE_COMPARE(out, Utility::format("Shaders::PhongGL::Configuration::setJointCount(): {}\n", data.message));
+}
+#endif
+
+void PhongGL_Test::constructNoCreate() {
+    {
+        PhongGL shader{NoCreate};
+        CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), PhongGL::Flags{});
+        CORRADE_COMPARE(shader.lightCount(), 0);
+    }
+
+    CORRADE_VERIFY(true);
+}
+
+void PhongGL_Test::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<PhongGL>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<PhongGL>{});
 }
 
 }}}}

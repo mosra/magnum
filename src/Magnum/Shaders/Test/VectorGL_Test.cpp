@@ -37,61 +37,38 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct VectorGL_Test: TestSuite::Tester {
     explicit VectorGL_Test();
 
-    template<UnsignedInt dimensions> void constructNoCreate();
-    template<UnsignedInt dimensions> void constructCopy();
-
     void debugFlag();
     void debugFlags();
     #ifndef MAGNUM_TARGET_GLES2
     void debugFlagsSupersets();
     #endif
+
+    template<UnsignedInt dimensions> void constructNoCreate();
+    template<UnsignedInt dimensions> void constructCopy();
 };
 
 VectorGL_Test::VectorGL_Test() {
-    addTests({
-        &VectorGL_Test::constructNoCreate<2>,
-        &VectorGL_Test::constructNoCreate<3>,
+    addTests({&VectorGL_Test::debugFlag,
+              &VectorGL_Test::debugFlags,
+              #ifndef MAGNUM_TARGET_GLES2
+              &VectorGL_Test::debugFlagsSupersets,
+              #endif
 
-        &VectorGL_Test::constructCopy<2>,
-        &VectorGL_Test::constructCopy<3>,
+              &VectorGL_Test::constructNoCreate<2>,
+              &VectorGL_Test::constructNoCreate<3>,
 
-        &VectorGL_Test::debugFlag,
-        &VectorGL_Test::debugFlags,
-        #ifndef MAGNUM_TARGET_GLES2
-        &VectorGL_Test::debugFlagsSupersets
-        #endif
-    });
-}
-
-template<UnsignedInt dimensions> void VectorGL_Test::constructNoCreate() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    {
-        VectorGL<dimensions> shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), typename VectorGL<dimensions>::Flags{});
-    }
-
-    CORRADE_VERIFY(true);
-}
-
-template<UnsignedInt dimensions> void VectorGL_Test::constructCopy() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    CORRADE_VERIFY(!std::is_copy_constructible<VectorGL<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<VectorGL<dimensions>>{});
+              &VectorGL_Test::constructCopy<2>,
+              &VectorGL_Test::constructCopy<3>});
 }
 
 void VectorGL_Test::debugFlag() {
     Containers::String out;
-
     Debug{&out} << VectorGL2D::Flag::TextureTransformation << VectorGL2D::Flag(0xf0);
     CORRADE_COMPARE(out, "Shaders::VectorGL::Flag::TextureTransformation Shaders::VectorGL::Flag(0xf0)\n");
 }
 
 void VectorGL_Test::debugFlags() {
     Containers::String out;
-
     Debug{&out} << VectorGL3D::Flags{VectorGL3D::Flag::TextureTransformation|VectorGL3D::Flag(0x80)} << VectorGL3D::Flags{};
     CORRADE_COMPARE(out, "Shaders::VectorGL::Flag::TextureTransformation|Shaders::VectorGL::Flag(0x80) Shaders::VectorGL::Flags{}\n");
 }
@@ -118,6 +95,25 @@ void VectorGL_Test::debugFlagsSupersets() {
     #endif
 }
 #endif
+
+template<UnsignedInt dimensions> void VectorGL_Test::constructNoCreate() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    {
+        VectorGL<dimensions> shader{NoCreate};
+        CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), typename VectorGL<dimensions>::Flags{});
+    }
+
+    CORRADE_VERIFY(true);
+}
+
+template<UnsignedInt dimensions> void VectorGL_Test::constructCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_VERIFY(!std::is_copy_constructible<VectorGL<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<VectorGL<dimensions>>{});
+}
 
 }}}}
 

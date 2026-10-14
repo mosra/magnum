@@ -64,6 +64,163 @@ constexpr struct {
 
 }
 
+Debug& operator<<(Debug& debug, const MaterialLayer value) {
+    debug << "Trade::MaterialLayer" << Debug::nospace;
+
+    if(UnsignedInt(value) - 1 >= Containers::arraySize(LayerMap))
+        return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+
+    return debug << "::" << Debug::nospace << LayerMap[UnsignedInt(value) - 1];
+}
+
+Debug& operator<<(Debug& debug, const MaterialAttribute value) {
+    debug << "Trade::MaterialAttribute" << Debug::nospace;
+
+    if(UnsignedInt(value) - 1 >= Containers::arraySize(AttributeMap))
+        return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+
+    /* LayerName is prefixed with a single space, drop that */
+    Containers::StringView string = AttributeMap[UnsignedInt(value) - 1].name;
+    if(string[0] == ' ')
+        string = string.exceptPrefix(1);
+
+    return debug << "::" << Debug::nospace << string;
+}
+
+Debug& operator<<(Debug& debug, const MaterialTextureSwizzle value) {
+    /* The swizzle is encoded as a fourCC, so just print the numerical value as
+       a char. Worst case this will print nothing or four garbage letters.
+       Sorry in that case. GCC 4.8 doesn't understand just {}, wants to have
+       a full MaterialTextureSwizzle{} here. */
+    const MaterialTextureSwizzle values[]{value, MaterialTextureSwizzle{}};
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MaterialTextureSwizzle::" << Debug::nospace;
+
+    return debug << reinterpret_cast<const char*>(values);
+}
+
+Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MaterialAttributeType" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MaterialAttributeType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        _c(Bool)
+        _c(Float)
+        _c(Deg)
+        _c(Rad)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(UnsignedLong)
+        _c(Long)
+        _c(Vector2)
+        _c(Vector2ui)
+        _c(Vector2i)
+        _c(Vector3)
+        _c(Vector3ui)
+        _c(Vector3i)
+        _c(Vector4)
+        _c(Vector4ui)
+        _c(Vector4i)
+        _c(Matrix2x2)
+        _c(Matrix2x3)
+        _c(Matrix2x4)
+        _c(Matrix3x2)
+        _c(Matrix3x3)
+        _c(Matrix3x4)
+        _c(Matrix4x2)
+        _c(Matrix4x3)
+        _c(Pointer)
+        _c(MutablePointer)
+        _c(String)
+        _c(Buffer)
+        _c(TextureSwizzle)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const MaterialType value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MaterialType" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MaterialType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        _c(Flat)
+        _c(Phong)
+        _c(PbrMetallicRoughness)
+        _c(PbrSpecularGlossiness)
+        _c(PbrClearCoat)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const MaterialTypes value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::MaterialTypes{}", {
+        MaterialType::Flat,
+        MaterialType::Phong,
+        MaterialType::PbrMetallicRoughness,
+        MaterialType::PbrSpecularGlossiness,
+        MaterialType::PbrClearCoat
+    });
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+Debug& operator<<(Debug& debug, const MaterialData::Flag value) {
+    debug << "Trade::MaterialData::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MaterialData::Flag::value: return debug << "::" #value;
+        _c(DoubleSided)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MaterialData::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::MaterialData::Flags{}", {
+        MaterialData::Flag::DoubleSided
+    });
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::MaterialAlphaMode" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MaterialAlphaMode::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        _c(Opaque)
+        _c(Mask)
+        _c(Blend)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
+}
+
 namespace Implementation {
 
 Containers::StringView materialLayerNameInternal(const MaterialLayer layer) {
@@ -1150,163 +1307,6 @@ Containers::Array<UnsignedInt> MaterialData::releaseLayerData() {
 
 Containers::Array<MaterialAttributeData> MaterialData::releaseAttributeData() {
     return Utility::move(_data);
-}
-
-Debug& operator<<(Debug& debug, const MaterialLayer value) {
-    debug << "Trade::MaterialLayer" << Debug::nospace;
-
-    if(UnsignedInt(value) - 1 >= Containers::arraySize(LayerMap))
-        return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
-
-    return debug << "::" << Debug::nospace << LayerMap[UnsignedInt(value) - 1];
-}
-
-Debug& operator<<(Debug& debug, const MaterialAttribute value) {
-    debug << "Trade::MaterialAttribute" << Debug::nospace;
-
-    if(UnsignedInt(value) - 1 >= Containers::arraySize(AttributeMap))
-        return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
-
-    /* LayerName is prefixed with a single space, drop that */
-    Containers::StringView string = AttributeMap[UnsignedInt(value) - 1].name;
-    if(string[0] == ' ')
-        string = string.exceptPrefix(1);
-
-    return debug << "::" << Debug::nospace << string;
-}
-
-Debug& operator<<(Debug& debug, const MaterialTextureSwizzle value) {
-    /* The swizzle is encoded as a fourCC, so just print the numerical value as
-       a char. Worst case this will print nothing or four garbage letters.
-       Sorry in that case. GCC 4.8 doesn't understand just {}, wants to have
-       a full MaterialTextureSwizzle{} here. */
-    const MaterialTextureSwizzle values[]{value, MaterialTextureSwizzle{}};
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::MaterialTextureSwizzle::" << Debug::nospace;
-
-    return debug << reinterpret_cast<const char*>(values);
-}
-
-Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::MaterialAttributeType" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case MaterialAttributeType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
-        _c(Bool)
-        _c(Float)
-        _c(Deg)
-        _c(Rad)
-        _c(UnsignedInt)
-        _c(Int)
-        _c(UnsignedLong)
-        _c(Long)
-        _c(Vector2)
-        _c(Vector2ui)
-        _c(Vector2i)
-        _c(Vector3)
-        _c(Vector3ui)
-        _c(Vector3i)
-        _c(Vector4)
-        _c(Vector4ui)
-        _c(Vector4i)
-        _c(Matrix2x2)
-        _c(Matrix2x3)
-        _c(Matrix2x4)
-        _c(Matrix3x2)
-        _c(Matrix3x3)
-        _c(Matrix3x4)
-        _c(Matrix4x2)
-        _c(Matrix4x3)
-        _c(Pointer)
-        _c(MutablePointer)
-        _c(String)
-        _c(Buffer)
-        _c(TextureSwizzle)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const MaterialType value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::MaterialType" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case MaterialType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
-        _c(Flat)
-        _c(Phong)
-        _c(PbrMetallicRoughness)
-        _c(PbrSpecularGlossiness)
-        _c(PbrClearCoat)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const MaterialTypes value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::MaterialTypes{}", {
-        MaterialType::Flat,
-        MaterialType::Phong,
-        MaterialType::PbrMetallicRoughness,
-        MaterialType::PbrSpecularGlossiness,
-        MaterialType::PbrClearCoat
-    });
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-Debug& operator<<(Debug& debug, const MaterialData::Flag value) {
-    debug << "Trade::MaterialData::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case MaterialData::Flag::value: return debug << "::" #value;
-        _c(DoubleSided)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const MaterialData::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::MaterialData::Flags{}", {
-        MaterialData::Flag::DoubleSided
-    });
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
-
-Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::MaterialAlphaMode" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case MaterialAlphaMode::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
-        _c(Opaque)
-        _c(Mask)
-        _c(Blend)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
 }
 
 }}

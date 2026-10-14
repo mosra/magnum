@@ -34,15 +34,23 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct ShaderTest: TestSuite::Tester {
     explicit ShaderTest();
 
+    void debugType();
+
     void constructNoCreate();
     void constructCopy();
-    void debugType();
 };
 
 ShaderTest::ShaderTest() {
-    addTests({&ShaderTest::constructNoCreate,
-              &ShaderTest::constructCopy,
-              &ShaderTest::debugType});
+    addTests({&ShaderTest::debugType,
+
+              &ShaderTest::constructNoCreate,
+              &ShaderTest::constructCopy});
+}
+
+void ShaderTest::debugType() {
+    Containers::String out;
+    Debug(&out) << Shader::Type::Fragment << Shader::Type(0xdead);
+    CORRADE_COMPARE(out, "GL::Shader::Type::Fragment GL::Shader::Type(0xdead)\n");
 }
 
 void ShaderTest::constructNoCreate() {
@@ -58,13 +66,6 @@ void ShaderTest::constructNoCreate() {
 void ShaderTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<Shader>{});
     CORRADE_VERIFY(!std::is_copy_assignable<Shader>{});
-}
-
-void ShaderTest::debugType() {
-    Containers::String out;
-
-    Debug(&out) << Shader::Type::Fragment << Shader::Type(0xdead);
-    CORRADE_COMPARE(out, "GL::Shader::Type::Fragment GL::Shader::Type(0xdead)\n");
 }
 
 }}}}

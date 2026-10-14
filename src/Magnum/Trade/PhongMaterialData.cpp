@@ -41,6 +41,37 @@ using namespace Math::Literals;
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH
+Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
+    debug << "Trade::PhongMaterialData::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case PhongMaterialData::Flag::v: return debug << "::" #v;
+        _c(DoubleSided)
+        _c(AmbientTexture)
+        _c(DiffuseTexture)
+        _c(SpecularTexture)
+        _c(NormalTexture)
+        _c(TextureTransformation)
+        _c(TextureCoordinates)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const PhongMaterialData::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::PhongMaterialData::Flags{}", {
+        PhongMaterialData::Flag::DoubleSided,
+        PhongMaterialData::Flag::AmbientTexture,
+        PhongMaterialData::Flag::DiffuseTexture,
+        PhongMaterialData::Flag::SpecularTexture,
+        PhongMaterialData::Flag::NormalTexture,
+        PhongMaterialData::Flag::TextureTransformation,
+        PhongMaterialData::Flag::TextureCoordinates});
+}
+
 PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientColor, const UnsignedInt ambientTexture, const UnsignedInt ambientTextureCoordinates, const Color4& diffuseColor, const UnsignedInt diffuseTexture, const UnsignedInt diffuseTextureCoordinates, const Color4& specularColor, const UnsignedInt specularTexture, const UnsignedInt specularTextureCoordinates, const UnsignedInt normalTexture, const UnsignedInt normalTextureCoordinates, const Matrix3& textureMatrix, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: MaterialData{MaterialType::Phong, [&](){
     Containers::Array<MaterialAttributeData> data;
 
@@ -103,11 +134,7 @@ PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientCol
 PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientColor, const UnsignedInt ambientTexture, const Color4& diffuseColor, const UnsignedInt diffuseTexture, const Color4& specularColor, const UnsignedInt specularTexture, const UnsignedInt normalTexture, const Matrix3& textureMatrix, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: PhongMaterialData{flags, ambientColor, ambientTexture, 0, diffuseColor, diffuseTexture, 0, specularColor, specularTexture, 0, normalTexture, 0, textureMatrix, alphaMode, alphaMask, shininess, importerState} {}
 
 PhongMaterialData::PhongMaterialData(const Flags flags, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: PhongMaterialData{flags, 0x000000ff_rgbaf, {}, 0xffffffff_rgbaf, {}, 0xffffffff_rgbaf, {}, {}, {}, alphaMode, alphaMask, shininess, importerState} {}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
 PhongMaterialData::Flags PhongMaterialData::flags() const {
     /* "Append" to flags recognized by the base class */
     Flags flags{Flag(UnsignedInt(MaterialData::flags()))};
@@ -433,40 +460,5 @@ UnsignedInt PhongMaterialData::commonTextureLayer() const {
 Float PhongMaterialData::shininess() const {
     return attributeOr(MaterialAttribute::Shininess, 80.0f);
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
-    debug << "Trade::PhongMaterialData::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case PhongMaterialData::Flag::v: return debug << "::" #v;
-        _c(DoubleSided)
-        _c(AmbientTexture)
-        _c(DiffuseTexture)
-        _c(SpecularTexture)
-        _c(NormalTexture)
-        _c(TextureTransformation)
-        _c(TextureCoordinates)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const PhongMaterialData::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::PhongMaterialData::Flags{}", {
-        PhongMaterialData::Flag::DoubleSided,
-        PhongMaterialData::Flag::AmbientTexture,
-        PhongMaterialData::Flag::DiffuseTexture,
-        PhongMaterialData::Flag::SpecularTexture,
-        PhongMaterialData::Flag::NormalTexture,
-        PhongMaterialData::Flag::TextureTransformation,
-        PhongMaterialData::Flag::TextureCoordinates});
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
 
 }}

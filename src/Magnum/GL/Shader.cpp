@@ -58,6 +58,27 @@ namespace Magnum { namespace GL {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const Shader::Type value) {
+    debug << "GL::Shader::Type" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Shader::Type::value: return debug << "::" #value;
+        _c(Vertex)
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        _c(TessellationControl)
+        _c(TessellationEvaluation)
+        _c(Geometry)
+        _c(Compute)
+        #endif
+        _c(Fragment)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
+}
+
 namespace {
 
 Containers::StringView shaderName(const Shader::Type type) {
@@ -969,27 +990,6 @@ void Shader::cleanLogImplementationIntelWindows(Containers::String& message) {
 
 void Shader::completionStatusImplementationFallback(GLuint, GLenum, GLint* value) {
     *value = GL_TRUE;
-}
-
-Debug& operator<<(Debug& debug, const Shader::Type value) {
-    debug << "GL::Shader::Type" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Shader::Type::value: return debug << "::" #value;
-        _c(Vertex)
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(TessellationControl)
-        _c(TessellationEvaluation)
-        _c(Geometry)
-        _c(Compute)
-        #endif
-        _c(Fragment)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 
 }}

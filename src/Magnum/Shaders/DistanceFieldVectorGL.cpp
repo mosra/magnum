@@ -58,6 +58,60 @@ namespace Magnum { namespace Shaders {
 
 using namespace Containers::Literals;
 
+namespace Implementation {
+
+Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlag value) {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of UniformBuffers, printing just one would result in
+       `Flag::MultiDraw|Flag(0x8)` in the output. */
+    if(value == DistanceFieldVectorGLFlag(UnsignedByte(DistanceFieldVectorGLFlag::MultiDraw|DistanceFieldVectorGLFlag::ShaderStorageBuffers)))
+        return debug << DistanceFieldVectorGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << DistanceFieldVectorGLFlag::ShaderStorageBuffers;
+    #endif
+
+    debug << "Shaders::DistanceFieldVectorGL::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case DistanceFieldVectorGLFlag::v: return debug << "::" #v;
+        _c(TextureTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
+        _c(MultiDraw)
+        _c(TextureArrays)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::DistanceFieldVectorGL::Flags{}", {
+        DistanceFieldVectorGLFlag::TextureTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers, meaning printing just one
+           would result in `Flag::MultiDraw|Flag(0x8)` in the output. So we
+           pass both and let the Flag printer deal with that. */
+        DistanceFieldVectorGLFlag(UnsignedByte(DistanceFieldVectorGLFlag::MultiDraw|DistanceFieldVectorGLFlag::ShaderStorageBuffers)),
+        #endif
+        DistanceFieldVectorGLFlag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        DistanceFieldVectorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
+        DistanceFieldVectorGLFlag::UniformBuffers,
+        DistanceFieldVectorGLFlag::TextureArrays
+        #endif
+    });
+}
+
+}
+
 namespace {
     enum: Int { TextureUnit = 6 };
 
@@ -541,59 +595,5 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
 
 template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<2>;
 template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<3>;
-
-namespace Implementation {
-
-Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlag value) {
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /* Special case coming from the Flags printer. As both flags are a superset
-       of UniformBuffers, printing just one would result in
-       `Flag::MultiDraw|Flag(0x8)` in the output. */
-    if(value == DistanceFieldVectorGLFlag(UnsignedByte(DistanceFieldVectorGLFlag::MultiDraw|DistanceFieldVectorGLFlag::ShaderStorageBuffers)))
-        return debug << DistanceFieldVectorGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << DistanceFieldVectorGLFlag::ShaderStorageBuffers;
-    #endif
-
-    debug << "Shaders::DistanceFieldVectorGL::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case DistanceFieldVectorGLFlag::v: return debug << "::" #v;
-        _c(TextureTransformation)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(UniformBuffers)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorageBuffers)
-        #endif
-        _c(MultiDraw)
-        _c(TextureArrays)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::DistanceFieldVectorGL::Flags{}", {
-        DistanceFieldVectorGLFlag::TextureTransformation,
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Both are a superset of UniformBuffers, meaning printing just one
-           would result in `Flag::MultiDraw|Flag(0x8)` in the output. So we
-           pass both and let the Flag printer deal with that. */
-        DistanceFieldVectorGLFlag(UnsignedByte(DistanceFieldVectorGLFlag::MultiDraw|DistanceFieldVectorGLFlag::ShaderStorageBuffers)),
-        #endif
-        DistanceFieldVectorGLFlag::MultiDraw, /* Superset of UniformBuffers */
-        #ifndef MAGNUM_TARGET_WEBGL
-        DistanceFieldVectorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
-        #endif
-        DistanceFieldVectorGLFlag::UniformBuffers,
-        DistanceFieldVectorGLFlag::TextureArrays
-        #endif
-    });
-}
-
-}
 
 }}

@@ -50,6 +50,69 @@
 
 namespace Magnum { namespace GL {
 
+Debug& operator<<(Debug& debug, const Buffer::TargetHint value) {
+    debug << "GL::Buffer::TargetHint" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Buffer::TargetHint::value: return debug << "::" #value;
+        _c(Array)
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(AtomicCounter)
+        #endif
+        _c(CopyRead)
+        _c(CopyWrite)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(DispatchIndirect)
+        _c(DrawIndirect)
+        #endif
+        #endif
+        _c(ElementArray)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Parameter)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(PixelPack)
+        _c(PixelUnpack)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorage)
+        #endif
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        _c(Texture)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(TransformFeedback)
+        _c(Uniform)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+Debug& operator<<(Debug& debug, const Buffer::Target value) {
+    debug << "GL::Buffer::Target" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Buffer::Target::value: return debug << "::" #value;
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(AtomicCounter)
+        _c(ShaderStorage)
+        #endif
+        _c(Uniform)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 Int Buffer::minMapAlignment() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::map_buffer_alignment>())
@@ -707,69 +770,6 @@ void* Buffer::mapRangeImplementationApple(Buffer& self, const GLintptr offset, c
 bool Buffer::unmapImplementationApple(Buffer& self) {
     self.textureWorkaroundAppleBefore();
     return unmapImplementationDefault(self);
-}
-#endif
-
-Debug& operator<<(Debug& debug, const Buffer::TargetHint value) {
-    debug << "GL::Buffer::TargetHint" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Buffer::TargetHint::value: return debug << "::" #value;
-        _c(Array)
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(AtomicCounter)
-        #endif
-        _c(CopyRead)
-        _c(CopyWrite)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(DispatchIndirect)
-        _c(DrawIndirect)
-        #endif
-        #endif
-        _c(ElementArray)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(Parameter)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(PixelPack)
-        _c(PixelUnpack)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorage)
-        #endif
-        #endif
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(Texture)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(TransformFeedback)
-        _c(Uniform)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
-}
-
-#ifndef MAGNUM_TARGET_GLES2
-Debug& operator<<(Debug& debug, const Buffer::Target value) {
-    debug << "GL::Buffer::Target" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Buffer::Target::value: return debug << "::" #value;
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(AtomicCounter)
-        _c(ShaderStorage)
-        #endif
-        _c(Uniform)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
 }
 #endif
 

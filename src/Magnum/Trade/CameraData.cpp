@@ -31,22 +31,6 @@
 
 namespace Magnum { namespace Trade {
 
-CameraData::CameraData(const CameraType type, const Rad fov, const Float aspectRatio, const Float near, const Float far, const void* const importerState) noexcept: _type{type}, _size{2*near*Math::tan(fov*0.5f)*Vector2::yScale(1.0f/aspectRatio)}, _near{near}, _far{far}, _importerState{importerState} {
-    CORRADE_ASSERT(type == CameraType::Perspective3D,
-        "Trade::CameraData: only perspective cameras can have FoV specified", );
-}
-
-CameraData::CameraData(const CameraType type, const Vector2& size, const Float near, const Float far, const void* const importerState) noexcept: _type{type}, _size{size}, _near{near}, _far{far}, _importerState{importerState} {
-    CORRADE_ASSERT(type != CameraType::Orthographic2D || (!near && !far),
-        "Trade::CameraData: 2D cameras can't be specified with near and far clipping planes", );
-}
-
-Rad CameraData::fov() const {
-    CORRADE_ASSERT(_type == CameraType::Perspective3D,
-        "Trade::CameraData::fov(): the camera is not perspective", {});
-    return 2*Math::atan(_size.x()/(2*_near));
-}
-
 Debug& operator<<(Debug& debug, const CameraType value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 
@@ -64,6 +48,22 @@ Debug& operator<<(Debug& debug, const CameraType value) {
     }
 
     return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+CameraData::CameraData(const CameraType type, const Rad fov, const Float aspectRatio, const Float near, const Float far, const void* const importerState) noexcept: _type{type}, _size{2*near*Math::tan(fov*0.5f)*Vector2::yScale(1.0f/aspectRatio)}, _near{near}, _far{far}, _importerState{importerState} {
+    CORRADE_ASSERT(type == CameraType::Perspective3D,
+        "Trade::CameraData: only perspective cameras can have FoV specified", );
+}
+
+CameraData::CameraData(const CameraType type, const Vector2& size, const Float near, const Float far, const void* const importerState) noexcept: _type{type}, _size{size}, _near{near}, _far{far}, _importerState{importerState} {
+    CORRADE_ASSERT(type != CameraType::Orthographic2D || (!near && !far),
+        "Trade::CameraData: 2D cameras can't be specified with near and far clipping planes", );
+}
+
+Rad CameraData::fov() const {
+    CORRADE_ASSERT(_type == CameraType::Perspective3D,
+        "Trade::CameraData::fov(): the camera is not perspective", {});
+    return 2*Math::atan(_size.x()/(2*_near));
 }
 
 }}

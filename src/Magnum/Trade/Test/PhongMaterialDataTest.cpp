@@ -37,6 +37,9 @@ struct PhongMaterialDataTest: TestSuite::Tester {
     explicit PhongMaterialDataTest();
 
     #ifdef MAGNUM_BUILD_DEPRECATED
+    void debugFlag();
+    void debugFlags();
+
     void constructDeprecated();
     void constructDeprecatedTextured();
     void constructDeprecatedTexturedTextureTransform();
@@ -59,11 +62,6 @@ struct PhongMaterialDataTest: TestSuite::Tester {
     void commonTransformationCoordinatesLayerOneDifferentTexture();
     void commonCoordinatesLayerImplicit();
     void noCommonTransformationCoordinatesLayer();
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    void debugFlag();
-    void debugFlags();
-    #endif
 };
 
 const Containers::StringView PhongTextureData[] {
@@ -76,6 +74,9 @@ const Containers::StringView PhongTextureData[] {
 PhongMaterialDataTest::PhongMaterialDataTest() {
     addTests({
         #ifdef MAGNUM_BUILD_DEPRECATED
+        &PhongMaterialDataTest::debugFlag,
+        &PhongMaterialDataTest::debugFlags,
+
         &PhongMaterialDataTest::constructDeprecated,
         &PhongMaterialDataTest::constructDeprecatedTextured,
         &PhongMaterialDataTest::constructDeprecatedTexturedTextureTransform,
@@ -101,20 +102,29 @@ PhongMaterialDataTest::PhongMaterialDataTest() {
         &PhongMaterialDataTest::commonCoordinatesLayerImplicit},
         Containers::arraySize(PhongTextureData));
 
-    addTests({
-        &PhongMaterialDataTest::noCommonTransformationCoordinatesLayer,
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        &PhongMaterialDataTest::debugFlag,
-        &PhongMaterialDataTest::debugFlags
-        #endif
-        });
+    addTests({&PhongMaterialDataTest::noCommonTransformationCoordinatesLayer});
 }
 
 using namespace Containers::Literals;
 using namespace Math::Literals;
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+void PhongMaterialDataTest::debugFlag() {
+    Containers::String out;
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Debug{&out} << PhongMaterialData::Flag::AmbientTexture << PhongMaterialData::Flag(0xf0);
+    CORRADE_COMPARE(out, "Trade::PhongMaterialData::Flag::AmbientTexture Trade::PhongMaterialData::Flag(0xf0)\n");
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
+void PhongMaterialDataTest::debugFlags() {
+    Containers::String out;
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Debug{&out} << (PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture) << PhongMaterialData::Flags{};
+    CORRADE_COMPARE(out, "Trade::PhongMaterialData::Flag::DiffuseTexture|Trade::PhongMaterialData::Flag::SpecularTexture Trade::PhongMaterialData::Flags{}\n");
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+
 void PhongMaterialDataTest::constructDeprecated() {
     const int a{};
     CORRADE_IGNORE_DEPRECATED_PUSH
@@ -721,24 +731,6 @@ void PhongMaterialDataTest::noCommonTransformationCoordinatesLayer() {
         "Trade::PhongMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set\n"
         "Trade::PhongMaterialData::commonTextureLayer(): the material doesn't have a common array texture layer\n");
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-void PhongMaterialDataTest::debugFlag() {
-    Containers::String out;
-
-    Debug{&out} << PhongMaterialData::Flag::AmbientTexture << PhongMaterialData::Flag(0xf0);
-    CORRADE_COMPARE(out, "Trade::PhongMaterialData::Flag::AmbientTexture Trade::PhongMaterialData::Flag(0xf0)\n");
-}
-
-void PhongMaterialDataTest::debugFlags() {
-    Containers::String out;
-
-    Debug{&out} << (PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture) << PhongMaterialData::Flags{};
-    CORRADE_COMPARE(out, "Trade::PhongMaterialData::Flag::DiffuseTexture|Trade::PhongMaterialData::Flag::SpecularTexture Trade::PhongMaterialData::Flags{}\n");
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
 
 }}}}
 

@@ -34,6 +34,31 @@
 
 namespace Magnum { namespace Vk {
 
+Debug& operator<<(Debug& debug, const MeshPrimitive value) {
+    debug << "Vk::MeshPrimitive" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::MeshPrimitive::value: return debug << "::" << Debug::nospace << #value;
+        _c(Points)
+        _c(Lines)
+        _c(LineStrip)
+        _c(Triangles)
+        _c(TriangleStrip)
+        _c(TriangleFan)
+        _c(LinesAdjacency)
+        _c(LineStripAdjacency)
+        _c(TrianglesAdjacency)
+        _c(TriangleStripAdjacency)
+        _c(Patches)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Vulkan docs have the values in decimal, so not converting to hex */
+    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
+}
+
 namespace {
 
 constexpr MeshPrimitive MeshPrimitiveMapping[]{
@@ -264,31 +289,6 @@ MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedI
 
 MeshLayout&& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const Magnum::VertexFormat format, const UnsignedInt offset) && {
     return Utility::move(addAttribute(location, binding, format, offset));
-}
-
-Debug& operator<<(Debug& debug, const MeshPrimitive value) {
-    debug << "Vk::MeshPrimitive" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Vk::MeshPrimitive::value: return debug << "::" << Debug::nospace << #value;
-        _c(Points)
-        _c(Lines)
-        _c(LineStrip)
-        _c(Triangles)
-        _c(TriangleStrip)
-        _c(TriangleFan)
-        _c(LinesAdjacency)
-        _c(LineStripAdjacency)
-        _c(TrianglesAdjacency)
-        _c(TriangleStripAdjacency)
-        _c(Patches)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    /* Vulkan docs have the values in decimal, so not converting to hex */
-    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
 }
 
 }}

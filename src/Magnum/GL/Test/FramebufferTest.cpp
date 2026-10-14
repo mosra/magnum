@@ -34,17 +34,23 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct FramebufferTest: TestSuite::Tester {
     explicit FramebufferTest();
 
+    void debugStatus();
+
     void constructNoCreate();
     void constructCopy();
-
-    void debugStatus();
 };
 
 FramebufferTest::FramebufferTest() {
-    addTests({&FramebufferTest::constructNoCreate,
-              &FramebufferTest::constructCopy,
+    addTests({&FramebufferTest::debugStatus,
 
-              &FramebufferTest::debugStatus});
+              &FramebufferTest::constructNoCreate,
+              &FramebufferTest::constructCopy});
+}
+
+void FramebufferTest::debugStatus() {
+    Containers::String out;
+    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
+    CORRADE_COMPARE(out, "GL::Framebuffer::Status::IncompleteMissingAttachment GL::Framebuffer::Status(0xdead)\n");
 }
 
 void FramebufferTest::constructNoCreate() {
@@ -60,13 +66,6 @@ void FramebufferTest::constructNoCreate() {
 void FramebufferTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<Framebuffer>{});
     CORRADE_VERIFY(!std::is_copy_assignable<Framebuffer>{});
-}
-
-void FramebufferTest::debugStatus() {
-    Containers::String out;
-
-    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
-    CORRADE_COMPARE(out, "GL::Framebuffer::Status::IncompleteMissingAttachment GL::Framebuffer::Status(0xdead)\n");
 }
 
 }}}}

@@ -36,6 +36,9 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct MemoryTest: TestSuite::Tester {
     explicit MemoryTest();
 
+    void debugMemoryFlag();
+    void debugMemoryFlags();
+
     void requirementsConstructNoInit();
     void requirementsConstructFromVk();
 
@@ -50,13 +53,13 @@ struct MemoryTest: TestSuite::Tester {
     void constructCopy();
 
     void mapWrappedUnknownSize();
-
-    void debugMemoryFlag();
-    void debugMemoryFlags();
 };
 
 MemoryTest::MemoryTest() {
-    addTests({&MemoryTest::requirementsConstructNoInit,
+    addTests({&MemoryTest::debugMemoryFlag,
+              &MemoryTest::debugMemoryFlags,
+
+              &MemoryTest::requirementsConstructNoInit,
               &MemoryTest::requirementsConstructFromVk,
 
               &MemoryTest::requirementsAlignedSize,
@@ -69,10 +72,19 @@ MemoryTest::MemoryTest() {
               &MemoryTest::constructNoCreate,
               &MemoryTest::constructCopy,
 
-              &MemoryTest::mapWrappedUnknownSize,
+              &MemoryTest::mapWrappedUnknownSize});
+}
 
-              &MemoryTest::debugMemoryFlag,
-              &MemoryTest::debugMemoryFlags});
+void MemoryTest::debugMemoryFlag() {
+    Containers::String out;
+    Debug{&out} << MemoryFlag::HostCached << MemoryFlag(0xdeadcafe);
+    CORRADE_COMPARE(out, "Vk::MemoryFlag::HostCached Vk::MemoryFlag(0xdeadcafe)\n");
+}
+
+void MemoryTest::debugMemoryFlags() {
+    Containers::String out;
+    Debug{&out} << (MemoryFlag::HostCached|MemoryFlag::LazilyAllocated) << MemoryFlags{};
+    CORRADE_COMPARE(out, "Vk::MemoryFlag::HostCached|Vk::MemoryFlag::LazilyAllocated Vk::MemoryFlags{}\n");
 }
 
 void MemoryTest::requirementsConstructNoInit() {
@@ -193,18 +205,6 @@ void MemoryTest::mapWrappedUnknownSize() {
     CORRADE_COMPARE(out,
         "Vk::Memory::map(): the memory has unknown size, you have to specify it explicitly\n"
         "Vk::Memory::mapRead(): the memory has unknown size, you have to specify it explicitly\n");
-}
-
-void MemoryTest::debugMemoryFlag() {
-    Containers::String out;
-    Debug{&out} << MemoryFlag::HostCached << MemoryFlag(0xdeadcafe);
-    CORRADE_COMPARE(out, "Vk::MemoryFlag::HostCached Vk::MemoryFlag(0xdeadcafe)\n");
-}
-
-void MemoryTest::debugMemoryFlags() {
-    Containers::String out;
-    Debug{&out} << (MemoryFlag::HostCached|MemoryFlag::LazilyAllocated) << MemoryFlags{};
-    CORRADE_COMPARE(out, "Vk::MemoryFlag::HostCached|Vk::MemoryFlag::LazilyAllocated Vk::MemoryFlags{}\n");
 }
 
 }}}}

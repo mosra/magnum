@@ -40,6 +40,11 @@ namespace Magnum { namespace Animation { namespace Test { namespace {
 struct InterpolationTest: TestSuite::Tester {
     explicit InterpolationTest();
 
+    void debugInterpolation();
+    void debugInterpolationPacked();
+    void debugExtrapolation();
+    void debugExtrapolationPacked();
+
     void interpolatorFor();
     void interpolatorForInvalid();
     void interpolatorForBool();
@@ -83,11 +88,6 @@ struct InterpolationTest: TestSuite::Tester {
     void unpack();
     void unpackEase();
     void unpackEaseClamped();
-
-    void debugInterpolation();
-    void debugInterpolationPacked();
-    void debugExtrapolation();
-    void debugExtrapolationPacked();
 };
 
 using namespace Math::Literals;
@@ -159,7 +159,12 @@ const struct {
 };
 
 InterpolationTest::InterpolationTest() {
-    addTests({&InterpolationTest::interpolatorFor,
+    addTests({&InterpolationTest::debugInterpolation,
+              &InterpolationTest::debugInterpolationPacked,
+              &InterpolationTest::debugExtrapolation,
+              &InterpolationTest::debugExtrapolationPacked,
+
+              &InterpolationTest::interpolatorFor,
               &InterpolationTest::interpolatorForInvalid,
               &InterpolationTest::interpolatorForBool,
               &InterpolationTest::interpolatorForBoolInvalid,
@@ -206,12 +211,33 @@ InterpolationTest::InterpolationTest() {
               &InterpolationTest::easeClamped,
               &InterpolationTest::unpack,
               &InterpolationTest::unpackEase,
-              &InterpolationTest::unpackEaseClamped,
+              &InterpolationTest::unpackEaseClamped});
+}
 
-              &InterpolationTest::debugInterpolation,
-              &InterpolationTest::debugInterpolationPacked,
-              &InterpolationTest::debugExtrapolation,
-              &InterpolationTest::debugExtrapolationPacked});
+void InterpolationTest::debugInterpolation() {
+    Containers::String out;
+    Debug{&out} << Interpolation::Custom << Interpolation(0xde);
+    CORRADE_COMPARE(out, "Animation::Interpolation::Custom Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::debugInterpolationPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << Interpolation::Custom << Debug::packed << Interpolation(0xde) << Interpolation::Constant;
+    CORRADE_COMPARE(out, "Custom 0xde Animation::Interpolation::Constant\n");
+}
+
+void InterpolationTest::debugExtrapolation() {
+    Containers::String out;
+    Debug{&out} << Extrapolation::DefaultConstructed << Extrapolation(0xde);
+    CORRADE_COMPARE(out, "Animation::Extrapolation::DefaultConstructed Animation::Extrapolation(0xde)\n");
+}
+
+void InterpolationTest::debugExtrapolationPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << Extrapolation::DefaultConstructed << Debug::packed << Extrapolation(0xde) << Extrapolation::Constant;
+    CORRADE_COMPARE(out, "DefaultConstructed 0xde Animation::Extrapolation::Constant\n");
 }
 
 void InterpolationTest::interpolatorFor() {
@@ -626,35 +652,6 @@ void InterpolationTest::unpackEaseClamped() {
     CORRADE_COMPARE(Math::lerp(Math::unpack<Float, UnsignedShort>(32767), Math::unpack<Float, UnsignedShort>(62258), Easing::backIn(0.3f)), 0.402924f);
     CORRADE_COMPARE(lerpPackedBackInClamped(32767, 62258, 0.3f), 0.402924f);
 }
-
-void InterpolationTest::debugInterpolation() {
-    Containers::String out;
-
-    Debug{&out} << Interpolation::Custom << Interpolation(0xde);
-    CORRADE_COMPARE(out, "Animation::Interpolation::Custom Animation::Interpolation(0xde)\n");
-}
-
-void InterpolationTest::debugInterpolationPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << Interpolation::Custom << Debug::packed << Interpolation(0xde) << Interpolation::Constant;
-    CORRADE_COMPARE(out, "Custom 0xde Animation::Interpolation::Constant\n");
-}
-
-void InterpolationTest::debugExtrapolation() {
-    Containers::String out;
-
-    Debug{&out} << Extrapolation::DefaultConstructed << Extrapolation(0xde);
-    CORRADE_COMPARE(out, "Animation::Extrapolation::DefaultConstructed Animation::Extrapolation(0xde)\n");
-}
-
-void InterpolationTest::debugExtrapolationPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << Extrapolation::DefaultConstructed << Debug::packed << Extrapolation(0xde) << Extrapolation::Constant;
-    CORRADE_COMPARE(out, "DefaultConstructed 0xde Animation::Extrapolation::Constant\n");
-}
-
 
 }}}}
 

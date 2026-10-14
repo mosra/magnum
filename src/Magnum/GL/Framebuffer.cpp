@@ -64,6 +64,36 @@
 
 namespace Magnum { namespace GL {
 
+Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
+    debug << "GL::Framebuffer::Status" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Framebuffer::Status::value: return debug << "::" #value;
+        _c(Complete)
+        _c(IncompleteAttachment)
+        _c(IncompleteMissingAttachment)
+        #ifdef MAGNUM_TARGET_GLES2
+        _c(IncompleteDimensions)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        _c(IncompleteDrawBuffer)
+        _c(IncompleteReadBuffer)
+        #endif
+        _c(Unsupported)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        _c(IncompleteMultisample)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        _c(IncompleteLayerTargets)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
+}
+
 const Framebuffer::DrawAttachment Framebuffer::DrawAttachment::None = Framebuffer::DrawAttachment(GL_NONE);
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::Depth = Framebuffer::BufferAttachment(GL_DEPTH_ATTACHMENT);
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::Stencil = Framebuffer::BufferAttachment(GL_STENCIL_ATTACHMENT);
@@ -446,35 +476,5 @@ void Framebuffer::parameterImplementationDSA(Framebuffer& self, const GLenum par
     glNamedFramebufferParameteri(self._id, parameter, value);
 }
 #endif
-
-Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
-    debug << "GL::Framebuffer::Status" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Framebuffer::Status::value: return debug << "::" #value;
-        _c(Complete)
-        _c(IncompleteAttachment)
-        _c(IncompleteMissingAttachment)
-        #ifdef MAGNUM_TARGET_GLES2
-        _c(IncompleteDimensions)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        _c(IncompleteDrawBuffer)
-        _c(IncompleteReadBuffer)
-        #endif
-        _c(Unsupported)
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        _c(IncompleteMultisample)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        _c(IncompleteLayerTargets)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << GLenum(value) << Debug::nospace << ")";
-}
 
 }}

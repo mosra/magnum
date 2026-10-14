@@ -35,6 +35,31 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct AttributeTest: TestSuite::Tester {
     explicit AttributeTest();
 
+    void debugComponents1();
+    void debugComponents2();
+    void debugComponents3();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugComponents4();
+    #endif
+    void debugComponentsMatrix2();
+    void debugComponentsMatrix3();
+    void debugComponentsMatrix4();
+    void debugComponentsVector4();
+    void debugDataTypeFloat();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugDataTypeInt();
+    void debugDataTypeUnsignedInt();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void debugDataTypeDouble();
+    #endif
+    void debugDataTypeVector3();
+    void debugDataTypeVector4();
+
+    void debugDynamicKind();
+    void debugDynamicComponents();
+    void debugDynamicDataType();
+
     void attributeScalar();
     void attributeScalarInt();
     void attributeScalarUnsignedInt();
@@ -82,35 +107,35 @@ struct AttributeTest: TestSuite::Tester {
     void attributeFromGenericFormatNotAvailable();
 
     void hasVertexFormat();
-
-    void debugComponents1();
-    void debugComponents2();
-    void debugComponents3();
-    #ifndef MAGNUM_TARGET_GLES2
-    void debugComponents4();
-    #endif
-    void debugComponentsMatrix2();
-    void debugComponentsMatrix3();
-    void debugComponentsMatrix4();
-    void debugComponentsVector4();
-    void debugDataTypeFloat();
-    #ifndef MAGNUM_TARGET_GLES2
-    void debugDataTypeInt();
-    void debugDataTypeUnsignedInt();
-    #endif
-    #ifndef MAGNUM_TARGET_GLES
-    void debugDataTypeDouble();
-    #endif
-    void debugDataTypeVector3();
-    void debugDataTypeVector4();
-
-    void debugDynamicKind();
-    void debugDynamicComponents();
-    void debugDynamicDataType();
 };
 
 AttributeTest::AttributeTest() {
-    addTests({&AttributeTest::attributeScalar,
+    addTests({&AttributeTest::debugComponents1,
+              &AttributeTest::debugComponents2,
+              &AttributeTest::debugComponents3,
+              #ifndef MAGNUM_TARGET_GLES2
+              &AttributeTest::debugComponents4,
+              #endif
+              &AttributeTest::debugComponentsMatrix2,
+              &AttributeTest::debugComponentsMatrix3,
+              &AttributeTest::debugComponentsMatrix4,
+              &AttributeTest::debugComponentsVector4,
+              &AttributeTest::debugDataTypeFloat,
+              #ifndef MAGNUM_TARGET_GLES2
+              &AttributeTest::debugDataTypeInt,
+              &AttributeTest::debugDataTypeUnsignedInt,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &AttributeTest::debugDataTypeDouble,
+              #endif
+              &AttributeTest::debugDataTypeVector3,
+              &AttributeTest::debugDataTypeVector4,
+
+              &AttributeTest::debugDynamicKind,
+              &AttributeTest::debugDynamicComponents,
+              &AttributeTest::debugDynamicDataType,
+
+              &AttributeTest::attributeScalar,
               &AttributeTest::attributeScalarInt,
               &AttributeTest::attributeScalarUnsignedInt,
               &AttributeTest::attributeScalarDouble,
@@ -156,32 +181,184 @@ AttributeTest::AttributeTest() {
               &AttributeTest::attributeFromGenericFormatTooManyComponents,
               &AttributeTest::attributeFromGenericFormatNotAvailable,
 
-              &AttributeTest::hasVertexFormat,
+              &AttributeTest::hasVertexFormat});
+}
 
-              &AttributeTest::debugComponents1,
-              &AttributeTest::debugComponents2,
-              &AttributeTest::debugComponents3,
-              #ifndef MAGNUM_TARGET_GLES2
-              &AttributeTest::debugComponents4,
-              #endif
-              &AttributeTest::debugComponentsMatrix2,
-              &AttributeTest::debugComponentsMatrix3,
-              &AttributeTest::debugComponentsMatrix4,
-              &AttributeTest::debugComponentsVector4,
-              &AttributeTest::debugDataTypeFloat,
-              #ifndef MAGNUM_TARGET_GLES2
-              &AttributeTest::debugDataTypeInt,
-              &AttributeTest::debugDataTypeUnsignedInt,
-              #endif
-              #ifndef MAGNUM_TARGET_GLES
-              &AttributeTest::debugDataTypeDouble,
-              #endif
-              &AttributeTest::debugDataTypeVector3,
-              &AttributeTest::debugDataTypeVector4,
+void AttributeTest::debugComponents1() {
+    typedef Attribute<3, Float> Attribute;
 
-              &AttributeTest::debugDynamicKind,
-              &AttributeTest::debugDynamicComponents,
-              &AttributeTest::debugDynamicDataType});
+    Containers::String out;
+    Debug{&out} << Attribute::Components::One << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::Components::One GL::Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponents2() {
+    typedef Attribute<3, Vector2> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponents3() {
+    typedef Attribute<3, Vector3> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AttributeTest::debugComponents4() {
+    typedef Attribute<3, Vector4i> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
+}
+#endif
+
+void AttributeTest::debugComponentsMatrix2() {
+    typedef Attribute<3, Matrix2x2> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponentsMatrix3() {
+    typedef Attribute<3, Matrix3> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponentsMatrix4() {
+    typedef Attribute<3, Matrix4> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponentsVector4() {
+    typedef Attribute<3, Vector4> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugDataTypeFloat() {
+    typedef Attribute<3, Float> Attribute;
+
+    Containers::String out;
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    Debug{&out} << Attribute::DataType::Half << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Half GL::Attribute::DataType(0xdead)\n");
+    #else
+    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AttributeTest::debugDataTypeInt() {
+    typedef Attribute<3, Int> Attribute;
+
+    {
+        Containers::String out;
+        Debug{&out} << Attribute::DataType::Short << Attribute::DataType(0xdead);
+        CORRADE_COMPARE(out, "GL::Attribute::DataType::Short GL::Attribute::DataType(0xdead)\n");
+    }
+
+    /* Unsigned types for signed attributes are not supported on WebGL, exposed
+       just as deprecated for backwards compatibility */
+    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
+    {
+        Containers::String out;
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        #endif
+        Debug{&out} << Attribute::DataType::UnsignedInt << Attribute::DataType::UnsignedByte;
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+        CORRADE_COMPARE(out, "GL::Attribute::DataType::UnsignedInt GL::Attribute::DataType::UnsignedByte\n");
+    }
+    #endif
+}
+
+void AttributeTest::debugDataTypeUnsignedInt() {
+    typedef Attribute<3, UnsignedInt> Attribute;
+
+    {
+        Containers::String out;
+        Debug{&out} << Attribute::DataType::UnsignedShort << Attribute::DataType(0xdead);
+        CORRADE_COMPARE(out, "GL::Attribute::DataType::UnsignedShort GL::Attribute::DataType(0xdead)\n");
+    }
+
+    /* Signed types for unsigned attributes are not supported on WebGL, exposed
+       just as deprecated for backwards compatibility */
+    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
+    {
+        Containers::String out;
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        #endif
+        Debug{&out} << Attribute::DataType::Int << Attribute::DataType::Byte;
+        #ifdef MAGNUM_TARGET_WEBGL
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+        CORRADE_COMPARE(out, "GL::Attribute::DataType::Int GL::Attribute::DataType::Byte\n");
+    }
+    #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AttributeTest::debugDataTypeDouble() {
+    typedef Attribute<3, Double> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::DataType::Double << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Double GL::Attribute::DataType(0xdead)\n");
+}
+#endif
+
+void AttributeTest::debugDataTypeVector3() {
+    typedef Attribute<3, Vector3> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
+}
+
+void AttributeTest::debugDataTypeVector4() {
+    typedef Attribute<3, Vector4> Attribute;
+
+    Containers::String out;
+    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
+}
+
+void AttributeTest::debugDynamicKind() {
+    Containers::String out;
+    Debug{&out} << DynamicAttribute::Kind::GenericNormalized << DynamicAttribute::Kind(0xfe);
+    CORRADE_COMPARE(out, "GL::DynamicAttribute::Kind::GenericNormalized GL::DynamicAttribute::Kind(0xfe)\n");
+}
+
+void AttributeTest::debugDynamicComponents() {
+    Containers::String out;
+    Debug{&out} << DynamicAttribute::Components::Three << DynamicAttribute::Components(0xdead);
+    CORRADE_COMPARE(out, "GL::DynamicAttribute::Components::Three GL::DynamicAttribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugDynamicDataType() {
+    Containers::String out;
+    Debug{&out} << DynamicAttribute::DataType::Float << DynamicAttribute::DataType(0xdead);
+    CORRADE_COMPARE(out, "GL::DynamicAttribute::DataType::Float GL::DynamicAttribute::DataType(0xdead)\n");
 }
 
 void AttributeTest::attributeScalar() {
@@ -1241,183 +1418,6 @@ void AttributeTest::hasVertexFormat() {
         #pragma GCC diagnostic pop
         #endif
     }
-}
-
-void AttributeTest::debugComponents1() {
-    typedef Attribute<3, Float> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::Components::One << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::Components::One GL::Attribute::Components(0xdead)\n");
-}
-
-void AttributeTest::debugComponents2() {
-    typedef Attribute<3, Vector2> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
-}
-
-void AttributeTest::debugComponents3() {
-    typedef Attribute<3, Vector3> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
-}
-
-#ifndef MAGNUM_TARGET_GLES2
-void AttributeTest::debugComponents4() {
-    typedef Attribute<3, Vector4i> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
-}
-#endif
-
-void AttributeTest::debugComponentsMatrix2() {
-    typedef Attribute<3, Matrix2x2> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
-}
-
-void AttributeTest::debugComponentsMatrix3() {
-    typedef Attribute<3, Matrix3> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
-}
-
-void AttributeTest::debugComponentsMatrix4() {
-    typedef Attribute<3, Matrix4> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
-}
-
-void AttributeTest::debugComponentsVector4() {
-    typedef Attribute<3, Vector4> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
-}
-
-void AttributeTest::debugDataTypeFloat() {
-    typedef Attribute<3, Float> Attribute;
-
-    Containers::String out;
-    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    Debug{&out} << Attribute::DataType::Half << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::DataType::Half GL::Attribute::DataType(0xdead)\n");
-    #else
-    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
-    #endif
-}
-
-#ifndef MAGNUM_TARGET_GLES2
-void AttributeTest::debugDataTypeInt() {
-    typedef Attribute<3, Int> Attribute;
-
-    {
-        Containers::String out;
-        Debug{&out} << Attribute::DataType::Short << Attribute::DataType(0xdead);
-        CORRADE_COMPARE(out, "GL::Attribute::DataType::Short GL::Attribute::DataType(0xdead)\n");
-    }
-
-    /* Unsigned types for signed attributes are not supported on WebGL, exposed
-       just as deprecated for backwards compatibility */
-    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
-    {
-        Containers::String out;
-        #ifdef MAGNUM_TARGET_WEBGL
-        CORRADE_IGNORE_DEPRECATED_PUSH
-        #endif
-        Debug{&out} << Attribute::DataType::UnsignedInt << Attribute::DataType::UnsignedByte;
-        #ifdef MAGNUM_TARGET_WEBGL
-        CORRADE_IGNORE_DEPRECATED_POP
-        #endif
-        CORRADE_COMPARE(out, "GL::Attribute::DataType::UnsignedInt GL::Attribute::DataType::UnsignedByte\n");
-    }
-    #endif
-}
-
-void AttributeTest::debugDataTypeUnsignedInt() {
-    typedef Attribute<3, UnsignedInt> Attribute;
-
-    {
-        Containers::String out;
-        Debug{&out} << Attribute::DataType::UnsignedShort << Attribute::DataType(0xdead);
-        CORRADE_COMPARE(out, "GL::Attribute::DataType::UnsignedShort GL::Attribute::DataType(0xdead)\n");
-    }
-
-    /* Signed types for unsigned attributes are not supported on WebGL, exposed
-       just as deprecated for backwards compatibility */
-    #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_BUILD_DEPRECATED)
-    {
-        Containers::String out;
-        #ifdef MAGNUM_TARGET_WEBGL
-        CORRADE_IGNORE_DEPRECATED_PUSH
-        #endif
-        Debug{&out} << Attribute::DataType::Int << Attribute::DataType::Byte;
-        #ifdef MAGNUM_TARGET_WEBGL
-        CORRADE_IGNORE_DEPRECATED_POP
-        #endif
-        CORRADE_COMPARE(out, "GL::Attribute::DataType::Int GL::Attribute::DataType::Byte\n");
-    }
-    #endif
-}
-#endif
-
-#ifndef MAGNUM_TARGET_GLES
-void AttributeTest::debugDataTypeDouble() {
-    typedef Attribute<3, Double> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::DataType::Double << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::DataType::Double GL::Attribute::DataType(0xdead)\n");
-}
-#endif
-
-void AttributeTest::debugDataTypeVector3() {
-    typedef Attribute<3, Vector3> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
-}
-
-void AttributeTest::debugDataTypeVector4() {
-    typedef Attribute<3, Vector4> Attribute;
-
-    Containers::String out;
-    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out, "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
-}
-
-void AttributeTest::debugDynamicKind() {
-    Containers::String out;
-    Debug{&out} << DynamicAttribute::Kind::GenericNormalized << DynamicAttribute::Kind(0xfe);
-    CORRADE_COMPARE(out, "GL::DynamicAttribute::Kind::GenericNormalized GL::DynamicAttribute::Kind(0xfe)\n");
-}
-
-void AttributeTest::debugDynamicComponents() {
-    Containers::String out;
-    Debug{&out} << DynamicAttribute::Components::Three << DynamicAttribute::Components(0xdead);
-    CORRADE_COMPARE(out, "GL::DynamicAttribute::Components::Three GL::DynamicAttribute::Components(0xdead)\n");
-}
-
-void AttributeTest::debugDynamicDataType() {
-    Containers::String out;
-    Debug{&out} << DynamicAttribute::DataType::Float << DynamicAttribute::DataType(0xdead);
-    CORRADE_COMPARE(out, "GL::DynamicAttribute::DataType::Float GL::DynamicAttribute::DataType(0xdead)\n");
 }
 
 }}}}

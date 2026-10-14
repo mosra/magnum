@@ -37,6 +37,10 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct SamplerTest: TestSuite::Tester {
     explicit SamplerTest();
 
+    void debugFilter();
+    void debugMipmap();
+    void debugWrapping();
+
     void mapFilter();
     void mapFilterInvalid();
 
@@ -57,14 +61,14 @@ struct SamplerTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
-
-    void debugFilter();
-    void debugMipmap();
-    void debugWrapping();
 };
 
 SamplerTest::SamplerTest() {
-    addTests({&SamplerTest::mapFilter,
+    addTests({&SamplerTest::debugFilter,
+              &SamplerTest::debugMipmap,
+              &SamplerTest::debugWrapping,
+
+              &SamplerTest::mapFilter,
               &SamplerTest::mapFilterInvalid,
 
               &SamplerTest::mapMipmap,
@@ -87,11 +91,7 @@ SamplerTest::SamplerTest() {
               &SamplerTest::createInfoSetWrappingSingleValue<Magnum::SamplerWrapping>,
 
               &SamplerTest::constructNoCreate,
-              &SamplerTest::constructCopy,
-
-              &SamplerTest::debugFilter,
-              &SamplerTest::debugMipmap,
-              &SamplerTest::debugWrapping});
+              &SamplerTest::constructCopy});
 }
 
 template<class> struct SamplerTypeTraits;

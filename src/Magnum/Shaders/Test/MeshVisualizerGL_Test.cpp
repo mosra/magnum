@@ -38,6 +38,15 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct MeshVisualizerGL_Test: TestSuite::Tester {
     explicit MeshVisualizerGL_Test();
 
+    void debugFlag2D();
+    void debugFlag3D();
+    void debugFlags2D();
+    void debugFlags3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugFlagsSupersets2D();
+    void debugFlagsSupersets3D();
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     void configurationSetJointCountInvalid2D();
     void configurationSetJointCountInvalid3D();
@@ -50,15 +59,6 @@ struct MeshVisualizerGL_Test: TestSuite::Tester {
     void constructCopy3D();
 
     void vertexIndexSameAsObjectId();
-
-    void debugFlag2D();
-    void debugFlag3D();
-    void debugFlags2D();
-    void debugFlags3D();
-    #ifndef MAGNUM_TARGET_GLES2
-    void debugFlagsSupersets2D();
-    void debugFlagsSupersets3D();
-    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -83,6 +83,16 @@ const struct {
 #endif
 
 MeshVisualizerGL_Test::MeshVisualizerGL_Test() {
+    addTests({&MeshVisualizerGL_Test::debugFlag2D,
+              &MeshVisualizerGL_Test::debugFlag3D,
+              &MeshVisualizerGL_Test::debugFlags2D,
+              &MeshVisualizerGL_Test::debugFlags3D,
+              #ifndef MAGNUM_TARGET_GLES2
+              &MeshVisualizerGL_Test::debugFlagsSupersets2D,
+              &MeshVisualizerGL_Test::debugFlagsSupersets3D,
+              #endif
+              });
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({
         &MeshVisualizerGL_Test::configurationSetJointCountInvalid2D,
@@ -90,112 +100,29 @@ MeshVisualizerGL_Test::MeshVisualizerGL_Test() {
         Containers::arraySize(ConfigurationSetJointCountInvalidData));
     #endif
 
-    addTests({
-        &MeshVisualizerGL_Test::constructNoCreate2D,
-        &MeshVisualizerGL_Test::constructNoCreate3D,
+    addTests({&MeshVisualizerGL_Test::constructNoCreate2D,
+              &MeshVisualizerGL_Test::constructNoCreate3D,
 
-        &MeshVisualizerGL_Test::constructCopy2D,
-        &MeshVisualizerGL_Test::constructCopy3D,
+              &MeshVisualizerGL_Test::constructCopy2D,
+              &MeshVisualizerGL_Test::constructCopy3D,
 
-        &MeshVisualizerGL_Test::vertexIndexSameAsObjectId,
-
-        &MeshVisualizerGL_Test::debugFlag2D,
-        &MeshVisualizerGL_Test::debugFlag3D,
-        &MeshVisualizerGL_Test::debugFlags2D,
-        &MeshVisualizerGL_Test::debugFlags3D,
-        #ifndef MAGNUM_TARGET_GLES2
-        &MeshVisualizerGL_Test::debugFlagsSupersets2D,
-        &MeshVisualizerGL_Test::debugFlagsSupersets3D,
-        #endif
-    });
-}
-
-#ifndef MAGNUM_TARGET_GLES2
-void MeshVisualizerGL_Test::configurationSetJointCountInvalid2D() {
-    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    MeshVisualizerGL2D::Configuration configuration;
-
-    Containers::String out;
-    Error redirectError{&out};
-    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
-    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): {}\n", data.message));
-}
-
-void MeshVisualizerGL_Test::configurationSetJointCountInvalid3D() {
-    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    MeshVisualizerGL3D::Configuration configuration;
-
-    Containers::String out;
-    Error redirectError{&out};
-    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
-    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): {}\n", data.message));
-}
-#endif
-
-void MeshVisualizerGL_Test::constructNoCreate2D() {
-    {
-        MeshVisualizerGL2D shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), MeshVisualizerGL2D::Flags{});
-    }
-
-    CORRADE_VERIFY(true);
-}
-
-void MeshVisualizerGL_Test::constructNoCreate3D() {
-    {
-        MeshVisualizerGL3D shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-        CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flags{});
-    }
-
-    CORRADE_VERIFY(true);
-}
-
-void MeshVisualizerGL_Test::constructCopy2D() {
-    CORRADE_VERIFY(!std::is_copy_constructible<MeshVisualizerGL2D>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<MeshVisualizerGL2D>{});
-}
-
-void MeshVisualizerGL_Test::constructCopy3D() {
-    CORRADE_VERIFY(!std::is_copy_constructible<MeshVisualizerGL3D>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<MeshVisualizerGL3D>{});
-}
-
-void MeshVisualizerGL_Test::vertexIndexSameAsObjectId() {
-    #ifdef MAGNUM_TARGET_GLES2
-    CORRADE_SKIP("Object ID is not available on ES2.");
-    #else
-    CORRADE_COMPARE(MeshVisualizerGL2D::VertexIndex::Location, GenericGL2D::ObjectId::Location);
-    CORRADE_COMPARE(MeshVisualizerGL3D::VertexIndex::Location, GenericGL3D::ObjectId::Location);
-    #endif
+              &MeshVisualizerGL_Test::vertexIndexSameAsObjectId});
 }
 
 void MeshVisualizerGL_Test::debugFlag2D() {
     Containers::String out;
-
     Debug{&out} << MeshVisualizerGL2D::Flag::Wireframe << MeshVisualizerGL2D::Flag(0xbad00000);
     CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::Wireframe Shaders::MeshVisualizerGL2D::Flag(0xbad00000)\n");
 }
 
 void MeshVisualizerGL_Test::debugFlag3D() {
     Containers::String out;
-
     Debug{&out} << MeshVisualizerGL3D::Flag::Wireframe << MeshVisualizerGL3D::Flag(0xbad00000);
     CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::Wireframe Shaders::MeshVisualizerGL3D::Flag(0xbad00000)\n");
 }
 
 void MeshVisualizerGL_Test::debugFlags2D() {
     Containers::String out;
-
     Debug{&out} << (MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader) << MeshVisualizerGL2D::Flags{};
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL2D::Flag::Wireframe|Shaders::MeshVisualizerGL2D::Flag::NoGeometryShader Shaders::MeshVisualizerGL2D::Flags{}\n");
@@ -206,7 +133,6 @@ void MeshVisualizerGL_Test::debugFlags2D() {
 
 void MeshVisualizerGL_Test::debugFlags3D() {
     Containers::String out;
-
     Debug{&out} << (MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader) << MeshVisualizerGL3D::Flags{};
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     CORRADE_COMPARE(out, "Shaders::MeshVisualizerGL3D::Flag::Wireframe|Shaders::MeshVisualizerGL3D::Flag::NoGeometryShader Shaders::MeshVisualizerGL3D::Flags{}\n");
@@ -306,6 +232,75 @@ void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
     #endif
 }
 #endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGL_Test::configurationSetJointCountInvalid2D() {
+    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    MeshVisualizerGL2D::Configuration configuration;
+
+    Containers::String out;
+    Error redirectError{&out};
+    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
+    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): {}\n", data.message));
+}
+
+void MeshVisualizerGL_Test::configurationSetJointCountInvalid3D() {
+    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    MeshVisualizerGL3D::Configuration configuration;
+
+    Containers::String out;
+    Error redirectError{&out};
+    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
+    CORRADE_COMPARE(out, Utility::format("Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): {}\n", data.message));
+}
+#endif
+
+void MeshVisualizerGL_Test::constructNoCreate2D() {
+    {
+        MeshVisualizerGL2D shader{NoCreate};
+        CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), MeshVisualizerGL2D::Flags{});
+    }
+
+    CORRADE_VERIFY(true);
+}
+
+void MeshVisualizerGL_Test::constructNoCreate3D() {
+    {
+        MeshVisualizerGL3D shader{NoCreate};
+        CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flags{});
+    }
+
+    CORRADE_VERIFY(true);
+}
+
+void MeshVisualizerGL_Test::constructCopy2D() {
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshVisualizerGL2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshVisualizerGL2D>{});
+}
+
+void MeshVisualizerGL_Test::constructCopy3D() {
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshVisualizerGL3D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshVisualizerGL3D>{});
+}
+
+void MeshVisualizerGL_Test::vertexIndexSameAsObjectId() {
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("Object ID is not available on ES2.");
+    #else
+    CORRADE_COMPARE(MeshVisualizerGL2D::VertexIndex::Location, GenericGL2D::ObjectId::Location);
+    CORRADE_COMPARE(MeshVisualizerGL3D::VertexIndex::Location, GenericGL3D::ObjectId::Location);
+    #endif
+}
 
 }}}}
 

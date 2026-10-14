@@ -37,21 +37,27 @@ namespace Magnum { namespace Audio { namespace Test { namespace {
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
+    void debugHrtfStatus();
+
     void constructNoCreate();
     void constructCopyMove();
 
     void extensions();
-
-    void debugHrtfStatus();
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::constructNoCreate,
+    addTests({&ContextTest::debugHrtfStatus,
+
+              &ContextTest::constructNoCreate,
               &ContextTest::constructCopyMove,
 
-              &ContextTest::extensions,
+              &ContextTest::extensions});
+}
 
-              &ContextTest::debugHrtfStatus});
+void ContextTest::debugHrtfStatus() {
+    Containers::String out;
+    Debug(&out) << Context::HrtfStatus::Denied << Context::HrtfStatus(0xdead);
+    CORRADE_COMPARE(out, "Audio::Context::HrtfStatus::Denied Audio::Context::HrtfStatus(0xdead)\n");
 }
 
 void ContextTest::constructNoCreate() {
@@ -100,12 +106,6 @@ void ContextTest::extensions() {
 
         previous = e.string();
     }
-}
-
-void ContextTest::debugHrtfStatus() {
-    Containers::String out;
-    Debug(&out) << Context::HrtfStatus::Denied << Context::HrtfStatus(0xdead);
-    CORRADE_COMPARE(out, "Audio::Context::HrtfStatus::Denied Audio::Context::HrtfStatus(0xdead)\n");
 }
 
 }}}}

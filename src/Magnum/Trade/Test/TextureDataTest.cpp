@@ -34,21 +34,34 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct TextureDataTest: TestSuite::Tester {
     explicit TextureDataTest();
 
+    void debugType();
+    void debugTypePacked();
+
     void construct();
     void constructCopy();
     void constructMove();
-
-    void debugType();
-    void debugTypePacked();
 };
 
 TextureDataTest::TextureDataTest() {
-    addTests({&TextureDataTest::construct,
-              &TextureDataTest::constructCopy,
-              &TextureDataTest::constructMove,
+    addTests({&TextureDataTest::debugType,
+              &TextureDataTest::debugTypePacked,
 
-              &TextureDataTest::debugType,
-              &TextureDataTest::debugTypePacked});
+              &TextureDataTest::construct,
+              &TextureDataTest::constructCopy,
+              &TextureDataTest::constructMove});
+}
+
+void TextureDataTest::debugType() {
+    Containers::String out;
+    Debug(&out) << TextureType::Texture3D << TextureType(0xbe);
+    CORRADE_COMPARE(out, "Trade::TextureType::Texture3D Trade::TextureType(0xbe)\n");
+}
+
+void TextureDataTest::debugTypePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << TextureType::Texture3D << Debug::packed << TextureType(0xbe) << TextureType::Texture2D;
+    CORRADE_COMPARE(out, "Texture3D 0xbe Trade::TextureType::Texture2D\n");
 }
 
 void TextureDataTest::construct() {
@@ -115,20 +128,6 @@ void TextureDataTest::constructMove() {
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<TextureData>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<TextureData>::value);
-}
-
-void TextureDataTest::debugType() {
-    Containers::String out;
-
-    Debug(&out) << TextureType::Texture3D << TextureType(0xbe);
-    CORRADE_COMPARE(out, "Trade::TextureType::Texture3D Trade::TextureType(0xbe)\n");
-}
-
-void TextureDataTest::debugTypePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug(&out) << Debug::packed << TextureType::Texture3D << Debug::packed << TextureType(0xbe) << TextureType::Texture2D;
-    CORRADE_COMPARE(out, "Texture3D 0xbe Trade::TextureType::Texture2D\n");
 }
 
 }}}}

@@ -37,53 +37,32 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct VertexColorGL_Test: TestSuite::Tester {
     explicit VertexColorGL_Test();
 
-    template<UnsignedInt dimensions> void constructNoCreate();
-    template<UnsignedInt dimensions> void constructCopy();
-
     void debugFlag();
     void debugFlags();
     #ifndef MAGNUM_TARGET_GLES2
     void debugFlagsSupersets();
     #endif
+
+    template<UnsignedInt dimensions> void constructNoCreate();
+    template<UnsignedInt dimensions> void constructCopy();
 };
 
 VertexColorGL_Test::VertexColorGL_Test() {
-    addTests<VertexColorGL_Test>({
-        &VertexColorGL_Test::constructNoCreate<2>,
-        &VertexColorGL_Test::constructNoCreate<3>,
+    addTests({&VertexColorGL_Test::debugFlag,
+              &VertexColorGL_Test::debugFlags,
+              #ifndef MAGNUM_TARGET_GLES2
+              &VertexColorGL_Test::debugFlagsSupersets,
+              #endif
 
-        &VertexColorGL_Test::constructCopy<2>,
-        &VertexColorGL_Test::constructCopy<3>,
+              &VertexColorGL_Test::constructNoCreate<2>,
+              &VertexColorGL_Test::constructNoCreate<3>,
 
-        &VertexColorGL_Test::debugFlag,
-        &VertexColorGL_Test::debugFlags,
-        #ifndef MAGNUM_TARGET_GLES2
-        &VertexColorGL_Test::debugFlagsSupersets
-        #endif
-    });
-}
-
-template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    {
-        VertexColorGL<dimensions> shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-    }
-
-    CORRADE_VERIFY(true);
-}
-
-template<UnsignedInt dimensions> void VertexColorGL_Test::constructCopy() {
-    setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    CORRADE_VERIFY(!std::is_copy_constructible<VertexColorGL<dimensions>>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<VertexColorGL<dimensions>>{});
+              &VertexColorGL_Test::constructCopy<2>,
+              &VertexColorGL_Test::constructCopy<3>});
 }
 
 void VertexColorGL_Test::debugFlag() {
     Containers::String out;
-
     #ifndef MAGNUM_TARGET_GLES2
     Debug{&out} << VertexColorGL3D::Flag::UniformBuffers << VertexColorGL3D::Flag(0xf0);
     CORRADE_COMPARE(out, "Shaders::VertexColorGL::Flag::UniformBuffers Shaders::VertexColorGL::Flag(0xf0)\n");
@@ -95,7 +74,6 @@ void VertexColorGL_Test::debugFlag() {
 
 void VertexColorGL_Test::debugFlags() {
     Containers::String out;
-
     #ifndef MAGNUM_TARGET_GLES2
     Debug{&out} << (VertexColorGL3D::Flag::UniformBuffers|VertexColorGL3D::Flag(0xf0)) << VertexColorGL3D::Flags{};
     CORRADE_COMPARE(out, "Shaders::VertexColorGL::Flag::UniformBuffers|Shaders::VertexColorGL::Flag(0xf0) Shaders::VertexColorGL::Flags{}\n");
@@ -127,6 +105,24 @@ void VertexColorGL_Test::debugFlagsSupersets() {
     #endif
 }
 #endif
+
+template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    {
+        VertexColorGL<dimensions> shader{NoCreate};
+        CORRADE_COMPARE(shader.id(), 0);
+    }
+
+    CORRADE_VERIFY(true);
+}
+
+template<UnsignedInt dimensions> void VertexColorGL_Test::constructCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_VERIFY(!std::is_copy_constructible<VertexColorGL<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<VertexColorGL<dimensions>>{});
+}
 
 }}}}
 

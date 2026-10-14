@@ -58,6 +58,60 @@ namespace Magnum { namespace Shaders {
 
 using namespace Containers::Literals;
 
+namespace Implementation {
+
+Debug& operator<<(Debug& debug, const VectorGLFlag value) {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of UniformBuffers, printing just one would result in
+       `Flag::MultiDraw|Flag(0x8)` in the output. */
+    if(value == VectorGLFlag(UnsignedByte(VectorGLFlag::MultiDraw|VectorGLFlag::ShaderStorageBuffers)))
+        return debug << VectorGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << VectorGLFlag::ShaderStorageBuffers;
+    #endif
+
+    debug << "Shaders::VectorGL::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case VectorGLFlag::v: return debug << "::" #v;
+        _c(TextureTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
+        _c(MultiDraw)
+        _c(TextureArrays)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const VectorGLFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::VectorGL::Flags{}", {
+        VectorGLFlag::TextureTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers, meaning printing just one
+           would result in `Flag::MultiDraw|Flag(0x8)` in the output. So we
+           pass both and let the Flag printer deal with that. */
+        VectorGLFlag(UnsignedByte(VectorGLFlag::MultiDraw|VectorGLFlag::ShaderStorageBuffers)),
+        #endif
+        VectorGLFlag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        VectorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
+        VectorGLFlag::UniformBuffers,
+        VectorGLFlag::TextureArrays
+        #endif
+    });
+}
+
+}
+
 namespace {
     enum: Int { TextureUnit = 6 };
 
@@ -520,59 +574,5 @@ template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bin
 
 template class MAGNUM_SHADERS_EXPORT VectorGL<2>;
 template class MAGNUM_SHADERS_EXPORT VectorGL<3>;
-
-namespace Implementation {
-
-Debug& operator<<(Debug& debug, const VectorGLFlag value) {
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /* Special case coming from the Flags printer. As both flags are a superset
-       of UniformBuffers, printing just one would result in
-       `Flag::MultiDraw|Flag(0x8)` in the output. */
-    if(value == VectorGLFlag(UnsignedByte(VectorGLFlag::MultiDraw|VectorGLFlag::ShaderStorageBuffers)))
-        return debug << VectorGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << VectorGLFlag::ShaderStorageBuffers;
-    #endif
-
-    debug << "Shaders::VectorGL::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case VectorGLFlag::v: return debug << "::" #v;
-        _c(TextureTransformation)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(UniformBuffers)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorageBuffers)
-        #endif
-        _c(MultiDraw)
-        _c(TextureArrays)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const VectorGLFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::VectorGL::Flags{}", {
-        VectorGLFlag::TextureTransformation,
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Both are a superset of UniformBuffers, meaning printing just one
-           would result in `Flag::MultiDraw|Flag(0x8)` in the output. So we
-           pass both and let the Flag printer deal with that. */
-        VectorGLFlag(UnsignedByte(VectorGLFlag::MultiDraw|VectorGLFlag::ShaderStorageBuffers)),
-        #endif
-        VectorGLFlag::MultiDraw, /* Superset of UniformBuffers */
-        #ifndef MAGNUM_TARGET_WEBGL
-        VectorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
-        #endif
-        VectorGLFlag::UniformBuffers,
-        VectorGLFlag::TextureArrays
-        #endif
-    });
-}
-
-}
 
 }}

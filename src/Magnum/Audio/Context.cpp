@@ -42,6 +42,25 @@
 
 namespace Magnum { namespace Audio {
 
+Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
+    debug << "Audio::Context::HrtfStatus" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Context::HrtfStatus::value: return debug << "::" #value;
+        _c(Disabled)
+        _c(Enabled)
+        _c(Denied)
+        _c(Required)
+        _c(Detected)
+        _c(UnsupportedFormat)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << ALenum(value) << Debug::nospace << ")";
+}
+
 namespace {
 
 /* Binary search is performed on the extensions, thus they have to be sorted
@@ -75,25 +94,6 @@ const Extension* findExtension(const Containers::StringView extension) {
 Containers::ArrayView<const Extension> Extension::extensions() {
     /* GCC 4.8 needs an explicit cast */
     return Containers::arrayView(ExtensionList);
-}
-
-Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
-    debug << "Audio::Context::HrtfStatus" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Context::HrtfStatus::value: return debug << "::" #value;
-        _c(Disabled)
-        _c(Enabled)
-        _c(Denied)
-        _c(Required)
-        _c(Detected)
-        _c(UnsupportedFormat)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << ALenum(value) << Debug::nospace << ")";
 }
 
 namespace {

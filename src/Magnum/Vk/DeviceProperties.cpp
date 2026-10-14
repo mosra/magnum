@@ -51,6 +51,102 @@
 
 namespace Magnum { namespace Vk {
 
+Debug& operator<<(Debug& debug, const DeviceType value) {
+    debug << "Vk::DeviceType" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::DeviceType::value: return debug << "::" << Debug::nospace << #value;
+        _c(Other)
+        _c(IntegratedGpu)
+        _c(DiscreteGpu)
+        _c(VirtualGpu)
+        _c(Cpu)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Vulkan docs have the values in decimal, so not converting to hex */
+    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const DeviceDriver value) {
+    debug << "Vk::DeviceDriver" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::DeviceDriver::value: return debug << "::" << Debug::nospace << #value;
+        _c(Unknown)
+        _c(AmdOpenSource)
+        _c(AmdProprietary)
+        _c(ArmProprietary)
+        _c(BroadcomProprietary)
+        _c(GgpProprietary)
+        _c(GoogleSwiftShader)
+        _c(ImaginationProprietary)
+        _c(IntelOpenSourceMesa)
+        _c(IntelProprietaryWindows)
+        _c(MesaLlvmpipe)
+        _c(MesaRadv)
+        _c(MoltenVk)
+        _c(NVidiaProprietary)
+        _c(QualcommProprietary)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Vulkan docs have the values in decimal, so not converting to hex */
+    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const QueueFlag value) {
+    debug << "Vk::QueueFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::QueueFlag::value: return debug << "::" << Debug::nospace << #value;
+        _c(Graphics)
+        _c(Compute)
+        _c(Transfer)
+        _c(SparseBinding)
+        _c(Protected)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Flag bits should be in hex, unlike plain values */
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const QueueFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Vk::QueueFlags{}", {
+        Vk::QueueFlag::Graphics,
+        Vk::QueueFlag::Compute,
+        Vk::QueueFlag::Transfer,
+        Vk::QueueFlag::SparseBinding,
+        Vk::QueueFlag::Protected});
+}
+
+Debug& operator<<(Debug& debug, const MemoryHeapFlag value) {
+    debug << "Vk::MemoryHeapFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::MemoryHeapFlag::value: return debug << "::" << Debug::nospace << #value;
+        _c(DeviceLocal)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Flag bits should be in hex, unlike plain values */
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MemoryHeapFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Vk::MemoryHeapFlags{}", {
+        Vk::MemoryHeapFlag::DeviceLocal});
+}
+
 struct DeviceProperties::State {
     explicit State(Instance& instance, VkPhysicalDevice handle);
 
@@ -665,102 +761,6 @@ DeviceProperties pickDevice(Instance& instance) {
     if(device)
         return *Utility::move(device);
     std::exit(1); /* LCOV_EXCL_LINE */
-}
-
-Debug& operator<<(Debug& debug, const DeviceType value) {
-    debug << "Vk::DeviceType" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Vk::DeviceType::value: return debug << "::" << Debug::nospace << #value;
-        _c(Other)
-        _c(IntegratedGpu)
-        _c(DiscreteGpu)
-        _c(VirtualGpu)
-        _c(Cpu)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    /* Vulkan docs have the values in decimal, so not converting to hex */
-    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const DeviceDriver value) {
-    debug << "Vk::DeviceDriver" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Vk::DeviceDriver::value: return debug << "::" << Debug::nospace << #value;
-        _c(Unknown)
-        _c(AmdOpenSource)
-        _c(AmdProprietary)
-        _c(ArmProprietary)
-        _c(BroadcomProprietary)
-        _c(GgpProprietary)
-        _c(GoogleSwiftShader)
-        _c(ImaginationProprietary)
-        _c(IntelOpenSourceMesa)
-        _c(IntelProprietaryWindows)
-        _c(MesaLlvmpipe)
-        _c(MesaRadv)
-        _c(MoltenVk)
-        _c(NVidiaProprietary)
-        _c(QualcommProprietary)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    /* Vulkan docs have the values in decimal, so not converting to hex */
-    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const QueueFlag value) {
-    debug << "Vk::QueueFlag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Vk::QueueFlag::value: return debug << "::" << Debug::nospace << #value;
-        _c(Graphics)
-        _c(Compute)
-        _c(Transfer)
-        _c(SparseBinding)
-        _c(Protected)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    /* Flag bits should be in hex, unlike plain values */
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const QueueFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Vk::QueueFlags{}", {
-        Vk::QueueFlag::Graphics,
-        Vk::QueueFlag::Compute,
-        Vk::QueueFlag::Transfer,
-        Vk::QueueFlag::SparseBinding,
-        Vk::QueueFlag::Protected});
-}
-
-Debug& operator<<(Debug& debug, const MemoryHeapFlag value) {
-    debug << "Vk::MemoryHeapFlag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Vk::MemoryHeapFlag::value: return debug << "::" << Debug::nospace << #value;
-        _c(DeviceLocal)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    /* Flag bits should be in hex, unlike plain values */
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedInt(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const MemoryHeapFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Vk::MemoryHeapFlags{}", {
-        Vk::MemoryHeapFlag::DeviceLocal});
 }
 
 }}

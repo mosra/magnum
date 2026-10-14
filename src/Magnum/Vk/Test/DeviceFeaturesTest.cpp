@@ -34,17 +34,29 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct DeviceFeaturesTest: TestSuite::Tester {
     explicit DeviceFeaturesTest();
 
-    void mapping();
-
     void debugFeature();
     void debugFeatures();
+
+    void mapping();
 };
 
 DeviceFeaturesTest::DeviceFeaturesTest() {
-    addTests({&DeviceFeaturesTest::mapping,
+    addTests({&DeviceFeaturesTest::debugFeature,
+              &DeviceFeaturesTest::debugFeatures,
 
-              &DeviceFeaturesTest::debugFeature,
-              &DeviceFeaturesTest::debugFeatures});
+              &DeviceFeaturesTest::mapping});
+}
+
+void DeviceFeaturesTest::debugFeature() {
+    Containers::String out;
+    Debug{&out} << DeviceFeature::FullDrawIndexUnsignedInt << DeviceFeature::VulkanMemoryModel << DeviceFeature(0xab);
+    CORRADE_COMPARE(out, "Vk::DeviceFeature::FullDrawIndexUnsignedInt Vk::DeviceFeature::VulkanMemoryModel Vk::DeviceFeature(0xab)\n");
+}
+
+void DeviceFeaturesTest::debugFeatures() {
+    Containers::String out;
+    Debug{&out} << (DeviceFeature::FullDrawIndexUnsignedInt|DeviceFeature::VulkanMemoryModel|DeviceFeature(0xab)|DeviceFeature(0xcc)) << DeviceFeatures{};
+    CORRADE_COMPARE(out, "Vk::DeviceFeature::FullDrawIndexUnsignedInt|Vk::DeviceFeature::VulkanMemoryModel|Vk::DeviceFeature(0xab)|Vk::DeviceFeature(0xcc) Vk::DeviceFeatures{}\n");
 }
 
 void DeviceFeaturesTest::mapping() {
@@ -91,18 +103,6 @@ void DeviceFeaturesTest::mapping() {
     }
 
     CORRADE_COMPARE(firstUnhandled, 0xff);
-}
-
-void DeviceFeaturesTest::debugFeature() {
-    Containers::String out;
-    Debug{&out} << DeviceFeature::FullDrawIndexUnsignedInt << DeviceFeature::VulkanMemoryModel << DeviceFeature(0xab);
-    CORRADE_COMPARE(out, "Vk::DeviceFeature::FullDrawIndexUnsignedInt Vk::DeviceFeature::VulkanMemoryModel Vk::DeviceFeature(0xab)\n");
-}
-
-void DeviceFeaturesTest::debugFeatures() {
-    Containers::String out;
-    Debug{&out} << (DeviceFeature::FullDrawIndexUnsignedInt|DeviceFeature::VulkanMemoryModel|DeviceFeature(0xab)|DeviceFeature(0xcc)) << DeviceFeatures{};
-    CORRADE_COMPARE(out, "Vk::DeviceFeature::FullDrawIndexUnsignedInt|Vk::DeviceFeature::VulkanMemoryModel|Vk::DeviceFeature(0xab)|Vk::DeviceFeature(0xcc) Vk::DeviceFeatures{}\n");
 }
 
 }}}}

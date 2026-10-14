@@ -34,8 +34,6 @@ namespace Magnum { namespace Test { namespace {
 struct ImageFlagsTest: TestSuite::Tester {
     explicit ImageFlagsTest();
 
-    void matchingValues();
-
     void debugFlag1D();
     void debugFlag2D();
     void debugFlag3D();
@@ -49,12 +47,12 @@ struct ImageFlagsTest: TestSuite::Tester {
     void debugFlags1DPacked();
     void debugFlags2DPacked();
     void debugFlags3DPacked();
+
+    void matchingValues();
 };
 
 ImageFlagsTest::ImageFlagsTest() {
-    addTests({&ImageFlagsTest::matchingValues,
-
-              &ImageFlagsTest::debugFlag1D,
+    addTests({&ImageFlagsTest::debugFlag1D,
               &ImageFlagsTest::debugFlag2D,
               &ImageFlagsTest::debugFlag3D,
               &ImageFlagsTest::debugFlag1DPacked,
@@ -66,11 +64,9 @@ ImageFlagsTest::ImageFlagsTest() {
               &ImageFlagsTest::debugFlags3D,
               &ImageFlagsTest::debugFlags1DPacked,
               &ImageFlagsTest::debugFlags2DPacked,
-              &ImageFlagsTest::debugFlags3DPacked});
-}
+              &ImageFlagsTest::debugFlags3DPacked,
 
-void ImageFlagsTest::matchingValues() {
-    CORRADE_COMPARE(UnsignedShort(ImageFlag3D::Array), UnsignedShort(ImageFlag2D::Array));
+              &ImageFlagsTest::matchingValues});
 }
 
 void ImageFlagsTest::debugFlag1D() {
@@ -153,6 +149,10 @@ void ImageFlagsTest::debugFlags3DPacked() {
     /* Last is not packed, ones before should not make any flags persistent */
     Debug{&out} << Debug::packed << (ImageFlag3D::Array|ImageFlag3D::CubeMap |ImageFlag3D(0xcaf0)) << Debug::packed << ImageFlags3D{} << ImageFlag3D::Array;
     CORRADE_COMPARE(out, "Array|CubeMap|0xcaf0 {} ImageFlag3D::Array\n");
+}
+
+void ImageFlagsTest::matchingValues() {
+    CORRADE_COMPARE(UnsignedShort(ImageFlag3D::Array), UnsignedShort(ImageFlag2D::Array));
 }
 
 }}}

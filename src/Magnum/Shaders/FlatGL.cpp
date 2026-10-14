@@ -58,6 +58,90 @@ namespace Magnum { namespace Shaders {
 
 using namespace Containers::Literals;
 
+namespace Implementation {
+
+Debug& operator<<(Debug& debug, const FlatGLFlag value) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Special case coming from the FlatGLFlags printer. As both flags are a
+       superset of ObjectId, printing just one would result in
+       `Flag::InstancedObjectId|Flag(0x800)` in the output. */
+    if(value == FlatGLFlag(UnsignedShort(FlatGLFlag::InstancedObjectId|FlatGLFlag::ObjectIdTexture)))
+        return debug << FlatGLFlag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << FlatGLFlag::ObjectIdTexture;
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Similarly here, both are a superset of UniformBuffers */
+    if(value == FlatGLFlag(UnsignedShort(FlatGLFlag::MultiDraw|FlatGLFlag::ShaderStorageBuffers)))
+        return debug << FlatGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << FlatGLFlag::ShaderStorageBuffers;
+    #endif
+    #endif
+
+    debug << "Shaders::FlatGL::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case FlatGLFlag::v: return debug << "::" #v;
+        _c(Textured)
+        _c(AlphaMask)
+        _c(VertexColor)
+        _c(TextureTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(ObjectId)
+        _c(InstancedObjectId)
+        _c(ObjectIdTexture)
+        #endif
+        _c(InstancedTransformation)
+        _c(InstancedTextureOffset)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
+        _c(MultiDraw)
+        _c(TextureArrays)
+        _c(DynamicPerVertexJointCount)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const FlatGLFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::FlatGL::Flags{}", {
+        FlatGLFlag::Textured,
+        FlatGLFlag::AlphaMask,
+        FlatGLFlag::VertexColor,
+        FlatGLFlag::InstancedTextureOffset, /* Superset of TextureTransformation */
+        FlatGLFlag::TextureTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Both are a superset of ObjectId, meaning printing just one would
+           result in `Flag::InstancedObjectId|Flag(0x800)` in the output. So we
+           pass both and let the FlatGLFlag printer deal with that. */
+        FlatGLFlag(UnsignedShort(FlatGLFlag::InstancedObjectId|FlatGLFlag::ObjectIdTexture)),
+        FlatGLFlag::InstancedObjectId, /* Superset of ObjectId */
+        FlatGLFlag::ObjectIdTexture, /* Superset of ObjectId */
+        FlatGLFlag::ObjectId,
+        #endif
+        FlatGLFlag::InstancedTransformation,
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers; similarly to ObjectId above
+           letting the Flag printer deal with that */
+        FlatGLFlag(UnsignedShort(FlatGLFlag::MultiDraw|FlatGLFlag::ShaderStorageBuffers)),
+        #endif
+        FlatGLFlag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        FlatGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
+        FlatGLFlag::UniformBuffers,
+        FlatGLFlag::TextureArrays,
+        FlatGLFlag::DynamicPerVertexJointCount,
+        #endif
+    });
+}
+
+}
+
 namespace {
     enum: Int {
         TextureUnit = 0,
@@ -828,89 +912,5 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::Configuration& Fla
 
 template class MAGNUM_SHADERS_EXPORT FlatGL<2>;
 template class MAGNUM_SHADERS_EXPORT FlatGL<3>;
-
-namespace Implementation {
-
-Debug& operator<<(Debug& debug, const FlatGLFlag value) {
-    #ifndef MAGNUM_TARGET_GLES2
-    /* Special case coming from the FlatGLFlags printer. As both flags are a
-       superset of ObjectId, printing just one would result in
-       `Flag::InstancedObjectId|Flag(0x800)` in the output. */
-    if(value == FlatGLFlag(UnsignedShort(FlatGLFlag::InstancedObjectId|FlatGLFlag::ObjectIdTexture)))
-        return debug << FlatGLFlag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << FlatGLFlag::ObjectIdTexture;
-    #ifndef MAGNUM_TARGET_WEBGL
-    /* Similarly here, both are a superset of UniformBuffers */
-    if(value == FlatGLFlag(UnsignedShort(FlatGLFlag::MultiDraw|FlatGLFlag::ShaderStorageBuffers)))
-        return debug << FlatGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << FlatGLFlag::ShaderStorageBuffers;
-    #endif
-    #endif
-
-    debug << "Shaders::FlatGL::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case FlatGLFlag::v: return debug << "::" #v;
-        _c(Textured)
-        _c(AlphaMask)
-        _c(VertexColor)
-        _c(TextureTransformation)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(ObjectId)
-        _c(InstancedObjectId)
-        _c(ObjectIdTexture)
-        #endif
-        _c(InstancedTransformation)
-        _c(InstancedTextureOffset)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(UniformBuffers)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorageBuffers)
-        #endif
-        _c(MultiDraw)
-        _c(TextureArrays)
-        _c(DynamicPerVertexJointCount)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedShort(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const FlatGLFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::FlatGL::Flags{}", {
-        FlatGLFlag::Textured,
-        FlatGLFlag::AlphaMask,
-        FlatGLFlag::VertexColor,
-        FlatGLFlag::InstancedTextureOffset, /* Superset of TextureTransformation */
-        FlatGLFlag::TextureTransformation,
-        #ifndef MAGNUM_TARGET_GLES2
-        /* Both are a superset of ObjectId, meaning printing just one would
-           result in `Flag::InstancedObjectId|Flag(0x800)` in the output. So we
-           pass both and let the FlatGLFlag printer deal with that. */
-        FlatGLFlag(UnsignedShort(FlatGLFlag::InstancedObjectId|FlatGLFlag::ObjectIdTexture)),
-        FlatGLFlag::InstancedObjectId, /* Superset of ObjectId */
-        FlatGLFlag::ObjectIdTexture, /* Superset of ObjectId */
-        FlatGLFlag::ObjectId,
-        #endif
-        FlatGLFlag::InstancedTransformation,
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Both are a superset of UniformBuffers; similarly to ObjectId above
-           letting the Flag printer deal with that */
-        FlatGLFlag(UnsignedShort(FlatGLFlag::MultiDraw|FlatGLFlag::ShaderStorageBuffers)),
-        #endif
-        FlatGLFlag::MultiDraw, /* Superset of UniformBuffers */
-        #ifndef MAGNUM_TARGET_WEBGL
-        FlatGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
-        #endif
-        FlatGLFlag::UniformBuffers,
-        FlatGLFlag::TextureArrays,
-        FlatGLFlag::DynamicPerVertexJointCount,
-        #endif
-    });
-}
-
-}
 
 }}

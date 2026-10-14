@@ -49,6 +49,28 @@ namespace Magnum { namespace Audio {
 
 using namespace Containers::Literals;
 
+Debug& operator<<(Debug& debug, const ImporterFeature value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Audio::ImporterFeature" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ImporterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(OpenData)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const ImporterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Audio::ImporterFeatures{}", {
+        ImporterFeature::OpenData});
+}
+
 Containers::StringView AbstractImporter::pluginInterface() {
     return MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE ""_s;
 }
@@ -137,28 +159,6 @@ Containers::Array<char> AbstractImporter::data() {
     Containers::Array<char> out = doData();
     CORRADE_ASSERT(!out.deleter(), "Audio::AbstractImporter::data(): implementation is not allowed to use a custom Array deleter", {});
     return out;
-}
-
-Debug& operator<<(Debug& debug, const ImporterFeature value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Audio::ImporterFeature" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case ImporterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
-        _c(OpenData)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const ImporterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Audio::ImporterFeatures{}", {
-        ImporterFeature::OpenData});
 }
 
 }}

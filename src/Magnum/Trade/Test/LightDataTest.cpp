@@ -36,6 +36,9 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct LightDataTest: TestSuite::Tester {
     explicit LightDataTest();
 
+    void debugType();
+    void debugTypePacked();
+
     void construct();
     void constructAttenuation();
     void constructRange();
@@ -45,9 +48,6 @@ struct LightDataTest: TestSuite::Tester {
 
     void constructCopy();
     void constructMove();
-
-    void debugType();
-    void debugTypePacked();
 };
 
 using namespace Math::Literals;
@@ -88,7 +88,10 @@ const struct {
 };
 
 LightDataTest::LightDataTest() {
-    addTests({&LightDataTest::construct,
+    addTests({&LightDataTest::debugType,
+              &LightDataTest::debugTypePacked,
+
+              &LightDataTest::construct,
               &LightDataTest::constructAttenuation,
               &LightDataTest::constructRange,
               &LightDataTest::constructNone});
@@ -97,10 +100,21 @@ LightDataTest::LightDataTest() {
         Containers::arraySize(ConstructInvalidData));
 
     addTests({&LightDataTest::constructCopy,
-              &LightDataTest::constructMove,
+              &LightDataTest::constructMove});
+}
 
-              &LightDataTest::debugType,
-              &LightDataTest::debugTypePacked});
+void LightDataTest::debugType() {
+    Containers::String out;
+
+    Debug(&out) << LightType::Spot << LightType(0xbe);
+    CORRADE_COMPARE(out, "Trade::LightType::Spot Trade::LightType(0xbe)\n");
+}
+
+void LightDataTest::debugTypePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug(&out) << Debug::packed << LightType::Spot << Debug::packed << LightType(0xbe) << LightType::Ambient;
+    CORRADE_COMPARE(out, "Spot 0xbe Trade::LightType::Ambient\n");
 }
 
 void LightDataTest::construct() {
@@ -433,20 +447,6 @@ void LightDataTest::constructMove() {
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<LightData>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<LightData>::value);
-}
-
-void LightDataTest::debugType() {
-    Containers::String out;
-
-    Debug(&out) << LightType::Spot << LightType(0xbe);
-    CORRADE_COMPARE(out, "Trade::LightType::Spot Trade::LightType(0xbe)\n");
-}
-
-void LightDataTest::debugTypePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug(&out) << Debug::packed << LightType::Spot << Debug::packed << LightType(0xbe) << LightType::Ambient;
-    CORRADE_COMPARE(out, "Spot 0xbe Trade::LightType::Ambient\n");
 }
 
 }}}}

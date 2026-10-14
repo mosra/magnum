@@ -56,6 +56,56 @@ namespace Magnum { namespace Shaders {
 
 using namespace Containers::Literals;
 
+namespace Implementation {
+
+Debug& operator<<(Debug& debug, const VertexColorGLFlag value) {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of UniformBuffers, printing just one would result in
+       `Flag::MultiDraw|Flag(0x4)` in the output. */
+    if(value == VertexColorGLFlag(UnsignedByte(VertexColorGLFlag::MultiDraw|VertexColorGLFlag::ShaderStorageBuffers)))
+        return debug << VertexColorGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << VertexColorGLFlag::ShaderStorageBuffers;
+    #endif
+
+    debug << "Shaders::VertexColorGL::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case VertexColorGLFlag::v: return debug << "::" #v;
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
+        _c(MultiDraw)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const VertexColorGLFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::VertexColorGL::Flags{}", {
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers, meaning printing just one
+           would result in `Flag::MultiDraw|Flag(0x4)` in the output. So we
+           pass both and let the Flag printer deal with that. */
+        VertexColorGLFlag(UnsignedByte(VertexColorGLFlag::MultiDraw|VertexColorGLFlag::ShaderStorageBuffers)),
+        #endif
+        VertexColorGLFlag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        VertexColorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
+        VertexColorGLFlag::UniformBuffers
+        #endif
+    });
+}
+
+}
+
 namespace {
     #ifndef MAGNUM_TARGET_GLES2
     enum: Int {
@@ -321,55 +371,5 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimens
 
 template class MAGNUM_SHADERS_EXPORT VertexColorGL<2>;
 template class MAGNUM_SHADERS_EXPORT VertexColorGL<3>;
-
-namespace Implementation {
-
-Debug& operator<<(Debug& debug, const VertexColorGLFlag value) {
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /* Special case coming from the Flags printer. As both flags are a superset
-       of UniformBuffers, printing just one would result in
-       `Flag::MultiDraw|Flag(0x4)` in the output. */
-    if(value == VertexColorGLFlag(UnsignedByte(VertexColorGLFlag::MultiDraw|VertexColorGLFlag::ShaderStorageBuffers)))
-        return debug << VertexColorGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << VertexColorGLFlag::ShaderStorageBuffers;
-    #endif
-
-    debug << "Shaders::VertexColorGL::Flag" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case VertexColorGLFlag::v: return debug << "::" #v;
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(UniformBuffers)
-        #ifndef MAGNUM_TARGET_WEBGL
-        _c(ShaderStorageBuffers)
-        #endif
-        _c(MultiDraw)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << Debug::hex << UnsignedByte(value) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, const VertexColorGLFlags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Shaders::VertexColorGL::Flags{}", {
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Both are a superset of UniformBuffers, meaning printing just one
-           would result in `Flag::MultiDraw|Flag(0x4)` in the output. So we
-           pass both and let the Flag printer deal with that. */
-        VertexColorGLFlag(UnsignedByte(VertexColorGLFlag::MultiDraw|VertexColorGLFlag::ShaderStorageBuffers)),
-        #endif
-        VertexColorGLFlag::MultiDraw, /* Superset of UniformBuffers */
-        #ifndef MAGNUM_TARGET_WEBGL
-        VertexColorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
-        #endif
-        VertexColorGLFlag::UniformBuffers
-        #endif
-    });
-}
-
-}
 
 }}

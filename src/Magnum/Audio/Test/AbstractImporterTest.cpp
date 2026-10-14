@@ -41,6 +41,11 @@ namespace Magnum { namespace Audio { namespace Test { namespace {
 struct AbstractImporterTest: TestSuite::Tester {
     explicit AbstractImporterTest();
 
+    void debugFeature();
+    void debugFeaturePacked();
+    void debugFeatures();
+    void debugFeaturesPacked();
+
     void construct();
 
     void openData();
@@ -63,15 +68,15 @@ struct AbstractImporterTest: TestSuite::Tester {
     void data();
     void dataNoFile();
     void dataCustomDeleter();
-
-    void debugFeature();
-    void debugFeaturePacked();
-    void debugFeatures();
-    void debugFeaturesPacked();
 };
 
 AbstractImporterTest::AbstractImporterTest() {
-    addTests({&AbstractImporterTest::construct,
+    addTests({&AbstractImporterTest::debugFeature,
+              &AbstractImporterTest::debugFeaturePacked,
+              &AbstractImporterTest::debugFeatures,
+              &AbstractImporterTest::debugFeaturesPacked,
+
+              &AbstractImporterTest::construct,
 
               &AbstractImporterTest::openData,
               &AbstractImporterTest::openFileAsData,
@@ -89,12 +94,33 @@ AbstractImporterTest::AbstractImporterTest() {
 
               &AbstractImporterTest::data,
               &AbstractImporterTest::dataNoFile,
-              &AbstractImporterTest::dataCustomDeleter,
+              &AbstractImporterTest::dataCustomDeleter});
+}
 
-              &AbstractImporterTest::debugFeature,
-              &AbstractImporterTest::debugFeaturePacked,
-              &AbstractImporterTest::debugFeatures,
-              &AbstractImporterTest::debugFeaturesPacked});
+void AbstractImporterTest::debugFeature() {
+    Containers::String out;
+    Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xf0);
+    CORRADE_COMPARE(out, "Audio::ImporterFeature::OpenData Audio::ImporterFeature(0xf0)\n");
+}
+
+void AbstractImporterTest::debugFeaturePacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImporterFeature::OpenData << Debug::packed << ImporterFeature(0xf0) << ImporterFeature::OpenData;
+    CORRADE_COMPARE(out, "OpenData 0xf0 Audio::ImporterFeature::OpenData\n");
+}
+
+void AbstractImporterTest::debugFeatures() {
+    Containers::String out;
+    Debug{&out} << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << ImporterFeatures{};
+    CORRADE_COMPARE(out, "Audio::ImporterFeature::OpenData|Audio::ImporterFeature(0xf0) Audio::ImporterFeatures{}\n");
+}
+
+void AbstractImporterTest::debugFeaturesPacked() {
+    Containers::String out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << Debug::packed << ImporterFeatures{} << ImporterFeature::OpenData;
+    CORRADE_COMPARE(out, "OpenData|0xf0 {} Audio::ImporterFeature::OpenData\n");
 }
 
 void AbstractImporterTest::construct() {
@@ -379,34 +405,6 @@ void AbstractImporterTest::dataCustomDeleter() {
 
     importer.data();
     CORRADE_COMPARE(out, "Audio::AbstractImporter::data(): implementation is not allowed to use a custom Array deleter\n");
-}
-
-void AbstractImporterTest::debugFeature() {
-    Containers::String out;
-
-    Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xf0);
-    CORRADE_COMPARE(out, "Audio::ImporterFeature::OpenData Audio::ImporterFeature(0xf0)\n");
-}
-
-void AbstractImporterTest::debugFeaturePacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << ImporterFeature::OpenData << Debug::packed << ImporterFeature(0xf0) << ImporterFeature::OpenData;
-    CORRADE_COMPARE(out, "OpenData 0xf0 Audio::ImporterFeature::OpenData\n");
-}
-
-void AbstractImporterTest::debugFeatures() {
-    Containers::String out;
-
-    Debug{&out} << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << ImporterFeatures{};
-    CORRADE_COMPARE(out, "Audio::ImporterFeature::OpenData|Audio::ImporterFeature(0xf0) Audio::ImporterFeatures{}\n");
-}
-
-void AbstractImporterTest::debugFeaturesPacked() {
-    Containers::String out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << Debug::packed << ImporterFeatures{} << ImporterFeature::OpenData;
-    CORRADE_COMPARE(out, "OpenData|0xf0 {} Audio::ImporterFeature::OpenData\n");
 }
 
 }}}}

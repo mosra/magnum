@@ -34,42 +34,27 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct DevicePropertiesTest: TestSuite::Tester {
     explicit DevicePropertiesTest();
 
-    void constructNoCreate();
-    void constructCopy();
-
     void debugDeviceType();
     void debugDeviceDriver();
     void debugQueueFamilyPropertiesFlag();
     void debugQueueFamilyPropertiesFlags();
     void debugMemoryHeapFlag();
     void debugMemoryHeapFlags();
+
+    void constructNoCreate();
+    void constructCopy();
 };
 
 DevicePropertiesTest::DevicePropertiesTest() {
-    addTests({&DevicePropertiesTest::constructNoCreate,
-              &DevicePropertiesTest::constructCopy,
-
-              &DevicePropertiesTest::debugDeviceType,
+    addTests({&DevicePropertiesTest::debugDeviceType,
               &DevicePropertiesTest::debugDeviceDriver,
               &DevicePropertiesTest::debugQueueFamilyPropertiesFlag,
               &DevicePropertiesTest::debugQueueFamilyPropertiesFlags,
               &DevicePropertiesTest::debugMemoryHeapFlag,
-              &DevicePropertiesTest::debugMemoryHeapFlags});
-}
+              &DevicePropertiesTest::debugMemoryHeapFlags,
 
-void DevicePropertiesTest::constructNoCreate() {
-    {
-        DeviceProperties properties{NoCreate};
-        CORRADE_VERIFY(!properties.handle());
-    }
-
-    /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DeviceProperties>::value);
-}
-
-void DevicePropertiesTest::constructCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<DeviceProperties>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<DeviceProperties>{});
+              &DevicePropertiesTest::constructNoCreate,
+              &DevicePropertiesTest::constructCopy});
 }
 
 void DevicePropertiesTest::debugDeviceType() {
@@ -106,6 +91,21 @@ void DevicePropertiesTest::debugMemoryHeapFlags() {
     Containers::String out;
     Debug{&out} << (MemoryHeapFlag::DeviceLocal|MemoryHeapFlag(0xf0)) << MemoryHeapFlags{};
     CORRADE_COMPARE(out, "Vk::MemoryHeapFlag::DeviceLocal|Vk::MemoryHeapFlag(0xf0) Vk::MemoryHeapFlags{}\n");
+}
+
+void DevicePropertiesTest::constructNoCreate() {
+    {
+        DeviceProperties properties{NoCreate};
+        CORRADE_VERIFY(!properties.handle());
+    }
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DeviceProperties>::value);
+}
+
+void DevicePropertiesTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<DeviceProperties>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DeviceProperties>{});
 }
 
 }}}}

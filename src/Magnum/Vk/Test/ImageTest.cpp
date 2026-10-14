@@ -41,6 +41,9 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct ImageTest: TestSuite::Tester {
     explicit ImageTest();
 
+    void debugAspect();
+    void debugAspects();
+
     template<class T> void createInfoConstruct();
     template<class T> void createInfoConstruct1D();
     template<class T> void createInfoConstruct2D();
@@ -100,13 +103,13 @@ struct ImageTest: TestSuite::Tester {
     void copyImageToBufferInfoConstructNoInit();
     void copyImageToBufferInfoConstructFromVk();
     void copyImageToBufferInfoConvertToVk();
-
-    void debugAspect();
-    void debugAspects();
 };
 
 ImageTest::ImageTest() {
-    addTests({&ImageTest::createInfoConstruct<PixelFormat>,
+    addTests({&ImageTest::debugAspect,
+              &ImageTest::debugAspects,
+
+              &ImageTest::createInfoConstruct<PixelFormat>,
               &ImageTest::createInfoConstruct<Magnum::PixelFormat>,
               &ImageTest::createInfoConstruct<Magnum::CompressedPixelFormat>,
               &ImageTest::createInfoConstruct1D<PixelFormat>,
@@ -182,10 +185,19 @@ ImageTest::ImageTest() {
               &ImageTest::copyImageToBufferInfoConstruct,
               &ImageTest::copyImageToBufferInfoConstructNoInit,
               &ImageTest::copyImageToBufferInfoConstructFromVk,
-              &ImageTest::copyImageToBufferInfoConvertToVk,
+              &ImageTest::copyImageToBufferInfoConvertToVk});
+}
 
-              &ImageTest::debugAspect,
-              &ImageTest::debugAspects});
+void ImageTest::debugAspect() {
+    Containers::String out;
+    Debug{&out} << ImageAspect::Depth << ImageAspect(0xdeadcafe);
+    CORRADE_COMPARE(out, "Vk::ImageAspect::Depth Vk::ImageAspect(0xdeadcafe)\n");
+}
+
+void ImageTest::debugAspects() {
+    Containers::String out;
+    Debug{&out} << (ImageAspect::Stencil|ImageAspect(0xf0)) << ImageAspects{};
+    CORRADE_COMPARE(out, "Vk::ImageAspect::Stencil|Vk::ImageAspect(0xf0) Vk::ImageAspects{}\n");
 }
 
 template<class> struct Traits;
@@ -869,18 +881,6 @@ void ImageTest::copyImageToBufferInfoConvertToVk() {
     CORRADE_COMPARE(copies[0].imageSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT);
     CORRADE_COMPARE(copies[1].imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
     CORRADE_COMPARE(copies[1].imageSubresource.mipLevel, 3);
-}
-
-void ImageTest::debugAspect() {
-    Containers::String out;
-    Debug{&out} << ImageAspect::Depth << ImageAspect(0xdeadcafe);
-    CORRADE_COMPARE(out, "Vk::ImageAspect::Depth Vk::ImageAspect(0xdeadcafe)\n");
-}
-
-void ImageTest::debugAspects() {
-    Containers::String out;
-    Debug{&out} << (ImageAspect::Stencil|ImageAspect(0xf0)) << ImageAspects{};
-    CORRADE_COMPARE(out, "Vk::ImageAspect::Stencil|Vk::ImageAspect(0xf0) Vk::ImageAspects{}\n");
 }
 
 }}}}
