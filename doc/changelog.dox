@@ -2087,6 +2087,10 @@ See also:
     case you were passing a custom pixel format enum to the image classes, you
     have provide a size query function with the new name to make your code
     compile again.
+-   @ref GL::Attribute::DataType::UnsignedInt and
+    @relativeref{GL::Attribute,DataType::Int} and corresponding
+    @ref GL::DynamicAttribute::DataType values were present on ES2 builds by
+    mistake, as only 8-bit and 16-bit integer attributes are supported there.
 -   @ref GL::TextureFormat::SR8 and @ref GL::TextureFormat::SRG8 were present
     on ES2 builds by mistake --- the @gl_extension{EXT,texture_sRGB_R8} and
     @gl_extension{EXT,texture_sRGB_RG8} extensions require OpenGL ES 3.0 at

@@ -1208,12 +1208,14 @@ void AttributeTest::attributeFromGenericFormat() {
     CORRADE_COMPARE(b.vectors(), 1);
     CORRADE_COMPARE(b.dataType(), DynamicAttribute::DataType::Byte);
 
+    #ifndef MAGNUM_TARGET_GLES2
     DynamicAttribute c{DynamicAttribute::Kind::Generic, 3,
         VertexFormat::Vector4ui};
     CORRADE_COMPARE(c.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(c.location(), 3);
     CORRADE_COMPARE(c.components(), DynamicAttribute::Components::Four);
     CORRADE_COMPARE(c.dataType(), DynamicAttribute::DataType::UnsignedInt);
+    #endif
 
     /* This one shouldn't fail even though the normalization is (probably?)
        ignored. Not exactly sure. */
@@ -1316,9 +1318,9 @@ void AttributeTest::attributeFromGenericFormatUnexpectedForNormalizedKind() {
     Containers::String out;
     Error redirectError{&out};
     DynamicAttribute{DynamicAttribute::Kind::GenericNormalized, 3,
-        VertexFormat::Int};
+        VertexFormat::Short};
     CORRADE_COMPARE(out,
-        "GL::DynamicAttribute: can't use VertexFormat::Int for a normalized attribute\n");
+        "GL::DynamicAttribute: can't use VertexFormat::Short for a normalized attribute\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -1383,7 +1385,12 @@ void AttributeTest::attributeFromGenericFormatNotAvailable() {
 }
 
 void AttributeTest::hasVertexFormat() {
+    CORRADE_VERIFY(GL::hasVertexFormat(Magnum::VertexFormat::Vector2s));
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_VERIFY(GL::hasVertexFormat(Magnum::VertexFormat::Vector2i));
+    #else
+    CORRADE_VERIFY(!GL::hasVertexFormat(Magnum::VertexFormat::Vector2i));
+    #endif
     CORRADE_VERIFY(GL::hasVertexFormat(Magnum::VertexFormat::Matrix2x2));
     #ifdef MAGNUM_TARGET_GLES
     CORRADE_VERIFY(!GL::hasVertexFormat(Magnum::VertexFormat::Vector3d));

@@ -216,17 +216,27 @@ template<UnsignedInt location, class T> class Attribute {
              */
             Short = GL_SHORT,
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Unsigned int. On WebGL is only for float and unsigned integer
              * attributes, cannot be used with signed integer attributes.
+             * @requires_gles30 32-bit integer attributes are not available in
+             *      OpenGL ES 2.0.
+             * @requires_webgl20 32-bit integer attributes are not available in
+             *      WebGL 1.0.
              */
             UnsignedInt = GL_UNSIGNED_INT,
 
             /**
              * Int. On WebGL is only for float and signed integer attributes,
              * cannot be used with unsigned integer attributes.
+             * @requires_gles30 32-bit integer attributes are not available in
+             *      OpenGL ES 2.0.
+             * @requires_webgl20 32-bit integer attributes are not available in
+             *      WebGL 1.0.
              */
             Int = GL_INT,
+            #endif
 
             #ifndef MAGNUM_TARGET_WEBGL
             /**
@@ -563,8 +573,26 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
             Byte = GL_BYTE,                     /**< Byte */
             UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
             Short = GL_SHORT,                   /**< Short */
-            UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
-            Int = GL_INT,                       /**< Int */
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Unsigned int
+             * @requires_gles30 32-bit integer attributes are not available in
+             *      OpenGL ES 2.0.
+             * @requires_webgl20 32-bit integer attributes are not available in
+             *      WebGL 1.0.
+             */
+            UnsignedInt = GL_UNSIGNED_INT,
+
+            /**
+             * Int
+             * @requires_gles30 32-bit integer attributes are not available in
+             *      OpenGL ES 2.0.
+             * @requires_webgl20 32-bit integer attributes are not available in
+             *      WebGL 1.0.
+             */
+            Int = GL_INT,
+            #endif
 
             #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
             /**
@@ -879,8 +907,10 @@ struct FloatAttribute {
         Byte = GL_BYTE,
         UnsignedShort = GL_UNSIGNED_SHORT,
         Short = GL_SHORT,
+        #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT,
+        #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_GLES2
         Half = GL_HALF_FLOAT,

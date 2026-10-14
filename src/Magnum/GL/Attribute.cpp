@@ -84,8 +84,10 @@ Debug& operator<<(Debug& debug, const DynamicAttribute::DataType value) {
         _c(Byte)
         _c(UnsignedShort)
         _c(Short)
+        #ifndef MAGNUM_TARGET_GLES2
         _c(UnsignedInt)
         _c(Int)
+        #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Half)
         #endif
@@ -118,8 +120,10 @@ UnsignedInt FloatAttribute::size(GLint components, DataType dataType) {
         case DataType::Half:
         #endif
             return 2*components;
+        #ifndef MAGNUM_TARGET_GLES2
         case DataType::UnsignedInt:
         case DataType::Int:
+        #endif
         case DataType::Float:
             return 4*components;
         #ifndef MAGNUM_TARGET_GLES
@@ -397,8 +401,10 @@ Debug& operator<<(Debug& debug, const FloatAttribute::DataType value) {
         _c(Byte)
         _c(UnsignedShort)
         _c(Short)
+        #ifndef MAGNUM_TARGET_GLES2
         _c(UnsignedInt)
         _c(Int)
+        #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Half)
         #endif
@@ -557,10 +563,15 @@ bool hasVertexFormat(const VertexFormat format) {
         case VertexFormat::Byte:
         case VertexFormat::UnsignedShort:
         case VertexFormat::Short:
-        case VertexFormat::UnsignedInt:
-        case VertexFormat::Int:
         case VertexFormat::Float:
             return true;
+        case VertexFormat::UnsignedInt:
+        case VertexFormat::Int:
+            #ifndef MAGNUM_TARGET_GLES2
+            return true;
+            #else
+            return false;
+            #endif
 
         case VertexFormat::Half:
             #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -601,8 +612,10 @@ UnsignedInt attributeSize(DynamicAttribute::Components components, DynamicAttrib
         case DynamicAttribute::DataType::Half:
         #endif
             return 2*componentCount;
+        #ifndef MAGNUM_TARGET_GLES2
         case DynamicAttribute::DataType::UnsignedInt:
         case DynamicAttribute::DataType::Int:
+        #endif
         case DynamicAttribute::DataType::Float:
             return 4*componentCount;
         #ifndef MAGNUM_TARGET_GLES
@@ -644,8 +657,10 @@ DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const 
         _c(Byte)
         _c(UnsignedShort)
         _c(Short)
+        #ifndef MAGNUM_TARGET_GLES2
         _c(UnsignedInt)
         _c(Int)
+        #endif
         _c(Float)
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Half)
