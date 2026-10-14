@@ -3425,10 +3425,9 @@ void MeshGLTest::setBaseVertexRangeNoExtensionAvailable() {
 #endif
 
 void MeshGLTest::setInstanceCount() {
-    /* Verbatim copy of addVertexBufferFloat() with added extension check and
-       setInstanceCount() call. It would just render three times the same
-       value. I'm too lazy to invent proper test case, so I'll just check that
-       it didn't generate any error and rendered something */
+    /* Like addVertexBufferFloat() but with the attribute being instanced, and
+       additional extension checks. This verifies the setInstanceCount() API,
+       tests for instanced attributes are in addVertexBufferInstanced*(). */
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
@@ -3449,18 +3448,32 @@ void MeshGLTest::setInstanceCount() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
+    /* If the setInstanceCount() call is correctly done, it should render three
+       instances over each other with only the third one getting the right
+       value */
+    const Float data[]{
+        0.0f, /* Offset */
+        0.3f, -0.7f, /* First two instances */
+        Math::unpack<Float, UnsignedByte>(96)
+    };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
         .setInstanceCount(3)
-        .addVertexBuffer(buffer, 4, Attribute());
+        .addVertexBufferInstanced(buffer, 1, 4, Attribute{});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+    const auto value = Checker(FloatShader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)",
+        /* WebGL 1 requires that at least one attribute is not instanced. Add
+           a dummy input (that isn't even present in the mesh) to fix that. */
+        #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
+        "#define VERTEX_INTERFACE_EXTENSION in mediump float dummy;\n"
+        "#define VERTEX_MAIN_EXTENSION gl_Position.y = dummy;\n"
+        #endif
+    },
         #ifndef MAGNUM_TARGET_GLES2
         RenderbufferFormat::RGBA8,
         #else
@@ -3478,10 +3491,8 @@ void MeshGLTest::setInstanceCount() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::setInstanceCountBaseInstance() {
-    /* Verbatim copy of setInstanceCount() with additional extension check and
-       setBaseInstance() call. It would just render three times the same
-       value. I'm too lazy to invent proper test case, so I'll just check that
-       it didn't generate any error and rendered something */
+    /* Expansion of setInstanceCount() with extra instance data at the front
+       and more extension checks */
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
@@ -3499,15 +3510,23 @@ void MeshGLTest::setInstanceCountBaseInstance() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
+    /* If the setInstanceCount() and setBaseInstance() calls are correctly
+       done, it should skip the first 16 values and render three instances over
+       each other with only the third one getting the right value */
+    const Float data[]{
+        0.0f, /* Offset */
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, /* Instance offset */
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f,
+        0.3f, -0.7f, /* First two instances */
+        Math::unpack<Float, UnsignedByte>(96) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
         .setInstanceCount(3)
-        .setBaseInstance(72)
-        .addVertexBuffer(buffer, 4, Attribute());
+        .setBaseInstance(16)
+        .addVertexBufferInstanced(buffer, 1, 4, Attribute{});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -3545,10 +3564,7 @@ void MeshGLTest::setInstanceCountBaseInstanceNoExtensionAvailable() {
 #endif
 
 void MeshGLTest::setInstanceCountIndexed() {
-    /* Verbatim copy of setIndexBuffer() with added extension check and
-       setInstanceCount() call. It would just render three times the same
-       value. I'm too lazy to invent proper test case, so I'll just check that
-       it didn't generate any error and rendered something */
+    /* Basically a merge of setInstanceCount() and setIndexBuffer() */
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
@@ -3567,8 +3583,23 @@ void MeshGLTest::setInstanceCountIndexed() {
     #endif
     #endif
 
+    /* Only the position and normal is used from indexedVertexData, texture
+       coordinates from the instance data instead */
     Buffer vertices;
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
+
+    /* If the setInstanceCount() call is correctly done, it should render three
+       instances over each other with only the third one getting the right
+       value for the texture coordinates */
+    const Float instanceData[]{
+        0.0f, /* Offset */
+        1.0f, -0.5f, /* First two instances */
+        -0.5f, 1.0f,
+        Math::unpack<Float, UnsignedByte>(97),
+            Math::unpack<Float, UnsignedByte>(28),
+    };
+    Buffer instances;
+    instances.setData(instanceData);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
     Buffer indices{Buffer::TargetHint::ElementArray};
@@ -3576,8 +3607,11 @@ void MeshGLTest::setInstanceCountIndexed() {
 
     Mesh mesh;
     mesh.setInstanceCount(3)
-        .addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
-                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .addVertexBuffer(vertices, 1*4,
+            MultipleShader::Position{},
+            MultipleShader::Normal{},
+            sizeof(MultipleShader::TextureCoordinates::Type))
+        .addVertexBufferInstanced(instances, 1, 4, MultipleShader::TextureCoordinates{})
         .setIndexBuffer(indices, 2, MeshIndexType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -3600,10 +3634,8 @@ void MeshGLTest::setInstanceCountIndexed() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::setInstanceCountIndexedBaseInstance() {
-    /* Verbatim copy of setInstanceCountIndexed() with additional extension
-       check and setBaseInstance() call. It would just render three times the
-       same value. I'm too lazy to invent proper test case, so I'll just check
-       that it didn't generate any error and rendered something */
+    /* Expansion of setInstanceCountIndexed() with extra instance data at the
+       front and more extension checks */
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
@@ -3619,8 +3651,28 @@ void MeshGLTest::setInstanceCountIndexedBaseInstance() {
         CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not supported.");
     #endif
 
+    /* Only the position and normal is used from indexedVertexData, texture
+       coordinates from the instance data instead */
     Buffer vertices;
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
+
+    /* If the setInstanceCount() and setBaseInstance() calls are correctly
+       done, it should skip the first 16 values and render three instances over
+       each other with only the third one getting the right value for the
+       texture coordinates */
+    const Float instanceData[]{
+        0.0f, /* Offset */
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, /* Instance offset */
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f,
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f,
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f,
+        1.0f, -0.5f, /* First two instances */
+        -0.5f, 1.0f,
+        Math::unpack<Float, UnsignedByte>(97),
+            Math::unpack<Float, UnsignedByte>(28),
+    };
+    Buffer instances;
+    instances.setData(instanceData);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
     Buffer indices{Buffer::TargetHint::ElementArray};
@@ -3628,9 +3680,12 @@ void MeshGLTest::setInstanceCountIndexedBaseInstance() {
 
     Mesh mesh;
     mesh.setInstanceCount(3)
-        .setBaseInstance(72)
-        .addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
-                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setBaseInstance(16)
+        .addVertexBuffer(vertices, 1*4,
+            MultipleShader::Position{},
+            MultipleShader::Normal{},
+            sizeof(MultipleShader::TextureCoordinates::Type))
+        .addVertexBufferInstanced(instances, 1, 4, MultipleShader::TextureCoordinates{})
         .setIndexBuffer(indices, 2, MeshIndexType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -3674,10 +3729,8 @@ void MeshGLTest::setInstanceCountIndexedBaseInstanceNoExtensionAvailable() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::setInstanceCountIndexedBaseVertex() {
-    /* Verbatim copy of setBaseVertex() with additional extension check and
-       setInstanceCount() call. It would just render three times the same
-       value. I'm too lazy to invent proper test case, so I'll just check
-       that it didn't generate any error and rendered something */
+    /* Copy of setInstanceCountIndexed() with different vertex data like in
+       setBaseVertex() */
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
@@ -3702,8 +3755,23 @@ void MeshGLTest::setInstanceCountIndexedBaseVertex() {
         CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not supported.");
     #endif
 
+    /* Only the position and normal is used from indexedVertexData, texture
+       coordinates from the instance data instead */
     Buffer vertices;
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
+
+    /* If the setInstanceCount() call is correctly done, it should render three
+       instances over each other with only the third one getting the right
+       value for the texture coordinates */
+    const Float instanceData[]{
+        0.0f, /* Offset */
+        1.0f, -0.5f, /* First two instances */
+        -0.5f, 1.0f,
+        Math::unpack<Float, UnsignedByte>(97),
+            Math::unpack<Float, UnsignedByte>(28),
+    };
+    Buffer instances;
+    instances.setData(instanceData);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
     Buffer indices{Buffer::TargetHint::ElementArray};
@@ -3712,8 +3780,11 @@ void MeshGLTest::setInstanceCountIndexedBaseVertex() {
     Mesh mesh;
     mesh.setBaseVertex(2)
         .setInstanceCount(3)
-        .addVertexBuffer(vertices, 2*4,  MultipleShader::Position(),
-                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .addVertexBuffer(vertices, 2*4,
+            MultipleShader::Position{},
+            MultipleShader::Normal{},
+            sizeof(MultipleShader::TextureCoordinates::Type))
+        .addVertexBufferInstanced(instances, 1, 4, MultipleShader::TextureCoordinates{})
         .setIndexBuffer(indices, 2, MeshIndexType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -3767,10 +3838,8 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexNoExtensionAvailable() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstance() {
-    /* Verbatim copy of setInstanceCountBaseVertex() with added extension check
-       and setBaseInstance() call. It would just render three times the same
-       value. I'm too lazy to invent proper test case, so I'll just check
-       that it didn't generate any error and rendered something */
+    /* Copy of setInstanceCountIndexedBaseVertex() with extra instance data at
+       the front and more extension checks */
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
@@ -3788,8 +3857,27 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstance() {
         CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() << "is not supported.");
     #endif
 
+    /* Only the position and normal is used from indexedVertexData, texture
+       coordinates from the instance data instead */
     Buffer vertices;
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
+
+    /* If the setInstanceCount() call is correctly done, it should render three
+       instances over each other with only the third one getting the right
+       value for the texture coordinates */
+    const Float instanceData[]{
+        0.0f, /* Offset */
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, /* Instance offset */
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f,
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f,
+        0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f, 0.1f, 0.2f,
+        1.0f, -0.5f, /* First two instances */
+        -0.5f, 1.0f,
+        Math::unpack<Float, UnsignedByte>(97),
+            Math::unpack<Float, UnsignedByte>(28),
+    };
+    Buffer instances;
+    instances.setData(instanceData);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
     Buffer indices{Buffer::TargetHint::ElementArray};
@@ -3798,9 +3886,12 @@ void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstance() {
     Mesh mesh;
     mesh.setBaseVertex(2)
         .setInstanceCount(3)
-        .setBaseInstance(72)
-        .addVertexBuffer(vertices, 2*4,  MultipleShader::Position(),
-                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setBaseInstance(16)
+        .addVertexBuffer(vertices, 2*4,
+            MultipleShader::Position{},
+            MultipleShader::Normal{},
+            sizeof(MultipleShader::TextureCoordinates::Type))
+        .addVertexBufferInstanced(instances, 1, 4, MultipleShader::TextureCoordinates{})
         .setIndexBuffer(indices, 2, MeshIndexType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
