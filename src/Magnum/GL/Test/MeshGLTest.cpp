@@ -1002,12 +1002,7 @@ void MeshGLTest::construct() {
 }
 
 struct FloatShader: AbstractShaderProgram {
-    explicit FloatShader(Containers::StringView type, Containers::StringView conversion
-        /* See the definition for details */
-        #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
-        , bool dummy = false
-        #endif
-    );
+    explicit FloatShader(Containers::StringView type, Containers::StringView conversion, Containers::StringView extension = {});
 };
 
 void MeshGLTest::constructMove() {
@@ -1254,15 +1249,7 @@ struct Checker {
     Framebuffer framebuffer;
 };
 
-FloatShader::FloatShader(Containers::StringView type, Containers::StringView conversion
-    /* WebGL 1 requires that at least one attribute is not instanced. The
-       addVertexBufferInstancedFloat() and drawInstancedAttributeSingleInstance()
-       tests set this to true to add a dummy input (that isn't even present in
-       the mesh) to fix that. */
-    #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
-    , bool dummy
-    #endif
-) {
+FloatShader::FloatShader(Containers::StringView type, Containers::StringView conversion, Containers::StringView extension) {
     constexpr Version version =
         #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
@@ -1281,39 +1268,29 @@ FloatShader::FloatShader(Containers::StringView type, Containers::StringView con
     Shader vert{version, Shader::Type::Vertex};
     Shader frag{version, Shader::Type::Fragment};
 
+    if(extension)
+        vert.addSource(extension);
     vert.addSource(Utility::format(
-        #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
-        dummy ?
-            "#if !defined(GL_ES) && __VERSION__ == 120\n"
-            "#define mediump\n"
-            "#endif\n"
-            "#if (defined(GL_ES) && __VERSION__ < 300) || __VERSION__ == 120\n"
-            "#define in attribute\n"
-            "#define out varying\n"
-            "#endif\n"
-            "in mediump {0} value;\n"
-            "in mediump float dummy;\n"
-            "out mediump {0} valueInterpolated;\n"
-            "void main() {{\n"
-            "    valueInterpolated = value;\n"
-            "    gl_PointSize = 1.0;\n"
-            "    gl_Position = vec4(0.0, 0.0, dummy, 1.0);\n"
-            "}}\n" :
-        #endif
-            "#if !defined(GL_ES) && __VERSION__ == 120\n"
-            "#define mediump\n"
-            "#endif\n"
-            "#if (defined(GL_ES) && __VERSION__ < 300) || __VERSION__ == 120\n"
-            "#define in attribute\n"
-            "#define out varying\n"
-            "#endif\n"
-            "in mediump {0} value;\n"
-            "out mediump {0} valueInterpolated;\n"
-            "void main() {{\n"
-            "    valueInterpolated = value;\n"
-            "    gl_PointSize = 1.0;\n"
-            "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
-            "}}\n",
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define mediump\n"
+        "#endif\n"
+        "#if (defined(GL_ES) && __VERSION__ < 300) || __VERSION__ == 120\n"
+        "#define in attribute\n"
+        "#define out varying\n"
+        "#endif\n"
+        "#ifdef VERTEX_INTERFACE_EXTENSION\n"
+        "VERTEX_INTERFACE_EXTENSION\n"
+        "#endif\n"
+        "in mediump {0} value;\n"
+        "out mediump {0} valueInterpolated;\n"
+        "void main() {{\n"
+        "    valueInterpolated = value;\n"
+        "    gl_PointSize = 1.0;\n"
+        "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
+        "    #ifdef VERTEX_MAIN_EXTENSION\n"
+        "    VERTEX_MAIN_EXTENSION\n"
+        "    #endif\n"
+        "}}\n",
         type));
     frag.addSource(Utility::format(
         "#if !defined(GL_ES) && __VERSION__ == 120\n"
@@ -3906,13 +3883,14 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"
+    const auto value = Checker(FloatShader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)",
         /* WebGL 1 requires that at least one attribute is not instanced. Add
            a dummy input (that isn't even present in the mesh) to fix that. */
         #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
-        , /* dummy */ true
+        "#define VERTEX_INTERFACE_EXTENSION in mediump float dummy;\n"
+        "#define VERTEX_MAIN_EXTENSION gl_Position.y = dummy;\n"
         #endif
-    ),
+    },
         #ifndef MAGNUM_TARGET_GLES2
         RenderbufferFormat::RGBA8,
         #else
@@ -4130,11 +4108,12 @@ void MeshGLTest::drawInstancedAttributeSingleInstance() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, renderbuffer)
                .bind();
 
-    FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"
+    FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)",
         /* WebGL 1 requires that at least one attribute is not instanced. Add
            a dummy input (that isn't even present in the mesh) to fix that. */
         #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
-        , /* dummy */ true
+        "#define VERTEX_INTERFACE_EXTENSION in mediump float dummy;\n"
+        "#define VERTEX_MAIN_EXTENSION gl_Position.y = dummy;\n"
         #endif
     };
 
