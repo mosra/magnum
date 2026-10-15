@@ -192,7 +192,7 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
 }
 
 Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling, const bool silentLog) const {
-    #ifdef _MAGNUM_PLATFORM_USE_X11
+    #if defined(_MAGNUM_PLATFORM_USE_X11) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || (!defined(CORRADE_TARGET_UNIX) && !(defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)))
     std::ostream* const output = silentLog ? nullptr : Debug::output();
     #endif
     std::ostream* const verbose = _verboseLog && !silentLog ? Debug::output() : nullptr;
@@ -253,7 +253,7 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
            unconditionally, the user should use physical DPI scaling instead. */
         #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
         if(!Implementation::isWindowsAppDpiAware()) {
-            Warning{verbose} << "Platform::GlfwApplication: your application is not set as DPI-aware, DPI scaling won't be used";
+            Warning{output} << "Platform::GlfwApplication: your application is not set as DPI-aware, DPI scaling won't be used";
             return Vector2{1.0f};
         }
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
@@ -263,12 +263,12 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
         Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling;
         return dpiScaling;
         #else
-        Debug{verbose} << "Platform::GlfwApplication: sorry, virtual DPI scaling only available on GLFW 3.3+, falling back to physical DPI scaling";
+        Warning{output} << "Platform::GlfwApplication: sorry, virtual DPI scaling only available on GLFW 3.3+, falling back to physical DPI scaling";
         #endif
 
         /* Otherwise ¯\_(ツ)_/¯ */
         #else
-        Debug{verbose} << "Platform::GlfwApplication: sorry, virtual DPI scaling not implemented on this platform yet, falling back to physical DPI scaling";
+        Warning{output} << "Platform::GlfwApplication: sorry, virtual DPI scaling not implemented on this platform, falling back to physical DPI scaling";
         #endif
     }
 
@@ -297,7 +297,7 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
 
     /* Not implemented otherwise */
     #else
-    Debug{verbose} << "Platform::GlfwApplication: sorry, physical DPI scaling not implemented on this platform yet";
+    Warning{output} << "Platform::GlfwApplication: sorry, physical DPI scaling not implemented on this platform, falling back to no scaling";
     return Vector2{1.0f};
     #endif
     #endif

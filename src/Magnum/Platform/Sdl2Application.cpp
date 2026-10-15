@@ -304,7 +304,7 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
 }
 
 Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling, const bool silentLog) const {
-    #if defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+    #if (defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || (!defined(CORRADE_TARGET_UNIX) && !(defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)))
     std::ostream* const output = silentLog ? nullptr : Debug::output();
     #endif
     std::ostream* const verbose = _verboseLog && !silentLog ? Debug::output() : nullptr;
@@ -361,7 +361,7 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
            not), and only if the app is, then we use SDL_GetDisplayDPI(). */
         #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
         if(!Implementation::isWindowsAppDpiAware()) {
-            Warning{verbose} << "Platform::Sdl2Application: your application is not set as DPI-aware, DPI scaling won't be used";
+            Warning{output} << "Platform::Sdl2Application: your application is not set as DPI-aware, DPI scaling won't be used";
             return Vector2{1.0f};
         }
         Vector2 dpi;
@@ -373,7 +373,7 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
 
         /* Otherwise ¯\_(ツ)_/¯ */
         #else
-        Debug{verbose} << "Platform::Sdl2Application: sorry, virtual DPI scaling not implemented on this platform yet, falling back to physical DPI scaling";
+        Warning{output} << "Platform::Sdl2Application: sorry, virtual DPI scaling not implemented on this platform, falling back to physical DPI scaling";
         #endif
     }
     #endif
@@ -430,7 +430,7 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
 
     /* Not implemented otherwise */
     #else
-    Debug{verbose} << "Platform::Sdl2Application: sorry, physical DPI scaling not implemented on this platform yet";
+    Warning{output} << "Platform::Sdl2Application: sorry, physical DPI scaling not implemented on this platform, falling back to no scaling";
     return Vector2{1.0f};
     #endif
     #endif
