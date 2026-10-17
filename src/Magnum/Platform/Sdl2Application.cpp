@@ -1555,7 +1555,7 @@ Sdl2Application::Cursor Sdl2Application::cursor() {
 
     SDL_Cursor* cursor = SDL_GetCursor();
 
-    if(cursor) for(UnsignedInt i = 0; i < sizeof(_cursors); i++)
+    if(cursor) for(UnsignedInt i = 0; i < Containers::arraySize(_cursors); i++)
         if(_cursors[i] == cursor)
             return Cursor(i);
 
