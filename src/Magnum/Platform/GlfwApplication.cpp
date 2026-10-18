@@ -153,10 +153,19 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     else if(dpiScaling == "physical"_s)
         _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Physical;
     #endif
-    else if(dpiScaling.containsAny(" \t\n"_s))
-        _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
-    else
-        _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
+    else {
+        if(dpiScaling.containsAny(" \t\n"_s))
+            _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
+        else
+            _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
+        /* If e.g. `virtual` is passed on macOS, it falls back to parsing it as
+           a number, resulting in zero, which then leads to nasty assertions or
+           other misbehavior. Catch that early and exit. */
+        if(Math::equal(_commandLineDpiScaling.product(), 0.0f)) {
+            Error{} << "Platform::GlfwApplication: invalid DPI scaling" << dpiScaling;
+            std::exit(2);
+        }
+    }
 }
 
 void GlfwApplication::create() {
