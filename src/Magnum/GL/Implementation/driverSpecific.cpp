@@ -476,6 +476,18 @@ constexpr Containers::StringView KnownWorkarounds[]{
 "apitrace-zero-initial-viewport"_s,
 #endif
 
+#if defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE)
+/* GLFW on Wayland uses framebuffer scaling but the initial framebuffer
+   viewport is using the unscaled window size, and additionally that viewport
+   is stretched over the whole scaled window. Which makes this hard to notice
+   as in an "ideal" case the window is looking just blurry with nothing clearly
+   wrong. Slightly resizing the window causes GLFW to restore both to where
+   they should be. To fix this, the viewport is explicitly set to the scaled
+   value during startup along with calling glfwSwapBuffers() that makes the
+   window use the whole framebuffer instead of just a part. */
+"glfw-unscaled-initial-wayland-viewport"_s,
+#endif
+
 #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
 /* While the EXT_disjoint_timer_query extension should be only on WebGL 1 and
    EXT_disjoint_timer_query_webgl2 only on WebGL 2, Firefox reports

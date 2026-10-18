@@ -45,6 +45,9 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
+#if defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE)
+#include "Magnum/GL/DefaultFramebuffer.h" /* fixing initial Wayland viewport */
+#endif
 #endif
 
 namespace Magnum { namespace Platform {
@@ -802,6 +805,15 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     /* Make the final context current */
     glfwMakeContextCurrent(_window);
 
+    /* On Wayland GLFW has an incorrect initial viewport without scaling
+       applied. Ask for the workaround status before actually creating the
+       Magnum context so the workaround is listed in the startup log, however
+       the actual framebuffer size is known only once the window is shown,
+       so defer that to after. */
+    #if defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE)
+    const bool patchViewportSize = glfwGetPlatform() == GLFW_PLATFORM_WAYLAND && !_context->isDriverWorkaroundDisabled("glfw-unscaled-initial-wayland-viewport"_s);
+    #endif
+
     /* Destroy everything when the Magnum context creation fails */
     if(!_context->tryCreate(glConfiguration)) {
         glfwDestroyWindow(_window);
@@ -811,8 +823,25 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     /* Show the window once we are sure that everything is okay. This
        apparently causes a minimized window to get restored, so perform the
        minimization only after this step, not before. */
-    if(!(configuration.windowFlags() & WindowFlag::Hidden))
+    if(!(configuration.windowFlags() & WindowFlag::Hidden)) {
         glfwShowWindow(_window);
+        /* Patch the Wayland viewport now that the framebuffer size is known.
+           Can't do that directly through glViewport() because that would make
+           the value cached in the state tracker outdated. Additionally have to
+           call glfwSwapBuffers() because for some reason the initial buffer is
+           the original unscaled viewport stretched over the whole window, i.e.
+           blurry.
+
+           If the window is hidden, the framebuffer size doesn't get updated by
+           GLFW initially. It only happens once the window gets shown, via a
+           regular viewport event. */
+        #if defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE)
+        if(patchViewportSize) {
+            GL::defaultFramebuffer.setViewport({{}, framebufferSize()});
+            glfwSwapBuffers(_window);
+        }
+        #endif
+    }
     if(configuration.windowFlags() >= WindowFlag::Minimized)
         glfwIconifyWindow(_window);
 
