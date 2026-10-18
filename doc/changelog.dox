@@ -946,6 +946,13 @@ See also:
     information.
 -   Added @ref Platform::GlfwApplication::WindowFlag::FullscreenDesktop for
     consistency with @ref Platform::Sdl2Application
+-   DPI scaling handling in @ref Platform::Sdl2Application and
+    @ref Platform::GlfwApplication was updated to take Wayland differences into
+    account. Additionally, GLFW doesn't apply framebuffer scaling to the
+    initial GL viewport size, which is now patched and exposed as a new
+    @cpp "glfw-unscaled-initial-wayland-viewport" @ce workaround. See
+    @ref opengl-workarounds for more information. See also
+    [mosra/magnum#691](https://github.com/mosra/magnum/issues/691).
 
 @subsubsection changelog-latest-changes-scenegraph SceneGraph library
 
