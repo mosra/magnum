@@ -116,9 +116,6 @@ enum class Sdl2Application::Flag: UnsignedByte {
     TextInputActive = 1 << 5,
     Resizable = 1 << 6,
     #endif
-    #ifdef CORRADE_TARGET_APPLE
-    HiDpiWarningPrinted = 1 << 7
-    #endif
 };
 
 Containers::StringView Sdl2Application::keyName(const Key key) {
@@ -297,26 +294,22 @@ void Sdl2Application::create(const Configuration& configuration, const GLConfigu
 #endif
 
 Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
-    /* Print a helpful warning in case some extra steps are needed for HiDPI
-       support */
-    #ifdef CORRADE_TARGET_APPLE
-    if(!Implementation::isAppleBundleHiDpiEnabled() && !(_flags & Flag::HiDpiWarningPrinted)) {
-        Warning{} << "Platform::Sdl2Application: warning: the executable is not a HiDPI-enabled app bundle";
-        _flags |= Flag::HiDpiWarningPrinted;
-    }
-    #elif defined(CORRADE_TARGET_WINDOWS)
-    /* Handled in dpiScalingInternal(), warning printed only when using virtual
-       DPI scaling (and thus not setting the HiDpiWarningPrinted flag) */
-    #endif
-
     return dpiScalingInternal(configuration.dpiScalingPolicy(), configuration.dpiScaling());
 }
 
 Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling, const bool silentLog) const {
-    #if (defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || (!defined(CORRADE_TARGET_UNIX) && !(defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)))
     std::ostream* const output = silentLog ? nullptr : Debug::output();
-    #endif
     std::ostream* const verbose = _verboseLog && !silentLog ? Debug::output() : nullptr;
+
+    /* Print a helpful warning in case some extra steps are needed for HiDPI
+       support. Do that even before parsing the command-line- or
+       configuration-supplied values to let the user know those might not
+       behave as expected. */
+    #ifdef CORRADE_TARGET_APPLE
+    if(!Implementation::isAppleBundleHiDpiEnabled()) {
+        Warning{output} << "Platform::Sdl2Application: warning: the executable is not a HiDPI-enabled app bundle";
+    }
+    #endif
 
     /* Use values from the configuration only if not overridden on command line
        to something non-default. In any case explicit scaling has a precedence
@@ -342,6 +335,22 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
         #endif
     }
 
+    /* On Windows SDL_GetDisplayDPI() is querying GetDpiForMonitor() --
+       https://github.com/spurious/SDL-mirror/blob/17af4584cb28cdb3c2feba17e7d989a806007d9f/src/video/windows/SDL_windowsmodes.c#L266
+       and GetDpiForMonitor() returns 96 if the application is DPI unaware. So
+       we instead check for DPI awareness first and if the app is not DPI aware
+       we tell that to the user explicitly and don't even attempt to query the
+       value as neither virtual nor physical scaling would behave as expected.
+       This is done only after parsing the command-line- and
+       configuration-supplied values so a custom value can still be supplied if
+       desired. */
+    #if defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+    if(!Implementation::isWindowsAppDpiAware()) {
+        Warning{output} << "Platform::Sdl2Application: your application is not set as DPI-aware, DPI scaling won't be used";
+        return Vector2{1.0f};
+    }
+    #endif
+
     /* There's no choice on Apple, it's all controlled by the plist file. So
        unless someone specified custom scaling via config or command-line
        above, return the default. */
@@ -362,17 +371,9 @@ Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScaling
             return dpiScaling;
         }
 
-        /* Check for DPI awareness on (non-RT) Windows and then ask for DPI.
-           SDL_GetDisplayDPI() is querying GetDpiForMonitor() --
-           https://github.com/spurious/SDL-mirror/blob/17af4584cb28cdb3c2feba17e7d989a806007d9f/src/video/windows/SDL_windowsmodes.c#L266
-           and GetDpiForMonitor() returns 96 if the application is DPI unaware.
-           So we instead check for DPI awareness first (and tell the user if
-           not), and only if the app is, then we use SDL_GetDisplayDPI(). */
+        /* On (non-RT) Windows SDL_GetDisplayDPI() returns the correct value as
+           long as the app is DPI-aware, which was checked above */
         #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
-        if(!Implementation::isWindowsAppDpiAware()) {
-            Warning{output} << "Platform::Sdl2Application: your application is not set as DPI-aware, DPI scaling won't be used";
-            return Vector2{1.0f};
-        }
         Vector2 dpi;
         if(SDL_GetDisplayDPI(0, nullptr, &dpi.x(), &dpi.y()) == 0) {
             const Vector2 dpiScaling{dpi/96.0f};

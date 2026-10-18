@@ -456,10 +456,9 @@ variable).
     DPI display. On platforms that don't have a concept of a window (such
     as mobile platforms or @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"), it
     causes the framebuffer to match display pixels 1:1 without any scaling.
-    This is supported on Linux and all mobile platforms (except iOS) and
-    Emscripten. On Windows this is equivalent to virtual DPI scaling but
-    without doing an explicit check for DPI awareness first. Equivalent to
-    passing @ref Configuration::DpiScalingPolicy::Physical to
+    This is supported on Unix, Windows, all mobile platforms (except iOS) and
+    Emscripten. Equivalent to passing
+    @ref Configuration::DpiScalingPolicy::Physical to
     @ref Configuration::setSize() or `physical` via command line / environment.
 
 Besides the above, it's possible to supply a custom DPI scaling value to

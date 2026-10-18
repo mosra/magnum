@@ -62,10 +62,7 @@ enum class GlfwApplication::Flag: UnsignedByte {
     TextInputActive = 1 << 1,
     VSyncEnabled = 1 << 2,
     NoTickEvent = 1 << 3,
-    Exit = 1 << 4,
-    #ifdef CORRADE_TARGET_APPLE
-    HiDpiWarningPrinted = 1 << 5
-    #endif
+    Exit = 1 << 4
 };
 
 GlfwApplication::GlfwApplication(const Arguments& arguments): GlfwApplication{arguments, Configuration{}} {}
@@ -185,26 +182,22 @@ void GlfwApplication::create(const Configuration& configuration, const GLConfigu
 #endif
 
 Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
-    /* Print a helpful warning in case some extra steps are needed for HiDPI
-       support */
-    #ifdef CORRADE_TARGET_APPLE
-    if(!Implementation::isAppleBundleHiDpiEnabled() && !(_flags & Flag::HiDpiWarningPrinted)) {
-        Warning{} << "Platform::GlfwApplication: warning: the executable is not a HiDPI-enabled app bundle";
-        _flags |= Flag::HiDpiWarningPrinted;
-    }
-    #elif defined(CORRADE_TARGET_WINDOWS)
-    /* Handled in dpiScalingInternal(), warning printed only when using virtual
-       DPI scaling (and thus not setting the HiDpiWarningPrinted flag) */
-    #endif
-
     return dpiScalingInternal(configuration.dpiScalingPolicy(), configuration.dpiScaling());
 }
 
 Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling, const bool silentLog) const {
-    #if defined(_MAGNUM_PLATFORM_USE_X11) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || (!defined(CORRADE_TARGET_UNIX) && !(defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)))
     std::ostream* const output = silentLog ? nullptr : Debug::output();
-    #endif
     std::ostream* const verbose = _verboseLog && !silentLog ? Debug::output() : nullptr;
+
+    /* Print a helpful warning in case some extra steps are needed for HiDPI
+       support. Do that even before parsing the command-line- or
+       configuration-supplied values to let the user know those might not
+       behave as expected. */
+    #ifdef CORRADE_TARGET_APPLE
+    if(!Implementation::isAppleBundleHiDpiEnabled()) {
+        Warning{output} << "Platform::GlfwApplication: warning: the executable is not a HiDPI-enabled app bundle";
+    }
+    #endif
 
     /* Use values from the configuration only if not overridden on command line
        to something non-default. In any case explicit scaling has a precedence
@@ -230,6 +223,20 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
         #endif
     }
 
+    /* On Windows GLFW is advertising the application to be DPI-aware on its
+       own even without supplying an explicit manifest -- https://github.com/glfw/glfw/blob/089ea9af227fdffdf872348923e1c12682e63029/src/win32_init.c#L564-L569
+       If, for some reason, the app is still not DPI-aware, tell that to the
+       user explicitly and don't even attempt to query the value as neither
+       virtual nor physical scaling would behave as expected. This is done only
+       after parsing the command-line- and configuration-supplied values so a
+       custom value can still be supplied if desired. */
+    #if defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+    if(!Implementation::isWindowsAppDpiAware()) {
+        Warning{output} << "Platform::GlfwApplication: your application is not set as DPI-aware, DPI scaling won't be used";
+        return Vector2{1.0f};
+    }
+    #endif
+
     /* There's no choice on Apple, it's all controlled by the plist file. So
        unless someone specified custom scaling via config or command-line
        above, return the default. */
@@ -252,19 +259,10 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
             return dpiScaling;
         }
 
-        /* Check for DPI awareness on non-RT Windows and then ask for content
-           scale (available since GLFW 3.3). GLFW is advertising the
-           application to be DPI-aware on its own even without supplying an
-           explicit manifest -- https://github.com/glfw/glfw/blob/089ea9af227fdffdf872348923e1c12682e63029/src/win32_init.c#L564-L569
-           If, for some reason, the app is still not DPI-aware, tell that to
-           the user explicitly and don't even attempt to query the value if the
-           app is not DPI aware. If it's desired to get the DPI value
-           unconditionally, the user should use physical DPI scaling instead. */
+        /* On non-RT Windows ask for content scale (available since GLFW
+           3.3), which returns the correct value as long as the app is
+           DPI-aware, which was checked above */
         #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
-        if(!Implementation::isWindowsAppDpiAware()) {
-            Warning{output} << "Platform::GlfwApplication: your application is not set as DPI-aware, DPI scaling won't be used";
-            return Vector2{1.0f};
-        }
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
         GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
         Vector2 dpiScaling;
