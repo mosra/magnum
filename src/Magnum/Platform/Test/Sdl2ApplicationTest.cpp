@@ -489,8 +489,23 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     Configuration conf;
     conf.setTitle("Window title that should have no exclamation mark!!"_s.exceptSuffix(2))
         .addWindowFlags(WindowFlag::Resizable);
-    if(!args.value("dpi-scaling").empty())
-        conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
+    if(const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling")) {
+        if(dpiScaling == "default")
+            conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Default);
+        #ifdef CORRADE_TARGET_APPLE
+        else if(dpiScaling == "framebuffer")
+            conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Framebuffer);
+        #else
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+        else if(dpiScaling == "virtual")
+            conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Virtual);
+        #endif
+        else if(dpiScaling == "physical")
+            conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Physical);
+        #endif
+        else
+            conf.setSize(conf.size(), args.value<Vector2>("dpi-scaling"));
+    }
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     if(args.isSet("fullscreen"))
         conf.addWindowFlags(WindowFlag::Fullscreen);
