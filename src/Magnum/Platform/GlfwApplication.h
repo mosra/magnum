@@ -47,7 +47,7 @@
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_NONE /* Don't drag in random GL headers */
 #endif
 #include <GLFW/glfw3.h>
 
@@ -1961,8 +1961,10 @@ class GlfwApplication::Configuration {
             /**
              * Framebuffer DPI scaling. The window will have the same size as
              * requested, but the framebuffer size will be different. Supported
-             * only on macOS and iOS and is also the only supported value
-             * there.
+             * only on macOS and is also the only supported value there.
+             *
+             * Equivalent to `--magnum-dpi-scaling framebuffer` passed on
+             * command-line.
              */
             Framebuffer,
 
@@ -1982,10 +1984,7 @@ class GlfwApplication::Configuration {
              * Physical DPI scaling. Takes the requested window size as a
              * physical size that a window would have on platform's default DPI
              * and scales it to have the same size on given display physical
-             * DPI. On platforms that don't have a concept of a window it
-             * causes the framebuffer to match screen pixels 1:1 without any
-             * scaling. Supported on desktop platforms except macOS and on
-             * mobile and web. Default on mobile and web.
+             * DPI.
              *
              * Equivalent to `--magnum-dpi-scaling physical` passed on
              * command-line.
@@ -1993,10 +1992,13 @@ class GlfwApplication::Configuration {
             Physical,
 
             /**
-             * Default policy for current platform. Alias to one of
-             * @ref DpiScalingPolicy::Framebuffer, @ref DpiScalingPolicy::Virtual
-             * or @ref DpiScalingPolicy::Physical depending on platform. See
+             * Default policy for current platform. Alias to either
+             * @ref DpiScalingPolicy::Framebuffer or
+             * @ref DpiScalingPolicy::Virtual depending on platform. See
              * @ref Platform-Sdl2Application-dpi for details.
+             *
+             * Equivalent to `--magnum-dpi-scaling default` passed on
+             * command-line.
              */
             Default
         };

@@ -2777,6 +2777,9 @@ class Sdl2Application::Configuration {
              * requested, but the framebuffer size will be different. Supported
              * only on macOS and iOS and is also the only supported value
              * there.
+             *
+             * Equivalent to `--magnum-dpi-scaling framebuffer` passed on
+             * command-line.
              */
             Framebuffer,
 
@@ -2811,6 +2814,9 @@ class Sdl2Application::Configuration {
              * @ref DpiScalingPolicy::Framebuffer, @ref DpiScalingPolicy::Virtual
              * or @ref DpiScalingPolicy::Physical depending on platform. See
              * @ref Platform-Sdl2Application-dpi for details.
+             *
+             * Equivalent to `--magnum-dpi-scaling default` passed on
+             * command-line.
              */
             Default
         };
