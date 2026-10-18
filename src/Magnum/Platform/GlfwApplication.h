@@ -153,8 +153,9 @@ If no other application header is included, this class is also aliased to
 @section Platform-GlfwApplication-dpi DPI awareness
 
 DPI awareness behavior is consistent with @ref Sdl2Application except that iOS
-or Emscripten specifics don't apply here. In addition, on Windows, GLFW is
-implicitly advertising DPI awareness, so the manifest file described in
+or Emscripten specifics don't apply here, and Wayland uses framebuffer DPI
+scaling always, regardless of GLFW version used. In addition, on Windows, GLFW
+is implicitly advertising DPI awareness, so the manifest file described in
 @ref platforms-windows-hidpi doesn't necessarily need to be supplied. See
 @ref Platform-Sdl2Application-dpi "Sdl2Application DPI awareness documentation"
 for more information.
@@ -1789,7 +1790,8 @@ namespace Implementation {
     enum class GlfwDpiScalingPolicy: UnsignedByte {
         /* Using 0 for an "unset" value */
 
-        #ifdef CORRADE_TARGET_APPLE
+        /* Framebuffer is used only with Wayland on Unix */
+        #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_UNIX)
         Framebuffer = 1,
         #endif
 
@@ -1800,9 +1802,12 @@ namespace Implementation {
         #endif
 
         Default
+            /* On non-Apple Unix it's not aliased to anything as it can be
+               either Virtual or Framebuffer depending on whether we're running
+               on Wayland */
             #ifdef CORRADE_TARGET_APPLE
             = Framebuffer
-            #else
+            #elif !defined(CORRADE_TARGET_UNIX)
             = Virtual
             #endif
     };
@@ -1961,7 +1966,8 @@ class GlfwApplication::Configuration {
             /**
              * Framebuffer DPI scaling. The window will have the same size as
              * requested, but the framebuffer size will be different. Supported
-             * only on macOS and is also the only supported value there.
+             * on Unix when running under Wayland, and on macOS, on both it's
+             * also the only supported value.
              *
              * Equivalent to `--magnum-dpi-scaling framebuffer` passed on
              * command-line.
@@ -1972,8 +1978,8 @@ class GlfwApplication::Configuration {
              * Virtual DPI scaling. Scales the window based on UI scaling
              * setting in the system. Falls back to
              * @ref DpiScalingPolicy::Physical on platforms that don't support
-             * it. Supported only on desktop platforms (except macOS) and it's
-             * the default there.
+             * it. Supported on Unix when running under X11 and on Windows, on
+             * both it's the default there.
              *
              * Equivalent to `--magnum-dpi-scaling virtual` passed on
              * command-line.
@@ -1984,7 +1990,7 @@ class GlfwApplication::Configuration {
              * Physical DPI scaling. Takes the requested window size as a
              * physical size that a window would have on platform's default DPI
              * and scales it to have the same size on given display physical
-             * DPI.
+             * DPI. Supported on Unix when running under X11 and on Windows.
              *
              * Equivalent to `--magnum-dpi-scaling physical` passed on
              * command-line.
@@ -1992,10 +1998,10 @@ class GlfwApplication::Configuration {
             Physical,
 
             /**
-             * Default policy for current platform. Alias to either
+             * Default policy for current platform. Resolves to either
              * @ref DpiScalingPolicy::Framebuffer or
-             * @ref DpiScalingPolicy::Virtual depending on platform. See
-             * @ref Platform-Sdl2Application-dpi for details.
+             * @ref DpiScalingPolicy::Virtual depending on platform and window
+             * system used. See @ref Platform-GlfwApplication-dpi for details.
              *
              * Equivalent to `--magnum-dpi-scaling default` passed on
              * command-line.

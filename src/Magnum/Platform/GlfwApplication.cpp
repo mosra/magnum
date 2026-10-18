@@ -77,6 +77,27 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration
 }
 #endif
 
+namespace {
+
+/* GLFW before version 3.4 is compiled either for X11 or for Wayland, and
+   reports that in the version string. Version 3.4 adds runtime platform
+   selection and convenience queries. Emulate the newer API on older versions
+   for convenience. */
+#if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 304
+#define GLFW_PLATFORM_X11 1
+#define GLFW_PLATFORM_WAYLAND 2
+int glfwGetPlatform() {
+    const Containers::StringView platform = glfwGetVersionString();
+    if(platform.contains("X11"_s))
+        return GLFW_PLATFORM_X11;
+    if(platform.contains("Wayland"_s))
+        return GLFW_PLATFORM_WAYLAND;
+    return {};
+}
+#endif
+
+}
+
 GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     _flags{Flag::Redraw}
 {
@@ -139,15 +160,39 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     if(args.value("log") == "verbose")
         _verboseLog = true;
     const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling");
+    #if defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE)
+    const bool isWayland = glfwGetPlatform() == GLFW_PLATFORM_WAYLAND;
+    #endif
     if(dpiScaling == "default"_s)
+        /* Here we don't need to resolve to Virtual or Framebuffer on Wayland
+           as the value will get overriden by the configuration-supplied
+           value */
         _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Default;
-    #ifdef CORRADE_TARGET_APPLE
-    else if(dpiScaling == "framebuffer"_s)
+    #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_UNIX)
+    else if(dpiScaling == "framebuffer"_s
+        #ifndef CORRADE_TARGET_APPLE
+        /* On Wayland framebuffer scaling is the only option. If not running
+           on Wayland, don't recognize --magnum-dpi-scaling framebuffer at
+           all. */
+        && isWayland
+        #endif
+    )
         _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Framebuffer;
-    #else
-    else if(dpiScaling == "virtual"_s)
+    #endif
+    #ifndef CORRADE_TARGET_APPLE
+    /* If running on a Wayland backend where framebuffer scaling is the only
+       option, these two aren't allowed there */
+    else if(dpiScaling == "virtual"_s
+        #ifdef CORRADE_TARGET_UNIX
+        && !isWayland
+        #endif
+    )
         _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Virtual;
-    else if(dpiScaling == "physical"_s)
+    else if(dpiScaling == "physical"_s
+        #ifdef CORRADE_TARGET_UNIX
+        && !isWayland
+        #endif
+    )
         _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Physical;
     #endif
     else {
@@ -205,12 +250,20 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
     #ifndef CORRADE_TARGET_APPLE
     Implementation::GlfwDpiScalingPolicy dpiScalingPolicy{};
     #endif
+    #if defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE)
+    const int glfwPlatform = glfwGetPlatform();
+    #endif
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::GlfwApplication: user-defined DPI scaling" << _commandLineDpiScaling;
         return _commandLineDpiScaling;
     } else if(_commandLineDpiScalingPolicy != Implementation::GlfwDpiScalingPolicy::Default) {
         #ifndef CORRADE_TARGET_APPLE
+        /* On non-Apple Unix the constructor guaranteed this to be Framebuffer
+           if on Wayland */
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
+        #ifdef CORRADE_TARGET_UNIX
+        CORRADE_INTERNAL_ASSERT(glfwPlatform != GLFW_PLATFORM_WAYLAND || dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Framebuffer);
+        #endif
         #endif
     } else if(!configurationDpiScaling.isZero()) {
         Debug{verbose} << "Platform::GlfwApplication: app-defined DPI scaling" << configurationDpiScaling;
@@ -218,6 +271,31 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
     } else {
         #ifndef CORRADE_TARGET_APPLE
         dpiScalingPolicy = configurationDpiScalingPolicy;
+        #ifdef CORRADE_TARGET_UNIX
+        if(glfwPlatform == GLFW_PLATFORM_WAYLAND) {
+            /* By default, the policy is set to Default (heh), not Framebuffer,
+               don't warn in that case. Compared to --magnum-dpi-scaling this
+               is not a hard error as it's generally too annoing for the app
+               code to check whether X11 or Wayland is used before actually
+               creating the window */
+            if(dpiScalingPolicy != Implementation::GlfwDpiScalingPolicy::Framebuffer &&
+               dpiScalingPolicy != Implementation::GlfwDpiScalingPolicy::Default)
+            {
+                CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Physical);
+                Warning{output} << "Platform::GlfwApplication:" << (dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual ? "virtual" : "physical") << "DPI scaling not supported on this platform, falling back to framebuffer scaling";
+            }
+            dpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Framebuffer;
+        } else {
+            /* Conversely, if we're not on Wayland, warn if attempting to use
+               framebuffer scaling and fall back to virtual */
+            if(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Framebuffer) {
+                Warning{output} << "Platform::GlfwApplication: framebuffer DPI scaling not supported on this platform, falling back to virtual scaling";
+                dpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Virtual;
+            }
+            if(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Default)
+                dpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Virtual;
+        }
+        #endif
         #else
         static_cast<void>(configurationDpiScalingPolicy);
         #endif
@@ -243,48 +321,66 @@ Vector2 GlfwApplication::dpiScalingInternal(const Implementation::GlfwDpiScaling
     #ifdef CORRADE_TARGET_APPLE
     return Vector2{1.0f};
 
-    /* Otherwise there's a choice between virtual and physical DPI scaling */
+    /* Otherwise there's a choice between virtual and physical DPI scaling, or
+       possibly only framebuffer scaling if we're on Wayland because things are
+       always made more complex than they need to be, ugh */
     #else
-    /* Try to get virtual DPI scaling first, if supported and requested */
-    if(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual) {
-        /* Use Xft.dpi on X11. This could probably be dropped for GLFW 3.3+
-           as glfwGetMonitorContentScale() does the same, but I'd still need to
-           keep it for 2.2 and below, plus the same code needs to be used for
-           SDL anyway. So keeping it to reduce the chance for unexpected minor
-           differences across app implementations. */
-        #ifdef _MAGNUM_PLATFORM_USE_X11
-        const Vector2 dpiScaling{Implementation::x11DpiScaling(output)};
-        if(!dpiScaling.isZero()) {
-            Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling.x();
-            return dpiScaling;
-        }
+    #if defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE)
+    if(glfwPlatform == GLFW_PLATFORM_WAYLAND) {
+        CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Framebuffer);
+        Debug{verbose} << "Platform::GlfwApplication: using framebuffer DPI scaling on Wayland";
+        return Vector2{1.0f};
+    }
+    #endif
 
-        /* On non-RT Windows ask for content scale (available since GLFW
-           3.3), which returns the correct value as long as the app is
-           DPI-aware, which was checked above */
-        #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
-        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+    /* On non-Wayland Unix and Windows try to get virtual DPI scaling first, if
+       supported and requested */
+    if(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual) {
+        /* If we're on GLFW < 3.3 where we cannot use
+           glfwGetMonitorContentScale(), X11 was found at compile time and the
+           session is actually running on X11, do a manual query of Xft.dpi.
+           Checking for X11 is done with glfwGetPlatform(), not using
+           XDG_SESSION_TYPE because one can be on Wayland (with
+           XDG_SESSION_TYPE=wayland) but set
+           `glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);` to force use of
+           XWayland. */
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR < 303 && defined(_MAGNUM_PLATFORM_USE_X11)
+        if(glfwPlatform == GLFW_PLATFORM_X11) {
+            const Vector2 dpiScaling{Implementation::x11DpiScaling(output)};
+            if(!dpiScaling.isZero()) {
+                Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling.x();
+                return dpiScaling;
+            }
+        }
+        #endif
+
+        /* On Unix with GLFW 3.3+ we can use glfwGetMonitorContentScale() that
+           returns a correct value for both X11 and Wayland, same for non-RT
+           Windows as long as the app is DPI-aware, which was checked above.
+
+           On Unix with GLFW < 3.3, if running X11, the Xft.dpi branch above
+           was taken, and if running Wayland or Windows, the below "sorry, not
+           implemented" message is printed instead. */
+        #if (defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))) && GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
         GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
         Vector2 dpiScaling;
         glfwGetMonitorContentScale(monitor, &dpiScaling.x(), &dpiScaling.y());
         Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling;
         return dpiScaling;
-        #else
-        Warning{output} << "Platform::GlfwApplication: sorry, virtual DPI scaling only available on GLFW 3.3+, falling back to physical DPI scaling";
-        #endif
 
-        /* Otherwise ¯\_(ツ)_/¯ */
+        /* Otherwise ¯\_(ツ)_/¯. In particular, this gets printed for GLFW < 3.3
+           on Wayland or on Windows. */
         #else
         Warning{output} << "Platform::GlfwApplication: sorry, virtual DPI scaling not implemented on this platform, falling back to physical DPI scaling";
         #endif
     }
 
-    /* At this point, either the virtual DPI query failed or a physical DPI
-       scaling is requested */
+    /* At this point, either the virtual DPI query failed, isn't implemented or
+       a physical DPI scaling is requested */
     CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Physical);
 
-    /* Physical DPI scaling. Enable only on Linux (where it gets the usually
-       very-off value from X11) and on non-RT Windows (where it calculates it
+    /* Physical DPI scaling. Enable only on Linux + X11 (where it gets the
+       usually very-off value) and on non-RT Windows (where it calculates it
        from actual monitor dimensions). */
     #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
     GLFWmonitor* const monitor = glfwGetPrimaryMonitor();

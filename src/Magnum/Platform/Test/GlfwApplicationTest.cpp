@@ -416,10 +416,11 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
     if(const Containers::StringView dpiScaling = args.value<Containers::StringView>("dpi-scaling")) {
         if(dpiScaling == "default")
             conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Default);
-        #ifdef CORRADE_TARGET_APPLE
+        #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_UNIX)
         else if(dpiScaling == "framebuffer")
             conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Framebuffer);
-        #else
+        #endif
+        #ifndef CORRADE_TARGET_APPLE
         else if(dpiScaling == "virtual")
             conf.setSize(conf.size(), Configuration::DpiScalingPolicy::Virtual);
         else if(dpiScaling == "physical")
