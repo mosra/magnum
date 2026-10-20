@@ -75,7 +75,7 @@ const struct {
     bool fieldIdInsteadOfName;
     std::size_t transformationsToExclude, meshesToExclude;
     std::size_t expectedOutputSize;
-} TestData[]{
+} AbsoluteFieldTransformationsData[]{
     {"", {}, {}, false,
         2, 0,
         5},
@@ -104,7 +104,7 @@ const struct {
     Matrix4 globalTransformation3D;
     bool fieldIdInsteadOfName;
     std::size_t expectedOutputSize;
-} IntoData[]{
+} AbsoluteFieldTransformationsIntoData[]{
     {"", {}, {}, false,
         5},
     {"field ID", {}, {}, true,
@@ -134,7 +134,7 @@ HierarchyTest::HierarchyTest() {
 
     addInstancedTests({&HierarchyTest::absoluteFieldTransformations2D,
                        &HierarchyTest::absoluteFieldTransformations3D},
-        Containers::arraySize(TestData));
+        Containers::arraySize(AbsoluteFieldTransformationsData));
 
     addTests({&HierarchyTest::absoluteFieldTransformationsFieldNotFound,
               &HierarchyTest::absoluteFieldTransformationsNot2DNot3D,
@@ -142,7 +142,7 @@ HierarchyTest::HierarchyTest() {
 
     addInstancedTests({&HierarchyTest::absoluteFieldTransformationsInto2D,
                        &HierarchyTest::absoluteFieldTransformationsInto3D},
-        Containers::arraySize(IntoData));
+        Containers::arraySize(AbsoluteFieldTransformationsIntoData));
 
     addTests({&HierarchyTest::absoluteFieldTransformationsIntoInvalidSize});
 }
@@ -562,7 +562,7 @@ const struct Scene {
 }};
 
 void HierarchyTest::absoluteFieldTransformations2D() {
-    auto&& data = TestData[testCaseInstanceId()];
+    auto&& data = AbsoluteFieldTransformationsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 33, {}, Data, {
@@ -621,7 +621,7 @@ void HierarchyTest::absoluteFieldTransformations2D() {
 }
 
 void HierarchyTest::absoluteFieldTransformations3D() {
-    auto&& data = TestData[testCaseInstanceId()];
+    auto&& data = AbsoluteFieldTransformationsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 33, {}, Data, {
@@ -737,7 +737,7 @@ void HierarchyTest::absoluteFieldTransformationsNoParentField() {
 }
 
 void HierarchyTest::absoluteFieldTransformationsInto2D() {
-    auto&& data = IntoData[testCaseInstanceId()];
+    auto&& data = AbsoluteFieldTransformationsIntoData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* The *Into() variant is the actual base implementation, so just verify
@@ -794,7 +794,7 @@ void HierarchyTest::absoluteFieldTransformationsInto2D() {
 }
 
 void HierarchyTest::absoluteFieldTransformationsInto3D() {
-    auto&& data = IntoData[testCaseInstanceId()];
+    auto&& data = AbsoluteFieldTransformationsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* The *Into() variant is the actual base implementation, so just verify
