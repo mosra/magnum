@@ -26,6 +26,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 
@@ -53,6 +54,7 @@ struct IntersectionTest: TestSuite::Tester {
     void pointCone();
     void pointDoubleCone();
     void sphereCone();
+    template<class T> void sphereConeNearApex();
     void sphereConeView();
     void sphereConeViewNotRigid();
     void rangeCone();
@@ -67,6 +69,25 @@ using Magnum::Frustum;
 using Magnum::Constants;
 using Magnum::Range3D;
 using Magnum::Rad;
+
+constexpr struct {
+    const char* name;
+    Float angle;
+    Vector3 center;
+    Float radius;
+    bool intersects;
+} SphereConeNearApexData[]{
+    {"wide cone, beside apex", 120.0f, {1.5f, 0.0f, 0.0f}, 1.0f, true},
+    {"wide cone, behind apex", 120.0f, {1.1f, 0.0f, -0.2f}, 1.0f, true},
+    {"wide cone, in front of apex", 120.0f, {1.5f, 0.0f, 0.2f}, 1.0f, true},
+    {"narrow cone, beside apex", 60.0f, {1.1f, 0.0f, 0.0f}, 1.0f, true},
+    {"outside side", 120.0f, {2.5f, 0.0f, 0.0f}, 1.0f, false},
+    {"outside behind apex", 120.0f, {0.0f, 0.0f, -1.5f}, 1.0f, false},
+    {"contains apex", 120.0f, {0.0f, 0.0f, -0.5f}, 1.0f, true},
+    {"touches apex", 120.0f, {0.0f, 0.0f, -1.0f}, 1.0f, true},
+    {"inside cone", 120.0f, {0.0f, 0.0f, 3.0f}, 1.0f, true},
+    {"zero radius outside", 120.0f, {1.0f, 0.0f, 0.0f}, 0.0f, false}
+};
 
 IntersectionTest::IntersectionTest() {
     addTests({&IntersectionTest::pointCircle,
@@ -88,6 +109,10 @@ IntersectionTest::IntersectionTest() {
               &IntersectionTest::sphereConeViewNotRigid,
               &IntersectionTest::rangeCone,
               &IntersectionTest::aabbCone});
+
+    addInstancedTests<IntersectionTest>({&IntersectionTest::sphereConeNearApex<Float>,
+                                       &IntersectionTest::sphereConeNearApex<Double>},
+        Containers::arraySize(SphereConeNearApexData));
 }
 
 void IntersectionTest::pointCircle() {
@@ -405,6 +430,44 @@ void IntersectionTest::sphereCone() {
     /* Same as above on double side of the cone */
     CORRADE_VERIFY(!Intersection::sphereCone(center - surface + sNormal*0.25f, 0.5f, center, normal, angle));
     CORRADE_VERIFY(!Intersection::sphereCone(center - 4.0f*surface, 0.5f, center, normal, angle));
+}
+
+template<class T> void IntersectionTest::sphereConeNearApex() {
+    auto&& data = SphereConeNearApexData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(TypeTraits<T>::name());
+
+    const Math::Vector3<T> sphereCenter{data.center};
+    const T radius = T(data.radius);
+    const Math::Rad<T> angle{Math::Deg<T>{T(data.angle)}};
+    const T sinAngle = Math::sin(angle/T(2));
+    const T tanAngle = Math::tan(angle/T(2));
+    const Math::Vector3<T> normal = Math::Vector3<T>::zAxis();
+
+    /* A sphere beside the apex can intersect the cone's side without
+       containing the apex. For example, at (1.5, 0, 0) the distance to the
+       side of a 120-degree cone is 1.5*cos(60 degrees) = 0.75. */
+    CORRADE_COMPARE(Intersection::sphereCone(sphereCenter, radius,
+        Math::Vector3<T>{}, normal, angle), data.intersects);
+    CORRADE_COMPARE(Intersection::sphereCone(sphereCenter, radius,
+        Math::Vector3<T>{}, normal, sinAngle, T(1) + tanAngle*tanAngle), data.intersects);
+
+    /* The view-based overload should agree, also after rotating and
+       translating the cone and the sphere together. */
+    const Math::Vector3<T> origin{T(1), T(-2), T(3)};
+    const Math::Vector3<T> rotatedNormal = Math::Vector3<T>::yAxis();
+    const Math::Vector3<T> transformedCenter = origin +
+        Math::Vector3<T>{sphereCenter.x(), sphereCenter.z(), -sphereCenter.y()};
+    const Math::Matrix4<T> view = Math::Matrix4<T>::lookAt(origin,
+        origin + rotatedNormal, Math::Vector3<T>::zAxis()).invertedRigid();
+    CORRADE_COMPARE(Intersection::sphereCone(transformedCenter, radius,
+        origin, rotatedNormal, angle), data.intersects);
+    CORRADE_COMPARE(Intersection::sphereCone(transformedCenter, radius,
+        origin, rotatedNormal, sinAngle, T(1) + tanAngle*tanAngle), data.intersects);
+    CORRADE_COMPARE(Intersection::sphereConeView(transformedCenter, radius,
+        view, angle), data.intersects);
+    CORRADE_COMPARE(Intersection::sphereConeView(transformedCenter, radius,
+        view, sinAngle, tanAngle), data.intersects);
 }
 
 void IntersectionTest::sphereConeView() {
