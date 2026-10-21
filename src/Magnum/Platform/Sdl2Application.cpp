@@ -726,6 +726,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         glFlags |= GLConfiguration::Flag::NoError;
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, glFlags >= GLConfiguration::Flag::NoError);
+    SDL_GL_SetAttribute(SDL_GL_STEREO, glFlags >= GLConfiguration::Flag::Stereo);
 
     /* Set context version, if user-specified */
     if(glConfiguration.version() != GL::Version::None) {

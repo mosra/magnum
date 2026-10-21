@@ -2314,6 +2314,15 @@ class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
             /* Treated as a separate attribute and not a flag in SDL, thus
                handling manually. */
             NoError = 1ull << 32,
+
+            /**
+             * Stereo rendering.
+             * @requires_gles Context flags are not available in WebGL.
+             * @m_since_latest
+             */
+            /* Treated as a separate attribute and not a flag in SDL, thus
+               handling manually. */
+            Stereo = 1ull << 33,
             #endif
 
             /**

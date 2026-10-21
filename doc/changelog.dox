@@ -416,6 +416,8 @@ See also:
     @relativeref{Platform::Sdl2Application,clearWindowFlags()} for toggling
     fullscreen, minimization, maximization windows and other flags at runtime
     in @ref Platform::Sdl2Application and @ref Platform::GlfwApplication
+-   Added @ref Platform::Sdl2Application::GLConfiguration::Flag::Stereo for
+    consistency with @ref Platform::GlfwApplication (see [mosra/magnum#699](https://github.com/mosra/magnum/discussions/699))
 
 @subsubsection changelog-latest-new-primitives Primitives library
 
