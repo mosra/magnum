@@ -27,9 +27,11 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::SceneTools::parentsBreadthFirst(), @ref Magnum::SceneTools::parentsBreadthFirstInto(), @ref Magnum::SceneTools::childrenDepthFirst(), @ref Magnum::SceneTools::childrenDepthFirstInto(), @ref Magnum::SceneTools::absoluteFieldTransformations2D(), @ref Magnum::SceneTools::absoluteFieldTransformations2DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations3D(), @ref Magnum::SceneTools::absoluteFieldTransformations3DInto()
+ * @brief Function @ref Magnum::SceneTools::parentsBreadthFirst(), @ref Magnum::SceneTools::parentsBreadthFirstInto(), @ref Magnum::SceneTools::childrenDepthFirst(), @ref Magnum::SceneTools::childrenDepthFirstInto(), @ref Magnum::SceneTools::absoluteTransformations3DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations2D(), @ref Magnum::SceneTools::absoluteFieldTransformations2DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations3D(), @ref Magnum::SceneTools::absoluteFieldTransformations3DInto()
  * @m_since_latest
  */
+
+#include <Corrade/Corrade.h> /* CORRADE_CPU* macro stuff */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/SceneTools/visibility.h"
@@ -130,6 +132,58 @@ in @p scene.
     @ref parentsBreadthFirstInto()
 */
 MAGNUM_SCENETOOLS_EXPORT void childrenDepthFirstInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<UnsignedInt>& childCountDestination);
+
+namespace Implementation {
+    MAGNUM_SCENETOOLS_EXPORT extern void MAGNUM_SCENETOOLS_CPU_DISPATCHED_DECLARATION(absoluteTransformations3D)(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride);
+    MAGNUM_SCENETOOLS_CPU_DISPATCHER_DECLARATION(absoluteTransformations3D)
+}
+
+/**
+@brief Calculate absolute 3D transformations for a hierarchy
+@m_since_latest
+
+Fills the @p output array with @p transformations multiplied with their parent
+transformations according to indices in @p parents.
+
+Expects that the @p parents view contains indices pointing to the
+@p transformations view or @cpp -1 @ce for @p globalTransformation, and that
+the parent references are back-referencing, i.e. parent at given index always
+points to an index earlier in the view, so that the transformations can be
+processed sequentially.
+
+The @p output view is expected to have one more item than @p parents,
+@cpp output[0] @ce is then filled with @p globalTransformation, absolute
+transformation for input at index @cpp i @ce is then in @cpp output[i + 1] @ce.
+The calculated transformations are affine (i.e., the bottom row of all matrices
+is assumed to be @f$ (0, 0, 0, 1) @f$).
+
+As the internal implementation is vectorized, both @p transformations and
+@p output views are expected to be aligned to 64 bytes, with strides being
+multiples of 64 bytes as well. Negative strides are allowed too. You can use
+@cpp alignas(64) @ce or @relativeref{Corrade,Utility::allocateAligned()} to
+create an appropriately aligned storage. Example usage:
+
+@snippet SceneTools.cpp absoluteTransformations3DInto
+
+The function can also operate in-place if the original transformations don't
+need to be preserved after. To do that, put them into an array with one extra
+item at the front and then pass it both to @p transformations and @p output.
+This has the most efficient memory access pattern and is thus suitable for
+cases where fresh transformations are used each time. For example:
+
+@snippet SceneTools.cpp absoluteTransformations3DInto-in-place
+
+@todo 2D version as well, once it's clear what representation to use (3x4? how
+    to align? etc) ... adding just a scalar variant with no alignment
+    requirements would mean a nasty breakage for users later
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation = {});
+#else
+/* To avoid including Matrix4 */
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation);
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output);
+#endif
 
 /**
 @brief Calculate absolute 2D transformations for given field

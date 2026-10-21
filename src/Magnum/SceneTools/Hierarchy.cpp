@@ -26,16 +26,23 @@
 
 #include "Hierarchy.h"
 
+#include <Corrade/Cpu.h>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
+#ifdef CORRADE_ENABLE_AVX
+#include <Corrade/Utility/IntrinsicsAvx.h>
+#elif defined(CORRADE_ENABLE_SSE2)
+#include <Corrade/Utility/IntrinsicsSse2.h>
+#endif
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/SceneTools/Implementation/cpu.h"
 #include "Magnum/Trade/SceneData.h"
 
 namespace Magnum { namespace SceneTools {
@@ -256,6 +263,368 @@ void childrenDepthFirstInto(const Trade::SceneData& scene, const Containers::Str
         that would be duplicated here and in parentsBreadthFirst()?) */
     CORRADE_ASSERT(outputOffset == parents.size(),
         "SceneTools::childrenDepthFirst(): hierarchy is sparse", );
+}
+
+namespace Implementation {
+
+namespace {
+
+MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Scalar)) {
+  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) {
+    for(std::size_t i = 0; i != size; ++i) {
+        const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
+
+        /* `c = a*b`; `a` is stored in the output array which contains the
+           global transform (for `parent == -1`) at index 0, which is why
+           `parent + 1` is used, similarly `c` is stored at `i + 1` */
+        const Matrix4& a = *reinterpret_cast<const Matrix4*>(output + (parent + 1)*outputStride);
+        const Matrix4& b = *reinterpret_cast<const Matrix4*>(transformations + i*transformationsStride);
+        Matrix4& c = *reinterpret_cast<Matrix4*>(output + (i + 1)*outputStride);
+
+        c = a*b;
+    }
+  };
+}
+
+#ifdef CORRADE_ENABLE_SSE2
+/* Originally from https://stackoverflow.com/a/18508113, with a single load and
+   four shuffles instead of four loads, subsequently changed to calculate only
+   an affine transformation, i.e., ignoring all `b[j][3]` elements and assuming
+   they're (0, 0, 0, 1), and with caching of the left-side matrix. See
+   Test/HierarchyTest.h for the other (slower) variants that led to this. */
+MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SSE2 typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Sse2)) {
+  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_SSE2 {
+    /* GCC stupidly warns that these may be uninitialized, so zero-init */
+    __m128 a0{};
+    __m128 a1{};
+    __m128 a2{};
+    __m128 a3{};
+
+    Int prevParent = INT32_MIN;
+    for(std::size_t i = 0; i != size; ++i) {
+        /* Same as in the scalar implementation, the only difference is that
+           we're casting only to the primitive float type */
+        const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
+        const Float* const b = reinterpret_cast<const Float*>(transformations + i*transformationsStride);
+        Float* const c = reinterpret_cast<Float*>(output + (i + 1)*outputStride);
+
+        /* Optimistically assume the parent index stays the same across
+           multiple transformations, which allows us to cache the loaded
+           left-side matrix. There isn't as many SSE2 registers as is with AVX+
+           so on older HW or on 32-bit targets this could be worse than no
+           caching at all due to having to offload the loaded registers back to
+           memory. But in my tests on a 64-bit machine it's a clear win. */
+        if CORRADE_UNLIKELY(prevParent != parent) {
+            prevParent = parent;
+            const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
+
+            /* Columns `a[0]` to `a[3]` */
+            a0 = _mm_load_ps(a + 0);
+            a1 = _mm_load_ps(a + 4);
+            a2 = _mm_load_ps(a + 8);
+            a3 = _mm_load_ps(a + 12);
+        }
+
+        /* Rows `b[j][0]` to `b[j][2]`, `b[j][3]` omitted */
+        for(std::size_t j = 0; j != 3; ++j) {
+            /* Elements `b[j][0]` to `b[j][2]`, four times in each register */
+            const __m128 bj = _mm_load_ps(b + j*4);
+            const __m128 bj0x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(0, 0, 0, 0));
+            const __m128 bj1x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(1, 1, 1, 1));
+            const __m128 bj2x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(2, 2, 2, 2));
+
+            /* Calculate the whole output row at once. As `b[j][3]` is 0 the
+               part of the expression that's `a[3]*b[j][3]` cancels out:
+                c[j] = a[0]*b[j][0] + a[1]*b[j][1] +
+                       a[2]*b[j][2]
+               In other words, for k being 0 to 3:
+                c[j][k] = a[0][k]*b[j][0] + a[1][k]*b[j][1] +
+                          a[2][k]*b[j][2] */
+            _mm_store_ps(c + j*4, _mm_add_ps(
+                _mm_add_ps(
+                    _mm_mul_ps(a0, bj0x4),
+                    _mm_mul_ps(a1, bj1x4)),
+                    _mm_mul_ps(a2, bj2x4)));
+        }
+
+        /* Row `b[3][0]` to `b[3][2]`, `b[3][3]` omitted */
+        {
+            /* Elements `b[3][0]` to `b[3][2]`, four times in each register */
+            const __m128 b3 = _mm_load_ps(b + 3*4);
+            const __m128 b30x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(0, 0, 0, 0));
+            const __m128 b31x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(1, 1, 1, 1));
+            const __m128 b32x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(2, 2, 2, 2));
+
+            /* Calculate the whole output row at once. As `b[3][3]` is 1 the
+               part of the expression that's `a[3]*b[3][3]` reduces to `a[3]`:
+                c[j] = a[0]*b[3][0] + a[1]*b[3][1] +
+                       a[2]*b[3][2] + a[3]
+               In other words, for k being 0 to 3:
+                c[j][k] = a[0][k]*b[3][0] + a[1][k]*b[3][1] +
+                          a[2][k]*b[3][2] + a[3][k] */
+            _mm_store_ps(c + 3*4, _mm_add_ps(
+                _mm_add_ps(
+                    _mm_mul_ps(a0, b30x4),
+                    _mm_mul_ps(a1, b31x4)),
+                _mm_add_ps(
+                    _mm_mul_ps(a2, b32x4),
+                    a3)));
+        }
+    }
+  };
+}
+#endif
+
+#ifdef CORRADE_ENABLE_AVX
+/* Basically a direct translation of the affine SSE2 code above, processing two
+   columns with two scalars at once. The _mm256_permute2f128_ps() is chosen
+   because that's what GCC 10's autovectorizer uses for the scalar 4x4 version
+   with -mavx. */
+MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Avx)) {
+  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX {
+    /* GCC stupidly warns that these may be uninitialized, so zero-init */
+    __m256 a0x2{};
+    __m256 a1x2{};
+    __m256 a2x2{};
+    __m256 aZero3{};
+
+    Int prevParent = INT32_MIN;
+    for(std::size_t i = 0; i != size; ++i) {
+        const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
+        const Float* const b = reinterpret_cast<const Float*>(transformations + i*transformationsStride);
+        Float* const c = reinterpret_cast<Float*>(output + (i + 1)*outputStride);
+
+        /* Optimistically assume the parent index stays the same across
+           multiple transformations, which allows us to cache the loaded
+           left-side matrix */
+        if CORRADE_UNLIKELY(prevParent != parent) {
+            prevParent = parent;
+            const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
+
+            /* Columns `a[0]` to `a[3]`, twice in each register */
+            const __m256 a01 = _mm256_load_ps(a + 0);
+            const __m256 a23 = _mm256_load_ps(a + 8);
+            a0x2 = _mm256_permute2f128_ps(a01, a01, 0x00);
+            a1x2 = _mm256_permute2f128_ps(a01, a01, 0x11);
+            a2x2 = _mm256_permute2f128_ps(a23, a23, 0x00);
+            /* Here the first part of the register is zeros, second is `a[3]`.
+               Setting bit 3 causes the first part to be zeroed. Could also
+               pass _mm256_setzero_ps() as one argument but this is more
+               consistent. */
+            aZero3 = _mm256_permute2f128_ps(a23, a23, 0x18);
+        }
+
+        /* Elements `b[0][i]` four times in a register followed by `b[1][i]`
+           four times, then `b[2][i]` four times in a register followed by
+           `b[3][i] four times. The `b[j][3]` elements are omitted as the
+           bottom row is assumed to be (0, 0, 0, 1). */
+        const __m256 b01 = _mm256_load_ps(b + 0);
+        const __m256 b23 = _mm256_load_ps(b + 8);
+        const __m256 b00x4_10x4 = _mm256_permute_ps(b01, _MM_SHUFFLE(0, 0, 0, 0));
+        const __m256 b01x4_11x4 = _mm256_permute_ps(b01, _MM_SHUFFLE(1, 1, 1, 1));
+        const __m256 b02x4_12x4 = _mm256_permute_ps(b01, _MM_SHUFFLE(2, 2, 2, 2));
+        const __m256 b20x4_30x4 = _mm256_permute_ps(b23, _MM_SHUFFLE(0, 0, 0, 0));
+        const __m256 b21x4_31x4 = _mm256_permute_ps(b23, _MM_SHUFFLE(1, 1, 1, 1));
+        const __m256 b22x4_32x4 = _mm256_permute_ps(b23, _MM_SHUFFLE(2, 2, 2, 2));
+
+        /* As `b[j][3]` are both 0, the `a[3]*b[j][3]` part of the expression
+           cancels out:
+            c[0] = a[0]*b[0][0] + a[1]*b[0][1] + a[2]*b[0][2]
+            c[1] = a[0]*b[1][0] + a[1]*b[1][1] + a[2]*b[1][2] */
+        _mm256_store_ps(c + 0, _mm256_add_ps(
+            _mm256_add_ps(
+                _mm256_mul_ps(a0x2, b00x4_10x4),
+                _mm256_mul_ps(a1x2, b01x4_11x4)),
+                _mm256_mul_ps(a2x2, b02x4_12x4)));
+
+        /* As `b[2][3]` is 0 and `b[3][3]` is 1, the `a[3]*b[2][3]` part of the
+           expression cancels out and `a[3]*b[3][3]` reduces to `a[3]`:
+            c[2] = a[0]*b[2][0] + a[1]*b[2][1] + a[2]*b[2][2]
+            c[3] = a[0]*b[3][0] + a[1]*b[3][1] + a[2]*b[3][2] + a[3] */
+        _mm256_store_ps(c + 8, _mm256_add_ps(
+            _mm256_add_ps(
+                _mm256_mul_ps(a0x2, b20x4_30x4),
+                _mm256_mul_ps(a1x2, b21x4_31x4)),
+            _mm256_add_ps(
+                _mm256_mul_ps(a2x2, b22x4_32x4),
+                aZero3)));
+    }
+  };
+}
+#endif
+
+#ifdef CORRADE_ENABLE_AVX_FMA
+/* Like the AVX implementation, just folding the _mm256_mul_ps() and
+   _mm256_add_ps() together. Matches GCC 10's autovectorizer for the 4x4
+   version with -mavx -mfma. Comments omitted as there's nothing new to say. */
+MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX_FMA typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Avx|Cpu::AvxFma)) {
+  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX_FMA {
+    /* GCC stupidly warns that these may be uninitialized, so zero-init */
+    __m256 a0x2{};
+    __m256 a1x2{};
+    __m256 a2x2{};
+    __m256 aZero3{};
+
+    Int prevParent = INT32_MIN;
+    for(std::size_t i = 0; i != size; ++i) {
+        const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
+        const Float* const b = reinterpret_cast<const Float*>(transformations + i*transformationsStride);
+        Float* const c = reinterpret_cast<Float*>(output + (i + 1)*outputStride);
+
+        if CORRADE_UNLIKELY(prevParent != parent) {
+            prevParent = parent;
+            const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
+
+            const __m256 a01 = _mm256_load_ps(a + 0);
+            const __m256 a23 = _mm256_load_ps(a + 8);
+            a0x2 = _mm256_permute2f128_ps(a01, a01, 0x00);
+            a1x2 = _mm256_permute2f128_ps(a01, a01, 0x11);
+            a2x2 = _mm256_permute2f128_ps(a23, a23, 0x00);
+            aZero3 = _mm256_permute2f128_ps(a23, a23, 0x18);
+        }
+
+        const __m256 b01 = _mm256_load_ps(b + 0);
+        const __m256 b23 = _mm256_load_ps(b + 8);
+        const __m256 b00x4_10x4 = _mm256_permute_ps(b01, _MM_SHUFFLE(0, 0, 0, 0));
+        const __m256 b01x4_11x4 = _mm256_permute_ps(b01, _MM_SHUFFLE(1, 1, 1, 1));
+        const __m256 b02x4_12x4 = _mm256_permute_ps(b01, _MM_SHUFFLE(2, 2, 2, 2));
+        const __m256 b20x4_30x4 = _mm256_permute_ps(b23, _MM_SHUFFLE(0, 0, 0, 0));
+        const __m256 b21x4_31x4 = _mm256_permute_ps(b23, _MM_SHUFFLE(1, 1, 1, 1));
+        const __m256 b22x4_32x4 = _mm256_permute_ps(b23, _MM_SHUFFLE(2, 2, 2, 2));
+
+        _mm256_store_ps(c + 0,
+            _mm256_fmadd_ps(a0x2, b00x4_10x4,
+                _mm256_fmadd_ps(a1x2, b01x4_11x4,
+                    _mm256_mul_ps(a2x2, b02x4_12x4))));
+        _mm256_store_ps(c + 8,
+            _mm256_fmadd_ps(a0x2, b20x4_30x4,
+                _mm256_fmadd_ps(a1x2, b21x4_31x4,
+                    _mm256_fmadd_ps(a2x2, b22x4_32x4, aZero3))));
+    }
+  };
+}
+#endif
+
+#ifdef CORRADE_ENABLE_AVX512F
+/* Translation of the above AVX2 FMA code to a 512-bit width, processing four
+   columns and four scalars at once instead of two. */
+MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX512F typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Avx512f)) {
+  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX512F {
+    /* GCC stupidly warns that these may be uninitialized, so zero-init */
+    __m512 a0x4{};
+    __m512 a1x4{};
+    __m512 a2x4{};
+    __m512 aZero3{};
+
+    Int prevParent = INT32_MIN;
+    for(std::size_t i = 0; i != size; ++i) {
+        const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
+        /* _mm512_load_ps() take an untyped pointer, finally, so we don't need
+           to mess with reinterpret_cast anymore */
+        const void* const b = transformations + i*transformationsStride;
+        void* const c = output + (i + 1)*outputStride;
+
+        if CORRADE_UNLIKELY(prevParent != parent) {
+            prevParent = parent;
+            const void* const a = output + (parent + 1)*outputStride;
+
+            /* Columns `a[0]` to `a[2]`, four times in each register. For the
+               _mm512_permutexvar_ps() arguments, elements inside each 128-bit
+               vector are ordered in reverse, so in order to put element 3 at
+               index 3, it has to be first of the four-argument group, not
+               last. */
+            const __m512 a0123 = _mm512_load_ps(a);
+            a0x4 = _mm512_permutexvar_ps(_mm512_set_epi32(
+                3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0), a0123);
+            a1x4 = _mm512_permutexvar_ps(_mm512_set_epi32(
+                7, 6, 5, 4, 7, 6, 5, 4, 7, 6, 5, 4, 7, 6, 5, 4), a0123);
+            a2x4 = _mm512_permutexvar_ps(_mm512_set_epi32(
+                11, 10, 9, 8, 11, 10, 9, 8, 11, 10, 9, 8, 11, 10, 9, 8), a0123);
+            /* Three columns of zeros, followed by `a[3]`. Assuming a[0][3] is
+               zero, use it to zero-fill the rest. Similarly to above, the
+               128-bit vectors are *also* ordered in reverse so the first
+               four-argument group is actually the last column of A. */
+            aZero3 = _mm512_permutexvar_ps(_mm512_set_epi32(
+                15, 14, 13, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3), a0123);
+        }
+
+        /* Elements `b[0][i]` four times in a register followed by `b[1][i]`
+           four times, `b[2][i]` four times and `b[3][i] four times.
+           The `b[j][3]` elements are omitted as the bottom row is assumed to
+           be (0, 0, 0, 1). */
+        const __m512 b0123 = _mm512_load_ps(b);
+        const __m512 b00x4_10x4_20x4_30x4 = _mm512_permute_ps(b0123, _MM_SHUFFLE(0, 0, 0, 0));
+        const __m512 b01x4_11x4_21x4_31x4 = _mm512_permute_ps(b0123, _MM_SHUFFLE(1, 1, 1, 1));
+        const __m512 b02x4_12x4_22x4_32x4 = _mm512_permute_ps(b0123, _MM_SHUFFLE(2, 2, 2, 2));
+
+        /* As `b[0][3]` to `b[2][3]` are all 0, the `a[3]*b[j][3]` part of the
+           expression cancels out. Then, `b[3][3]` is 1, so the `a[3]*b[3][3]`
+           part of the expression reduces to `a[3]`:
+            c[0] = a[0]*b[0][0] + a[1]*b[0][1] + a[2]*b[0][2]
+            c[1] = a[0]*b[1][0] + a[1]*b[1][1] + a[2]*b[1][2]
+            c[2] = a[0]*b[2][0] + a[1]*b[2][1] + a[2]*b[2][2]
+            c[3] = a[0]*b[3][0] + a[1]*b[3][1] + a[2]*b[3][2] + a[3] */
+        _mm512_store_ps(c,
+            _mm512_fmadd_ps(a0x4, b00x4_10x4_20x4_30x4,
+                _mm512_fmadd_ps(a1x4, b01x4_11x4_21x4_31x4,
+                    _mm512_fmadd_ps(a2x4, b02x4_12x4_22x4_32x4, aZero3))));
+    }
+  };
+}
+#endif
+
+}
+
+#ifdef CORRADE_TARGET_X86
+MAGNUM_SCENETOOLS_CPU_DISPATCHER(absoluteTransformations3DImplementation, Cpu::AvxFma)
+#else
+MAGNUM_SCENETOOLS_CPU_DISPATCHER(absoluteTransformations3DImplementation)
+#endif
+MAGNUM_SCENETOOLS_CPU_DISPATCHED(absoluteTransformations3DImplementation, void MAGNUM_SCENETOOLS_CPU_DISPATCHED_DECLARATION(absoluteTransformations3D)(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride))({
+    return absoluteTransformations3DImplementation(CORRADE_CPU_SELECT(Cpu::Default))(size, parents, parentsStride, transformations, transformationsStride, output, outputStride);
+})
+
+}
+
+void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation) {
+    const std::size_t size = parents.size();
+    const char* const parentsData = static_cast<const char*>(parents.data());
+    const std::ptrdiff_t parentsStride = parents.stride();
+    const char* const transformationsData = static_cast<const char*>(transformations.data());
+    const std::ptrdiff_t transformationsStride = transformations.stride();
+    char* const outputData = static_cast<char*>(output.data());
+    const std::ptrdiff_t outputStride = output.stride();
+    CORRADE_ASSERT(transformations.size() == size && output.size() == size + 1,
+        "SceneTools::absoluteTransformations3DInto(): expected transformations with" << size << "elements and output with" << size + 1 << "elements but got" << transformations.size() << "and" << output.size(), );
+    /* Stride is checked before alignment as with the opposite order the stride
+       assert couldn't be easily tested for, as struct sizes are always a
+       multiple of member alignment. This also seems to handle negative strides
+       correctly without having to do anything extra. */
+    CORRADE_ASSERT(transformationsStride % 64 == 0,
+        "SceneTools::absoluteTransformations3DInto(): transformations stride" << transformationsStride << "is not a multiple of 64 bytes", );
+    CORRADE_ASSERT(reinterpret_cast<std::uintptr_t>(transformationsData) % 64 == 0,
+        "SceneTools::absoluteTransformations3DInto(): transformations are not 64-byte aligned", );
+    CORRADE_ASSERT(outputStride % 64 == 0,
+        "SceneTools::absoluteTransformations3DInto(): output stride" << outputStride << "is not a multiple of 64 bytes", );
+    CORRADE_ASSERT(reinterpret_cast<std::uintptr_t>(outputData) % 64 == 0,
+        "SceneTools::absoluteTransformations3DInto(): output is not 64-byte aligned", );
+    #ifndef CORRADE_NO_DEBUG_ASSERT
+    /* This is important for verifying that the input data make sense, but is
+       too expensive to run in hot code, so it's just a debug assert */
+    for(std::size_t i = 0; i != parents.size(); ++i)
+        CORRADE_DEBUG_ASSERT(parents[i] >= -1 && parents[i] < Int(i),
+            "SceneTools::absoluteTransformations3DInto(): expected parents to be -1 or back-referencing but got parent" << parents[i] << "at index" << i, );
+    #endif
+
+    /* Put the global transformation as the first item in the output, to be
+       picked by parents that are -1. There's nothing to optimize about this
+       assignment so it's done outside of the dispatched arch-specific code. */
+    output[0] = globalTransformation;
+    Implementation::absoluteTransformations3D(size, parentsData, parentsStride, transformationsData, transformationsStride, outputData, outputStride);
+}
+
+void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output) {
+    absoluteTransformations3DInto(parents, transformations, output, {});
 }
 
 namespace {
