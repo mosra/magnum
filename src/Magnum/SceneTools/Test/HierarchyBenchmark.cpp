@@ -138,17 +138,12 @@ HierarchyBenchmark::HierarchyBenchmark() {
     _parents = Containers::Array<Int>{ValueInit, Many};
 
     std::mt19937 gen{std::random_device{}()};
-    std::uniform_int_distribution<Int> distrib{-1, Int(SlightlyLess)};
+    std::uniform_int_distribution<Int> distrib{0, Int(SlightlyLess + 1)};
 
     /* Parenting randomly to the first 100 objects */
     for(std::size_t i = 0; i != Many; ++i) {
-        Int parent;
-        /** @todo can this done any better than this loop? */
-        do
-            parent = distrib(gen);
-        while(parent != -1 && UnsignedInt(parent) >= i);
-
-        _parents[i] = parent;
+        /* Restrict the parent to be in the [-1, i - 1] range */
+        _parents[i] = (distrib(gen) % (i + 1)) - 1;
     }
 
     /* Basic verification that the parent indices are always back-referencing
