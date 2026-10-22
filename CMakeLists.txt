@@ -395,6 +395,42 @@ if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT)
         CACHE STRING "Name of a DLL in which to search for unique globals symbols if MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS is enabled")
 endif()
 
+# Runtime CPU dispatch. Same logic as with equivalent options used in Corrade,
+# see there for further explanation.
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(_MAGNUM_BUILD_CPU_RUNTIME_DISPATCH_DEFAULT OFF)
+else()
+    set(_MAGNUM_BUILD_CPU_RUNTIME_DISPATCH_DEFAULT ON)
+endif()
+option(MAGNUM_BUILD_CPU_RUNTIME_DISPATCH "Build with runtime dispatch for CPU-dependent functionality" ${_MAGNUM_BUILD_CPU_RUNTIME_DISPATCH_DEFAULT})
+# Enabled by default and independent of MAGNUM_BUILD_CPU_RUNTIME_DISPATCH as
+# correctness is important.
+cmake_dependent_option(MAGNUM_BUILD_TESTS_FORCE_CPU_POINTER_DISPATCH "Force pointer-based dispatch for unit tests to verify all variants of CPU-dependent functionality" ON "MAGNUM_BUILD_TESTS" OFF)
+# Pass -msimd128 to tests to make it possible to verify also the WASM SIMD
+# functionality even if the actual library is built without.
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(ENABLE_IF_NODEJS_15 OFF)
+    if(MAGNUM_BUILD_TESTS)
+        # FindNodeJs is installed to a subdirectory next to UseCorrade, to
+        # prevent it from being in CMAKE_MODULE_PATH always and clashing
+        # with modules of the same name from elsewhere. Add it to the
+        # CMAKE_MODULE_PATH just locally for the project. If the variable is
+        # not defined, an old FindCorrade may be used, in which case we assume
+        # the user supplies it in a different way.
+        if(CORRADE_DEPENDENCY_MODULE_DIR)
+            set(CMAKE_MODULE_PATH "${CORRADE_DEPENDENCY_MODULE_DIR}" ${CMAKE_MODULE_PATH})
+        endif()
+        find_package(NodeJs REQUIRED QUIET)
+        if(NOT NodeJs_VERSION VERSION_LESS 15.0)
+            set(ENABLE_IF_NODEJS_15 ON)
+        elseif(NOT DEFINED MAGNUM_BUILD_TESTS_FORCE_WASM_SIMD128)
+            message(WARNING "Disabling MAGNUM_BUILD_TESTS_FORCE_WASM_SIMD128 by default as finalized WebAssembly SIMD support is only since Node.js 15 but found version ${NodeJs_VERSION}")
+        endif()
+    endif()
+
+    cmake_dependent_option(MAGNUM_BUILD_TESTS_FORCE_WASM_SIMD128 "Force -msimd128 for unit tests to verify also WASM SIMD variants of CPU-dependent functionality" ${ENABLE_IF_NODEJS_15} "MAGNUM_BUILD_TESTS_FORCE_CPU_POINTER_DISPATCH" OFF)
+endif()
+
 # OpenGLTester / VulkanTester libraries, built by default only if GL / VK tests
 # are enabled
 cmake_dependent_option(MAGNUM_WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT MAGNUM_BUILD_GL_TESTS" ON)

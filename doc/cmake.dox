@@ -319,6 +319,9 @@ are also available as preprocessor variables if including
 -   `MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS` --- Defined if static libraries keep
     their globals unique even across different shared libraries. Enabled by
     default for static builds.
+-   `MAGNUM_BUILD_CPU_RUNTIME_DISPATCH` --- Defined if built with code paths
+    optimized for multiple architectres with the best matching variant selected
+    at runtime based on detected CPU features
 -   `MAGNUM_TARGET_GL` --- Defined if compiled with OpenGL interoperability
     enabled
 -   `MAGNUM_TARGET_GLES` --- Defined if compiled for OpenGL ES

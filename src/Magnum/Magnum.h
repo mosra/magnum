@@ -127,6 +127,25 @@ Enabled by default in a static build. On Windows see also the
 #undef MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
 
 /**
+@brief Build with runtime CPU dispatch
+@m_since_latest
+
+Defined if the library is built with performance-critical code paths optimized
+for multiple architectures (such as SSE or AVX on x86), with the best matching
+variant selected at runtime based on detected CPU features. If not defined, the
+library is built with just a single variant that's picked at compile time
+depending on target architecture flags being passed to the compiler.
+
+The actual feature detection and dispatch both in the runtime and compile-time
+scenario is performed by the Corrade @relativeref{Corrade,Cpu} library. See
+@ref Cpu-usage-automatic-cached-dispatch for details and information about
+performance tradeoffs.
+@see @see @ref CORRADE_CPU_USE_IFUNC, @ref building, @ref cmake
+*/
+#define MAGNUM_BUILD_CPU_RUNTIME_DISPATCH
+#undef MAGNUM_BUILD_CPU_RUNTIME_DISPATCH
+
+/**
 @brief OpenGL interoperability
 
 Defined if the engine is built with OpenGL interoperability enabled --- extra
