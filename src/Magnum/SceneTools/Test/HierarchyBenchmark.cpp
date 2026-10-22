@@ -24,6 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* On GCC 4.8, the <random> header apparently messes up with AVX includes
+   somehow, causing <Corrade/Utility/IntrinsicsAvx.h> to not work if it's
+   included after, resulting in errors about _m256i not defined. */
+#include "Magnum/SceneTools/Test/HierarchyTest.h"
+
 #include <random>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -34,7 +39,6 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/SceneTools/Hierarchy.h"
 #include "Magnum/SceneTools/Test/cpuVariantHelpers.h"
-#include "Magnum/SceneTools/Test/HierarchyTest.h"
 
 namespace Magnum { namespace SceneTools { namespace Test { namespace {
 
