@@ -768,6 +768,17 @@ Options controlling the build:
     you to update your code whenever there's a breaking change in the APIs or
     in library behavior. It's however recommended to have this option disabled
     when deploying a final application as it can result in smaller binaries.
+-   `MAGNUM_BUILD_CPU_RUNTIME_DISPATCH` --- Build with performance-critical
+    code paths optimized for multiple architectures (such as SSE or AVX on
+    x86), with the best matching variant selected at runtime based on detected
+    CPU features. If not enabled, the library is built with just a single
+    variant that's picked at compile time depending on target architecture
+    flags being passed to the compiler. Enabled by default on all platforms
+    except @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", where dispatch through
+    a function pointer is prohibitively expensive. See also the
+    @ref CORRADE_CPU_USE_IFUNC option and
+    @ref Cpu-usage-automatic-cached-dispatch in Corrade for details and
+    information about performance tradeoffs.
 -   `MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS`,
     `MAGNUM_FONTCONVERTER_STATIC_PLUGINS`,
     `MAGNUM_IMAGECONVERTER_STATIC_PLUGINS`,
@@ -862,11 +873,31 @@ command-line option.
 
 @subsection building-tests Building and running tests
 
-If you want to build also the tests (which are not built by default), enable
-`MAGNUM_BUILD_TESTS` in CMake. The tests use Corrade's
-@ref Corrade::TestSuite "TestSuite" framework and can be run either manually
-(the binaries are located in `Test/` subdirectories in the build directory) or
-using
+Building of tests is controlled by the following options:
+
+-   `MAGNUM_BUILD_TESTS` --- Builds unit tests. Disabled by default.
+-   `MAGNUM_BUILD_TESTS_FORCE_CPU_POINTER_DISPATCH` --- Force unit tests to be
+    built with function-pointer-based dispatch for CPU-dependent functionality,
+    independently of the `MAGNUM_BUILD_CPU_RUNTIME_DISPATCH` and
+    @ref CORRADE_CPU_USE_IFUNC options. This makes it possible for the tests to
+    verify all variants instead of just one, and is enabled by default. The
+    overhead from function pointers may however be significant on certain
+    platforms, skewing benchmark results. Disable it to make the tests use the
+    same dispatch method as the rest of the library.
+-   `MAGNUM_BUILD_TESTS_FORCE_WASM_SIMD128` --- Force Emscripten unit tests to
+    be built with `-msimd128` independenently of `CMAKE_CXX_FLAGS`. Together
+    with `MAGNUM_BUILD_TESTS_FORCE_CPU_POINTER_DISPATCH` and presence of the
+    @ref CORRADE_ENABLE_SIMD128 preprocessor variable this makes it possible
+    for the tests to verify also WebAssembly SIMD variants of CPU-dependent
+    functionality instead of just the scalar version if the rest of the library
+    is built without `-msimd128`. Enabled by default if
+    `MAGNUM_BUILD_TESTS_FORCE_CPU_POINTER_DISPATCH` is set and Node.js version
+    15+ is found, which has finalized WebAssembly SIMD support. Disable to make
+    the tests use the same compilation flags as the rest of the library.
+
+The tests use Corrade's @relativeref{Corrade,TestSuite} framework and can be
+run either manually (test binaries, all suffixed with `*Test`, are in the
+`bin/` subdirectory of the build directory) or using
 
 @code{.sh}
 ctest --output-on-failure

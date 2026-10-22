@@ -1296,6 +1296,14 @@ See also:
 -   The buildsystem now uses CMake's `GNUInstallDirs` module for a standardized
     way to specify installation location of binaries, libraries, include files
     and other data (see [mosra/magnum#696](https://github.com/mosra/magnum/issues/696))
+-   All platforms except Emscripten now build certain code paths optimized for
+    multiple architectures, with the best variant selected at runtime using the
+    @ref Cpu library based on available CPU features. This behavior can be
+    disabled with the @ref MAGNUM_BUILD_CPU_RUNTIME_DISPATCH CMake option.
+    On Linux, IFUNC is used if @ref CORRADE_CPU_USE_IFUNC is enabled in
+    Corrade, macOS and Windows implement runtime dispatch using function
+    pointers, On Emscripten however, calls through a function pointer are
+    prohibitely expensive and thus this feature is disabled there by default.
 
 @subsection changelog-latest-bugfixes Bug fixes
 
