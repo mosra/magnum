@@ -46,4 +46,16 @@
 #define MAGNUM_SCENETOOLS_LOCAL
 #endif
 
+/* Function-pointer-based CPU dispatch, exposing also the runtime dispatcher
+   implementation. If used, those need Corrade.h included. */
+#if defined(MAGNUM_SCENETOOLS_FORCE_CPU_POINTER_DISPATCH) || (defined(MAGNUM_BUILD_CPU_RUNTIME_DISPATCH) && !defined(CORRADE_CPU_USE_IFUNC))
+    #define MAGNUM_SCENETOOLS_CPU_DISPATCHER_DECLARATION(name)                \
+        MAGNUM_SCENETOOLS_EXPORT decltype(name) name ## Implementation(Cpu::Features);
+    #define MAGNUM_SCENETOOLS_CPU_DISPATCHED_DECLARATION(name) (*name)
+/* IFUNC or compile-time CPU dispatch, runtime dispatcher is not exposed */
+#else
+    #define MAGNUM_SCENETOOLS_CPU_DISPATCHER_DECLARATION(name)
+    #define MAGNUM_SCENETOOLS_CPU_DISPATCHED_DECLARATION(name) (name)
+#endif
+
 #endif

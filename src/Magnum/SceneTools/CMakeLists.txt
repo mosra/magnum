@@ -126,13 +126,20 @@ if(MAGNUM_WITH_SCENECONVERTER)
 endif()
 
 if(MAGNUM_BUILD_TESTS)
-    # Library with graceful assert for testing
+    # Library with graceful assert, function-pointer-based CPU dispatch and
+    # WASM SIMD128 for testing.
     add_library(MagnumSceneToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         # $<TARGET_OBJECTS:MagnumSceneToolsObjects>
         ${MagnumSceneTools_GracefulAssert_SRCS})
     set_target_properties(MagnumSceneToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumSceneToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumSceneTools_EXPORTS")
+    if(MAGNUM_BUILD_TESTS_FORCE_CPU_POINTER_DISPATCH)
+        target_compile_definitions(MagnumSceneToolsTestLib PUBLIC "MAGNUM_SCENETOOLS_FORCE_CPU_POINTER_DISPATCH")
+        if(MAGNUM_BUILD_TESTS_FORCE_WASM_SIMD128)
+            target_compile_options(MagnumSceneToolsTestLib PUBLIC "-msimd128")
+        endif()
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumSceneToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
