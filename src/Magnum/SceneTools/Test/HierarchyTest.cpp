@@ -721,11 +721,22 @@ void HierarchyTest::absoluteTransformations3D() {
     if(!isCpuVariantSupported(data))
         CORRADE_SKIP("CPU features not supported");
 
-    /* Regular case */
+    /* Regular case. On MinGW alignas(64) isn't working properly for stack
+       variables so have to allocate a heap memory instead. */
+    #ifndef CORRADE_TARGET_MINGW
     alignas(64) Matrix4 output[9];
+    #else
+    Containers::Array<Matrix4> transformations = Utility::allocateAligned<Matrix4, 64>(NoInit, 8);
+    Utility::copy(AbsoluteTransformations3DTransformations, transformations);
+    Containers::Array<Matrix4> output = Utility::allocateAligned<Matrix4, 64>(NoInit, 9);
+    #endif
     absoluteTransformations3DInto(
         AbsoluteTransformations3DParents,
+        #ifndef CORRADE_TARGET_MINGW
         AbsoluteTransformations3DTransformations,
+        #else
+        transformations,
+        #endif
         output, Matrix4::translation({5.0f, 2.0f, 1.0f}));
     CORRADE_COMPARE_AS(Containers::arrayView(output),
         Containers::arrayView(AbsoluteTransformations3DExpected),
@@ -734,7 +745,11 @@ void HierarchyTest::absoluteTransformations3D() {
     /* Zero items should also just work, copying the global transform to the
        output and nothing else. This is simple enough to not need a dedicated
        instanced case. */
+    #ifndef CORRADE_TARGET_MINGW
     alignas(64) Matrix4 outputSingle[1];
+    #else
+    Containers::Array<Matrix4> outputSingle = Utility::allocateAligned<Matrix4, 64>(NoInit, 1);
+    #endif
     absoluteTransformations3DInto({}, {},
         outputSingle, Matrix4::translation({6.0f, 3.0f, 2.0f}));
     CORRADE_COMPARE_AS(Containers::arrayView(outputSingle),
@@ -764,12 +779,21 @@ void HierarchyTest::absoluteTransformations3DStrided() {
        negative stride to verify it's handled correctly by all variants, except
        the ones that deliberately don't support it */
 
+    /* On MinGW alignas(64) isn't working properly for stack variables so have
+       to allocate a heap memory instead. */
     struct alignas(64) Thing {
         Matrix4 transformation;
         Matrix4 out;
         Int parent;
         /* 15*4 bytes of padding here, probably */
-    } things[9];
+    };
+    #ifndef CORRADE_TARGET_MINGW
+    Thing things[9];
+    #else
+    /* In this case it should get the alignment from the type, shouldn't need
+       to explicitly specify 64 here as well */
+    Containers::Array<Thing> things = Utility::allocateAligned<Thing>(NoInit, 9);
+    #endif
     Containers::StridedArrayView1D<Thing> view = Containers::stridedArrayView(things).flipped<0>();
     Utility::copy(AbsoluteTransformations3DParents,
         view.slice(&Thing::parent).exceptPrefix(1));
@@ -806,7 +830,13 @@ void HierarchyTest::absoluteTransformations3DInPlace() {
        verify the variants don't stomp over the input data when calculating the
        output */
 
+    /* On MinGW alignas(64) isn't working properly for stack variables so have
+       to allocate a heap memory instead. */
+    #ifndef CORRADE_TARGET_MINGW
     alignas(64) Matrix4 transformations[9];
+    #else
+    Containers::Array<Matrix4> transformations = Utility::allocateAligned<Matrix4, 64>(NoInit, 9);
+    #endif
     Utility::copy(AbsoluteTransformations3DTransformations,
         Containers::arrayView(transformations).exceptPrefix(1));
 
@@ -822,10 +852,19 @@ void HierarchyTest::absoluteTransformations3DInPlace() {
 void HierarchyTest::absoluteTransformationsInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    /* On MinGW alignas(64) isn't working properly for stack variables so have
+       to allocate a heap memory instead. */
+    #ifndef CORRADE_TARGET_MINGW
     alignas(64) Matrix4 transformations[6];
     alignas(64) Matrix4 transformationsWrong[7];
     alignas(64) Matrix4 output[7];
     alignas(64) Matrix4 outputWrong[6];
+    #else
+    Containers::Array<Matrix4> transformations = Utility::allocateAligned<Matrix4, 64>(NoInit, 6);
+    Containers::Array<Matrix4> transformationsWrong = Utility::allocateAligned<Matrix4, 64>(NoInit, 7);
+    Containers::Array<Matrix4> output = Utility::allocateAligned<Matrix4, 64>(NoInit, 7);
+    Containers::Array<Matrix4> outputWrong = Utility::allocateAligned<Matrix4, 64>(NoInit, 6);
+    #endif
     Int parents[6]{-1, -1, -1, -1, -1, -1};
     Int parentsWrong[7];
     struct WrongStride {
@@ -840,7 +879,11 @@ void HierarchyTest::absoluteTransformationsInvalid() {
     } unaligned;
 
     /* Just a single output matrix alone should work */
+    #ifndef CORRADE_TARGET_MINGW
     alignas(64) Matrix4 outputSingle[1];
+    #else
+    Containers::Array<Matrix4> outputSingle = Utility::allocateAligned<Matrix4, 64>(NoInit, 1);
+    #endif
     absoluteTransformations3DInto({}, {}, outputSingle);
     /* Stride of -64 bytes should work with no problem */
     absoluteTransformations3DInto(parents,
