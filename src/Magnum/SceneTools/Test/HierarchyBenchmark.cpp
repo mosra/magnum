@@ -80,12 +80,14 @@ const struct {
     {Cpu::Scalar, nullptr, nullptr},
     #ifdef CORRADE_ENABLE_SSE2
     #ifdef MAGNUM_SCENETOOLS_FORCE_CPU_POINTER_DISPATCH
-    {Cpu::Sse2, "no cache, no affine transform, no shuffle",
-        absoluteTransformation3DSse2NoCacheNoAffineNoShuffle},
-    {Cpu::Sse2, "no cache, no affine transform",
-        absoluteTransformation3DSse2NoCacheNoAffine},
-    {Cpu::Sse2, "no cache",
-        absoluteTransformation3DSse2NoCache},
+    {Cpu::Sse2, "no shuffle, no cache, no affine transform",
+        absoluteTransformation3DSse2NoShuffleNoCacheNoAffine},
+    {Cpu::Sse2, "two-register shuffle, no cache, no affine transform",
+        absoluteTransformation3DSse2TwoRegisterShuffleNoCacheNoAffine},
+    {Cpu::Sse2, "two-register shuffle, no cache",
+        absoluteTransformation3DSse2TwoRegisterShuffleNoCache},
+    {Cpu::Sse2, "two-register shuffle",
+        absoluteTransformation3DSse2TwoRegisterShuffle},
     #endif
     {Cpu::Sse2, nullptr, nullptr},
     #endif

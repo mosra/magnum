@@ -64,7 +64,7 @@ void absoluteTransformation3DScalarAffine(std::size_t size, const char* parents,
 
 #ifdef CORRADE_ENABLE_SSE2
 /* Basic algorithm from https://stackoverflow.com/a/18508113 (slowest) */
-CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoCacheNoAffineNoShuffle(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoShuffleNoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
@@ -96,8 +96,9 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoCacheNoAffineNoShuffle(st
 
 /* Like above, with a single load and four shuffles instead of four loads.
    Single vector load plus four shuffles is faster than four separate scalar
-   broadcasts with _mm_set1_ps(). */
-CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+   broadcasts with _mm_set1_ps(). Note that the suffles can be still beaten
+   with something faster, which is used in the builtin variant. */
+CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffleNoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
@@ -134,8 +135,8 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoCacheNoAffine(std::size_t
     }
 }
 
-/* Like the builtin SSE2 variant but without caching of loaded A columns */
-CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoCache(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+/* Affine variant of the above */
+CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffleNoCache(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
@@ -146,6 +147,62 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoCache(std::size_t size, c
         const __m128 a1 = _mm_load_ps(a + 4);
         const __m128 a2 = _mm_load_ps(a + 8);
         const __m128 a3 = _mm_load_ps(a + 12);
+
+        for(std::size_t j = 0; j != 3; ++j) {
+            const __m128 bj = _mm_load_ps(b + j*4);
+            const __m128 bj0x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(0, 0, 0, 0));
+            const __m128 bj1x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(1, 1, 1, 1));
+            const __m128 bj2x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(2, 2, 2, 2));
+
+            _mm_store_ps(c + j*4, _mm_add_ps(
+                _mm_add_ps(
+                    _mm_mul_ps(a0, bj0x4),
+                    _mm_mul_ps(a1, bj1x4)),
+                    _mm_mul_ps(a2, bj2x4)));
+        }
+
+        {
+            const __m128 b3 = _mm_load_ps(b + 3*4);
+            const __m128 b30x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(0, 0, 0, 0));
+            const __m128 b31x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(1, 1, 1, 1));
+            const __m128 b32x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(2, 2, 2, 2));
+
+            _mm_store_ps(c + 3*4, _mm_add_ps(
+                _mm_add_ps(
+                    _mm_mul_ps(a0, b30x4),
+                    _mm_mul_ps(a1, b31x4)),
+                _mm_add_ps(
+                    _mm_mul_ps(a2, b32x4),
+                    a3)));
+        }
+    }
+}
+
+/* The above but with caching the left side on the top. Compared to the builtin
+   version uses two-register _mm_shuffle_ps() (SSE) instead of single-register
+   SSE2 _mm_shuffle_epi32(). Is slightly slower. */
+CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffle(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+    __m128 a0{};
+    __m128 a1{};
+    __m128 a2{};
+    __m128 a3{};
+
+    Int prevParent = INT32_MIN;
+    for(std::size_t i = 0; i != size; ++i) {
+        const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
+        const Float* const b = reinterpret_cast<const Float*>(transformations + i*transformationsStride);
+        Float* const c = reinterpret_cast<Float*>(output + (i + 1)*outputStride);
+
+        if CORRADE_UNLIKELY(prevParent != parent) {
+            prevParent = parent;
+            const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
+
+            /* Columns `a[0]` to `a[3]` */
+            a0 = _mm_load_ps(a + 0);
+            a1 = _mm_load_ps(a + 4);
+            a2 = _mm_load_ps(a + 8);
+            a3 = _mm_load_ps(a + 12);
+        }
 
         for(std::size_t j = 0; j != 3; ++j) {
             const __m128 bj = _mm_load_ps(b + j*4);

@@ -288,10 +288,11 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED typename std::decay<decltype(absoluteTransfor
 
 #ifdef CORRADE_ENABLE_SSE2
 /* Originally from https://stackoverflow.com/a/18508113, with a single load and
-   four shuffles instead of four loads, subsequently changed to calculate only
-   an affine transformation, i.e., ignoring all `b[j][3]` elements and assuming
-   they're (0, 0, 0, 1), and with caching of the left-side matrix. See
-   Test/HierarchyTest.h for the other (slower) variants that led to this. */
+   four (integer) shuffles instead of four loads, subsequently changed to
+   calculate only an affine transformation, i.e., ignoring all `b[j][3]`
+   elements and assuming they're (0, 0, 0, 1), and with caching of the
+   left-side matrix. See Test/HierarchyTest.h for the other (slower) variants
+   that led to this. */
 MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SSE2 typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Sse2)) {
   return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_SSE2 {
     /* GCC stupidly warns that these may be uninitialized, so zero-init */
@@ -329,9 +330,13 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SSE2 typename std::decay<declt
         for(std::size_t j = 0; j != 3; ++j) {
             /* Elements `b[j][0]` to `b[j][2]`, four times in each register */
             const __m128 bj = _mm_load_ps(b + j*4);
-            const __m128 bj0x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(0, 0, 0, 0));
-            const __m128 bj1x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(1, 1, 1, 1));
-            const __m128 bj2x4 = _mm_shuffle_ps(bj, bj, _MM_SHUFFLE(2, 2, 2, 2));
+            /* Using SSE2 _mm_shuffle_epi32() (and two extra casts to satisfy
+               the type checker, but with no impact on the generated code) is
+               faster than SSE _mm_shuffle_ps() that takes two input
+               registers */
+            const __m128 bj0x4 = _mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(bj), _MM_SHUFFLE(0, 0, 0, 0)));
+            const __m128 bj1x4 = _mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(bj), _MM_SHUFFLE(1, 1, 1, 1)));
+            const __m128 bj2x4 = _mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(bj), _MM_SHUFFLE(2, 2, 2, 2)));
 
             /* Calculate the whole output row at once. As `b[j][3]` is 0 the
                part of the expression that's `a[3]*b[j][3]` cancels out:
@@ -351,9 +356,11 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SSE2 typename std::decay<declt
         {
             /* Elements `b[3][0]` to `b[3][2]`, four times in each register */
             const __m128 b3 = _mm_load_ps(b + 3*4);
-            const __m128 b30x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(0, 0, 0, 0));
-            const __m128 b31x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(1, 1, 1, 1));
-            const __m128 b32x4 = _mm_shuffle_ps(b3, b3, _MM_SHUFFLE(2, 2, 2, 2));
+            /* Like above, using SSE2 _mm_shuffle_epi32() is faster than SSE
+               _mm_shuffle_ps() that takes two input registers */
+            const __m128 b30x4 = _mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(b3), _MM_SHUFFLE(0, 0, 0, 0)));
+            const __m128 b31x4 = _mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(b3), _MM_SHUFFLE(1, 1, 1, 1)));
+            const __m128 b32x4 = _mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(b3), _MM_SHUFFLE(2, 2, 2, 2)));
 
             /* Calculate the whole output row at once. As `b[3][3]` is 1 the
                part of the expression that's `a[3]*b[3][3]` reduces to `a[3]`:
