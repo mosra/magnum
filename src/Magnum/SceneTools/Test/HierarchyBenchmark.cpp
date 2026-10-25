@@ -116,6 +116,9 @@ const struct {
         absoluteTransformations3DAvx512fHardcodedStride},
     #endif
     #endif
+    #ifdef CORRADE_ENABLE_SIMD128
+    {Cpu::Simd128, nullptr, nullptr},
+    #endif
 };
 
 /* 10k is just enough to get stable results in release also for AVX-512 and

@@ -138,6 +138,9 @@ const struct {
         absoluteTransformations3DAvx512fHardcodedStride},
     #endif
     #endif
+    #ifdef CORRADE_ENABLE_SIMD128
+    {Cpu::Simd128, nullptr, nullptr},
+    #endif
 };
 
 const struct {

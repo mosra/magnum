@@ -38,6 +38,9 @@
 #elif defined(CORRADE_ENABLE_SSE2)
 #include <Corrade/Utility/IntrinsicsSse2.h>
 #endif
+#ifdef CORRADE_ENABLE_SIMD128
+#include <wasm_simd128.h>
+#endif
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Matrix3.h"
@@ -575,6 +578,64 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX512F typename std::decay<de
             _mm512_fmadd_ps(a0x4, b00x4_10x4_20x4_30x4,
                 _mm512_fmadd_ps(a1x4, b01x4_11x4_21x4_31x4,
                     _mm512_fmadd_ps(a2x4, b02x4_12x4_22x4_32x4, aZero3))));
+    }
+  };
+}
+#endif
+
+#ifdef CORRADE_ENABLE_SIMD128
+/* Direct translation of the SSE2 variant. There aren't really many options how
+   to do things in WASM SIMD, so this is basically the only possible result. */
+MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SIMD128 typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Simd128)) {
+  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_SIMD128 {
+    v128_t a0;
+    v128_t a1;
+    v128_t a2;
+    v128_t a3;
+
+    Int prevParent = INT32_MIN;
+    for(std::size_t i = 0; i != size; ++i) {
+        const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
+        const v128_t* const b = reinterpret_cast<const v128_t*>(transformations + i*transformationsStride);
+        v128_t* const c = reinterpret_cast<v128_t*>(output + (i + 1)*outputStride);
+
+        if CORRADE_UNLIKELY(prevParent != parent) {
+            prevParent = parent;
+            const v128_t* const a = reinterpret_cast<const v128_t*>(output + (parent + 1)*outputStride);
+
+            a0 = wasm_v128_load(a + 0);
+            a1 = wasm_v128_load(a + 1);
+            a2 = wasm_v128_load(a + 2);
+            a3 = wasm_v128_load(a + 3);
+        }
+
+        for(std::size_t j = 0; j != 3; ++j) {
+            const v128_t bj = wasm_v128_load(b + j);
+            const v128_t bj0x4 = wasm_i32x4_shuffle(bj, bj, 0, 0, 0, 0);
+            const v128_t bj1x4 = wasm_i32x4_shuffle(bj, bj, 1, 1, 1, 1);
+            const v128_t bj2x4 = wasm_i32x4_shuffle(bj, bj, 2, 2, 2, 2);
+
+            wasm_v128_store(c + j, wasm_f32x4_add(
+                wasm_f32x4_add(
+                    wasm_f32x4_mul(a0, bj0x4),
+                    wasm_f32x4_mul(a1, bj1x4)),
+                wasm_f32x4_mul(a2, bj2x4)));
+        }
+
+        {
+            const v128_t b3 = wasm_v128_load(b + 3);
+            const v128_t b30x4 = wasm_i32x4_shuffle(b3, b3, 0, 0, 0, 0);
+            const v128_t b31x4 = wasm_i32x4_shuffle(b3, b3, 1, 1, 1, 1);
+            const v128_t b32x4 = wasm_i32x4_shuffle(b3, b3, 2, 2, 2, 2);
+
+            wasm_v128_store(c + 3, wasm_f32x4_add(
+                wasm_f32x4_add(
+                    wasm_f32x4_mul(a0, b30x4),
+                    wasm_f32x4_mul(a1, b31x4)),
+                wasm_f32x4_add(
+                    wasm_f32x4_mul(a2, b32x4),
+                    a3)));
+        }
     }
   };
 }
