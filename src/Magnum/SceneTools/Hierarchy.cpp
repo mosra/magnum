@@ -349,7 +349,7 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SSE2 typename std::decay<declt
                 _mm_add_ps(
                     _mm_mul_ps(a0, bj0x4),
                     _mm_mul_ps(a1, bj1x4)),
-                    _mm_mul_ps(a2, bj2x4)));
+                _mm_mul_ps(a2, bj2x4)));
         }
 
         /* Row `b[3][0]` to `b[3][2]`, `b[3][3]` omitted */
@@ -442,7 +442,7 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX typename std::decay<declty
             _mm256_add_ps(
                 _mm256_mul_ps(a0x2, b00x4_10x4),
                 _mm256_mul_ps(a1x2, b01x4_11x4)),
-                _mm256_mul_ps(a2x2, b02x4_12x4)));
+            _mm256_mul_ps(a2x2, b02x4_12x4)));
 
         /* As `b[2][3]` is 0 and `b[3][3]` is 1, the `a[3]*b[2][3]` part of the
            expression cancels out and `a[3]*b[3][3]` reduces to `a[3]`:

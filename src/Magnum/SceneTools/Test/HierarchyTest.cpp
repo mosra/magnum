@@ -97,28 +97,28 @@ const struct {
     /* Order of the tests same as in HierarchyBenchmark for consistency */
     #ifdef MAGNUM_SCENETOOLS_FORCE_CPU_POINTER_DISPATCH
     {Cpu::Scalar, "affine transform",
-        absoluteTransformation3DScalarAffine},
+        absoluteTransformations3DScalarAffine},
     #endif
     {Cpu::Scalar, nullptr, nullptr},
     #ifdef CORRADE_ENABLE_SSE2
     #ifdef MAGNUM_SCENETOOLS_FORCE_CPU_POINTER_DISPATCH
     {Cpu::Sse2, "no shuffle, no cache, no affine transform",
-        absoluteTransformation3DSse2NoShuffleNoCacheNoAffine},
+        absoluteTransformations3DSse2NoShuffleNoCacheNoAffine},
     {Cpu::Sse2, "two-register shuffle, no cache, no affine transform",
-        absoluteTransformation3DSse2TwoRegisterShuffleNoCacheNoAffine},
+        absoluteTransformations3DSse2TwoRegisterShuffleNoCacheNoAffine},
     {Cpu::Sse2, "two-register shuffle, no cache",
-        absoluteTransformation3DSse2TwoRegisterShuffleNoCache},
+        absoluteTransformations3DSse2TwoRegisterShuffleNoCache},
     {Cpu::Sse2, "two-register shuffle",
-        absoluteTransformation3DSse2TwoRegisterShuffle},
+        absoluteTransformations3DSse2TwoRegisterShuffle},
     #endif
     {Cpu::Sse2, nullptr, nullptr},
     #endif
     #ifdef CORRADE_ENABLE_AVX
     #ifdef MAGNUM_SCENETOOLS_FORCE_CPU_POINTER_DISPATCH
     {Cpu::Avx, "no cache, no affine transform",
-        absoluteTransformation3DAvxNoCacheNoAffine},
+        absoluteTransformations3DAvxNoCacheNoAffine},
     {Cpu::Avx, "no cache",
-        absoluteTransformation3DAvxNoCache},
+        absoluteTransformations3DAvxNoCache},
     #endif
     {Cpu::Avx, nullptr, nullptr},
     #endif
@@ -128,14 +128,14 @@ const struct {
     #ifdef CORRADE_ENABLE_AVX512F
     #ifdef MAGNUM_SCENETOOLS_FORCE_CPU_POINTER_DISPATCH
     {Cpu::Avx512f, "no affine transform, broadcast",
-        absoluteTransformation3DAvx512fNoAffineBroadcast},
+        absoluteTransformations3DAvx512fNoAffineBroadcast},
     {Cpu::Avx512f, "no affine transform",
-        absoluteTransformation3DAvx512fNoAffine},
+        absoluteTransformations3DAvx512fNoAffine},
     #endif
     {Cpu::Avx512f, nullptr, nullptr},
     #ifdef MAGNUM_SCENETOOLS_FORCE_CPU_POINTER_DISPATCH
     {Cpu::Avx512f, "hardcoded stride",
-        absoluteTransformation3DAvx512fHardcodedStride},
+        absoluteTransformations3DAvx512fHardcodedStride},
     #endif
     #endif
 };

@@ -49,7 +49,7 @@ namespace Magnum { namespace SceneTools { namespace Test { namespace {
    multiply but just an affine transformation. Theoretically should be faster
    as it does less multiplications, but in practice is slower, likely because
    the compiler isn't able to autovectorize this. */
-void absoluteTransformation3DScalarAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+void absoluteTransformations3DScalarAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Matrix4& a = *reinterpret_cast<const Matrix4*>(output + (parent + 1)*outputStride);
@@ -64,7 +64,7 @@ void absoluteTransformation3DScalarAffine(std::size_t size, const char* parents,
 
 #ifdef CORRADE_ENABLE_SSE2
 /* Basic algorithm from https://stackoverflow.com/a/18508113 (slowest) */
-CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoShuffleNoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_SSE2 void absoluteTransformations3DSse2NoShuffleNoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
@@ -98,7 +98,7 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2NoShuffleNoCacheNoAffine(st
    Single vector load plus four shuffles is faster than four separate scalar
    broadcasts with _mm_set1_ps(). Note that the suffles can be still beaten
    with something faster, which is used in the builtin variant. */
-CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffleNoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_SSE2 void absoluteTransformations3DSse2TwoRegisterShuffleNoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
@@ -136,7 +136,7 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffleNoCacheNo
 }
 
 /* Affine variant of the above */
-CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffleNoCache(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_SSE2 void absoluteTransformations3DSse2TwoRegisterShuffleNoCache(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
@@ -158,7 +158,7 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffleNoCache(s
                 _mm_add_ps(
                     _mm_mul_ps(a0, bj0x4),
                     _mm_mul_ps(a1, bj1x4)),
-                    _mm_mul_ps(a2, bj2x4)));
+                _mm_mul_ps(a2, bj2x4)));
         }
 
         {
@@ -181,7 +181,7 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffleNoCache(s
 /* The above but with caching the left side on the top. Compared to the builtin
    version uses two-register _mm_shuffle_ps() (SSE) instead of single-register
    SSE2 _mm_shuffle_epi32(). Is slightly slower. */
-CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffle(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_SSE2 void absoluteTransformations3DSse2TwoRegisterShuffle(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     __m128 a0{};
     __m128 a1{};
     __m128 a2{};
@@ -214,7 +214,7 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffle(std::siz
                 _mm_add_ps(
                     _mm_mul_ps(a0, bj0x4),
                     _mm_mul_ps(a1, bj1x4)),
-                    _mm_mul_ps(a2, bj2x4)));
+                _mm_mul_ps(a2, bj2x4)));
         }
 
         {
@@ -238,7 +238,7 @@ CORRADE_ENABLE_SSE2 void absoluteTransformation3DSse2TwoRegisterShuffle(std::siz
 #ifdef CORRADE_ENABLE_AVX
 /* Basically a direct translation of the no-affine SSE2 code above, processing
    two columns at once */
-CORRADE_ENABLE_AVX void absoluteTransformation3DAvxNoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_AVX void absoluteTransformations3DAvxNoCacheNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
@@ -291,7 +291,7 @@ CORRADE_ENABLE_AVX void absoluteTransformation3DAvxNoCacheNoAffine(std::size_t s
 
 /* Variant of the AVX codepath without caching the left-side matrix for
    subsequent calculations */
-CORRADE_ENABLE_AVX void absoluteTransformation3DAvxNoCache(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_AVX void absoluteTransformations3DAvxNoCache(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
         const Float* const a = reinterpret_cast<const Float*>(output + (parent + 1)*outputStride);
@@ -318,7 +318,7 @@ CORRADE_ENABLE_AVX void absoluteTransformation3DAvxNoCache(std::size_t size, con
             _mm256_add_ps(
                 _mm256_mul_ps(a0x2, b00x4_10x4),
                 _mm256_mul_ps(a1x2, b01x4_11x4)),
-                _mm256_mul_ps(a2x2, b02x4_12x4)));
+            _mm256_mul_ps(a2x2, b02x4_12x4)));
 
         _mm256_store_ps(c + 8, _mm256_add_ps(
             _mm256_add_ps(
@@ -336,7 +336,7 @@ CORRADE_ENABLE_AVX void absoluteTransformation3DAvxNoCache(std::size_t size, con
    verify that the stride calculation isn't affecting performance too much.
    Done just for the highest-bit-width variant because there any extra
    instructions have the biggest impact. */
-CORRADE_ENABLE_AVX512F void absoluteTransformation3DAvx512fHardcodedStride(std::size_t size, const char* parents, std::ptrdiff_t, const char* transformations, std::ptrdiff_t, char* output, std::ptrdiff_t) {
+CORRADE_ENABLE_AVX512F void absoluteTransformations3DAvx512fHardcodedStride(std::size_t size, const char* parents, std::ptrdiff_t, const char* transformations, std::ptrdiff_t, char* output, std::ptrdiff_t) {
     /* GCC stupidly warns that these may be uninitialized, so zero-init */
     __m512 a0x4{};
     __m512 a1x4{};
@@ -393,7 +393,7 @@ CORRADE_ENABLE_AVX512F void absoluteTransformation3DAvx512fHardcodedStride(std::
 
 /* Variant of the builtin AVX512 affine version that's doing a full 4x4
    multiply for easier iteration and debugging */
-CORRADE_ENABLE_AVX512F void absoluteTransformation3DAvx512fNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_AVX512F void absoluteTransformations3DAvx512fNoAffine(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     /* GCC stupidly warns that these may be uninitialized, so zero-init */
     __m512 a0x4{};
     __m512 a1x4{};
@@ -438,7 +438,7 @@ CORRADE_ENABLE_AVX512F void absoluteTransformation3DAvx512fNoAffine(std::size_t 
 /* Like above, with extract + broadcast instead of _mm512_permutexvar_ps().
    Doesn't need to set the extra registers for the permutation mask but isn't
    actually faster. */
-CORRADE_ENABLE_AVX512F void absoluteTransformation3DAvx512fNoAffineBroadcast(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
+CORRADE_ENABLE_AVX512F void absoluteTransformations3DAvx512fNoAffineBroadcast(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride) {
     /* GCC stupidly warns that these may be uninitialized, so zero-init */
     __m512 a0x4{};
     __m512 a1x4{};
