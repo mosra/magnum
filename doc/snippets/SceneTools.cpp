@@ -124,8 +124,10 @@ Containers::Array<Int> parents = DOXYGEN_ELLIPSIS({});
 Containers::Array<Matrix4> transformations =
     Utility::allocateAligned<Matrix4, 64>(NoInit, parents.size() + 1);
 
-/* Fill transformations.exceptPrefix(1) with the input transformations first,
-   they'll then get converted to absolute */
+/* Fill transformations.exceptPrefix(1) with input transformations first */
+DOXYGEN_ELLIPSIS()
+
+/* Then convert them to absolute */
 SceneTools::absoluteTransformations3DInto(parents,
     transformations.exceptPrefix(1), transformations);
 /* [absoluteTransformations3DInto-in-place] */
