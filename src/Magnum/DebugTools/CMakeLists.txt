@@ -143,7 +143,12 @@ endif()
 target_link_libraries(MagnumDebugTools PUBLIC Magnum)
 if(Corrade_TestSuite_FOUND AND MAGNUM_WITH_TRADE)
     target_link_libraries(MagnumDebugTools PUBLIC
-        Corrade::TestSuite
+        Corrade::TestSuite)
+endif()
+# Screenshot relies on Trade if GL is enabled, and then
+# CompareImage / CompareMaterial if TestSuite is enabled
+if(MAGNUM_TARGET_GL OR (Corrade_TestSuite_FOUND AND MAGNUM_WITH_TRADE))
+    target_link_libraries(MagnumDebugTools PUBLIC
         MagnumTrade)
 endif()
 if(MAGNUM_TARGET_GL)
@@ -175,9 +180,13 @@ if(MAGNUM_BUILD_TESTS)
         set_target_properties(MagnumDebugToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumDebugToolsTestLib PUBLIC Magnum)
-    if(Corrade_TestSuite_FOUND AND MAGNUM_WITH_TRADE)
+    # If building tests, Corrade_TestSuite_FOUND is set, no need to check that
+    if(MAGNUM_WITH_TRADE)
         target_link_libraries(MagnumDebugToolsTestLib PUBLIC
-            Corrade::TestSuite
+            Corrade::TestSuite)
+    endif()
+    if(MAGNUM_TARGET_GL OR MAGNUM_WITH_TRADE)
+        target_link_libraries(MagnumDebugToolsTestLib PUBLIC
             MagnumTrade)
     endif()
     if(MAGNUM_TARGET_GL)
