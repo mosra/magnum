@@ -679,7 +679,7 @@ void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Ma
     #ifndef CORRADE_NO_DEBUG_ASSERT
     /* This is important for verifying that the input data make sense, but is
        too expensive to run in hot code, so it's just a debug assert */
-    for(std::size_t i = 0; i != parents.size(); ++i)
+    for(std::size_t i = 0; i != size; ++i)
         CORRADE_DEBUG_ASSERT(parents[i] >= -1 && parents[i] < Int(i),
             "SceneTools::absoluteTransformations3DInto(): expected parents to be -1 or back-referencing but got parent" << parents[i] << "at index" << i, );
     #endif
