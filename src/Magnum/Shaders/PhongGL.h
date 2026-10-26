@@ -729,7 +729,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              *      themselves (along with flipping their winding with e.g.
              *      @ref MeshTools::flipFaceWindingInPlace()), or partition
              *      draws with different winding directions into separate
-             *      batches.
+             *      batches with @ref SceneTools::absoluteTransformationScalingSigns3D()
+             *      and then change @ref GL::Renderer::setFrontFace() just once
+             *      for the whole batch.
              *
              * This flag has no effect if no lights are used.
              * @see @ref Trade::MaterialAttribute::DoubleSided

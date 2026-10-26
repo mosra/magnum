@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::SceneTools::parentsBreadthFirst(), @ref Magnum::SceneTools::parentsBreadthFirstInto(), @ref Magnum::SceneTools::childrenDepthFirst(), @ref Magnum::SceneTools::childrenDepthFirstInto(), @ref Magnum::SceneTools::absoluteTransformations3DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations2D(), @ref Magnum::SceneTools::absoluteFieldTransformations2DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations3D(), @ref Magnum::SceneTools::absoluteFieldTransformations3DInto()
+ * @brief Function @ref Magnum::SceneTools::parentsBreadthFirst(), @ref Magnum::SceneTools::parentsBreadthFirstInto(), @ref Magnum::SceneTools::childrenDepthFirst(), @ref Magnum::SceneTools::childrenDepthFirstInto(), @ref Magnum::SceneTools::absoluteTransformations3DInto(), @ref Magnum::SceneTools::absoluteTransformationScalingSigns3D(), @ref Magnum::SceneTools::absoluteTransformationScalingSigns3DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations2D(), @ref Magnum::SceneTools::absoluteFieldTransformations2DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations3D(), @ref Magnum::SceneTools::absoluteFieldTransformations3DInto()
  * @m_since_latest
  */
 
@@ -189,6 +189,8 @@ cases where fresh transformations are processed each time. For example:
 @todo 2D version as well, once it's clear what representation to use (3x4? how
     to align? etc) ... adding just a scalar variant with no alignment
     requirements would mean a nasty breakage for users later
+
+@see @ref absoluteTransformationScalingSigns3D()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation = {});
@@ -196,6 +198,85 @@ MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::St
 /* To avoid including Matrix4 */
 MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation);
 MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output);
+#endif
+
+/**
+@brief Calculate scaling signs of absolute 3D transformations for a hierarchy
+@param transformations      Affine transformations
+@param parents              Parent indices pointing into the
+    @p transformations view representing the hierarchy
+@param globalTransformation Global transformation to prepend to all others
+@return Calculated scaling signs
+@m_since_latest
+
+Like @ref absoluteTransformations3DInto() but calculates just scaling signs,
+i.e. setting a corresponding bit to @cpp true @ce if given absolute
+transformation contains a negative scaling and @cpp false @ce otherwise. In 3D,
+drawing with a negative scaling usually needs special handling such as flipping
+face winding direction in order to have lighting appear correct. That can be
+subsequently done based on the returned mask either directly in associated mesh
+data using @ref MeshTools::flipFaceWindingInPlace(), or by toggling a
+corresponding renderer state such as @ref GL::Renderer::setFrontFace() for a
+corresponding draw. See also @ref Shaders::PhongGL::Flag::DoubleSided for
+additional information.
+
+As with @ref absoluteTransformations3DInto(), expects that the @p parents view
+contains indices pointing to the @p transformations view or @cpp -1 @ce for
+@p globalTransformation, and that the parent references are back-referencing,
+i.e. @cpp parent[i] < i @ce holds for all elements, so that the transformations
+can be processed sequentially.
+
+A transformation has negative scaling if its @ref Matrix4::determinant() is
+negative. Furthermore, given that @f$ \det \boldsymbol{AB} = \det \boldsymbol{A} \boldsymbol{B} @f$,
+internally the operation reduces to just sign multiplication instead of doing
+full matrix multiplications. This also means none of the performance-focused
+data layout requirements of @ref absoluteTransformations3DInto() need to apply
+here.
+
+@m_class{m-note m-warning}
+
+@par
+    Note that, for implementation simplicity, transformations that have zero
+    scaling in certain axis are treated the same as positive scaling, as such
+    transformations are expected to be rather rare as they likely produce
+    rendering artifacts anyway. In practice this means that any zero scaling
+    transformation will inherit any negative sign from a parent instead of
+    resetting it, and it also won't reset negative signs of its children.
+
+@see @ref absoluteTransformationScalingSigns3DInto()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+MAGNUM_SCENETOOLS_EXPORT Containers::BitArray absoluteTransformationScalingSigns3D(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Matrix4& globalTransformation = {});
+#else
+/* To avoid including Matrix4 */
+MAGNUM_SCENETOOLS_EXPORT Containers::BitArray absoluteTransformationScalingSigns3D(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Matrix4& globalTransformation);
+MAGNUM_SCENETOOLS_EXPORT Containers::BitArray absoluteTransformationScalingSigns3D(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents);
+#endif
+
+/**
+@brief Calculate scaling signs of absolute 3D transformations for a hierarchy into an existing array
+@param[in] transformations      Affine transformations
+@param[in] parents              Parent indices pointing into the
+    @p transformations view representing the hierarchy
+@param[out] output              Where to put calculated scaling signs
+@param[in] globalTransformation Global transformation to prepend to all others
+@m_since_latest
+
+A variant of @ref absoluteTransformationScalingSigns3D() that fills existing
+memory instead of allocating a new array. The @p output view is expected to
+have one more item than @p parents, @cpp output[0] @ce is then filled with a
+scaling sign of @p globalTransformation, scaling sign of an absolute
+transformation for input at index @cpp i @ce is then in @cpp output[i + 1] @ce.
+Example usage:
+
+@snippet SceneTools.cpp absoluteTransformationScalingSigns3DInto
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformationScalingSigns3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, Containers::MutableBitArrayView output, const Matrix4& globalTransformation = {});
+#else
+/* To avoid including Matrix4 */
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformationScalingSigns3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, Containers::MutableBitArrayView output, const Matrix4& globalTransformation);
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformationScalingSigns3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, Containers::MutableBitArrayView output);
 #endif
 
 /**

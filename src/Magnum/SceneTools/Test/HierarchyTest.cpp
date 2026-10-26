@@ -24,11 +24,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Format.h>
@@ -68,6 +72,11 @@ struct HierarchyTest: TestSuite::Tester {
     void absoluteTransformations3DInPlace();
     void absoluteTransformationsInvalid();
     void absoluteTransformationsInvalidParents();
+
+    void absoluteTransformationScalingSigns3D();
+    void absoluteTransformationScalingSigns3DInto();
+    void absoluteTransformationScalingSignsInvalid();
+    void absoluteTransformationScalingSignsInvalidParents();
 
     void absoluteFieldTransformations2D();
     void absoluteFieldTransformations3D();
@@ -215,7 +224,12 @@ HierarchyTest::HierarchyTest() {
         &HierarchyTest::restoreImplementations);
 
     addTests({&HierarchyTest::absoluteTransformationsInvalid,
-              &HierarchyTest::absoluteTransformationsInvalidParents});
+              &HierarchyTest::absoluteTransformationsInvalidParents,
+
+              &HierarchyTest::absoluteTransformationScalingSigns3D,
+              &HierarchyTest::absoluteTransformationScalingSigns3DInto,
+              &HierarchyTest::absoluteTransformationScalingSignsInvalid,
+              &HierarchyTest::absoluteTransformationScalingSignsInvalidParents});
 
     addInstancedTests({&HierarchyTest::absoluteFieldTransformations2D,
                        &HierarchyTest::absoluteFieldTransformations3D},
@@ -944,6 +958,223 @@ void HierarchyTest::absoluteTransformationsInvalidParents() {
         "SceneTools::absoluteTransformations3DInto(): expected parents to be -1 or back-referencing but got parent 3 at index 3\n"
         "SceneTools::absoluteTransformations3DInto(): expected parents to be -1 or back-referencing but got parent -2 at index 2\n"
         "SceneTools::absoluteTransformations3DInto(): expected parents to be -1 or back-referencing but got parent 0 at index 0\n",
+        TestSuite::Compare::String);
+}
+
+void HierarchyTest::absoluteTransformationScalingSigns3D() {
+    const Int parents[]{
+        -1, /* 0 */
+        0,  /* 1, picking the transform right before */
+        -1, /* 2, a root again */
+        1,  /* 3 */
+        1,  /* 4, using the same parent twice in a row, negative scaling */
+        3,  /* 5 */
+        5,  /* 6, long chain */
+        6,  /* 7, long chain, negative scaling */
+        4,  /* 8, another chain, negative scaling */
+        5,  /* 9, third chain, zero determinant */
+        9,  /* 10, third chain, negative scaling that should be ignored due
+                   to parent being a zero determinant but isn't */
+        9,  /* 11, third chain, inherits parent zero determinant w/o change */
+        4,  /* 12, fourth chain, zero determinant that should reset the parent
+                   negative scaling back but doesn't */
+    };
+    const Matrix4 transformations[]{
+        {},                                         /* 0 */
+        Matrix4::rotationZ(-35.0_degf),             /* 1 */
+        {},                                         /* 2 */
+        Matrix4::translation({1.0f, 2.0f, -3.0f}),  /* 3 */
+        Matrix4::scaling({1.0f, -2.0f, 3.0f}),      /* 4, negative scaling */
+        Matrix4::scaling({-1.0f, 2.0f, -3.0f}),     /* 5, *not* negative */
+        {},                                         /* 6 */
+        Matrix4::scaling({-1.0f, -2.0f, -3.0f}),    /* 7, negative scaling */
+        Matrix4::reflection({1.0f, 0.0f, 0.0f}),    /* 8, negative scaling */
+        Matrix4::scaling({1.0f, 0.0f, 1.0f}),       /* 9, zero determinant */
+        Matrix4::scaling({-1.0f, 2.0f, 3.0f}),      /* 10, negative scaling */
+        {},                                         /* 11 */
+        Matrix4::scaling({0.0f, 1.0f, 0.0f}),       /* 12, zero determinant */
+    };
+    /* Verify the documented assumptions */
+    for(Int i: {0, 1, 2, 3, 5, 6, 11}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE_AS(transformations[i].determinant(), 0.0f,
+            TestSuite::Compare::Greater);
+    }
+    for(Int i: {4, 7, 8, 10}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE_AS(transformations[i].determinant(), 0.0f,
+            TestSuite::Compare::Less);
+    }
+    for(Int i: {9, 12}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(transformations[i].determinant(), 0.0f);
+    }
+
+    bool expected[]{
+        false, /* 0 */
+        false, /* 1 */
+        false, /* 2 */
+        false, /* 3 */
+        true,  /* 4, negative scaling */
+        false, /* 5 */
+        false, /* 6 */
+        true,  /* 7, inherited negative scaling */
+        false, /* 8, inherited negative scaling, flipped back */
+        false, /* 9, zero determinant */
+        true,  /* 10, negative scaling that should be ignored due to parent
+                      being zero determinant but isn't because it's simpler
+                      that way */
+        false, /* 11 */
+        true,  /* 11, inherited negative scaling that should be reset due to
+                      this transform having zero determinant but isn't because
+                      it's simpler that way */
+    };
+
+    /* Common case with a non-negative-scale global transformation */
+    /** @todo wtf, why is the cast needed */
+    CORRADE_COMPARE_AS(Containers::MutableBitArrayView{SceneTools::absoluteTransformationScalingSigns3D(transformations, parents)},
+        Containers::stridedArrayView(expected).sliceBit(0),
+        TestSuite::Compare::Container);
+
+    /* Global transformation having a zero determinant is treated as if it had
+       a positive one because it's simpler that way, i.e. same result as
+       above */
+    /** @todo wtf, why is the cast needed */
+    CORRADE_COMPARE_AS(Containers::MutableBitArrayView{SceneTools::absoluteTransformationScalingSigns3D(transformations, parents, Matrix4::scaling({}))},
+        Containers::stridedArrayView(expected).sliceBit(0),
+        TestSuite::Compare::Container);
+
+    /* Passing a negative scale as a global transformation flips everything */
+    for(bool& i: expected)
+        i ^= true;
+    /** @todo wtf, why is the cast needed */
+    CORRADE_COMPARE_AS(Containers::MutableBitArrayView{SceneTools::absoluteTransformationScalingSigns3D(transformations, parents, Matrix4::scaling({-1.0f, 1.0f, 1.0f}))},
+        Containers::stridedArrayView(expected).sliceBit(0),
+        TestSuite::Compare::Container);
+
+    /* Passing in an empty array should produce nothing without crashing */
+    CORRADE_COMPARE_AS(SceneTools::absoluteTransformationScalingSigns3D({}, {}),
+        Containers::BitArray{},
+        TestSuite::Compare::Container);
+}
+
+void HierarchyTest::absoluteTransformationScalingSigns3DInto() {
+    /* Compared to absoluteTransformationScalingSigns3D() verifies mainly the
+       edge cases with the stored global transformation sign, other than that
+       it's just trivial chained sign propagation as the algorithm internals
+       are sufficiently tested above */
+
+    const Int parents[]{
+        -1, /* 0 */
+        0,  /* 1, negative scaling */
+        1,  /* 2, inherited negative scaling */
+        2,  /* 3, negative scaling flipped back */
+    };
+    const Matrix4 transformations[]{
+        {},
+        Matrix4::scaling({1.0f, -1.0f, 1.0f}),
+        {},
+        Matrix4::scaling({1.0f, -1.0f, 1.0f}),
+    };
+
+    /* Implicit global transform */
+    {
+        /* Verify also that it's internally reset it to all zeros */
+        Containers::BitArray output{DirectInit, 5, true};
+        SceneTools::absoluteTransformationScalingSigns3DInto(transformations, parents, output);
+        /** @todo wtf, why is the cast needed */
+        CORRADE_COMPARE_AS(Containers::MutableBitArrayView{output},
+        Containers::stridedArrayView({
+            false,  /* global */
+            false,  /* 0 */
+            true,   /* 1 */
+            true,   /* 2 */
+            false,  /* 3 */
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+    /* Global transform with negative scaling inverts everything */
+    } {
+        Containers::BitArray output{NoInit, 5};
+        SceneTools::absoluteTransformationScalingSigns3DInto(transformations, parents, output, Matrix4::scaling({1.0f, -1.0f, 1.0f}));
+        /** @todo wtf, why is the cast needed */
+        CORRADE_COMPARE_AS(Containers::MutableBitArrayView{output},
+        Containers::stridedArrayView({
+            true,   /* global */
+            true,   /* 0 */
+            false,  /* 1 */
+            false,  /* 2 */
+            true,   /* 3 */
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+    /* Calling with an empty input stores just the global sign */
+    } {
+        Containers::BitArray output{NoInit, 1};
+        SceneTools::absoluteTransformationScalingSigns3DInto({}, {}, output);
+        CORRADE_COMPARE(output[0], false);
+    } {
+        Containers::BitArray output{NoInit, 1};
+        SceneTools::absoluteTransformationScalingSigns3DInto({}, {}, output, Matrix4::scaling({1.0f, -1.0f, 1.0f}));
+        CORRADE_COMPARE(output[0], true);
+    }
+}
+
+void HierarchyTest::absoluteTransformationScalingSignsInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Matrix4 transformations[6];
+    Matrix4 transformationsWrong[7];
+    Containers::BitArray output{NoInit, 7};
+    Containers::BitArray outputWrong{NoInit, 6};
+    Int parents[6]{-1, -1, -1, -1, -1, -1};
+    Int parentsWrong[7];
+
+    /* Empty call and just a single output bit alone should work */
+    Containers::BitArray outputSingle{NoInit, 1};
+    SceneTools::absoluteTransformationScalingSigns3D({}, {});
+    SceneTools::absoluteTransformationScalingSigns3DInto({}, {}, outputSingle);
+
+    Containers::String out;
+    Error redirectError{&out};
+    /* Wrong sizes */
+    SceneTools::absoluteTransformationScalingSigns3DInto(transformations, parents, outputWrong);
+    SceneTools::absoluteTransformationScalingSigns3D(transformations, parentsWrong);
+    SceneTools::absoluteTransformationScalingSigns3DInto(transformations, parentsWrong, output);
+    SceneTools::absoluteTransformationScalingSigns3D(transformationsWrong, parents);
+    SceneTools::absoluteTransformationScalingSigns3DInto(transformationsWrong, parents, output);
+    CORRADE_COMPARE_AS(out,
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents with 6 elements and output with 7 elements but got 6 and 6\n"
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents with 6 elements and output with 7 elements but got 7 and 7\n"
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents with 6 elements and output with 7 elements but got 7 and 7\n"
+        /* absoluteTransformationScalingSigns3D() sizes the output to 8
+           elements based on parent size */
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents with 7 elements and output with 8 elements but got 6 and 8\n"
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents with 7 elements and output with 8 elements but got 6 and 7\n",
+        TestSuite::Compare::String);
+}
+
+void HierarchyTest::absoluteTransformationScalingSignsInvalidParents() {
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
+
+    /* Separate test case because these are debug-only assertions. Basically a
+       copy of absoluteTransformationsInvalidParents(). */
+
+    Matrix4 transformations[4];
+
+    Containers::String out;
+    Error redirectError{&out};
+    SceneTools::absoluteTransformationScalingSigns3D(transformations, Containers::arrayView({
+        -1, 0, 1, 3
+    }));
+    SceneTools::absoluteTransformationScalingSigns3D(transformations, Containers::arrayView({
+        -1, 0, -2, 1
+    }));
+    SceneTools::absoluteTransformationScalingSigns3D(transformations, Containers::arrayView({
+        0, -1, -1, -1
+    }));
+    CORRADE_COMPARE_AS(out,
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents to be -1 or back-referencing but got parent 3 at index 3\n"
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents to be -1 or back-referencing but got parent -2 at index 2\n"
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents to be -1 or back-referencing but got parent 0 at index 0\n",
         TestSuite::Compare::String);
 }
 

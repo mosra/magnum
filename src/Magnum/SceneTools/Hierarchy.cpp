@@ -29,6 +29,8 @@
 #include <Corrade/Cpu.h>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
@@ -693,6 +695,56 @@ void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Ma
 
 void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output) {
     absoluteTransformations3DInto(transformations, parents, output, {});
+}
+
+void absoluteTransformationScalingSigns3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, Containers::MutableBitArrayView output, const Matrix4& globalTransformation) {
+    const std::size_t size = transformations.size();
+    CORRADE_ASSERT(parents.size() == size && output.size() == size + 1,
+        "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents with" << size << "elements and output with" << size + 1 << "elements but got" << parents.size() << "and" << output.size(), );
+    #ifndef CORRADE_NO_DEBUG_ASSERT
+    /* This is important for verifying that the input data make sense, but is
+       too expensive to run in hot code, so it's just a debug assert */
+    for(std::size_t i = 0; i != parents.size(); ++i)
+        CORRADE_DEBUG_ASSERT(parents[i] >= -1 && parents[i] < Int(i),
+            "SceneTools::absoluteTransformationScalingSigns3DInto(): expected parents to be -1 or back-referencing but got parent" << parents[i] << "at index" << i, );
+    #endif
+
+    /* Assume negative scaling is an exception, so speed up by zero-filling the
+       array and then setting only bits where the sign is negative */
+    output.resetAll();
+
+    /* Determinant being 0 is deliberately treated the same way as positive.
+       Zero determinant would basically cause the sign to be 0 for given
+       transformation and all children, meaning that we'd have to track that in
+       a second bitmask or something. Rare scenario (and likely causing broken
+       rendering anyway), not worth the extra effort. */
+    if(globalTransformation.determinant() < 0)
+        output.set(0);
+    for(std::size_t i = 0; i != size; ++i) {
+        /* If parent transformation has a positive determinant and this one
+           also, the result is false (1*1 = 1). If both are negative, the
+           result is false too (-1*-1 = 1). Otherwise the result is true
+           (-1*1 = 1*-1 = -1). This maps to a XOR operation on the booleans. */
+        if(output[parents[i] + 1] ^ (transformations[i].determinant() < 0))
+            output.set(i + 1);
+    }
+}
+
+void absoluteTransformationScalingSigns3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, Containers::MutableBitArrayView output) {
+    absoluteTransformationScalingSigns3DInto(transformations, parents, output, {});
+}
+
+Containers::BitArray absoluteTransformationScalingSigns3D(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Matrix4& globalTransformation) {
+    Containers::BitArray output{NoInit, transformations.size() + 1};
+    absoluteTransformationScalingSigns3DInto(transformations, parents, output, globalTransformation);
+    /** @todo this will blow up for small BitArrays once it has a "SBO"
+        optimization, do some shifted copy in that case instead */
+    CORRADE_INTERNAL_ASSERT(output.offset() == 0 && output.deleter() == nullptr);
+    return Containers::BitArray{output.release(), 1, transformations.size(), nullptr};
+}
+
+Containers::BitArray absoluteTransformationScalingSigns3D(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents) {
+    return absoluteTransformationScalingSigns3D(transformations, parents, {});
 }
 
 namespace {

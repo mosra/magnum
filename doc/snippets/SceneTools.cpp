@@ -134,6 +134,17 @@ SceneTools::absoluteTransformations3DInto(
 }
 
 {
+/* [absoluteTransformationScalingSigns3DInto] */
+Containers::Array<Int> parents = DOXYGEN_ELLIPSIS({});
+Containers::Array<Matrix4> transformations = DOXYGEN_ELLIPSIS({});
+
+/* out.exceptPrefix(1) then contains absolute scaling signs */
+Containers::BitArray out(NoInit, parents.size() + 1);
+SceneTools::absoluteTransformationScalingSigns3DInto(transformations, parents, out);
+/* [absoluteTransformationScalingSigns3DInto] */
+}
+
+{
 /* [childrenDepthFirst-extract-tree] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 
