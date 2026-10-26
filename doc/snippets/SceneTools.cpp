@@ -114,7 +114,7 @@ Containers::Array<Matrix4> transformations = DOXYGEN_ELLIPSIS({});
 /* out.exceptPrefix(1) then contains absolute transformations */
 Containers::Array<Matrix4> out =
     Utility::allocateAligned<Matrix4, 64>(NoInit, parents.size() + 1);
-SceneTools::absoluteTransformations3DInto(parents, transformations, out);
+SceneTools::absoluteTransformations3DInto(transformations, parents, out);
 /* [absoluteTransformations3DInto] */
 }
 
@@ -128,8 +128,8 @@ Containers::Array<Matrix4> transformations =
 DOXYGEN_ELLIPSIS()
 
 /* Then convert them to absolute */
-SceneTools::absoluteTransformations3DInto(parents,
-    transformations.exceptPrefix(1), transformations);
+SceneTools::absoluteTransformations3DInto(
+    transformations.exceptPrefix(1), parents, transformations);
 /* [absoluteTransformations3DInto-in-place] */
 }
 

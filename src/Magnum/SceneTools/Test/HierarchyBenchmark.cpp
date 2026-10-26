@@ -236,7 +236,7 @@ void HierarchyBenchmark::absoluteTransformations3D() {
         Matrix4::rotationY(37.0_degf)*
         Matrix4::translation({1.0f, 2.0f, 3.0f});
     CORRADE_BENCHMARK(100)
-        absoluteTransformations3DInto(_parents, _transformations, out, globalTransformation);
+        absoluteTransformations3DInto(_transformations, _parents, out, globalTransformation);
 
     /* All _transformations are identity, so this should result in the global
        transform simply copied everywhere */
@@ -269,7 +269,7 @@ void HierarchyBenchmark::absoluteTransformations3DClustered() {
         Matrix4::rotationY(37.0_degf)*
         Matrix4::translation({1.0f, 2.0f, 3.0f});
     CORRADE_BENCHMARK(100)
-        absoluteTransformations3DInto(_parentsClustered, _transformations, out, globalTransformation);
+        absoluteTransformations3DInto(_transformations, _parentsClustered, out, globalTransformation);
 
     /* All _transformations are identity, so this should result in the global
        transform simply copied everywhere */
@@ -303,7 +303,7 @@ void HierarchyBenchmark::absoluteTransformations3DClusteredInPlace() {
     Utility::copy(_transformations, out.exceptPrefix(1));
 
     CORRADE_BENCHMARK(100)
-        absoluteTransformations3DInto(_parentsClustered, out.exceptPrefix(1), out);
+        absoluteTransformations3DInto(out.exceptPrefix(1), _parentsClustered, out);
 
     /* All _transformations are identity, so this should result in the global
        (identity) transform simply copied everywhere */
@@ -348,8 +348,9 @@ void HierarchyBenchmark::absoluteTransformations3DClusteredInterleaved() {
         Matrix4::rotationY(37.0_degf)*
         Matrix4::translation({1.0f, 2.0f, 3.0f});
     CORRADE_BENCHMARK(100)
-        absoluteTransformations3DInto(_parentsClustered,
+        absoluteTransformations3DInto(
             stridedArrayView(interleaved).slice(&Data::in).exceptPrefix(1),
+            _parentsClustered,
             stridedArrayView(interleaved).slice(&Data::out), globalTransformation);
 
     /* All _transformations are identity, so this should result in the global
@@ -384,7 +385,7 @@ void HierarchyBenchmark::absoluteTransformations3DChained() {
         Matrix4::rotationY(37.0_degf)*
         Matrix4::translation({1.0f, 2.0f, 3.0f});
     CORRADE_BENCHMARK(100)
-        absoluteTransformations3DInto(_parentsChained, _transformations, out, globalTransformation);
+        absoluteTransformations3DInto(_transformations, _parentsChained, out, globalTransformation);
 
     /* All _transformations are identity, so this should result in the global
        transform simply copied everywhere */

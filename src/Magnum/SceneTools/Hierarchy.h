@@ -140,6 +140,12 @@ namespace Implementation {
 
 /**
 @brief Calculate absolute 3D transformations for a hierarchy
+@param[in] transformations      Affine transformations
+@param[in] parents              Parent indices pointing into the
+    @p transformations view representing the hierarchy
+@param[out] output              Where to put calculated absolute
+    transformations
+@param[in] globalTransformation Global transformation to prepend to all others
 @m_since_latest
 
 Fills the @p output array with @p transformations multiplied with their parent
@@ -177,11 +183,11 @@ cases where fresh transformations are processed each time. For example:
     requirements would mean a nasty breakage for users later
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation = {});
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation = {});
 #else
 /* To avoid including Matrix4 */
-MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation);
-MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output);
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation);
+MAGNUM_SCENETOOLS_EXPORT void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output);
 #endif
 
 /**

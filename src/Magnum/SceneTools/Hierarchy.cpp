@@ -273,7 +273,7 @@ namespace Implementation {
 namespace {
 
 MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Scalar)) {
-  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) {
+  return [](const std::size_t size, const char* const transformations, const std::ptrdiff_t transformationsStride, const char* const parents, const std::ptrdiff_t parentsStride, char* const output, const std::ptrdiff_t outputStride) {
     for(std::size_t i = 0; i != size; ++i) {
         const Int parent = *reinterpret_cast<const Int*>(parents + i*parentsStride);
 
@@ -297,7 +297,7 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED typename std::decay<decltype(absoluteTransfor
    left-side matrix. See Test/HierarchyTest.h for the other (slower) variants
    that led to this. */
 MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SSE2 typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Sse2)) {
-  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_SSE2 {
+  return [](const std::size_t size, const char* const transformations, const std::ptrdiff_t transformationsStride, const char* const parents, const std::ptrdiff_t parentsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_SSE2 {
     /* GCC stupidly warns that these may be uninitialized, so zero-init */
     __m128 a0{};
     __m128 a1{};
@@ -391,7 +391,7 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SSE2 typename std::decay<declt
    because that's what GCC 10's autovectorizer uses for the scalar 4x4 version
    with -mavx. */
 MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Avx)) {
-  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX {
+  return [](const std::size_t size, const char* const transformations, const std::ptrdiff_t transformationsStride, const char* const parents, const std::ptrdiff_t parentsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX {
     /* GCC stupidly warns that these may be uninitialized, so zero-init */
     __m256 a0x2{};
     __m256 a1x2{};
@@ -468,7 +468,7 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX typename std::decay<declty
    _mm256_add_ps() together. Matches GCC 10's autovectorizer for the 4x4
    version with -mavx -mfma. Comments omitted as there's nothing new to say. */
 MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX_FMA typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Avx|Cpu::AvxFma)) {
-  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX_FMA {
+  return [](const std::size_t size, const char* const transformations, const std::ptrdiff_t transformationsStride,  const char* const parents, const std::ptrdiff_t parentsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX_FMA {
     /* GCC stupidly warns that these may be uninitialized, so zero-init */
     __m256 a0x2{};
     __m256 a1x2{};
@@ -519,7 +519,7 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX_FMA typename std::decay<de
 /* Translation of the above AVX2 FMA code to a 512-bit width, processing four
    columns and four scalars at once instead of two. */
 MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX512F typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Avx512f)) {
-  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX512F {
+  return [](const std::size_t size, const char* const transformations, const std::ptrdiff_t transformationsStride, const char* const parents, const std::ptrdiff_t parentsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_AVX512F {
     /* GCC stupidly warns that these may be uninitialized, so zero-init */
     __m512 a0x4{};
     __m512 a1x4{};
@@ -587,7 +587,7 @@ MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_AVX512F typename std::decay<de
 /* Direct translation of the SSE2 variant. There aren't really many options how
    to do things in WASM SIMD, so this is basically the only possible result. */
 MAGNUM_SCENETOOLS_CPU_MAYBE_UNUSED CORRADE_ENABLE_SIMD128 typename std::decay<decltype(absoluteTransformations3D)>::type absoluteTransformations3DImplementation(CORRADE_CPU_DECLARE(Cpu::Simd128)) {
-  return [](const std::size_t size, const char* const parents, const std::ptrdiff_t parentsStride, const char* const transformations, const std::ptrdiff_t transformationsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_SIMD128 {
+  return [](const std::size_t size, const char* const transformations, const std::ptrdiff_t transformationsStride, const char* const parents, const std::ptrdiff_t parentsStride, char* const output, const std::ptrdiff_t outputStride) CORRADE_ENABLE_SIMD128 {
     v128_t a0;
     v128_t a1;
     v128_t a2;
@@ -648,22 +648,22 @@ MAGNUM_SCENETOOLS_CPU_DISPATCHER(absoluteTransformations3DImplementation, Cpu::A
 #else
 MAGNUM_SCENETOOLS_CPU_DISPATCHER(absoluteTransformations3DImplementation)
 #endif
-MAGNUM_SCENETOOLS_CPU_DISPATCHED(absoluteTransformations3DImplementation, void MAGNUM_SCENETOOLS_CPU_DISPATCHED_DECLARATION(absoluteTransformations3D)(std::size_t size, const char* parents, std::ptrdiff_t parentsStride, const char* transformations, std::ptrdiff_t transformationsStride, char* output, std::ptrdiff_t outputStride))({
-    return absoluteTransformations3DImplementation(CORRADE_CPU_SELECT(Cpu::Default))(size, parents, parentsStride, transformations, transformationsStride, output, outputStride);
+MAGNUM_SCENETOOLS_CPU_DISPATCHED(absoluteTransformations3DImplementation, void MAGNUM_SCENETOOLS_CPU_DISPATCHED_DECLARATION(absoluteTransformations3D)(std::size_t size, const char* transformations, std::ptrdiff_t transformationsStride, const char* parents, std::ptrdiff_t parentsStride, char* output, std::ptrdiff_t outputStride))({
+    return absoluteTransformations3DImplementation(CORRADE_CPU_SELECT(Cpu::Default))(size, transformations, transformationsStride, parents, parentsStride, output, outputStride);
 })
 
 }
 
-void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation) {
-    const std::size_t size = parents.size();
-    const char* const parentsData = static_cast<const char*>(parents.data());
-    const std::ptrdiff_t parentsStride = parents.stride();
+void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output, const Matrix4& globalTransformation) {
+    const std::size_t size = transformations.size();
     const char* const transformationsData = static_cast<const char*>(transformations.data());
     const std::ptrdiff_t transformationsStride = transformations.stride();
+    const char* const parentsData = static_cast<const char*>(parents.data());
+    const std::ptrdiff_t parentsStride = parents.stride();
     char* const outputData = static_cast<char*>(output.data());
     const std::ptrdiff_t outputStride = output.stride();
-    CORRADE_ASSERT(transformations.size() == size && output.size() == size + 1,
-        "SceneTools::absoluteTransformations3DInto(): expected transformations with" << size << "elements and output with" << size + 1 << "elements but got" << transformations.size() << "and" << output.size(), );
+    CORRADE_ASSERT(parents.size() == size && output.size() == size + 1,
+        "SceneTools::absoluteTransformations3DInto(): expected parents with" << size << "elements and output with" << size + 1 << "elements but got" << parents.size() << "and" << output.size(), );
     /* Stride is checked before alignment as with the opposite order the stride
        assert couldn't be easily tested for, as struct sizes are always a
        multiple of member alignment. This also seems to handle negative strides
@@ -688,11 +688,11 @@ void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const In
        picked by parents that are -1. There's nothing to optimize about this
        assignment so it's done outside of the dispatched arch-specific code. */
     output[0] = globalTransformation;
-    Implementation::absoluteTransformations3D(size, parentsData, parentsStride, transformationsData, transformationsStride, outputData, outputStride);
+    Implementation::absoluteTransformations3D(size, transformationsData, transformationsStride, parentsData, parentsStride, outputData, outputStride);
 }
 
-void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<Matrix4>& output) {
-    absoluteTransformations3DInto(parents, transformations, output, {});
+void absoluteTransformations3DInto(const Containers::StridedArrayView1D<const Matrix4>& transformations, const Containers::StridedArrayView1D<const Int>& parents, const Containers::StridedArrayView1D<Matrix4>& output) {
+    absoluteTransformations3DInto(transformations, parents, output, {});
 }
 
 namespace {

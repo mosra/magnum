@@ -736,12 +736,12 @@ void HierarchyTest::absoluteTransformations3D() {
     Containers::Array<Matrix4> output = Utility::allocateAligned<Matrix4, 64>(NoInit, 9);
     #endif
     absoluteTransformations3DInto(
-        AbsoluteTransformations3DParents,
         #ifndef CORRADE_TARGET_MINGW
         AbsoluteTransformations3DTransformations,
         #else
         transformations,
         #endif
+        AbsoluteTransformations3DParents,
         output, Matrix4::translation({5.0f, 2.0f, 1.0f}));
     CORRADE_COMPARE_AS(Containers::arrayView(output),
         Containers::arrayView(AbsoluteTransformations3DExpected),
@@ -806,8 +806,8 @@ void HierarchyTest::absoluteTransformations3DStrided() {
         view.slice(&Thing::transformation).exceptPrefix(1));
 
     absoluteTransformations3DInto(
-        view.slice(&Thing::parent).exceptPrefix(1),
         view.slice(&Thing::transformation).exceptPrefix(1),
+        view.slice(&Thing::parent).exceptPrefix(1),
         view.slice(&Thing::out),
         Matrix4::translation({5.0f, 2.0f, 1.0f}));
     CORRADE_COMPARE_AS(view.slice(&Thing::out),
@@ -846,8 +846,8 @@ void HierarchyTest::absoluteTransformations3DInPlace() {
         Containers::arrayView(transformations).exceptPrefix(1));
 
     absoluteTransformations3DInto(
-        AbsoluteTransformations3DParents,
         Containers::arrayView(transformations).exceptPrefix(1),
+        AbsoluteTransformations3DParents,
         transformations, Matrix4::translation({5.0f, 2.0f, 1.0f}));
     CORRADE_COMPARE_AS(Containers::arrayView(transformations),
         Containers::arrayView(AbsoluteTransformations3DExpected),
@@ -891,26 +891,27 @@ void HierarchyTest::absoluteTransformationsInvalid() {
     #endif
     absoluteTransformations3DInto({}, {}, outputSingle);
     /* Stride of -64 bytes should work with no problem */
-    absoluteTransformations3DInto(parents,
+    absoluteTransformations3DInto(
         Containers::stridedArrayView(transformations).flipped<0>(),
+        parents,
         Containers::stridedArrayView(output).flipped<0>());
 
     Containers::String out;
     Error redirectError{&out};
     /* Wrong sizes */
-    absoluteTransformations3DInto(parents, transformations, outputWrong);
-    absoluteTransformations3DInto(parents, transformationsWrong, output);
-    absoluteTransformations3DInto(parentsWrong, transformations, output);
+    absoluteTransformations3DInto(transformations, parents, outputWrong);
+    absoluteTransformations3DInto(transformations, parentsWrong, output);
+    absoluteTransformations3DInto(transformationsWrong, parents, output);
     /* Wrong stride */
-    absoluteTransformations3DInto(parents, Containers::stridedArrayView(wrongStride).slice(&WrongStride::matrix).exceptPrefix(1), output);
-    absoluteTransformations3DInto(parents, transformations, Containers::stridedArrayView(wrongStride).slice(&WrongStride::matrix));
+    absoluteTransformations3DInto(Containers::stridedArrayView(wrongStride).slice(&WrongStride::matrix).exceptPrefix(1), parents, output);
+    absoluteTransformations3DInto(transformations, parents, Containers::stridedArrayView(wrongStride).slice(&WrongStride::matrix));
     /* Wrong alignment */
-    absoluteTransformations3DInto(parents, Containers::arrayView(unaligned.matrix).exceptSuffix(1), output);
-    absoluteTransformations3DInto(parents, transformations, unaligned.matrix);
+    absoluteTransformations3DInto(Containers::arrayView(unaligned.matrix).exceptSuffix(1), parents, output);
+    absoluteTransformations3DInto(transformations, parents, unaligned.matrix);
     CORRADE_COMPARE_AS(out,
-        "SceneTools::absoluteTransformations3DInto(): expected transformations with 6 elements and output with 7 elements but got 6 and 6\n"
-        "SceneTools::absoluteTransformations3DInto(): expected transformations with 6 elements and output with 7 elements but got 7 and 7\n"
-        "SceneTools::absoluteTransformations3DInto(): expected transformations with 7 elements and output with 8 elements but got 6 and 7\n"
+        "SceneTools::absoluteTransformations3DInto(): expected parents with 6 elements and output with 7 elements but got 6 and 6\n"
+        "SceneTools::absoluteTransformations3DInto(): expected parents with 6 elements and output with 7 elements but got 7 and 7\n"
+        "SceneTools::absoluteTransformations3DInto(): expected parents with 7 elements and output with 8 elements but got 6 and 7\n"
         "SceneTools::absoluteTransformations3DInto(): transformations stride 68 is not a multiple of 64 bytes\n"
         "SceneTools::absoluteTransformations3DInto(): output stride 68 is not a multiple of 64 bytes\n"
         "SceneTools::absoluteTransformations3DInto(): transformations are not 64-byte aligned\n"
@@ -928,17 +929,17 @@ void HierarchyTest::absoluteTransformationsInvalidParents() {
 
     Containers::String out;
     Error redirectError{&out};
-    absoluteTransformations3DInto(Containers::arrayView({
+    absoluteTransformations3DInto(transformations, Containers::arrayView({
         -1, 0, 1, 3
-    }), transformations, output);
+    }), output);
     /* Values less than -1 are also wrong */
-    absoluteTransformations3DInto(Containers::arrayView({
+    absoluteTransformations3DInto(transformations, Containers::arrayView({
         -1, 0, -2, 1
-    }), transformations, output);
+    }), output);
     /* The first parent cannot be anything else than -1 */
-    absoluteTransformations3DInto(Containers::arrayView({
+    absoluteTransformations3DInto(transformations, Containers::arrayView({
         0, -1, -1, -1
-    }), transformations, output);
+    }), output);
     CORRADE_COMPARE_AS(out,
         "SceneTools::absoluteTransformations3DInto(): expected parents to be -1 or back-referencing but got parent 3 at index 3\n"
         "SceneTools::absoluteTransformations3DInto(): expected parents to be -1 or back-referencing but got parent -2 at index 2\n"
