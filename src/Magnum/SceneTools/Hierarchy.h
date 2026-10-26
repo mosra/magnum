@@ -178,6 +178,14 @@ cases where fresh transformations are processed each time. For example:
 
 @snippet SceneTools.cpp absoluteTransformations3DInto-in-place
 
+@todo non-Into convenience variant that returns an Array without the initial
+    element used for global transformation, would require either an extra copy
+    or some way to patch the deleter of Utility::allocateAligned() to subtract
+    64 bytes from the pointer passed to std::free() ... it'd also still require
+    the transformations to be aligned or it'd have to copy those into some
+    internal allocation as well; maybe just wait until there's a clear use case
+    for this where any extra copies are not as important as the annoyance
+    involved with aligned arrays?
 @todo 2D version as well, once it's clear what representation to use (3x4? how
     to align? etc) ... adding just a scalar variant with no alignment
     requirements would mean a nasty breakage for users later
