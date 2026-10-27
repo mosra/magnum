@@ -2145,9 +2145,9 @@ void MeshDataTest::constructIndexless() {
     MeshData data{MeshPrimitive::LineLoop, Utility::move(vertexData), {
         MeshAttributeData{MeshAttribute::Position, vertices}
     }, MeshData::ImplicitVertexCount, &importerState};
-    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     /* These are empty so it doesn't matter, but this is a nice non-restrictive
        default */
+    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::LineLoop);
     CORRADE_COMPARE(data.importerState(), &importerState);
@@ -2191,9 +2191,9 @@ void MeshDataTest::constructAttributeless() {
     MeshData data{MeshPrimitive::TriangleStrip,
         Utility::move(indexData), MeshIndexData{indices},
         3, &importerState};
+    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     /* These are empty so it doesn't matter, but this is a nice non-restrictive
        default */
-    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!data.attributeData());
