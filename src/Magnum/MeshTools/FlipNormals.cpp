@@ -35,6 +35,17 @@
 
 namespace Magnum { namespace MeshTools {
 
+void flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>& normals) {
+    for(Vector3& normal: normals)
+        normal = -normal;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void flipNormals(std::vector<Vector3>& normals) {
+    flipNormalsInPlace(normals);
+}
+#endif
+
 namespace {
 
 template<class T> inline void flipFaceWindingInPlaceImplementation(const Containers::StridedArrayView1D<T>& indices) {
@@ -71,22 +82,15 @@ void flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices)
     }
 }
 
-void flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>& normals) {
-    for(Vector3& normal: normals)
-        normal = -normal;
+#ifdef MAGNUM_BUILD_DEPRECATED
+void flipFaceWinding(std::vector<UnsignedInt>& indices) {
+    flipFaceWindingInPlace(indices);
 }
+#endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals) {
     flipNormalsInPlace(indices, normals);
-}
-
-void flipFaceWinding(std::vector<UnsignedInt>& indices) {
-    flipFaceWindingInPlace(indices);
-}
-
-void flipNormals(std::vector<Vector3>& normals) {
-    flipNormalsInPlace(normals);
 }
 #endif
 

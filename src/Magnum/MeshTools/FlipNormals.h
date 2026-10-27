@@ -45,75 +45,72 @@
 namespace Magnum { namespace MeshTools {
 
 /**
-@brief Flip mesh normals and face winding in-place
-@param[in,out] indices  Index array to operate on
+@brief Flip mesh normals in-place
 @param[in,out] normals  Normal array to operate on
-@m_since{2020,06}
 
-Flips normal vectors and face winding in index array for face culling to work
-properly too. See also @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
-and @ref flipFaceWindingInPlace(), which flip normals or face winding only.
-Expects a triangle mesh, thus the index count has to be divisible by 3.
-*/
-void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
-
-/**
- * @overload
- * @m_since{2020,06}
- */
-void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
-
-/**
- * @overload
- * @m_since{2020,06}
- */
-void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
-
-/**
-@brief Flip mesh normals and face winding in-place on a type-erased index array
-@m_since{2020,06}
-
-Expects that the second dimension of @p indices is contiguous and represents
-the actual 1/2/4-byte index type. Based on its size then calls one of the
+Flips normal vectors to point in the opposite direction. Note that for face
+culling to work properly, face winding may need to be flipped as well --- use
 @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
-etc. overloads.
+and overloads to perform both operations at once. See
+@ref flipFaceWindingInPlace() for detailed explanation of face winding
+direction and its effect on rendering.
 */
-void flipNormalsInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
+MAGNUM_MESHTOOLS_EXPORT void flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>& normals);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief @copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
-@m_deprecated_since{2020,06} Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
+@copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
+@m_deprecated_since{2020,06} Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
     instead.
 */
-CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals);
+CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<Vector3>& normals);
 #endif
 
 /**
-@brief Flip face winding in-place
+@brief Flip mesh face winding in-place
 @param[in,out] indices  Index array to operate on
 @m_since{2020,06}
 
-Same as @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&),
-but flips only face winding. Expects a triangle mesh, thus the index count has
-to be divisible by 3.
+Flips order of indices in each triangle, turning `a, b, c` into `a, c, b` for
+each. Expects a triangle mesh, thus size of the @p indices view has to be
+divisible by 3.
+
+Face winding direction --- either counterclockwise or clockwise --- is used to distinguish front and back faces of a mesh when doing back face culling, such
+as with @ref GL::Renderer::Feature::FaceCulling, and when rendering
+double-sided meshes with e.g. @ref Shaders::PhongGL::Flag::DoubleSided. For
+correct rendering the winding direction is expected to match normal direction.
+
+If the direction doesn't match, which can happen for example if a negative
+scaling is applied on the mesh, or if the mesh data were produced with
+expectation that front faces have clockwise winding but the renderer expects
+counterclockwise, the winding can be flipped either directly in the mesh by
+calling this function or by setting appropriate renderer state such as
+@ref GL::Renderer::setFrontFace().
+
+Most commonly you'd want to flip both normals and face winding, for example if
+wanting to look at a cube from inside instead of from outside, which can be
+done with @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&).
+
+See also @ref SceneTools::absoluteTransformationScalingSigns3D() which can be
+used to collect transformations with negative scaling for a complete scene
+hierarchy.
 */
-void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices);
+MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices);
+MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices);
+MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices);
 
 /**
-@brief Flip face winding in-place on a type-erased index array
+@brief Flip mesh face winding in-place on a type-erased index array
 @m_since{2020,06}
 
 Expects that the second dimension of @p indices is contiguous and represents
@@ -121,7 +118,7 @@ the actual 1/2/4-byte index type. Based on its size then calls one of the
 @ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
 etc. overloads.
 */
-void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices);
+MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
@@ -133,42 +130,60 @@ CORRADE_DEPRECATED("use flipFaceWindingInPlace() instead") MAGNUM_MESHTOOLS_EXPO
 #endif
 
 /**
-@brief Flip mesh normals in-place
+@brief Flip mesh normals and face winding in-place
+@param[in,out] indices  Index array to operate on
 @param[in,out] normals  Normal array to operate on
+@m_since{2020,06}
 
-Same as @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&),
-but flips only normals, not face winding.
+Same as calling both @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
+and @ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
+at the same time. See their documentation for more information.
 */
-void MAGNUM_MESHTOOLS_EXPORT flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>& normals);
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
-@m_deprecated_since{2020,06} Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
-    instead.
-*/
-CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<Vector3>& normals);
-#endif
-
 inline void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
     flipFaceWindingInPlace(indices);
     flipNormalsInPlace(normals);
 }
 
+/**
+ * @overload
+ * @m_since{2020,06}
+ */
 inline void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
     flipFaceWindingInPlace(indices);
     flipNormalsInPlace(normals);
 }
 
+/**
+ * @overload
+ * @m_since{2020,06}
+ */
 inline void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
     flipFaceWindingInPlace(indices);
     flipNormalsInPlace(normals);
 }
 
+/**
+@brief Flip mesh normals and face winding in-place on a type-erased index array
+@m_since{2020,06}
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
+etc. overloads.
+*/
 inline void flipNormalsInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
     flipFaceWindingInPlace(indices);
     flipNormalsInPlace(normals);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
+@m_deprecated_since{2020,06} Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
+    instead.
+*/
+CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals);
+#endif
 
 }}
 
