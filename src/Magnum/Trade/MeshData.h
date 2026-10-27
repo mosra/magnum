@@ -1295,16 +1295,20 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Index data flags
          *
-         * @see @ref releaseIndexData(), @ref mutableIndexData(),
-         *      @ref mutableIndices()
+         * Returns a combination of @ref DataFlag::Owned and
+         * @ref DataFlag::Mutable If the mesh is not indexed.
+         * @see @ref isIndexed(), @ref releaseIndexData(),
+         *      @ref mutableIndexData(), @ref mutableIndices()
          */
         DataFlags indexDataFlags() const { return _indexDataFlags; }
 
         /**
          * @brief Vertex data flags
          *
-         * @see @ref releaseVertexData(), @ref mutableVertexData(),
-         *      @ref mutableAttribute()
+         * Returns a combination of @ref DataFlag::Owned and
+         * @ref DataFlag::Mutable If the mesh has no attributes.
+         * @see @ref attributeCount(), @ref releaseVertexData(),
+         *      @ref mutableVertexData(), @ref mutableAttribute()
          */
         DataFlags vertexDataFlags() const { return _vertexDataFlags; }
 
