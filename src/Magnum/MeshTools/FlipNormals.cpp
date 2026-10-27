@@ -52,9 +52,8 @@ template<class T> inline void flipFaceWindingInPlaceImplementation(const Contain
     CORRADE_ASSERT(indices.size() % 3 == 0,
         "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got" << indices.size(), );
 
-    using Utility::swap;
     for(std::size_t i = 0; i != indices.size(); i += 3)
-        swap(indices[i+1], indices[i+2]);
+        Utility::swap(indices[i + 1], indices[i + 2]);
 }
 
 }
