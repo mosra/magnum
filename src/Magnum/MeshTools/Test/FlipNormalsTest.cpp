@@ -37,7 +37,7 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 struct FlipNormalsTest: TestSuite::Tester {
     explicit FlipNormalsTest();
 
-    void wrongIndexCount();
+    void flipFaceWindingWrongIndexCount();
     template<class T> void flipFaceWinding();
     template<class T> void flipFaceWindingErased();
     void flipFaceWindingErasedNonContiguous();
@@ -51,7 +51,7 @@ struct FlipNormalsTest: TestSuite::Tester {
 };
 
 FlipNormalsTest::FlipNormalsTest() {
-    addTests({&FlipNormalsTest::wrongIndexCount,
+    addTests({&FlipNormalsTest::flipFaceWindingWrongIndexCount,
               &FlipNormalsTest::flipFaceWinding<UnsignedByte>,
               &FlipNormalsTest::flipFaceWinding<UnsignedShort>,
               &FlipNormalsTest::flipFaceWinding<UnsignedInt>,
@@ -70,16 +70,22 @@ FlipNormalsTest::FlipNormalsTest() {
               &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedInt>});
 }
 
-void FlipNormalsTest::wrongIndexCount() {
+void FlipNormalsTest::flipFaceWindingWrongIndexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* Passing an empty view is okay */
+    flipFaceWindingInPlace(Containers::ArrayView<UnsignedShort>{});
+
+    UnsignedByte indices[7];
 
     Containers::String out;
     Error redirectError{&out};
-
-    UnsignedByte indices[2];
     flipFaceWindingInPlace(Containers::stridedArrayView(indices));
-
-    CORRADE_COMPARE(out, "MeshTools::flipNormals(): index count is not divisible by 3!\n");
+    flipNormalsInPlace(Containers::stridedArrayView(indices), {});
+    CORRADE_COMPARE(out,
+        "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got 7\n"
+        /* flipNormalsInPlace() delegates to flipFaceWindingInPlace() */
+        "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got 7\n");
 }
 
 template<class T> void FlipNormalsTest::flipFaceWinding() {

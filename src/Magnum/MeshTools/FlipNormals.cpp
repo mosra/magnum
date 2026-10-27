@@ -49,7 +49,8 @@ void flipNormals(std::vector<Vector3>& normals) {
 namespace {
 
 template<class T> inline void flipFaceWindingInPlaceImplementation(const Containers::StridedArrayView1D<T>& indices) {
-    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::flipNormals(): index count is not divisible by 3!", );
+    CORRADE_ASSERT(indices.size() % 3 == 0,
+        "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got" << indices.size(), );
 
     using Utility::swap;
     for(std::size_t i = 0; i != indices.size(); i += 3)
