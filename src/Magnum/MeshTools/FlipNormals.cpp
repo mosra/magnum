@@ -72,15 +72,18 @@ void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedByte>& 
 }
 
 void flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices) {
-    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::flipFaceWindingInPlace(): second index view dimension is not contiguous", );
-    if(indices.size()[1] == 4)
+    CORRADE_ASSERT(indices.isContiguous<1>(),
+        "MeshTools::flipFaceWindingInPlace(): second index view dimension is not contiguous", );
+
+    const std::size_t typeSize = indices.size()[1];
+    if(typeSize == 4)
         return flipFaceWindingInPlaceImplementation(Containers::arrayCast<1, UnsignedInt>(indices));
-    else if(indices.size()[1] == 2)
+    if(typeSize == 2)
         return flipFaceWindingInPlaceImplementation(Containers::arrayCast<1, UnsignedShort>(indices));
-    else {
-        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::flipFaceWindingInPlace(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
+    if(typeSize == 1)
         return flipFaceWindingInPlaceImplementation(Containers::arrayCast<1, UnsignedByte>(indices));
-    }
+
+    CORRADE_ASSERT_UNREACHABLE("MeshTools::flipFaceWindingInPlace(): expected index type size 1, 2 or 4 but got" << typeSize, );
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
