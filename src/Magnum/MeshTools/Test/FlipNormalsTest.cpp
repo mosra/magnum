@@ -28,8 +28,9 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/MeshTools/FlipNormals.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
@@ -41,7 +42,6 @@ struct FlipNormalsTest: TestSuite::Tester {
     template<class T> void flipFaceWinding();
     template<class T> void flipFaceWindingErased();
     void flipFaceWindingErasedNonContiguous();
-    void flipFaceWindingErasedWrongIndexSize();
     void flipNormals();
 
     template<class T> void flipNormalsFaceWinding();
@@ -58,8 +58,9 @@ FlipNormalsTest::FlipNormalsTest() {
               &FlipNormalsTest::flipFaceWindingErased<UnsignedByte>,
               &FlipNormalsTest::flipFaceWindingErased<UnsignedShort>,
               &FlipNormalsTest::flipFaceWindingErased<UnsignedInt>,
+              &FlipNormalsTest::flipFaceWindingErased<Vector3us>,
+              &FlipNormalsTest::flipFaceWindingErased<Vector4ui>,
               &FlipNormalsTest::flipFaceWindingErasedNonContiguous,
-              &FlipNormalsTest::flipFaceWindingErasedWrongIndexSize,
               &FlipNormalsTest::flipNormals,
 
               &FlipNormalsTest::flipNormalsFaceWinding<UnsignedByte>,
@@ -77,15 +78,20 @@ void FlipNormalsTest::flipFaceWindingWrongIndexCount() {
     flipFaceWindingInPlace(Containers::ArrayView<UnsignedShort>{});
 
     UnsignedByte indices[7];
+    Vector3b attribute[8];
 
     Containers::String out;
     Error redirectError{&out};
     flipFaceWindingInPlace(Containers::stridedArrayView(indices));
     flipNormalsInPlace(Containers::stridedArrayView(indices), {});
-    CORRADE_COMPARE(out,
+    flipFaceWindingInPlace(Containers::arrayCast<2, char>(Containers::stridedArrayView(attribute)));
+    CORRADE_COMPARE_AS(out,
         "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got 7\n"
         /* flipNormalsInPlace() delegates to flipFaceWindingInPlace() */
-        "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got 7\n");
+        "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got 7\n"
+        /* The fallback byte-by-byte flipping code has its own assert */
+        "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got 8\n",
+        TestSuite::Compare::String);
 }
 
 template<class T> void FlipNormalsTest::flipFaceWinding() {
@@ -99,15 +105,49 @@ template<class T> void FlipNormalsTest::flipFaceWinding() {
         TestSuite::Compare::Container);
 }
 
-template<class T> void FlipNormalsTest::flipFaceWindingErased() {
-    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+template<class> struct IndexTraits;
+template<> struct IndexTraits<UnsignedByte> {
+    static const char* name() { return "UnsignedByte"; }
+    static UnsignedByte multiplier() { return 47; };
+};
+template<> struct IndexTraits<UnsignedShort> {
+    static const char* name() { return "UnsignedShort"; }
+    static UnsignedShort multiplier() { return 13103; };
+};
+template<> struct IndexTraits<UnsignedInt> {
+    static const char* name() { return "UnsignedInt"; }
+    static UnsignedInt multiplier() { return 858993433; };
+};
+template<> struct IndexTraits<Vector3us> {
+    static const char* name() { return "Vector3us"; }
+    static Vector3us multiplier() { return {13103, 13099, 13001}; }
+};
+template<> struct IndexTraits<Vector4ui> {
+    static const char* name() { return "Vector4ui"; }
+    static Vector4ui multiplier() { return {858993433, 286331141, 1228889, 12413}; }
+};
 
-    T indices[]{0, 1, 2, 3, 4, 5};
+template<class T> void FlipNormalsTest::flipFaceWindingErased() {
+    setTestCaseTemplateName(IndexTraits<T>::name());
+
+    T indices[]{
+        T(0*IndexTraits<T>::multiplier()),
+        T(1*IndexTraits<T>::multiplier()),
+        T(2*IndexTraits<T>::multiplier()),
+        T(3*IndexTraits<T>::multiplier()),
+        T(4*IndexTraits<T>::multiplier()),
+        T(5*IndexTraits<T>::multiplier()),
+    };
     flipFaceWindingInPlace(Containers::arrayCast<2, char>(Containers::stridedArrayView(indices)));
 
-    CORRADE_COMPARE_AS(Containers::arrayView(indices),
-        Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(indices), Containers::arrayView({
+        T(0*IndexTraits<T>::multiplier()),
+        T(2*IndexTraits<T>::multiplier()),
+        T(1*IndexTraits<T>::multiplier()),
+        T(3*IndexTraits<T>::multiplier()),
+        T(5*IndexTraits<T>::multiplier()),
+        T(4*IndexTraits<T>::multiplier()),
+    }), TestSuite::Compare::Container);
 }
 
 void FlipNormalsTest::flipFaceWindingErasedNonContiguous() {
@@ -120,18 +160,6 @@ void FlipNormalsTest::flipFaceWindingErasedNonContiguous() {
     flipFaceWindingInPlace(Containers::StridedArrayView2D<char>{indices, {6, 2}, {4, 2}});
     CORRADE_COMPARE(out,
         "MeshTools::flipFaceWindingInPlace(): second index view dimension is not contiguous\n");
-}
-
-void FlipNormalsTest::flipFaceWindingErasedWrongIndexSize() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    char indices[6*3]{};
-
-    Containers::String out;
-    Error redirectError{&out};
-    flipFaceWindingInPlace(Containers::StridedArrayView2D<char>{indices, {6, 3}});
-    CORRADE_COMPARE(out,
-        "MeshTools::flipFaceWindingInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 void FlipNormalsTest::flipNormals() {

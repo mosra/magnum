@@ -82,7 +82,17 @@ void flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices)
     if(typeSize == 1)
         return flipFaceWindingInPlaceImplementation(Containers::arrayCast<1, UnsignedByte>(indices));
 
-    CORRADE_ASSERT_UNREACHABLE("MeshTools::flipFaceWindingInPlace(): expected index type size 1, 2 or 4 but got" << typeSize, );
+    const std::size_t indexCount = indices.size()[0];
+    CORRADE_ASSERT(indexCount % 3 == 0,
+        "MeshTools::flipFaceWindingInPlace(): expected index count to be divisible by 3 but got" << indexCount, );
+
+    /* Especially on debug builds this isn't really the peak achievable
+       performance (could take advantage of the contiguous second dimension,
+       operate on raw pointers...) but is better than not being able to do this
+       at all */
+    for(std::size_t i = 0; i != indexCount; i += 3)
+        for(std::size_t j = 0; j != typeSize; ++j)
+            Utility::swap(indices[{i + 1, j}], indices[{i + 2, j}]);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

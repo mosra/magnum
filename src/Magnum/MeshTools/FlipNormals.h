@@ -113,10 +113,18 @@ MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArr
 @brief Flip mesh face winding in-place on a type-erased index array
 @m_since{2020,06}
 
-Expects that the second dimension of @p indices is contiguous and represents
-the actual 1/2/4-byte index type. Based on its size then calls one of the
+Flips order of indices in each triangle, turning `a, b, c` into `a, c, b` for
+each. Expects a triangle mesh, thus size of the @p indices view has to be
+divisible by 3, and the second dimension is expected to be contiguous.
+
+Can be used not just with index arrays but with vertex
+attribute arrays of arbitrary types as well in cases of a non-indexed mesh. For
+1/2/4-byte types delegates into one of the
 @ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
-etc. overloads.
+etc. overloads, for other sizes falls back to byte-by-byte swapping. For
+example:
+
+@snippet MeshTools.cpp flipFaceWindingInPlace-attributes
 */
 MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices);
 

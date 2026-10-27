@@ -286,6 +286,20 @@ static_cast<void>(cylinderVertexOffset);
 }
 
 {
+/* [flipFaceWindingInPlace-attributes] */
+struct Vertex {
+    Vector3 position;
+    Vector3 normal;
+} cube[]{
+    DOXYGEN_ELLIPSIS({})
+};
+
+MeshTools::flipFaceWindingInPlace(
+    Containers::arrayCast<2, char>(Containers::stridedArrayView(cube)));
+/* [flipFaceWindingInPlace-attributes] */
+}
+
+{
 /* [generateFlatNormals] */
 Containers::ArrayView<UnsignedInt> indices;
 Containers::ArrayView<Vector3> indexedPositions;
