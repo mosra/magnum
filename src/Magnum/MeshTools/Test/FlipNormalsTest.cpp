@@ -166,10 +166,9 @@ void FlipNormalsTest::flipNormals() {
     Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
     flipNormalsInPlace(normals);
 
-    CORRADE_COMPARE_AS(Containers::arrayView(normals),
-        Containers::arrayView<Vector3>({
-            -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
-        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(normals), Containers::arrayView({
+        -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void FlipNormalsTest::flipNormalsFaceWinding() {
@@ -182,10 +181,9 @@ template<class T> void FlipNormalsTest::flipNormalsFaceWinding() {
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(Containers::arrayView(normals),
-        Containers::arrayView<Vector3>({
-            -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
-        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(normals), Containers::arrayView({
+        -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void FlipNormalsTest::flipNormalsFaceWindingErased() {
@@ -200,10 +198,9 @@ template<class T> void FlipNormalsTest::flipNormalsFaceWindingErased() {
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(Containers::arrayView(normals),
-        Containers::arrayView<Vector3>({
-            -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
-        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(normals), Containers::arrayView({
+        -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
+    }), TestSuite::Compare::Container);
 }
 
 }}}}
