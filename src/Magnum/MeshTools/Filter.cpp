@@ -91,6 +91,8 @@ Trade::MeshData filterAttributes(Trade::MeshData&& mesh, const Containers::BitAr
 }
 
 Trade::MeshData filterAttributes(const Trade::MeshData& mesh, const Containers::BitArrayView attributesToKeep) {
+    /* Pass through to the && overload, which then decides whether to reuse
+       anything based on the DataFlags */
     return filterAttributes(reference(mesh), attributesToKeep);
 }
 
@@ -108,6 +110,8 @@ Trade::MeshData filterOnlyAttributes(Trade::MeshData&& mesh, const Containers::A
 }
 
 Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
+    /* Pass through to the && overload, which then decides whether to reuse
+       anything based on the DataFlags */
     return filterOnlyAttributes(reference(mesh), attributes);
 }
 
@@ -153,6 +157,8 @@ Trade::MeshData filterExceptAttributes(Trade::MeshData&& mesh, const Containers:
 }
 
 Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
+    /* Pass through to the && overload, which then decides whether to reuse
+       anything based on the DataFlags */
     return filterExceptAttributes(reference(mesh), attributes);
 }
 

@@ -160,7 +160,7 @@ template<class T, class U> U transformPoints(const T& transformation, U vectors)
 Expects that the mesh contains a two-dimensional
 @ref Trade::MeshAttribute::Position with index @p id (and in morph target
 @p morphTargetId if not @cpp -1 @ce) and that the attribute does not have an
-implementation-specific format. To avoid data loss with packed types, the
+implementation-specific format. To avoid data loss with packed formats, the
 positions are converted to @ref VertexFormat::Vector2 if not already. In that
 case the data layouting is done by @ref interleavedLayout() with the @p flags
 parameter propagated to it, see its documentation for detailed behavior
@@ -213,11 +213,13 @@ CORRADE_DEPRECATED("use transform2D(Trade::MeshData&&, const Matrix3&, UnsignedI
 
 Expects that the mesh has mutable vertex data and contains a two-dimensional
 @ref Trade::MeshAttribute::Position with index @p id (and in morph target
-@p morphTargetId if not @cpp -1 @ce). To avoid data loss with packed types, the
-in-place operation requires the position type to be @ref VertexFormat::Vector2
---- if you can't guarantee that, use @ref transform2D() instead. Other
-attributes, position attributes other than @p id or with different
-@p morphTargetId, and indices (if any) are left untouched.
+@p morphTargetId if not @cpp -1 @ce). To avoid data loss with packed formats,
+the in-place operation requires the positions to be in
+@ref VertexFormat::Vector2 --- if you can't guarantee that, use
+@ref transform2D() instead. Other attributes, position attributes other than
+@p id or with different @p morphTargetId, and indices (if any) are left
+untouched.
+
 @see @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
     @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
@@ -236,7 +238,7 @@ Expects that the mesh contains a three-dimensional
 index @p id in @p morphTargetId are present as well, those get transformed with
 @ref Matrix4::normalMatrix() extracted out of @p transformation. All these
 attributes are expected to not have an implementation-specific format. To avoid
-data loss with packed types, the positions, normals and bitangents are
+data loss with packed formats, the positions, normals and bitangents are
 converted to @ref VertexFormat::Vector3 if not already, tangents to either
 @ref VertexFormat::Vector3 or @ref VertexFormat::Vector4 if not already. In
 that case the data layouting is done by @ref interleavedLayout() with the
@@ -302,8 +304,8 @@ morph target @p morphTargetId if not @cpp -1 @ce); optionally also
 @ref Trade::MeshAttribute::Normal, @ref Trade::MeshAttribute::Tangent or
 @ref Trade::MeshAttribute::Bitangent with index @p id in @p morphTargetId,
 those get transformed with @ref Matrix4::normalMatrix() extracted out of
-@p transformation. To avoid data loss with packed types, the in-place operation
-requires the position, normal and bitangent types to be
+@p transformation. To avoid data loss with packed formats, the in-place
+operation requires the position, normal and bitangents to be in
 @ref VertexFormat::Vector3 and tangent either @ref VertexFormat::Vector3 or
 @ref VertexFormat::Vector4 --- if you can't guarantee that, use
 @ref transform3D() instead. Other attributes, position/TBN attributes other
@@ -322,7 +324,7 @@ MAGNUM_MESHTOOLS_EXPORT void transform3DInPlace(Trade::MeshData& mesh, const Mat
 
 Expects that the mesh contains a @ref Trade::MeshAttribute::TextureCoordinates
 with index @p id (and in morph target @p morphTargetId if not @cpp -1 @ce). To
-avoid data loss with packed types, the coordinattes are converted to
+avoid data loss with packed formats, the coordinattes are converted to
 @ref VertexFormat::Vector2 if not already. In that case the data layouting is
 done by @ref interleavedLayout() with the @p flags parameter propagated to it,
 see its documentation for detailed behavior description. Other attributes,
@@ -376,8 +378,8 @@ CORRADE_DEPRECATED("use transformTextureCoordinates2D(Trade::MeshData&&, const M
 Expects that the mesh has mutable vertex data and contains a
 @ref Trade::MeshAttribute::TextureCoordinates with index @p id (and in morph
 target @p morphTargetId if not @cpp -1 @ce) and that the attribute does not
-have an implementation-specific format. To avoid data loss with packed types,
-the in-place operation requires the coordinate type to be
+have an implementation-specific format. To avoid data loss with packed formats,
+the in-place operation requires the coordinates to be in
 @ref VertexFormat::Vector2 --- if you can't guarantee that, use
 @ref transformTextureCoordinates2D() instead. Other attributes, texture
 coordinate attributes other than @p id or with different @p morphTargetId, and

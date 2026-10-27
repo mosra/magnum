@@ -160,7 +160,7 @@ while @ref MeshIndexType::UnsignedByte can make the in-memory representation
 smaller, it's not supported by all GPU APIs and its usage is discouraged.
 
 The mesh is expected to be indexed and the index type and the @p atLeast
-parameter is expected to not be implementation-specific type.
+parameter is expected to not be an implementation-specific type.
 @see @ref isMeshIndexTypeImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(const Trade::MeshData& mesh, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
@@ -170,7 +170,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(const Trade::MeshData& m
 @m_since{2020,06}
 
 Compared to @ref compressIndices(const Trade::MeshData&, MeshIndexType) this
-function can transfer ownership of @p data vertex buffer (in case it is
+function can transfer ownership of @p mesh vertex buffer (in case it is
 owned) to the returned instance instead of making a copy of it. Index and
 attribute data are copied always.
 @see @ref Trade::MeshData::vertexDataFlags()

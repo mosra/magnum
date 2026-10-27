@@ -92,7 +92,7 @@ GenerateNormalsTest::GenerateNormalsTest() {
                    &GenerateNormalsTest::benchmarkSmooth}, 150);
 }
 
-/* Two vertices connected by one edge, each wound in another direction */
+/* Two triangles connected by one edge, each wound in another direction */
 constexpr Vector3 TwoTriangles[]{
     {-1.0f, 0.0f, 0.0f},
     {0.0f, -1.0f, 0.0f},
