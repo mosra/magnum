@@ -37,6 +37,12 @@
 #include "Magnum/Primitives/Grid.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For testing the deprecated owned() API */
+#define _MAGNUM_NO_DEPRECATED_MESHTOOLS_REFERENCE
+#include "Magnum/MeshTools/Reference.h"
+#endif
+
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct CopyTest: TestSuite::Tester {
@@ -63,7 +69,18 @@ struct CopyTest: TestSuite::Tester {
     void mutableReferenceNotMutable();
 };
 
-struct {
+/** @todo remove this once Reference.h and owned() is gone */
+const struct {
+    const char* name;
+    bool deprecated;
+} CopyData[]{
+    {"", false},
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    {"deprecated owned() alias", true}
+    #endif
+};
+
+const struct {
     const char* name;
     MeshIndexType type;
 } StridedIndicesData[]{
@@ -72,15 +89,19 @@ struct {
 };
 
 CopyTest::CopyTest() {
-    addTests({&CopyTest::copy,
-              &CopyTest::copyNoIndexData,
+    addInstancedTests({&CopyTest::copy},
+        Containers::arraySize(CopyData));
+
+    addTests({&CopyTest::copyNoIndexData,
               &CopyTest::copyNoAttributeVertexData});
 
     addInstancedTests({&CopyTest::copyStridedIndices},
         Containers::arraySize(StridedIndicesData));
 
-    addTests({&CopyTest::copyRvalueNotOwned,
-              &CopyTest::copyRvalueIndicesVerticesAttributesOwned,
+    addInstancedTests({&CopyTest::copyRvalueNotOwned},
+        Containers::arraySize(CopyData));
+
+    addTests({&CopyTest::copyRvalueIndicesVerticesAttributesOwned,
               &CopyTest::copyRvalueAttributesOwned,
 
               &CopyTest::reference,
@@ -96,6 +117,9 @@ CopyTest::CopyTest() {
 }
 
 void CopyTest::copy() {
+    auto&& data = CopyData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     const struct Vertex {
         Vector3 position;
         Short array[3];
@@ -129,7 +153,18 @@ void CopyTest::copy() {
                 Containers::stridedArrayView(vertices).slice(&Vertex::bit)},
         }};
 
-    Trade::MeshData copy = MeshTools::copy(mesh);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
+    Trade::MeshData copy =
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        data.deprecated ?
+            MeshTools::owned(mesh) :
+        #endif
+        MeshTools::copy(mesh);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_VERIFY(copy.isIndexed());
     CORRADE_COMPARE(copy.primitive(), mesh.primitive());
     CORRADE_COMPARE(copy.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
@@ -258,6 +293,9 @@ void CopyTest::copyStridedIndices() {
 }
 
 void CopyTest::copyRvalueNotOwned() {
+    auto&& data = CopyData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Vector3 positions[]{
         {1.0f, 2.0f, 3.0f},
         {6.0f, 7.0f, 8.0f},
@@ -270,9 +308,21 @@ void CopyTest::copyRvalueNotOwned() {
             Containers::arrayView(positions)},
     };
 
-    Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles,
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
         Trade::DataFlag::ExternallyOwned, indices, Trade::MeshIndexData{indices},
-        Trade::DataFlag::Mutable, positions, Trade::meshAttributeDataNonOwningArray(attributes)});
+        Trade::DataFlag::Mutable, positions, Trade::meshAttributeDataNonOwningArray(attributes)};
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
+    Trade::MeshData copy =
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        data.deprecated ?
+            MeshTools::owned(Utility::move(mesh)) :
+        #endif
+            MeshTools::copy(Utility::move(mesh));
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_VERIFY(copy.isIndexed());
     CORRADE_COMPARE(copy.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(copy.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);

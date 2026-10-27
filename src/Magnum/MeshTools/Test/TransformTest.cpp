@@ -131,6 +131,18 @@ const struct {
     {"morph target", 0, 37}
 };
 
+/** @todo remove this once the deprecated overloads are gone */
+const struct {
+    const char* name;
+    bool deprecated, rvalue;
+} ImplementationSpecificIndexTypeData[]{
+    {"", false, false},
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    {"deprecated morph-target-less overload", true, false},
+    {"deprecated morph-target-less r-value overload", true, true}
+    #endif
+};
+
 const struct {
     const char* name;
     bool indexed;
@@ -325,9 +337,12 @@ TransformTest::TransformTest() {
     addInstancedTests({&TransformTest::meshData2DNoPosition},
         Containers::arraySize(NoAttributeData));
 
-    addTests({&TransformTest::meshData2DNot2D,
-              &TransformTest::meshData2DImplementationSpecificIndexType,
-              &TransformTest::meshData2DImplementationSpecificVertexFormat});
+    addTests({&TransformTest::meshData2DNot2D});
+
+    addInstancedTests({&TransformTest::meshData2DImplementationSpecificIndexType},
+        Containers::arraySize(ImplementationSpecificIndexTypeData));
+
+    addTests({&TransformTest::meshData2DImplementationSpecificVertexFormat});
 
     addInstancedTests({&TransformTest::meshData2DRvaluePassthrough},
         Containers::arraySize(MeshData2DRvaluePassthroughData));
@@ -356,8 +371,10 @@ TransformTest::TransformTest() {
     addInstancedTests({&TransformTest::meshData3DNoPosition},
         Containers::arraySize(NoAttributeData));
 
-    addTests({&TransformTest::meshData3DNot3D,
-              &TransformTest::meshData3DImplementationSpecificIndexType});
+    addTests({&TransformTest::meshData3DNot3D});
+
+    addInstancedTests({&TransformTest::meshData3DImplementationSpecificIndexType},
+        Containers::arraySize(ImplementationSpecificIndexTypeData));
 
     addInstancedTests({&TransformTest::meshData3DImplementationSpecificVertexFormat},
         Containers::arraySize(MeshData3DIMplementationSpecificVertexFormatData));
@@ -390,8 +407,10 @@ TransformTest::TransformTest() {
     addInstancedTests({&TransformTest::meshDataTextureCoordinates2DNoCoordinates},
         Containers::arraySize(NoAttributeData));
 
-    addTests({&TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType,
-              &TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat});
+    addInstancedTests({&TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType},
+        Containers::arraySize(ImplementationSpecificIndexTypeData));
+
+    addTests({&TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat});
 
     addInstancedTests({&TransformTest::meshDataTextureCoordinates2DRvaluePassthrough},
         Containers::arraySize(MeshDataTextureCoordinatesRvaluePassthroughData));
@@ -574,18 +593,41 @@ void TransformTest::meshData2DNot2D() {
 }
 
 void TransformTest::meshData2DImplementationSpecificIndexType() {
-    const UnsignedShort indices[]{3, 1, 2, 0, 2};
-    const Vector2 vertices[]{
+    auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Owned instance so it's possible to test the deprecated r-value overloads
+       as well */
+    /** @todo change back to non-owned once the deprecated APIs are gone */
+    Containers::Array<char> indexData{NoInit, 5*sizeof(UnsignedShort)};
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({3, 1, 2, 0, 2}, indices);
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector2)};
+    auto vertices = Containers::arrayCast<Vector2>(vertexData);
+    Utility::copy({
         {0.0f, 0.0f},
         {1.0f, 0.0f},
         {0.0f, 2.0f}
-    };
+    }, vertices);
     Trade::MeshData mesh{MeshPrimitive::Points,
-        {}, indices, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::stridedArrayView(indices).slice(1, 4)},
-        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}}};
+        Utility::move(indexData), Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), indices.slice(1, 4)},
+        Utility::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}}};
 
     /* Just verify the index data get passed through with no information loss */
-    Trade::MeshData out = transform2D(mesh, Matrix3{}, 0, -1, InterleaveFlag::PreserveStridedIndices);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
+    Trade::MeshData out =
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        data.deprecated ?
+            data.rvalue ?
+                transform2D(Utility::move(mesh), Matrix3{}, 0, InterleaveFlag::PreserveStridedIndices) :
+                transform2D(mesh, Matrix3{}, 0, InterleaveFlag::PreserveStridedIndices) :
+        #endif
+            transform2D(mesh, Matrix3{}, 0, -1, InterleaveFlag::PreserveStridedIndices);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_COMPARE(out.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(out.indexType(), meshIndexTypeWrap(0xcaca));
     CORRADE_COMPARE(out.indexOffset(), 2);
@@ -594,6 +636,14 @@ void TransformTest::meshData2DImplementationSpecificIndexType() {
     CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(out.indices())),
         Containers::arrayView<UnsignedShort>({1, 2, 0}),
         TestSuite::Compare::Container);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* The r-value should be properly passed through from the deprecated
+       overloads */
+    if(data.rvalue) {
+        CORRADE_COMPARE(out.indexData().data(), static_cast<const void*>(indices.data()));
+        CORRADE_COMPARE(out.vertexData().data(), static_cast<const void*>(vertices.data()));
+    }
+    #endif
 }
 
 void TransformTest::meshData2DImplementationSpecificVertexFormat() {
@@ -1024,18 +1074,41 @@ void TransformTest::meshData3DNot3D() {
 }
 
 void TransformTest::meshData3DImplementationSpecificIndexType() {
-    const UnsignedShort indices[]{3, 1, 2, 0, 2};
-    const Vector3 vertices[]{
+    auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Owned instance so it's possible to test the deprecated r-value overloads
+       as well */
+    /** @todo change back to non-owned once the deprecated APIs are gone */
+    Containers::Array<char> indexData{NoInit, 5*sizeof(UnsignedShort)};
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({3, 1, 2, 0, 2}, indices);
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector3)};
+    auto vertices = Containers::arrayCast<Vector3>(vertexData);
+    Utility::copy({
         {0.0f, 0.0f, -1.0f},
         {1.0f, 0.0f, -2.0f},
         {0.0f, 2.0f, -1.0f}
-    };
+    }, vertices);
     Trade::MeshData mesh{MeshPrimitive::Points,
-        {}, indices, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::stridedArrayView(indices).slice(1, 4)},
-        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}}};
+        Utility::move(indexData), Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), indices.slice(1, 4)},
+        Utility::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}}};
 
     /* Just verify the index data get passed through with no information loss */
-    Trade::MeshData out = transform3D(mesh, Matrix4{}, 0, -1, InterleaveFlag::PreserveStridedIndices);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
+    Trade::MeshData out =
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        data.deprecated ?
+            data.rvalue ?
+                transform3D(Utility::move(mesh), Matrix4{}, 0, InterleaveFlag::PreserveStridedIndices) :
+                transform3D(mesh, Matrix4{}, 0, InterleaveFlag::PreserveStridedIndices) :
+        #endif
+            transform3D(mesh, Matrix4{}, 0, -1, InterleaveFlag::PreserveStridedIndices);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_COMPARE(out.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(out.indexType(), meshIndexTypeWrap(0xcaca));
     CORRADE_COMPARE(out.indexOffset(), 2);
@@ -1044,6 +1117,14 @@ void TransformTest::meshData3DImplementationSpecificIndexType() {
     CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(out.indices())),
         Containers::arrayView<UnsignedShort>({1, 2, 0}),
         TestSuite::Compare::Container);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* The r-value should be properly passed through from the deprecated
+       overloads */
+    if(data.rvalue) {
+        CORRADE_COMPARE(out.indexData().data(), static_cast<const void*>(indices.data()));
+        CORRADE_COMPARE(out.vertexData().data(), static_cast<const void*>(vertices.data()));
+    }
+    #endif
 }
 
 void TransformTest::meshData3DImplementationSpecificVertexFormat() {
@@ -1527,18 +1608,41 @@ void TransformTest::meshDataTextureCoordinates2DNoCoordinates() {
 }
 
 void TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType() {
-    const UnsignedShort indices[]{3, 1, 2, 0, 2};
-    const Vector2 vertices[]{
+    auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Owned instance so it's possible to test the deprecated r-value overloads
+       as well */
+    /** @todo change back to non-owned once the deprecated APIs are gone */
+    Containers::Array<char> indexData{NoInit, 5*sizeof(UnsignedShort)};
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({3, 1, 2, 0, 2}, indices);
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector2)};
+    auto vertices = Containers::arrayCast<Vector2>(vertexData);
+    Utility::copy({
         {0.0f, 0.0f},
         {1.0f, 0.0f},
         {0.0f, 2.0f}
-    };
+    }, vertices);
     Trade::MeshData mesh{MeshPrimitive::Points,
-        {}, indices, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::stridedArrayView(indices).slice(1, 4)},
-        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::arrayView(vertices)}}};
+        Utility::move(indexData), Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), indices.slice(1, 4)},
+        Utility::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices}}};
 
     /* Just verify the index data get passed through with no information loss */
-    Trade::MeshData out = transformTextureCoordinates2D(mesh, Matrix3{}, 0, -1, InterleaveFlag::PreserveStridedIndices);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
+    Trade::MeshData out =
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        data.deprecated ?
+            data.rvalue ?
+                transformTextureCoordinates2D(Utility::move(mesh), Matrix3{}, 0, InterleaveFlag::PreserveStridedIndices) :
+                transformTextureCoordinates2D(mesh, Matrix3{}, 0, InterleaveFlag::PreserveStridedIndices) :
+        #endif
+            transformTextureCoordinates2D(mesh, Matrix3{}, 0, -1, InterleaveFlag::PreserveStridedIndices);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     CORRADE_COMPARE(out.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(out.indexType(), meshIndexTypeWrap(0xcaca));
     CORRADE_COMPARE(out.indexOffset(), 2);
@@ -1547,6 +1651,14 @@ void TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType(
     CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(out.indices())),
         Containers::arrayView<UnsignedShort>({1, 2, 0}),
         TestSuite::Compare::Container);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* The r-value should be properly passed through from the deprecated
+       overloads */
+    if(data.rvalue) {
+        CORRADE_COMPARE(out.indexData().data(), static_cast<const void*>(indices.data()));
+        CORRADE_COMPARE(out.vertexData().data(), static_cast<const void*>(vertices.data()));
+    }
+    #endif
 }
 
 void TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat() {

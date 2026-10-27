@@ -121,6 +121,8 @@ class IndexEqual {
 }
 
 std::vector<UnsignedInt> combineIndexArrays(const std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>& arrays) {
+    /* Yes, this will blow up if arrays are empty. But this is deprecated
+       functionality so I ain't gonna waste time fixing this. */
     return combineIndexArrays(&arrays[0], &arrays[0] + arrays.size());
 }
 

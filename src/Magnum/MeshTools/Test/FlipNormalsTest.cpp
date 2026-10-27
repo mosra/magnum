@@ -33,6 +33,10 @@
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/MeshTools/FlipNormals.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#endif
+
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct FlipNormalsTest: TestSuite::Tester {
@@ -40,11 +44,23 @@ struct FlipNormalsTest: TestSuite::Tester {
 
     void flipFaceWindingWrongIndexCount();
     template<class T> void flipFaceWinding();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void flipFaceWindingDeprecated();
+    #endif
+
     template<class T> void flipFaceWindingErased();
     void flipFaceWindingErasedNonContiguous();
+
     void flipNormals();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void flipNormalsDeprecated();
+    #endif
 
     template<class T> void flipNormalsFaceWinding();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void flipNormalsFaceWindingDeprecated();
+    #endif
+
     template<class T> void flipNormalsFaceWindingErased();
     /* Delegates into type-erased flipFaceWinding(), so testing asserts again
        isn't needed */
@@ -55,17 +71,29 @@ FlipNormalsTest::FlipNormalsTest() {
               &FlipNormalsTest::flipFaceWinding<UnsignedByte>,
               &FlipNormalsTest::flipFaceWinding<UnsignedShort>,
               &FlipNormalsTest::flipFaceWinding<UnsignedInt>,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &FlipNormalsTest::flipFaceWindingDeprecated,
+              #endif
+
               &FlipNormalsTest::flipFaceWindingErased<UnsignedByte>,
               &FlipNormalsTest::flipFaceWindingErased<UnsignedShort>,
               &FlipNormalsTest::flipFaceWindingErased<UnsignedInt>,
               &FlipNormalsTest::flipFaceWindingErased<Vector3us>,
               &FlipNormalsTest::flipFaceWindingErased<Vector4ui>,
               &FlipNormalsTest::flipFaceWindingErasedNonContiguous,
+
               &FlipNormalsTest::flipNormals,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &FlipNormalsTest::flipNormalsDeprecated,
+              #endif
 
               &FlipNormalsTest::flipNormalsFaceWinding<UnsignedByte>,
               &FlipNormalsTest::flipNormalsFaceWinding<UnsignedShort>,
               &FlipNormalsTest::flipNormalsFaceWinding<UnsignedInt>,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &FlipNormalsTest::flipNormalsFaceWindingDeprecated,
+              #endif
+
               &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedByte>,
               &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedShort>,
               &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedInt>});
@@ -104,6 +132,19 @@ template<class T> void FlipNormalsTest::flipFaceWinding() {
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
         TestSuite::Compare::Container);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void FlipNormalsTest::flipFaceWindingDeprecated() {
+    std::vector<UnsignedInt> indices{0, 1, 2, 3, 4, 5};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MeshTools::flipFaceWinding(indices);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    CORRADE_COMPARE_AS(Containers::arrayView(indices),
+        Containers::arrayView<UnsignedInt>({0, 2, 1, 3, 5, 4}),
+        TestSuite::Compare::Container);
+}
+#endif
 
 template<class> struct IndexTraits;
 template<> struct IndexTraits<UnsignedByte> {
@@ -171,6 +212,23 @@ void FlipNormalsTest::flipNormals() {
     }), TestSuite::Compare::Container);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void FlipNormalsTest::flipNormalsDeprecated() {
+    std::vector<UnsignedInt> indices{0, 1, 2, 3, 4, 5};
+    std::vector<Vector3> normals{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MeshTools::flipNormals(indices, normals);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    CORRADE_COMPARE_AS(Containers::arrayView(indices),
+        Containers::arrayView<UnsignedInt>({0, 2, 1, 3, 5, 4}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(normals), Containers::arrayView({
+        -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
+    }), TestSuite::Compare::Container);
+}
+#endif
+
 template<class T> void FlipNormalsTest::flipNormalsFaceWinding() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
@@ -185,6 +243,19 @@ template<class T> void FlipNormalsTest::flipNormalsFaceWinding() {
         -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
     }), TestSuite::Compare::Container);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void FlipNormalsTest::flipNormalsFaceWindingDeprecated() {
+    std::vector<Vector3> normals{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    MeshTools::flipNormals(normals);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    CORRADE_COMPARE_AS(Containers::arrayView(normals), Containers::arrayView({
+        -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
+    }), TestSuite::Compare::Container);
+}
+#endif
 
 template<class T> void FlipNormalsTest::flipNormalsFaceWindingErased() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());

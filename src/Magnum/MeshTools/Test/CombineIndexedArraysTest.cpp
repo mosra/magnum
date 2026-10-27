@@ -39,13 +39,15 @@ struct CombineIndexedArraysTest: TestSuite::Tester {
     explicit CombineIndexedArraysTest();
 
     void wrongIndexCount();
-    void indexArrays();
+    void indexArraysVector();
+    void indexArraysInitializedList();
     void indexedArrays();
 };
 
 CombineIndexedArraysTest::CombineIndexedArraysTest() {
     addTests({&CombineIndexedArraysTest::wrongIndexCount,
-              &CombineIndexedArraysTest::indexArrays,
+              &CombineIndexedArraysTest::indexArraysVector,
+              &CombineIndexedArraysTest::indexArraysInitializedList,
               &CombineIndexedArraysTest::indexedArrays});
 }
 
@@ -62,7 +64,19 @@ void CombineIndexedArraysTest::wrongIndexCount() {
     CORRADE_COMPARE(out, "MeshTools::combineIndexArrays(): the arrays don't have the same size\n");
 }
 
-void CombineIndexedArraysTest::indexArrays() {
+void CombineIndexedArraysTest::indexArraysVector() {
+    std::vector<UnsignedInt> a{0, 1, 0};
+    std::vector<UnsignedInt> b{3, 4, 3};
+    std::vector<UnsignedInt> c{6, 7, 6};
+
+    std::vector<UnsignedInt> result = combineIndexArrays(std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>{a, b, c});
+    CORRADE_COMPARE(result, (std::vector<UnsignedInt>{0, 1, 0}));
+    CORRADE_COMPARE(a, (std::vector<UnsignedInt>{0, 1}));
+    CORRADE_COMPARE(b, (std::vector<UnsignedInt>{3, 4}));
+    CORRADE_COMPARE(c, (std::vector<UnsignedInt>{6, 7}));
+}
+
+void CombineIndexedArraysTest::indexArraysInitializedList() {
     std::vector<UnsignedInt> a{0, 1, 0};
     std::vector<UnsignedInt> b{3, 4, 3};
     std::vector<UnsignedInt> c{6, 7, 6};
