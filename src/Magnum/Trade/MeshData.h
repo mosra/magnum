@@ -2733,10 +2733,6 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::indices() co
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::indices(): the mesh is not indexed", {});
     Containers::StridedArrayView2D<const char> data = indices();
-    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1])
-        return {};
-    #endif
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(_indexType),
         "Trade::MeshData::indices(): can't cast data from an implementation-specific index type" << Debug::hex << meshIndexTypeUnwrap(_indexType), {});
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
