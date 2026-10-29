@@ -55,6 +55,7 @@ struct CopyTest: TestSuite::Tester {
 
     void copyRvalueNotOwned();
     void copyRvalueIndicesVerticesAttributesOwned();
+    void copyRvalueIndicesOwnedStrided();
     void copyRvalueAttributesOwned();
 
     void reference();
@@ -101,8 +102,12 @@ CopyTest::CopyTest() {
     addInstancedTests({&CopyTest::copyRvalueNotOwned},
         Containers::arraySize(CopyData));
 
-    addTests({&CopyTest::copyRvalueIndicesVerticesAttributesOwned,
-              &CopyTest::copyRvalueAttributesOwned,
+    addTests({&CopyTest::copyRvalueIndicesVerticesAttributesOwned});
+
+    addInstancedTests({&CopyTest::copyRvalueIndicesOwnedStrided},
+        Containers::arraySize(StridedIndicesData));
+
+    addTests({&CopyTest::copyRvalueAttributesOwned,
 
               &CopyTest::reference,
               &CopyTest::referenceNoIndexData,
@@ -389,6 +394,45 @@ void CopyTest::copyRvalueIndicesVerticesAttributesOwned() {
     CORRADE_COMPARE(copy.indexData().data(), static_cast<const void*>(indices.data()));
     CORRADE_COMPARE(copy.vertexData().data(), static_cast<void*>(positions.data()));
     CORRADE_COMPARE(copy.attributeData().data(), originalAttributes);
+}
+
+void CopyTest::copyRvalueIndicesOwnedStrided() {
+    auto&& data = StridedIndicesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Like copyStridedIndices() but testing that the layout is preserved also
+       in case of a r-value ownership transfer */
+
+    Containers::Array<char> indexData{NoInit, sizeof(UnsignedShort)*7};
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({
+        0, 3, 0, 7, 0, 15, 0
+    }, indices);
+
+    /* The full index data layout including whatever format should be
+       preserved */
+    Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Points,
+        Utility::move(indexData), Trade::MeshIndexData{data.type, indices.exceptPrefix(1).every(2)},
+        16});
+    CORRADE_VERIFY(copy.isIndexed());
+    CORRADE_COMPARE(copy.primitive(), MeshPrimitive::Points);
+    CORRADE_COMPARE(copy.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(copy.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(copy.indexCount(), 3);
+    CORRADE_COMPARE(copy.indexType(), data.type);
+    CORRADE_COMPARE(copy.indexOffset(), 2);
+    CORRADE_COMPARE(copy.indexStride(), 4);
+    CORRADE_COMPARE(copy.vertexCount(), 16);
+    CORRADE_COMPARE(copy.attributeCount(), 0);
+
+    /* Has to do a prefix() because for an implementation-specific index type
+       the returned size is equal to stride */
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(copy.indices().prefix({copy.indexCount(), 2}))),
+        Containers::arrayView<UnsignedShort>({3, 7, 15}),
+        TestSuite::Compare::Container);
+
+    /* All data should be transferred without any copy */
+    CORRADE_COMPARE(copy.indexData().data(), static_cast<const void*>(indices.data()));
 }
 
 void CopyTest::copyRvalueAttributesOwned() {
