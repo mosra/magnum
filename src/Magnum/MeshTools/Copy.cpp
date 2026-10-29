@@ -85,24 +85,27 @@ Trade::MeshData copy(const Trade::MeshData& mesh) {
 }
 
 Trade::MeshData copy(Trade::MeshData&& mesh) {
-    /* Transfer index data if they're owned and mutable. This works without any
-       extra effort also for non-indexed meshes. */
+    /* If the mesh is indexed, transfer index data if they're owned and
+       mutable, otherwise copy them. Because releasing them will clear index
+       count, save that in advance, If not indexed, the default-constructed
+       instances are fine. */
     Containers::Array<char> indexData;
     Trade::MeshIndexData indices;
-    if(mesh.indexDataFlags() >= (Trade::DataFlag::Owned|Trade::DataFlag::Mutable)) {
-        indices = Trade::MeshIndexData{mesh.indices()};
-        indexData = mesh.releaseIndexData();
-
-    /* Otherwise copy them, if the mesh is indexed. If not, the
-       default-constructed instances are fine. */
-    } else if(mesh.isIndexed()) {
-        indexData = Containers::Array<char>{InPlaceInit, mesh.indexData()};
+    if(mesh.isIndexed()) {
+        const UnsignedInt indexCount = mesh.indexCount();
+        if(mesh.indexDataFlags() >= (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+            indexData = mesh.releaseIndexData();
+        else
+            indexData = Containers::Array<char>{InPlaceInit, mesh.indexData()};
+        /* Cannot do just Trade::MeshIndexData{mesh.indices()} for the owned
+           case as that'd discard information about implementation-specific
+           index types */
         indices = Trade::MeshIndexData{
             mesh.indexType(),
             Containers::StridedArrayView1D<const void>{
                 indexData,
                 indexData.data() + mesh.indexOffset(),
-                mesh.indexCount(),
+                indexCount,
                 mesh.indexStride()}};
     }
 
