@@ -72,44 +72,33 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     if(indices.isEmpty())
         return;
 
-    /* Gather count of triangles for every vertex. This abuses the output
-       storage to avoid extra allocations, zero-initialize it first to avoid
-       random memory getting used. */
-    Containers::StridedArrayView1D<UnsignedInt> triangleCount =
-        Containers::arrayCast<UnsignedInt>(normals);
-    for(UnsignedInt& i: triangleCount)
-        i = 0;
+    /* Gather count of triangles for every vertex. Offset the indices by one
+       so `triangleOffset[0]` stays 0. */
+    Containers::Array<UnsignedInt> triangleOffset{ValueInit, positions.size() + 1};
     for(const T index: indices) {
         CORRADE_ASSERT(index < positions.size(), "MeshTools::generateSmoothNormalsInto(): index" << index << "out of range for" << positions.size() << "elements", );
-        ++triangleCount[index];
+        ++triangleOffset[index + 1];
     }
 
-    /* Turn that into a running offset array:
-       triangleOffset[i + 1] - triangleOffset[i] is triangle count for vertex i
-       triangleOffset[i] is offset into an triangle ID array for vertex i */
-    Containers::Array<UnsignedInt> triangleOffset{NoInit, positions.size() + 1};
-    triangleOffset[0] = 0;
-    for(std::size_t i = 0; i != triangleCount.size(); ++i)
-        triangleOffset[i + 1] = triangleOffset[i] + triangleCount[i];
+    /* Turn the counts into a running offset array where
+       `[triangleOffset[i + 1], triangleOffset[i + 2])` is the range of
+       triangle IDs for vertex `i`. In other words, `triangleOffset[0]` and
+       `triangleOffset[1]` are now both 0. */
+    UnsignedInt prevOffset = triangleOffset[0];
+    for(std::size_t i = 1; i != triangleOffset.size(); ++i) {
+        const UnsignedInt nextOffset = triangleOffset[i] + prevOffset;
+        triangleOffset[i] = prevOffset;
+        prevOffset = nextOffset;
+    }
+    CORRADE_INTERNAL_ASSERT(triangleOffset[0] == 0 && triangleOffset[1] == 0);
 
-    CORRADE_INTERNAL_ASSERT(triangleOffset.back() == indices.size());
-
-    /* Gather triangle IDs for every vertex. For vertex i,
-       triangleIds[triangleOffset[i]] until triangleIds[triangleOffset[i + 1]]
-       contains IDs of triangles that contain it. */
+    /* Gather triangle IDs for every vertex, shifting the offset array by one
+       element left in the process. In other words, then `[triangleOffset[i], triangleOffset[i + 1])` is the range of triangle IDs for vertex `i`,
+       with `triangleOffset[0]` being 0. */
     Containers::Array<T> triangleIds{NoInit, indices.size()};
-    for(std::size_t i = 0; i != indices.size(); ++i) {
-        const T triangleId = i/3;
-        const T vertexId = indices[i];
-
-        /* How many triangle IDs is still left to be written, which also means
-           the offset where we put the ID. Decrement that for the next run. */
-        const std::size_t triangleIdsLeftForVertex = triangleCount[vertexId]--;
-        triangleIds[triangleOffset[vertexId + 1] - triangleIdsLeftForVertex] = triangleId;
-    }
-
-    /* Now, triangleCount should be all zeros, we don't need it anymore and the
-       underlying `normals` array is ready to get filled with real output. */
+    for(std::size_t i = 0; i != indices.size(); ++i)
+        triangleIds[triangleOffset[indices[i] + 1]++] = i/3;
+    CORRADE_INTERNAL_ASSERT(triangleOffset[0] == 0 && triangleOffset.back() == indices.size());
 
     /* Precalculate cross product and interior angles of each face --- the loop
        below would otherwise calculate it for every vertex, which is at least
