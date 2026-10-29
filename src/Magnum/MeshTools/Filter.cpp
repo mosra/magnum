@@ -62,6 +62,18 @@ Trade::MeshData filterAttributes(Trade::MeshData&& mesh, const Containers::BitAr
             mesh.indexCount(),
             mesh.indexStride()}};
 
+    /* If there are no attributes left, it doesn't make sense to transfer the
+       vertex data at all (and thus potentially make the rvalue mesh instance
+       useless), return an index-only mesh instead. */
+    if(filtered.isEmpty()) {
+        if(mesh.indexDataFlags() >= Trade::DataFlag::Owned)
+            return Trade::MeshData{mesh.primitive(),
+                mesh.releaseIndexData(), indices, mesh.vertexCount()};
+        else
+            return Trade::MeshData{mesh.primitive(),
+                {}, mesh.indexData(), indices, mesh.vertexCount()};
+    }
+
     /* If either the index or vertex buffer is owned, transfer the ownership to
        the returned instance, otherwise reference the original. Save vertex
        count first to use for the returned instance because releaseVertexData()

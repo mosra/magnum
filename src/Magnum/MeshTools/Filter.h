@@ -44,7 +44,9 @@ namespace Magnum { namespace MeshTools {
 
 Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attributes for which the corresponding bit in @p attributesToKeep was
-set. The index buffer, if present, is left untouched. The size of
+set. The index buffer, if present, is transferred untouched. If
+@p attributesToKeep is all zeros, only the index buffer, if present, is
+transferred, and the returned mesh is without any vertex data. The size of
 @p attributesToKeep is expected to be equal to
 @ref Trade::MeshData::attributeCount().
 
@@ -65,7 +67,8 @@ Compared to @ref filterAttributes(const Trade::MeshData&, Containers::BitArrayVi
 if the @p mesh index or vertex data is owned, the function transfers the data
 ownership to the returned instance instead of returning a non-owning reference.
 If neither the index nor the vertex data is owned, the two overloads behave the
-same.
+same. If @p attributesToKeep is all zeros, no vertex data ownership transfer
+happens.
 @see @ref Trade::MeshData::indexDataFlags(),
      @ref Trade::MeshData::vertexDataFlags()
 */
@@ -77,11 +80,13 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterAttributes(Trade::MeshData&& mesh,
 
 Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attributes that are listed in @p attributes. The index buffer, if
-present, is left untouched. Attributes from the list that are not present in
-@p mesh are skipped, duplicates in the list are treated the same as if given
-attribute was listed just once. If given attribute is present multiple times in
-the mesh (such as secondary colors or texture coordinates), all its occurences
-are kept --- if you want a different behavior, use
+present, is transferred untouched. If @p attributes are empty, only the index
+buffer, if present, is transferred, and the returned mesh is without any vertex
+data. Attributes from the list that are not present in @p mesh are skipped,
+duplicates in the list are treated the same as if given attribute was listed
+just once. If given attribute is present multiple times in the mesh (such as
+secondary colors or texture coordinates), all its occurences are kept --- if
+you want a different behavior, use
 @ref filterAttributes(const Trade::MeshData&, Containers::BitArrayView) and
 pick attributes by their IDs instead.
 
@@ -108,7 +113,7 @@ Compared to @ref filterOnlyAttributes(const Trade::MeshData&, Containers::ArrayV
 if the @p mesh index or vertex data is owned, the function transfers the data
 ownership to the returned instance instead of returning a non-owning reference.
 If neither the index nor the vertex data is owned, the two overloads behave the
-same.
+same. If @p attributes are empty, no vertex data ownership transfer happens.
 @see @ref Trade::MeshData::indexDataFlags(),
      @ref Trade::MeshData::vertexDataFlags()
 */
@@ -126,11 +131,13 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(Trade::MeshData&& m
 
 Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attributes that are not listed in @p attributes. The index buffer, if
-present, is left untouched. Attributes from the list that are not present in
-@p mesh are skipped, duplicates in the list are treated the same as if given
-attribute was listed just once. If given attribute is present multiple times in
-the mesh (such as secondary colors or texture coordinates), all its occurences
-are removed --- if you want a different behavior, use
+present, is transferred untouched. If @p attributes are empty, only the index
+buffer, if present, is transferred, and the returned mesh is without any vertex
+data. Attributes from the list that are not present in @p mesh are skipped,
+duplicates in the list are treated the same as if given attribute was listed
+just once. If given attribute is present multiple times in the mesh (such as
+secondary colors or texture coordinates), all its occurences are removed --- if
+you want a different behavior, use
 @ref filterAttributes(const Trade::MeshData&, Containers::BitArrayView) and
 pick attributes by their IDs instead.
 
@@ -157,7 +164,7 @@ Compared to @ref filterExceptAttributes(const Trade::MeshData&, Containers::Arra
 if the @p mesh index or vertex data is owned, the function transfers the data
 ownership to the returned instance instead of returning a non-owning reference.
 If neither the index nor the vertex data is owned, the two overloads behave the
-same.
+same. If @p attributes are empty, no vertex data ownership transfer happens.
 @see @ref Trade::MeshData::indexDataFlags(),
      @ref Trade::MeshData::vertexDataFlags()
 */
