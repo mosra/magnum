@@ -70,9 +70,6 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     CORRADE_ASSERT(normals.size() == positions.size(),
         "MeshTools::generateSmoothNormalsInto(): bad output size, expected" << positions.size() << "but got" << normals.size(), );
 
-    if(indices.isEmpty())
-        return;
-
     /* Single allocation for all temporary state */
     Containers::ArrayView<UnsignedInt> triangleOffset;
     Containers::ArrayView<T> triangleIds;
@@ -93,14 +90,14 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* Turn the counts into a running offset array where
        `[triangleOffset[i + 1], triangleOffset[i + 2])` is the range of
        triangle IDs for vertex `i`. In other words, `triangleOffset[0]` and
-       `triangleOffset[1]` are now both 0. */
+       `triangleOffset[1]` (if there is any triangle at all) are now both 0. */
     UnsignedInt prevOffset = triangleOffset[0];
     for(std::size_t i = 1; i != triangleOffset.size(); ++i) {
         const UnsignedInt nextOffset = triangleOffset[i] + prevOffset;
         triangleOffset[i] = prevOffset;
         prevOffset = nextOffset;
     }
-    CORRADE_INTERNAL_ASSERT(triangleOffset[0] == 0 && triangleOffset[1] == 0);
+    CORRADE_INTERNAL_ASSERT(triangleOffset[0] == 0 && (triangleOffset.size() == 1 || triangleOffset[1] == 0));
 
     /* Gather triangle IDs for every vertex, shifting the offset array by one
        element left in the process. In other words, then `[triangleOffset[i], triangleOffset[i + 1])` is the range of triangle IDs for vertex `i`,
@@ -147,11 +144,18 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* For every vertex v, calculate normals from all faces it belongs to and
        average them */
     for(std::size_t v = 0; v != positions.size(); ++v) {
-        /* normals are an external memory, ensure we accumulate from zero */
+        /* If given vertex isn't used by any triangle, skip it altogether,
+           leaving the normal data untouched */
+        std::size_t t = triangleOffset[v];
+        const std::size_t end = triangleOffset[v + 1];
+        if(t == end)
+            continue;
+
+        /* Otherwise ensure we accumulate from zero */
         normals[v] = Vector3{Math::ZeroInit};
 
         /* Go through all triangles sharing this vertex */
-        for(std::size_t t = triangleOffset[v]; t != triangleOffset[v + 1]; ++t) {
+        for(; t != end; ++t) {
             const std::size_t baseIndex = triangleIds[t]*3;
             const T v0i = indices[baseIndex + 0];
             const T v1i = indices[baseIndex + 1];
