@@ -59,13 +59,14 @@ constexpr struct {
 } VersionData[] {
     #ifndef MAGNUM_TARGET_GLES
     {"GL 2.1", GL::Version::GL210},
-    {"GL 3.0", GL::Version::GL300}
+    {"GL 3.0", GL::Version::GL300},
     #else
     {"GLES 2.0", GL::Version::GLES200},
     #ifndef MAGNUM_TARGET_GLES2
-    {"GLES 3.0", GL::Version::GLES300}
+    {"GLES 3.0", GL::Version::GLES300},
     #endif
     #endif
+    {"current version", GL::Version::None}
 };
 
 FullScreenTriangleGLTest::FullScreenTriangleGLTest() {
@@ -77,7 +78,7 @@ void FullScreenTriangleGLTest::test() {
     auto&& data = VersionData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    if(!GL::Context::current().isVersionSupported(data.version))
+    if(data.version != GL::Version::None && !GL::Context::current().isVersionSupported(data.version))
         CORRADE_SKIP("Version not supported");
 
     struct FullscreenFlatShader: GL::AbstractShaderProgram {
@@ -113,7 +114,8 @@ void main() {
 
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());
         }
-    } shader{data.version};
+    } shader{data.version != GL::Version::None ?
+        data.version : GL::Context::current().version()};
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -131,7 +133,8 @@ void main() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    shader.draw(fullScreenTriangle(data.version));
+    shader.draw(data.version != GL::Version::None ?
+        fullScreenTriangle(data.version) : fullScreenTriangle());
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
