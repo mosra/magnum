@@ -127,10 +127,7 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
            NaN and the angle calculation will assert. This happens also when
            any of the original positions is NaN. If that's the case, skip the
            rest. Given triangle will then contribute with a zero total angle,
-           effectively getting ignored for normal calculation.
-
-           If, however, an angle
-           */
+           effectively getting ignored for normal calculation. */
         const Vector3 v10n = (v1 - v0).normalized();
         const Vector3 v20n = (v2 - v0).normalized();
         const Vector3 v21n = (v2 - v1).normalized();
