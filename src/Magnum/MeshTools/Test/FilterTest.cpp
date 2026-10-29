@@ -47,6 +47,7 @@ struct FilterTest: TestSuite::Tester {
     void attributes();
     void attributesNoIndexData();
     void attributesRvalue();
+    void attributesRvalueNone();
     void attributesWrongBitCount();
 
     void onlyAttributes();
@@ -93,13 +94,13 @@ const struct {
         {}, Trade::DataFlag::Global,
         {}, {}},
     {"index data owned",
-        Trade::DataFlag::Owned, {},
+        Trade::DataFlag::Owned|Trade::DataFlag::Mutable, {},
         Trade::DataFlag::Owned|Trade::DataFlag::Mutable, {}},
     {"vertex data owned",
         Trade::DataFlag::ExternallyOwned, Trade::DataFlag::Owned|Trade::DataFlag::Mutable,
         {}, Trade::DataFlag::Owned|Trade::DataFlag::Mutable},
     {"both owned",
-        Trade::DataFlag::Owned, Trade::DataFlag::Owned,
+        Trade::DataFlag::Owned|Trade::DataFlag::Mutable, Trade::DataFlag::Owned|Trade::DataFlag::Mutable,
         Trade::DataFlag::Owned|Trade::DataFlag::Mutable, Trade::DataFlag::Owned|Trade::DataFlag::Mutable},
 };
 
@@ -109,7 +110,8 @@ FilterTest::FilterTest() {
 
     addTests({&FilterTest::attributesNoIndexData});
 
-    addInstancedTests({&FilterTest::attributesRvalue},
+    addInstancedTests({&FilterTest::attributesRvalue,
+                       &FilterTest::attributesRvalueNone},
         Containers::arraySize(AttributesRvalueData));
 
     addTests({&FilterTest::attributesWrongBitCount});
@@ -292,6 +294,62 @@ void FilterTest::attributesRvalue() {
     CORRADE_COMPARE(filtered.attributeName(0), Trade::MeshAttribute::Tangent);
 }
 
+void FilterTest::attributesRvalueNone() {
+    auto&& data = AttributesRvalueData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Verifies that vertex data and count stays untouched in the original
+       meshes if there are no attributes left after */
+
+    Containers::Array<char> indexData{ValueInit, 5*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector3)};
+    auto positions = Containers::arrayCast<Vector3>(vertexData);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
+    }};
+
+    Containers::Optional<Trade::MeshData> mesh;
+    if(data.indexDataFlags >= Trade::DataFlag::Owned &&
+       data.vertexDataFlags >= Trade::DataFlag::Owned)
+        mesh = Trade::MeshData{MeshPrimitive::Triangles,
+            Utility::move(indexData), Trade::MeshIndexData{indices},
+            Utility::move(vertexData), Utility::move(attributes)};
+    else if(data.indexDataFlags >= Trade::DataFlag::Owned)
+        mesh = Trade::MeshData{MeshPrimitive::Triangles,
+            Utility::move(indexData), Trade::MeshIndexData{indices},
+            data.vertexDataFlags, vertexData, Utility::move(attributes)};
+    else if(data.vertexDataFlags >= Trade::DataFlag::Owned)
+        mesh = Trade::MeshData{MeshPrimitive::Triangles,
+            data.indexDataFlags, indexData, Trade::MeshIndexData{indices},
+            Utility::move(vertexData), Utility::move(attributes)};
+    else
+        mesh = Trade::MeshData{MeshPrimitive::Triangles,
+            data.indexDataFlags, indexData, Trade::MeshIndexData{indices},
+            data.vertexDataFlags, vertexData, Utility::move(attributes)};
+
+
+    Trade::MeshData filtered = filterAttributes(Utility::move(*mesh), Containers::BitArray{ValueInit, mesh->attributeCount()});
+
+    /* The data ownership should be transferred if possible */
+    CORRADE_VERIFY(filtered.isIndexed());
+    CORRADE_COMPARE(filtered.indexCount(), 5);
+    CORRADE_COMPARE(filtered.indexData().data(), static_cast<const void*>(indices.data()));
+    CORRADE_COMPARE(filtered.indexDataFlags(), data.expectedIndexDataFlags);
+
+    /* There should be no attributes or vertex data, and the original mesh
+       attributes and vertex data and count should stay intact */
+    CORRADE_COMPARE(filtered.vertexCount(), 3);
+    CORRADE_COMPARE(filtered.vertexData().data(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
+    CORRADE_COMPARE(filtered.attributeCount(), 0);
+    CORRADE_COMPARE(mesh->vertexCount(), 3);
+    CORRADE_COMPARE(mesh->vertexData().data(), static_cast<const void*>(positions.data()));
+    CORRADE_COMPARE(mesh->vertexDataFlags(), data.vertexDataFlags);
+    CORRADE_COMPARE(mesh->attributeCount(), 1);
+}
+
 void FilterTest::attributesWrongBitCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -401,7 +459,8 @@ void FilterTest::onlyAttributesNoAttributeData() {
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
-        Utility::move(indexData), Trade::MeshIndexData{indices}, 15};
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Containers::Array<char>{NoInit, 1}, {}, 15};
 
     Trade::MeshData filtered = filterOnlyAttributes(mesh, {
         Trade::MeshAttribute::Position
@@ -416,8 +475,9 @@ void FilterTest::onlyAttributesNoAttributeData() {
 
     /* The vertex count should get preserved even if there are no attributes */
     CORRADE_COMPARE(filtered.vertexCount(), 15);
-    /* Consistent with behavior in reference() for vertex-less meshes */
-    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlags{});
+    /* Consistent with construction of attribute-less MeshData */
+    CORRADE_COMPARE(filtered.vertexData().data(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
 
     CORRADE_COMPARE(filtered.attributeCount(), 0);
 }
@@ -572,7 +632,8 @@ void FilterTest::onlyAttributeIdsNoAttributeData() {
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
-        Utility::move(indexData), Trade::MeshIndexData{indices}, 15};
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Containers::Array<char>{NoInit, 1}, {}, 15};
 
     CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterOnlyAttributes(mesh, std::initializer_list<UnsignedInt>{});
@@ -587,8 +648,9 @@ void FilterTest::onlyAttributeIdsNoAttributeData() {
 
     /* The vertex count should get preserved even if there are no attributes */
     CORRADE_COMPARE(filtered.vertexCount(), 15);
-    /* Consistent with behavior in reference() for vertex-less meshes */
-    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlags{});
+    /* Consistent with construction of attribute-less MeshData */
+    CORRADE_COMPARE(filtered.vertexData().data(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
 
     CORRADE_COMPARE(filtered.attributeCount(), 0);
 }
@@ -684,7 +746,8 @@ void FilterTest::exceptAttributesNoAttributeData() {
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
-        Utility::move(indexData), Trade::MeshIndexData{indices}, 15};
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Containers::Array<char>{NoInit, 1}, {}, 15};
 
     Trade::MeshData filtered = filterExceptAttributes(mesh, {
         Trade::MeshAttribute::Position
@@ -699,8 +762,9 @@ void FilterTest::exceptAttributesNoAttributeData() {
 
     /* The vertex count should get preserved even if there are no attributes */
     CORRADE_COMPARE(filtered.vertexCount(), 15);
-    /* Consistent with behavior in reference() for vertex-less meshes */
-    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlags{});
+    /* Consistent with construction of attribute-less MeshData */
+    CORRADE_COMPARE(filtered.vertexData().data(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
 
     CORRADE_COMPARE(filtered.attributeCount(), 0);
 }
@@ -857,7 +921,8 @@ void FilterTest::exceptAttributeIdsNoAttributeData() {
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
-        Utility::move(indexData), Trade::MeshIndexData{indices}, 15};
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Containers::Array<char>{NoInit, 1}, {}, 15};
 
     CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterExceptAttributes(mesh, std::initializer_list<UnsignedInt>{});
@@ -872,8 +937,9 @@ void FilterTest::exceptAttributeIdsNoAttributeData() {
 
     /* The vertex count should get preserved even if there are no attributes */
     CORRADE_COMPARE(filtered.vertexCount(), 15);
-    /* Consistent with behavior in reference() for vertex-less meshes */
-    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlags{});
+    /* Consistent with construction of attribute-less MeshData */
+    CORRADE_COMPARE(filtered.vertexData().data(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
 
     CORRADE_COMPARE(filtered.attributeCount(), 0);
 }
