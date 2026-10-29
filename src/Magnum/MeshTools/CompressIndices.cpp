@@ -28,7 +28,6 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pair.h>
-#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/Copy.h"
@@ -137,10 +136,8 @@ Trade::MeshData compressIndices(Trade::MeshData&& mesh, MeshIndexType atLeast) {
     const UnsignedInt vertexCount = mesh.vertexCount();
     if(mesh.vertexDataFlags() & Trade::DataFlag::Owned)
         vertexData = mesh.releaseVertexData();
-    else {
-        vertexData = Containers::Array<char>{NoInit, mesh.vertexData().size()};
-        Utility::copy(mesh.vertexData(), vertexData);
-    }
+    else
+        vertexData = Containers::Array<char>{InPlaceInit, mesh.vertexData()};
 
     /* Compress the indices */
     UnsignedInt offset;

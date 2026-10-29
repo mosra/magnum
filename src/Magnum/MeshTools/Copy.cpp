@@ -26,8 +26,6 @@
 
 #include "Copy.h"
 
-#include <Corrade/Utility/Algorithms.h>
-
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/MeshTools/Implementation/remapAttributeData.h"
 
@@ -98,7 +96,7 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
     /* Otherwise copy them, if the mesh is indexed. If not, the
        default-constructed instances are fine. */
     } else if(mesh.isIndexed()) {
-        indexData = Containers::Array<char>{NoInit, mesh.indexData().size()};
+        indexData = Containers::Array<char>{InPlaceInit, mesh.indexData()};
         indices = Trade::MeshIndexData{
             mesh.indexType(),
             Containers::StridedArrayView1D<const void>{
@@ -106,23 +104,19 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
                 indexData.data() + mesh.indexOffset(),
                 mesh.indexCount(),
                 mesh.indexStride()}};
-        Utility::copy(mesh.indexData(), indexData);
     }
 
-    /* If vertex data are already owned, move them to the output. Because
-       releasing them will clear vertex count, save that in advance, save also
-       original vertex data view for attribute offset calculation */
+    /* If vertex data are already owned, move them to the output, otherwise
+       copy them. Because releasing them will clear vertex count, save that in
+       advance, save also original vertex data view for attribute offset
+       calculation */
     const UnsignedInt vertexCount = mesh.vertexCount();
     const Containers::ArrayView<const char> originalVertexData = mesh.vertexData();
     Containers::Array<char> vertexData;
-    if(mesh.vertexDataFlags() & Trade::DataFlag::Owned) {
+    if(mesh.vertexDataFlags() & Trade::DataFlag::Owned)
         vertexData = mesh.releaseVertexData();
-
-    /* Otherwise copy them */
-    } else {
-        vertexData = Containers::Array<char>{NoInit, originalVertexData.size()};
-        Utility::copy(originalVertexData, vertexData);
-    }
+    else
+        vertexData = Containers::Array<char>{InPlaceInit, originalVertexData};
 
     /* There's no way to know if attribute data are owned until we release
        them and check the deleter, but releasing them makes it impossible to

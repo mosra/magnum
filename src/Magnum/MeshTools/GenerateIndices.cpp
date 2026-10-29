@@ -28,9 +28,6 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
-#include <Corrade/Utility/Algorithms.h>
-#endif
 
 #include "Magnum/Math/Vector3.h"
 #ifndef MAGNUM_SINGLES_NO_TRADE_DEPENDENCY
@@ -624,10 +621,8 @@ Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
     Containers::Array<char> vertexData;
     if(mesh.vertexDataFlags() & Trade::DataFlag::Owned)
         vertexData = mesh.releaseVertexData();
-    else {
-        vertexData = Containers::Array<char>{NoInit, mesh.vertexData().size()};
-        Utility::copy(mesh.vertexData(), vertexData);
-    }
+    else
+        vertexData = Containers::Array<char>{InPlaceInit, mesh.vertexData()};
 
     /* Recreate the attribute array with views on the new vertexData */
     /** @todo if the vertex data were moved and this array is owned, it
