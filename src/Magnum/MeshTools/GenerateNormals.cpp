@@ -70,9 +70,6 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     CORRADE_ASSERT(normals.size() == positions.size(),
         "MeshTools::generateSmoothNormalsInto(): bad output size, expected" << positions.size() << "but got" << normals.size(), );
 
-    if(indices.isEmpty())
-        return;
-
     /* Single allocation for all temporary state */
     Containers::ArrayView<UnsignedInt> triangleOffset;
     Containers::ArrayView<T> triangleIds;
@@ -147,11 +144,18 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* For every vertex v, calculate normals from all faces it belongs to and
        average them */
     for(std::size_t v = 0; v != positions.size(); ++v) {
-        /* normals are an external memory, ensure we accumulate from zero */
+        /* If given vertex isn't used by any triangle, skip it altogether,
+           leaving the normal data untouched */
+        std::size_t t = triangleOffset[v];
+        const std::size_t end = triangleOffset[v + 1];
+        if(t == end)
+            continue;
+
+        /* Otherwise ensure we accumulate from zero */
         normals[v] = Vector3{Math::ZeroInit};
 
         /* Go through all triangles sharing this vertex */
-        for(std::size_t t = triangleOffset[v]; t != triangleOffset[v + 1]; ++t) {
+        for(; t != end; ++t) {
             const std::size_t baseIndex = triangleIds[t]*3;
             const T v0i = indices[baseIndex + 0];
             const T v1i = indices[baseIndex + 1];

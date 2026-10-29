@@ -53,6 +53,7 @@ struct GenerateNormalsTest: TestSuite::Tester {
     void smoothCylinder();
     void smoothZeroAreaTriangle();
     void smoothNanPosition();
+    void smoothUnusedVertices();
     void smoothWrongCount();
     void smoothOutOfRange();
     void smoothIntoWrongSize();
@@ -63,6 +64,61 @@ struct GenerateNormalsTest: TestSuite::Tester {
 
     void benchmarkFlat();
     void benchmarkSmooth();
+};
+
+const struct {
+    const char* name;
+    Containers::Array<UnsignedShort> indices;
+    Vector3 expected[6];
+} SmoothUnusedVerticesData[]{
+    {"all vertices used", {InPlaceInit, {
+        0, 1, 2, 3, 4, 5
+    }}, {
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+    }},
+    {"one vertex unused", {InPlaceInit, {
+        0, 3, 2, 3, 4, 5
+    }}, {
+        {0.0f, 0.0f, 1.0f},
+        {1.0f, 3.0f, 2.0f}, /* unchanged */
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+    }},
+    {"two vertices unused", {InPlaceInit, {
+        0, 3, 2, 3, 0, 5
+    }}, {
+        {0.0f, 0.0f, 1.0f},
+        {1.0f, 3.0f, 2.0f}, /* unchanged */
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {3.0f, 1.0f, 2.0f}, /* unchanged */
+        {0.0f, 0.0f, 1.0f},
+    }},
+    {"sparse index buffer", {InPlaceInit, {
+        4, 1, 2
+    }}, {
+        {1.0f, 2.0f, 3.0f}, /* unchanged */
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {2.0f, 3.0f, 1.0f}, /* unchanged */
+        {0.0f, 0.0f, 1.0f},
+        {3.0f, 2.0f, 1.0f}, /* unchanged */
+    }},
+    {"empty index buffer", {}, {
+        {1.0f, 2.0f, 3.0f}, /* unchanged */
+        {1.0f, 3.0f, 2.0f}, /* unchanged */
+        {2.0f, 1.0f, 3.0f}, /* unchanged */
+        {2.0f, 3.0f, 1.0f}, /* unchanged */
+        {3.0f, 1.0f, 2.0f}, /* unchanged */
+        {3.0f, 2.0f, 1.0f}, /* unchanged */
+    }},
 };
 
 GenerateNormalsTest::GenerateNormalsTest() {
@@ -77,8 +133,12 @@ GenerateNormalsTest::GenerateNormalsTest() {
               &GenerateNormalsTest::smoothBeveledCube,
               &GenerateNormalsTest::smoothCylinder,
               &GenerateNormalsTest::smoothZeroAreaTriangle,
-              &GenerateNormalsTest::smoothNanPosition,
-              &GenerateNormalsTest::smoothWrongCount,
+              &GenerateNormalsTest::smoothNanPosition});
+
+    addInstancedTests({&GenerateNormalsTest::smoothUnusedVertices},
+        Containers::arraySize(SmoothUnusedVerticesData));
+
+    addTests({&GenerateNormalsTest::smoothWrongCount,
               &GenerateNormalsTest::smoothOutOfRange,
               &GenerateNormalsTest::smoothIntoWrongSize,
 
@@ -350,6 +410,38 @@ void GenerateNormalsTest::smoothNanPosition() {
     CORRADE_VERIFY(Math::isNan(generated[1]).all());
     CORRADE_VERIFY(Math::isNan(generated[2]).all());
     CORRADE_VERIFY(Math::isNan(generated[3]).all());
+}
+
+void GenerateNormalsTest::smoothUnusedVertices() {
+    auto&& data = SmoothUnusedVerticesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Two triangles connected by an edge, with the vertices either shared or
+       duplicated */
+    const Vector3 positions[]{
+        {-1.0f,  0.0f, 0.0f}, /* 0, duplicated with 4 */
+        {+1.0f,  0.0f, 0.0f}, /* 1, duplicated with 3 */
+        { 0.0f, +1.0f, 0.0f}, /* 2 */
+
+        {+1.0f,  0.0f, 0.0f}, /* 3, duplicated with 1 */
+        {-1.0f,  0.0f, 0.0f}, /* 4, duplicated with 0 */
+        { 0.0f, -1.0f, 0.0f}, /* 5 */
+    };
+
+    /* If no indices reference given point, the output normal won't change. In
+       the worst case with no indices, the normals won't be changed at all. */
+    Vector3 normals[]{
+        {1.0f, 2.0f, 3.0f},
+        {1.0f, 3.0f, 2.0f},
+        {2.0f, 1.0f, 3.0f},
+        {2.0f, 3.0f, 1.0f},
+        {3.0f, 1.0f, 2.0f},
+        {3.0f, 2.0f, 1.0f},
+    };
+    generateSmoothNormalsInto(data.indices, positions, normals);
+    CORRADE_COMPARE_AS(Containers::arrayView(normals),
+        Containers::arrayView(data.expected),
+        TestSuite::Compare::Container);
 }
 
 void GenerateNormalsTest::smoothWrongCount() {
