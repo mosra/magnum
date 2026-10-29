@@ -198,6 +198,9 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
     if(!extraAttributeCount && !originalAttributeData.deleter())
         attributeData = Utility::move(originalAttributeData);
     else {
+        /* Cannot use `{InPlaceInit, attributeData.prefix(...)}` here as that'd
+           use a non-default deleter, preventing the mesh from being returned
+           from plugins */
         attributeData = Containers::Array<Trade::MeshAttributeData>{ValueInit, originalAttributeCount + extraAttributeCount};
         Utility::copy(originalAttributeData, attributeData.prefix(originalAttributeCount));
     }
@@ -303,14 +306,13 @@ Trade::MeshData interleave(Trade::MeshData&& mesh, const Containers::ArrayView<c
            strided indices, make a full copy including any extra offsets and
            paddings */
         } else if(flags & InterleaveFlag::PreserveStridedIndices) {
-            indexData = Containers::Array<char>{NoInit, mesh.indexData().size()};
+            indexData = Containers::Array<char>{InPlaceInit, mesh.indexData()};
             indices = Trade::MeshIndexData{indexType,
                 Containers::StridedArrayView1D<const void>{
                     indexData,
                     indexData.data() + mesh.indexOffset(),
                     mesh.indexCount(),
                     mesh.indexStride()}};
-            Utility::copy(mesh.indexData(), indexData);
 
         /* Otherwise, make a tightly packed copy, in which case we can't have
            an implementation-specific index type */
