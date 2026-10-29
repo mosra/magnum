@@ -27,6 +27,7 @@
 #include "GenerateNormals.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
@@ -72,9 +73,18 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     if(indices.isEmpty())
         return;
 
+    /* Single allocation for all temporary state */
+    Containers::ArrayView<UnsignedInt> triangleOffset;
+    Containers::ArrayView<T> triangleIds;
+    Containers::ArrayView<Containers::Pair<Vector3, Math::Vector3<Rad>>> crossAngles;
+    Containers::ArrayTuple storage{
+        {ValueInit, positions.size() + 1, triangleOffset},
+        {NoInit, indices.size(), triangleIds},
+        {NoInit, indices.size()/3, crossAngles},
+    };
+
     /* Gather count of triangles for every vertex. Offset the indices by one
        so `triangleOffset[0]` stays 0. */
-    Containers::Array<UnsignedInt> triangleOffset{ValueInit, positions.size() + 1};
     for(const T index: indices) {
         CORRADE_ASSERT(index < positions.size(), "MeshTools::generateSmoothNormalsInto(): index" << index << "out of range for" << positions.size() << "elements", );
         ++triangleOffset[index + 1];
@@ -95,7 +105,6 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* Gather triangle IDs for every vertex, shifting the offset array by one
        element left in the process. In other words, then `[triangleOffset[i], triangleOffset[i + 1])` is the range of triangle IDs for vertex `i`,
        with `triangleOffset[0]` being 0. */
-    Containers::Array<T> triangleIds{NoInit, indices.size()};
     for(std::size_t i = 0; i != indices.size(); ++i)
         triangleIds[triangleOffset[indices[i] + 1]++] = i/3;
     CORRADE_INTERNAL_ASSERT(triangleOffset[0] == 0 && triangleOffset.back() == indices.size());
@@ -103,7 +112,6 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* Precalculate cross product and interior angles of each face --- the loop
        below would otherwise calculate it for every vertex, which is at least
        3x as much work */
-    Containers::Array<Containers::Pair<Vector3, Math::Vector3<Rad>>> crossAngles{NoInit, indices.size()/3};
     for(std::size_t i = 0; i != crossAngles.size(); ++i) {
         const Vector3 v0 = positions[indices[i*3 + 0]];
         const Vector3 v1 = positions[indices[i*3 + 1]];
