@@ -4360,6 +4360,10 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
 
     Containers::String out;
     Error redirectError{&out};
+    data.attribute<Float>(0);
+    data.attribute<Float[]>(0);
+    data.mutableAttribute<Float>(0);
+    data.mutableAttribute<Float[]>(0);
     data.attribute<Float>(MeshAttribute::Position);
     data.attribute<Float>(MeshAttribute::Normal);
     data.attribute<Float>(MeshAttribute::TextureCoordinates);
@@ -4380,6 +4384,10 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     data.weightsAsArray();
     data.objectIdsAsArray();
     CORRADE_COMPARE(out,
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead4\n"
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead5\n"
@@ -4666,15 +4674,24 @@ void MeshDataTest::attributeWrongType() {
 
     Containers::String out;
     Error redirectError{&out};
+    data.attribute<Vector4>(0);
+    data.attribute<Vector4[]>(0);
+    data.mutableAttribute<Vector4>(0);
+    data.mutableAttribute<Vector4[]>(0);
     data.attribute<Vector4>(MeshAttribute::Position);
     data.attribute<Vector4[]>(MeshAttribute::Position);
     data.mutableAttribute<Vector4>(MeshAttribute::Position);
     data.mutableAttribute<Vector4[]>(MeshAttribute::Position);
-    CORRADE_COMPARE(out,
+    CORRADE_COMPARE_AS(out,
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
         "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
-        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n");
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
+        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n"
+        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is VertexFormat::Vector3 but requested a type equivalent to VertexFormat::Vector4\n",
+        TestSuite::Compare::String);
 }
 
 void MeshDataTest::attributeWrongArrayAccess() {

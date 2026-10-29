@@ -6860,10 +6860,11 @@ void SceneDataTest::fieldWrongType() {
     scene.mutableField<UnsignedByte[]>(SceneField::Mesh);
 
     scene.field(sceneFieldCustom(773));
+    scene.field<UnsignedByte>(sceneFieldCustom(773));
+    scene.field<UnsignedByte[]>(sceneFieldCustom(773));
     scene.mutableField(sceneFieldCustom(773));
-    /* Accessing SceneFieldType::Bit through field<T>(2) etc. is handled by the
-       same code path as accessing via a mismatched type, no need to test those
-       explicitly */
+    scene.mutableField<UnsignedByte>(sceneFieldCustom(773));
+    scene.mutableField<UnsignedByte[]>(sceneFieldCustom(773));
 
     scene.fieldBits(SceneField::Mesh);
     scene.fieldBitArrays(SceneField::Mesh);
@@ -6873,7 +6874,7 @@ void SceneDataTest::fieldWrongType() {
     scene.fieldStringData(SceneField::Mesh);
     scene.fieldStrings(SceneField::Mesh);
 
-    CORRADE_COMPARE(out,
+    CORRADE_COMPARE_AS(out,
         "Trade::SceneData::field(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use fieldBits() or fieldBitArrays() to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use mutableFieldBits() or mutableFieldBitArrays() to access it\n"
 
@@ -6896,6 +6897,10 @@ void SceneDataTest::fieldWrongType() {
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
 
         "Trade::SceneData::field(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use fieldBits() or fieldBitArrays() to access it\n"
+        "Trade::SceneData::field(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use fieldBits() or fieldBitArrays() to access it\n"
+        "Trade::SceneData::field(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use fieldBits() or fieldBitArrays() to access it\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use mutableFieldBits() or mutableFieldBitArrays() to access it\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use mutableFieldBits() or mutableFieldBitArrays() to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use mutableFieldBits() or mutableFieldBitArrays() to access it\n"
 
         "Trade::SceneData::fieldBits(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
@@ -6904,7 +6909,8 @@ void SceneDataTest::fieldWrongType() {
         "Trade::SceneData::mutableFieldBitArrays(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
 
         "Trade::SceneData::fieldStringData(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n"
-        "Trade::SceneData::fieldStrings(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n");
+        "Trade::SceneData::fieldStrings(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n",
+        TestSuite::Compare::String);
 }
 
 void SceneDataTest::fieldWrongPointerType() {
