@@ -773,10 +773,7 @@ void TransformTest::meshData2DRvaluePassthroughIndexDataNotOwned() {
 void TransformTest::meshData2DRvaluePassthroughVertexDataNotOwned() {
     Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
     auto indices = Containers::arrayCast<UnsignedShort>(indexData);
-    /* Not using copy({...}) as we'd have no way to compare against the
-       original unchanged data */
-    const UnsignedShort indicesExpected[]{1, 2, 0};
-    Utility::copy(indicesExpected, indices);
+    Utility::copy({1, 2, 0}, indices);
     const Vector2 vertices[]{
         {0.0f, 0.0f},
         {1.0f, 0.0f},
@@ -1317,10 +1314,7 @@ void TransformTest::meshData3DRvaluePassthroughIndexDataNotOwned() {
 void TransformTest::meshData3DRvaluePassthroughVertexDataNotOwned() {
     Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
     auto indices = Containers::arrayCast<UnsignedShort>(indexData);
-    /* Not using copy({...}) as we'd have no way to compare against the
-       original unchanged data */
-    const UnsignedShort indicesExpected[]{1, 2, 0};
-    Utility::copy(indicesExpected, indices);
+    Utility::copy({1, 2, 0}, indices);
     const Vector3 vertices[]{
         {0.0f, 0.0f, -1.0f},
         {1.0f, 0.0f, -2.0f},
@@ -1788,10 +1782,7 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwn
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOwned() {
     Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
     auto indices = Containers::arrayCast<UnsignedShort>(indexData);
-    /* Not using copy({...}) as we'd have no way to compare against the
-       original unchanged data */
-    const UnsignedShort indicesExpected[]{1, 2, 0};
-    Utility::copy(indicesExpected, indices);
+    Utility::copy({1, 2, 0}, indices);
     const Vector2 vertices[]{
         {0.0f, 0.0f},
         {1.0f, 0.0f},
