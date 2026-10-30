@@ -27,13 +27,15 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::flipFaceWindingInPlace(), @ref Magnum::MeshTools::flipNormalsInPlace()
+ * @brief Function @ref Magnum::MeshTools::flipFaceWindingInPlace(), @ref Magnum::MeshTools::flipFaceWinding(), @ref Magnum::MeshTools::flipNormalsInPlace(), @ref Magnum::MeshTools::flipNormals()
  */
 
 #include <Corrade/Containers/Containers.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/MeshTools/InterleaveFlags.h"
 #include "Magnum/MeshTools/visibility.h"
+#include "Magnum/Trade/Trade.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/ArrayViewStl.h>
@@ -54,6 +56,7 @@ culling to work properly, face winding may need to be flipped as well --- use
 and overloads to perform both operations at once. See
 @ref flipFaceWindingInPlace() for detailed explanation of face winding
 direction and its effect on rendering.
+@see @ref flipNormalsInPlace(Trade::MeshData&)
 */
 MAGNUM_MESHTOOLS_EXPORT void flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>& normals);
 
@@ -94,6 +97,7 @@ done with @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedI
 See also @ref SceneTools::absoluteTransformationScalingSigns3D() which can be
 used to collect transformations with negative scaling for a complete scene
 hierarchy.
+@see @ref flipFaceWindingInPlace(Trade::MeshData&)
 */
 MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices);
 
@@ -125,6 +129,8 @@ etc. overloads, for other sizes falls back to byte-by-byte swapping. For
 example:
 
 @snippet MeshTools.cpp flipFaceWindingInPlace-attributes
+
+@see @ref flipFaceWindingInPlace(Trade::MeshData&)
 */
 MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices);
 
@@ -136,6 +142,83 @@ MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(const Containers::StridedArr
 */
 CORRADE_DEPRECATED("use flipFaceWindingInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipFaceWinding(std::vector<UnsignedInt>& indices);
 #endif
+
+/**
+@brief Flip mesh face winding in-place
+@m_since_latest
+
+If the @p mesh is indexed, expects that it has mutable index data with the
+indices not being in an implementation-specific format and index count is
+divisible by 3. Then calls @ref flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>&)
+on the index array and leaves vertex and attribute data untouched.
+
+If the @p mesh is not indexed, instead expects that it has mutable vertex data
+with no attributes having an implementation-specific format and vertex count is divisible by 3. Then calls @ref flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>&)
+on all attribute arrays.
+
+Currently the implementation expects that @p mesh is
+@ref MeshPrimitive::Triangles. If you have triangle strips or fans, convert
+them to indexed triangles with @ref generateIndices() first.
+
+See documentation of @ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
+for details about what all is affected by a mesh face winding direction. Use
+@ref flipNormalsInPlace(Trade::MeshData&) to flip both normals and face
+winding.
+@see @ref Trade::MeshData::isIndexed(),
+    @ref Trade::MeshData::indexDataFlags(),
+    @ref Trade::MeshData::vertexDataFlags(),
+    @ref Trade::MeshData::indexType() const,
+    @ref isMeshIndexTypeImplementationSpecific(),
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const,
+    @ref isVertexFormatImplementationSpecific()
+*/
+MAGNUM_MESHTOOLS_EXPORT void flipFaceWindingInPlace(Trade::MeshData& mesh);
+
+/**
+@brief Flip mesh face winding
+@m_since_latest
+
+If the @p mesh is indexed, expects that the indices are not in an
+implementation-specific format and index count is divisible by 3. Then makes a
+copy of the index array, calls @ref flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>&)
+on it, and copies vertex and attribute data untouched.
+
+If the @p mesh is not indexed, instead expects that no attributes have an
+implementation-specific format and vertex count is divisible by 3. Then makes a
+copy of the vertex array and calls @ref flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>&)
+on all attribute arrays. The attribute data are copied untouched.
+
+Currently the implementation expects that @p mesh is
+@ref MeshPrimitive::Triangles. If you have triangle strips or fans, convert
+them to indexed triangles with @ref generateIndices() first.
+
+See documentation of @ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
+for details about what all is affected by a mesh face winding direction. See
+also @ref flipFaceWinding(Trade::MeshData&&) for a potentially more efficient
+operation instead of always performing a full copy, you can also do an in-place
+transformation using @ref flipFaceWindingInPlace(Trade::MeshData&). Use
+@ref flipNormals(const Trade::MeshData&, InterleaveFlags) to flip both normals
+and face winding.
+@see @ref Trade::MeshData::isIndexed(),
+    @ref Trade::MeshData::indexType() const,
+    @ref isMeshIndexTypeImplementationSpecific(),
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const,
+    @ref isVertexFormatImplementationSpecific()
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData flipFaceWinding(const Trade::MeshData& mesh);
+
+/**
+@brief Flip mesh face winding
+@m_since_latest
+
+Compared to @ref flipFaceWinding(const Trade::MeshData&) this function can
+transfer ownership of @p mesh vertex and index buffers (in case they're owned)
+to the returned instance instead of making a copy of them. Attribute data are
+copied always.
+@see @ref Trade::MeshData::indexDataFlags(),
+    @ref Trade::MeshData::vertexDataFlags()
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData flipFaceWinding(Trade::MeshData&& mesh);
 
 /**
 @brief Flip mesh normals and face winding in-place
@@ -192,6 +275,87 @@ inline void flipNormalsInPlace(const Containers::StridedArrayView2D<char>& indic
 */
 CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals);
 #endif
+
+/**
+@brief Flip mesh normals and face winding in-place
+@m_since_latest
+
+If the @p mesh contains @ref Trade::MeshAttribute::Normal attributes, expects
+that the vertex data are mutable, with all normals having
+@ref VertexFormat::Vector3 --- if you can't guarantee that, use
+@ref flipNormals(const Trade::MeshData&, InterleaveFlags) instead. If the mesh
+doesn't contain any normals, only face winding is flipped.
+
+If the @p mesh is indexed, expects that it has mutable index data with the
+indices not being in an implementation-specific type and index count is
+divisible by 3. If the @p mesh is not indexed, instead expects that it has
+mutable vertex data, *all* attributes are not in an implementation-specific
+format and vertex count is divisible by 3.
+
+Currently the implementation expects that @p mesh is
+@ref MeshPrimitive::Triangles. If you have triangle strips or fans, convert
+them to indexed triangles with @ref generateIndices() first.
+
+Delegates to @ref flipFaceWindingInPlace(Trade::MeshData&) and then for all
+@ref Trade::MeshAttribute::Normal attributes calls @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&).
+Use @ref flipFaceWindingInPlace(Trade::MeshData&) for flipping just face
+winding without affecting normals.
+@see @ref Trade::MeshData::isIndexed(),
+    @ref Trade::MeshData::indexDataFlags(),
+    @ref Trade::MeshData::vertexDataFlags(),
+    @ref Trade::MeshData::indexType() const,
+    @ref isMeshIndexTypeImplementationSpecific(),
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const,
+    @ref isVertexFormatImplementationSpecific()
+*/
+MAGNUM_MESHTOOLS_EXPORT void flipNormalsInPlace(Trade::MeshData& mesh);
+
+/**
+@brief Flip mesh normals and face winding
+@m_since_latest
+
+If the @p mesh is indexed, expects that the indices are not in an
+implementation-specific type and index count is divisible by 3. If the @p mesh
+is not indexed, instead expects that *all* attributes are not in an
+implementation-specific format and vertex count is divisible by 3.
+
+If the mesh contains @ref Trade::MeshAttribute::Normal attributes, they're all
+converted to @ref VertexFormat::Vector3 if not already. In case a conversion
+needs to happen, *all* attributes are expected to not have an
+implementation-specific format. The data layouting is done by
+@ref interleavedLayout() with the @p flags parameter propagated to it, see its
+documentation for detailed behavior description.
+
+Currently the implementation expects that @p mesh is
+@ref MeshPrimitive::Triangles. If you have triangle strips or fans, convert
+them to indexed triangles with @ref generateIndices() first.
+
+See also @ref flipNormals(Trade::MeshData&&, InterleaveFlags) for a potentially
+more efficient operation instead of always performing a full copy, you can also
+do an in-place transformation using @ref flipNormalsInPlace(Trade::MeshData&).
+Use @ref flipFaceWinding(const Trade::MeshData&) for flipping just face winding
+without affecting normals.
+@see @ref Trade::MeshData::isIndexed(),
+    @ref Trade::MeshData::indexType() const,
+    @ref isMeshIndexTypeImplementationSpecific(),
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const,
+    @ref isVertexFormatImplementationSpecific()
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData flipNormals(const Trade::MeshData& mesh, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+
+/**
+@brief Flip mesh normals and face winding
+@m_since_latest
+
+Compared to @ref flipNormals(const Trade::MeshData&, InterleaveFlags) this
+function can transfer ownership of @p mesh vertex and index buffers (in case
+they're owned and all @ref Trade::MeshAttribute::Normal attributes are
+@ref VertexFormat::Vector3) to the returned instance instead of making a copy
+of them. Attribute data are copied always.
+@see @ref Trade::MeshData::indexDataFlags(),
+    @ref Trade::MeshData::vertexDataFlags()
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData flipNormals(Trade::MeshData&& mesh, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 }}
 
