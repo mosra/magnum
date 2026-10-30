@@ -368,6 +368,11 @@ See also:
 -   New @ref MeshTools::interleave(MeshPrimitive, const Trade::MeshIndexData&, Containers::ArrayView<const Trade::MeshAttributeData>)
     overload for conveniently creating an interleaved mesh out of loose index
     and attribute arrays
+-   New @ref MeshTools::flipFaceWindingInPlace(Trade::MeshData&),
+    @ref MeshTools::flipFaceWinding(const Trade::MeshData&)
+    @ref MeshTools::flipNormalsInPlace(Trade::MeshData&) and
+    @ref MeshTools::flipNormals(const Trade::MeshData&, InterleaveFlags)
+    utilities operating directly on @ref Trade::MeshData instances
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
