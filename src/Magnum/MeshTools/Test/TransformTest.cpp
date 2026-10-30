@@ -1377,7 +1377,8 @@ void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
     setTestCaseDescription(data.name);
 
     struct Vertex {
-        Vector3b position;
+        Vector3 position;
+        Vector3b positionPacked;
         Vector4b tangent;
         Vector3h bitangent;
         Vector3s normal;
@@ -1385,22 +1386,29 @@ void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
     Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
     auto vertices = stridedArrayView(Containers::arrayCast<Vertex>(vertexData));
     Utility::copy({
-        {{0, 0, -1},
+        {{0.0f, 0.0f, -1.0f},
+         {0, 0, -1},
          {0, 127, 0, 127},
          {-1.0_h, 0.0_h, 0.0_h},
          {0, 0, 32767}},
-        {{1, 0, -2},
+        {{1.0f, 0.0f, -2.0f},
+         {1, 0, -2},
          {127, 0, 0, 127},
          {0.0_h, -1.0_h, 0.0_h},
          {0, 0, 32767}},
-        {{0, 2, -1},
+        {{0.0f, 2.0f, -1.0f},
+         {0, 2, -1},
          {0, 127, 0, -127},
          {0.0_h, 0.0_h, -1.0_h},
          {32767, 0, 0}}
     }, vertices);
 
     Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)}
+        data.positionFormat == VertexFormat::Vector3 ?
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                vertices.slice(&Vertex::position)} :
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                vertices.slice(&Vertex::positionPacked)}
     }};
     if(data.tangentFormat != VertexFormat{})
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertexFormatComponentCount(data.tangentFormat) == 4 ? VertexFormat::Vector4bNormalized : VertexFormat::Vector3bNormalized, vertices.slice(&Vertex::tangent)});
