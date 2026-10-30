@@ -167,6 +167,17 @@ parameter propagated to it, see its documentation for detailed behavior
 description. Other attributes, position attributes other than @p id or with
 different @p morphTargetId, and indices (if any) are passed through untouched.
 
+@m_class{m-note m-warning}
+
+@par
+    If you're applying negative scaling (which is the case if
+    @ref Matrix3::determinant() of the @p transformation is less than zero),
+    you may want to also flip face winding using
+    @ref flipFaceWinding(const Trade::MeshData&). This cannot be done
+    automatically from this function as flipping face winding affects the mesh
+    as a whole, and cannot be limited to just a single position attribute with
+    given @p id.
+
 See also @ref transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
 for a potentially more efficient operation instead of always performing a full
 copy, you can also do an in-place transformation using @ref transform2DInPlace().
@@ -220,6 +231,17 @@ the in-place operation requires the positions to be in
 @p id or with different @p morphTargetId, and indices (if any) are left
 untouched.
 
+@m_class{m-note m-warning}
+
+@par
+    If you're applying negative scaling (which is the case if
+    @ref Matrix3::determinant() of the @p transformation is less than zero),
+    you may want to also flip face winding using
+    @ref flipFaceWindingInPlace(Trade::MeshData&). This cannot be done
+    automatically from this function as flipping face winding affects the mesh
+    as a whole, and cannot be limited to just a single position attribute with
+    given @p id.
+
 @see @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
     @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
@@ -247,10 +269,16 @@ behavior description. Other attributes, additional position/TBN attributes
 other than @p id or with different @p morphTargetId, and indices (if any) are
 passed through untouched.
 
-If you're applying negative scaling, you may want to also flip face winding
-afterwards using @ref flipFaceWindingInPlace().
+@m_class{m-note m-warning}
 
-@todoc reference the MeshData flipFaceWindingInPlace variant once it exists
+@par
+    If you're applying negative scaling (which is the case if
+    @ref Matrix4::determinant() of the @p transformation is less than zero),
+    you may want to also flip face winding using
+    @ref flipFaceWinding(const Trade::MeshData&). This cannot be done
+    automatically from this function as flipping face winding affects the mesh
+    as a whole, and cannot be limited to just a single position attribute with
+    given @p id.
 
 See also @ref transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt, Int, InterleaveFlags)
 for a potentially more efficient operation instead of always performing a full
@@ -311,6 +339,18 @@ operation requires the position, normal and bitangents to be in
 @ref transform3D() instead. Other attributes, position/TBN attributes other
 than @p id or with different @p morphTargetId, and indices (if any) are left
 untouched.
+
+@m_class{m-note m-warning}
+
+@par
+    If you're applying negative scaling (which is the case if
+    @ref Matrix4::determinant() of the @p transformation is less than zero),
+    you may want to also flip face winding using
+    @ref flipFaceWindingInPlace(Trade::MeshData&). This cannot be done
+    automatically from this function as flipping face winding affects the mesh
+    as a whole, and cannot be limited to just a single position attribute with
+    given @p id.
+
 @see @ref transform2DInPlace(), @ref transformTextureCoordinates2DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
     @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,

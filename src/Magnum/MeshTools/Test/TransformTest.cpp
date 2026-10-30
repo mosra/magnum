@@ -118,8 +118,12 @@ const struct {
         Matrix3::rotation(35.0_degf)},
     {"morph target", false, 0, 37,
         Matrix3::translation({1.5f, 3.0f})*
-        Matrix3::rotation(35.0_degf)}
-    /** @todo negative scaling that flips face winding */
+        Matrix3::rotation(35.0_degf)},
+    /* To verify this *doesn't* flip face winding, see function docs for why */
+    {"negative scaling", false, 0, -1,
+        Matrix3::scaling({-2.0f, 1.0f})},
+    {"negative scaling, indexed", true, 0, -1,
+        Matrix3::scaling({-2.0f, 1.0f})},
 };
 
 const struct {
@@ -224,7 +228,13 @@ const struct {
         Matrix4::scaling({2.0f, 1.0f, 0.5f}),
        (Matrix4::rotationX(35.0_degf)*
         Matrix4::scaling({2.0f, 1.0f, 0.5f})).normalMatrix()},
-    /** @todo negative scaling that flips face winding */
+    /* To verify this *doesn't* flip face winding, see function docs for why */
+    {"negative scaling", false, false, false, false, false, 0, -1,
+        Matrix4::scaling({-2.0f, 1.0f, 1.0f}),
+        Matrix4::scaling({-2.0f, 1.0f, 1.0f}).normalMatrix()},
+    {"negative scaling, indexed", true, false, false, false, false, 0, -1,
+        Matrix4::scaling({-2.0f, 1.0f, 1.0f}),
+        Matrix4::scaling({-2.0f, 1.0f, 1.0f}).normalMatrix()},
 };
 
 const struct {
