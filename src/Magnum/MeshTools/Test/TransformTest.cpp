@@ -693,6 +693,11 @@ void TransformTest::meshData2DRvaluePassthrough() {
     arrayAppend(attributes, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position), data.morphTargetId}
     });
+    /* Have to convert the attributes back to a non-growable array with a
+       default deleter because that's what copy() internally uses to
+       distinguish whether the attributes are owned */
+    arrayShrink(attributes, ValueInit);
+    CORRADE_VERIFY(!attributes.deleter());
     const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -739,9 +744,12 @@ void TransformTest::meshData2DRvaluePassthroughIndexDataNotOwned() {
         {0.0f, 2.0f}
     }, vertices);
 
-    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
-    }};
+    /* Have to use ValueInit + copy to have an array with a default deleter
+       because that's what copy() internally uses to distinguish whether the
+       attributes are owned */
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, 1};
+    attributes[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices};
+    CORRADE_VERIFY(!attributes.deleter());
     const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -764,10 +772,10 @@ void TransformTest::meshData2DRvaluePassthroughIndexDataNotOwned() {
         transformation.transformPoint({0.0f, 2.0f})
     }), TestSuite::Compare::Container);
 
-    /* The memory should not point to the original data */
+    /* The memory should *not* point to the original data for the indices */
     CORRADE_VERIFY(out.indexData().data() != static_cast<const void*>(indices));
-    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+    CORRADE_COMPARE(out.attributeData().data(), originalAttributeData);
 }
 
 void TransformTest::meshData2DRvaluePassthroughVertexDataNotOwned() {
@@ -780,14 +788,9 @@ void TransformTest::meshData2DRvaluePassthroughVertexDataNotOwned() {
         {0.0f, 2.0f}
     };
 
-    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}
-    }};
-    const void* originalAttributeData = attributes.data();
-
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(indexData), Trade::MeshIndexData{indices},
-        {}, vertices, Utility::move(attributes)};
+        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}}};
 
     const Matrix3 transformation = Matrix3::rotation(35.0_degf);
     Trade::MeshData out = transform2D(Utility::move(mesh), transformation);
@@ -805,10 +808,11 @@ void TransformTest::meshData2DRvaluePassthroughVertexDataNotOwned() {
         transformation.transformPoint({0.0f, 2.0f})
     }), TestSuite::Compare::Container);
 
-    /* The memory should not point to the original data */
-    CORRADE_VERIFY(out.indexData().data() != static_cast<void*>(indices.data()));
+    /* The memory should *not* point to the original data for the vertices. Not
+       verifying the behavior for attribute data as that's an implementation
+       detail in copy(). */
+    CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
     CORRADE_VERIFY(out.vertexData().data() != static_cast<const void*>(vertices));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
 }
 
 void TransformTest::meshData2DRvaluePassthroughNoPosition() {
@@ -832,6 +836,10 @@ void TransformTest::meshData2DRvaluePassthroughNoPosition() {
 }
 
 void TransformTest::meshData2DRvaluePassthroughWrongFormat() {
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({1, 2, 0}, indices);
+
     Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector2ub)};
     auto vertices = Containers::arrayCast<Vector2ub>(vertexData);
     Utility::copy({
@@ -840,13 +848,9 @@ void TransformTest::meshData2DRvaluePassthroughWrongFormat() {
         {0, 2}
     }, vertices);
 
-    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
-    }};
-    const void* originalAttributeData = attributes.data();
-
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
-        Utility::move(vertexData), Utility::move(attributes)};
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Utility::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}}};
 
     const Matrix3 transformation = Matrix3::rotation(35.0_degf);
     Trade::MeshData out = transform2D(Utility::move(mesh), transformation);
@@ -858,9 +862,11 @@ void TransformTest::meshData2DRvaluePassthroughWrongFormat() {
         transformation.transformPoint({0.0f, 2.0f})
     }), TestSuite::Compare::Container);
 
-    /* The memory should not point to the original data */
+    /* The memory should *not* point to the original data for the vertices. Not
+       verifying the behavior for attribute data as those are copied in this
+       case always. */
+    CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
     CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
 }
 
 void TransformTest::meshData2DInPlaceNotMutable() {
@@ -1200,6 +1206,11 @@ void TransformTest::meshData3DRvaluePassthrough() {
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, vertices.slice(&Vertex::bitangent), data.morphTargetId});
     if(data.normals)
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertices.slice(&Vertex::normal), data.morphTargetId});
+    /* Have to convert the attributes back to a non-growable array with a
+       default deleter because that's what copy() internally uses to
+       distinguish whether the attributes are owned */
+    arrayShrink(attributes, ValueInit);
+    CORRADE_VERIFY(!attributes.deleter());
     const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -1280,9 +1291,12 @@ void TransformTest::meshData3DRvaluePassthroughIndexDataNotOwned() {
         {0.0f, 2.0f, -1.0f}
     }, vertices);
 
-    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices}
-    }};
+    /* Have to use ValueInit + copy to have an array with a default deleter
+       because that's what copy() internally uses to distinguish whether the
+       attributes are owned */
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, 1};
+    attributes[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices};
+    CORRADE_VERIFY(!attributes.deleter());
     const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -1305,10 +1319,10 @@ void TransformTest::meshData3DRvaluePassthroughIndexDataNotOwned() {
         transformation.transformPoint({0.0f, 2.0f, -1.0f})
     }), TestSuite::Compare::Container);
 
-    /* The memory should not point to the original data */
+    /* The memory should *not* point to the original data for the indices */
     CORRADE_VERIFY(out.indexData().data() != static_cast<const void*>(indices));
-    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+    CORRADE_COMPARE(out.attributeData().data(), originalAttributeData);
 }
 
 void TransformTest::meshData3DRvaluePassthroughVertexDataNotOwned() {
@@ -1321,14 +1335,9 @@ void TransformTest::meshData3DRvaluePassthroughVertexDataNotOwned() {
         {0.0f, 2.0f, -1.0f}
     };
 
-    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}
-    }};
-    const void* originalAttributeData = attributes.data();
-
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(indexData), Trade::MeshIndexData{indices},
-        {}, vertices, Utility::move(attributes)};
+        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertices)}}};
 
     const Matrix4 transformation = Matrix4::rotationX(35.0_degf);
     Trade::MeshData out = transform3D(Utility::move(mesh), transformation);
@@ -1346,10 +1355,11 @@ void TransformTest::meshData3DRvaluePassthroughVertexDataNotOwned() {
         transformation.transformPoint({0.0f, 2.0f, -1.0f})
     }), TestSuite::Compare::Container);
 
-    /* The memory should not point to the original data */
-    CORRADE_VERIFY(out.indexData().data() != static_cast<void*>(indices.data()));
+    /* The memory should *not* point to the original data for the vertices. Not
+       verifying the behavior for attribute data as that's an implementation
+       detail in copy(). */
+    CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
     CORRADE_VERIFY(out.vertexData().data() != static_cast<const void*>(vertices));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
 }
 
 void TransformTest::meshData3DRvaluePassthroughNoPosition() {
@@ -1375,6 +1385,10 @@ void TransformTest::meshData3DRvaluePassthroughNoPosition() {
 void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
     auto&& data = MeshData3DWrongFormatData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({1, 2, 0}, indices);
 
     struct Vertex {
         Vector3 position;
@@ -1416,9 +1430,9 @@ void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, vertices.slice(&Vertex::bitangent)});
     if(data.normalFormat != VertexFormat{})
         arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3sNormalized, vertices.slice(&Vertex::normal)});
-    const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        Utility::move(indexData), Trade::MeshIndexData{indices},
         Utility::move(vertexData), Utility::move(attributes)};
 
     const Matrix4 transformation = Matrix4::rotationX(35.0_degf);
@@ -1462,9 +1476,11 @@ void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
         }), TestSuite::Compare::Container);
     }
 
-    /* The memory should not point to the original data */
+    /* The memory should *not* point to the original data for the vertices. Not
+       verifying the behavior for attribute data as those are copied in this
+       case always. */
+    CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
     CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
 }
 
 void TransformTest::meshData3DInPlaceNotMutable() {
@@ -1710,6 +1726,11 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthrough() {
     arrayAppend(attributes, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates), data.morphTargetId}
     });
+    /* Have to convert the attributes back to a non-growable array with a
+       default deleter because that's what copy() internally uses to
+       distinguish whether the attributes are owned */
+    arrayShrink(attributes, ValueInit);
+    CORRADE_VERIFY(!attributes.deleter());
     const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -1756,9 +1777,12 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwn
         {0.0f, 2.0f}
     }, vertices);
 
-    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices}
-    }};
+    /* Have to use ValueInit + copy to have an array with a default deleter
+       because that's what copy() internally uses to distinguish whether the
+       attributes are owned */
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, 1};
+    attributes[0] = Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices};
+    CORRADE_VERIFY(!attributes.deleter());
     const void* originalAttributeData = attributes.data();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
@@ -1781,10 +1805,10 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwn
         transformation.transformPoint({0.0f, 2.0f})
     }), TestSuite::Compare::Container);
 
-    /* The memory should not point to the original data */
+    /* The memory should *not* point to the original data for the indices */
     CORRADE_VERIFY(out.indexData().data() != static_cast<const void*>(indices));
-    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+    CORRADE_COMPARE(out.attributeData().data(), originalAttributeData);
 }
 
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOwned() {
@@ -1797,14 +1821,9 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOw
         {0.0f, 2.0f}
     };
 
-    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::arrayView(vertices)}
-    }};
-    const void* originalAttributeData = attributes.data();
-
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
         Utility::move(indexData), Trade::MeshIndexData{indices},
-        {}, vertices, Utility::move(attributes)};
+        {}, vertices, {Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::arrayView(vertices)}}};
 
     const Matrix3 transformation = Matrix3::rotation(35.0_degf);
     Trade::MeshData out = transformTextureCoordinates2D(Utility::move(mesh), transformation);
@@ -1822,10 +1841,11 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOw
         transformation.transformPoint({0.0f, 2.0f})
     }), TestSuite::Compare::Container);
 
-    /* The memory should not point to the original data */
-    CORRADE_VERIFY(out.indexData().data() != static_cast<void*>(indices.data()));
+    /* The memory should *not* point to the original data for the vertices. Not
+       verifying the behavior for attribute data as that's an implementation
+       detail in copy(). */
+    CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
     CORRADE_VERIFY(out.vertexData().data() != static_cast<const void*>(vertices));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
 }
 
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughNoCoordinates() {
@@ -1849,6 +1869,10 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughNoCoordinates()
 }
 
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughWrongFormat() {
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({1, 2, 0}, indices);
+
     Containers::Array<char> vertexData{NoInit, 3*sizeof(Vector2ub)};
     auto vertices = Containers::arrayCast<Vector2ub>(vertexData);
     Utility::copy({
@@ -1857,13 +1881,9 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughWrongFormat() {
         {0, 2}
     }, vertices);
 
-    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices}
-    }};
-    const void* originalAttributeData = attributes.data();
-
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
-        Utility::move(vertexData), Utility::move(attributes)};
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Utility::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices}}};
 
     const Matrix3 transformation = Matrix3::rotation(35.0_degf);
     Trade::MeshData out = transformTextureCoordinates2D(Utility::move(mesh), transformation);
@@ -1875,9 +1895,11 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughWrongFormat() {
         transformation.transformPoint({0.0f, 2.0f})
     }), TestSuite::Compare::Container);
 
-    /* The memory should not point to the original data */
+    /* The memory should *not* point to the original data for the vertices. Not
+       verifying the behavior for attribute data as those are copied in this
+       case always. */
+    CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
     CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
-    CORRADE_VERIFY(out.attributeData().data() != static_cast<const void*>(originalAttributeData));
 }
 
 void TransformTest::meshDataTextureCoordinates2DInPlaceNotMutable() {
