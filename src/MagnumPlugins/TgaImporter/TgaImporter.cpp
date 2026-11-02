@@ -87,6 +87,12 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
 
     const Implementation::TgaHeader& header = *reinterpret_cast<const Implementation::TgaHeader*>(_in.data());
 
+    /** @todo query the orientation bits in `TgaHeader::descriptor`, see page 8
+        of https://github.com/DEAKSoftware/Truevision-TGA and
+        https://github.com/nothings/stb/pull/1667), once ImageFlags have
+        orientation bits add an option for either preserving it or switching to
+        (some) default */
+
     /* Size in machine endian */
     const Vector2i size{Utility::Endianness::littleEndian(header.width),
                         Utility::Endianness::littleEndian(header.height)};

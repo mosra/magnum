@@ -217,6 +217,12 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
         Warning{} << "Trade::TgaImageConverter::convertToData(): 1D array images are unrepresentable in TGA, saving as a regular 2D image";
     }
 
+    /** @todo once ImageFlag2D has orientation bits, preserve these in the file
+        (two bits in `TgaHeader::descriptor`, see page 8 of
+        https://github.com/DEAKSoftware/Truevision-TGA and
+        https://github.com/nothings/stb/pull/1667), option for either
+        preserving it or switching to the default bottom left */
+
     /* Initialize data buffer. If we're writing a RLE-encoded file, create a
        growable array (which we have to copy to a non-growable after after), if
        not then allocate exactly the amount of bytes so we don't need to copy
