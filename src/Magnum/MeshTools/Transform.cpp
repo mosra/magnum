@@ -410,6 +410,9 @@ void transformTextureCoordinates2DInPlace(Trade::MeshData& mesh, const Matrix3& 
     /** @todo this needs a proper batch implementation */
     for(Vector2& position: mesh.mutableAttribute<Vector2>(*textureCoordinateAttributeId))
         position = transformation.transformPoint(position);
+
+    /** @todo shouldn't this be transforming tangents and bitangents as
+        well? */
 }
 
 }}
