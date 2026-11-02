@@ -56,12 +56,32 @@ Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformatio
     /* If needing format expansion, first copy original attributes to a mutable
        array so we can update the position attribute format. Not using
        Utility::copy() here as the view returned by attributeData() might have
-       offset-only attributes which interleave() doesn't want. */
+       offset-only attributes which interleave() doesn't want.
+
+       Here we also need to preserve the original attribute order so it doesn't
+       happen that e.g. positions with ID 0 become positions with ID 2 because
+       the expanded attribute got put at the end after two other positions.
+       Thus we indeed have to copy the whole attribute array and update parts
+       of it instead of passing a mask to filterAttributes() and then appending
+       only the modified attributes with interleave(). Which also means
+       implementation-specific vertex formats cannot be preserved (as is
+       asserted below), because e.g. a position attribute that needs expansion
+       can be right after an implementation-specific attribute and we don't
+       know how large the implementation-specific format is to preserve it. The
+       InterleaveFlag::PreserveInterleavedAttributes flag *could* help but only
+       if we no longer preserved the order (so, passing a bitmask to
+       filterAttributes() instead of discarding all) and added the updated
+       positions at the end using interleave() (which is wrong), keeping their
+       original locations as unused wasted space (which is even more wrong). */
     Trade::MeshData out{MeshPrimitive::Points, 0}; /* placeholder */
     if(positionAttributeFormat != VertexFormat::Vector2) {
         Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, mesh.attributeCount()};
-        for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+        for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
+            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(mesh.attributeFormat(i)),
+                "MeshTools::transform2D(): attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(mesh.attributeFormat(i)),
+                (Trade::MeshData{MeshPrimitive::Points, 0}));
             attributes[i] = mesh.attributeData(i);
+        }
 
         /* Replace the position attribute with an empty placeholder that we'll
            unpack the data into */
@@ -167,7 +187,12 @@ Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformatio
     /* If needing format expansion, first copy original attributes to a mutable
        array so we can update the attribute formats. Not using Utility::copy()
        here as the view returned by attributeData() might have offset-only
-       attributes which interleave() doesn't want. */
+       attributes which interleave() doesn't want.
+
+       Here we also need to preserve the original attribute order so it doesn't
+       happen that e.g. positions with ID 0 become positions with ID 2 because
+       the expanded attribute got put at the end after two other positions. See
+       the corresponding comment in transform2D() above for details. */
     Trade::MeshData out{MeshPrimitive::Points, 0}; /* placeholder */
     if(positionAttributeFormat != VertexFormat::Vector3 ||
        (tangentAttributeId && tangentAttributeFormat != desiredTangentVertexFormat) ||
@@ -175,8 +200,12 @@ Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformatio
        (normalAttributeId && normalAttributeFormat != VertexFormat::Vector3)
     ) {
         Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, mesh.attributeCount()};
-        for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+        for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
+            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(mesh.attributeFormat(i)),
+                "MeshTools::transform3D(): attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(mesh.attributeFormat(i)),
+                (Trade::MeshData{MeshPrimitive::Points, 0}));
             attributes[i] = mesh.attributeData(i);
+        }
 
         /* If the position/TBN attributes aren't in a desired format, replace
            them with an empty placeholder that we'll unpack the data into */
@@ -308,12 +337,22 @@ Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matr
     /* If needing format expansion, first copy original attributes to a mutable
        array so we can update the position attribute format, if needed. Not
        using Utility::copy() here as the view returned by attributeData() might
-       have offset-only attributes which interleave() doesn't want. */
+       have offset-only attributes which interleave() doesn't want.
+
+       Here we also need to preserve the original attribute order so it doesn't
+       happen that e.g. texture coordinates with ID 0 become coordinates with
+       ID 2 because the expanded attribute got put at the end after two other
+       coordinates. See the corresponding comment in transform2D() above for
+       details. */
     Trade::MeshData out{MeshPrimitive::Points, 0}; /* placeholder */
     if(textureCoordinateAttributeFormat != VertexFormat::Vector2) {
         Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, mesh.attributeCount()};
-        for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+        for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
+            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(mesh.attributeFormat(i)),
+                "MeshTools::transformTextureCoordinates2D(): attribute" << i << "has an implementation-specific format" << Debug::hex << vertexFormatUnwrap(mesh.attributeFormat(i)),
+                (Trade::MeshData{MeshPrimitive::Points, 0}));
             attributes[i] = mesh.attributeData(i);
+        }
 
         /* Replace the texture coordinate attribute with an empty placeholder
            that we'll unpack the data into */

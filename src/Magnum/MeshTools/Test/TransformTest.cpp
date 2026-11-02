@@ -30,6 +30,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Format.h>
 
@@ -637,15 +638,36 @@ void TransformTest::meshData2DImplementationSpecificIndexType() {
 void TransformTest::meshData2DImplementationSpecificVertexFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    /* It should check a position attribute with given ID */
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertexFormatWrap(0xcaca), nullptr},
     }};
+    /* In case the position vertex format needs expansion it has to assert for
+       all other attributes early enough to not cause a confusing assertion in
+       interleave() */
+    Trade::MeshData needsFormatExpansion{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xbebe), nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2s, nullptr},
+    }};
+
+    /* However if a format doesn't nneed expansion then implementation-specific
+       formats are alright and this will pass with no issues */
+    transform2D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2s, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xfefe), nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
+    }}, {}, 1);
 
     Containers::String out;
     Error redirectError{&out};
     transform2D(mesh, {}, 1);
-    CORRADE_COMPARE(out, "MeshTools::transform2D(): positions have an implementation-specific format 0xcaca\n");
+    transform2D(needsFormatExpansion, {}, 1);
+    CORRADE_COMPARE_AS(out,
+        "MeshTools::transform2D(): positions have an implementation-specific format 0xcaca\n"
+        "MeshTools::transform2D(): attribute 1 has an implementation-specific format 0xbebe\n",
+        TestSuite::Compare::String);
 }
 
 void TransformTest::meshData2DRvaluePassthrough() {
@@ -1104,17 +1126,38 @@ void TransformTest::meshData3DImplementationSpecificVertexFormat() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    /* It should check an attribute with given ID */
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, data.positionFormat, nullptr},
         Trade::MeshAttributeData{data.otherAttribute, VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{data.otherAttribute, data.otherAttributeFormat, nullptr},
     }};
+    /* In case some attribute vertex format needs expansion it has to assert
+       for all other attributes early enough to not cause a confusing assertion
+       in interleave() */
+    Trade::MeshData needsFormatExpansion{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xbebe), nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3s, nullptr},
+    }};
+
+    /* However if a format doesn't nneed expansion then implementation-specific
+       formats are alright and this will pass with no issues */
+    transform3D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3s, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xfefe), nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+    }}, {}, 1);
 
     Containers::String out;
     Error redirectError{&out};
     transform3D(mesh, {}, 1);
-    CORRADE_COMPARE(out, Utility::format("MeshTools::transform3D(): {} have an implementation-specific format 0xcaca\n", data.name));
+    transform3D(needsFormatExpansion, {}, 1);
+    CORRADE_COMPARE_AS(out, Utility::format(
+        "MeshTools::transform3D(): {} have an implementation-specific format 0xcaca\n"
+        "MeshTools::transform3D(): attribute 1 has an implementation-specific format 0xbebe\n",
+        data.name), TestSuite::Compare::String);
 }
 
 void TransformTest::meshData3DRvaluePassthrough() {
@@ -1630,15 +1673,37 @@ void TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType(
 void TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    /* It should check a coordinate attribute with given ID */
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertexFormatWrap(0xcaca), nullptr},
     }};
+    /* In case the coordinate vertex format needs expansion it has to assert
+       for all other attributes early enough to not cause a confusing assertion
+       in interleave() */
+    Trade::MeshData needsFormatExpansion{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xbebe), nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2s, nullptr},
+    }};
+
+    /* However if a format doesn't nneed expansion then implementation-specific
+       formats are alright and this will pass with no issues */
+    transformTextureCoordinates2D(Trade::MeshData{MeshPrimitive::Points, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2s, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xfefe), nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
+    }}, {}, 1);
+
 
     Containers::String out;
     Error redirectError{&out};
     transformTextureCoordinates2D(mesh, {}, 1);
-    CORRADE_COMPARE(out, "MeshTools::transformTextureCoordinates2D(): texture coordinates have an implementation-specific format 0xcaca\n");
+    transformTextureCoordinates2D(needsFormatExpansion, {}, 1);
+    CORRADE_COMPARE_AS(out,
+        "MeshTools::transformTextureCoordinates2D(): texture coordinates have an implementation-specific format 0xcaca\n"
+        "MeshTools::transformTextureCoordinates2D(): attribute 1 has an implementation-specific format 0xbebe\n",
+        TestSuite::Compare::String);
 }
 
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthrough() {
