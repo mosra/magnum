@@ -108,7 +108,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * @f$ \boldsymbol{c}_3 @f$ is defined as: @f[
          *      \begin{array}{rcl}
          *          \boldsymbol{c}_0 & = & \boldsymbol{p}_a \\
-         *          \boldsymbol{c}_1 & = & \frac{1}{3} \boldsymbol{n}_a - \boldsymbol{p}_a \\
+         *          \boldsymbol{c}_1 & = & \boldsymbol{p}_a + \frac{1}{3} \boldsymbol{n}_a \\
          *          \boldsymbol{c}_2 & = & \boldsymbol{p}_b - \frac{1}{3} \boldsymbol{m}_b \\
          *          \boldsymbol{c}_3 & = & \boldsymbol{p}_b
          *      \end{array}
@@ -122,7 +122,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         template<UnsignedInt order_ = order, typename std::enable_if<order_ == 3, int>::type = 0>
         #endif
         static Bezier<order, dimensions, T> fromCubicHermite(const CubicHermite<VectorType>& a, const CubicHermite<VectorType>& b) {
-            return {a.point(), a.outTangent()/T(3) - a.point(), b.point() - b.inTangent()/T(3), b.point()};
+            return {a.point(), a.point() + a.outTangent()/T(3), b.point() - b.inTangent()/T(3), b.point()};
         }
 
         /**
