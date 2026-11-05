@@ -43,10 +43,12 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 struct GenerateNormalsTest: TestSuite::Tester {
     explicit GenerateNormalsTest();
 
+    void flatEmpty();
     void flat();
     void flatWrongCount();
     void flatIntoWrongSize();
 
+    void smoothEmpty();
     template<class T> void smoothTwoTriangles();
     void smoothCube();
     void smoothBeveledCube();
@@ -66,10 +68,12 @@ struct GenerateNormalsTest: TestSuite::Tester {
 };
 
 GenerateNormalsTest::GenerateNormalsTest() {
-    addTests({&GenerateNormalsTest::flat,
+    addTests({&GenerateNormalsTest::flatEmpty,
+              &GenerateNormalsTest::flat,
               &GenerateNormalsTest::flatWrongCount,
               &GenerateNormalsTest::flatIntoWrongSize,
 
+              &GenerateNormalsTest::smoothEmpty,
               &GenerateNormalsTest::smoothTwoTriangles<UnsignedByte>,
               &GenerateNormalsTest::smoothTwoTriangles<UnsignedShort>,
               &GenerateNormalsTest::smoothTwoTriangles<UnsignedInt>,
@@ -102,6 +106,14 @@ constexpr Vector3 TwoTriangles[]{
     {0.0f, 1.0f, 0.0f},
     {1.0f, 0.0f, 0.0f}
 };
+
+void GenerateNormalsTest::flatEmpty() {
+    /* Verifies that there isn't any logic that would assume at least one
+       triangle and crash */
+    CORRADE_COMPARE_AS(generateFlatNormals({}),
+        Containers::ArrayView<const Vector3>{},
+        TestSuite::Compare::Container);
+}
 
 void GenerateNormalsTest::flat() {
     CORRADE_COMPARE_AS(generateFlatNormals(TwoTriangles),
@@ -136,6 +148,14 @@ void GenerateNormalsTest::flatIntoWrongSize() {
     Vector3 normals[7];
     generateFlatNormalsInto(positions, normals);
     CORRADE_COMPARE(out, "MeshTools::generateFlatNormalsInto(): bad output size, expected 6 but got 7\n");
+}
+
+void GenerateNormalsTest::smoothEmpty() {
+    /* Verifies that there isn't any logic that would assume at least one
+       triangle and crash */
+    CORRADE_COMPARE_AS(generateSmoothNormals(Containers::ArrayView<const UnsignedShort>{}, {}),
+        Containers::ArrayView<const Vector3>{},
+        TestSuite::Compare::Container);
 }
 
 template<class T> void GenerateNormalsTest::smoothTwoTriangles() {
