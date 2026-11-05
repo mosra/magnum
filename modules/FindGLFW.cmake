@@ -88,10 +88,14 @@ if(CORRADE_TARGET_WINDOWS)
             set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2017)
         elseif(MSVC_VERSION VERSION_LESS 1930)
             set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2019)
-        # MSVC 2022 17.10 overflowed the 1930 range to 1940, so assume a
-        # hypothetical MSVC 2025 will start with 1950.
         elseif(MSVC_VERSION VERSION_LESS 1950)
             set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2022)
+        # https://learn.microsoft.com/en-us/cpp/overview/compiler-versions,
+        # Visual Studio 2026+ gets decoupled from the compiler version,
+        # assuming 1970+ will be some next version again. This variant is
+        # present since GLFW 3.5.
+        elseif(MSVC_VERSION VERSION_LESS 1960)
+            set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2026)
         else()
             message(FATAL_ERROR "Unsupported MSVC version")
         endif()
