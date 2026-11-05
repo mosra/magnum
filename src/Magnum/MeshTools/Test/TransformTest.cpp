@@ -60,7 +60,7 @@ struct TransformTest: TestSuite::Tester {
     void meshData2DRvaluePassthroughIndexDataNotOwned();
     void meshData2DRvaluePassthroughVertexDataNotOwned();
     void meshData2DRvaluePassthroughWrongFormat();
-    /* in-place variant called from the others and as such tested sufficiently,
+    /* In-place variant called from the others and as such tested sufficiently,
        except for the asserts below */
     void meshData2DInPlaceNotMutable();
     void meshData2DInPlaceNoPosition();
@@ -75,7 +75,7 @@ struct TransformTest: TestSuite::Tester {
     void meshData3DRvaluePassthroughIndexDataNotOwned();
     void meshData3DRvaluePassthroughVertexDataNotOwned();
     void meshData3DRvaluePassthroughWrongFormat();
-    /* in-place variant called from the others and as such tested sufficiently,
+    /* In-place variant called from the others and as such tested sufficiently,
        except for the asserts below */
     void meshData3DInPlaceNotMutable();
     void meshData3DInPlaceNoPosition();
@@ -89,7 +89,7 @@ struct TransformTest: TestSuite::Tester {
     void meshDataTextureCoordinates2DRvaluePassthroughIndexDataNotOwned();
     void meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOwned();
     void meshDataTextureCoordinates2DRvaluePassthroughWrongFormat();
-    /* in-place variant called from the others and as such tested sufficiently,
+    /* In-place variant called from the others and as such tested sufficiently,
        except for the asserts below */
     void meshDataTextureCoordinates2DInPlaceNotMutable();
     void meshDataTextureCoordinates2DInPlaceNoCoordinates();
@@ -737,7 +737,7 @@ void TransformTest::meshData2DRvaluePassthrough() {
             TestSuite::Compare::Container);
     }
 
-    /* The vertices should be expanded to floats and transformed */
+    /* The vertices should be transformed */
     CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Position, data.id, data.morphTargetId), VertexFormat::Vector2);
     CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position, data.id, data.morphTargetId), Containers::arrayView({
         transformation.transformPoint({0.0f, 0.0f}),
@@ -1251,7 +1251,7 @@ void TransformTest::meshData3DRvaluePassthrough() {
             TestSuite::Compare::Container);
     }
 
-    /* The vertices should be expanded to floats and transformed */
+    /* The vertices should be transformed */
     CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::Position, data.id, data.morphTargetId), VertexFormat::Vector3);
     CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position, data.id, data.morphTargetId), Containers::arrayView({
         transformation.transformPoint({0.0f, 0.0f, -1.0f}),
@@ -1705,7 +1705,6 @@ void TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexForm
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
     }}, {}, 1);
 
-
     Containers::String out;
     Error redirectError{&out};
     transformTextureCoordinates2D(mesh, {}, 1);
@@ -1773,7 +1772,7 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthrough() {
             TestSuite::Compare::Container);
     }
 
-    /* The vertices should be expanded to floats and transformed */
+    /* The vertices should be transformed */
     CORRADE_COMPARE(out.attributeFormat(Trade::MeshAttribute::TextureCoordinates, data.id, data.morphTargetId), VertexFormat::Vector2);
     CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates, data.id, data.morphTargetId), Containers::arrayView({
         transformation.transformPoint({0.0f, 0.0f}),
