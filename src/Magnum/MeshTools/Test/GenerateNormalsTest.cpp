@@ -26,12 +26,17 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
+#include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/GenerateNormals.h"
@@ -66,6 +71,22 @@ struct GenerateNormalsTest: TestSuite::Tester {
 
     void benchmarkFlat();
     void benchmarkSmooth();
+
+    template<class Position, class Normal> void meshDataFlat();
+    template<class Index, class Position, class Normal> void meshDataSmooth();
+    template<class Position> void meshDataAddNormalAttribute();
+    void meshDataWrongPrimitiveIndexVertexCount();
+    void meshDataNoPosition();
+    void meshDataNot3D();
+    void meshDataNotEnoughNormals();
+    void meshDataImplementationSpecificAttributeFormat();
+    void meshDataFlatIndexed();
+    void meshDataSmoothNonIndexed();
+    void meshDataSmoothImplementationSpecificIndexType();
+    void meshDataRvaluePassthrough();
+    void meshDataRvaluePassthroughIndexDataNotOwned();
+    void meshDataRvaluePassthroughVertexDataNotOwned();
+    void meshDataRvaluePassthroughWrongFormat();
 };
 
 const struct {
@@ -123,6 +144,108 @@ const struct {
     }},
 };
 
+const struct {
+    const char* name;
+    UnsignedInt id;
+    Int morphTargetId;
+} MeshDataFlatData[]{
+    {"", 0, -1},
+    {"second set", 1, -1},
+    {"morph target", 0, 37},
+};
+
+const struct {
+    const char* name;
+    UnsignedInt id;
+    Int morphTargetId;
+    InterleaveFlags interleaveFlags;
+    std::ptrdiff_t expectedIndexStrideMultiplierWithExpandedVertexFormat;
+} MeshDataSmoothData[]{
+    {"",
+        0, -1, {}, 1},
+    {"PreserveStridedIndices",
+        0, -1, InterleaveFlag::PreserveStridedIndices, 2},
+    {"second set",
+        1, -1, {}, 1},
+    {"morph target",
+        0, 37, {}, 1},
+};
+
+const struct {
+    const char* name;
+    bool smooth;
+    UnsignedInt id;
+    Int morphTargetId;
+} MeshDataAddNormalAttributeData[]{
+    {"flat", false, 0, -1},
+    {"flat, second set", false, 1, -1},
+    {"flat, morph target", false, 0, 37},
+    {"smooth", true, 0, -1},
+    {"smooth, second set", true, 1, -1},
+    {"smooth, morph target", true, 0, 37},
+};
+
+const struct {
+    const char* name;
+    bool smooth;
+    const char* prefix;
+} MeshDataData[]{
+    {"flat", false, "generateFlatNormals"},
+    {"smooth", true, "generateSmoothNormals"}
+};
+
+const struct {
+    const char* name;
+    bool smooth;
+    UnsignedInt id;
+    Int morphTargetId;
+    const char* prefix;
+    const char* suffix;
+} MeshDataNoAttributeData[]{
+    {"flat",
+        false, 1, -1, "generateFlatNormals", ""},
+    {"flat, morph target",
+        false, 0, 37, "generateFlatNormals", " in morph target 37"},
+    {"smooth",
+        true, 1, -1, "generateSmoothNormals", ""},
+    {"smooth, morph target",
+        true, 0, 37, "generateSmoothNormals", " in morph target 37"},
+};
+
+const struct {
+    const char* name;
+    bool smooth;
+    UnsignedInt id;
+    Int morphTargetId;
+} MeshDataRvaluePassthroughData[]{
+    {"flat", false, 0, -1},
+    {"flat, second set", false, 1, -1},
+    {"flat, morph target", false, 0, 37},
+    {"smooth", true, 0, -1},
+    {"smooth, second set", true, 1, -1},
+    {"smooth, morph target", true, 0, 37},
+};
+
+const struct {
+    const char* name;
+    bool smooth;
+    VertexFormat positionFormat;
+    VertexFormat normalFormat;
+} MeshDataRvaluePassthroughWrongFormatData[]{
+    {"flat, packed positions",
+        false, VertexFormat::Vector3b, VertexFormat::Vector3},
+    {"flat, packed normals",
+        false, VertexFormat::Vector3, VertexFormat::Vector3s},
+    {"flat, no normals",
+        false, VertexFormat::Vector3, VertexFormat{}},
+    {"smooth, packed positions",
+        true, VertexFormat::Vector3b, VertexFormat::Vector3},
+    {"smooth, packed normals",
+        true, VertexFormat::Vector3, VertexFormat::Vector3s},
+    {"smooth, no normals",
+        true, VertexFormat::Vector3, VertexFormat{}},
+};
+
 GenerateNormalsTest::GenerateNormalsTest() {
     addTests({&GenerateNormalsTest::flatEmpty,
               &GenerateNormalsTest::flat,
@@ -154,6 +277,55 @@ GenerateNormalsTest::GenerateNormalsTest() {
 
     addBenchmarks({&GenerateNormalsTest::benchmarkFlat,
                    &GenerateNormalsTest::benchmarkSmooth}, 150);
+
+    addInstancedTests<GenerateNormalsTest>({
+        &GenerateNormalsTest::meshDataFlat<Float, Float>,
+        &GenerateNormalsTest::meshDataFlat<Float, Half>,
+        &GenerateNormalsTest::meshDataFlat<Half, Float>,
+        &GenerateNormalsTest::meshDataFlat<Half, Half>
+    }, Containers::arraySize(MeshDataFlatData));
+
+    addInstancedTests<GenerateNormalsTest>({
+        &GenerateNormalsTest::meshDataSmooth<UnsignedInt, Float, Float>,
+        &GenerateNormalsTest::meshDataSmooth<UnsignedShort, Float, Half>,
+        &GenerateNormalsTest::meshDataSmooth<UnsignedByte, Float, Half>,
+        &GenerateNormalsTest::meshDataSmooth<UnsignedInt, Half, Half>,
+        &GenerateNormalsTest::meshDataSmooth<UnsignedShort, Half, Half>
+    }, Containers::arraySize(MeshDataSmoothData));
+
+    addInstancedTests<GenerateNormalsTest>({
+        &GenerateNormalsTest::meshDataAddNormalAttribute<Float>,
+        &GenerateNormalsTest::meshDataAddNormalAttribute<Half>
+    }, Containers::arraySize(MeshDataAddNormalAttributeData));
+
+    addTests({&GenerateNormalsTest::meshDataWrongPrimitiveIndexVertexCount});
+
+    addInstancedTests({&GenerateNormalsTest::meshDataNoPosition},
+        Containers::arraySize(MeshDataNoAttributeData));
+
+    addInstancedTests({&GenerateNormalsTest::meshDataNot3D},
+        Containers::arraySize(MeshDataData));
+
+    addInstancedTests({&GenerateNormalsTest::meshDataNotEnoughNormals},
+        Containers::arraySize(MeshDataNoAttributeData));
+
+    addInstancedTests({&GenerateNormalsTest::meshDataImplementationSpecificAttributeFormat},
+        Containers::arraySize(MeshDataData));
+
+    addTests({&GenerateNormalsTest::meshDataFlatIndexed,
+              &GenerateNormalsTest::meshDataSmoothNonIndexed,
+              &GenerateNormalsTest::meshDataSmoothImplementationSpecificIndexType});
+
+    addInstancedTests({&GenerateNormalsTest::meshDataRvaluePassthrough},
+        Containers::arraySize(MeshDataRvaluePassthroughData));
+
+    addTests({&GenerateNormalsTest::meshDataRvaluePassthroughIndexDataNotOwned});
+
+    addInstancedTests({&GenerateNormalsTest::meshDataRvaluePassthroughVertexDataNotOwned},
+        Containers::arraySize(MeshDataData));
+
+    addInstancedTests({&GenerateNormalsTest::meshDataRvaluePassthroughWrongFormat},
+        Containers::arraySize(MeshDataRvaluePassthroughWrongFormatData));
 }
 
 /* Two triangles connected by one edge, each wound in another direction */
@@ -567,6 +739,769 @@ void GenerateNormalsTest::smoothErasedWrongIndexSize() {
     generateSmoothNormals(Containers::StridedArrayView2D<const char>{indices, {6, 3}}.every(2), positions);
     CORRADE_COMPARE(out,
         "MeshTools::generateSmoothNormalsInto(): expected index type size 1, 2 or 4 but got 3\n");
+}
+
+template<class Position, class Normal> void GenerateNormalsTest::meshDataFlat() {
+    auto&& data = MeshDataFlatData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName({Math::TypeTraits<Position>::name(),
+                             Math::TypeTraits<Normal>::name()});
+
+    /* Like the flat() test case, just with a bunch of templates on top */
+
+    struct Vertex {
+        Vector3b secondaryPositionOrNormal;
+        Math::Vector3<Position> position;
+        Math::Vector3<Normal> normal;
+        Float somethingElse;
+    } vertices[]{
+        {{15, -34, 3}, {Position(-1.0), Position(0.0), Position(0.0)}, {}, 3.0f},
+        {{11, -25, 0}, {Position(0.0), Position(-1.0), Position(0.0)}, {}, 4.0f},
+        {{16, -27, 2}, {Position(0.0), Position(1.0), Position(0.0)}, {}, 1.0f},
+
+        {{-22, 19, 1}, {Position(0.0), Position(-1.0), Position(0.0)}, {}, 7.0f},
+        {{-45, 99, 7}, {Position(0.0), Position(1.0), Position(0.0)}, {}, 8.0f},
+        {{-89, 98, 6}, {Position(1.0), Position(0.0), Position(0.0)}, {}, 2.0f}
+    };
+    Containers::StridedArrayView1D<const Vertex> view = vertices;
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1 || data.morphTargetId != -1) {
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::secondaryPositionOrNormal)});
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3bNormalized, view.slice(&Vertex::secondaryPositionOrNormal)});
+    } else {
+        CORRADE_COMPARE(data.id, 0);
+        CORRADE_COMPARE(data.morphTargetId, -1);
+    }
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::position), data.morphTargetId},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, view.slice(&Vertex::normal), data.morphTargetId},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(0), view.slice(&Vertex::somethingElse)}
+    });
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles, {}, vertices, Utility::move(attributes)};
+
+    Trade::MeshData out = generateFlatNormals(mesh, data.id, data.morphTargetId);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(!out.isIndexed());
+
+    /* The extra attributes should be preserved without format expansion */
+    CORRADE_COMPARE(out.attributeCount(), mesh.attributeCount());
+    if(data.id == 1) {
+        CORRADE_COMPARE_AS(out.attribute<Vector3b>(Trade::MeshAttribute::Position),
+            view.slice(&Vertex::secondaryPositionOrNormal),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(out.attribute<Vector3b>(Trade::MeshAttribute::Normal),
+            view.slice(&Vertex::secondaryPositionOrNormal),
+            TestSuite::Compare::Container);
+    }
+    CORRADE_COMPARE_AS(out.attribute<Float>(Trade::meshAttributeCustom(0)),
+        view.slice(&Vertex::somethingElse),
+        TestSuite::Compare::Container);
+
+    /* The positions should be expanded to floats if not already and the
+       normals generated, again the same as in the flat() test case above */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position, data.id, data.morphTargetId),
+        Containers::arrayView(TwoTriangles),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal, data.id, data.morphTargetId), Containers::arrayView<Vector3>({
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+        -Vector3::zAxis(),
+        -Vector3::zAxis(),
+        -Vector3::zAxis()
+    }), TestSuite::Compare::Container);
+}
+
+template<class Index, class Position, class Normal> void GenerateNormalsTest::meshDataSmooth() {
+    auto&& data = MeshDataSmoothData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName({Math::TypeTraits<Index>::name(),
+                             Math::TypeTraits<Position>::name(),
+                             Math::TypeTraits<Normal>::name()});
+
+    /* First triangle with a normal facing backward, second downward. The
+       shared edge then being average of the two. Every second index is used to
+       test propagation of InterleaveFlags. */
+    Index indices[]{
+        2, 0, 3, 0, 0, 0,
+        3, 0, 2, 0, 1, 0
+    };
+    struct Vertex {
+        Vector3b secondaryPositionOrNormal;
+        Math::Vector3<Position> position;
+        Math::Vector3<Normal> normal;
+        Float somethingElse;
+    } vertices[]{
+        {{16, -27, 2}, {Position(0.0), Position(1.0), Position(0.0)}, {}, 1.0f},
+        {{-89, 98, 6}, {Position(0.0), Position(0.0), Position(-1.0)}, {}, 2.0f},
+        {{15, -34, 3}, {Position(-1.0), Position(0.0), Position(0.0)}, {}, 3.0f},
+        {{11, -25, 0}, {Position(+1.0), Position(0.0), Position(0.0)}, {}, 4.0f},
+    };
+    Containers::StridedArrayView1D<const Vertex> view = vertices;
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1 || data.morphTargetId != -1) {
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::secondaryPositionOrNormal)});
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3bNormalized, view.slice(&Vertex::secondaryPositionOrNormal)});
+    } else {
+        CORRADE_COMPARE(data.id, 0);
+        CORRADE_COMPARE(data.morphTargetId, -1);
+    }
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::position), data.morphTargetId},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, view.slice(&Vertex::normal), data.morphTargetId},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(0), view.slice(&Vertex::somethingElse)}
+    });
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        {}, indices, Trade::MeshIndexData{Containers::stridedArrayView(indices).every(2)},
+        {}, vertices, Utility::move(attributes)};
+
+    Trade::MeshData out = generateSmoothNormals(mesh, data.id, data.morphTargetId, data.interleaveFlags);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Triangles);
+
+    /* The indices should be preserved in the same type */
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), Trade::Implementation::meshIndexTypeFor<Index>());
+    /* If no format expansion happens, the index data is passed through
+       unchanged, thus keeping the original stride */
+    CORRADE_COMPARE(out.indexStride(), (std::is_same<Position, Float>::value && std::is_same<Normal, Float>::value ? 2 : data.expectedIndexStrideMultiplierWithExpandedVertexFormat)*sizeof(Index));
+    CORRADE_COMPARE_AS(out.indices<Index>(),
+        Containers::stridedArrayView(indices).every(2),
+        TestSuite::Compare::Container);
+
+    /* The extra attributes should be preserved without format expansion */
+    CORRADE_COMPARE(out.attributeCount(), mesh.attributeCount());
+    if(data.id == 1) {
+        CORRADE_COMPARE_AS(out.attribute<Vector3b>(Trade::MeshAttribute::Position),
+            view.slice(&Vertex::secondaryPositionOrNormal),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(out.attribute<Vector3b>(Trade::MeshAttribute::Normal),
+            view.slice(&Vertex::secondaryPositionOrNormal),
+            TestSuite::Compare::Container);
+    }
+    CORRADE_COMPARE_AS(out.attribute<Float>(Trade::meshAttributeCustom(0)),
+        view.slice(&Vertex::somethingElse),
+        TestSuite::Compare::Container);
+
+    /* The positions should be expanded to floats if not already and the
+       normals generated */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position, data.id, data.morphTargetId), Containers::arrayView<Vector3>({
+        {0.0f, 1.0f, 0.0f},
+        {0.0f, 0.0f, -1.0f},
+        {-1.0f, 0.0f, 0.0f},
+        {+1.0f, 0.0f, 0.0f},
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal, data.id, data.morphTargetId), Containers::arrayView<Vector3>({
+        Vector3::zAxis(), /* backward */
+        -Vector3::yAxis(), /* downward */
+        Vector3{0.0f, -1.0f, 1.0f}.normalized(), /* average of the above two */
+        Vector3{0.0f, -1.0f, 1.0f}.normalized(),
+    }), TestSuite::Compare::Container);
+}
+
+template<class Position> void GenerateNormalsTest::meshDataAddNormalAttribute() {
+    auto&& data = MeshDataAddNormalAttributeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName({Math::TypeTraits<Position>::name()});
+
+    UnsignedShort indices[]{
+        0, 1, 2
+    };
+    struct Vertex {
+        Vector3b secondaryPositionOrNormal;
+        Math::Vector3<Position> position;
+        Float somethingElse;
+    } vertices[]{
+        {{15, -34, 3}, {Position(-1.0), Position(0.0), Position(0.0)}, 3.0f},
+        {{11, -25, 0}, {Position(+1.0), Position(0.0), Position(0.0)}, 4.0f},
+        {{16, -27, 2}, {Position(0.0), Position(1.0), Position(0.0)}, 1.0f},
+    };
+    Containers::StridedArrayView1D<const Vertex> view = vertices;
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1 || data.morphTargetId != -1) {
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::secondaryPositionOrNormal)});
+        arrayAppend(attributes, Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3bNormalized, view.slice(&Vertex::secondaryPositionOrNormal)});
+    } else {
+        CORRADE_COMPARE(data.id, 0);
+        CORRADE_COMPARE(data.morphTargetId, -1);
+    }
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, view.slice(&Vertex::position), data.morphTargetId},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(0), view.slice(&Vertex::somethingElse)}
+    });
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        {}, data.smooth ? Containers::arrayView(indices) : nullptr, data.smooth ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        {}, vertices, Utility::move(attributes)};
+
+    Trade::MeshData out = data.smooth ?
+        generateSmoothNormals(mesh, data.id, data.morphTargetId) :
+        generateFlatNormals(mesh, data.id, data.morphTargetId);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Triangles);
+
+    /* The indices should be preserved in the same type */
+    CORRADE_COMPARE(out.isIndexed(), data.smooth);
+    if(data.smooth) {
+        CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indices),
+            TestSuite::Compare::Container);
+    }
+
+    /* The extra attributes should be preserved without format expansion, and
+       the missing normal attribute added */
+    CORRADE_COMPARE(out.attributeCount(), mesh.attributeCount() + 1);
+    if(data.id == 1) {
+        CORRADE_COMPARE_AS(out.attribute<Vector3b>(Trade::MeshAttribute::Position),
+            view.slice(&Vertex::secondaryPositionOrNormal),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(out.attribute<Vector3b>(Trade::MeshAttribute::Normal),
+            view.slice(&Vertex::secondaryPositionOrNormal),
+            TestSuite::Compare::Container);
+    }
+    CORRADE_COMPARE_AS(out.attribute<Float>(Trade::meshAttributeCustom(0)),
+        view.slice(&Vertex::somethingElse),
+        TestSuite::Compare::Container);
+
+    /* The positions should be expanded to floats if not already and the
+       normals generated into a fresh attribute */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position, data.id, data.morphTargetId), Containers::arrayView<Vector3>({
+        {-1.0f, 0.0f, 0.0f},
+        {+1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal, data.id, data.morphTargetId), Containers::arrayView<Vector3>({
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+    }), TestSuite::Compare::Container);
+}
+
+void GenerateNormalsTest::meshDataWrongPrimitiveIndexVertexCount() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    UnsignedShort indices[8];
+    Trade::MeshData wrongPrimitive{MeshPrimitive::TriangleStrip, 6};
+    Trade::MeshData wrongIndexedPrimitive{MeshPrimitive::TriangleStrip,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr}, 6};
+    Trade::MeshData wrongVertexCount{MeshPrimitive::Triangles, 7};
+    Trade::MeshData wrongIndexCount{MeshPrimitive::Triangles,
+        {}, indices, Trade::MeshIndexData{indices}, 6};
+
+    Containers::String out;
+    Error redirectError{&out};
+    generateFlatNormals(wrongPrimitive);
+    generateSmoothNormals(wrongIndexedPrimitive);
+    generateFlatNormals(wrongVertexCount);
+    generateSmoothNormals(wrongIndexCount);
+    CORRADE_COMPARE_AS(out,
+        "MeshTools::generateFlatNormals(): expected a MeshPrimitive::Triangles mesh but got MeshPrimitive::TriangleStrip\n"
+        "MeshTools::generateSmoothNormals(): expected a MeshPrimitive::Triangles mesh but got MeshPrimitive::TriangleStrip\n"
+        "MeshTools::generateFlatNormals(): expected vertex count divisible by 3 but got 7\n"
+        "MeshTools::generateSmoothNormals(): expected index count divisible by 3 but got 8\n",
+        TestSuite::Compare::String);
+}
+
+void GenerateNormalsTest::meshDataNoPosition() {
+    auto&& data = MeshDataNoAttributeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}}};
+
+    Containers::String out;
+    Error redirectError{&out};
+    if(data.smooth)
+        generateSmoothNormals(mesh, data.id, data.morphTargetId);
+    else
+        generateFlatNormals(mesh, data.id, data.morphTargetId);
+    CORRADE_COMPARE(out, Utility::format("MeshTools::{}(): the mesh has no positions with index {}{}\n", data.prefix, data.id, data.suffix));
+}
+
+void GenerateNormalsTest::meshDataNot3D() {
+    auto&& data = MeshDataData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr}}};
+
+    Containers::String out;
+    Error redirectError{&out};
+    if(data.smooth)
+        generateSmoothNormals(mesh);
+    else
+        generateFlatNormals(mesh);
+    CORRADE_COMPARE(out, Utility::format("MeshTools::{}(): expected 3D positions but got VertexFormat::Vector2\n", data.prefix));
+}
+
+void GenerateNormalsTest::meshDataNotEnoughNormals() {
+    auto&& data = MeshDataNoAttributeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* The trivial case of asking to generate normals for mesh with just a
+       position attribute should always work */
+    Trade::MeshData singlePositionAttribute{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}}};
+    if(data.smooth)
+        generateSmoothNormals(singlePositionAttribute);
+    else
+        generateFlatNormals(singlePositionAttribute);
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr, 0, data.morphTargetId},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr, 0, 12},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr, 0, data.morphTargetId},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr, 0, data.morphTargetId},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr, 0, data.morphTargetId},
+        }};
+
+    Containers::String out;
+    Error redirectError{&out};
+    if(data.smooth)
+        generateSmoothNormals(mesh, 2, data.morphTargetId);
+    else
+        generateFlatNormals(mesh, 2, data.morphTargetId);
+    CORRADE_COMPARE(out, Utility::format("MeshTools::{}(): expected at least 2 normal attributes{} but got 1\n", data.prefix, data.suffix));
+}
+
+void GenerateNormalsTest::meshDataImplementationSpecificAttributeFormat() {
+    auto&& data = MeshDataData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* It should check a coordinate attribute with given ID */
+    Trade::MeshData implementationSpecificPosition{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertexFormatWrap(0xcaca), nullptr},
+        }};
+    Trade::MeshData implementationSpecificNormal{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertexFormatWrap(0xbebe), nullptr},
+        }};
+    /* In case the coordinate vertex format needs expansion it has to assert
+       for all other attributes early enough to not cause a confusing assertion
+       in interleave() */
+    Trade::MeshData needsPositionExpansion{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xdede), nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3s, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+        }};
+    Trade::MeshData needsNormalExpansion{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xafaf), nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3sNormalized, nullptr},
+        }};
+    Trade::MeshData needsNormalAddition{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xebeb), nullptr},
+        }};
+
+    /* However if a format doesn't nneed expansion and we also have a normal
+       attribute of expected format to write to then implementation-specific
+       formats are alright and this will pass with no issues */
+    Trade::MeshData implementationSpecificOther{MeshPrimitive::Triangles,
+        nullptr, data.smooth ? Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr} : Trade::MeshIndexData{nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3s, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3sNormalized, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertexFormatWrap(0xfefe), nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+        }};
+    if(data.smooth)
+        generateSmoothNormals(implementationSpecificOther, 1);
+    else
+        generateFlatNormals(implementationSpecificOther, 1);
+
+    Containers::String out;
+    Error redirectError{&out};
+    if(data.smooth) {
+        generateSmoothNormals(implementationSpecificPosition, 1);
+        generateSmoothNormals(implementationSpecificNormal, 1);
+        generateSmoothNormals(needsPositionExpansion, 1);
+        generateSmoothNormals(needsNormalExpansion, 1);
+        generateSmoothNormals(needsNormalAddition, 1);
+    } else {
+        generateFlatNormals(implementationSpecificPosition, 1);
+        generateFlatNormals(implementationSpecificNormal, 1);
+        generateFlatNormals(needsPositionExpansion, 1);
+        generateFlatNormals(needsNormalExpansion, 1);
+        generateFlatNormals(needsNormalAddition, 1);
+    }
+    CORRADE_COMPARE_AS(out, Utility::format(
+        "MeshTools::{0}(): positions have an implementation-specific format 0xcaca\n"
+        "MeshTools::{0}(): normals have an implementation-specific format 0xbebe\n"
+        "MeshTools::{0}(): attribute 2 has an implementation-specific format 0xdede\n"
+        "MeshTools::{0}(): attribute 1 has an implementation-specific format 0xafaf\n"
+        "MeshTools::{0}(): attribute 3 has an implementation-specific format 0xebeb\n",
+        data.prefix), TestSuite::Compare::String);
+}
+
+void GenerateNormalsTest::meshDataFlatIndexed() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        }};
+
+    Containers::String out;
+    Error redirectError{&out};
+    generateFlatNormals(mesh);
+    CORRADE_COMPARE(out, "MeshTools::generateFlatNormals(): expected a non-indexed mesh\n");
+}
+
+void GenerateNormalsTest::meshDataSmoothNonIndexed() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        }};
+
+    Containers::String out;
+    Error redirectError{&out};
+    generateSmoothNormals(mesh);
+    CORRADE_COMPARE(out, "MeshTools::generateSmoothNormals(): expected an indexed mesh\n");
+}
+
+void GenerateNormalsTest::meshDataSmoothImplementationSpecificIndexType() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcece), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+        }};
+
+    Containers::String out;
+    Error redirectError{&out};
+    generateSmoothNormals(mesh);
+    CORRADE_COMPARE(out, "MeshTools::generateSmoothNormals(): mesh has an implementation-specific index type 0xcece\n");
+}
+
+void GenerateNormalsTest::meshDataRvaluePassthrough() {
+    auto&& data = MeshDataRvaluePassthroughData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Trivial index buffer, the result is the same for both flat and smooth
+       normal generation */
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    /* Not using copy({...}) as we'd have no way to compare against the
+       original unchanged data */
+    const UnsignedShort indicesExpected[]{0, 1, 2};
+    Utility::copy(indicesExpected, indices);
+
+    /* Same here, we want to have a way to compare against the original */
+    struct Vertex {
+        Vector3b secondaryPositionOrNormal;
+        Vector3 position, normal;
+    } verticesExpected[]{
+        {{15, -34, 3}, {-1.0f, 0.0f, 0.0f}, {}},
+        {{11, -25, 0}, {+1.0f, 0.0f, 0.0f}, {}},
+        {{16, -27, 2}, {0.0f, 1.0f, 0.0f}, {}}
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
+    auto vertices = stridedArrayView(Containers::arrayCast<Vertex>(vertexData));
+    Utility::copy(verticesExpected, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    if(data.id == 1 || data.morphTargetId != -1) {
+        arrayAppend(attributes, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::secondaryPositionOrNormal)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3bNormalized, vertices.slice(&Vertex::secondaryPositionOrNormal)},
+        });
+    } else {
+        CORRADE_COMPARE(data.id, 0);
+        CORRADE_COMPARE(data.morphTargetId, -1);
+    }
+    arrayAppend(attributes, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertices.slice(&Vertex::normal), data.morphTargetId},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position), data.morphTargetId},
+    });
+    /* Have to convert the attributes back to a non-growable array with a
+       default deleter because that's what copy() internally uses to
+       distinguish whether the attributes are owned */
+    arrayShrink(attributes, ValueInit);
+    CORRADE_VERIFY(!attributes.deleter());
+    const void* originalAttributeData = attributes.data();
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        data.smooth ? Utility::move(indexData) : nullptr,
+        data.smooth ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        Utility::move(vertexData), Utility::move(attributes)};
+
+    Trade::MeshData out = data.smooth ?
+        generateSmoothNormals(Utility::move(mesh), data.id, data.morphTargetId) :
+        generateFlatNormals(Utility::move(mesh), data.id, data.morphTargetId);
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(out.isIndexed(), data.smooth);
+    CORRADE_COMPARE(out.attributeCount(), data.id == 1 || data.morphTargetId != -1 ? 4 : 2);
+
+    /* Indices should be passed through unchanged */
+    if(data.smooth) {
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indicesExpected),
+            TestSuite::Compare::Container);
+    }
+
+    /* Positions and secondary attribute as well */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position, data.id, data.morphTargetId),
+        Containers::stridedArrayView(verticesExpected).slice(&Vertex::position),
+        TestSuite::Compare::Container);
+    if(data.id == 1 || data.morphTargetId != -1) {
+        CORRADE_COMPARE_AS(out.attribute<Vector3b>(Trade::MeshAttribute::Position),
+            Containers::stridedArrayView(verticesExpected).slice(&Vertex::secondaryPositionOrNormal),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(out.attribute<Vector3b>(Trade::MeshAttribute::Normal),
+            Containers::stridedArrayView(verticesExpected).slice(&Vertex::secondaryPositionOrNormal),
+            TestSuite::Compare::Container);
+    }
+
+    /* Normals should be generated, same for smooth and flat */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal, data.id, data.morphTargetId), Containers::arrayView<Vector3>({
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+    }), TestSuite::Compare::Container);
+
+    /* The memory should point to the original data */
+    if(data.smooth)
+        CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+    CORRADE_COMPARE(out.attributeData().data(), originalAttributeData);
+}
+
+void GenerateNormalsTest::meshDataRvaluePassthroughIndexDataNotOwned() {
+    /* Done only for the smooth normal generation, as flat normals require a
+       non-indexed mesh, which is tested above already */
+
+    const UnsignedShort indices[]{
+        0, 1, 2
+    };
+
+    struct Vertex {
+        Vector3 position, normal;
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
+    auto vertices = stridedArrayView(Containers::arrayCast<Vertex>(vertexData));
+    Utility::copy({
+        {{-1.0f, 0.0f, 0.0f}, {}},
+        {{+1.0f, 0.0f, 0.0f}, {}},
+        {{0.0f, 1.0f, 0.0f}, {}}
+    }, vertices);
+
+    /* Have to use ValueInit + copy to have an array with a default deleter
+       because that's what copy() internally uses to distinguish whether the
+       attributes are owned */
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, 2};
+    attributes[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position, stridedArrayView(vertices).slice(&Vertex::position)};
+    attributes[1] = Trade::MeshAttributeData{Trade::MeshAttribute::Normal, stridedArrayView(vertices).slice(&Vertex::normal)};
+    CORRADE_VERIFY(!attributes.deleter());
+    const void* originalAttributeData = attributes.data();
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        {}, indices, Trade::MeshIndexData{indices},
+        Utility::move(vertexData), Utility::move(attributes)};
+
+    Trade::MeshData out = generateSmoothNormals(Utility::move(mesh));
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.attributeCount(), 2);
+
+    /* Indices and positions should be passed through unchanged */
+    CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
+        {-1.0f, 0.0f, 0.0f},
+        {+1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+    }), TestSuite::Compare::Container);
+
+    /* Normals should be generated */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+    }), TestSuite::Compare::Container);
+
+    /* The memory should *not* point to the original data for the indices */
+    CORRADE_VERIFY(out.indexData().data() != static_cast<const void*>(indices));
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+    CORRADE_COMPARE(out.attributeData().data(), originalAttributeData);
+}
+
+void GenerateNormalsTest::meshDataRvaluePassthroughVertexDataNotOwned() {
+    auto&& data = MeshDataData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({0, 1, 2}, indices);
+
+    struct Vertex {
+        Vector3 position, normal;
+    } vertices[]{
+        {{-1.0f, 0.0f, 0.0f}, {}},
+        {{+1.0f, 0.0f, 0.0f}, {}},
+        {{0.0f, 1.0f, 0.0f}, {}}
+    };
+
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        data.smooth ? Utility::move(indexData) : nullptr,
+        data.smooth ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        {}, vertices, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(vertices).slice(&Vertex::position)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::stridedArrayView(vertices).slice(&Vertex::normal)},
+        }};
+
+    Trade::MeshData out = data.smooth ?
+        generateSmoothNormals(Utility::move(mesh)) :
+        generateFlatNormals(Utility::move(mesh));
+    CORRADE_COMPARE(out.primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(out.isIndexed(), data.smooth);
+    CORRADE_COMPARE(out.attributeCount(), 2);
+
+    /* Indices and positions should be passed through unchanged */
+    if(data.smooth) {
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indices),
+            TestSuite::Compare::Container);
+    }
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
+        {-1.0f, 0.0f, 0.0f},
+        {+1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+    }), TestSuite::Compare::Container);
+
+    /* Normals should be generated */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+    }), TestSuite::Compare::Container);
+
+    /* The memory should *not* point to the original data for the vertices. Not
+       verifying the behavior for attribute data as that's an implementation
+       detail in copy(). */
+    if(data.smooth)
+        CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<const void*>(vertices));
+}
+
+void GenerateNormalsTest::meshDataRvaluePassthroughWrongFormat() {
+    auto&& data = MeshDataRvaluePassthroughWrongFormatData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<char> indexData{NoInit, 3*sizeof(UnsignedShort)};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({0, 1, 2}, indices);
+
+    struct Vertex {
+        Vector3 position;
+        Vector3b positionPacked;
+        Vector3 normal;
+        Vector3s normalPacked;
+    };
+    Containers::Array<char> vertexData{NoInit, 3*sizeof(Vertex)};
+    auto vertices = stridedArrayView(Containers::arrayCast<Vertex>(vertexData));
+    Utility::copy({
+        {{-1.0f, 0.0f, 0.0f},
+         {-1, 0, 0},
+         {}, {}},
+        {{+1.0f, 0.0f, 0.0f},
+         {+1, 0, 0},
+         {}, {}},
+        {{0.0f, 1.0f, 0.0f},
+         {0, 1, 0},
+         {}, {}},
+    }, vertices);
+
+    Containers::Array<Trade::MeshAttributeData> attributes{InPlaceInit, {
+        data.positionFormat == VertexFormat::Vector3 ?
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                vertices.slice(&Vertex::position)} :
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                vertices.slice(&Vertex::positionPacked)}
+    }};
+    if(data.normalFormat != VertexFormat{}) {
+        arrayAppend(attributes, data.normalFormat == VertexFormat::Vector3 ?
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, vertices.slice(&Vertex::normal)} :
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3sNormalized, vertices.slice(&Vertex::normalPacked)});
+    }
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        data.smooth ? Utility::move(indexData) : nullptr,
+        data.smooth ? Trade::MeshIndexData{indices} : Trade::MeshIndexData{nullptr},
+        Utility::move(vertexData), Utility::move(attributes)};
+
+    Trade::MeshData out = data.smooth ?
+        generateSmoothNormals(Utility::move(mesh)) :
+        generateFlatNormals(Utility::move(mesh));
+
+    /* Indices and positions should be passed through unchanged, positions
+       potentially expanded */
+    if(data.smooth) {
+        CORRADE_COMPARE_AS(out.indices<UnsignedShort>(),
+            Containers::arrayView(indices),
+            TestSuite::Compare::Container);
+    }
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
+        {-1.0f, 0.0f, 0.0f},
+        {+1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+    }), TestSuite::Compare::Container);
+
+    /* Normals should be generated, potentially into an expanded buffer */
+    CORRADE_COMPARE_AS(out.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+        Vector3::zAxis(),
+    }), TestSuite::Compare::Container);
+
+    /* The memory should *not* point to the original data for the vertices. Not
+       verifying the behavior for attribute data as those are copied in this
+       case always. */
+    if(data.smooth)
+        CORRADE_COMPARE(out.indexData().data(), static_cast<void*>(indices.data()));
+    CORRADE_VERIFY(out.vertexData().data() != static_cast<void*>(vertices.data()));
 }
 
 }}}}

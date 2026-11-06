@@ -370,8 +370,10 @@ See also:
     and attribute arrays
 -   New @ref MeshTools::flipFaceWindingInPlace(Trade::MeshData&),
     @ref MeshTools::flipFaceWinding(const Trade::MeshData&)
-    @ref MeshTools::flipNormalsInPlace(Trade::MeshData&) and
-    @ref MeshTools::flipNormals(const Trade::MeshData&, InterleaveFlags)
+    @ref MeshTools::flipNormalsInPlace(Trade::MeshData&),
+    @ref MeshTools::flipNormals(const Trade::MeshData&, InterleaveFlags),
+    @ref MeshTools::generateFlatNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags)
+    and @ref MeshTools::generateSmoothNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags)
     utilities operating directly on @ref Trade::MeshData instances
 
 @subsubsection changelog-latest-new-platform Platform libraries
