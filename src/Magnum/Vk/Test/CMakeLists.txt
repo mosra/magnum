@@ -5,6 +5,7 @@
 #               2020, 2021, 2022, 2023, 2024, 2025, 2026
 #             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2016 Jonathan Hale <squareys@googlemail.com>
+#   Copyright © 2026 Arnaud TANGUY <arn.tanguy@gmail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -29,16 +30,16 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/Vk/Test")
 
+if(CORRADE_TARGET_ANDROID)
+    set(VK_TEST_DIR ".")
+else()
+    set(VK_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 # Inputs to configure.h needed only by Vulkan tests
 if(MAGNUM_BUILD_VK_TESTS)
     # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
     find_package(Corrade REQUIRED PluginManager)
-
-    if(CORRADE_TARGET_ANDROID)
-        set(VK_TEST_DIR ".")
-    else()
-        set(VK_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-    endif()
 
     if(NOT MAGNUM_BUILD_PLUGINS_STATIC)
         if(MAGNUM_WITH_ANYIMAGEIMPORTER)
@@ -50,9 +51,9 @@ if(MAGNUM_BUILD_VK_TESTS)
     endif()
 endif()
 
-# The file is needed by VkShaderTest as well, so it's created always, not just
-# for MAGNUM_BUILD_VK_TESTS. First replace ${} variables, then $<> generator
-# expressions.
+# The file (and thus also VK_TEST_DIR) is needed by VkShaderTest as well, so
+# it's created always, not just for MAGNUM_BUILD_VK_TESTS. First replace ${}
+# variables, then $<> generator expressions.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
