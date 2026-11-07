@@ -621,7 +621,7 @@ template<class T> bool sphereCone(
     const Vector3<T> diff = sphereCenter - coneOrigin;
 
     /* Point - cone test */
-    if(Math::dot(diff - sphereRadius*sinAngle*coneNormal, coneNormal) > T(0)) {
+    if(Math::dot(diff + sphereRadius*sinAngle*coneNormal, coneNormal) > T(0)) {
         const Vector3<T> c = sinAngle*diff + coneNormal*sphereRadius;
         const T lenA = Math::dot(c, coneNormal);
 
