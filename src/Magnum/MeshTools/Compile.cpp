@@ -35,9 +35,6 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Vector3.h"
-#include "Magnum/MeshTools/GenerateNormals.h"
-#include "Magnum/MeshTools/Duplicate.h"
-#include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -46,6 +43,10 @@
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/CompressIndices.h"
+#include "Magnum/MeshTools/Copy.h"
+#include "Magnum/MeshTools/Duplicate.h"
+#include "Magnum/MeshTools/GenerateNormals.h"
+#include "Magnum/MeshTools/Interleave.h"
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
@@ -253,6 +254,8 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
     return mesh;
 }
 
+/** @todo inline into the public compile() function here once the
+    Generate*Normals flags are gone */
 GL::Mesh compileInternal(const Trade::MeshData& meshData, const CompileFlags flags) {
     GL::Buffer indices{NoCreate};
     if(meshData.isIndexed()) {
@@ -289,53 +292,40 @@ GL::Mesh compile(const Trade::MeshData& mesh) {
 }
 
 GL::Mesh compile(const Trade::MeshData& mesh, CompileFlags flags) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
     /* If we want to generate normals, prepare a new mesh data and recurse,
        with the flags unset */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     if(mesh.primitive() == MeshPrimitive::Triangles && (flags & (CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals))) {
-        CORRADE_ASSERT(mesh.attributeCount(Trade::MeshAttribute::Position),
-            "MeshTools::compile(): the mesh has no positions, can't generate normals", GL::Mesh{});
-        /* This could fire if we have 2D positions or for packed formats */
-        CORRADE_ASSERT(mesh.attributeFormat(Trade::MeshAttribute::Position) == VertexFormat::Vector3,
-            "MeshTools::compile(): can't generate normals for" << mesh.attributeFormat(Trade::MeshAttribute::Position) << "positions", GL::Mesh{});
-
-        /* If the data already have a normal array, reuse its location,
-           otherwise mix in an extra one */
-        Trade::MeshAttributeData normalAttribute;
-        Containers::ArrayView<const Trade::MeshAttributeData> extra;
-        if(!mesh.hasAttribute(Trade::MeshAttribute::Normal)) {
-            normalAttribute = Trade::MeshAttributeData{
-                Trade::MeshAttribute::Normal, VertexFormat::Vector3,
-                nullptr};
-            extra = {&normalAttribute, 1};
-        /* If we reuse a normal location, expect correct type */
-        } else CORRADE_ASSERT(mesh.attributeFormat(Trade::MeshAttribute::Normal) == VertexFormat::Vector3,
-            "MeshTools::compile(): can't generate normals into" << mesh.attributeFormat(Trade::MeshAttribute::Normal), GL::Mesh{});
-
-        /* If we want flat normals, we need to first duplicate everything using
-           the index buffer. Otherwise just interleave the potential extra
-           normal attribute in. */
+        /* If we want flat normals, get rid of the index buffer. Otherwise just
+           make a non-owning reference on the original mesh for passing
+           further. */
         Trade::MeshData generated{MeshPrimitive::Points, 0};
         if(flags & CompileFlag::GenerateFlatNormals && mesh.isIndexed())
-            generated = duplicate(mesh, extra);
+            generated = duplicate(mesh);
         else
-            generated = interleave(mesh, extra);
+            generated = reference(mesh);
 
         /* Generate the normals. If we don't have the index buffer, we can only
            generate flat ones. */
         if(flags & CompileFlag::GenerateFlatNormals || !mesh.isIndexed())
-            generateFlatNormalsInto(
-                generated.attribute<Vector3>(Trade::MeshAttribute::Position),
-                generated.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
+            generated = generateFlatNormals(Utility::move(generated));
         else
-            generateSmoothNormalsInto(generated.indices(),
-                generated.attribute<Vector3>(Trade::MeshAttribute::Position),
-                generated.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
+            generated = generateSmoothNormals(Utility::move(generated));
 
         return compile(generated, flags & ~(CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals));
     }
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
     flags &= ~(CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals);
+    CORRADE_IGNORE_DEPRECATED_POP
+    /** @todo drop once the Generate*Normals flags are gone as this then checks
+        nothing anymore */
     CORRADE_INTERNAL_ASSERT(!(flags & ~CompileFlag::NoWarnOnCustomAttributes));
+    #endif
     return compileInternal(mesh, flags);
 }
 

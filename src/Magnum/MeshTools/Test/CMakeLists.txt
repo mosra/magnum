@@ -117,6 +117,8 @@ if(MAGNUM_BUILD_GL_TESTS)
             CompileTestFiles/flat2D.tga
             CompileTestFiles/flat3D.tga
             CompileTestFiles/phong.tga
+            # TODO remove the phong-smooth.tga and phong-flat.tga files once
+            #   deprecated CompileFlag::Generate*Normals is gone
             CompileTestFiles/phong-smooth.tga
             CompileTestFiles/phong-flat.tga
             CompileTestFiles/skinning.tga

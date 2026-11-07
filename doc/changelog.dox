@@ -1613,6 +1613,13 @@ See also:
     @ref MeshTools::reference() and @ref MeshTools::mutableReference() were
     moved there as well, with @cpp Magnum/MeshTools/Reference.h @ce being a
     deprecated alias now.
+-   @cpp MeshTools::CompileFlag::GenerateFlatNormals @ce and
+    @cpp CompileFlag::GenerateSmoothNormals @ce enum values passed to
+    @ref MeshTools::compile(const Trade::MeshData&, CompileFlags) are
+    deorecated in favor of explicitly calling @ref MeshTools::generateFlatNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags)
+    and @ref MeshTools::generateSmoothNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags)
+    which are more flexible and can be used in other contexts than just
+    producing an OpenGL mesh instance for direct drawing
 -   @cpp Platform::EmscriptenApplication::GLConfiguration::Flag::PreferLowPowerToHighPerformance @ce
     is deprecated as it didn't allow explicitly choosing between high
     performance and a default, use @relativeref{Platform::EmscriptenApplication::GLConfiguration,Flag::PowerPreferenceLowPower}

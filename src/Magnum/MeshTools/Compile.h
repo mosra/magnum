@@ -59,25 +59,32 @@ namespace Magnum { namespace MeshTools {
 @see @ref CompileFlags, @ref compile(const Trade::MeshData&, CompileFlags)
 */
 enum class CompileFlag: UnsignedByte {
+    #ifdef MAGNUM_BUILD_DEPRECATED
     /**
      * If the mesh is @ref MeshPrimitive::Triangles, generates normals using
-     * @ref MeshTools::generateFlatNormals(). If the mesh is not a triangle
-     * mesh or doesn't have 3D positions, this flag does nothing. If the mesh
-     * already has its own normals, these get replaced. If
-     * @ref CompileFlag::GenerateSmoothNormals is specified together with this
-     * flag, this flag gets a priority.
+     * @ref MeshTools::generateFlatNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags).
+     * If the mesh is not a triangle mesh or doesn't have 3D positions, this
+     * flag does nothing. If the mesh already has its own normals, these get
+     * replaced. If @ref CompileFlag::GenerateSmoothNormals is specified
+     * together with this flag, this flag gets a priority.
+     * @m_deprecated_since_latest Use @ref generateFlatNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags)
+     *      on the input @ref Trade::MeshData instance instead.
      */
-    GenerateFlatNormals = 1 << 0,
+    GenerateFlatNormals CORRADE_DEPRECATED_ENUM("use generateFlatNormals() instead") = 1 << 0,
 
     /**
      * If the mesh @ref MeshPrimitive::Triangles, generates normals using
-     * @ref MeshTools::generateSmoothNormals() based on triangle adjacency
-     * information from the index buffer. If the mesh is not indexed, this
-     * behaves the same as @ref CompileFlag::GenerateFlatNormals. If the mesh
-     * is not a triangle mesh or doesn't have 3D positions, this flag does
-     * nothing. If the mesh already has its own normals, these get replaced.
+     * @ref MeshTools::generateSmoothNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags)
+     * based on triangle adjacency information from the index buffer. If the
+     * mesh is not indexed, this behaves the same as
+     * @ref CompileFlag::GenerateFlatNormals. If the mesh is not a triangle
+     * mesh or doesn't have 3D positions, this flag does nothing. If the mesh
+     * already has its own normals, these get replaced.
+     * @m_deprecated_since_latest Use @ref generateSmoothNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags)
+     *      on the input @ref Trade::MeshData instance instead.
      */
-    GenerateSmoothNormals = 1 << 1,
+    GenerateSmoothNormals CORRADE_DEPRECATED_ENUM("use generateSmoothNormals() instead") = 1 << 1,
+    #endif
 
     /**
      * By default, @ref compile() warns when it encounters custom attributes,
@@ -124,9 +131,9 @@ possibly also an index buffer, if the mesh is indexed.
     the two is bound. The second is ignored with a warning as they share the
     same binding slot.
 -   If the mesh contains @ref Trade::MeshAttribute::Normal or if
-    @ref CompileFlag::GenerateFlatNormals /
-    @ref CompileFlag::GenerateSmoothNormals is set, these are bound to
-    @ref Shaders::GenericGL3D::Normal.
+    @ref CompileFlag::GenerateFlatNormals @m_class{m-label m-danger} **deprecated** /
+    @ref CompileFlag::GenerateSmoothNormals @m_class{m-label m-danger} **deprecated**
+    is set, these are bound to @ref Shaders::GenericGL3D::Normal.
 -   If the mesh contains @ref Trade::MeshAttribute::TextureCoordinates, these
     are bound to @ref Shaders::GenericGL::TextureCoordinates.
 -   If the mesh contains @ref Trade::MeshAttribute::Color, these are bound to
@@ -162,11 +169,11 @@ possibly also an index buffer, if the mesh is indexed.
 If normal generation is not requested, @ref Trade::MeshData::indexData() and
 @ref Trade::MeshData::vertexData() are uploaded as-is without any further
 modifications, keeping the original layout and vertex formats. If
-@ref CompileFlag::GenerateSmoothNormals is requested, vertex data is
-interleaved together with the generated normals; if
-@ref CompileFlag::GenerateFlatNormals is requested, the mesh is first
-deindexed and then the vertex data is interleaved together with the generated
-normals.
+@ref CompileFlag::GenerateSmoothNormals @m_class{m-label m-danger} **deprecated**
+is requested, vertex data is interleaved together with the generated normals;
+if @ref CompileFlag::GenerateFlatNormals @m_class{m-label m-danger} **deprecated**
+is requested, the mesh is first deindexed and then the vertex data is
+interleaved together with the generated normals.
 
 The generated mesh owns the index and vertex buffers and there's no possibility
 to access them afterwards. For alternative solutions see the
@@ -187,6 +194,7 @@ MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh, CompileFla
 /* Separately because this one doesn't rely on duplicate() / interleave() /
    generate*Normals() and thus the exe can be smaller when using this function
    directly */
+/** @todo stop doing this once the deprecated normal generation is gone */
 MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh);
 
 /**

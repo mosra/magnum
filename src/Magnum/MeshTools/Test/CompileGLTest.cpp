@@ -79,8 +79,10 @@ enum class Flag {
     Bitangents = 1 << 2,
     BitangentsFromTangents = 1 << 3,
     Normals = 1 << 4,
+    #ifdef MAGNUM_BUILD_DEPRECATED
     GeneratedFlatNormals = 1 << 5,
     GeneratedSmoothNormals = 1 << 6,
+    #endif
     TextureCoordinates2D = 1 << 7,
     Colors = 1 << 8,
     ObjectId = 1 << 9
@@ -123,10 +125,6 @@ struct CompileGLTest: GL::OpenGLTester {
     void unsupportedAttribute();
     void unsupportedAttributeStride();
     void implementationSpecificAttributeFormat();
-
-    void generateNormalsNoPosition();
-    void generateNormals2DPosition();
-    void generateNormalsNoFloats();
 
     void externalBuffers();
     void externalBuffersInvalid();
@@ -193,6 +191,7 @@ const struct {
     {"positions + normals + colors", Flag::Normals|Flag::Colors,{}},
     {"positions + normals + texcoords", Flag::Normals|Flag::TextureCoordinates2D,  {}},
     {"positions + normals + texcoords + colors", Flag::Normals|Flag::TextureCoordinates2D|Flag::Colors, {}},
+    #ifdef MAGNUM_BUILD_DEPRECATED
     {"positions + gen flat normals", Flag::GeneratedFlatNormals, {}},
     {"positions + gen both smooth and flat normals", Flag::GeneratedSmoothNormals|Flag::GeneratedFlatNormals, {}},
     {"positions + normals, gen flat normals", Flag::Normals|Flag::GeneratedFlatNormals, {}},
@@ -208,6 +207,7 @@ const struct {
     {"positions, gen smooth normals + texcoords", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D, {}},
     {"positions, gen smooth normals + texcoords + colors", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D|Flag::Colors, {}},
     {"positions, nonindexed + gen smooth normals", Flag::NonIndexed|Flag::GeneratedSmoothNormals, {}},
+    #endif
     {"positions, tangents, bitangents, normals", Flag::Tangents|Flag::Bitangents|Flag::Normals, {}},
     {"positions, tangents, bitangents from tangents, normals", Flag::Tangents|Flag::BitangentsFromTangents|Flag::Normals, {}},
     {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed, {}}
@@ -484,10 +484,6 @@ CompileGLTest::CompileGLTest() {
 
     addInstancedTests({&CompileGLTest::implementationSpecificAttributeFormat},
         Containers::arraySize(CustomAttributeWarningData));
-
-    addTests({&CompileGLTest::generateNormalsNoPosition,
-              &CompileGLTest::generateNormals2DPosition,
-              &CompileGLTest::generateNormalsNoFloats});
 
     addInstancedTests({&CompileGLTest::externalBuffers},
         Containers::arraySize(DataExternal),
@@ -918,10 +914,14 @@ template<class T> void CompileGLTest::threeDimensions() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CompileFlags flags;
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
     if(data.flags & Flag::GeneratedFlatNormals)
         flags |= CompileFlag::GenerateFlatNormals;
     if(data.flags & Flag::GeneratedSmoothNormals)
         flags |= CompileFlag::GenerateSmoothNormals;
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
     #endif
@@ -954,8 +954,14 @@ template<class T> void CompileGLTest::threeDimensions() {
             (DebugTools::CompareImageToFile{_manager}));
     }
 
-    /* Check with the phong shader, if we have normals (but not flat generated) */
-    if(data.flags & Flag::Normals && !(data.flags & Flag::GeneratedFlatNormals)) {
+    /* Check with the phong shader, if we have normals (but not flat
+       generated with the deprecated flag) */
+    /** @todo update comment once GeneratedFlatNormals is gone */
+    if(data.flags & Flag::Normals
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        && !(data.flags & Flag::GeneratedFlatNormals)
+        #endif
+    ) {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _phong
             .setDiffuseColor(0x33ff66_rgbf)
@@ -973,6 +979,7 @@ template<class T> void CompileGLTest::threeDimensions() {
             (DebugTools::CompareImageToFile{_manager, 0.5f, 0.029f}));
     }
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
     /* Check generated flat / smooth normals with the phong shader. If smooth
        normals are requested but the mesh is not indexed, it should behave the
        same as flat normals. */
@@ -1009,6 +1016,7 @@ template<class T> void CompileGLTest::threeDimensions() {
                NVidia as well */
             (DebugTools::CompareImageToFile{_manager, 0.5f, 0.037f}));
     }
+    #endif
 
     /* Check with the colored shader, if we have colors */
     if(data.flags & Flag::Colors) {
@@ -1677,50 +1685,6 @@ void CompileGLTest::implementationSpecificAttributeFormat() {
         compile(data);
     CORRADE_COMPARE(out, instanceData.flags ? "" :
         "MeshTools::compile(): ignoring attribute Trade::MeshAttribute::Position with an implementation-specific format 0xdead\n");
-}
-
-void CompileGLTest::generateNormalsNoPosition() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    Trade::MeshData data{MeshPrimitive::Triangles, 1};
-
-    Containers::String out;
-    Error redirectError{&out};
-    compile(data, CompileFlag::GenerateFlatNormals);
-    CORRADE_COMPARE(out,
-        "MeshTools::compile(): the mesh has no positions, can't generate normals\n");
-}
-
-void CompileGLTest::generateNormals2DPosition() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    Trade::MeshData data{MeshPrimitive::Triangles, nullptr, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            VertexFormat::Vector2, nullptr}
-    }};
-
-    Containers::String out;
-    Error redirectError{&out};
-    compile(data, CompileFlag::GenerateFlatNormals);
-    CORRADE_COMPARE(out,
-        "MeshTools::compile(): can't generate normals for VertexFormat::Vector2 positions\n");
-}
-
-void CompileGLTest::generateNormalsNoFloats() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    Trade::MeshData data{MeshPrimitive::Triangles, nullptr, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            VertexFormat::Vector3, nullptr},
-        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
-            VertexFormat::Vector3h, nullptr},
-    }};
-
-    Containers::String out;
-    Error redirectError{&out};
-    compile(data, CompileFlag::GenerateFlatNormals);
-    CORRADE_COMPARE(out,
-        "MeshTools::compile(): can't generate normals into VertexFormat::Vector3h\n");
 }
 
 void CompileGLTest::externalBuffers() {

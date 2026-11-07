@@ -54,7 +54,6 @@ Example usage:
 
 @see @ref generateFlatNormalsInto(), @ref generateSmoothNormals(),
     @ref generateFlatNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags),
-    @ref MeshTools::CompileFlag::GenerateFlatNormals,
     @ref Math::cross(const Vector3<T>&, const Vector3<T>&)
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>& positions);
@@ -161,8 +160,7 @@ Implementation is based on the article
 [Weighted Vertex Normals](http://www.bytehazard.com/articles/vertnorm.html) by
 Martijn Buijs.
 @see @ref generateSmoothNormalsInto(), @ref generateFlatNormals(),
-    @ref generateSmoothNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags),
-    @ref MeshTools::CompileFlag::GenerateSmoothNormals
+    @ref generateSmoothNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags)
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
 
