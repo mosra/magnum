@@ -188,7 +188,7 @@ void SamplerTest::createInfoConstruct() {
 
 void SamplerTest::createInfoConstructNoInit() {
     SamplerCreateInfo info{NoInit};
-    info->sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     new(&info) SamplerCreateInfo{NoInit};
     {
         /* Explicitly check we're not on Clang because certain Clang-based IDEs
@@ -197,7 +197,7 @@ void SamplerTest::createInfoConstructNoInit() {
         #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ >= 16 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 16+ misoptimizes and overwrites the value.");
         #endif
-        CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO);
+        CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<SamplerCreateInfo, NoInitT>::value);
