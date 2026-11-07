@@ -437,7 +437,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     Containers::StridedArrayView1D<const Vector3> normals;
     Containers::StridedArrayView1D<const Vector2> textureCoords2D;
     Containers::StridedArrayView1D<const Color4> colors;
-    bool useIndices; /**< @todo turn into a view once compressIndices() takes views */
+    bool useIndices;
 
     /* If the mesh has no normals, we want to generate them and the mesh is an
        indexed triangle mesh, duplicate all attributes, otherwise just
