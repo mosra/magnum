@@ -129,6 +129,11 @@ if(NOT CMAKE_CXX_FLAGS MATCHES "-std=")
         corrade_add_test(MathQuaternionCpp14Test QuaternionCpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathRangeCpp14Test RangeCpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathRectangularMatrixCpp14Test RectangularMatrixCpp14Test.cpp LIBRARIES MagnumMathTestLib)
+        # Use of std::less in STL internals may change with introduction of
+        # std::less<void> in C++14, compile a C++14 variant of this test as
+        # well to catch potential issues.
+        corrade_add_test(MathStrictWeakOrderingCpp14Test StrictWeakOrderingTest.cpp LIBRARIES MagnumMathTestLib)
+        target_compile_definitions(MathStrictWeakOrderingCpp14Test PRIVATE COMPILING_AS_CPP14)
         corrade_add_test(MathSwizzleCpp14Test SwizzleCpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathVectorCpp14Test VectorCpp14Test.cpp LIBRARIES MagnumMathTestLib)
         corrade_add_test(MathVector2Cpp14Test Vector2Cpp14Test.cpp LIBRARIES MagnumMathTestLib)
@@ -146,6 +151,7 @@ if(NOT CMAKE_CXX_FLAGS MATCHES "-std=")
             MathQuaternionCpp14Test
             MathRangeCpp14Test
             MathRectangularMatrixCpp14Test
+            MathStrictWeakOrderingCpp14Test
             MathSwizzleCpp14Test
             MathVectorCpp14Test
             MathVector2Cpp14Test

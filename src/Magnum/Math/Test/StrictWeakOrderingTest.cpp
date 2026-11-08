@@ -32,6 +32,10 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 
+/* As documented below, this specialization isn't used at all if compiling with
+   libc++ 22 in C++14 and up because there std::less<void> is used instead,
+   which fails to compile. But keeping it present there to not make it look
+   like it fails to compile only because this specialization isn't present. */
 namespace std {
     template<> struct less<Magnum::Math::Vector2<int>>: Magnum::Math::Implementation::StrictWeakOrdering<Magnum::Math::Vector2<int>> {};
 }
@@ -50,15 +54,35 @@ struct StrictWeakOrderingTest: TestSuite::Tester {
 using Vector2i = Magnum::Math::Vector2<Int>;
 
 StrictWeakOrderingTest::StrictWeakOrderingTest() {
+    #ifdef COMPILING_AS_CPP14
+    setTestName("Magnum::Math::Test::StrictWeakOrderingCpp14Test");
+    #endif
+
     addTests({&StrictWeakOrderingTest::base,
 
               &StrictWeakOrderingTest::set<std::set<Vector2i, Implementation::StrictWeakOrdering<Vector2i>>>,
               &StrictWeakOrderingTest::set<std::set<Vector2i, StrictWeakOrdering>>,
+              /* libc++ 22 in C++14 and up no longer uses std::less<Key> which
+                 is the documented default template argument for std::set and
+                 std::map. Instead it uses std::less<void>, which just wraps
+                 operator<() but for vectors it returns BitVector, which has
+                 only an explicit bool conversion, resulting in a failure at
+                  https://github.com/llvm/llvm-project/blob/61d504125f5c44bba599224f9a7f25b3e6ede508/libcxx/include/__utility/lazy_synth_three_way_comparator.h#L45
+                 A similar issue was reported but considered to be invalid user
+                 code so we simply don't even try to test the default
+                 comparator anymore on libc++ 22+ in C++14 and up:
+                  https://github.com/llvm/llvm-project/issues/178847 */
+              #if !defined(CORRADE_TARGET_CXX14) || !defined(CORRADE_TARGET_LIBCXX) || _LIBCPP_VERSION < 22
               &StrictWeakOrderingTest::set<std::set<Vector2i>>,
+              #endif
 
               &StrictWeakOrderingTest::map<std::map<Vector2i, Int, Implementation::StrictWeakOrdering<Vector2i>>>,
               &StrictWeakOrderingTest::map<std::map<Vector2i, Int, StrictWeakOrdering>>,
-              &StrictWeakOrderingTest::map<std::map<Vector2i, Int>>});
+              /* As above, doesn't compile in libc++ 22+ in C++14 and up */
+              #if !defined(CORRADE_TARGET_CXX14) || !defined(CORRADE_TARGET_LIBCXX) || _LIBCPP_VERSION < 22
+              &StrictWeakOrderingTest::map<std::map<Vector2i, Int>>
+              #endif
+              });
 }
 
 void StrictWeakOrderingTest::base() {
@@ -80,9 +104,12 @@ template<> struct Compare<Implementation::StrictWeakOrdering<Vector2i>> {
 template<> struct Compare<StrictWeakOrdering> {
     static const char* name() { return "StrictWeakOrdering"; }
 };
+/* See comments above. Clang otherwise complains that name() is unused. */
+#if !defined(CORRADE_TARGET_CXX14) || !defined(CORRADE_TARGET_LIBCXX) || _LIBCPP_VERSION < 22
 template<> struct Compare<std::less<Vector2i>> {
     static const char* name() { return "std::less<Vector2i>"; }
 };
+#endif
 
 template<class Set> void StrictWeakOrderingTest::set() {
     setTestCaseTemplateName(Compare<typename Set::key_compare>::name());
