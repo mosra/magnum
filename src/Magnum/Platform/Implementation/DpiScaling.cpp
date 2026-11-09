@@ -34,13 +34,14 @@
 
 #ifdef _MAGNUM_PLATFORM_USE_X11
 #include <cstdlib> /* std::getenv() */
-#include <cstring>
 #include <dlfcn.h>
 #include <X11/Xresource.h>
+#undef None
+#undef Success /* X11 macro, breaks Utility::String::ParseState::Success */
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
-#undef None
+#include <Corrade/Utility/String.h>
 #endif
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
@@ -60,6 +61,8 @@
 #endif
 
 namespace Magnum { namespace Platform { namespace Implementation {
+
+using namespace Containers::Literals;
 
 Utility::Arguments windowScalingArguments() {
     Utility::Arguments args{"magnum"};
@@ -130,10 +133,10 @@ Float x11DpiScaling(std::ostream* output) {
         XrmValue value;
         char* type{};
         if(xrmGetResource(db, "Xft.dpi", "Xft.Dpi", &type, &value)) {
-            if(type && strcmp(type, "String") == 0) {
-                const float scaling = std::stof(value.addr)/96.0f;
-                CORRADE_INTERNAL_ASSERT(scaling);
-                return scaling;
+            if(type == "String"_s) {
+                float scaling;
+                CORRADE_INTERNAL_ASSERT(Utility::String::parseFloat(value.addr, scaling) && scaling);
+                return scaling/96.0f;
             }
         }
 
